@@ -1,0 +1,166 @@
+# -*- mode: Makefile; -*-
+# Copyright (c) 2011 Bitcoin Developers
+# Distributed under the MIT/X11 software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
+# Mac OS X makefile for spectrecoin
+# Originally by Laszlo Hanyecz (solar@heliacal.net)
+USE_UPNP:=0
+CXX=llvm-g++
+DEPSDIR=/usr/local/Cellar
+
+INCLUDEPATHS= \
+ -I"$(CURDIR)" \
+ -I"$(CURDIR)"/obj \
+ -I"$(DEPSDIR)/include" \
+ -I"$(DEPSDIR)/include/db48"
+
+LIBPATHS= \
+ -L"$(DEPSDIR)/lib" \
+ -L"$(DEPSDIR)/lib/db48"
+
+USE_UPNP:=1
+
+LIBS= -dead_strip
+
+LIBS += \
+ -ldb_cxx-4.8 \
+ -lboost_system-mt \
+ -lboost_filesystem-mt \
+ -lboost_program_options-mt \
+ -lboost_thread-mt \
+ -lssl \
+ -lcrypto
+
+
+DEFS=-DMAC_OSX -DMSG_NOSIGNAL=0 -DBOOST_SPIRIT_THREADSAFE
+
+ifdef RELEASE
+# Compile for maximum compatibility and smallest size.
+# This requires that dependencies are compiled
+# the same way.
+CFLAGS = -arch x86_64 -stdlib=libc++
+else
+CFLAGS = -arch x86_64 -stdlib=libc++ -g -msse2
+endif
+
+# ppc doesn't work because we don't support big-endian
+CFLAGS += -Wall -Wextra -Wformat -Wno-ignored-qualifiers -Wformat-security -Wno-unused-parameter \
+    $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS)
+OBJS= \
+    obj/alert.o \
+    obj/version.o \
+    obj/checkpoints.o \
+    obj/netbase.o \
+    obj/addrman.o \
+    obj/crypter.o \
+    obj/key.o \
+    obj/eckey.o \
+    obj/extkey.o \
+    obj/db.o \
+    obj/init.o \
+    obj/spectrecoind.o \
+    obj/keystore.o \
+    obj/miner.o \
+    obj/main.o \
+    obj/net.o \
+    obj/protocol.o \
+    obj/rpcprotocol.o \
+    obj/rpcserver.o \
+    obj/rpcclient.o \
+    obj/rpcdump.o \
+    obj/rpcnet.o \
+    obj/rpcmining.o \
+    obj/rpcwallet.o \
+    obj/rpcblockchain.o \
+    obj/rpcrawtransaction.o \
+    obj/rpcsmessage.o \
+    obj/rpcextkey.o \
+    obj/rpcmnemonic.o \
+    obj/script.o \
+    obj/sync.o \
+    obj/util.o \
+    obj/hash.o \
+    obj/wallet.o \
+    obj/walletdb.o \
+    obj/noui.o \
+    obj/kernel.o \
+    obj/pbkdf2.o \
+    obj/scrypt.o \
+    obj/scrypt-arm.o \
+    obj/scrypt-x86.o \
+    obj/scrypt-x86_64.o \
+    obj/smessage.o \
+    obj/stealth.o \
+    obj/ringsig.o \
+    obj/core.o \
+    obj/txmempool.o \
+    obj/chainparams.o \
+    obj/state.o \
+    obj/bloom.o
+
+
+
+all: spectrecoind
+
+test check: test_spectre FORCE
+	./test_spectre
+LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
+DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
+DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
+OBJS += obj/txdb-leveldb.o
+leveldb/libleveldb.a:
+	@echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
+obj/txdb-leveldb.o: leveldb/libleveldb.a
+
+# auto-generated dependencies:
+-include obj/*.P
+
+obj/build.h: FORCE
+	/bin/sh ../share/genbuild.sh obj/build.h
+version.cpp: obj/build.h
+DEFS += -DHAVE_BUILD_INFO
+obj/scrypt-x86.o: scrypt-x86.S
+	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
+obj/scrypt-x86_64.o: scrypt-x86_64.S
+	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
+obj/scrypt-arm.o: scrypt-arm.S
+	$(CXX) -c $(CFLAGS) -MMD -o $@ $<
+
+obj/%.o: %.cpp
+	$(CXX) -c $(CFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+
+spectrecoind: $(OBJS:obj/%=obj/%)
+	$(LINK) $(CFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+
+
+TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
+
+xTESTCXXFLAGS = -std=c++11
+
+obj-test/%.o: test/%.cpp
+	$(CXX) -c $(TESTDEFS) $(xTESTCXXFLAGS) $(CFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+
+test_spectre: $(TESTOBJS) $(filter-out obj/init.o obj/spectrecoind.o,$(OBJS:obj/%=obj/%))
+	$(LINK) $(CFLAGS) -o $@ $(LIBPATHS) $^ $(TESTLIBS) $(xLDFLAGS) $(LIBS)
+
+clean:
+	-rm -f spectrecoind
+	-rm -f obj/*.o
+	-rm -f obj/*.P
+	-rm -f obj/build.h
+	-rm -f test_spectre
+	-rm -f obj-test/*.o
+	-rm -f obj-test/*.P
+	-cd leveldb && $(MAKE) clean || true
+
+
+FORCE:

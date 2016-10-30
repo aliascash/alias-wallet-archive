@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[spectrecore.umbra_qt]
+file_filter = src/qt/locale/umbra_<lang>.ts
+source_file = src/qt/locale/umbra_en.ts
+source_lang = en
+type = QT
+
