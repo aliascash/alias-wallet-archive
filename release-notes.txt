@@ -1,156 +1,17 @@
 
 Spectrecoin Release Notes
 
-
-Version 1.3.3.0
+Version 1.1.0.0
+ - Bug Fixes
+ - Tor release
  
- - Added BIP44 support
+Version 1.0.0.1
+ - Minor changes to protocol
+ - Bug Fixes
+
+Version 1.0.0.0
  
- - Added BIP39 support
- 
- - Added smaller ring signatures
-    https://bitcointalk.org/index.php?topic=972541.msg10619684
- 
- - The goal for this release is to implement a framework for BIP32
-   on which to build, the more interesting features possible with bip32 keys can
-   be implemented later.  For this release we aim to implement a hierarchical 
-   deterministic wallet - which means you can recover all the keys in a wallet
-   using only the master key.
- 
- - Added basic BIP32 support
-    
-    
-    - Each extended key can derive 2^31 normal child keys and 2^31 hardened
-      child keys.
-        - 
-    
-    - All new keys are deterministically generated from a master key.
-        - The complete wallet state (except key labels) can be recreated from 
-          a single master key.
-    
-    - When the wallet is first started a new master bip32 key will be generated
-      from the master key, internal (child 1) and external (child 0) chains are 
-      derived from the master key.
-      
-      The wallet will only generate a master key automatically once.
-      If the first master key is removed a new key will need to be imported
-      manually for the wallet to be able to generate keys.
-        
-    
-    - New prefix for base58 data
-        - extended key identifiers are represented in the same way as normal 
-          spectre addresses, to prevent confusion a new prefix has been added.
-          Extended key identifiers begin with 'x' on live, on testnet with 'X'
-    
-    - New rpc function extkey, alias: bip32
-        
-        - path
-            The path is a backslash deliminated string of digits.
-            m/3/4h/5
-            Only backslashes, digits and m, h and ' may occur in the path.
-            
-            The tokens m and 0 can only be first or last in the path.
-        
-        - examples:
-            - extkey <bip32_key> <path>
-                - returns the child key according to the path
-            - extkey gen 
-                - generates new key from random data
-                - extkey <passphrase> <nun hashes> <seed string>
-                    Match bip32.org keys: bip32 gen "pass" 50000 "Bitcoin seed"
-    
-    - Notes
-        - The change address of anon transactions is picked as the first stealth
-          address of default account else the first legacy stealth address.
- 
- - Added Gitian build descriptors
-    - See contrib/gitian-descriptors/README
- 
- - SMSG ScanBlock harvest public keys from coinstake transactions
- 
- - Added "Txn Type" field to txnreport
- 
- - Added 'env' parameter to getinfo
-    - returns more environment specific information
- 
- - Added simple command line interface to spectrecoind
-    - enabled with new parameter "cli" when not started as a daemon
-
- - Added createmultisig rpc command
-    - createmultisig does the same as existing command addmultisigaddress
-      except that the resulting address and script are not added to the wallet.
-
- - decoderawtransaction scriptPubKey includes the hex representation
-    - hex of a prevout scriptPubKey is required for signrawtransaction
- 
- - signrawtransaction works when private keys are passed in as parameters
-    - adds redeemScript to the tempKeystore
-
- - Added option to disable SMSG scanning of incoming blocks.
-    - smsgoptions set scanIncoming false
-
- - smsgoptions command is now case insensitive
- - smsgoptions list takes a bool parameter to list option descriptions
- 
- - dumpprivkey takes a pubkey as input
- 
- - More unit tests enabled
-  - The coin_selection_tests sometimes fail, it's related to the nSpendTime
-    parameter and isn't a real error.
-
- - Gui improvements
-  - Lock icon goes orange when system unlocked for staking only.
-  - Table pagination icons limited to 5.
-  
-
-
-
-Version 1.3.2.0
-
- - Implemented PoS V2
-    
-    
- - Removed Thin mode staking
-    The network relies on full nodes for security.
-    Staking should be a reward for maintaining a full node.
-    
-
- - Removed hash from DiskBlockIndex
-    hash is saved in the key, no need to save it twice, 32 bytes saved per block
-    Key prefix "blockindex" changed to "bidx", 36 bytes saved per block
-    
-    
-    The TXDB version has been raised to 70510.
-    
-    On first boot the nodes will wipe any database before 70509 and initialise
-    a reindex, which will reload the TXDB from the stored blockchain.
-    
-    For Databases of verson 70509 an migration will run, significantly faster
-    than a reindex.  All existing nodes should be on txdb version 70509.
-    
-    Thin nodes don't store the blockchain and will need to redownload.
-    
-    Note: Reindexing the chain could cause your failed stake transactions to be
-    detected as occuring during the reindex, and displayed at the top of the
-    transaction list.  They can be removed by running clearwallettransactions
-    followed by reloadanondata.
-    
-
-
- - Enabled unit tests
-    Compile: make -f makefile.unix test_spectre
-    Run: ./test_spectre --log_level=all
-    
-
-
-
- - printstakemodifier, printcoinstake and printcoinage are replaced by debugpos
-
-
-
-
-
-
+ - Initial Release
 
 
 

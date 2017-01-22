@@ -1,10 +1,30 @@
 TEMPLATE = app
 TARGET = spectre
-VERSION = 1.0.0
-INCLUDEPATH += src src/json src/qt
+VERSION = 1.0.0.0
+INCLUDEPATH += src src/json src/qt src/tor
 DEFINES += BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
 CONFIG += thread
+CONFIG += static
+
+#INCLUDEPATH += C:\MinGW\msys\1.0\local\include
+	
+    #LIBEVENT_INCLUDE_PATH=C:\MinGW\msys\1.0\local\include
+    #LIBEVENT_LIB_PATH=C:\deps\32\libevent-2.0.22\.libs
+    #LIBEVENT_LIB_PATH=C:\MinGW\msys\1.0\local\lib
+	
+    #BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
+    #BOOST_INCLUDE_PATH=C:\deps\32\boost_1_55_0
+    #BOOST_LIB_PATH=C:\deps\32\boost_1_55_0\stage\lib
+
+    #BDB_INCLUDE_PATH=C:\deps\32\db-4.8.30.NC\build_unix
+    #BDB_LIB_PATH=C:\deps\32\db-4.8.30.NC\build_unix
+	
+    #OPENSSL_INCLUDE_PATH=C:\deps\32\openssl-1.0.1j\include
+    #OPENSSL_LIB_PATH=C:\deps\32\openssl-1.0.1j
+
+#    MINIUPNPC_INCLUDE_PATH=C:\deps\32\miniupnpc
+ #   MINIUPNPC_LIB_PATH=C:\deps\32\miniupnpc
 
 # Mobile devices
 android:ios{
@@ -75,17 +95,23 @@ build_macosx64 {
 
 }
 build_win32 {
-    BOOST_LIB_SUFFIX=-mgw48-mt-s-1_55
-    BOOST_INCLUDE_PATH=c:/deps/boost/include
-    BOOST_LIB_PATH=c:/deps/boost/lib
 
-    BDB_INCLUDE_PATH=c:/deps/db-4.8.30.NC/build_unix
-    BDB_LIB_PATH=c:/deps/db-4.8.30.NC/build_unix
-    OPENSSL_INCLUDE_PATH=c:/deps/openssl_1.0.1h/include
-    OPENSSL_LIB_PATH=c:/deps/openssl_1.0.1h/lib/
+    LIBEVENT_INCLUDE_PATH=C:\MinGW\msys\1.0\local\include
+    #LIBEVENT_LIB_PATH=C:\deps\32\libevent-2.0.22\.libs
+    LIBEVENT_LIB_PATH=C:\MinGW\msys\1.0\local\lib
+	
+    BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
+    BOOST_INCLUDE_PATH=C:\deps\32\boost_1_55_0
+    BOOST_LIB_PATH=C:\deps\32\boost_1_55_0\stage\lib
 
-    MINIUPNPC_INCLUDE_PATH=c:/deps/miniupnpc
-    MINIUPNPC_LIB_PATH=c:/deps/miniupnpc
+    BDB_INCLUDE_PATH=C:\deps\32\db-4.8.30.NC\build_unix
+    BDB_LIB_PATH=C:\deps\32\db-4.8.30.NC\build_unix
+	
+    OPENSSL_INCLUDE_PATH=C:\deps\32\openssl-1.0.1j\include
+    OPENSSL_LIB_PATH=C:\deps\32\openssl-1.0.1j
+
+    MINIUPNPC_INCLUDE_PATH=C:\deps\32\miniupnpc
+    MINIUPNPC_LIB_PATH=C:\deps\32\miniupnpc
 
         #USE_BUILD_INFO = 1
         DEFINES += HAVE_BUILD_INFO
@@ -109,7 +135,7 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat -static
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--large-address-aware -Wl,--nxcompat -static
 win32:QMAKE_LFLAGS *= -static-libgcc -static-libstdc++
 
 # use: qmake "USE_UPNP=1" ( enabled by default; default)
@@ -155,7 +181,7 @@ win32 {
         QMAKE_RANLIB = $$replace(QMAKE_STRIP, strip, ranlib)
     }
     LIBS += -lshlwapi
-    genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
+    #genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
 } else:macx {
     # we use QMAKE_CXXFLAGS_RELEASE even without RELEASE=1 because we use RELEASE to indicate linking preferences not -O preferences
     genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX AR=$${QMAKE_HOST}-ar TARGET_OS=Darwin $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
@@ -369,6 +395,88 @@ SOURCES += \
     src/qt/spectregui.cpp \
     src/qt/spectre.cpp \
     src/qt/spectrebridge.cpp
+	
+### tor sources
+SOURCES += src/tor/anonymize.cpp \
+    src/tor/address.c \
+    src/tor/addressmap.c \
+    src/tor/aes.c \
+    src/tor/backtrace.c \
+    src/tor/buffers.c \
+    src/tor/channel.c \
+    src/tor/channeltls.c \
+    src/tor/circpathbias.c \
+    src/tor/circuitbuild.c \
+    src/tor/circuitlist.c \
+    src/tor/circuitmux.c \
+    src/tor/circuitmux_ewma.c \
+    src/tor/circuitstats.c \
+    src/tor/circuituse.c \
+    src/tor/command.c \
+    src/tor/compat.c \
+    src/tor/compat_libevent.c \
+    src/tor/config.c \
+    src/tor/config_codedigest.c \
+    src/tor/confparse.c \
+    src/tor/connection.c \
+    src/tor/connection_edge.c \
+    src/tor/connection_or.c \
+    src/tor/container.c \
+    src/tor/control.c \
+    src/tor/cpuworker.c \
+    src/tor/crypto.c \
+    src/tor/crypto_curve25519.c \
+    src/tor/crypto_format.c \
+    src/tor/curve25519-donna.c \
+    src/tor/di_ops.c \
+    src/tor/directory.c \
+    src/tor/dirserv.c \
+    src/tor/dirvote.c \
+    src/tor/dns.c \
+    src/tor/dnsserv.c \
+    src/tor/entrynodes.c \
+    src/tor/ext_orport.c \
+    src/tor/fp_pair.c \
+    src/tor/geoip.c \
+    src/tor/hibernate.c \
+    src/tor/log.c \
+    src/tor/memarea.c \
+    src/tor/mempool.c \
+    src/tor/microdesc.c \
+    src/tor/networkstatus.c \
+    src/tor/nodelist.c \
+    src/tor/onion.c \
+    src/tor/onion_fast.c \
+    src/tor/onion_main.c \
+    src/tor/onion_ntor.c \
+    src/tor/onion_tap.c \
+    src/tor/policies.c \
+    src/tor/procmon.c \
+    src/tor/reasons.c \
+    src/tor/relay.c \
+    src/tor/rendclient.c \
+    src/tor/rendcommon.c \
+    src/tor/rendmid.c \
+    src/tor/rendservice.c \
+    src/tor/rephist.c \
+    src/tor/replaycache.c \
+    src/tor/router.c \
+    src/tor/routerlist.c \
+    src/tor/routerparse.c \
+    src/tor/routerset.c \
+    src/tor/sandbox.c \
+    src/tor/statefile.c \
+    src/tor/status.c \
+    src/tor/strlcat.c \
+    src/tor/strlcpy.c \
+    src/tor/tor_util.c \
+    src/tor/torgzip.c \
+    src/tor/tortls.c \
+    src/tor/transports.c \
+    src/tor/util_codedigest.c \
+
+
+#### tor sources
     
 
 FORMS += \
@@ -460,9 +568,10 @@ macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH
-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,)
+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$LIBEVENT_INCLUDE_PATH
+LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(LIBEVENT_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+LIBS += -levent -lz
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX

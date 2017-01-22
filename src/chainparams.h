@@ -87,7 +87,7 @@ public:
 
 
     int LastPOWBlock() const { return nLastPOWBlock; }
-    int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
+    //int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
@@ -114,7 +114,6 @@ protected:
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     int nLastPOWBlock;
-    int nLastFairLaunchBlock;
 };
 
 /**

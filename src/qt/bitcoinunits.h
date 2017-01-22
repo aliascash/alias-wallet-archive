@@ -17,10 +17,10 @@ public:
      */
     enum Unit
     {
-        SPEC,
-        mSPEC,
-        uSPEC,
-        sSPEC
+        XSPEC,
+        mXSPEC,
+        uXSPEC,
+        sXSPEC
     };
 
     //! @name Static API

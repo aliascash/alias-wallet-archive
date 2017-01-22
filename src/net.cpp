@@ -27,6 +27,11 @@
 using namespace std;
 using namespace boost;
 
+
+extern "C" {
+    int tor_main(int argc, char *argv[]);
+}
+
 static const int MAX_OUTBOUND_CONNECTIONS = 16;
 
 bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
@@ -1192,10 +1197,51 @@ void MapPort(bool)
 
 
 
+/* Tor implementation ---------------------------------*/
+
+// hidden service seeds
+static const char *strMainNetOnionSeed[][1] = {
+    {"3bhu2bafrb7th2e5.onion"},
+    {NULL}
+};
+
+static const char *strTestNetOnionSeed[][1] = {
+    {NULL}
+};
+
+void ThreadOnionSeed(void* parg)
+{
+
+    // Make this thread recognisable as the tor thread
+    RenameThread("onionseed");
+
+    static const char *(*strOnionSeed)[1] = fTestNet ? strTestNetOnionSeed : strMainNetOnionSeed;
+
+    int found = 0;
+
+    printf("Loading addresses from .onion seeds\n");
+
+    for (unsigned int seed_idx = 0; strOnionSeed[seed_idx][0] != NULL; seed_idx++) {
+        CNetAddr parsed;
+        if (
+            !parsed.SetSpecial(
+                strOnionSeed[seed_idx][0]
+            )
+        ) {
+            throw runtime_error("ThreadOnionSeed() : invalid .onion seed");
+        }
+        int nOneDay = 24*3600;
+        CAddress addr = CAddress(CService(parsed, Params().GetDefaultPort()));
+        addr.nTime = GetTime() - 3*nOneDay - GetRand(4*nOneDay); // use a random age between 3 and 7 days old
+        found++;
+        addrman.Add(addr, parsed);
+    }
+
+    printf("%d addresses found from .onion seeds\n", found);
+}
 
 
-
-void ThreadDNSAddressSeed()
+/* void ThreadDNSAddressSeed()
 {
     // goal: only query DNS seeds if address need is acute
     if ((addrman.size() > 0) &&
@@ -1236,7 +1282,7 @@ void ThreadDNSAddressSeed()
     }
 
     LogPrintf("%d addresses found from DNS seeds\n", found);
-}
+} */
 
 void DumpAddresses()
 {
@@ -1656,7 +1702,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     return true;
 }
 
-void static Discover(boost::thread_group& threadGroup)
+/* void static Discover(boost::thread_group& threadGroup)
 {
     if (!fDiscover)
         return;
@@ -1706,7 +1752,46 @@ void static Discover(boost::thread_group& threadGroup)
 #endif
 
 }
+*/
+void static Discover()
+{
+   // no network discovery
+}
 
+
+static void run_tor() {
+    printf("TOR thread started.\n");
+
+    std::string logDecl = "notice file " + GetDataDir().string() + "/tor/tor.log";
+    char *argvLogDecl = (char*) logDecl.c_str();
+
+    char* argv[] = {
+        "tor",
+        "--hush",
+        "--Log",
+        argvLogDecl
+    };
+
+    tor_main(4, argv);
+}
+
+
+void StartTor(void* parg)
+{
+    // Make this thread recognisable as the tor thread
+    RenameThread("onion");
+
+    try
+    {
+      run_tor();
+    }
+    catch (std::exception& e) {
+      PrintException(&e, "StartTor()");
+    }
+
+    printf("Onion thread exited.");
+
+}
 
 void StartNode(boost::thread_group& threadGroup)
 {
@@ -1719,17 +1804,27 @@ void StartNode(boost::thread_group& threadGroup)
     if (pnodeLocalHost == NULL)
         pnodeLocalHost = new CNode(INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), nLocalServices));
 
-    Discover(threadGroup);
+    //Discover(threadGroup);
+	Discover();
 
     //
     // Start threads
     //
-
-    if (!GetBoolArg("-dnsseed", true))
+	
+/*	if (!GetBoolArg("-dnsseed", true))
         LogPrintf("DNS seeding disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "dnsseed", &ThreadDNSAddressSeed));
+*/
+	
+	// start the onion seeder
+    if (!GetBoolArg("-onionseed", true))
+        printf(".onion seeding disabled\n");
+    else
+        if (!NewThread(ThreadOnionSeed, NULL))
+	printf("Error: could not start .onion seeding\n");
 
+    
     MapPort(GetBoolArg("-upnp", DEFAULT_UPNP));
 
     // Send and receive from sockets, accept connections

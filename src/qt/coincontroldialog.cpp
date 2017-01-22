@@ -529,7 +529,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, Spectr
     } else
     {
         // actually update labels
-        int nDisplayUnit = BitcoinUnits::SPEC;
+        int nDisplayUnit = BitcoinUnits::XSPEC;
         if (model && model->getOptionsModel())
             nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
@@ -593,7 +593,7 @@ void CoinControlDialog::updateView()
     QFlags<Qt::ItemFlag> flgCheckbox=Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
     QFlags<Qt::ItemFlag> flgTristate=Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsTristate;
 
-    int nDisplayUnit = BitcoinUnits::SPEC;
+    int nDisplayUnit = BitcoinUnits::XSPEC;
     if (model && model->getOptionsModel())
         nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 

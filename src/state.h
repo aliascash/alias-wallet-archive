@@ -1,4 +1,5 @@
-// Copyright (c) 2014 The SpectreCoin developers
+// Copyright (c) 2014 The ShadowCoin developers
+// Copyright (c) 2016 The SpectreCoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -47,7 +48,7 @@ enum
     SMSG_RELAY   = (1 << 4),
 };
 
-const int64_t GENESIS_BLOCK_TIME = 1476954000;
+const int64_t GENESIS_BLOCK_TIME = 1479594600;
 
 static const int64_t COIN = 100000000;
 static const int64_t CENT = 1000000;
@@ -57,7 +58,7 @@ static const int64_t MIN_TX_FEE = 10000;
 static const int64_t MIN_TX_FEE_ANON = 1000000;
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64_t COIN_YEAR_REWARD = 2 * CENT; // 2% per year
+static const int64_t COIN_YEAR_REWARD = 5 * CENT; // 5% per year
 
 static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
 

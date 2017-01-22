@@ -18,11 +18,11 @@
         <source>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
-Copyright © 2016 The Spectre developers</source>
+Copyright © 2015 The Shadow developers</source>
         <translation>Copyright © 2009-2014 The Bitcoin developers
 Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
-Copyright © 2016 The Spectre developers</translation>
+Copyright © 2015 The Shadow developers</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1087,8 +1087,8 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
     <message>
         <location line="+5"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; SPECTRE, ring size %2 to SPEC %3 (%4)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; SPECTRE, ring size %2 to SPEC %3 (%4)</translation>
+        <source>&lt;b&gt;%1&lt;/b&gt; SPECTRE, ring size %2 to XSPEC %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; SPECTRE, ring size %2 to XSPEC %3 (%4)</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2600,8 +2600,8 @@ Expected time to earn reward is %3</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Generated coins must mature 120 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Generated coins must mature 510 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours. {120 ?}</translation>
+        <source>Generated coins must mature 288 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation>Generated coins must mature 288 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours. {288 ?}</translation>
     </message>
     <message>
         <location line="+7"/>

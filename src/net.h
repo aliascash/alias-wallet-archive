@@ -60,6 +60,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
+void StartTor(void* parg);
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
@@ -131,12 +132,14 @@ public:
 /** Thread types */
 enum threadId
 {
+	THREAD_TORNET,
     THREAD_SOCKETHANDLER,
     THREAD_OPENCONNECTIONS,
     THREAD_MESSAGEHANDLER,
     THREAD_RPCLISTENER,
     THREAD_UPNP,
-    THREAD_DNSSEED,
+	THREAD_ONIONSEED,
+//    THREAD_DNSSEED,
     THREAD_ADDEDCONNECTIONS,
     THREAD_DUMPADDRESS,
     THREAD_RPCHANDLER,
@@ -145,7 +148,7 @@ enum threadId
     THREAD_MAX
 };
 
-extern bool fDiscover;
+// extern bool fDiscover;
 extern bool fUseUPnP;
 
 extern uint64_t nLocalHostNonce;
@@ -306,6 +309,7 @@ public:
     bool fOneShot;
     bool fClient;
     bool fInbound;
+	bool fVerified;	// tor implementation
     bool fNetworkNode;
     bool fSuccessfullyConnected;
     bool fDisconnect;
@@ -381,6 +385,7 @@ public:
         fOneShot = false;
         fClient = false; // set by version message
         fInbound = fInboundIn;
+		fVerified = false;  // tor implementation
         fNetworkNode = false;
         fSuccessfullyConnected = false;
         fDisconnect = false;
