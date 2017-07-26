@@ -1,9 +1,72 @@
-/* * Copyright (c) 2012-2013, The Tor Project, Inc. */
+/* * Copyright (c) 2012-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
  * \file circuitmux.c
  * \brief Circuit mux/cell selection abstraction
+ *
+ * A circuitmux is responsible for <b>MU</b>ltiple<b>X</b>ing all of the
+ * circuits that are writing on a single channel. It keeps track of which of
+ * these circuits has something to write (aka, "active" circuits), and which
+ * one should write next.  A circuitmux corresponds 1:1 with a channel.
+ *
+ * There can be different implementations of the circuitmux's rules (which
+ * decide which circuit is next to write).
+ *
+ * A circuitmux exposes three distinct
+ * interfaces to other components:
+ *
+ * To channels, which each have a circuitmux_t, the supported operations
+ * (invoked from relay.c) are:
+ *
+ *   circuitmux_get_first_active_circuit():
+ *
+ *     Pick one of the circuitmux's active circuits to send cells from.
+ *
+ *   circuitmux_notify_xmit_cells():
+ *
+ *     Notify the circuitmux that cells have been sent on a circuit.
+ *
+ * To circuits, the exposed operations are:
+ *
+ *   circuitmux_attach_circuit():
+ *
+ *     Attach a circuit to the circuitmux; this will allocate any policy-
+ *     specific data wanted for this circuit and add it to the active
+ *     circuits list if it has queued cells.
+ *
+ *   circuitmux_detach_circuit():
+ *
+ *     Detach a circuit from the circuitmux, freeing associated structures.
+ *
+ *   circuitmux_clear_num_cells():
+ *
+ *     Clear the circuitmux's cell counter for this circuit.
+ *
+ *   circuitmux_set_num_cells():
+ *
+ *     Set the circuitmux's cell counter for this circuit. One of
+ *     circuitmuc_clear_num_cells() or circuitmux_set_num_cells() MUST be
+ *     called when the number of cells queued on a circuit changes.
+ *
+ * See circuitmux.h for the circuitmux_policy_t data structure, which contains
+ * a table of function pointers implementing a circuit selection policy, and
+ * circuitmux_ewma.c for an example of a circuitmux policy.  Circuitmux
+ * policies can be manipulated with:
+ *
+ *   circuitmux_get_policy():
+ *
+ *     Return the current policy for a circuitmux_t, if any.
+ *
+ *   circuitmux_clear_policy():
+ *
+ *     Remove a policy installed on a circuitmux_t, freeing all associated
+ *     data.  The circuitmux will revert to the built-in round-robin behavior.
+ *
+ *   circuitmux_set_policy():
+ *
+ *     Install a policy on a circuitmux_t; the appropriate callbacks will be
+ *     made to attach all existing circuits to the new policy.
  **/
 
 #include "or.h"
@@ -37,64 +100,6 @@ typedef struct circuit_muxinfo_s circuit_muxinfo_t;
 
 /*
  * Structures for circuitmux.c
- */
-
-/*
- * A circuitmux is a collection of circuits; it tracks which subset
- * of the attached circuits are 'active' (i.e., have cells available
- * to transmit) and how many cells on each.  It expoes three distinct
- * interfaces to other components:
- *
- * To channels, which each have a circuitmux_t, the supported operations
- * are:
- *
- *   circuitmux_get_first_active_circuit():
- *
- *     Pick one of the circuitmux's active circuits to send cells from.
- *
- *   circuitmux_notify_xmit_cells():
- *
- *     Notify the circuitmux that cells have been sent on a circuit.
- *
- * To circuits, the exposed operations are:
- *
- *   circuitmux_attach_circuit():
- *
- *     Attach a circuit to the circuitmux; this will allocate any policy-
- *     specific data wanted for this circuit and add it to the active
- *     circuits list if it has queued cells.
- *
- *   circuitmux_detach_circuit():
- *
- *     Detach a circuit from the circuitmux, freeing associated structures.
- *
- *   circuitmux_clear_num_cells():
- *
- *     Clear the circuitmux's cell counter for this circuit.
- *
- *   circuitmux_set_num_cells():
- *
- *     Set the circuitmux's cell counter for this circuit.
- *
- * See circuitmux.h for the circuitmux_policy_t data structure, which contains
- * a table of function pointers implementing a circuit selection policy, and
- * circuitmux_ewma.c for an example of a circuitmux policy.  Circuitmux
- * policies can be manipulated with:
- *
- *   circuitmux_get_policy():
- *
- *     Return the current policy for a circuitmux_t, if any.
- *
- *   circuitmux_clear_policy():
- *
- *     Remove a policy installed on a circuitmux_t, freeing all associated
- *     data.  The circuitmux will revert to the built-in round-robin behavior.
- *
- *   circuitmux_set_policy():
- *
- *     Install a policy on a circuitmux_t; the appropriate callbacks will be
- *     made to attach all existing circuits to the new policy.
- *
  */
 
 struct circuitmux_s {
@@ -186,10 +191,10 @@ struct chanid_circid_muxinfo_t {
  * Static function declarations
  */
 
-static INLINE int
+static inline int
 chanid_circid_entries_eq(chanid_circid_muxinfo_t *a,
                          chanid_circid_muxinfo_t *b);
-static INLINE unsigned int
+static inline unsigned int
 chanid_circid_entry_hash(chanid_circid_muxinfo_t *a);
 static chanid_circid_muxinfo_t *
 circuitmux_find_map_entry(circuitmux_t *cmux, circuit_t *circ);
@@ -199,12 +204,12 @@ circuitmux_make_circuit_active(circuitmux_t *cmux, circuit_t *circ,
 static void
 circuitmux_make_circuit_inactive(circuitmux_t *cmux, circuit_t *circ,
                                  cell_direction_t direction);
-static INLINE void
+static inline void
 circuitmux_move_active_circ_to_tail(circuitmux_t *cmux, circuit_t *circ,
                                     cell_direction_t direction);
-static INLINE circuit_t **
+static inline circuit_t **
 circuitmux_next_active_circ_p(circuitmux_t *cmux, circuit_t *circ);
-static INLINE circuit_t **
+static inline circuit_t **
 circuitmux_prev_active_circ_p(circuitmux_t *cmux, circuit_t *circ);
 static void circuitmux_assert_okay_pass_one(circuitmux_t *cmux);
 static void circuitmux_assert_okay_pass_two(circuitmux_t *cmux);
@@ -226,7 +231,7 @@ static int64_t global_destroy_ctr = 0;
  * used by circuitmux_notify_xmit_cells().
  */
 
-static INLINE void
+static inline void
 circuitmux_move_active_circ_to_tail(circuitmux_t *cmux, circuit_t *circ,
                                     cell_direction_t direction)
 {
@@ -306,7 +311,7 @@ circuitmux_move_active_circ_to_tail(circuitmux_t *cmux, circuit_t *circ,
   circuitmux_assert_okay_paranoid(cmux);
 }
 
-static INLINE circuit_t **
+static inline circuit_t **
 circuitmux_next_active_circ_p(circuitmux_t *cmux, circuit_t *circ)
 {
   tor_assert(cmux);
@@ -319,7 +324,7 @@ circuitmux_next_active_circ_p(circuitmux_t *cmux, circuit_t *circ)
   }
 }
 
-static INLINE circuit_t **
+static inline circuit_t **
 circuitmux_prev_active_circ_p(circuitmux_t *cmux, circuit_t *circ)
 {
   tor_assert(cmux);
@@ -338,7 +343,7 @@ circuitmux_prev_active_circ_p(circuitmux_t *cmux, circuit_t *circ)
  * than zero appropriately.
  */
 
-static INLINE int
+static inline int
 chanid_circid_entries_eq(chanid_circid_muxinfo_t *a,
                          chanid_circid_muxinfo_t *b)
 {
@@ -349,7 +354,7 @@ chanid_circid_entries_eq(chanid_circid_muxinfo_t *a,
  * Helper: return a hash based on circuit ID and channel ID in a.
  */
 
-static INLINE unsigned int
+static inline unsigned int
 chanid_circid_entry_hash(chanid_circid_muxinfo_t *a)
 {
     return (((unsigned int)(a->circ_id) << 8) ^
@@ -362,10 +367,10 @@ HT_HEAD(chanid_circid_muxinfo_map, chanid_circid_muxinfo_t);
 
 /* Emit a bunch of hash table stuff */
 HT_PROTOTYPE(chanid_circid_muxinfo_map, chanid_circid_muxinfo_t, node,
-             chanid_circid_entry_hash, chanid_circid_entries_eq);
-HT_GENERATE(chanid_circid_muxinfo_map, chanid_circid_muxinfo_t, node,
-            chanid_circid_entry_hash, chanid_circid_entries_eq, 0.6,
-            malloc, realloc, free);
+             chanid_circid_entry_hash, chanid_circid_entries_eq)
+HT_GENERATE2(chanid_circid_muxinfo_map, chanid_circid_muxinfo_t, node,
+             chanid_circid_entry_hash, chanid_circid_entries_eq, 0.6,
+             tor_reallocarray_, tor_free_)
 
 /*
  * Circuitmux alloc/free functions
@@ -390,10 +395,13 @@ circuitmux_alloc(void)
 
 /**
  * Detach all circuits from a circuitmux (use before circuitmux_free())
+ *
+ * If <b>detached_out</b> is non-NULL, add every detached circuit_t to
+ * detached_out.
  */
 
 void
-circuitmux_detach_all_circuits(circuitmux_t *cmux)
+circuitmux_detach_all_circuits(circuitmux_t *cmux, smartlist_t *detached_out)
 {
   chanid_circid_muxinfo_t **i = NULL, *to_remove;
   channel_t *chan = NULL;
@@ -409,7 +417,11 @@ circuitmux_detach_all_circuits(circuitmux_t *cmux)
   i = HT_START(chanid_circid_muxinfo_map, cmux->chanid_circid_map);
   while (i) {
     to_remove = *i;
-    if (to_remove) {
+
+    if (! to_remove) {
+      log_warn(LD_BUG, "Somehow, an HT iterator gave us a NULL pointer.");
+      break;
+    } else {
       /* Find a channel and circuit */
       chan = channel_find_by_global_id(to_remove->chan_id);
       if (chan) {
@@ -430,6 +442,9 @@ circuitmux_detach_all_circuits(circuitmux_t *cmux)
 
             /* Clear n_mux */
             circ->n_mux = NULL;
+
+            if (detached_out)
+              smartlist_add(detached_out, circ);
           } else if (circ->magic == OR_CIRCUIT_MAGIC) {
             /*
              * Update active_circuits et al.; this does policy notifies, so
@@ -445,6 +460,9 @@ circuitmux_detach_all_circuits(circuitmux_t *cmux)
              * so clear p_mux.
              */
             TO_OR_CIRCUIT(circ)->p_mux = NULL;
+
+            if (detached_out)
+              smartlist_add(detached_out, circ);
           } else {
             /* Complain and move on */
             log_warn(LD_CIRC,
@@ -608,8 +626,8 @@ circuitmux_clear_policy(circuitmux_t *cmux)
  * Return the policy currently installed on a circuitmux_t
  */
 
-const circuitmux_policy_t *
-circuitmux_get_policy(circuitmux_t *cmux)
+MOCK_IMPL(const circuitmux_policy_t *,
+circuitmux_get_policy, (circuitmux_t *cmux))
 {
   tor_assert(cmux);
 
@@ -883,8 +901,8 @@ circuitmux_num_cells_for_circuit(circuitmux_t *cmux, circuit_t *circ)
  * Query total number of available cells on a circuitmux
  */
 
-unsigned int
-circuitmux_num_cells(circuitmux_t *cmux)
+MOCK_IMPL(unsigned int,
+circuitmux_num_cells, (circuitmux_t *cmux))
 {
   tor_assert(cmux);
 
@@ -1079,8 +1097,11 @@ circuitmux_detach_circuit,(circuitmux_t *cmux, circuit_t *circ))
   /*
    * Use this to keep track of whether we found it for n_chan or
    * p_chan for consistency checking.
+   *
+   * The 0 initializer is not a valid cell_direction_t value.
+   * We assert that it has been replaced with a valid value before it is used.
    */
-  cell_direction_t last_searched_direction;
+  cell_direction_t last_searched_direction = 0;
 
   tor_assert(cmux);
   tor_assert(cmux->chanid_circid_map);
@@ -1109,6 +1130,9 @@ circuitmux_detach_circuit,(circuitmux_t *cmux, circuit_t *circ))
       }
     }
   }
+
+  tor_assert(last_searched_direction == CELL_DIRECTION_OUT
+             || last_searched_direction == CELL_DIRECTION_IN);
 
   /*
    * If hashent isn't NULL, we have a circuit to detach; don't remove it from
@@ -1893,6 +1917,90 @@ circuitmux_append_destroy_cell(channel_t *chan,
      */
     log_debug(LD_GENERAL, "Primed a buffer.");
     channel_flush_from_first_active_circuit(chan, 1);
+  }
+}
+
+/*DOCDOC; for debugging 12184.  This runs slowly. */
+int64_t
+circuitmux_count_queued_destroy_cells(const channel_t *chan,
+                                      const circuitmux_t *cmux)
+{
+  int64_t n_destroy_cells = cmux->destroy_ctr;
+  int64_t destroy_queue_size = cmux->destroy_cell_queue.n;
+
+  int64_t manual_total = 0;
+  int64_t manual_total_in_map = 0;
+  packed_cell_t *cell;
+
+  TOR_SIMPLEQ_FOREACH(cell, &cmux->destroy_cell_queue.head, next) {
+    circid_t id;
+    ++manual_total;
+
+    id = packed_cell_get_circid(cell, chan->wide_circ_ids);
+    if (circuit_id_in_use_on_channel(id, (channel_t*)chan))
+      ++manual_total_in_map;
+  }
+
+  if (n_destroy_cells != destroy_queue_size ||
+      n_destroy_cells != manual_total ||
+      n_destroy_cells != manual_total_in_map) {
+    log_warn(LD_BUG, "  Discrepancy in counts for queued destroy cells on "
+             "circuitmux. n="I64_FORMAT". queue_size="I64_FORMAT". "
+             "manual_total="I64_FORMAT". manual_total_in_map="I64_FORMAT".",
+             I64_PRINTF_ARG(n_destroy_cells),
+             I64_PRINTF_ARG(destroy_queue_size),
+             I64_PRINTF_ARG(manual_total),
+             I64_PRINTF_ARG(manual_total_in_map));
+  }
+
+  return n_destroy_cells;
+}
+
+/**
+ * Compare cmuxes to see which is more preferred; return < 0 if
+ * cmux_1 has higher priority (i.e., cmux_1 < cmux_2 in the scheduler's
+ * sort order), > 0 if cmux_2 has higher priority, or 0 if they are
+ * equally preferred.
+ *
+ * If the cmuxes have different cmux policies or the policy does not
+ * support the cmp_cmux method, return 0.
+ */
+
+MOCK_IMPL(int,
+circuitmux_compare_muxes, (circuitmux_t *cmux_1, circuitmux_t *cmux_2))
+{
+  const circuitmux_policy_t *policy;
+
+  tor_assert(cmux_1);
+  tor_assert(cmux_2);
+
+  if (cmux_1 == cmux_2) {
+    /* Equivalent because they're the same cmux */
+    return 0;
+  }
+
+  if (cmux_1->policy && cmux_2->policy) {
+    if (cmux_1->policy == cmux_2->policy) {
+      policy = cmux_1->policy;
+
+      if (policy->cmp_cmux) {
+        /* Okay, we can compare! */
+        return policy->cmp_cmux(cmux_1, cmux_1->policy_data,
+                                cmux_2, cmux_2->policy_data);
+      } else {
+        /*
+         * Equivalent because the policy doesn't know how to compare between
+         * muxes.
+         */
+        return 0;
+      }
+    } else {
+      /* Equivalent because they have different policies */
+      return 0;
+    }
+  } else {
+    /* Equivalent because one or both are missing a policy */
+    return 0;
   }
 }
 

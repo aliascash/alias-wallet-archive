@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2013, The Tor Project, Inc. */
+/* Copyright (c) 2011-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -9,7 +9,7 @@
 #ifndef TOR_PROCMON_H
 #define TOR_PROCMON_H
 
-#include "tor_compat.h"
+#include "torcompat.h"
 #include "compat_libevent.h"
 
 #include "torlog.h"

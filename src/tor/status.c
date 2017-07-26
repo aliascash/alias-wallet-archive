@@ -1,42 +1,46 @@
-/* Copyright (c) 2010-2013, The Tor Project, Inc. */
+/* Copyright (c) 2010-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
  * \file status.c
- * \brief Keep status information and log the heartbeat messages.
+ * \brief Collect status information and log heartbeat messages.
+ *
+ * This module is responsible for implementing the heartbeat log messages,
+ * which periodically inform users and operators about basic facts to
+ * do with their Tor instance.  The log_heartbeat() function, invoked from
+ * main.c, is the principle entry point.  It collects data from elsewhere
+ * in Tor, and logs it in a human-readable format.
  **/
 
+#define STATUS_PRIVATE
+
 #include "or.h"
+#include "circuituse.h"
 #include "config.h"
 #include "status.h"
 #include "nodelist.h"
 #include "relay.h"
 #include "router.h"
 #include "circuitlist.h"
-#include "onion_main.h"
+#include "tormain.h"
 #include "rephist.h"
 #include "hibernate.h"
 #include "rephist.h"
 #include "statefile.h"
 
 static void log_accounting(const time_t now, const or_options_t *options);
+#include "geoip.h"
 
 /** Return the total number of circuits. */
-static int
+STATIC int
 count_circuits(void)
 {
-  circuit_t *circ;
-  int nr=0;
-
-  TOR_LIST_FOREACH(circ, circuit_get_global_list(), head)
-    nr++;
-
-  return nr;
+  return smartlist_len(circuit_get_global_list());
 }
 
 /** Take seconds <b>secs</b> and return a newly allocated human-readable
  * uptime string */
-static char *
+STATIC char *
 secs_to_uptime(long secs)
 {
   long int days = secs / 86400;
@@ -63,7 +67,7 @@ secs_to_uptime(long secs)
 
 /** Take <b>bytes</b> and returns a newly allocated human-readable usage
  * string. */
-static char *
+STATIC char *
 bytes_to_usage(uint64_t bytes)
 {
   char *bw_string = NULL;
@@ -95,7 +99,6 @@ log_heartbeat(time_t now)
   const int hibernating = we_are_hibernating();
 
   const or_options_t *options = get_options();
-  (void)now;
 
   if (public_server_mode(options) && !hibernating) {
     /* Let's check if we are in the current cached consensus. */
@@ -113,25 +116,46 @@ log_heartbeat(time_t now)
 
   log_fn(LOG_NOTICE, LD_HEARTBEAT, "Heartbeat: Tor's uptime is %s, with %d "
          "circuits open. I've sent %s and received %s.%s",
-         uptime, count_circuits(),bw_sent,bw_rcvd,
+         uptime, count_circuits(), bw_sent, bw_rcvd,
          hibernating?" We are currently hibernating.":"");
 
   if (server_mode(options) && accounting_is_enabled(options) && !hibernating) {
     log_accounting(now, options);
   }
 
-  if (stats_n_data_cells_packaged && !hibernating)
-    log_notice(LD_HEARTBEAT, "Average packaged cell fullness: %2.3f%%",
-        100*(U64_TO_DBL(stats_n_data_bytes_packaged) /
-             U64_TO_DBL(stats_n_data_cells_packaged*RELAY_PAYLOAD_SIZE)) );
+  double fullness_pct = 100;
+  if (stats_n_data_cells_packaged && !hibernating) {
+    fullness_pct =
+      100*(U64_TO_DBL(stats_n_data_bytes_packaged) /
+           U64_TO_DBL(stats_n_data_cells_packaged*RELAY_PAYLOAD_SIZE));
+  }
+  const double overhead_pct = ( r - 1.0 ) * 100.0;
 
-  if (r > 1.0) {
-    double overhead = ( r - 1.0 ) * 100.0;
-    log_notice(LD_HEARTBEAT, "TLS write overhead: %.f%%", overhead);
+#define FULLNESS_PCT_THRESHOLD 80
+#define TLS_OVERHEAD_THRESHOLD 15
+
+  const int severity = (fullness_pct < FULLNESS_PCT_THRESHOLD ||
+                        overhead_pct > TLS_OVERHEAD_THRESHOLD)
+    ? LOG_NOTICE : LOG_INFO;
+
+  log_fn(severity, LD_HEARTBEAT,
+         "Average packaged cell fullness: %2.3f%%. "
+         "TLS write overhead: %.f%%", fullness_pct, overhead_pct);
+
+  if (public_server_mode(options)) {
+    rep_hist_log_circuit_handshake_stats(now);
+    rep_hist_log_link_protocol_counts();
   }
 
-  if (public_server_mode(options))
-    rep_hist_log_circuit_handshake_stats(now);
+  circuit_log_ancient_one_hop_circuits(1800);
+
+  if (options->BridgeRelay) {
+    char *msg = NULL;
+    msg = format_client_stats_heartbeat(now);
+    if (msg)
+      log_notice(LD_HEARTBEAT, "%s", msg);
+    tor_free(msg);
+  }
 
   tor_free(uptime);
   tor_free(bw_sent);
@@ -146,20 +170,38 @@ log_accounting(const time_t now, const or_options_t *options)
   or_state_t *state = get_or_state();
   char *acc_rcvd = bytes_to_usage(state->AccountingBytesReadInInterval);
   char *acc_sent = bytes_to_usage(state->AccountingBytesWrittenInInterval);
-  char *acc_max = bytes_to_usage(options->AccountingMax);
+  char *acc_used = bytes_to_usage(get_accounting_bytes());
+  uint64_t acc_bytes = options->AccountingMax;
+  char *acc_max;
   time_t interval_end = accounting_get_end_time();
   char end_buf[ISO_TIME_LEN + 1];
   char *remaining = NULL;
+  acc_max = bytes_to_usage(acc_bytes);
   format_local_iso_time(end_buf, interval_end);
   remaining = secs_to_uptime(interval_end - now);
 
+  const char *acc_rule;
+  switch (options->AccountingRule) {
+    case ACCT_MAX: acc_rule = "max";
+    break;
+    case ACCT_SUM: acc_rule = "sum";
+    break;
+    case ACCT_OUT: acc_rule = "out";
+    break;
+    case ACCT_IN: acc_rule = "in";
+    break;
+    default: acc_rule = "max";
+    break;
+  }
+
   log_notice(LD_HEARTBEAT, "Heartbeat: Accounting enabled. "
-      "Sent: %s / %s, Received: %s / %s. The "
+      "Sent: %s, Received: %s, Used: %s / %s, Rule: %s. The "
       "current accounting interval ends on %s, in %s.",
-      acc_sent, acc_max, acc_rcvd, acc_max, end_buf, remaining);
+      acc_sent, acc_rcvd, acc_used, acc_max, acc_rule, end_buf, remaining);
 
   tor_free(acc_rcvd);
   tor_free(acc_sent);
+  tor_free(acc_used);
   tor_free(acc_max);
   tor_free(remaining);
 }

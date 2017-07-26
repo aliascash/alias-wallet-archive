@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2013, The Tor Project, Inc. */
+/* Copyright (c) 2011-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -51,35 +51,37 @@
  * logic, because of race conditions that can cause dangling
  * pointers. ]
  *
- * <b>In even more detail, this is what happens when a SIGHUP
- * occurs:</b>
+ * <b>In even more detail, this is what happens when a config read
+ * (like a SIGHUP or a SETCONF) occurs:</b>
  *
  * We immediately destroy all unconfigured proxies (We shouldn't have
- * unconfigured proxies in the first place, except when SIGHUP rings
- * immediately after tor is launched.).
+ * unconfigured proxies in the first place, except when the config
+ * read happens immediately after tor is launched.).
  *
  * We mark all managed proxies and transports to signify that they
  * must be removed if they don't contribute by the new torrc
  * (we mark using the <b>marked_for_removal</b> element).
  * We also mark all managed proxies to signify that they might need to
  * be restarted so that they end up supporting all the transports the
- * new torrc wants them to support (using the <b>got_hup</b> element).
+ * new torrc wants them to support
+ * (we mark using the <b>was_around_before_config_read</b> element).
  * We also clear their <b>transports_to_launch</b> list so that we can
  * put there the transports we need to launch according to the new
  * torrc.
  *
  * We then start parsing torrc again.
  *
- * Everytime we encounter a transport line using a known pre-SIGHUP
- * managed proxy, we cleanse that proxy from the removal mark.
- * We also mark it as unconfigured so that on the next scheduled
- * events tick, we investigate whether we need to restart the proxy
- * so that it also spawns the new transports.
- * If the post-SIGHUP <b>transports_to_launch</b> list is identical to
- * the pre-SIGHUP one, it means that no changes were introduced to
- * this proxy during the SIGHUP and no restart has to take place.
+ * Everytime we encounter a transport line using a managed proxy that
+ * was around before the config read, we cleanse that proxy from the
+ * removal mark.  We also toggle the <b>check_if_restarts_needed</b>
+ * flag, so that on the next <b>pt_configure_remaining_proxies</b>
+ * tick, we investigate whether we need to restart the proxy so that
+ * it also spawns the new transports.  If the post-config-read
+ * <b>transports_to_launch</b> list is identical to the pre-config-read
+ * one, it means that no changes were introduced to this proxy during
+ * the config read and no restart has to take place.
  *
- * During the post-SIGHUP torrc parsing, we unmark all transports
+ * During the post-config-read torrc parsing, we unmark all transports
  * spawned by managed proxies that we find in our torrc.
  * We do that so that if we don't need to restart a managed proxy, we
  * can continue using its old transports normally.
@@ -89,13 +91,13 @@
 
 #define PT_PRIVATE
 #include "or.h"
+#include "bridges.h"
 #include "config.h"
 #include "circuitbuild.h"
 #include "transports.h"
-#include "tor_util.h"
+#include "torutil.h"
 #include "router.h"
 #include "statefile.h"
-#include "entrynodes.h"
 #include "connection_or.h"
 #include "ext_orport.h"
 #include "control.h"
@@ -103,14 +105,12 @@
 static process_environment_t *
 create_managed_proxy_environment(const managed_proxy_t *mp);
 
-static INLINE int proxy_configuration_finished(const managed_proxy_t *mp);
+static inline int proxy_configuration_finished(const managed_proxy_t *mp);
 
 static void handle_finished_proxy(managed_proxy_t *mp);
 static void parse_method_error(const char *line, int is_server_method);
 #define parse_server_method_error(l) parse_method_error(l, 1)
 #define parse_client_method_error(l) parse_method_error(l, 0)
-
-static INLINE void free_execve_args(char **arg);
 
 /** Managed proxy protocol strings */
 #define PROTO_ENV_ERROR "ENV-ERROR"
@@ -122,6 +122,8 @@ static INLINE void free_execve_args(char **arg);
 #define PROTO_SMETHOD_ERROR "SMETHOD-ERROR"
 #define PROTO_CMETHODS_DONE "CMETHODS DONE"
 #define PROTO_SMETHODS_DONE "SMETHODS DONE"
+#define PROTO_PROXY_DONE "PROXY DONE"
+#define PROTO_PROXY_ERROR "PROXY-ERROR"
 
 /** The first and only supported - at the moment - configuration
     protocol version. */
@@ -322,9 +324,9 @@ transport_add(transport_t *t)
 /** Remember a new pluggable transport proxy at <b>addr</b>:<b>port</b>.
  *  <b>name</b> is set to the name of the protocol this proxy uses.
  *  <b>socks_ver</b> is set to the SOCKS version of the proxy. */
-int
-transport_add_from_config(const tor_addr_t *addr, uint16_t port,
-                          const char *name, int socks_ver)
+MOCK_IMPL(int,
+transport_add_from_config, (const tor_addr_t *addr, uint16_t port,
+                            const char *name, int socks_ver))
 {
   transport_t *t = transport_new(addr, port, name, socks_ver, NULL);
 
@@ -428,7 +430,7 @@ add_transport_to_proxy(const char *transport, managed_proxy_t *mp)
 {
   tor_assert(mp->transports_to_launch);
   if (!smartlist_contains_string(mp->transports_to_launch, transport))
-    smartlist_add(mp->transports_to_launch, tor_strdup(transport));
+    smartlist_add_strdup(mp->transports_to_launch, transport);
 }
 
 /** Called when a SIGHUP occurs. Returns true if managed proxy
@@ -437,6 +439,17 @@ add_transport_to_proxy(const char *transport, managed_proxy_t *mp)
 static int
 proxy_needs_restart(const managed_proxy_t *mp)
 {
+  int ret = 1;
+  char* proxy_uri;
+
+  /* If the PT proxy config has changed, then all existing pluggable transports
+   * should be restarted.
+   */
+
+  proxy_uri = get_pt_proxy_uri();
+  if (strcmp_opt(proxy_uri, mp->proxy_uri) != 0)
+    goto needs_restart;
+
   /* mp->transport_to_launch is populated with the names of the
      transports that must be launched *after* the SIGHUP.
      mp->transports is populated with the transports that were
@@ -457,17 +470,16 @@ proxy_needs_restart(const managed_proxy_t *mp)
 
   } SMARTLIST_FOREACH_END(t);
 
-  return 0;
-
+  ret = 0;
  needs_restart:
-  return 1;
+  tor_free(proxy_uri);
+  return ret;
 }
 
 /** Managed proxy <b>mp</b> must be restarted. Do all the necessary
  *  preparations and then flag its state so that it will be relaunched
  *  in the next tick. */
 static void
-
 proxy_prepare_for_restart(managed_proxy_t *mp)
 {
   transport_t *t_tmp = NULL;
@@ -490,6 +502,11 @@ proxy_prepare_for_restart(managed_proxy_t *mp)
   /* free the transport in mp->transports */
   SMARTLIST_FOREACH(mp->transports, transport_t *, t, transport_free(t));
   smartlist_clear(mp->transports);
+
+  /* Reset the proxy's HTTPS/SOCKS proxy */
+  tor_free(mp->proxy_uri);
+  mp->proxy_uri = get_pt_proxy_uri();
+  mp->proxy_supported = 0;
 
   /* flag it as an infant proxy so that it gets launched on next tick */
   mp->conf_state = PT_PROTO_INFANT;
@@ -534,8 +551,7 @@ launch_managed_proxy(managed_proxy_t *mp)
 }
 
 /** Check if any of the managed proxies we are currently trying to
- *  configure have anything new to say. This is called from
- *  run_scheduled_events(). */
+ *  configure has anything new to say. */
 void
 pt_configure_remaining_proxies(void)
 {
@@ -555,11 +571,12 @@ pt_configure_remaining_proxies(void)
     tor_assert(mp->conf_state != PT_PROTO_BROKEN &&
                mp->conf_state != PT_PROTO_FAILED_LAUNCH);
 
-    if (mp->got_hup) {
-      mp->got_hup = 0;
+    if (mp->was_around_before_config_read) {
+      /* This proxy is marked by a config read. Check whether we need
+         to restart it. */
 
-      /* This proxy is marked by a SIGHUP. Check whether we need to
-         restart it. */
+      mp->was_around_before_config_read = 0;
+
       if (proxy_needs_restart(mp)) {
         log_info(LD_GENERAL, "Preparing managed proxy '%s' for restart.",
                  mp->argv[0]);
@@ -695,7 +712,7 @@ register_client_proxy(const managed_proxy_t *mp)
 }
 
 /** Register the transports of managed proxy <b>mp</b>. */
-static INLINE void
+static inline void
 register_proxy(const managed_proxy_t *mp)
 {
   if (mp->is_server)
@@ -725,10 +742,52 @@ managed_proxy_destroy(managed_proxy_t *mp,
   /* free the argv */
   free_execve_args(mp->argv);
 
+  /* free the outgoing proxy URI */
+  tor_free(mp->proxy_uri);
+
   tor_process_handle_destroy(mp->process_handle, also_terminate_process);
   mp->process_handle = NULL;
 
   tor_free(mp);
+}
+
+/** Convert the tor proxy options to a URI suitable for TOR_PT_PROXY.
+ * Return a newly allocated string containing the URI, or NULL if no
+ * proxy is set. */
+STATIC char *
+get_pt_proxy_uri(void)
+{
+  const or_options_t *options = get_options();
+  char *uri = NULL;
+
+  if (options->Socks4Proxy || options->Socks5Proxy || options->HTTPSProxy) {
+    char addr[TOR_ADDR_BUF_LEN+1];
+
+    if (options->Socks4Proxy) {
+      tor_addr_to_str(addr, &options->Socks4ProxyAddr, sizeof(addr), 1);
+      tor_asprintf(&uri, "socks4a://%s:%d", addr, options->Socks4ProxyPort);
+    } else if (options->Socks5Proxy) {
+      tor_addr_to_str(addr, &options->Socks5ProxyAddr, sizeof(addr), 1);
+      if (!options->Socks5ProxyUsername && !options->Socks5ProxyPassword) {
+        tor_asprintf(&uri, "socks5://%s:%d", addr, options->Socks5ProxyPort);
+      } else {
+        tor_asprintf(&uri, "socks5://%s:%s@%s:%d",
+                     options->Socks5ProxyUsername,
+                     options->Socks5ProxyPassword,
+                     addr, options->Socks5ProxyPort);
+      }
+    } else if (options->HTTPSProxy) {
+      tor_addr_to_str(addr, &options->HTTPSProxyAddr, sizeof(addr), 1);
+      if (!options->HTTPSProxyAuthenticator) {
+        tor_asprintf(&uri, "http://%s:%d", addr, options->HTTPSProxyPort);
+      } else {
+        tor_asprintf(&uri, "http://%s@%s:%d", options->HTTPSProxyAuthenticator,
+                     addr, options->HTTPSProxyPort);
+      }
+    }
+  }
+
+  return uri;
 }
 
 /** Handle a configured or broken managed proxy <b>mp</b>. */
@@ -743,6 +802,13 @@ handle_finished_proxy(managed_proxy_t *mp)
     managed_proxy_destroy(mp, 0); /* destroy it but don't terminate */
     break;
   case PT_PROTO_CONFIGURED: /* if configured correctly: */
+    if (mp->proxy_uri && !mp->proxy_supported) {
+      log_warn(LD_CONFIG, "Managed proxy '%s' did not configure the "
+               "specified outgoing proxy and will be terminated.",
+               mp->argv[0]);
+      managed_proxy_destroy(mp, 1); /* annihilate it. */
+      break;
+    }
     register_proxy(mp); /* register its transports */
     mp->conf_state = PT_PROTO_COMPLETED; /* and mark it as completed. */
     break;
@@ -761,7 +827,7 @@ handle_finished_proxy(managed_proxy_t *mp)
 
 /** Return true if the configuration of the managed proxy <b>mp</b> is
     finished. */
-static INLINE int
+static inline int
 proxy_configuration_finished(const managed_proxy_t *mp)
 {
   return (mp->conf_state == PT_PROTO_CONFIGURED ||
@@ -860,6 +926,22 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
       goto err;
 
     return;
+  } else if (!strcmpstart(line, PROTO_PROXY_DONE)) {
+    if (mp->conf_state != PT_PROTO_ACCEPTING_METHODS)
+      goto err;
+
+    if (mp->proxy_uri) {
+      mp->proxy_supported = 1;
+      return;
+    }
+
+    /* No proxy was configured, this should log */
+  } else if (!strcmpstart(line, PROTO_PROXY_ERROR)) {
+    if (mp->conf_state != PT_PROTO_ACCEPTING_METHODS)
+      goto err;
+
+    parse_proxy_error(line);
+    goto err;
   } else if (!strcmpstart(line, SPAWN_ERROR_MESSAGE)) {
     /* managed proxy launch failed: parse error message to learn why. */
     int retval, child_state, saved_errno;
@@ -1017,7 +1099,7 @@ parse_smethod_line(const char *line, managed_proxy_t *mp)
 
   smartlist_add(mp->transports, transport);
 
-  /* For now, notify the user so that he knows where the server
+  /* For now, notify the user so that they know where the server
      transport is listening. */
   log_info(LD_CONFIG, "Server transport %s at %s:%d.",
            method_name, address, (int)port);
@@ -1126,6 +1208,21 @@ parse_cmethod_line(const char *line, managed_proxy_t *mp)
   return r;
 }
 
+/** Parses an PROXY-ERROR <b>line</b> and warns the user accordingly. */
+STATIC void
+parse_proxy_error(const char *line)
+{
+  /* (Length of the protocol string) plus (a space) and (the first char of
+     the error message) */
+  if (strlen(line) < (strlen(PROTO_PROXY_ERROR) + 2))
+    log_notice(LD_CONFIG, "Managed proxy sent us an %s without an error "
+               "message.", PROTO_PROXY_ERROR);
+
+  log_warn(LD_CONFIG, "Managed proxy failed to configure the "
+           "pluggable transport's outgoing proxy. (%s)",
+           line+strlen(PROTO_PROXY_ERROR)+1);
+}
+
 /** Return a newly allocated string that tor should place in
  * TOR_PT_SERVER_TRANSPORT_OPTIONS while configuring the server
  * manged proxy in <b>mp</b>. Return NULL if no such options are found. */
@@ -1172,7 +1269,7 @@ get_transport_options_for_server_proxy(const managed_proxy_t *mp)
 
 /** Return the string that tor should place in TOR_PT_SERVER_BINDADDR
  *  while configuring the server managed proxy in <b>mp</b>. The
- *  string is stored in the heap, and it's the the responsibility of
+ *  string is stored in the heap, and it's the responsibility of
  *  the caller to deallocate it after its use. */
 static char *
 get_bindaddr_for_server_proxy(const managed_proxy_t *mp)
@@ -1224,7 +1321,7 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
     tor_free(state_tmp);
   }
 
-  smartlist_add(envs, tor_strdup("TOR_PT_MANAGED_TRANSPORT_VER=1"));
+  smartlist_add_strdup(envs, "TOR_PT_MANAGED_TRANSPORT_VER=1");
 
   {
     char *transports_to_launch =
@@ -1243,8 +1340,10 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
     {
       char *orport_tmp =
         get_first_listener_addrport_string(CONN_TYPE_OR_LISTENER);
-      smartlist_add_asprintf(envs, "TOR_PT_ORPORT=%s", orport_tmp);
-      tor_free(orport_tmp);
+      if (orport_tmp) {
+        smartlist_add_asprintf(envs, "TOR_PT_ORPORT=%s", orport_tmp);
+        tor_free(orport_tmp);
+      }
     }
 
     {
@@ -1263,7 +1362,7 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
       }
     }
 
-    /* XXX024 Remove the '=' here once versions of obfsproxy which
+    /* XXXX Remove the '=' here once versions of obfsproxy which
      * assert that this env var exists are sufficiently dead.
      *
      * (If we remove this line entirely, some joker will stick this
@@ -1275,8 +1374,10 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
         get_first_listener_addrport_string(CONN_TYPE_EXT_OR_LISTENER);
       char *cookie_file_loc = get_ext_or_auth_cookie_file_name();
 
-      smartlist_add_asprintf(envs, "TOR_PT_EXTENDED_SERVER_PORT=%s",
-                             ext_or_addrport_tmp);
+      if (ext_or_addrport_tmp) {
+        smartlist_add_asprintf(envs, "TOR_PT_EXTENDED_SERVER_PORT=%s",
+                               ext_or_addrport_tmp);
+      }
       smartlist_add_asprintf(envs, "TOR_PT_AUTH_COOKIE_FILE=%s",
                              cookie_file_loc);
 
@@ -1285,6 +1386,19 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
 
     } else {
       smartlist_add_asprintf(envs, "TOR_PT_EXTENDED_SERVER_PORT=");
+    }
+
+    /* All new versions of tor will keep stdin open, so PTs can use it
+     * as a reliable termination detection mechanism.
+     */
+    smartlist_add_asprintf(envs, "TOR_PT_EXIT_ON_STDIN_CLOSE=1");
+  } else {
+    /* If ClientTransportPlugin has a HTTPS/SOCKS proxy configured, set the
+     * TOR_PT_PROXY line.
+     */
+
+    if (mp->proxy_uri) {
+      smartlist_add_asprintf(envs, "TOR_PT_PROXY=%s", mp->proxy_uri);
     }
   }
 
@@ -1310,7 +1424,7 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
  *
  * Requires that proxy_argv have at least one element. */
 STATIC managed_proxy_t *
-managed_proxy_create(const smartlist_t *transport_list,
+managed_proxy_create(const smartlist_t *with_transport_list,
                      char **proxy_argv, int is_server)
 {
   managed_proxy_t *mp = tor_malloc_zero(sizeof(managed_proxy_t));
@@ -1318,9 +1432,10 @@ managed_proxy_create(const smartlist_t *transport_list,
   mp->is_server = is_server;
   mp->argv = proxy_argv;
   mp->transports = smartlist_new();
+  mp->proxy_uri = get_pt_proxy_uri();
 
   mp->transports_to_launch = smartlist_new();
-  SMARTLIST_FOREACH(transport_list, const char *, transport,
+  SMARTLIST_FOREACH(with_transport_list, const char *, transport,
                     add_transport_to_proxy(transport, mp));
 
   /* register the managed proxy */
@@ -1343,9 +1458,9 @@ managed_proxy_create(const smartlist_t *transport_list,
  * Requires that proxy_argv be a NULL-terminated array of command-line
  * elements, containing at least one element.
  **/
-void
-pt_kickstart_proxy(const smartlist_t *transport_list,
-                   char **proxy_argv, int is_server)
+MOCK_IMPL(void,
+pt_kickstart_proxy, (const smartlist_t *with_transport_list,
+                     char **proxy_argv, int is_server))
 {
   managed_proxy_t *mp=NULL;
   transport_t *old_transport = NULL;
@@ -1357,30 +1472,31 @@ pt_kickstart_proxy(const smartlist_t *transport_list,
   mp = get_managed_proxy_by_argv_and_type(proxy_argv, is_server);
 
   if (!mp) { /* we haven't seen this proxy before */
-    managed_proxy_create(transport_list, proxy_argv, is_server);
+    managed_proxy_create(with_transport_list, proxy_argv, is_server);
 
   } else { /* known proxy. add its transport to its transport list */
-    if (mp->got_hup) {
-      /* If the managed proxy we found is marked by a SIGHUP, it means
-         that it's not useless and should be kept. If it's marked for
-         removal, unmark it and increase the unconfigured proxies so
-         that we try to restart it if we need to. Afterwards, check if
-         a transport_t for 'transport' used to exist before the SIGHUP
-         and make sure it doesn't get deleted because we might reuse
-         it. */
+    if (mp->was_around_before_config_read) {
+      /* If this managed proxy was around even before we read the
+         config this time, it means that it was already enabled before
+         and is not useless and should be kept. If it's marked for
+         removal, unmark it and make sure that we check whether it
+         needs to be restarted. */
       if (mp->marked_for_removal) {
         mp->marked_for_removal = 0;
         check_if_restarts_needed = 1;
       }
 
-      SMARTLIST_FOREACH_BEGIN(transport_list, const char *, transport) {
+      /* For each new transport, check if the managed proxy used to
+         support it before the SIGHUP. If that was the case, make sure
+         it doesn't get removed because we might reuse it. */
+      SMARTLIST_FOREACH_BEGIN(with_transport_list, const char *, transport) {
         old_transport = transport_get_by_name(transport);
         if (old_transport)
           old_transport->marked_for_removal = 0;
       } SMARTLIST_FOREACH_END(transport);
     }
 
-    SMARTLIST_FOREACH(transport_list, const char *, transport,
+    SMARTLIST_FOREACH(with_transport_list, const char *, transport,
                       add_transport_to_proxy(transport, mp));
     free_execve_args(proxy_argv);
   }
@@ -1388,7 +1504,7 @@ pt_kickstart_proxy(const smartlist_t *transport_list,
 
 /** Frees the array of pointers in <b>arg</b> used as arguments to
     execve(2). */
-static INLINE void
+STATIC void
 free_execve_args(char **arg)
 {
   char **tmp = arg;
@@ -1421,8 +1537,10 @@ pt_prepare_proxy_list_for_config_read(void)
 
     tor_assert(mp->conf_state == PT_PROTO_COMPLETED);
 
+    /* Mark all proxies for removal, and also note that they have been
+       here before the config read. */
     mp->marked_for_removal = 1;
-    mp->got_hup = 1;
+    mp->was_around_before_config_read = 1;
     SMARTLIST_FOREACH(mp->transports_to_launch, char *, t, tor_free(t));
     smartlist_clear(mp->transports_to_launch);
   } SMARTLIST_FOREACH_END(mp);
@@ -1492,7 +1610,7 @@ pt_get_extra_info_descriptor_string(void)
       uint32_t external_ip_address = 0;
       if (tor_addr_is_null(&t->addr) &&
           router_pick_published_address(get_options(),
-                                        &external_ip_address) >= 0) {
+                                        &external_ip_address, 0) >= 0) {
         tor_addr_t addr;
         tor_addr_from_ipv4h(&addr, external_ip_address);
         addrport = fmt_addrport(&addr, t->port);

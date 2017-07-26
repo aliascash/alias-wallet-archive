@@ -1,7 +1,7 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -12,11 +12,9 @@
 #ifndef TOR_NTMAIN_H
 #define TOR_NTMAIN_H
 
-//#ifdef _WIN32
-//#if !defined (WINCE)
-//#define NT_SERVICE
-//#endif
-//#endif
+#ifdef _WIN32
+#define NT_SERVICE
+#endif
 
 #ifdef NT_SERVICE
 int nt_service_parse_options(int argc, char **argv, int *should_exit);

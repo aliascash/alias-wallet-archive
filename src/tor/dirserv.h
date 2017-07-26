@@ -1,7 +1,7 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -34,10 +34,9 @@
 
 int connection_dirserv_flushed_some(dir_connection_t *conn);
 
-int dirserv_add_own_fingerprint(const char *nickname, crypto_pk_t *pk);
+int dirserv_add_own_fingerprint(crypto_pk_t *pk);
 int dirserv_load_fingerprint_file(void);
 void dirserv_free_fingerprint_list(void);
-const char *dirserv_get_nickname_by_digest(const char *digest);
 enum was_router_added_t dirserv_add_multiple_descriptors(
                                      const char *desc, uint8_t purpose,
                                      const char *source,
@@ -48,10 +47,8 @@ enum was_router_added_t dirserv_add_descriptor(routerinfo_t *ri,
 void dirserv_set_router_is_running(routerinfo_t *router, time_t now);
 int list_server_status_v1(smartlist_t *routers, char **router_status_out,
                           int for_controller);
-int dirserv_dump_directory_to_string(char **dir_out,
-                                     crypto_pk_t *private_key);
 char *dirserv_get_flag_thresholds_line(void);
-void dirserv_compute_bridge_flag_thresholds(routerlist_t *rl);
+void dirserv_compute_bridge_flag_thresholds(void);
 
 int directory_fetches_from_authorities(const or_options_t *options);
 int directory_fetches_dir_info_early(const or_options_t *options);
@@ -59,20 +56,15 @@ int directory_fetches_dir_info_later(const or_options_t *options);
 int directory_caches_unknown_auth_certs(const or_options_t *options);
 int directory_caches_dir_info(const or_options_t *options);
 int directory_permits_begindir_requests(const or_options_t *options);
-int directory_permits_controller_requests(const or_options_t *options);
 int directory_too_idle_to_fetch_descriptors(const or_options_t *options,
                                             time_t now);
 
-void directory_set_dirty(void);
-cached_dir_t *dirserv_get_directory(void);
-cached_dir_t *dirserv_get_runningrouters(void);
 cached_dir_t *dirserv_get_consensus(const char *flavor_name);
 void dirserv_set_cached_consensus_networkstatus(const char *consensus,
-                                                const char *flavor_name,
-                                                const digests_t *digests,
-                                                time_t published);
+                                              const char *flavor_name,
+                                              const common_digests_t *digests,
+                                              time_t published);
 void dirserv_clear_old_networkstatuses(time_t cutoff);
-void dirserv_clear_old_v1_info(time_t now);
 int dirserv_get_routerdesc_fingerprints(smartlist_t *fps_out, const char *key,
                                         const char **msg,
                                         int for_unencrypted_conn,
@@ -81,7 +73,8 @@ int dirserv_get_routerdescs(smartlist_t *descs_out, const char *key,
                             const char **msg);
 void dirserv_orconn_tls_done(const tor_addr_t *addr,
                              uint16_t or_port,
-                             const char *digest_rcvd);
+                             const char *digest_rcvd,
+                             const ed25519_public_key_t *ed_id_rcvd);
 int dirserv_should_launch_reachability_test(const routerinfo_t *ri,
                                             const routerinfo_t *ri_old);
 void dirserv_single_reachability_test(time_t now, routerinfo_t *router);
@@ -90,7 +83,8 @@ int authdir_wants_to_reject_router(routerinfo_t *ri, const char **msg,
                                    int complain,
                                    int *valid_out);
 uint32_t dirserv_router_get_status(const routerinfo_t *router,
-                                   const char **msg);
+                                   const char **msg,
+                                   int severity);
 void dirserv_set_node_flags_from_authoritative_status(node_t *node,
                                                       uint32_t authstatus);
 
@@ -103,14 +97,20 @@ size_t dirserv_estimate_data_size(smartlist_t *fps, int is_serverdescs,
 size_t dirserv_estimate_microdesc_size(const smartlist_t *fps, int compressed);
 
 char *routerstatus_format_entry(
-                              const routerstatus_t *rs, const char *platform,
+                              const routerstatus_t *rs,
+                              const char *version,
+                              const char *protocols,
                               routerstatus_format_type_t format,
                               const vote_routerstatus_t *vrs);
 void dirserv_free_all(void);
 void cached_dir_decref(cached_dir_t *d);
 cached_dir_t *new_cached_dir(char *s, time_t published);
 
+int validate_recommended_package_line(const char *line);
+
 #ifdef DIRSERV_PRIVATE
+
+STATIC void dirserv_set_routerstatus_testing(routerstatus_t *rs);
 
 /* Put the MAX_MEASUREMENT_AGE #define here so unit tests can see it */
 #define MAX_MEASUREMENT_AGE (3*24*60*60) /* 3 days */
@@ -129,10 +129,17 @@ STATIC int dirserv_query_measured_bw_cache_kb(const char *node_id,
                                               long *bw_out,
                                               time_t *as_of_out);
 STATIC int dirserv_has_measured_bw(const char *node_id);
+
+STATIC int
+dirserv_read_guardfraction_file_from_str(const char *guardfraction_file_str,
+                                      smartlist_t *vote_routerstatuses);
 #endif
 
 int dirserv_read_measured_bandwidths(const char *from_file,
                                      smartlist_t *routerstatuses);
+
+int dirserv_read_guardfraction_file(const char *fname,
+                                 smartlist_t *vote_routerstatuses);
 
 #endif
 

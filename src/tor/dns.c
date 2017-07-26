@@ -1,6 +1,6 @@
 /* Copyright (c) 2003-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -9,7 +9,45 @@
  * This is implemented as a wrapper around Adam Langley's eventdns.c code.
  * (We can't just use gethostbyname() and friends because we really need to
  * be nonblocking.)
+ *
+ * There are three main cases when a Tor relay uses dns.c to launch a DNS
+ * request:
+ *   <ol>
+ *    <li>To check whether the DNS server is working more or less correctly.
+ *      This happens via dns_launch_correctness_checks().  The answer is
+ *      reported in the return value from later calls to
+ *      dns_seems_to_be_broken().
+ *    <li>When a client has asked the relay, in a RELAY_BEGIN cell, to connect
+ *      to a given server by hostname.  This happens via dns_resolve().
+ *    <li>When a client has asked the rela, in a RELAY_RESOLVE cell, to look
+ *      up a given server's IP address(es) by hostname. This also happens via
+ *      dns_resolve().
+ *   </ol>
+ *
+ * Each of these gets handled a little differently.
+ *
+ * To check for correctness, we look up some hostname we expect to exist and
+ * have real entries, some hostnames which we expect to definitely not exist,
+ * and some hostnames that we expect to probably not exist.  If too many of
+ * the hostnames that shouldn't exist do exist, that's a DNS hijacking
+ * attempt.  If too many of the hostnames that should exist have the same
+ * addresses as the ones that shouldn't exist, that's a very bad DNS hijacking
+ * attempt, or a very naughty captive portal.  And if the hostnames that
+ * should exist simply don't exist, we probably have a broken nameserver.
+ *
+ * To handle client requests, we first check our cache for answers. If there
+ * isn't something up-to-date, we've got to launch A or AAAA requests as
+ * appropriate.  How we handle responses to those in particular is a bit
+ * complex; see dns_lookup() and set_exitconn_info_from_resolve().
+ *
+ * When a lookup is finally complete, the inform_pending_connections()
+ * function will tell all of the streams that have been waiting for the
+ * resolve, by calling connection_exit_connect() if the client sent a
+ * RELAY_BEGIN cell, and by calling send_resolved_cell() or
+ * send_hostname_cell() if the client sent a RELAY_RESOLVE cell.
  **/
+
+#define DNS_PRIVATE
 
 #include "or.h"
 #include "circuitlist.h"
@@ -19,70 +57,14 @@
 #include "connection_edge.h"
 #include "control.h"
 #include "dns.h"
-#include "onion_main.h"
+#include "tormain.h"
 #include "policies.h"
 #include "relay.h"
 #include "router.h"
 #include "ht.h"
 #include "sandbox.h"
-#ifdef HAVE_EVENT2_DNS_H
 #include <event2/event.h>
 #include <event2/dns.h>
-#else
-#include <event.h>
-#include "eventdns.h"
-#ifndef HAVE_EVDNS_SET_DEFAULT_OUTGOING_BIND_ADDRESS
-#define HAVE_EVDNS_SET_DEFAULT_OUTGOING_BIND_ADDRESS
-#endif
-#endif
-
-#ifndef HAVE_EVENT2_DNS_H
-struct evdns_base;
-struct evdns_request;
-#define evdns_base_new(x,y) tor_malloc(1)
-#define evdns_base_clear_nameservers_and_suspend(base) \
-  evdns_clear_nameservers_and_suspend()
-#define evdns_base_search_clear(base) evdns_search_clear()
-#define evdns_base_set_default_outgoing_bind_address(base, a, len)  \
-  evdns_set_default_outgoing_bind_address((a),(len))
-#define evdns_base_resolv_conf_parse(base, options, fname) \
-  evdns_resolv_conf_parse((options), (fname))
-#define evdns_base_count_nameservers(base)      \
-  evdns_count_nameservers()
-#define evdns_base_resume(base)                 \
-  evdns_resume()
-#define evdns_base_config_windows_nameservers(base)     \
-  evdns_config_windows_nameservers()
-#define evdns_base_set_option_(base, opt, val) \
-  evdns_set_option((opt),(val),DNS_OPTIONS_ALL)
-/* Note: our internal eventdns.c, plus Libevent 1.4, used a 1 return to
- * signify failure to launch a resolve. Libevent 2.0 uses a -1 return to
- * signify a failure on a resolve, though if we're on Libevent 2.0, we should
- * have event2/dns.h and never hit these macros.  Regardless, 0 is success. */
-#define evdns_base_resolve_ipv4(base, addr, options, cb, ptr) \
-  ((evdns_resolve_ipv4((addr), (options), (cb), (ptr))!=0)    \
-   ? NULL : ((void*)1))
-#define evdns_base_resolve_ipv6(base, addr, options, cb, ptr) \
-  ((evdns_resolve_ipv6((addr), (options), (cb), (ptr))!=0)    \
-   ? NULL : ((void*)1))
-#define evdns_base_resolve_reverse(base, addr, options, cb, ptr)        \
-  ((evdns_resolve_reverse((addr), (options), (cb), (ptr))!=0)           \
-   ? NULL : ((void*)1))
-#define evdns_base_resolve_reverse_ipv6(base, addr, options, cb, ptr)   \
-  ((evdns_resolve_reverse_ipv6((addr), (options), (cb), (ptr))!=0)      \
-   ? NULL : ((void*)1))
-
-#elif defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER < 0x02000303
-#define evdns_base_set_option_(base, opt, val) \
-  evdns_base_set_option((base), (opt),(val),DNS_OPTIONS_ALL)
-
-#else
-#define evdns_base_set_option_ evdns_base_set_option
-
-#endif
-
-/** Longest hostname we're willing to resolve. */
-#define MAX_ADDRESSLEN 256
 
 /** How long will we wait for an answer from the resolver before we decide
  * that the resolver is wedged? */
@@ -102,107 +84,15 @@ static char *resolv_conf_fname = NULL;
  * the nameservers?  Used to check whether we need to reconfigure. */
 static time_t resolv_conf_mtime = 0;
 
-/** Linked list of connections waiting for a DNS answer. */
-typedef struct pending_connection_t {
-  edge_connection_t *conn;
-  struct pending_connection_t *next;
-} pending_connection_t;
-
-/** Value of 'magic' field for cached_resolve_t.  Used to try to catch bad
- * pointers and memory stomping. */
-#define CACHED_RESOLVE_MAGIC 0x1234F00D
-
-/* Possible states for a cached resolve_t */
-/** We are waiting for the resolver system to tell us an answer here.
- * When we get one, or when we time out, the state of this cached_resolve_t
- * will become "DONE" and we'll possibly add a CACHED
- * entry. This cached_resolve_t will be in the hash table so that we will
- * know not to launch more requests for this addr, but rather to add more
- * connections to the pending list for the addr. */
-#define CACHE_STATE_PENDING 0
-/** This used to be a pending cached_resolve_t, and we got an answer for it.
- * Now we're waiting for this cached_resolve_t to expire.  This should
- * have no pending connections, and should not appear in the hash table. */
-#define CACHE_STATE_DONE 1
-/** We are caching an answer for this address. This should have no pending
- * connections, and should appear in the hash table. */
-#define CACHE_STATE_CACHED 2
-
-/** @name status values for a single DNS request.
- *
- * @{ */
-/** The DNS request is in progress. */
-#define RES_STATUS_INFLIGHT 1
-/** The DNS request finished and gave an answer */
-#define RES_STATUS_DONE_OK 2
-/** The DNS request finished and gave an error */
-#define RES_STATUS_DONE_ERR 3
-/**@}*/
-
-/** A DNS request: possibly completed, possibly pending; cached_resolve
- * structs are stored at the OR side in a hash table, and as a linked
- * list from oldest to newest.
- */
-typedef struct cached_resolve_t {
-  HT_ENTRY(cached_resolve_t) node;
-  uint32_t magic;  /**< Must be CACHED_RESOLVE_MAGIC */
-  char address[MAX_ADDRESSLEN]; /**< The hostname to be resolved. */
-
-  union {
-    uint32_t addr_ipv4; /**< IPv4 addr for <b>address</b>, if successful.
-                         * (In host order.) */
-    int err_ipv4; /**< One of DNS_ERR_*, if IPv4 lookup failed. */
-  } result_ipv4; /**< Outcome of IPv4 lookup */
-  union {
-    struct in6_addr addr_ipv6; /**< IPv6 addr for <b>address</b>, if
-                                * successful */
-    int err_ipv6; /**< One of DNS_ERR_*, if IPv6 lookup failed. */
-  } result_ipv6; /**< Outcome of IPv6 lookup, if any */
-  union {
-    char *hostname; /** A hostname, if PTR lookup happened successfully*/
-    int err_hostname; /** One of DNS_ERR_*, if PTR lookup failed. */
-  } result_ptr;
-  /** @name Status fields
-   *
-   * These take one of the RES_STATUS_* values, depending on the state
-   * of the corresponding lookup.
-   *
-   * @{ */
-  unsigned int res_status_ipv4 : 2;
-  unsigned int res_status_ipv6 : 2;
-  unsigned int res_status_hostname : 2;
-  /**@}*/
-  uint8_t state; /**< Is this cached entry pending/done/informative? */
-
-  time_t expire; /**< Remove items from cache after this time. */
-  uint32_t ttl_ipv4; /**< What TTL did the nameserver tell us? */
-  uint32_t ttl_ipv6; /**< What TTL did the nameserver tell us? */
-  uint32_t ttl_hostname; /**< What TTL did the nameserver tell us? */
-  /** Connections that want to know when we get an answer for this resolve. */
-  pending_connection_t *pending_connections;
-  /** Position of this element in the heap*/
-  int minheap_idx;
-} cached_resolve_t;
-
 static void purge_expired_resolves(time_t now);
 static void dns_found_answer(const char *address, uint8_t query_type,
                              int dns_answer,
                              const tor_addr_t *addr,
                              const char *hostname,
                              uint32_t ttl);
-static void send_resolved_cell(edge_connection_t *conn, uint8_t answer_type,
-                               const cached_resolve_t *resolve);
-static int launch_resolve(cached_resolve_t *resolve);
 static void add_wildcarded_test_address(const char *address);
 static int configure_nameservers(int force);
 static int answer_is_wildcarded(const char *ip);
-static int dns_resolve_impl(edge_connection_t *exitconn, int is_resolve,
-                            or_circuit_t *oncirc, char **resolved_to_hostname,
-                            int *made_connection_pending_out,
-                            cached_resolve_t **resolve_out);
-static int set_exitconn_info_from_resolve(edge_connection_t *exitconn,
-                                          const cached_resolve_t *resolve,
-                                          char **hostname_out);
 static int evdns_err_is_transient(int err);
 static void inform_pending_connections(cached_resolve_t *resolve);
 static void make_pending_resolve_cached(cached_resolve_t *cached);
@@ -227,7 +117,7 @@ static int dns_is_broken_for_ipv6 = 0;
 
 /** Function to compare hashed resolves on their addresses; used to
  * implement hash tables. */
-static INLINE int
+static inline int
 cached_resolves_eq(cached_resolve_t *a, cached_resolve_t *b)
 {
   /* make this smarter one day? */
@@ -236,16 +126,16 @@ cached_resolves_eq(cached_resolve_t *a, cached_resolve_t *b)
 }
 
 /** Hash function for cached_resolve objects */
-static INLINE unsigned int
+static inline unsigned int
 cached_resolve_hash(cached_resolve_t *a)
 {
-  return ht_string_hash(a->address);
+  return (unsigned) siphash24g((const uint8_t*)a->address, strlen(a->address));
 }
 
 HT_PROTOTYPE(cache_map, cached_resolve_t, node, cached_resolve_hash,
              cached_resolves_eq)
-HT_GENERATE(cache_map, cached_resolve_t, node, cached_resolve_hash,
-            cached_resolves_eq, 0.6, malloc, realloc, free)
+HT_GENERATE2(cache_map, cached_resolve_t, node, cached_resolve_hash,
+             cached_resolves_eq, 0.6, tor_reallocarray_, tor_free_)
 
 /** Initialize the DNS cache. */
 static void
@@ -353,29 +243,19 @@ has_dns_init_failed(void)
 }
 
 /** Helper: Given a TTL from a DNS response, determine what TTL to give the
- * OP that asked us to resolve it. */
+ * OP that asked us to resolve it, and how long to cache that record
+ * ourselves. */
 uint32_t
 dns_clip_ttl(uint32_t ttl)
 {
-  if (ttl < MIN_DNS_TTL)
-    return MIN_DNS_TTL;
-  else if (ttl > MAX_DNS_TTL)
-    return MAX_DNS_TTL;
+  /* This logic is a defense against "DefectTor" DNS-based traffic
+   * confirmation attacks, as in https://nymity.ch/tor-dns/tor-dns.pdf .
+   * We only give two values: a "low" value and a "high" value.
+   */
+  if (ttl < MIN_DNS_TTL_AT_EXIT)
+    return MIN_DNS_TTL_AT_EXIT;
   else
-    return ttl;
-}
-
-/** Helper: Given a TTL from a DNS response, determine how long to hold it in
- * our cache. */
-static uint32_t
-dns_get_expiry_ttl(uint32_t ttl)
-{
-  if (ttl < MIN_DNS_TTL)
-    return MIN_DNS_TTL;
-  else if (ttl > MAX_DNS_ENTRY_AGE)
-    return MAX_DNS_ENTRY_AGE;
-  else
-    return ttl;
+    return MAX_DNS_TTL_AT_EXIT;
 }
 
 /** Helper: free storage held by an entry in the DNS cache. */
@@ -446,7 +326,7 @@ cached_resolve_add_answer(cached_resolve_t *resolve,
       resolve->result_ipv4.err_ipv4 = dns_result;
       resolve->res_status_ipv4 = RES_STATUS_DONE_ERR;
     }
-
+    resolve->ttl_ipv4 = ttl;
   } else if (query_type == DNS_IPv6_AAAA) {
     if (resolve->res_status_ipv6 != RES_STATUS_INFLIGHT)
       return;
@@ -461,6 +341,7 @@ cached_resolve_add_answer(cached_resolve_t *resolve,
       resolve->result_ipv6.err_ipv6 = dns_result;
       resolve->res_status_ipv6 = RES_STATUS_DONE_ERR;
     }
+    resolve->ttl_ipv6 = ttl;
   }
 }
 
@@ -558,6 +439,8 @@ purge_expired_resolves(time_t now)
         /* Connections should only be pending if they have no socket. */
         tor_assert(!SOCKET_OK(pend->conn->base_.s));
         pendconn = pend->conn;
+        /* Prevent double-remove */
+        pendconn->base_.state = EXIT_CONN_STATE_RESOLVEFAILED;
         if (!pendconn->base_.marked_for_close) {
           connection_edge_end(pendconn, END_STREAM_REASON_TIMEOUT);
           circuit_detach_stream(circuit_get_by_edge_conn(pendconn), pendconn);
@@ -603,9 +486,9 @@ purge_expired_resolves(time_t now)
  * answer back along circ; otherwise, send the answer back along
  * <b>conn</b>'s attached circuit.
  */
-static void
-send_resolved_cell(edge_connection_t *conn, uint8_t answer_type,
-                   const cached_resolve_t *resolved)
+MOCK_IMPL(STATIC void,
+send_resolved_cell,(edge_connection_t *conn, uint8_t answer_type,
+                    const cached_resolve_t *resolved))
 {
   char buf[RELAY_PAYLOAD_SIZE], *cp = buf;
   size_t buflen = 0;
@@ -669,8 +552,9 @@ send_resolved_cell(edge_connection_t *conn, uint8_t answer_type,
  * answer back along circ; otherwise, send the answer back along
  * <b>conn</b>'s attached circuit.
  */
-static void
-send_resolved_hostname_cell(edge_connection_t *conn, const char *hostname)
+MOCK_IMPL(STATIC void,
+send_resolved_hostname_cell,(edge_connection_t *conn,
+                             const char *hostname))
 {
   char buf[RELAY_PAYLOAD_SIZE];
   size_t buflen;
@@ -798,11 +682,11 @@ dns_resolve(edge_connection_t *exitconn)
  *
  * Set *<b>resolve_out</b> to a cached resolve, if we found one.
  */
-static int
-dns_resolve_impl(edge_connection_t *exitconn, int is_resolve,
+MOCK_IMPL(STATIC int,
+dns_resolve_impl,(edge_connection_t *exitconn, int is_resolve,
                  or_circuit_t *oncirc, char **hostname_out,
                  int *made_connection_pending_out,
-                 cached_resolve_t **resolve_out)
+                 cached_resolve_t **resolve_out))
 {
   cached_resolve_t *resolve;
   cached_resolve_t search;
@@ -936,8 +820,14 @@ dns_resolve_impl(edge_connection_t *exitconn, int is_resolve,
 }
 
 /** Given an exit connection <b>exitconn</b>, and a cached_resolve_t
- * <b>resolve</b> whose DNS lookups have all succeeded or failed, update the
- * appropriate fields (address_ttl and addr) of <b>exitconn</b>.
+ * <b>resolve</b> whose DNS lookups have all either succeeded or failed,
+ * update the appropriate fields (address_ttl and addr) of <b>exitconn</b>.
+ *
+ * The logic can be complicated here, since we might have launched both
+ * an A lookup and an AAAA lookup, and since either of those might have
+ * succeeded or failed, and since we want to answer a RESOLVE cell with
+ * a full answer but answer a BEGIN cell with whatever answer the client
+ * would accept <i>and</i> we could still connect to.
  *
  * If this is a reverse lookup, set *<b>hostname_out</b> to a newly allocated
  * copy of the name resulting hostname.
@@ -945,10 +835,10 @@ dns_resolve_impl(edge_connection_t *exitconn, int is_resolve,
  * Return -2 on a transient error, -1 on a permenent error, and 1 on
  * a successful lookup.
  */
-static int
-set_exitconn_info_from_resolve(edge_connection_t *exitconn,
-                               const cached_resolve_t *resolve,
-                               char **hostname_out)
+MOCK_IMPL(STATIC int,
+set_exitconn_info_from_resolve,(edge_connection_t *exitconn,
+                                const cached_resolve_t *resolve,
+                                char **hostname_out))
 {
   int ipv4_ok, ipv6_ok, answer_with_ipv4, r;
   uint32_t begincell_flags;
@@ -1133,7 +1023,9 @@ connection_dns_remove(edge_connection_t *conn)
         return; /* more are pending */
       }
     }
-    tor_assert(0); /* not reachable unless onlyconn not in pending list */
+    log_warn(LD_BUG, "Connection (fd "TOR_SOCKET_T_FORMAT") was not waiting "
+             "for a resolve of %s, but we tried to remove it.",
+             conn->base_.s, escaped_safe_str(conn->base_.address));
   }
 }
 
@@ -1141,8 +1033,8 @@ connection_dns_remove(edge_connection_t *conn)
  * the resolve for <b>address</b> itself, and remove any cached results for
  * <b>address</b> from the cache.
  */
-void
-dns_cancel_pending_resolve(const char *address)
+MOCK_IMPL(void,
+dns_cancel_pending_resolve,(const char *address))
 {
   pending_connection_t *pend;
   cached_resolve_t search;
@@ -1214,7 +1106,7 @@ dns_cancel_pending_resolve(const char *address)
 
 /** Return true iff <b>address</b> is one of the addresses we use to verify
  * that well-known sites aren't being hijacked by our DNS servers. */
-static INLINE int
+static inline int
 is_test_address(const char *address)
 {
   const or_options_t *options = get_options();
@@ -1278,7 +1170,12 @@ dns_found_answer(const char *address, uint8_t query_type,
 
 /** Given a pending cached_resolve_t that we just finished resolving,
  * inform every connection that was waiting for the outcome of that
- * resolution. */
+ * resolution.
+ *
+ * Do this by sending a RELAY_RESOLVED cell (if the pending stream had sent us
+ * RELAY_RESOLVE cell), or by launching an exit connection (if the pending
+ * stream had send us a RELAY_BEGIN cell).
+ */
 static void
 inform_pending_connections(cached_resolve_t *resolve)
 {
@@ -1353,6 +1250,7 @@ inform_pending_connections(cached_resolve_t *resolve)
     }
     resolve->pending_connections = pend->next;
     tor_free(pend);
+    tor_free(hostname);
   }
 }
 
@@ -1410,7 +1308,7 @@ make_pending_resolve_cached(cached_resolve_t *resolve)
         resolve->ttl_hostname < ttl)
       ttl = resolve->ttl_hostname;
 
-    set_expiry(new_resolve, time(NULL) + dns_get_expiry_ttl(ttl));
+    set_expiry(new_resolve, time(NULL) + dns_clip_ttl(ttl));
   }
 
   assert_cache_ok();
@@ -1460,25 +1358,9 @@ configure_nameservers(int force)
     }
   }
 
-#ifdef HAVE_EVDNS_SET_DEFAULT_OUTGOING_BIND_ADDRESS
-  if (! tor_addr_is_null(&options->OutboundBindAddressIPv4_)) {
-    int socklen;
-    struct sockaddr_storage ss;
-    socklen = tor_addr_to_sockaddr(&options->OutboundBindAddressIPv4_, 0,
-                                   (struct sockaddr *)&ss, sizeof(ss));
-    if (socklen <= 0) {
-      log_warn(LD_BUG, "Couldn't convert outbound bind address to sockaddr."
-               " Ignoring.");
-    } else {
-      evdns_base_set_default_outgoing_bind_address(the_evdns_base,
-                                                   (struct sockaddr *)&ss,
-                                                   socklen);
-    }
-  }
-#endif
-
   evdns_set_log_fn(evdns_log_cb);
   if (conf_fname) {
+    log_debug(LD_FS, "stat()ing %s", conf_fname);
     if (stat(sandbox_intern_string(conf_fname), &st)) {
       log_warn(LD_EXIT, "Unable to stat resolver configuration in '%s': %s",
                conf_fname, strerror(errno));
@@ -1496,6 +1378,7 @@ configure_nameservers(int force)
 #if defined(DNS_OPTION_HOSTSFILE) && defined(USE_LIBSECCOMP)
     if (flags & DNS_OPTION_HOSTSFILE) {
       flags ^= DNS_OPTION_HOSTSFILE;
+      log_debug(LD_FS, "Loading /etc/hosts");
       evdns_base_load_hosts(the_evdns_base,
           sandbox_intern_string("/etc/hosts"));
     }
@@ -1539,7 +1422,7 @@ configure_nameservers(int force)
   }
 #endif
 
-#define SET(k,v)  evdns_base_set_option_(the_evdns_base, (k), (v))
+#define SET(k,v)  evdns_base_set_option(the_evdns_base, (k), (v))
 
   if (evdns_base_count_nameservers(the_evdns_base) == 1) {
     SET("max-timeouts:", "16");
@@ -1745,8 +1628,8 @@ launch_one_resolve(const char *address, uint8_t query_type,
 /** For eventdns: start resolving as necessary to find the target for
  * <b>exitconn</b>.  Returns -1 on error, -2 on transient error,
  * 0 on "resolve launched." */
-static int
-launch_resolve(cached_resolve_t *resolve)
+MOCK_IMPL(STATIC int,
+launch_resolve,(cached_resolve_t *resolve))
 {
   tor_addr_t a;
   int r;
@@ -1858,7 +1741,7 @@ wildcard_increment_answer(const char *id)
         "invalid addresses. Apparently they are hijacking DNS failures. "
         "I'll try to correct for this by treating future occurrences of "
         "\"%s\" as 'not found'.", id, *ip, id);
-      smartlist_add(dns_wildcard_list, tor_strdup(id));
+      smartlist_add_strdup(dns_wildcard_list, id);
     }
     if (!dns_wildcard_notice_given)
       control_event_server_status(LOG_NOTICE, "DNS_HIJACKED");
@@ -1882,7 +1765,7 @@ add_wildcarded_test_address(const char *address)
   n_test_addrs = get_options()->ServerDNSTestAddresses ?
     smartlist_len(get_options()->ServerDNSTestAddresses) : 0;
 
-  smartlist_add(dns_wildcarded_test_address_list, tor_strdup(address));
+  smartlist_add_strdup(dns_wildcarded_test_address_list, address);
   n = smartlist_len(dns_wildcarded_test_address_list);
   if (n > n_test_addrs/2) {
     tor_log(dns_wildcarded_test_address_notice_given ? LOG_INFO : LOG_NOTICE,
@@ -2171,7 +2054,7 @@ static void
 assert_cache_ok_(void)
 {
   cached_resolve_t **resolve;
-  int bad_rep = _cache_map_HT_REP_IS_BAD(&cache_root);
+  int bad_rep = HT_REP_IS_BAD_(cache_map, &cache_root);
   if (bad_rep) {
     log_err(LD_BUG, "Bad rep type %d on dns cache hash table", bad_rep);
     tor_assert(!bad_rep);
@@ -2199,5 +2082,18 @@ assert_cache_ok_(void)
       }
     });
 }
+
 #endif
+
+cached_resolve_t
+*dns_get_cache_entry(cached_resolve_t *query)
+{
+  return HT_FIND(cache_map, &cache_root, query);
+}
+
+void
+dns_insert_cache_entry(cached_resolve_t *new_entry)
+{
+  HT_INSERT(cache_map, &cache_root, new_entry);
+}
 

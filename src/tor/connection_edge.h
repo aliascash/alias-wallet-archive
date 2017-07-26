@@ -1,7 +1,7 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -17,8 +17,9 @@
 #define connection_mark_unattached_ap(conn, endreason) \
   connection_mark_unattached_ap_((conn), (endreason), __LINE__, SHORT_FILE__)
 
-void connection_mark_unattached_ap_(entry_connection_t *conn, int endreason,
-                                    int line, const char *file);
+MOCK_DECL(void,connection_mark_unattached_ap_,
+          (entry_connection_t *conn, int endreason,
+           int line, const char *file));
 int connection_edge_reached_eof(edge_connection_t *conn);
 int connection_edge_process_inbuf(edge_connection_t *conn,
                                   int package_partial);
@@ -44,21 +45,39 @@ entry_connection_t  *connection_ap_make_link(connection_t *partner,
 void connection_ap_handshake_socks_reply(entry_connection_t *conn, char *reply,
                                          size_t replylen,
                                          int endreason);
-void connection_ap_handshake_socks_resolved(entry_connection_t *conn,
-                                            int answer_type,
-                                            size_t answer_len,
-                                            const uint8_t *answer,
-                                            int ttl,
-                                            time_t expires);
+MOCK_DECL(void,connection_ap_handshake_socks_resolved,
+          (entry_connection_t *conn,
+           int answer_type,
+           size_t answer_len,
+           const uint8_t *answer,
+           int ttl,
+           time_t expires));
+void connection_ap_handshake_socks_resolved_addr(entry_connection_t *conn,
+                                                 const tor_addr_t *answer,
+                                                 int ttl,
+                                                 time_t expires);
 
 int connection_exit_begin_conn(cell_t *cell, circuit_t *circ);
 int connection_exit_begin_resolve(cell_t *cell, or_circuit_t *circ);
 void connection_exit_connect(edge_connection_t *conn);
-int connection_edge_is_rendezvous_stream(edge_connection_t *conn);
+int connection_edge_is_rendezvous_stream(const edge_connection_t *conn);
 int connection_ap_can_use_exit(const entry_connection_t *conn,
                                const node_t *exit);
 void connection_ap_expire_beginning(void);
-void connection_ap_attach_pending(void);
+void connection_ap_rescan_and_attach_pending(void);
+void connection_ap_attach_pending(int retry);
+void connection_ap_mark_as_pending_circuit_(entry_connection_t *entry_conn,
+                                           const char *file, int line);
+#define connection_ap_mark_as_pending_circuit(c) \
+  connection_ap_mark_as_pending_circuit_((c), __FILE__, __LINE__)
+void connection_ap_mark_as_non_pending_circuit(entry_connection_t *entry_conn);
+#define CONNECTION_AP_EXPECT_NONPENDING(c) do {                         \
+    if (ENTRY_TO_CONN(c)->state == AP_CONN_STATE_CIRCUIT_WAIT) {        \
+      log_warn(LD_BUG, "At %s:%d: %p was unexpectedly in circuit_wait.", \
+               __FILE__, __LINE__, (c));                                \
+      connection_ap_mark_as_non_pending_circuit(c);                     \
+    }                                                                   \
+  } while (0)
 void connection_ap_fail_onehop(const char *failed_digest,
                                cpath_build_state_t *build_state);
 void circuit_discard_optional_exit_enclaves(extend_info_t *info);
@@ -93,6 +112,12 @@ int connection_edge_update_circuit_isolation(const entry_connection_t *conn,
                                              int dry_run);
 void circuit_clear_isolation(origin_circuit_t *circ);
 streamid_t get_unique_stream_id_by_circ(origin_circuit_t *circ);
+
+void connection_edge_free_all(void);
+
+void connection_ap_warn_and_unmark_if_pending_circ(
+                                             entry_connection_t *entry_conn,
+                                             const char *where);
 
 /** @name Begin-cell flags
  *
@@ -137,6 +162,30 @@ STATIC int begin_cell_parse(const cell_t *cell, begin_cell_t *bcell,
 STATIC int connected_cell_format_payload(uint8_t *payload_out,
                                   const tor_addr_t *addr,
                                   uint32_t ttl);
+
+typedef struct {
+  /** Original address, after we lowercased it but before we started
+   * mapping it.
+   */
+  char orig_address[MAX_SOCKS_ADDR_LEN];
+  /** True iff the address has been automatically remapped to a local
+   * address in VirtualAddrNetwork.  (Only set true when we do a resolve
+   * and get a virtual address; not when we connect to the address.) */
+  int automap;
+  /** If this connection has a .exit address, who put it there? */
+  addressmap_entry_source_t exit_source;
+  /** If we've rewritten the address, when does this map expire? */
+  time_t map_expires;
+  /** If we should close the connection, this is the end_reason to pass
+   * to connection_mark_unattached_ap */
+  int end_reason;
+  /** True iff we should close the connection, either because of error or
+   * because of successful early RESOLVED reply. */
+  int should_close;
+} rewrite_result_t;
+
+STATIC void connection_ap_handshake_rewrite(entry_connection_t *conn,
+                                            rewrite_result_t *out);
 #endif
 
 #endif

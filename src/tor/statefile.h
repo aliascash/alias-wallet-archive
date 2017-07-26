@@ -1,7 +1,7 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #ifndef TOR_STATEFILE_H
@@ -20,6 +20,8 @@ void or_state_free_all(void);
 
 #ifdef STATEFILE_PRIVATE
 STATIC config_line_t *get_transport_in_state_by_name(const char *transport);
+STATIC void or_state_free(or_state_t *state);
+STATIC or_state_t *or_state_new(void);
 #endif
 
 #endif

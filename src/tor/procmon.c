@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2013, The Tor Project, Inc. */
+/* Copyright (c) 2011-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -8,13 +8,9 @@
 
 #include "procmon.h"
 
-#include "tor_util.h"
+#include "torutil.h"
 
-#ifdef HAVE_EVENT2_EVENT_H
 #include <event2/event.h>
-#else
-#include <event.h>
-#endif
 
 #ifdef HAVE_SIGNAL_H
 #include <signal.h>
@@ -116,11 +112,11 @@ struct tor_process_monitor_t {
    * periodically check whether the process we have a handle to has
    * ended. */
   HANDLE hproc;
-  /* XXX023 We can and should have Libevent watch hproc for us,
-   * if/when some version of Libevent 2.x can be told to do so. */
+  /* XXXX We should have Libevent watch hproc for us,
+   * if/when some version of Libevent can be told to do so. */
 #endif
 
-  /* XXX023 On Linux, we can and should receive the 22nd
+  /* XXXX On Linux, we can and should receive the 22nd
    * (space-delimited) field (‘starttime’) of /proc/$PID/stat from the
    * owning controller and store it, and poll once in a while to see
    * whether it has changed -- if so, the kernel has *definitely*
@@ -130,7 +126,8 @@ struct tor_process_monitor_t {
    * systems whose admins have mounted procfs, or the start-time field
    * of the process-information structure returned by kvmgetprocs() on
    * any system.  The latter is ickier. */
-  /* XXX023 On FreeBSD (and possibly other kqueue systems), we can and
+
+  /* XXXX On FreeBSD (and possibly other kqueue systems), we can and
    * should arrange to receive EVFILT_PROC NOTE_EXIT notifications for
    * pid, so we don't have to do such a heavyweight poll operation in
    * order to avoid the PID-reassignment race condition.  (We would
@@ -162,18 +159,11 @@ tor_validate_process_specifier(const char *process_spec,
   return parse_process_specifier(process_spec, &ppspec, msg);
 }
 
-#ifdef HAVE_EVENT2_EVENT_H
+/* XXXX we should use periodic_timer_new() for this stuff */
 #define PERIODIC_TIMER_FLAGS EV_PERSIST
-#else
-#define PERIODIC_TIMER_FLAGS (0)
-#endif
 
 /* DOCDOC poll_interval_tv */
-static struct timeval poll_interval_tv = {15, 0};
-/* Note: If you port this file to plain Libevent 2, you can make
- * poll_interval_tv const.  It has to be non-const here because in
- * libevent 1.x, event_add expects a pointer to a non-const struct
- * timeval. */
+static const struct timeval poll_interval_tv = {15, 0};
 
 /** Create a process-termination monitor for the process specifier
  * given in <b>process_spec</b>.  Return a newly allocated
@@ -191,7 +181,8 @@ tor_process_monitor_new(struct event_base *base,
                         tor_procmon_callback_t cb, void *cb_arg,
                         const char **msg)
 {
-  tor_process_monitor_t *procmon = tor_malloc(sizeof(tor_process_monitor_t));
+  tor_process_monitor_t *procmon = tor_malloc_zero(
+                                       sizeof(tor_process_monitor_t));
   struct parsed_process_specifier_t ppspec;
 
   tor_assert(msg != NULL);
@@ -328,10 +319,6 @@ tor_process_monitor_poll_cb(evutil_socket_t unused1, short unused2,
 
   if (its_dead_jim) {
     procmon->cb(procmon->cb_arg);
-#ifndef HAVE_EVENT2_EVENT_H
-  } else {
-    evtimer_add(procmon->e, &poll_interval_tv);
-#endif
   }
 }
 #endif

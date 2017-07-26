@@ -1,5 +1,21 @@
-/* Copyright (c) 2013, The Tor Project, Inc. */
+/* Copyright (c) 2013-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
+
+/**
+ * \file fp_pair.c
+ *
+ * \brief Manages data structures for associating pairs of fingerprints. Used
+ * to handle combinations of identity/signing-key fingerprints for
+ * authorities.
+ *
+ * This is a nice, simple, compact data structure module that handles a map
+ * from (signing key fingerprint, identity key fingerprint) to void *.  The
+ * fingerprints here are SHA1 digests of RSA keys.
+ *
+ * This structure is used in directory.c and in routerlist.c for handling
+ * handling authority certificates, since we never want more than a single
+ * certificate for any (ID key, signing key) pair.
+ **/
 
 #include "or.h"
 #include "fp_pair.h"
@@ -21,7 +37,7 @@ struct fp_pair_map_s {
  */
 
 /** Compare fp_pair_entry_t objects by key value. */
-static INLINE int
+static inline int
 fp_pair_map_entries_eq(const fp_pair_map_entry_t *a,
                        const fp_pair_map_entry_t *b)
 {
@@ -29,20 +45,11 @@ fp_pair_map_entries_eq(const fp_pair_map_entry_t *a,
 }
 
 /** Return a hash value for an fp_pair_entry_t. */
-static INLINE unsigned int
+static inline unsigned int
 fp_pair_map_entry_hash(const fp_pair_map_entry_t *a)
 {
-  const uint32_t *p;
-  unsigned int hash;
-
-  p = (const uint32_t *)(a->key.first);
-  /* Hashes are 20 bytes long, so 5 times uint32_t */
-  hash = p[0] ^ p[1] ^ p[2] ^ p[3] ^ p[4];
-  /* Now XOR in the second fingerprint */
-  p = (const uint32_t *)(a->key.second);
-  hash ^= p[0] ^ p[1] ^ p[2] ^ p[3] ^ p[4];
-
-  return hash;
+  tor_assert(sizeof(a->key) == DIGEST_LEN*2);
+  return (unsigned) siphash24g(&a->key, DIGEST_LEN*2);
 }
 
 /*
@@ -51,9 +58,9 @@ fp_pair_map_entry_hash(const fp_pair_map_entry_t *a)
 
 HT_PROTOTYPE(fp_pair_map_impl, fp_pair_map_entry_s, node,
              fp_pair_map_entry_hash, fp_pair_map_entries_eq)
-HT_GENERATE(fp_pair_map_impl, fp_pair_map_entry_s, node,
-            fp_pair_map_entry_hash, fp_pair_map_entries_eq,
-            0.6, tor_malloc, tor_realloc, tor_free)
+HT_GENERATE2(fp_pair_map_impl, fp_pair_map_entry_s, node,
+             fp_pair_map_entry_hash, fp_pair_map_entries_eq,
+             0.6, tor_reallocarray_, tor_free_)
 
 /** Constructor to create a new empty map from fp_pair_t to void *
  */

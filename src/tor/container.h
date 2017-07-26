@@ -1,12 +1,13 @@
 /* Copyright (c) 2003-2004, Roger Dingledine
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 #ifndef TOR_CONTAINER_H
 #define TOR_CONTAINER_H
 
-#include "tor_util.h"
+#include "torutil.h"
+#include "siphash.h"
 
 /** A resizeable list of pointers, with associated helpful functionality.
  *
@@ -26,17 +27,19 @@ typedef struct smartlist_t {
   /** @} */
 } smartlist_t;
 
-smartlist_t *smartlist_new(void);
-void smartlist_free(smartlist_t *sl);
+MOCK_DECL(smartlist_t *, smartlist_new, (void));
+MOCK_DECL(void, smartlist_free, (smartlist_t *sl));
 void smartlist_clear(smartlist_t *sl);
 void smartlist_add(smartlist_t *sl, void *element);
 void smartlist_add_all(smartlist_t *sl, const smartlist_t *s2);
 void smartlist_remove(smartlist_t *sl, const void *element);
+void smartlist_remove_keeporder(smartlist_t *sl, const void *element);
 void *smartlist_pop_last(smartlist_t *sl);
 void smartlist_reverse(smartlist_t *sl);
 void smartlist_string_remove(smartlist_t *sl, const char *element);
 int smartlist_contains(const smartlist_t *sl, const void *element);
 int smartlist_contains_string(const smartlist_t *sl, const char *element);
+int smartlist_pos(const smartlist_t *sl, const void *element);
 int smartlist_string_pos(const smartlist_t *, const char *elt);
 int smartlist_contains_string_case(const smartlist_t *sl, const char *element);
 int smartlist_contains_int_as_string(const smartlist_t *sl, int num);
@@ -51,21 +54,21 @@ void smartlist_subtract(smartlist_t *sl1, const smartlist_t *sl2);
 #ifdef DEBUG_SMARTLIST
 /** Return the number of items in sl.
  */
-static INLINE int smartlist_len(const smartlist_t *sl);
-static INLINE int smartlist_len(const smartlist_t *sl) {
+static inline int smartlist_len(const smartlist_t *sl);
+static inline int smartlist_len(const smartlist_t *sl) {
   tor_assert(sl);
   return (sl)->num_used;
 }
 /** Return the <b>idx</b>th element of sl.
  */
-static INLINE void *smartlist_get(const smartlist_t *sl, int idx);
-static INLINE void *smartlist_get(const smartlist_t *sl, int idx) {
+static inline void *smartlist_get(const smartlist_t *sl, int idx);
+static inline void *smartlist_get(const smartlist_t *sl, int idx) {
   tor_assert(sl);
   tor_assert(idx>=0);
   tor_assert(sl->num_used > idx);
   return sl->list[idx];
 }
-static INLINE void smartlist_set(smartlist_t *sl, int idx, void *val) {
+static inline void smartlist_set(smartlist_t *sl, int idx, void *val) {
   tor_assert(sl);
   tor_assert(idx>=0);
   tor_assert(sl->num_used > idx);
@@ -79,7 +82,7 @@ static INLINE void smartlist_set(smartlist_t *sl, int idx, void *val) {
 
 /** Exchange the elements at indices <b>idx1</b> and <b>idx2</b> of the
  * smartlist <b>sl</b>. */
-static INLINE void smartlist_swap(smartlist_t *sl, int idx1, int idx2)
+static inline void smartlist_swap(smartlist_t *sl, int idx1, int idx2)
 {
   if (idx1 != idx2) {
     void *elt = smartlist_get(sl, idx1);
@@ -93,8 +96,11 @@ void smartlist_del_keeporder(smartlist_t *sl, int idx);
 void smartlist_insert(smartlist_t *sl, int idx, void *val);
 void smartlist_sort(smartlist_t *sl,
                     int (*compare)(const void **a, const void **b));
-void *smartlist_get_most_frequent(const smartlist_t *sl,
-                    int (*compare)(const void **a, const void **b));
+void *smartlist_get_most_frequent_(const smartlist_t *sl,
+                    int (*compare)(const void **a, const void **b),
+                    int *count_out);
+#define smartlist_get_most_frequent(sl, compare) \
+  smartlist_get_most_frequent_((sl), (compare), NULL)
 void smartlist_uniq(smartlist_t *sl,
                     int (*compare)(const void **a, const void **b),
                     void (*free_fn)(void *elt));
@@ -102,9 +108,12 @@ void smartlist_uniq(smartlist_t *sl,
 void smartlist_sort_strings(smartlist_t *sl);
 void smartlist_sort_digests(smartlist_t *sl);
 void smartlist_sort_digests256(smartlist_t *sl);
+void smartlist_sort_pointers(smartlist_t *sl);
 
-char *smartlist_get_most_frequent_string(smartlist_t *sl);
-char *smartlist_get_most_frequent_digest256(smartlist_t *sl);
+const char *smartlist_get_most_frequent_string(smartlist_t *sl);
+const char *smartlist_get_most_frequent_string_(smartlist_t *sl,
+                                                int *count_out);
+const uint8_t *smartlist_get_most_frequent_digest256(smartlist_t *sl);
 
 void smartlist_uniq_strings(smartlist_t *sl);
 void smartlist_uniq_digests(smartlist_t *sl);
@@ -241,6 +250,16 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
   STMT_END
 
 /** Helper: While in a SMARTLIST_FOREACH loop over the list <b>sl</b> indexed
+ * with the variable <b>var</b>, remove the current element in a way that
+ * won't confuse the loop. */
+#define SMARTLIST_DEL_CURRENT_KEEPORDER(sl, var)          \
+  STMT_BEGIN                                              \
+     smartlist_del_keeporder(sl, var ## _sl_idx);         \
+     --var ## _sl_idx;                                    \
+     --var ## _sl_len;                                    \
+  STMT_END
+
+/** Helper: While in a SMARTLIST_FOREACH loop over the list <b>sl</b> indexed
  * with the variable <b>var</b>, replace the current element with <b>val</b>.
  * Does not deallocate the current value of <b>var</b>.
  */
@@ -326,11 +345,11 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
 #define DECLARE_MAP_FNS(maptype, keytype, prefix)                       \
   typedef struct maptype maptype;                                       \
   typedef struct prefix##entry_t *prefix##iter_t;                       \
-  maptype* prefix##new(void);                                           \
+  MOCK_DECL(maptype*, prefix##new, (void));                             \
   void* prefix##set(maptype *map, keytype key, void *val);              \
   void* prefix##get(const maptype *map, keytype key);                   \
   void* prefix##remove(maptype *map, keytype key);                      \
-  void prefix##free(maptype *map, void (*free_val)(void*));             \
+  MOCK_DECL(void, prefix##free, (maptype *map, void (*free_val)(void*))); \
   int prefix##isempty(const maptype *map);                              \
   int prefix##size(const maptype *map);                                 \
   prefix##iter_t *prefix##iter_init(maptype *map);                      \
@@ -344,6 +363,9 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
 DECLARE_MAP_FNS(strmap_t, const char *, strmap_);
 /* Map from const char[DIGEST_LEN] to void *. Implemented with a hash table. */
 DECLARE_MAP_FNS(digestmap_t, const char *, digestmap_);
+/* Map from const uint8_t[DIGEST256_LEN] to void *. Implemented with a hash
+ * table. */
+DECLARE_MAP_FNS(digest256map_t, const uint8_t *, digest256map_);
 
 #undef DECLARE_MAP_FNS
 
@@ -459,6 +481,13 @@ DECLARE_MAP_FNS(digestmap_t, const char *, digestmap_);
 /** Used to end a DIGESTMAP_FOREACH() block. */
 #define DIGESTMAP_FOREACH_END MAP_FOREACH_END
 
+#define DIGEST256MAP_FOREACH(map, keyvar, valtype, valvar)               \
+  MAP_FOREACH(digest256map_, map, const uint8_t *, keyvar, valtype, valvar)
+#define DIGEST256MAP_FOREACH_MODIFY(map, keyvar, valtype, valvar)       \
+  MAP_FOREACH_MODIFY(digest256map_, map, const uint8_t *,               \
+                     keyvar, valtype, valvar)
+#define DIGEST256MAP_FOREACH_END MAP_FOREACH_END
+
 #define STRMAP_FOREACH(map, keyvar, valtype, valvar)                 \
   MAP_FOREACH(strmap_, map, const char *, keyvar, valtype, valvar)
 #define STRMAP_FOREACH_MODIFY(map, keyvar, valtype, valvar)          \
@@ -471,65 +500,75 @@ void* strmap_remove_lc(strmap_t *map, const char *key);
 
 #define DECLARE_TYPED_DIGESTMAP_FNS(prefix, maptype, valtype)           \
   typedef struct maptype maptype;                                       \
-  typedef struct prefix##iter_t prefix##iter_t;                         \
-  static INLINE maptype* prefix##new(void)                              \
+  typedef struct prefix##iter_t *prefix##iter_t;                        \
+  ATTR_UNUSED static inline maptype*                                    \
+  prefix##new(void)                                                     \
   {                                                                     \
     return (maptype*)digestmap_new();                                   \
   }                                                                     \
-  static INLINE digestmap_t* prefix##to_digestmap(maptype *map)         \
+  ATTR_UNUSED static inline digestmap_t*                                \
+  prefix##to_digestmap(maptype *map)                                    \
   {                                                                     \
     return (digestmap_t*)map;                                           \
   }                                                                     \
-  static INLINE valtype* prefix##get(maptype *map, const char *key)     \
+  ATTR_UNUSED static inline valtype*                                    \
+  prefix##get(maptype *map, const char *key)     \
   {                                                                     \
     return (valtype*)digestmap_get((digestmap_t*)map, key);             \
   }                                                                     \
-  static INLINE valtype* prefix##set(maptype *map, const char *key,     \
-                                     valtype *val)                      \
+  ATTR_UNUSED static inline valtype*                                    \
+  prefix##set(maptype *map, const char *key, valtype *val)              \
   {                                                                     \
     return (valtype*)digestmap_set((digestmap_t*)map, key, val);        \
   }                                                                     \
-  static INLINE valtype* prefix##remove(maptype *map, const char *key)  \
+  ATTR_UNUSED static inline valtype*                                    \
+  prefix##remove(maptype *map, const char *key)                         \
   {                                                                     \
     return (valtype*)digestmap_remove((digestmap_t*)map, key);          \
   }                                                                     \
-  static INLINE void prefix##free(maptype *map, void (*free_val)(void*)) \
+  ATTR_UNUSED static inline void                                        \
+  prefix##f##ree(maptype *map, void (*free_val)(void*))                 \
   {                                                                     \
     digestmap_free((digestmap_t*)map, free_val);                        \
   }                                                                     \
-  static INLINE int prefix##isempty(maptype *map)                       \
+  ATTR_UNUSED static inline int                                         \
+  prefix##isempty(maptype *map)                                         \
   {                                                                     \
     return digestmap_isempty((digestmap_t*)map);                        \
   }                                                                     \
-  static INLINE int prefix##size(maptype *map)                          \
+  ATTR_UNUSED static inline int                                         \
+  prefix##size(maptype *map)                                            \
   {                                                                     \
     return digestmap_size((digestmap_t*)map);                           \
   }                                                                     \
-  static INLINE prefix##iter_t *prefix##iter_init(maptype *map)         \
+  ATTR_UNUSED static inline                                             \
+  prefix##iter_t *prefix##iter_init(maptype *map)                       \
   {                                                                     \
     return (prefix##iter_t*) digestmap_iter_init((digestmap_t*)map);    \
   }                                                                     \
-  static INLINE prefix##iter_t *prefix##iter_next(maptype *map,         \
-                                                  prefix##iter_t *iter) \
+  ATTR_UNUSED static inline                                             \
+  prefix##iter_t *prefix##iter_next(maptype *map, prefix##iter_t *iter) \
   {                                                                     \
     return (prefix##iter_t*) digestmap_iter_next(                       \
                        (digestmap_t*)map, (digestmap_iter_t*)iter);     \
   }                                                                     \
-  static INLINE prefix##iter_t *prefix##iter_next_rmv(maptype *map,     \
-                                                  prefix##iter_t *iter) \
+  ATTR_UNUSED static inline prefix##iter_t*                             \
+  prefix##iter_next_rmv(maptype *map, prefix##iter_t *iter)             \
   {                                                                     \
     return (prefix##iter_t*) digestmap_iter_next_rmv(                   \
                        (digestmap_t*)map, (digestmap_iter_t*)iter);     \
   }                                                                     \
-  static INLINE void prefix##iter_get(prefix##iter_t *iter,             \
-                                      const char **keyp,                \
-                                      valtype **valp)                   \
+  ATTR_UNUSED static inline void                                        \
+  prefix##iter_get(prefix##iter_t *iter,                                \
+                   const char **keyp,                                   \
+                   valtype **valp)                                      \
   {                                                                     \
     void *v;                                                            \
     digestmap_iter_get((digestmap_iter_t*) iter, keyp, &v);             \
     *valp = v;                                                          \
   }                                                                     \
-  static INLINE int prefix##iter_done(prefix##iter_t *iter)             \
+  ATTR_UNUSED static inline int                                         \
+  prefix##iter_done(prefix##iter_t *iter)                               \
   {                                                                     \
     return digestmap_iter_done((digestmap_iter_t*)iter);                \
   }
@@ -546,17 +585,17 @@ void* strmap_remove_lc(strmap_t *map, const char *key);
 /** A random-access array of one-bit-wide elements. */
 typedef unsigned int bitarray_t;
 /** Create a new bit array that can hold <b>n_bits</b> bits. */
-static INLINE bitarray_t *
+static inline bitarray_t *
 bitarray_init_zero(unsigned int n_bits)
 {
   /* round up to the next int. */
   size_t sz = (n_bits+BITARRAY_MASK) >> BITARRAY_SHIFT;
-  return tor_malloc_zero(sz*sizeof(unsigned int));
+  return tor_calloc(sz, sizeof(unsigned int));
 }
 /** Expand <b>ba</b> from holding <b>n_bits_old</b> to <b>n_bits_new</b>,
  * clearing all new bits.  Returns a possibly changed pointer to the
  * bitarray. */
-static INLINE bitarray_t *
+static inline bitarray_t *
 bitarray_expand(bitarray_t *ba,
                 unsigned int n_bits_old, unsigned int n_bits_new)
 {
@@ -565,7 +604,7 @@ bitarray_expand(bitarray_t *ba,
   char *ptr;
   if (sz_new <= sz_old)
     return ba;
-  ptr = tor_realloc(ba, sz_new*sizeof(unsigned int));
+  ptr = tor_reallocarray(ba, sz_new, sizeof(unsigned int));
   /* This memset does nothing to the older excess bytes.  But they were
    * already set to 0 by bitarry_init_zero. */
   memset(ptr+sz_old*sizeof(unsigned int), 0,
@@ -573,26 +612,26 @@ bitarray_expand(bitarray_t *ba,
   return (bitarray_t*) ptr;
 }
 /** Free the bit array <b>ba</b>. */
-static INLINE void
+static inline void
 bitarray_free(bitarray_t *ba)
 {
   tor_free(ba);
 }
 /** Set the <b>bit</b>th bit in <b>b</b> to 1. */
-static INLINE void
+static inline void
 bitarray_set(bitarray_t *b, int bit)
 {
   b[bit >> BITARRAY_SHIFT] |= (1u << (bit & BITARRAY_MASK));
 }
 /** Set the <b>bit</b>th bit in <b>b</b> to 0. */
-static INLINE void
+static inline void
 bitarray_clear(bitarray_t *b, int bit)
 {
   b[bit >> BITARRAY_SHIFT] &= ~ (1u << (bit & BITARRAY_MASK));
 }
 /** Return true iff <b>bit</b>th bit in <b>b</b> is nonzero.  NOTE: does
  * not necessarily return 1 on true. */
-static INLINE unsigned int
+static inline unsigned int
 bitarray_is_set(bitarray_t *b, int bit)
 {
   return b[bit >> BITARRAY_SHIFT] & (1u << (bit & BITARRAY_MASK));
@@ -607,14 +646,14 @@ typedef struct {
 
 #define BIT(n) ((n) & set->mask)
 /** Add the digest <b>digest</b> to <b>set</b>. */
-static INLINE void
+static inline void
 digestset_add(digestset_t *set, const char *digest)
 {
-  const uint32_t *p = (const uint32_t *)digest;
-  const uint32_t d1 = p[0] + (p[1]>>16);
-  const uint32_t d2 = p[1] + (p[2]>>16);
-  const uint32_t d3 = p[2] + (p[3]>>16);
-  const uint32_t d4 = p[3] + (p[0]>>16);
+  const uint64_t x = siphash24g(digest, 20);
+  const uint32_t d1 = (uint32_t) x;
+  const uint32_t d2 = (uint32_t)( (x>>16) + x);
+  const uint32_t d3 = (uint32_t)( (x>>32) + x);
+  const uint32_t d4 = (uint32_t)( (x>>48) + x);
   bitarray_set(set->ba, BIT(d1));
   bitarray_set(set->ba, BIT(d2));
   bitarray_set(set->ba, BIT(d3));
@@ -623,14 +662,14 @@ digestset_add(digestset_t *set, const char *digest)
 
 /** If <b>digest</b> is in <b>set</b>, return nonzero.  Otherwise,
  * <em>probably</em> return zero. */
-static INLINE int
+static inline int
 digestset_contains(const digestset_t *set, const char *digest)
 {
-  const uint32_t *p = (const uint32_t *)digest;
-  const uint32_t d1 = p[0] + (p[1]>>16);
-  const uint32_t d2 = p[1] + (p[2]>>16);
-  const uint32_t d3 = p[2] + (p[3]>>16);
-  const uint32_t d4 = p[3] + (p[0]>>16);
+  const uint64_t x = siphash24g(digest, 20);
+  const uint32_t d1 = (uint32_t) x;
+  const uint32_t d2 = (uint32_t)( (x>>16) + x);
+  const uint32_t d3 = (uint32_t)( (x>>32) + x);
+  const uint32_t d4 = (uint32_t)( (x>>48) + x);
   return bitarray_is_set(set->ba, BIT(d1)) &&
          bitarray_is_set(set->ba, BIT(d2)) &&
          bitarray_is_set(set->ba, BIT(d3)) &&
@@ -651,30 +690,36 @@ double find_nth_double(double *array, int n_elements, int nth);
 int32_t find_nth_int32(int32_t *array, int n_elements, int nth);
 uint32_t find_nth_uint32(uint32_t *array, int n_elements, int nth);
 long find_nth_long(long *array, int n_elements, int nth);
-static INLINE int
+static inline int
 median_int(int *array, int n_elements)
 {
   return find_nth_int(array, n_elements, (n_elements-1)/2);
 }
-static INLINE time_t
+static inline time_t
 median_time(time_t *array, int n_elements)
 {
   return find_nth_time(array, n_elements, (n_elements-1)/2);
 }
-static INLINE double
+static inline double
 median_double(double *array, int n_elements)
 {
   return find_nth_double(array, n_elements, (n_elements-1)/2);
 }
-static INLINE uint32_t
+static inline uint32_t
 median_uint32(uint32_t *array, int n_elements)
 {
   return find_nth_uint32(array, n_elements, (n_elements-1)/2);
 }
-static INLINE int32_t
+static inline int32_t
 median_int32(int32_t *array, int n_elements)
 {
   return find_nth_int32(array, n_elements, (n_elements-1)/2);
+}
+
+static inline uint32_t
+third_quartile_uint32(uint32_t *array, int n_elements)
+{
+  return find_nth_uint32(array, n_elements, (n_elements*3)/4);
 }
 
 #endif

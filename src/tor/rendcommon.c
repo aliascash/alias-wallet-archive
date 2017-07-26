@@ -1,5 +1,5 @@
 /* Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
@@ -11,13 +11,18 @@
 #include "or.h"
 #include "circuitbuild.h"
 #include "config.h"
+#include "control.h"
+#include "hs_common.h"
 #include "rendclient.h"
 #include "rendcommon.h"
 #include "rendmid.h"
+#include "hs_intropoint.h"
 #include "rendservice.h"
 #include "rephist.h"
+#include "router.h"
 #include "routerlist.h"
 #include "routerparse.h"
+#include "networkstatus.h"
 
 /** Return 0 if one and two are the same service ids, else -1 or 1 */
 int
@@ -155,10 +160,10 @@ rend_compute_v2_desc_id(char *desc_id_out, const char *service_id,
   }
   /* Calculate current time-period. */
   time_period = get_time_period(now, 0, service_id_binary);
-  /* Calculate secret-id-part = h(time-period + replica). */
+  /* Calculate secret-id-part = h(time-period | desc-cookie | replica). */
   get_secret_id_part_bytes(secret_id_part, time_period, descriptor_cookie,
                            replica);
-  /* Calculate descriptor ID. */
+  /* Calculate descriptor ID: H(permanent-id | secret-id-part) */
   rend_get_descriptor_id_bytes(desc_id_out, service_id_binary, secret_id_part);
   return 0;
 }
@@ -208,7 +213,7 @@ rend_encode_v2_intro_points(char **encoded, rend_service_descriptor_t *desc)
       goto done;
     }
     /* Assemble everything for this introduction point. */
-    address = tor_dup_addr(&info->addr);
+    address = tor_addr_to_str_dup(&info->addr);
     res = tor_snprintf(unenc + unenc_written, unenc_len - unenc_written,
                          "introduction-point %s\n"
                          "ip-address %s\n"
@@ -268,11 +273,7 @@ rend_encrypt_v2_intro_points_basic(char **encrypted_out,
   tor_assert(client_cookies && smartlist_len(client_cookies) > 0);
 
   /* Generate session key. */
-  if (crypto_rand(session_key, CIPHER_KEY_LEN) < 0) {
-    log_warn(LD_REND, "Unable to generate random session key to encrypt "
-                      "introduction point string.");
-    goto done;
-  }
+  crypto_rand(session_key, CIPHER_KEY_LEN);
 
   /* Determine length of encrypted introduction points including session
    * keys. */
@@ -334,11 +335,7 @@ rend_encrypt_v2_intro_points_basic(char **encrypted_out,
            REND_BASIC_AUTH_CLIENT_MULTIPLE;
        i < REND_BASIC_AUTH_CLIENT_MULTIPLE - 1; i++) {
     client_part = tor_malloc_zero(REND_BASIC_AUTH_CLIENT_ENTRY_LEN);
-    if (crypto_rand(client_part, REND_BASIC_AUTH_CLIENT_ENTRY_LEN) < 0) {
-      log_warn(LD_REND, "Unable to generate fake client entry.");
-      tor_free(client_part);
-      goto done;
-    }
+    crypto_rand(client_part, REND_BASIC_AUTH_CLIENT_ENTRY_LEN);
     smartlist_add(encrypted_session_keys, client_part);
   }
   /* Sort smartlist and put elements in result in order. */
@@ -362,12 +359,12 @@ rend_encrypt_v2_intro_points_basic(char **encrypted_out,
 }
 
 /** Encrypt the encoded introduction points in <b>encoded</b> using
- * authorization type 'anonymize' with <b>descriptor_cookie</b> of length
+ * authorization type 'stealth' with <b>descriptor_cookie</b> of length
  * REND_DESC_COOKIE_LEN and write the result to a newly allocated string
  * pointed to by <b>encrypted_out</b> of length <b>encrypted_len_out</b>.
  * Return 0 for success, -1 otherwise. */
 static int
-rend_encrypt_v2_intro_points_anonymize(char **encrypted_out,
+rend_encrypt_v2_intro_points_stealth(char **encrypted_out,
                                      size_t *encrypted_len_out,
                                      const char *encoded,
                                      const char *descriptor_cookie)
@@ -411,7 +408,7 @@ rend_desc_v2_is_parsable(rend_encoded_v2_service_descriptor_t *desc)
                                          &test_intro_content,
                                          &test_intro_size,
                                          &test_encoded_size,
-                                         &test_next, desc->desc_str);
+                                         &test_next, desc->desc_str, 1);
   rend_service_descriptor_free(test_parsed);
   tor_free(test_intro_content);
   return (res >= 0);
@@ -461,6 +458,7 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
                            smartlist_t *client_cookies)
 {
   char service_id[DIGEST_LEN];
+  char service_id_base32[REND_SERVICE_ID_LEN_BASE32+1];
   uint32_t time_period;
   char *ipos_base64 = NULL, *ipos = NULL, *ipos_encrypted = NULL,
        *descriptor_cookie = NULL;
@@ -509,7 +507,7 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
         ipos_len = ipos_encrypted_len;
         break;
       case REND_STEALTH_AUTH:
-        if (rend_encrypt_v2_intro_points_anonymize(&ipos_encrypted,
+        if (rend_encrypt_v2_intro_points_stealth(&ipos_encrypted,
                                                  &ipos_encrypted_len, ipos,
                                                  descriptor_cookie) < 0) {
           log_warn(LD_REND, "Encrypting of introduction points did not "
@@ -528,8 +526,9 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
         return -1;
     }
     /* Base64-encode introduction points. */
-    ipos_base64 = tor_malloc_zero(ipos_len * 2);
-    if (base64_encode(ipos_base64, ipos_len * 2, ipos, ipos_len)<0) {
+    ipos_base64 = tor_calloc(ipos_len, 2);
+    if (base64_encode(ipos_base64, ipos_len * 2, ipos, ipos_len,
+                      BASE64_ENCODE_MULTILINE)<0) {
       log_warn(LD_REND, "Could not encode introduction point string to "
                "base64. length=%d", (int)ipos_len);
       tor_free(ipos_base64);
@@ -556,7 +555,7 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
     char desc_digest[DIGEST_LEN];
     rend_encoded_v2_service_descriptor_t *enc =
       tor_malloc_zero(sizeof(rend_encoded_v2_service_descriptor_t));
-    /* Calculate secret-id-part = h(time-period + cookie + replica). */
+    /* Calculate secret-id-part = h(time-period | cookie | replica). */
     get_secret_id_part_bytes(secret_id_part, time_period, descriptor_cookie,
                              k);
     base32_encode(secret_id_part_base32, sizeof(secret_id_part_base32),
@@ -646,7 +645,6 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
         rend_encoded_v2_service_descriptor_free(enc);
         goto err;
     }
-    desc_str[written++] = '\n';
     desc_str[written++] = 0;
     /* Check if we can parse our own descriptor. */
     if (!rend_desc_v2_is_parsable(enc)) {
@@ -655,6 +653,11 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
       goto err;
     }
     smartlist_add(descs_out, enc);
+    /* Add the uploaded descriptor to the local service's descriptor cache */
+    rend_cache_store_v2_desc_as_service(enc->desc_str);
+    base32_encode(service_id_base32, sizeof(service_id_base32),
+          service_id, REND_SERVICE_ID_LEN);
+    control_event_hs_descriptor_created(service_id_base32, desc_id_base32, k);
   }
 
   log_info(LD_REND, "Successfully encoded a v2 descriptor and "
@@ -672,79 +675,6 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
   return seconds_valid;
 }
 
-/** Parse a service descriptor at <b>str</b> (<b>len</b> bytes).  On
- * success, return a newly alloced service_descriptor_t.  On failure,
- * return NULL.
- */
-rend_service_descriptor_t *
-rend_parse_service_descriptor(const char *str, size_t len)
-{
-  rend_service_descriptor_t *result = NULL;
-  int i, n_intro_points;
-  size_t keylen, asn1len;
-  const char *end, *cp, *eos;
-  rend_intro_point_t *intro;
-
-  result = tor_malloc_zero(sizeof(rend_service_descriptor_t));
-  cp = str;
-  end = str+len;
-  if (end-cp<2) goto truncated;
-  result->version = 0;
-  if (end-cp < 2) goto truncated;
-  asn1len = ntohs(get_uint16(cp));
-  cp += 2;
-  if ((size_t)(end-cp) < asn1len) goto truncated;
-  result->pk = crypto_pk_asn1_decode(cp, asn1len);
-  if (!result->pk) goto truncated;
-  cp += asn1len;
-  if (end-cp < 4) goto truncated;
-  result->timestamp = (time_t) ntohl(get_uint32(cp));
-  cp += 4;
-  result->protocols = 1<<2; /* always use intro format 2 */
-  if (end-cp < 2) goto truncated;
-  n_intro_points = ntohs(get_uint16(cp));
-  cp += 2;
-
-  result->intro_nodes = smartlist_new();
-  for (i=0;i<n_intro_points;++i) {
-    if (end-cp < 2) goto truncated;
-    eos = (const char *)memchr(cp,'\0',end-cp);
-    if (!eos) goto truncated;
-    /* Write nickname to extend info, but postpone the lookup whether
-     * we know that router. It's not part of the parsing process. */
-    intro = tor_malloc_zero(sizeof(rend_intro_point_t));
-    intro->extend_info = tor_malloc_zero(sizeof(extend_info_t));
-    strlcpy(intro->extend_info->nickname, cp,
-            sizeof(intro->extend_info->nickname));
-    smartlist_add(result->intro_nodes, intro);
-    cp = eos+1;
-  }
-  keylen = crypto_pk_keysize(result->pk);
-  tor_assert(end-cp >= 0);
-  if ((size_t)(end-cp) < keylen) goto truncated;
-  if ((size_t)(end-cp) > keylen) {
-    log_warn(LD_PROTOCOL,
-             "Signature is %d bytes too long on service descriptor.",
-             (int)((size_t)(end-cp) - keylen));
-    goto error;
-  }
-  note_crypto_pk_op(REND_CLIENT);
-  if (crypto_pk_public_checksig_digest(result->pk,
-                                       (char*)str,cp-str, /* data */
-                                       (char*)cp,end-cp  /* signature*/
-                                       )<0) {
-    log_warn(LD_PROTOCOL, "Bad signature on service descriptor.");
-    goto error;
-  }
-
-  return result;
- truncated:
-  log_warn(LD_PROTOCOL, "Truncated service descriptor.");
- error:
-  rend_service_descriptor_free(result);
-  return NULL;
-}
-
 /** Sets <b>out</b> to the first 10 bytes of the digest of <b>pk</b>,
  * base32 encoded.  NUL-terminates out.  (We use this string to
  * identify services in directory requests and .onion URLs.)
@@ -758,154 +688,6 @@ rend_get_service_id(crypto_pk_t *pk, char *out)
     return -1;
   base32_encode(out, REND_SERVICE_ID_LEN_BASE32+1, buf, REND_SERVICE_ID_LEN);
   return 0;
-}
-
-/* ==== Rendezvous service descriptor cache. */
-
-/** How old do we let hidden service descriptors get before discarding
- * them as too old? */
-#define REND_CACHE_MAX_AGE (2*24*60*60)
-/** How wrong do we assume our clock may be when checking whether hidden
- * services are too old or too new? */
-#define REND_CACHE_MAX_SKEW (24*60*60)
-
-/** Map from service id (as generated by rend_get_service_id) to
- * rend_cache_entry_t. */
-static strmap_t *rend_cache = NULL;
-
-/** Map from descriptor id to rend_cache_entry_t; only for hidden service
- * directories. */
-static digestmap_t *rend_cache_v2_dir = NULL;
-
-/** Initializes the service descriptor cache.
- */
-void
-rend_cache_init(void)
-{
-  rend_cache = strmap_new();
-  rend_cache_v2_dir = digestmap_new();
-}
-
-/** Helper: free storage held by a single service descriptor cache entry. */
-static void
-rend_cache_entry_free(rend_cache_entry_t *e)
-{
-  if (!e)
-    return;
-  rend_service_descriptor_free(e->parsed);
-  tor_free(e->desc);
-  tor_free(e);
-}
-
-/** Helper: deallocate a rend_cache_entry_t.  (Used with strmap_free(), which
- * requires a function pointer whose argument is void*). */
-static void
-rend_cache_entry_free_(void *p)
-{
-  rend_cache_entry_free(p);
-}
-
-/** Free all storage held by the service descriptor cache. */
-void
-rend_cache_free_all(void)
-{
-  strmap_free(rend_cache, rend_cache_entry_free_);
-  digestmap_free(rend_cache_v2_dir, rend_cache_entry_free_);
-  rend_cache = NULL;
-  rend_cache_v2_dir = NULL;
-}
-
-/** Removes all old entries from the service descriptor cache.
- */
-void
-rend_cache_clean(time_t now)
-{
-  strmap_iter_t *iter;
-  const char *key;
-  void *val;
-  rend_cache_entry_t *ent;
-  time_t cutoff = now - REND_CACHE_MAX_AGE - REND_CACHE_MAX_SKEW;
-  for (iter = strmap_iter_init(rend_cache); !strmap_iter_done(iter); ) {
-    strmap_iter_get(iter, &key, &val);
-    ent = (rend_cache_entry_t*)val;
-    if (ent->parsed->timestamp < cutoff) {
-      iter = strmap_iter_next_rmv(rend_cache, iter);
-      rend_cache_entry_free(ent);
-    } else {
-      iter = strmap_iter_next(rend_cache, iter);
-    }
-  }
-}
-
-/** Remove ALL entries from the rendezvous service descriptor cache.
- */
-void
-rend_cache_purge(void)
-{
-  if (rend_cache) {
-    log_info(LD_REND, "Purging client/v0-HS-authority HS descriptor cache");
-    strmap_free(rend_cache, rend_cache_entry_free_);
-  }
-  rend_cache = strmap_new();
-}
-
-/** Remove all old v2 descriptors and those for which this hidden service
- * directory is not responsible for any more. */
-void
-rend_cache_clean_v2_descs_as_dir(time_t now)
-{
-  digestmap_iter_t *iter;
-  time_t cutoff = now - REND_CACHE_MAX_AGE - REND_CACHE_MAX_SKEW;
-  for (iter = digestmap_iter_init(rend_cache_v2_dir);
-       !digestmap_iter_done(iter); ) {
-    const char *key;
-    void *val;
-    rend_cache_entry_t *ent;
-    digestmap_iter_get(iter, &key, &val);
-    ent = val;
-    if (ent->parsed->timestamp < cutoff ||
-        !hid_serv_responsible_for_desc_id(key)) {
-      char key_base32[REND_DESC_ID_V2_LEN_BASE32 + 1];
-      base32_encode(key_base32, sizeof(key_base32), key, DIGEST_LEN);
-      log_info(LD_REND, "Removing descriptor with ID '%s' from cache",
-               safe_str_client(key_base32));
-      iter = digestmap_iter_next_rmv(rend_cache_v2_dir, iter);
-      rend_cache_entry_free(ent);
-    } else {
-      iter = digestmap_iter_next(rend_cache_v2_dir, iter);
-    }
-  }
-}
-
-/** Determines whether <b>a</b> is in the interval of <b>b</b> (excluded) and
- * <b>c</b> (included) in a circular digest ring; returns 1 if this is the
- * case, and 0 otherwise.
- */
-int
-rend_id_is_in_interval(const char *a, const char *b, const char *c)
-{
-  int a_b, b_c, c_a;
-  tor_assert(a);
-  tor_assert(b);
-  tor_assert(c);
-
-  /* There are five cases in which a is outside the interval ]b,c]: */
-  a_b = tor_memcmp(a,b,DIGEST_LEN);
-  if (a_b == 0)
-    return 0; /* 1. a == b (b is excluded) */
-  b_c = tor_memcmp(b,c,DIGEST_LEN);
-  if (b_c == 0)
-    return 0; /* 2. b == c (interval is empty) */
-  else if (a_b <= 0 && b_c < 0)
-    return 0; /* 3. a b c */
-  c_a = tor_memcmp(c,a,DIGEST_LEN);
-  if (c_a < 0 && a_b <= 0)
-    return 0; /* 4. c a b */
-  else if (b_c < 0 && c_a < 0)
-    return 0; /* 5. b c a */
-
-  /* In the other cases (a c b; b a c; c b a), a is inside the interval. */
-  return 1;
 }
 
 /** Return true iff <b>query</b> is a syntactically valid service ID (as
@@ -922,490 +704,38 @@ rend_valid_service_id(const char *query)
   return 1;
 }
 
-/** If we have a cached rend_cache_entry_t for the service ID <b>query</b>
- * with <b>version</b>, set *<b>e</b> to that entry and return 1.
- * Else return 0. If <b>version</b> is nonnegative, only return an entry
- * in that descriptor format version. Otherwise (if <b>version</b> is
- * negative), return the most recent format we have.
- */
+/** Return true iff <b>query</b> is a syntactically valid descriptor ID.
+ * (as generated by rend_get_descriptor_id_bytes). */
 int
-rend_cache_lookup_entry(const char *query, int version, rend_cache_entry_t **e)
+rend_valid_descriptor_id(const char *query)
 {
-  char key[REND_SERVICE_ID_LEN_BASE32+2]; /* <version><query>\0 */
-  tor_assert(rend_cache);
-  if (!rend_valid_service_id(query))
-    return -1;
-  *e = NULL;
-  if (version != 0) {
-    tor_snprintf(key, sizeof(key), "2%s", query);
-    *e = strmap_get_lc(rend_cache, key);
+  if (strlen(query) != REND_DESC_ID_V2_LEN_BASE32) {
+    goto invalid;
   }
-  if (!*e && version != 2) {
-    tor_snprintf(key, sizeof(key), "0%s", query);
-    *e = strmap_get_lc(rend_cache, key);
+  if (strspn(query, BASE32_CHARS) != REND_DESC_ID_V2_LEN_BASE32) {
+    goto invalid;
   }
-  if (!*e)
-    return 0;
-  tor_assert((*e)->parsed && (*e)->parsed->intro_nodes);
-  /* XXX023 hack for now, to return "not found" if there are no intro
-   * points remaining. See bug 997. */
-  if (! rend_client_any_intro_points_usable(*e))
-    return 0;
-  return 1;
-}
 
-/** <b>query</b> is a base32'ed service id. If it's malformed, return -1.
- * Else look it up.
- *   - If it is found, point *desc to it, and write its length into
- *     *desc_len, and return 1.
- *   - If it is not found, return 0.
- * Note: calls to rend_cache_clean or rend_cache_store may invalidate
- * *desc.
- */
-int
-rend_cache_lookup_desc(const char *query, int version, const char **desc,
-                       size_t *desc_len)
-{
-  rend_cache_entry_t *e;
-  int r;
-  r = rend_cache_lookup_entry(query,version,&e);
-  if (r <= 0) return r;
-  *desc = e->desc;
-  *desc_len = e->len;
   return 1;
-}
 
-/** Lookup the v2 service descriptor with base32-encoded <b>desc_id</b> and
- * copy the pointer to it to *<b>desc</b>.  Return 1 on success, 0 on
- * well-formed-but-not-found, and -1 on failure.
- */
-int
-rend_cache_lookup_v2_desc_as_dir(const char *desc_id, const char **desc)
-{
-  rend_cache_entry_t *e;
-  char desc_id_digest[DIGEST_LEN];
-  tor_assert(rend_cache_v2_dir);
-  if (base32_decode(desc_id_digest, DIGEST_LEN,
-                    desc_id, REND_DESC_ID_V2_LEN_BASE32) < 0) {
-    log_fn(LOG_PROTOCOL_WARN, LD_REND,
-           "Rejecting v2 rendezvous descriptor request -- descriptor ID "
-           "contains illegal characters: %s",
-           safe_str(desc_id));
-    return -1;
-  }
-  /* Lookup descriptor and return. */
-  e = digestmap_get(rend_cache_v2_dir, desc_id_digest);
-  if (e) {
-    *desc = e->desc;
-    return 1;
-  }
+ invalid:
   return 0;
 }
 
-/* Do not allow more than this many introduction points in a hidden service
- * descriptor */
-#define MAX_INTRO_POINTS 10
-
-/** Parse *desc, calculate its service id, and store it in the cache.
- * If we have a newer v0 descriptor with the same ID, ignore this one.
- * If we have an older descriptor with the same ID, replace it.
- * If we are acting as client due to the published flag and have any v2
- * descriptor with the same ID, reject this one in order to not get
- * confused with having both versions for the same service.
- *
- * Return -2 if it's malformed or otherwise rejected; return -1 if we
- * already have a v2 descriptor here; return 0 if it's the same or older
- * than one we've already got; return 1 if it's novel.
- *
- * The published flag tells us if we store the descriptor
- * in our role as directory (1) or if we cache it as client (0).
- *
- * If <b>service_id</b> is non-NULL and the descriptor is not for that
- * service ID, reject it.  <b>service_id</b> must be specified if and
- * only if <b>published</b> is 0 (we fetched this descriptor).
- */
+/** Return true iff <b>client_name</b> is a syntactically valid name
+ * for rendezvous client authentication. */
 int
-rend_cache_store(const char *desc, size_t desc_len, int published,
-                 const char *service_id)
+rend_valid_client_name(const char *client_name)
 {
-  rend_cache_entry_t *e;
-  rend_service_descriptor_t *parsed;
-  char query[REND_SERVICE_ID_LEN_BASE32+1];
-  char key[REND_SERVICE_ID_LEN_BASE32+2]; /* 0<query>\0 */
-  time_t now;
-  tor_assert(rend_cache);
-  parsed = rend_parse_service_descriptor(desc,desc_len);
-  if (!parsed) {
-    log_warn(LD_PROTOCOL,"Couldn't parse service descriptor.");
-    return -2;
-  }
-  if (rend_get_service_id(parsed->pk, query)<0) {
-    log_warn(LD_BUG,"Couldn't compute service ID.");
-    rend_service_descriptor_free(parsed);
-    return -2;
-  }
-  if ((service_id != NULL) && strcmp(query, service_id)) {
-    log_warn(LD_REND, "Received service descriptor for service ID %s; "
-             "expected descriptor for service ID %s.",
-             query, safe_str(service_id));
-    rend_service_descriptor_free(parsed);
-    return -2;
-  }
-  now = time(NULL);
-  if (parsed->timestamp < now-REND_CACHE_MAX_AGE-REND_CACHE_MAX_SKEW) {
-    log_fn(LOG_PROTOCOL_WARN, LD_REND,
-           "Service descriptor %s is too old.",
-           safe_str_client(query));
-    rend_service_descriptor_free(parsed);
-    return -2;
-  }
-  if (parsed->timestamp > now+REND_CACHE_MAX_SKEW) {
-    log_fn(LOG_PROTOCOL_WARN, LD_REND,
-           "Service descriptor %s is too far in the future.",
-           safe_str_client(query));
-    rend_service_descriptor_free(parsed);
-    return -2;
-  }
-  /* Do we have a v2 descriptor and fetched this descriptor as a client? */
-  tor_snprintf(key, sizeof(key), "2%s", query);
-  if (!published && strmap_get_lc(rend_cache, key)) {
-    log_info(LD_REND, "We already have a v2 descriptor for service %s.",
-             safe_str_client(query));
-    rend_service_descriptor_free(parsed);
-    return -1;
-  }
-  if (parsed->intro_nodes &&
-      smartlist_len(parsed->intro_nodes) > MAX_INTRO_POINTS) {
-    log_warn(LD_REND, "Found too many introduction points on a hidden "
-             "service descriptor for %s. This is probably a (misguided) "
-             "attempt to improve reliability, but it could also be an "
-             "attempt to do a guard enumeration attack. Rejecting.",
-             safe_str_client(query));
-    rend_service_descriptor_free(parsed);
-    return -2;
-  }
-  tor_snprintf(key, sizeof(key), "0%s", query);
-  e = (rend_cache_entry_t*) strmap_get_lc(rend_cache, key);
-  if (e && e->parsed->timestamp > parsed->timestamp) {
-    log_info(LD_REND,"We already have a newer service descriptor %s with the "
-             "same ID and version.",
-             safe_str_client(query));
-    rend_service_descriptor_free(parsed);
+  size_t len = strlen(client_name);
+  if (len < 1 || len > REND_CLIENTNAME_MAX_LEN) {
     return 0;
   }
-  if (e && e->len == desc_len && tor_memeq(desc,e->desc,desc_len)) {
-    log_info(LD_REND,"We already have this service descriptor %s.",
-             safe_str_client(query));
-    e->received = time(NULL);
-    rend_service_descriptor_free(parsed);
+  if (strspn(client_name, REND_LEGAL_CLIENTNAME_CHARACTERS) != len) {
     return 0;
   }
-  if (!e) {
-    e = tor_malloc_zero(sizeof(rend_cache_entry_t));
-    strmap_set_lc(rend_cache, key, e);
-  } else {
-    rend_service_descriptor_free(e->parsed);
-    tor_free(e->desc);
-  }
-  e->received = time(NULL);
-  e->parsed = parsed;
-  e->len = desc_len;
-  e->desc = tor_malloc(desc_len);
-  memcpy(e->desc, desc, desc_len);
 
-  log_debug(LD_REND,"Successfully stored rend desc '%s', len %d.",
-            safe_str_client(query), (int)desc_len);
   return 1;
-}
-
-/** Parse the v2 service descriptor(s) in <b>desc</b> and store it/them to the
- * local rend cache. Don't attempt to decrypt the included list of introduction
- * points (as we don't have a descriptor cookie for it).
- *
- * If we have a newer descriptor with the same ID, ignore this one.
- * If we have an older descriptor with the same ID, replace it.
- * Return -2 if we are not acting as hidden service directory;
- * return -1 if the descriptor(s) were not parsable; return 0 if all
- * descriptors are the same or older than those we've already got;
- * return a positive number for the number of novel stored descriptors.
- */
-int
-rend_cache_store_v2_desc_as_dir(const char *desc)
-{
-  rend_service_descriptor_t *parsed;
-  char desc_id[DIGEST_LEN];
-  char *intro_content;
-  size_t intro_size;
-  size_t encoded_size;
-  char desc_id_base32[REND_DESC_ID_V2_LEN_BASE32 + 1];
-  int number_parsed = 0, number_stored = 0;
-  const char *current_desc = desc;
-  const char *next_desc;
-  rend_cache_entry_t *e;
-  time_t now = time(NULL);
-  tor_assert(rend_cache_v2_dir);
-  tor_assert(desc);
-  if (!hid_serv_acting_as_directory()) {
-    /* Cannot store descs, because we are (currently) not acting as
-     * hidden service directory. */
-    log_info(LD_REND, "Cannot store descs: Not acting as hs dir");
-    return -2;
-  }
-  while (rend_parse_v2_service_descriptor(&parsed, desc_id, &intro_content,
-                                          &intro_size, &encoded_size,
-                                          &next_desc, current_desc) >= 0) {
-    number_parsed++;
-    /* We don't care about the introduction points. */
-    tor_free(intro_content);
-    /* For pretty log statements. */
-    base32_encode(desc_id_base32, sizeof(desc_id_base32),
-                  desc_id, DIGEST_LEN);
-    /* Is desc ID in the range that we are (directly or indirectly) responsible
-     * for? */
-    if (!hid_serv_responsible_for_desc_id(desc_id)) {
-      log_info(LD_REND, "Service descriptor with desc ID %s is not in "
-                        "interval that we are responsible for.",
-               safe_str_client(desc_id_base32));
-      goto skip;
-    }
-    /* Is descriptor too old? */
-    if (parsed->timestamp < now - REND_CACHE_MAX_AGE-REND_CACHE_MAX_SKEW) {
-      log_info(LD_REND, "Service descriptor with desc ID %s is too old.",
-               safe_str(desc_id_base32));
-      goto skip;
-    }
-    /* Is descriptor too far in the future? */
-    if (parsed->timestamp > now + REND_CACHE_MAX_SKEW) {
-      log_info(LD_REND, "Service descriptor with desc ID %s is too far in the "
-                        "future.",
-               safe_str(desc_id_base32));
-      goto skip;
-    }
-    /* Do we already have a newer descriptor? */
-    e = digestmap_get(rend_cache_v2_dir, desc_id);
-    if (e && e->parsed->timestamp > parsed->timestamp) {
-      log_info(LD_REND, "We already have a newer service descriptor with the "
-                        "same desc ID %s and version.",
-               safe_str(desc_id_base32));
-      goto skip;
-    }
-    /* Do we already have this descriptor? */
-    if (e && !strcmp(desc, e->desc)) {
-      log_info(LD_REND, "We already have this service descriptor with desc "
-                        "ID %s.", safe_str(desc_id_base32));
-      e->received = time(NULL);
-      goto skip;
-    }
-    /* Store received descriptor. */
-    if (!e) {
-      e = tor_malloc_zero(sizeof(rend_cache_entry_t));
-      digestmap_set(rend_cache_v2_dir, desc_id, e);
-    } else {
-      rend_service_descriptor_free(e->parsed);
-      tor_free(e->desc);
-    }
-    e->received = time(NULL);
-    e->parsed = parsed;
-    e->desc = tor_strndup(current_desc, encoded_size);
-    e->len = encoded_size;
-    log_info(LD_REND, "Successfully stored service descriptor with desc ID "
-                      "'%s' and len %d.",
-             safe_str(desc_id_base32), (int)encoded_size);
-    number_stored++;
-    goto advance;
-  skip:
-    rend_service_descriptor_free(parsed);
-  advance:
-    /* advance to next descriptor, if available. */
-    current_desc = next_desc;
-    /* check if there is a next descriptor. */
-    if (!current_desc ||
-        strcmpstart(current_desc, "rendezvous-service-descriptor "))
-      break;
-  }
-  if (!number_parsed) {
-    log_info(LD_REND, "Could not parse any descriptor.");
-    return -1;
-  }
-  log_info(LD_REND, "Parsed %d and added %d descriptor%s.",
-           number_parsed, number_stored, number_stored != 1 ? "s" : "");
-  return number_stored;
-}
-
-/** Parse the v2 service descriptor in <b>desc</b>, decrypt the included list
- * of introduction points with <b>descriptor_cookie</b> (which may also be
- * <b>NULL</b> if decryption is not necessary), and store the descriptor to
- * the local cache under its version and service id.
- *
- * If we have a newer v2 descriptor with the same ID, ignore this one.
- * If we have an older descriptor with the same ID, replace it.
- * If we have any v0 descriptor with the same ID, reject this one in order
- * to not get confused with having both versions for the same service.
- * If the descriptor's service ID does not match
- * <b>rend_query</b>-\>onion_address, reject it.
- * Return -2 if it's malformed or otherwise rejected; return -1 if we
- * already have a v0 descriptor here; return 0 if it's the same or older
- * than one we've already got; return 1 if it's novel.
- */
-int
-rend_cache_store_v2_desc_as_client(const char *desc,
-                                   const rend_data_t *rend_query)
-{
-  /*XXXX this seems to have a bit of duplicate code with
-   * rend_cache_store_v2_desc_as_dir().  Fix that. */
-  /* Though having similar elements, both functions were separated on
-   * purpose:
-   * - dirs don't care about encoded/encrypted introduction points, clients
-   *   do.
-   * - dirs store descriptors in a separate cache by descriptor ID, whereas
-   *   clients store them by service ID; both caches are different data
-   *   structures and have different access methods.
-   * - dirs store a descriptor only if they are responsible for its ID,
-   *   clients do so in every way (because they have requested it before).
-   * - dirs can process multiple concatenated descriptors which is required
-   *   for replication, whereas clients only accept a single descriptor.
-   * Thus, combining both methods would result in a lot of if statements
-   * which probably would not improve, but worsen code readability. -KL */
-  rend_service_descriptor_t *parsed = NULL;
-  char desc_id[DIGEST_LEN];
-  char *intro_content = NULL;
-  size_t intro_size;
-  size_t encoded_size;
-  const char *next_desc;
-  time_t now = time(NULL);
-  char key[REND_SERVICE_ID_LEN_BASE32+2];
-  char service_id[REND_SERVICE_ID_LEN_BASE32+1];
-  rend_cache_entry_t *e;
-  int retval;
-  tor_assert(rend_cache);
-  tor_assert(desc);
-  /* Parse the descriptor. */
-  if (rend_parse_v2_service_descriptor(&parsed, desc_id, &intro_content,
-                                       &intro_size, &encoded_size,
-                                       &next_desc, desc) < 0) {
-    log_warn(LD_REND, "Could not parse descriptor.");
-    retval = -2;
-    goto err;
-  }
-  /* Compute service ID from public key. */
-  if (rend_get_service_id(parsed->pk, service_id)<0) {
-    log_warn(LD_REND, "Couldn't compute service ID.");
-    retval = -2;
-    goto err;
-  }
-  if (strcmp(rend_query->onion_address, service_id)) {
-    log_warn(LD_REND, "Received service descriptor for service ID %s; "
-             "expected descriptor for service ID %s.",
-             service_id, safe_str(rend_query->onion_address));
-    retval = -2;
-    goto err;
-  }
-  /* Decode/decrypt introduction points. */
-  if (intro_content) {
-    int n_intro_points;
-    if (rend_query->auth_type != REND_NO_AUTH &&
-        !tor_mem_is_zero(rend_query->descriptor_cookie,
-                         sizeof(rend_query->descriptor_cookie))) {
-      char *ipos_decrypted = NULL;
-      size_t ipos_decrypted_size;
-      if (rend_decrypt_introduction_points(&ipos_decrypted,
-                                           &ipos_decrypted_size,
-                                           rend_query->descriptor_cookie,
-                                           intro_content,
-                                           intro_size) < 0) {
-        log_warn(LD_REND, "Failed to decrypt introduction points. We are "
-                 "probably unable to parse the encoded introduction points.");
-      } else {
-        /* Replace encrypted with decrypted introduction points. */
-        log_info(LD_REND, "Successfully decrypted introduction points.");
-        tor_free(intro_content);
-        intro_content = ipos_decrypted;
-        intro_size = ipos_decrypted_size;
-      }
-    }
-    n_intro_points = rend_parse_introduction_points(parsed, intro_content,
-                                                    intro_size);
-    if (n_intro_points <= 0) {
-      log_warn(LD_REND, "Failed to parse introduction points. Either the "
-               "service has published a corrupt descriptor or you have "
-               "provided invalid authorization data.");
-      retval = -2;
-      goto err;
-    } else if (n_intro_points > MAX_INTRO_POINTS) {
-      log_warn(LD_REND, "Found too many introduction points on a hidden "
-               "service descriptor for %s. This is probably a (misguided) "
-               "attempt to improve reliability, but it could also be an "
-               "attempt to do a guard enumeration attack. Rejecting.",
-               safe_str_client(rend_query->onion_address));
-      retval = -2;
-      goto err;
-    }
-  } else {
-    log_info(LD_REND, "Descriptor does not contain any introduction points.");
-    parsed->intro_nodes = smartlist_new();
-  }
-  /* We don't need the encoded/encrypted introduction points any longer. */
-  tor_free(intro_content);
-  /* Is descriptor too old? */
-  if (parsed->timestamp < now - REND_CACHE_MAX_AGE-REND_CACHE_MAX_SKEW) {
-    log_warn(LD_REND, "Service descriptor with service ID %s is too old.",
-             safe_str_client(service_id));
-    retval = -2;
-    goto err;
-  }
-  /* Is descriptor too far in the future? */
-  if (parsed->timestamp > now + REND_CACHE_MAX_SKEW) {
-    log_warn(LD_REND, "Service descriptor with service ID %s is too far in "
-                      "the future.", safe_str_client(service_id));
-    retval = -2;
-    goto err;
-  }
-  /* Do we have a v0 descriptor? */
-  tor_snprintf(key, sizeof(key), "0%s", service_id);
-  if (strmap_get_lc(rend_cache, key)) {
-    log_info(LD_REND, "We already have a v0 descriptor for service ID %s.",
-             safe_str_client(service_id));
-    retval = -1;
-    goto err;
-  }
-  /* Do we already have a newer descriptor? */
-  tor_snprintf(key, sizeof(key), "2%s", service_id);
-  e = (rend_cache_entry_t*) strmap_get_lc(rend_cache, key);
-  if (e && e->parsed->timestamp > parsed->timestamp) {
-    log_info(LD_REND, "We already have a newer service descriptor for "
-                      "service ID %s with the same desc ID and version.",
-             safe_str_client(service_id));
-    retval = 0;
-    goto err;
-  }
-  /* Do we already have this descriptor? */
-  if (e && !strcmp(desc, e->desc)) {
-    log_info(LD_REND,"We already have this service descriptor %s.",
-             safe_str_client(service_id));
-    e->received = time(NULL);
-    retval = 0;
-    goto err;
-  }
-  if (!e) {
-    e = tor_malloc_zero(sizeof(rend_cache_entry_t));
-    strmap_set_lc(rend_cache, key, e);
-  } else {
-    rend_service_descriptor_free(e->parsed);
-    tor_free(e->desc);
-  }
-  e->received = time(NULL);
-  e->parsed = parsed;
-  e->desc = tor_malloc_zero(encoded_size + 1);
-  strlcpy(e->desc, desc, encoded_size + 1);
-  e->len = encoded_size;
-  log_debug(LD_REND,"Successfully stored rend desc '%s', len %d.",
-            safe_str_client(service_id), (int)encoded_size);
-  return 1;
-
- err:
-  rend_service_descriptor_free(parsed);
-  tor_free(intro_content);
-  return retval;
 }
 
 /** Called when we get a rendezvous-related relay cell on circuit
@@ -1433,7 +763,7 @@ rend_process_relay_cell(circuit_t *circ, const crypt_path_t *layer_hint,
   switch (command) {
     case RELAY_COMMAND_ESTABLISH_INTRO:
       if (or_circ)
-        r = rend_mid_establish_intro(or_circ,payload,length);
+        r = hs_intro_received_establish_intro(or_circ,payload,length);
       break;
     case RELAY_COMMAND_ESTABLISH_RENDEZVOUS:
       if (or_circ)
@@ -1441,11 +771,11 @@ rend_process_relay_cell(circuit_t *circ, const crypt_path_t *layer_hint,
       break;
     case RELAY_COMMAND_INTRODUCE1:
       if (or_circ)
-        r = rend_mid_introduce(or_circ,payload,length);
+        r = hs_intro_received_introduce1(or_circ,payload,length);
       break;
     case RELAY_COMMAND_INTRODUCE2:
       if (origin_circ)
-        r = rend_service_introduce(origin_circ,payload,length);
+        r = rend_service_receive_introduction(origin_circ,payload,length);
       break;
     case RELAY_COMMAND_INTRODUCE_ACK:
       if (origin_circ)
@@ -1476,12 +806,226 @@ rend_process_relay_cell(circuit_t *circ, const crypt_path_t *layer_hint,
              command);
 }
 
-/** Allocate and return a new rend_data_t with the same
- * contents as <b>query</b>. */
-rend_data_t *
-rend_data_dup(const rend_data_t *data)
+/** Determine the routers that are responsible for <b>id</b> (binary) and
+ * add pointers to those routers' routerstatus_t to <b>responsible_dirs</b>.
+ * Return -1 if we're returning an empty smartlist, else return 0.
+ */
+int
+hid_serv_get_responsible_directories(smartlist_t *responsible_dirs,
+                                     const char *id)
 {
-  tor_assert(data);
-  return tor_memdup(data, sizeof(rend_data_t));
+  int start, found, n_added = 0, i;
+  networkstatus_t *c = networkstatus_get_latest_consensus();
+  if (!c || !smartlist_len(c->routerstatus_list)) {
+    log_warn(LD_REND, "We don't have a consensus, so we can't perform v2 "
+             "rendezvous operations.");
+    return -1;
+  }
+  tor_assert(id);
+  start = networkstatus_vote_find_entry_idx(c, id, &found);
+  if (start == smartlist_len(c->routerstatus_list)) start = 0;
+  i = start;
+  do {
+    routerstatus_t *r = smartlist_get(c->routerstatus_list, i);
+    if (r->is_hs_dir) {
+      smartlist_add(responsible_dirs, r);
+      if (++n_added == REND_NUMBER_OF_CONSECUTIVE_REPLICAS)
+        return 0;
+    }
+    if (++i == smartlist_len(c->routerstatus_list))
+      i = 0;
+  } while (i != start);
+
+  /* Even though we don't have the desired number of hidden service
+   * directories, be happy if we got any. */
+  return smartlist_len(responsible_dirs) ? 0 : -1;
+}
+
+/* Length of the 'extended' auth cookie used to encode auth type before
+ * base64 encoding. */
+#define REND_DESC_COOKIE_LEN_EXT (REND_DESC_COOKIE_LEN + 1)
+/* Length of the zero-padded auth cookie when base64 encoded. These two
+ * padding bytes always (A=) are stripped off of the returned cookie. */
+#define REND_DESC_COOKIE_LEN_EXT_BASE64 (REND_DESC_COOKIE_LEN_BASE64 + 2)
+
+/** Encode a client authorization descriptor cookie.
+ * The result of this function is suitable for use in the HidServAuth
+ * option.  The trailing padding characters are removed, and the
+ * auth type is encoded into the cookie.
+ *
+ * Returns a new base64-encoded cookie. This function cannot fail.
+ * The caller is responsible for freeing the returned value.
+ */
+char *
+rend_auth_encode_cookie(const uint8_t *cookie_in, rend_auth_type_t auth_type)
+{
+  uint8_t extended_cookie[REND_DESC_COOKIE_LEN_EXT];
+  char *cookie_out = tor_malloc_zero(REND_DESC_COOKIE_LEN_EXT_BASE64 + 1);
+  int re;
+
+  tor_assert(cookie_in);
+
+  memcpy(extended_cookie, cookie_in, REND_DESC_COOKIE_LEN);
+  extended_cookie[REND_DESC_COOKIE_LEN] = ((int)auth_type - 1) << 4;
+  re = base64_encode(cookie_out, REND_DESC_COOKIE_LEN_EXT_BASE64 + 1,
+                     (const char *) extended_cookie, REND_DESC_COOKIE_LEN_EXT,
+                     0);
+  tor_assert(re == REND_DESC_COOKIE_LEN_EXT_BASE64);
+
+  /* Remove the trailing 'A='.  Auth type is encoded in the high bits
+   * of the last byte, so the last base64 character will always be zero
+   * (A).  This is subtly different behavior from base64_encode_nopad. */
+  cookie_out[REND_DESC_COOKIE_LEN_BASE64] = '\0';
+  memwipe(extended_cookie, 0, sizeof(extended_cookie));
+  return cookie_out;
+}
+
+/** Decode a base64-encoded client authorization descriptor cookie.
+ * The descriptor_cookie can be truncated to REND_DESC_COOKIE_LEN_BASE64
+ * characters (as given to clients), or may include the two padding
+ * characters (as stored by the service).
+ *
+ * The result is stored in REND_DESC_COOKIE_LEN bytes of cookie_out.
+ * The rend_auth_type_t decoded from the cookie is stored in the
+ * optional auth_type_out parameter.
+ *
+ * Return 0 on success, or -1 on error.  The caller is responsible for
+ * freeing the returned err_msg.
+ */
+int
+rend_auth_decode_cookie(const char *cookie_in, uint8_t *cookie_out,
+                        rend_auth_type_t *auth_type_out, char **err_msg_out)
+{
+  uint8_t descriptor_cookie_decoded[REND_DESC_COOKIE_LEN_EXT + 1] = { 0 };
+  char descriptor_cookie_base64ext[REND_DESC_COOKIE_LEN_EXT_BASE64 + 1];
+  const char *descriptor_cookie = cookie_in;
+  char *err_msg = NULL;
+  int auth_type_val = 0;
+  int res = -1;
+  int decoded_len;
+
+  size_t len = strlen(descriptor_cookie);
+  if (len == REND_DESC_COOKIE_LEN_BASE64) {
+    /* Add a trailing zero byte to make base64-decoding happy. */
+    tor_snprintf(descriptor_cookie_base64ext,
+                 sizeof(descriptor_cookie_base64ext),
+                 "%sA=", descriptor_cookie);
+    descriptor_cookie = descriptor_cookie_base64ext;
+  } else if (len != REND_DESC_COOKIE_LEN_EXT_BASE64) {
+    tor_asprintf(&err_msg, "Authorization cookie has wrong length: %s",
+                 escaped(cookie_in));
+    goto err;
+  }
+
+  decoded_len = base64_decode((char *) descriptor_cookie_decoded,
+                              sizeof(descriptor_cookie_decoded),
+                              descriptor_cookie,
+                              REND_DESC_COOKIE_LEN_EXT_BASE64);
+  if (decoded_len != REND_DESC_COOKIE_LEN &&
+      decoded_len != REND_DESC_COOKIE_LEN_EXT) {
+    tor_asprintf(&err_msg, "Authorization cookie has invalid characters: %s",
+                 escaped(cookie_in));
+    goto err;
+  }
+
+  if (auth_type_out) {
+    auth_type_val = (descriptor_cookie_decoded[REND_DESC_COOKIE_LEN] >> 4) + 1;
+    if (auth_type_val < 1 || auth_type_val > 2) {
+      tor_asprintf(&err_msg, "Authorization cookie type is unknown: %s",
+                   escaped(cookie_in));
+      goto err;
+    }
+    *auth_type_out = auth_type_val == 1 ? REND_BASIC_AUTH : REND_STEALTH_AUTH;
+  }
+
+  memcpy(cookie_out, descriptor_cookie_decoded, REND_DESC_COOKIE_LEN);
+  res = 0;
+ err:
+  if (err_msg_out) {
+    *err_msg_out = err_msg;
+  } else {
+    tor_free(err_msg);
+  }
+  memwipe(descriptor_cookie_decoded, 0, sizeof(descriptor_cookie_decoded));
+  memwipe(descriptor_cookie_base64ext, 0, sizeof(descriptor_cookie_base64ext));
+  return res;
+}
+
+/* Is this a rend client or server that allows direct (non-anonymous)
+ * connections?
+ * Clients must be specifically compiled and configured in this mode.
+ * Onion services can be configured to start in this mode.
+ * Prefer rend_client_allow_non_anonymous_connection() or
+ * rend_service_allow_non_anonymous_connection() whenever possible, so that
+ * checks are specific to Single Onion Services or Tor2web. */
+int
+rend_allow_non_anonymous_connection(const or_options_t* options)
+{
+  return (rend_client_allow_non_anonymous_connection(options)
+          || rend_service_allow_non_anonymous_connection(options));
+}
+
+/* Is this a rend client or server in non-anonymous mode?
+ * Clients must be specifically compiled in this mode.
+ * Onion services can be configured to start in this mode.
+ * Prefer rend_client_non_anonymous_mode_enabled() or
+ * rend_service_non_anonymous_mode_enabled() whenever possible, so that checks
+ * are specific to Single Onion Services or Tor2web. */
+int
+rend_non_anonymous_mode_enabled(const or_options_t *options)
+{
+  return (rend_client_non_anonymous_mode_enabled(options)
+          || rend_service_non_anonymous_mode_enabled(options));
+}
+
+/* Make sure that tor only builds one-hop circuits when they would not
+ * compromise user anonymity.
+ *
+ * One-hop circuits are permitted in Tor2web or Single Onion modes.
+ *
+ * Tor2web or Single Onion modes are also allowed to make multi-hop circuits.
+ * For example, single onion HSDir circuits are 3-hop to prevent denial of
+ * service.
+ */
+void
+assert_circ_anonymity_ok(origin_circuit_t *circ,
+                         const or_options_t *options)
+{
+  tor_assert(options);
+  tor_assert(circ);
+  tor_assert(circ->build_state);
+
+  if (circ->build_state->onehop_tunnel) {
+    tor_assert(rend_allow_non_anonymous_connection(options));
+  }
+}
+
+/* Return 1 iff the given <b>digest</b> of a permenanent hidden service key is
+ * equal to the digest in the origin circuit <b>ocirc</b> of its rend data .
+ * If the rend data doesn't exist, 0 is returned. This function is agnostic to
+ * the rend data version. */
+int
+rend_circuit_pk_digest_eq(const origin_circuit_t *ocirc,
+                          const uint8_t *digest)
+{
+  size_t rend_pk_digest_len;
+  const uint8_t *rend_pk_digest;
+
+  tor_assert(ocirc);
+  tor_assert(digest);
+
+  if (ocirc->rend_data == NULL) {
+    goto no_match;
+  }
+
+  rend_pk_digest = rend_data_get_pk_digest(ocirc->rend_data,
+                                           &rend_pk_digest_len);
+  if (tor_memeq(rend_pk_digest, digest, rend_pk_digest_len)) {
+    goto match;
+  }
+ no_match:
+  return 0;
+ match:
+  return 1;
 }
 

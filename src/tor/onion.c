@@ -1,16 +1,69 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
 /**
  * \file onion.c
  * \brief Functions to queue create cells, wrap the various onionskin types,
  * and parse and create the CREATE cell and its allies.
+ *
+ * This module has a few functions, all related to the CREATE/CREATED
+ * handshake that we use on links in order to create a circuit, and the
+ * related EXTEND/EXTENDED handshake that we use over circuits in order to
+ * extend them an additional hop.
+ *
+ * In this module, we provide a set of abstractions to create a uniform
+ * interface over the three circuit extension handshakes that Tor has used
+ * over the years (TAP, CREATE_FAST, and ntor).  These handshakes are
+ * implemented in onion_tap.c, onion_fast.c, and onion_ntor.c respectively.
+ *
+ * All[*] of these handshakes follow a similar pattern: a client, knowing
+ * some key from the relay it wants to extend through, generates the
+ * first part of a handshake. A relay receives that handshake, and sends
+ * a reply.  Once the client handles the reply, it knows that it is
+ * talking to the right relay, and it shares some freshly negotiated key
+ * material with that relay.
+ *
+ * We sometimes call the client's part of the handshake an "onionskin".
+ * We do this because historically, Onion Routing used a multi-layer
+ * structure called an "onion" to construct circuits. Each layer of the
+ * onion contained key material chosen by the client, the identity of
+ * the next relay in the circuit, and a smaller onion, encrypted with
+ * the key of the next relay.  When we changed Tor to use a telescoping
+ * circuit extension design, it corresponded to sending each layer of the
+ * onion separately -- as a series of onionskins.
+ *
+ * Clients invoke these functions when creating or extending a circuit,
+ * from circuitbuild.c.
+ *
+ * Relays invoke these functions when they receive a CREATE or EXTEND
+ * cell in command.c or relay.c, in order to queue the pending request.
+ * They also invoke them from cpuworker.c, which handles dispatching
+ * onionskin requests to different worker threads.
+ *
+ * <br>
+ *
+ * This module also handles:
+ *  <ul>
+ *  <li> Queueing incoming onionskins on the relay side before passing
+ *      them to worker threads.
+ *   <li>Expiring onionskins on the relay side if they have waited for
+ *     too long.
+ *   <li>Packaging private keys on the server side in order to pass
+ *     them to worker threads.
+ *   <li>Encoding and decoding CREATE, CREATED, CREATE2, and CREATED2 cells.
+ *   <li>Encoding and decodign EXTEND, EXTENDED, EXTEND2, and EXTENDED2
+ *    relay cells.
+ * </ul>
+ *
+ * [*] The CREATE_FAST handshake is weaker than described here; see
+ * onion_fast.c for more information.
  **/
 
 #include "or.h"
+#include "circuitbuild.h"
 #include "circuitlist.h"
 #include "config.h"
 #include "cpuworker.h"
@@ -22,6 +75,9 @@
 #include "relay.h"
 #include "rephist.h"
 #include "router.h"
+
+// trunnel
+#include "ed25519_cert.h"
 
 /** Type for a linked list of circuits that are waiting for a free CPU worker
  * to process a waiting onion handshake. */
@@ -38,9 +94,9 @@ typedef struct onion_queue_t {
 
 /** Array of queues of circuits waiting for CPU workers. An element is NULL
  * if that queue is empty.*/
-TOR_TAILQ_HEAD(onion_queue_head_t, onion_queue_t)
-              ol_list[MAX_ONION_HANDSHAKE_TYPE+1] = {
-  TOR_TAILQ_HEAD_INITIALIZER(ol_list[0]), /* tap */
+static TOR_TAILQ_HEAD(onion_queue_head_t, onion_queue_t)
+              ol_list[MAX_ONION_HANDSHAKE_TYPE+1] =
+{ TOR_TAILQ_HEAD_INITIALIZER(ol_list[0]), /* tap */
   TOR_TAILQ_HEAD_INITIALIZER(ol_list[1]), /* fast */
   TOR_TAILQ_HEAD_INITIALIZER(ol_list[2]), /* ntor */
 };
@@ -51,7 +107,7 @@ static int ol_entries[MAX_ONION_HANDSHAKE_TYPE+1];
 static int num_ntors_per_tap(void);
 static void onion_queue_entry_remove(onion_queue_t *victim);
 
-/* XXXX024 Check lengths vs MAX_ONIONSKIN_{CHALLENGE,REPLY}_LEN.
+/* XXXX Check lengths vs MAX_ONIONSKIN_{CHALLENGE,REPLY}_LEN.
  *
  * (By which I think I meant, "make sure that no
  * X_ONIONSKIN_CHALLENGE/REPLY_LEN is greater than
@@ -111,15 +167,11 @@ have_room_for_onionskin(uint16_t type)
        (uint64_t)options->MaxOnionQueueDelay)
     return 0;
 
-#ifdef CURVE25519_ENABLED
   /* If we support the ntor handshake, then don't let TAP handshakes use
    * more than 2/3 of the space on the queue. */
   if (type == ONION_HANDSHAKE_TYPE_TAP &&
       tap_usec / 1000 > (uint64_t)options->MaxOnionQueueDelay * 2 / 3)
     return 0;
-#else
-  (void) type;
-#endif
 
   return 1;
 }
@@ -134,9 +186,12 @@ onion_pending_add(or_circuit_t *circ, create_cell_t *onionskin)
   time_t now = time(NULL);
 
   if (onionskin->handshake_type > MAX_ONION_HANDSHAKE_TYPE) {
+    /* LCOV_EXCL_START
+     * We should have rejected this far before this point */
     log_warn(LD_BUG, "Handshake %d out of range! Dropping.",
              onionskin->handshake_type);
     return -1;
+    /* LCOV_EXCL_STOP */
   }
 
   tmp = tor_malloc_zero(sizeof(onion_queue_t));
@@ -183,7 +238,9 @@ onion_pending_add(or_circuit_t *circ, create_cell_t *onionskin)
     onion_queue_entry_remove(head);
     log_info(LD_CIRC,
              "Circuit create request is too old; canceling due to overload.");
-    circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_RESOURCELIMIT);
+    if (! TO_CIRCUIT(circ)->marked_for_close) {
+      circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_RESOURCELIMIT);
+    }
   }
   return 0;
 }
@@ -299,6 +356,8 @@ onion_pending_remove(or_circuit_t *circ)
   victim = circ->onionqueue_entry;
   if (victim)
     onion_queue_entry_remove(victim);
+
+  cpuworker_cancel_circ_handshake(circ);
 }
 
 /** Remove a queue entry <b>victim</b> from the queue, unlinking it from
@@ -307,10 +366,13 @@ static void
 onion_queue_entry_remove(onion_queue_t *victim)
 {
   if (victim->handshake_type > MAX_ONION_HANDSHAKE_TYPE) {
+    /* LCOV_EXCL_START
+     * We should have rejected this far before this point */
     log_warn(LD_BUG, "Handshake %d out of range! Dropping.",
              victim->handshake_type);
     /* XXX leaks */
     return;
+    /* LCOV_EXCL_STOP */
   }
 
   TOR_TAILQ_REMOVE(&ol_list[victim->handshake_type], victim, next);
@@ -329,50 +391,49 @@ onion_queue_entry_remove(onion_queue_t *victim)
 void
 clear_pending_onions(void)
 {
-  onion_queue_t *victim;
+  onion_queue_t *victim, *next;
   int i;
   for (i=0; i<=MAX_ONION_HANDSHAKE_TYPE; i++) {
-    while ((victim = TOR_TAILQ_FIRST(&ol_list[i]))) {
+    for (victim = TOR_TAILQ_FIRST(&ol_list[i]); victim; victim = next) {
+      next = TOR_TAILQ_NEXT(victim,next);
       onion_queue_entry_remove(victim);
     }
+    tor_assert(TOR_TAILQ_EMPTY(&ol_list[i]));
   }
   memset(ol_entries, 0, sizeof(ol_entries));
 }
 
 /* ============================================================ */
 
-/** Fill in a server_onion_keys_t object at <b>keys</b> with all of the keys
+/** Return a new server_onion_keys_t object with all of the keys
  * and other info we might need to do onion handshakes.  (We make a copy of
  * our keys for each cpuworker to avoid race conditions with the main thread,
  * and to avoid locking) */
-void
-setup_server_onion_keys(server_onion_keys_t *keys)
+server_onion_keys_t *
+server_onion_keys_new(void)
 {
-  memset(keys, 0, sizeof(server_onion_keys_t));
+  server_onion_keys_t *keys = tor_malloc_zero(sizeof(server_onion_keys_t));
   memcpy(keys->my_identity, router_get_my_id_digest(), DIGEST_LEN);
   dup_onion_keys(&keys->onion_key, &keys->last_onion_key);
-#ifdef CURVE25519_ENABLED
   keys->curve25519_key_map = construct_ntor_key_map();
   keys->junk_keypair = tor_malloc_zero(sizeof(curve25519_keypair_t));
   curve25519_keypair_generate(keys->junk_keypair, 0);
-#endif
+  return keys;
 }
 
-/** Release all storage held in <b>keys</b>, but do not free <b>keys</b>
- * itself (as it's likely to be stack-allocated.) */
+/** Release all storage held in <b>keys</b>. */
 void
-release_server_onion_keys(server_onion_keys_t *keys)
+server_onion_keys_free(server_onion_keys_t *keys)
 {
   if (! keys)
     return;
 
   crypto_pk_free(keys->onion_key);
   crypto_pk_free(keys->last_onion_key);
-#ifdef CURVE25519_ENABLED
   ntor_key_map_free(keys->curve25519_key_map);
   tor_free(keys->junk_keypair);
-#endif
-  memset(keys, 0, sizeof(server_onion_keys_t));
+  memwipe(keys, 0, sizeof(server_onion_keys_t));
+  tor_free(keys);
 }
 
 /** Release whatever storage is held in <b>state</b>, depending on its
@@ -389,16 +450,17 @@ onion_handshake_state_release(onion_handshake_state_t *state)
     fast_handshake_state_free(state->u.fast);
     state->u.fast = NULL;
     break;
-#ifdef CURVE25519_ENABLED
   case ONION_HANDSHAKE_TYPE_NTOR:
     ntor_handshake_state_free(state->u.ntor);
     state->u.ntor = NULL;
     break;
-#endif
   default:
+    /* LCOV_EXCL_START
+     * This state should not even exist. */
     log_warn(LD_BUG, "called with unknown handshake state type %d",
              (int)state->tag);
     tor_fragile_assert();
+    /* LCOV_EXCL_STOP */
   }
 }
 
@@ -434,9 +496,7 @@ onion_skin_create(int type,
     r = CREATE_FAST_LEN;
     break;
   case ONION_HANDSHAKE_TYPE_NTOR:
-#ifdef CURVE25519_ENABLED
-    if (tor_mem_is_zero((const char*)node->curve25519_onion_key.public_key,
-                        CURVE25519_PUBKEY_LEN))
+    if (!extend_info_supports_ntor(node))
       return -1;
     if (onion_skin_ntor_create((const uint8_t*)node->identity_digest,
                                &node->curve25519_onion_key,
@@ -445,14 +505,14 @@ onion_skin_create(int type,
       return -1;
 
     r = NTOR_ONIONSKIN_LEN;
-#else
-    return -1;
-#endif
     break;
   default:
+    /* LCOV_EXCL_START
+     * We should never try to create an impossible handshake type. */
     log_warn(LD_BUG, "called with unknown handshake state type %d", type);
     tor_fragile_assert();
     r = -1;
+    /* LCOV_EXCL_STOP */
   }
 
   if (r > 0)
@@ -499,7 +559,6 @@ onion_skin_server_handshake(int type,
     memcpy(rend_nonce_out, reply_out+DIGEST_LEN, DIGEST_LEN);
     break;
   case ONION_HANDSHAKE_TYPE_NTOR:
-#ifdef CURVE25519_ENABLED
     if (onionskin_len < NTOR_ONIONSKIN_LEN)
       return -1;
     {
@@ -520,14 +579,14 @@ onion_skin_server_handshake(int type,
       tor_free(keys_tmp);
       r = NTOR_REPLY_LEN;
     }
-#else
-    return -1;
-#endif
     break;
   default:
+    /* LCOV_EXCL_START
+     * We should have rejected this far before this point */
     log_warn(LD_BUG, "called with unknown handshake state type %d", type);
     tor_fragile_assert();
     return -1;
+    /* LCOV_EXCL_STOP */
   }
 
   return r;
@@ -539,48 +598,59 @@ onion_skin_server_handshake(int type,
  * bytes worth of key material in <b>keys_out_len</b>, set
  * <b>rend_authenticator_out</b> to the "KH" field that can be used to
  * establish introduction points at this hop, and return 0. On failure,
- * return -1. */
+ * return -1, and set *msg_out to an error message if this is worth
+ * complaining to the user about. */
 int
 onion_skin_client_handshake(int type,
                       const onion_handshake_state_t *handshake_state,
                       const uint8_t *reply, size_t reply_len,
                       uint8_t *keys_out, size_t keys_out_len,
-                      uint8_t *rend_authenticator_out)
+                      uint8_t *rend_authenticator_out,
+                      const char **msg_out)
 {
   if (handshake_state->tag != type)
     return -1;
 
   switch (type) {
   case ONION_HANDSHAKE_TYPE_TAP:
-    if (reply_len != TAP_ONIONSKIN_REPLY_LEN)
+    if (reply_len != TAP_ONIONSKIN_REPLY_LEN) {
+      if (msg_out)
+        *msg_out = "TAP reply was not of the correct length.";
       return -1;
+    }
     if (onion_skin_TAP_client_handshake(handshake_state->u.tap,
                                         (const char*)reply,
-                                        (char *)keys_out, keys_out_len) < 0)
+                                        (char *)keys_out, keys_out_len,
+                                        msg_out) < 0)
       return -1;
 
     memcpy(rend_authenticator_out, reply+DH_KEY_LEN, DIGEST_LEN);
 
     return 0;
   case ONION_HANDSHAKE_TYPE_FAST:
-    if (reply_len != CREATED_FAST_LEN)
+    if (reply_len != CREATED_FAST_LEN) {
+      if (msg_out)
+        *msg_out = "TAP reply was not of the correct length.";
       return -1;
+    }
     if (fast_client_handshake(handshake_state->u.fast, reply,
-                              keys_out, keys_out_len) < 0)
+                              keys_out, keys_out_len, msg_out) < 0)
       return -1;
 
     memcpy(rend_authenticator_out, reply+DIGEST_LEN, DIGEST_LEN);
     return 0;
-#ifdef CURVE25519_ENABLED
   case ONION_HANDSHAKE_TYPE_NTOR:
-    if (reply_len < NTOR_REPLY_LEN)
+    if (reply_len < NTOR_REPLY_LEN) {
+      if (msg_out)
+        *msg_out = "ntor reply was not of the correct length.";
       return -1;
+    }
     {
       size_t keys_tmp_len = keys_out_len + DIGEST_LEN;
       uint8_t *keys_tmp = tor_malloc(keys_tmp_len);
       if (onion_skin_ntor_client_handshake(handshake_state->u.ntor,
-                                           reply,
-                                           keys_tmp, keys_tmp_len) < 0) {
+                                        reply,
+                                        keys_tmp, keys_tmp_len, msg_out) < 0) {
         tor_free(keys_tmp);
         return -1;
       }
@@ -590,7 +660,6 @@ onion_skin_client_handshake(int type,
       tor_free(keys_tmp);
     }
     return 0;
-#endif
   default:
     log_warn(LD_BUG, "called with unknown handshake state type %d", type);
     tor_fragile_assert();
@@ -629,12 +698,10 @@ check_create_cell(const create_cell_t *cell, int unknown_ok)
     if (cell->handshake_len != CREATE_FAST_LEN)
       return -1;
     break;
-#ifdef CURVE25519_ENABLED
   case ONION_HANDSHAKE_TYPE_NTOR:
     if (cell->handshake_len != NTOR_ONIONSKIN_LEN)
       return -1;
     break;
-#endif
   default:
     if (! unknown_ok)
       return -1;
@@ -809,13 +876,114 @@ check_extend_cell(const extend_cell_t *cell)
   return check_create_cell(&cell->create_cell, 1);
 }
 
-/** Protocol constants for specifier types in EXTEND2
- * @{
- */
-#define SPECTYPE_IPV4 0
-#define SPECTYPE_IPV6 1
-#define SPECTYPE_LEGACY_ID 2
-/** @} */
+static int
+extend_cell_from_extend1_cell_body(extend_cell_t *cell_out,
+                                   const extend1_cell_body_t *cell)
+{
+  tor_assert(cell_out);
+  tor_assert(cell);
+  memset(cell_out, 0, sizeof(*cell_out));
+  tor_addr_make_unspec(&cell_out->orport_ipv4.addr);
+  tor_addr_make_unspec(&cell_out->orport_ipv6.addr);
+
+  cell_out->cell_type = RELAY_COMMAND_EXTEND;
+  tor_addr_from_ipv4h(&cell_out->orport_ipv4.addr, cell->ipv4addr);
+  cell_out->orport_ipv4.port = cell->port;
+  if (tor_memeq(cell->onionskin, NTOR_CREATE_MAGIC, 16)) {
+    cell_out->create_cell.cell_type = CELL_CREATE2;
+    cell_out->create_cell.handshake_type = ONION_HANDSHAKE_TYPE_NTOR;
+    cell_out->create_cell.handshake_len = NTOR_ONIONSKIN_LEN;
+    memcpy(cell_out->create_cell.onionskin, cell->onionskin + 16,
+           NTOR_ONIONSKIN_LEN);
+  } else {
+    cell_out->create_cell.cell_type = CELL_CREATE;
+    cell_out->create_cell.handshake_type = ONION_HANDSHAKE_TYPE_TAP;
+    cell_out->create_cell.handshake_len = TAP_ONIONSKIN_CHALLENGE_LEN;
+    memcpy(cell_out->create_cell.onionskin, cell->onionskin,
+           TAP_ONIONSKIN_CHALLENGE_LEN);
+  }
+  memcpy(cell_out->node_id, cell->identity, DIGEST_LEN);
+  return 0;
+}
+
+static int
+create_cell_from_create2_cell_body(create_cell_t *cell_out,
+                                   const create2_cell_body_t *cell)
+{
+  tor_assert(cell_out);
+  tor_assert(cell);
+  memset(cell_out, 0, sizeof(create_cell_t));
+  if (BUG(cell->handshake_len > sizeof(cell_out->onionskin))) {
+    /* This should be impossible because there just isn't enough room in the
+     * input cell to make the handshake_len this large and provide a
+     * handshake_data to match. */
+    return -1;
+  }
+
+  cell_out->cell_type = CELL_CREATE2;
+  cell_out->handshake_type = cell->handshake_type;
+  cell_out->handshake_len = cell->handshake_len;
+  memcpy(cell_out->onionskin,
+       create2_cell_body_getconstarray_handshake_data(cell),
+       cell->handshake_len);
+  return 0;
+}
+
+static int
+extend_cell_from_extend2_cell_body(extend_cell_t *cell_out,
+                                   const extend2_cell_body_t *cell)
+{
+  tor_assert(cell_out);
+  tor_assert(cell);
+  int found_ipv4 = 0, found_ipv6 = 0, found_rsa_id = 0, found_ed_id = 0;
+  memset(cell_out, 0, sizeof(*cell_out));
+  tor_addr_make_unspec(&cell_out->orport_ipv4.addr);
+  tor_addr_make_unspec(&cell_out->orport_ipv6.addr);
+  cell_out->cell_type = RELAY_COMMAND_EXTEND2;
+
+  unsigned i;
+  for (i = 0; i < cell->n_spec; ++i) {
+    const link_specifier_t *ls = extend2_cell_body_getconst_ls(cell, i);
+    switch (ls->ls_type) {
+      case LS_IPV4:
+        if (found_ipv4)
+          continue;
+        found_ipv4 = 1;
+        tor_addr_from_ipv4h(&cell_out->orport_ipv4.addr, ls->un_ipv4_addr);
+        cell_out->orport_ipv4.port = ls->un_ipv4_port;
+        break;
+      case LS_IPV6:
+        if (found_ipv6)
+          continue;
+        found_ipv6 = 1;
+        tor_addr_from_ipv6_bytes(&cell_out->orport_ipv6.addr,
+                                 (const char *)ls->un_ipv6_addr);
+        cell_out->orport_ipv6.port = ls->un_ipv6_port;
+        break;
+      case LS_LEGACY_ID:
+        if (found_rsa_id)
+          return -1;
+        found_rsa_id = 1;
+        memcpy(cell_out->node_id, ls->un_legacy_id, 20);
+        break;
+      case LS_ED25519_ID:
+        if (found_ed_id)
+          return -1;
+        found_ed_id = 1;
+        memcpy(cell_out->ed_pubkey.pubkey, ls->un_ed25519_id, 32);
+        break;
+      default:
+        /* Ignore this, whatever it is. */
+        break;
+    }
+  }
+
+  if (!found_rsa_id || !found_ipv4) /* These are mandatory */
+    return -1;
+
+  return create_cell_from_create2_cell_body(&cell_out->create_cell,
+                                            cell->create2);
+}
 
 /** Parse an EXTEND or EXTEND2 cell (according to <b>command</b>) from the
  * <b>payload_length</b> bytes of <b>payload</b> into <b>cell_out</b>. Return
@@ -824,101 +992,44 @@ int
 extend_cell_parse(extend_cell_t *cell_out, const uint8_t command,
                   const uint8_t *payload, size_t payload_length)
 {
-  const uint8_t *eop;
 
-  memset(cell_out, 0, sizeof(*cell_out));
+  tor_assert(cell_out);
+  tor_assert(payload);
+
   if (payload_length > RELAY_PAYLOAD_SIZE)
     return -1;
-  eop = payload + payload_length;
 
   switch (command) {
   case RELAY_COMMAND_EXTEND:
     {
-      if (payload_length != 6 + TAP_ONIONSKIN_CHALLENGE_LEN + DIGEST_LEN)
+      extend1_cell_body_t *cell = NULL;
+      if (extend1_cell_body_parse(&cell, payload, payload_length)<0 ||
+          cell == NULL) {
+        if (cell)
+          extend1_cell_body_free(cell);
         return -1;
-
-      cell_out->cell_type = RELAY_COMMAND_EXTEND;
-      tor_addr_from_ipv4n(&cell_out->orport_ipv4.addr, get_uint32(payload));
-      cell_out->orport_ipv4.port = ntohs(get_uint16(payload+4));
-      tor_addr_make_unspec(&cell_out->orport_ipv6.addr);
-      if (tor_memeq(payload + 6, NTOR_CREATE_MAGIC, 16)) {
-        cell_out->create_cell.cell_type = CELL_CREATE2;
-        cell_out->create_cell.handshake_type = ONION_HANDSHAKE_TYPE_NTOR;
-        cell_out->create_cell.handshake_len = NTOR_ONIONSKIN_LEN;
-        memcpy(cell_out->create_cell.onionskin, payload + 22,
-               NTOR_ONIONSKIN_LEN);
-      } else {
-        cell_out->create_cell.cell_type = CELL_CREATE;
-        cell_out->create_cell.handshake_type = ONION_HANDSHAKE_TYPE_TAP;
-        cell_out->create_cell.handshake_len = TAP_ONIONSKIN_CHALLENGE_LEN;
-        memcpy(cell_out->create_cell.onionskin, payload + 6,
-               TAP_ONIONSKIN_CHALLENGE_LEN);
       }
-      memcpy(cell_out->node_id, payload + 6 + TAP_ONIONSKIN_CHALLENGE_LEN,
-             DIGEST_LEN);
-      break;
+      int r = extend_cell_from_extend1_cell_body(cell_out, cell);
+      extend1_cell_body_free(cell);
+      if (r < 0)
+        return r;
     }
+    break;
   case RELAY_COMMAND_EXTEND2:
     {
-      uint8_t n_specs, spectype, speclen;
-      int i;
-      int found_ipv4 = 0, found_ipv6 = 0, found_id = 0;
-      tor_addr_make_unspec(&cell_out->orport_ipv4.addr);
-      tor_addr_make_unspec(&cell_out->orport_ipv6.addr);
-
-      if (payload_length == 0)
+      extend2_cell_body_t *cell = NULL;
+      if (extend2_cell_body_parse(&cell, payload, payload_length) < 0 ||
+          cell == NULL) {
+        if (cell)
+          extend2_cell_body_free(cell);
         return -1;
-
-      cell_out->cell_type = RELAY_COMMAND_EXTEND2;
-      n_specs = *payload++;
-      /* Parse the specifiers. We'll only take the first IPv4 and first IPv6
-       * address, and the node ID, and ignore everything else */
-      for (i = 0; i < n_specs; ++i) {
-        if (eop - payload < 2)
-          return -1;
-        spectype = payload[0];
-        speclen = payload[1];
-        payload += 2;
-        if (eop - payload < speclen)
-          return -1;
-        switch (spectype) {
-        case SPECTYPE_IPV4:
-          if (speclen != 6)
-            return -1;
-          if (!found_ipv4) {
-            tor_addr_from_ipv4n(&cell_out->orport_ipv4.addr,
-                                get_uint32(payload));
-            cell_out->orport_ipv4.port = ntohs(get_uint16(payload+4));
-            found_ipv4 = 1;
-          }
-          break;
-        case SPECTYPE_IPV6:
-          if (speclen != 18)
-            return -1;
-          if (!found_ipv6) {
-            tor_addr_from_ipv6_bytes(&cell_out->orport_ipv6.addr,
-                                     (const char*)payload);
-            cell_out->orport_ipv6.port = ntohs(get_uint16(payload+16));
-            found_ipv6 = 1;
-          }
-          break;
-        case SPECTYPE_LEGACY_ID:
-          if (speclen != 20)
-            return -1;
-          if (found_id)
-            return -1;
-          memcpy(cell_out->node_id, payload, 20);
-          found_id = 1;
-          break;
-        }
-        payload += speclen;
       }
-      if (!found_id || !found_ipv4)
-        return -1;
-      if (parse_create2_payload(&cell_out->create_cell,payload,eop-payload)<0)
-        return -1;
-      break;
+      int r = extend_cell_from_extend2_cell_body(cell_out, cell);
+      extend2_cell_body_free(cell);
+      if (r < 0)
+        return r;
     }
+    break;
   default:
     return -1;
   }
@@ -930,6 +1041,7 @@ extend_cell_parse(extend_cell_t *cell_out, const uint8_t command,
 static int
 check_extended_cell(const extended_cell_t *cell)
 {
+  tor_assert(cell);
   if (cell->created_cell.cell_type == CELL_CREATED) {
     if (cell->cell_type != RELAY_COMMAND_EXTENDED)
       return -1;
@@ -951,6 +1063,9 @@ extended_cell_parse(extended_cell_t *cell_out,
                     const uint8_t command, const uint8_t *payload,
                     size_t payload_len)
 {
+  tor_assert(cell_out);
+  tor_assert(payload);
+
   memset(cell_out, 0, sizeof(*cell_out));
   if (payload_len > RELAY_PAYLOAD_SIZE)
     return -1;
@@ -1067,6 +1182,21 @@ created_cell_format(cell_t *cell_out, const created_cell_t *cell_in)
   return 0;
 }
 
+/** Return true iff we are configured (by torrc or by the networkstatus
+ * parameters) to use Ed25519 identities in our Extend2 cells. */
+static int
+should_include_ed25519_id_extend_cells(const networkstatus_t *ns,
+                                       const or_options_t *options)
+{
+  if (options->ExtendByEd25519ID != -1)
+    return options->ExtendByEd25519ID; /* The user has an opinion. */
+
+  return (int) networkstatus_get_param(ns, "ExtendByEd25519ID",
+                                       0 /* default */,
+                                       0 /* min */,
+                                       1 /*max*/);
+}
+
 /** Format the EXTEND{,2} cell in <b>cell_in</b>, storing its relay payload in
  * <b>payload_out</b>, the number of bytes used in *<b>len_out</b>, and the
  * relay command in *<b>command_out</b>. The <b>payload_out</b> must have
@@ -1075,12 +1205,11 @@ int
 extend_cell_format(uint8_t *command_out, uint16_t *len_out,
                    uint8_t *payload_out, const extend_cell_t *cell_in)
 {
-  uint8_t *p, *eop;
+  uint8_t *p;
   if (check_extend_cell(cell_in) < 0)
     return -1;
 
   p = payload_out;
-  eop = payload_out + RELAY_PAYLOAD_SIZE;
 
   memset(p, 0, RELAY_PAYLOAD_SIZE);
 
@@ -1103,33 +1232,56 @@ extend_cell_format(uint8_t *command_out, uint16_t *len_out,
     break;
   case RELAY_COMMAND_EXTEND2:
     {
-      uint8_t n = 2;
+      uint8_t n_specifiers = 2;
       *command_out = RELAY_COMMAND_EXTEND2;
+      extend2_cell_body_t *cell = extend2_cell_body_new();
+      link_specifier_t *ls;
+      {
+        /* IPv4 specifier first. */
+        ls = link_specifier_new();
+        extend2_cell_body_add_ls(cell, ls);
+        ls->ls_type = LS_IPV4;
+        ls->ls_len = 6;
+        ls->un_ipv4_addr = tor_addr_to_ipv4h(&cell_in->orport_ipv4.addr);
+        ls->un_ipv4_port = cell_in->orport_ipv4.port;
+      }
+      {
+        /* Then RSA id */
+        ls = link_specifier_new();
+        extend2_cell_body_add_ls(cell, ls);
+        ls->ls_type = LS_LEGACY_ID;
+        ls->ls_len = DIGEST_LEN;
+        memcpy(ls->un_legacy_id, cell_in->node_id, DIGEST_LEN);
+      }
+      if (should_include_ed25519_id_extend_cells(NULL, get_options()) &&
+          !ed25519_public_key_is_zero(&cell_in->ed_pubkey)) {
+        /* Then, maybe, the ed25519 id! */
+        ++n_specifiers;
+        ls = link_specifier_new();
+        extend2_cell_body_add_ls(cell, ls);
+        ls->ls_type = LS_ED25519_ID;
+        ls->ls_len = 32;
+        memcpy(ls->un_ed25519_id, cell_in->ed_pubkey.pubkey, 32);
+      }
+      cell->n_spec = n_specifiers;
 
-      *p++ = n; /* 2 identifiers */
-      *p++ = SPECTYPE_IPV4; /* First is IPV4. */
-      *p++ = 6; /* It's 6 bytes long. */
-      set_uint32(p, tor_addr_to_ipv4n(&cell_in->orport_ipv4.addr));
-      set_uint16(p+4, htons(cell_in->orport_ipv4.port));
-      p += 6;
-      *p++ = SPECTYPE_LEGACY_ID; /* Next is an identity digest. */
-      *p++ = 20; /* It's 20 bytes long */
-      memcpy(p, cell_in->node_id, DIGEST_LEN);
-      p += 20;
-
-      /* Now we can send the handshake */
-      set_uint16(p, htons(cell_in->create_cell.handshake_type));
-      set_uint16(p+2, htons(cell_in->create_cell.handshake_len));
-      p += 4;
-
-      if (cell_in->create_cell.handshake_len > eop - p)
-        return -1;
-
-      memcpy(p, cell_in->create_cell.onionskin,
+      /* Now, the handshake */
+      cell->create2 = create2_cell_body_new();
+      cell->create2->handshake_type = cell_in->create_cell.handshake_type;
+      cell->create2->handshake_len = cell_in->create_cell.handshake_len;
+      create2_cell_body_setlen_handshake_data(cell->create2,
+                                         cell_in->create_cell.handshake_len);
+      memcpy(create2_cell_body_getarray_handshake_data(cell->create2),
+             cell_in->create_cell.onionskin,
              cell_in->create_cell.handshake_len);
 
-      p += cell_in->create_cell.handshake_len;
-      *len_out = p - payload_out;
+      ssize_t len_encoded = extend2_cell_body_encode(
+                             payload_out, RELAY_PAYLOAD_SIZE,
+                             cell);
+      extend2_cell_body_free(cell);
+      if (len_encoded < 0 || len_encoded > UINT16_MAX)
+        return -1;
+      *len_out = (uint16_t) len_encoded;
     }
     break;
   default:

@@ -1,49 +1,40 @@
 /* Copyright (c) 2001 Matej Pfajfar.
  * Copyright (c) 2001-2004, Roger Dingledine.
  * Copyright (c) 2004-2006, Roger Dingledine, Nick Mathewson.
- * Copyright (c) 2007-2013, The Tor Project, Inc. */
+ * Copyright (c) 2007-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
+/**
+ * \file routerset.c
+ *
+ * \brief Functions and structures to handle set-type selection of routers
+ *  by name, ID, address, etc.
+ *
+ * This module implements the routerset_t data structure, whose purpose
+ * is to specify a set of relays based on a list of their identities or
+ * properties.  Routersets can restrict relays by IP address mask,
+ * identity fingerprint, country codes, and nicknames (deprecated).
+ *
+ * Routersets are typically used for user-specified restrictions, and
+ * are created by invoking routerset_new and routerset_parse from
+ * config.c and confparse.c.  To use a routerset, invoke one of
+ * routerset_contains_...() functions , or use
+ * routerstatus_get_all_nodes() / routerstatus_subtract_nodes() to
+ * manipulate a smartlist of node_t pointers.
+ *
+ * Country-code restrictions are implemented in geoip.c.
+ */
+
+#define ROUTERSET_PRIVATE
+
 #include "or.h"
+#include "bridges.h"
 #include "geoip.h"
 #include "nodelist.h"
 #include "policies.h"
 #include "router.h"
 #include "routerparse.h"
 #include "routerset.h"
-
-/** A routerset specifies constraints on a set of possible routerinfos, based
- * on their names, identities, or addresses.  It is optimized for determining
- * whether a router is a member or not, in O(1+P) time, where P is the number
- * of address policy constraints. */
-struct routerset_t {
-  /** A list of strings for the elements of the policy.  Each string is either
-   * a nickname, a hexadecimal identity fingerprint, or an address policy.  A
-   * router belongs to the set if its nickname OR its identity OR its address
-   * matches an entry here. */
-  smartlist_t *list;
-  /** A map from lowercase nicknames of routers in the set to (void*)1 */
-  strmap_t *names;
-  /** A map from identity digests routers in the set to (void*)1 */
-  digestmap_t *digests;
-  /** An address policy for routers in the set.  For implementation reasons,
-   * a router belongs to the set if it is _rejected_ by this policy. */
-  smartlist_t *policies;
-
-  /** A human-readable description of what this routerset is for.  Used in
-   * log messages. */
-  char *description;
-
-  /** A list of the country codes in this set. */
-  smartlist_t *country_names;
-  /** Total number of countries we knew about when we built <b>countries</b>.*/
-  int n_countries;
-  /** Bit array mapping the return value of geoip_get_country() to 1 iff the
-   * country is a member of this routerset.  Note that we MUST call
-   * routerset_refresh_countries() whenever the geoip country list is
-   * reloaded. */
-  bitarray_t *countries;
-};
 
 /** Return a new empty routerset. */
 routerset_t *
@@ -60,7 +51,7 @@ routerset_new(void)
 
 /** If <b>c</b> is a country code in the form {cc}, return a newly allocated
  * string holding the "cc" part.  Else, return NULL. */
-static char *
+STATIC char *
 routerset_get_countryname(const char *c)
 {
   char *country;
@@ -116,10 +107,13 @@ routerset_parse(routerset_t *target, const char *s, const char *description)
   int added_countries = 0;
   char *countryname;
   smartlist_t *list = smartlist_new();
+  int malformed_list;
   smartlist_split_string(list, s, ",",
                          SPLIT_SKIP_SPACE | SPLIT_IGNORE_BLANK, 0);
   SMARTLIST_FOREACH_BEGIN(list, char *, nick) {
       addr_policy_t *p;
+      /* if it doesn't pass our validation, assume it's malformed */
+      malformed_list = 1;
       if (is_legal_hexdigest(nick)) {
         char d[DIGEST_LEN];
         if (*nick == '$')
@@ -135,15 +129,23 @@ routerset_parse(routerset_t *target, const char *s, const char *description)
                   description);
         smartlist_add(target->country_names, countryname);
         added_countries = 1;
-      } else if ((strchr(nick,'.') || strchr(nick, '*')) &&
-                 (p = router_parse_addr_policy_item_from_string(
-                                     nick, ADDR_POLICY_REJECT))) {
+      } else if ((strchr(nick,'.') || strchr(nick, ':') ||  strchr(nick, '*'))
+                 && (p = router_parse_addr_policy_item_from_string(
+                                     nick, ADDR_POLICY_REJECT,
+                                     &malformed_list))) {
+        /* IPv4 addresses contain '.', IPv6 addresses contain ':',
+         * and wildcard addresses contain '*'. */
         log_debug(LD_CONFIG, "Adding address %s to %s", nick, description);
         smartlist_add(target->policies, p);
-      } else {
-        log_warn(LD_CONFIG, "Entry '%s' in %s is malformed.", nick,
-                 description);
+      } else if (malformed_list) {
+        log_warn(LD_CONFIG, "Entry '%s' in %s is malformed. Discarding entire"
+                 " list.", nick, description);
         r = -1;
+        tor_free(nick);
+        SMARTLIST_DEL_CURRENT(list, nick);
+      } else {
+        log_notice(LD_CONFIG, "Entry '%s' in %s is ignored. Using the"
+                   " remainder of the list.", nick, description);
         tor_free(nick);
         SMARTLIST_DEL_CURRENT(list, nick);
       }
@@ -193,6 +195,17 @@ routerset_is_empty(const routerset_t *set)
   return !set || smartlist_len(set->list) == 0;
 }
 
+/** Return the number of entries in <b>set</b>. This does NOT return a
+ * negative value. */
+int
+routerset_len(const routerset_t *set)
+{
+  if (!set) {
+    return 0;
+  }
+  return smartlist_len(set->list);
+}
+
 /** Helper.  Return true iff <b>set</b> contains a router based on the other
  * provided fields.  Return higher values for more specific subentries: a
  * single router is more specific than an address range of routers, which is
@@ -200,7 +213,7 @@ routerset_is_empty(const routerset_t *set)
  *
  * (If country is -1, then we take the country
  * from addr.) */
-static int
+STATIC int
 routerset_contains(const routerset_t *set, const tor_addr_t *addr,
                    uint16_t orport,
                    const char *nickname, const char *id_digest,
@@ -250,12 +263,12 @@ routerset_add_unknown_ccs(routerset_t **setp, int only_if_some_cc_set)
     geoip_get_country("A1") >= 0;
 
   if (add_unknown) {
-    smartlist_add(set->country_names, tor_strdup("??"));
-    smartlist_add(set->list, tor_strdup("{??}"));
+    smartlist_add_strdup(set->country_names, "??");
+    smartlist_add_strdup(set->list, "{??}");
   }
   if (add_a1) {
-    smartlist_add(set->country_names, tor_strdup("a1"));
-    smartlist_add(set->list, tor_strdup("{a1}"));
+    smartlist_add_strdup(set->country_names, "a1");
+    smartlist_add_strdup(set->list, "{a1}");
   }
 
   if (add_unknown || add_a1) {
@@ -322,6 +335,18 @@ routerset_contains_node(const routerset_t *set, const node_t *node)
     return 0;
 }
 
+/** Return true iff <b>routerset</b> contains the bridge <b>bridge</b>. */
+int
+routerset_contains_bridge(const routerset_t *set, const bridge_info_t *bridge)
+{
+  const char *id = (const char*)bridge_get_rsa_id_digest(bridge);
+  const tor_addr_port_t *addrport = bridge_get_addr_port(bridge);
+
+  tor_assert(addrport);
+  return routerset_contains(set, &addrport->addr, addrport->port,
+                            NULL, id, -1);
+}
+
 /** Add every known node_t that is a member of <b>routerset</b> to
  * <b>out</b>, but never add any that are part of <b>excludeset</b>.
  * If <b>running_only</b>, only add the running ones. */
@@ -357,39 +382,6 @@ routerset_get_all_nodes(smartlist_t *out, const routerset_t *routerset,
     });
   }
 }
-
-#if 0
-/** Add to <b>target</b> every node_t from <b>source</b> except:
- *
- * 1) Don't add it if <b>include</b> is non-empty and the relay isn't in
- * <b>include</b>; and
- * 2) Don't add it if <b>exclude</b> is non-empty and the relay is
- * excluded in a more specific fashion by <b>exclude</b>.
- * 3) If <b>running_only</b>, don't add non-running routers.
- */
-void
-routersets_get_node_disjunction(smartlist_t *target,
-                           const smartlist_t *source,
-                           const routerset_t *include,
-                           const routerset_t *exclude, int running_only)
-{
-  SMARTLIST_FOREACH(source, const node_t *, node, {
-    int include_result;
-    if (running_only && !node->is_running)
-      continue;
-    if (!routerset_is_empty(include))
-      include_result = routerset_contains_node(include, node);
-    else
-      include_result = 1;
-
-    if (include_result) {
-      int exclude_result = routerset_contains_node(exclude, node);
-      if (include_result >= exclude_result)
-        smartlist_add(target, (void*)node);
-    }
-  });
-}
-#endif
 
 /** Remove every node_t from <b>lst</b> that is in <b>routerset</b>. */
 void

@@ -1,13 +1,21 @@
-/* Copyright (c) 2013, The Tor Project, Inc. */
+/* Copyright (c) 2013-2016, The Tor Project, Inc. */
 /* See LICENSE for licensing information */
 
-#define __USE_GNU
-#define _GNU_SOURCE 1
+/**
+ * \file backtrace.c
+ *
+ * \brief Functions to produce backtraces on bugs, crashes, or assertion
+ * failures.
+ *
+ * Currently, we've only got an implementation here using the backtrace()
+ * family of functions, which are sometimes provided by libc and sometimes
+ * provided by libexecinfo.  We tie into the sigaction() backend in order to
+ * detect crashes.
+ */
 
 #include "orconfig.h"
-#include "backtrace.h"
-#include "tor_compat.h"
-#include "tor_util.h"
+#include "torcompat.h"
+#include "torutil.h"
 #include "torlog.h"
 
 #ifdef HAVE_EXECINFO_H
@@ -31,6 +39,9 @@
 #include <ucontext.h>
 #endif
 
+#define EXPOSE_CLEAN_BACKTRACE
+#include "backtrace.h"
+
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE) && \
   defined(HAVE_BACKTRACE_SYMBOLS_FD) && defined(HAVE_SIGACTION)
 #define USE_BACKTRACE
@@ -49,6 +60,8 @@ static char *bt_version = NULL;
 /** Static allocation of stack to dump. This is static so we avoid stack
  * pressure. */
 static void *cb_buf[MAX_DEPTH];
+/** Protects cb_buf from concurrent access */
+static tor_mutex_t cb_buf_mutex;
 
 /** Change a stacktrace in <b>stack</b> of depth <b>depth</b> so that it will
  * log the correct function from which a signal was received with context
@@ -57,17 +70,17 @@ static void *cb_buf[MAX_DEPTH];
  * onto the stack.  Fortunately, we usually have the program counter in the
  * ucontext_t structure.
  */
-static void
-clean_backtrace(void **stack, int depth, const ucontext_t *ctx)
+void
+clean_backtrace(void **stack, size_t depth, const ucontext_t *ctx)
 {
 #ifdef PC_FROM_UCONTEXT
 #if defined(__linux__)
-  const int n = 1;
-#elif defined(__darwin__) || defined(__APPLE__) || defined(__OpenBSD__) \
+  const size_t n = 1;
+#elif defined(__darwin__) || defined(__APPLE__) || defined(OpenBSD) \
   || defined(__FreeBSD__)
-  const int n = 2;
+  const size_t n = 2;
 #else
-  const int n = 1;
+  const size_t n = 1;
 #endif
   if (depth <= n)
     return;
@@ -76,6 +89,7 @@ clean_backtrace(void **stack, int depth, const ucontext_t *ctx)
 #else
   (void) depth;
   (void) ctx;
+  (void) stack;
 #endif
 }
 
@@ -84,18 +98,29 @@ clean_backtrace(void **stack, int depth, const ucontext_t *ctx)
 void
 log_backtrace(int severity, int domain, const char *msg)
 {
-  int depth = backtrace(cb_buf, MAX_DEPTH);
-  char **symbols = backtrace_symbols(cb_buf, depth);
-  int i;
+  size_t depth;
+  char **symbols;
+  size_t i;
+
+  tor_mutex_acquire(&cb_buf_mutex);
+
+  depth = backtrace(cb_buf, MAX_DEPTH);
+  symbols = backtrace_symbols(cb_buf, (int)depth);
+
   tor_log(severity, domain, "%s. Stack trace:", msg);
   if (!symbols) {
+    /* LCOV_EXCL_START -- we can't provoke this. */
     tor_log(severity, domain, "    Unable to generate backtrace.");
-    return;
+    goto done;
+    /* LCOV_EXCL_STOP */
   }
   for (i=0; i < depth; ++i) {
     tor_log(severity, domain, "    %s", symbols[i]);
   }
-  free(symbols);
+  raw_free(symbols);
+
+ done:
+  tor_mutex_release(&cb_buf_mutex);
 }
 
 static void crash_handler(int sig, siginfo_t *si, void *ctx_)
@@ -106,7 +131,7 @@ static void
 crash_handler(int sig, siginfo_t *si, void *ctx_)
 {
   char buf[40];
-  int depth;
+  size_t depth;
   ucontext_t *ctx = (ucontext_t *) ctx_;
   int n_fds, i;
   const int *fds = NULL;
@@ -125,7 +150,7 @@ crash_handler(int sig, siginfo_t *si, void *ctx_)
 
   n_fds = tor_log_get_sigsafe_err_fds(&fds);
   for (i=0; i < n_fds; ++i)
-    backtrace_symbols_fd(cb_buf, depth, fds[i]);
+    backtrace_symbols_fd(cb_buf, (int)depth, fds[i]);
 
   abort();
 }
@@ -140,6 +165,9 @@ install_bt_handler(void)
   int i, rv=0;
 
   struct sigaction sa;
+
+  tor_mutex_init(&cb_buf_mutex);
+
   memset(&sa, 0, sizeof(sa));
   sa.sa_sigaction = crash_handler;
   sa.sa_flags = SA_SIGINFO;
@@ -147,10 +175,24 @@ install_bt_handler(void)
 
   for (i = 0; trap_signals[i] >= 0; ++i) {
     if (sigaction(trap_signals[i], &sa, NULL) == -1) {
+      /* LCOV_EXCL_START */
       log_warn(LD_BUG, "Sigaction failed: %s", strerror(errno));
       rv = -1;
+      /* LCOV_EXCL_STOP */
     }
   }
+
+  {
+    /* Now, generate (but do not log) a backtrace.  This ensures that
+     * libc has pre-loaded the symbols we need to dump things, so that later
+     * reads won't be denied by the sandbox code */
+    char **symbols;
+    size_t depth = backtrace(cb_buf, MAX_DEPTH);
+    symbols = backtrace_symbols(cb_buf, (int) depth);
+    if (symbols)
+      raw_free(symbols);
+  }
+
   return rv;
 }
 
@@ -158,7 +200,7 @@ install_bt_handler(void)
 static void
 remove_bt_handler(void)
 {
-  /* We don't need to actually free anything at exit here. */
+  tor_mutex_uninit(&cb_buf_mutex);
 }
 #endif
 
@@ -186,9 +228,10 @@ int
 configure_backtrace_handler(const char *tor_version)
 {
   tor_free(bt_version);
-  if (!tor_version)
-    tor_version = "";
-  tor_asprintf(&bt_version, "Tor %s", tor_version);
+  if (tor_version)
+    tor_asprintf(&bt_version, "Tor %s", tor_version);
+  else
+    tor_asprintf(&bt_version, "Tor");
 
   return install_bt_handler();
 }
