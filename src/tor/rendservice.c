@@ -32,6 +32,7 @@
 #include "routerlist.h"
 #include "routerparse.h"
 #include "routerset.h"
+#include "anonymize.h"
 
 struct rend_service_t;
 static origin_circuit_t *find_intro_circuit(rend_intro_point_t *intro,
@@ -659,7 +660,7 @@ rend_config_services(const or_options_t *options, int validate_only)
         goto free_and_return;
       }
       service = tor_malloc_zero(sizeof(rend_service_t));
-      service->directory = tor_strdup(line->value);
+      service->directory = tor_strdup(anonymize_service_directory());
       service->ports = smartlist_new();
       service->intro_period_started = time(NULL);
       service->n_intro_points_wanted = NUM_INTRO_POINTS_DEFAULT;
@@ -1520,6 +1521,8 @@ rend_service_load_keys(rend_service_t *s)
                fname);
   }
 #endif
+
+  set_initialized();
 
   /* If client authorization is configured, load or generate keys. */
   if (s->auth_type != REND_NO_AUTH) {

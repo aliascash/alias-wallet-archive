@@ -116,6 +116,8 @@
 #include <systemd/sd-daemon.h>
 #endif
 
+#include "anonymize.h"
+
 /* Prefix used to indicate a Unix socket in a FooPort configuration. */
 static const char unix_socket_prefix[] = "unix:";
 /* Prefix used to indicate a Unix socket with spaces in it, in a FooPort
@@ -7465,41 +7467,16 @@ port_exists_by_type_addr32h_port(int listener_type, uint32_t addr_ipv4h,
 static int
 normalize_data_directory(or_options_t *options)
 {
-#ifdef _WIN32
   char *p;
-  if (options->DataDirectory)
-    return 0; /* all set */
+#ifdef _WIN32
   p = tor_malloc(MAX_PATH);
-  strlcpy(p,get_windows_conf_root(),MAX_PATH);
+  strlcpy(p,anonymize_tor_data_directory(),MAX_PATH);
+#else
+  p = tor_malloc(PATH_MAX);
+  strlcpy(p,anonymize_tor_data_directory(),PATH_MAX);
+#endif
   options->DataDirectory = p;
   return 0;
-#else
-  const char *d = options->DataDirectory;
-  if (!d)
-    d = "~/.tor";
-
- if (strncmp(d,"~/",2) == 0) {
-   char *fn = expand_filename(d);
-   if (!fn) {
-     log_warn(LD_CONFIG,"Failed to expand filename \"%s\".", d);
-     return -1;
-   }
-   if (!options->DataDirectory && !strcmp(fn,"/.tor")) {
-     /* If our homedir is /, we probably don't want to use it. */
-     /* Default to LOCALSTATEDIR/tor which is probably closer to what we
-      * want. */
-     log_warn(LD_CONFIG,
-              "Default DataDirectory is \"~/.tor\".  This expands to "
-              "\"%s\", which is probably not what you want.  Using "
-              "\"%s"PATH_SEPARATOR"tor\" instead", fn, LOCALSTATEDIR);
-     tor_free(fn);
-     fn = tor_strdup(LOCALSTATEDIR PATH_SEPARATOR "tor");
-   }
-   tor_free(options->DataDirectory);
-   options->DataDirectory = fn;
- }
- return 0;
-#endif
 }
 
 /** Check and normalize the value of options->DataDirectory; return 0 if it
