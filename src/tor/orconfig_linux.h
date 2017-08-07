@@ -47,7 +47,6 @@
 #define HAVE_BACKTRACE_SYMBOLS_FD 1
 
 /* Define to 1 if you have the `cap_set_proc' function. */
-#define HAVE_CAP_SET_PROC 1
 
 /* True if we have -Wnull-dereference */
 #define HAVE_CFLAG_WNULL_DEREFERENCE 1
@@ -197,7 +196,7 @@
 /* #undef HAVE_ISSETUGID */
 
 /* Define to 1 if you have the `cap' library (-lcap). */
-#define HAVE_LIBCAP 1
+#define HAVE_LIBCAP 0
 
 /* Define to 1 if you have the <libscrypt.h> header file. */
 /* #undef HAVE_LIBSCRYPT_H */
@@ -325,7 +324,6 @@
 #define HAVE_SA_FAMILY_T 1
 
 /* Define to 1 if you have the <seccomp.h> header file. */
-#define HAVE_SECCOMP_H 1
 
 /* Define to 1 if you have the `SecureZeroMemory' function. */
 /* #undef HAVE_SECUREZEROMEMORY */
@@ -434,7 +432,6 @@
 /* #define HAVE_SYSTEMD_209 1 */
 
 /* Define to 1 if you have the <sys/capability.h> header file. */
-#define HAVE_SYS_CAPABILITY_H 1
 
 /* Define to 1 if you have the <sys/eventfd.h> header file. */
 #define HAVE_SYS_EVENTFD_H 1

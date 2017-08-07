@@ -338,9 +338,9 @@ static config_var_t option_vars_[] = {
   V(GeoIPv6File,                 FILENAME, "<default>"),
 #else
   V(GeoIPFile,                   FILENAME,
-    SHARE_DATADIR PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip"),
+    "/usr/share" PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip"),
   V(GeoIPv6File,                 FILENAME,
-    SHARE_DATADIR PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip6"),
+    "/usr/share" PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip6"),
 #endif
   OBSOLETE("Group"),
   V(GuardLifetime,               INTERVAL, "0 minutes"),
@@ -5649,7 +5649,6 @@ parse_transport_line(const or_options_t *options,
                      const char *line, int validate_only,
                      int server)
 {
-
   smartlist_t *items = NULL;
   int r;
   const char *transports = NULL;
@@ -5764,6 +5763,7 @@ parse_transport_line(const or_options_t *options,
       if (server) {
         pt_kickstart_server_proxy(transport_list, proxy_argv);
       } else {
+        log_info(LD_GENERAL, "Starting OBFS4 proxy...");
         pt_kickstart_client_proxy(transport_list, proxy_argv);
       }
     }
@@ -6667,8 +6667,6 @@ parse_port_config(smartlist_t *out,
       }
       tor_free(addrtmp);
     } else {
-      /* Try parsing integer port before address, because, who knows?
-         "9050" might be a valid address. */
       port = (int) tor_parse_long(addrport, 10, 0, 65535, &ok, NULL);
       if (ok) {
         int af = tor_addr_parse(&addr, defaultaddr);
@@ -7036,7 +7034,7 @@ parse_ports(or_options_t *options, int validate_only,
   if (parse_port_config(ports,
              options->SocksPort_lines, options->SocksListenAddress,
              "Socks", CONN_TYPE_AP_LISTENER,
-             "127.0.0.1", 9050,
+             "127.0.0.1", 9089,
              CL_PORT_WARN_NONLOCAL|CL_PORT_ALLOW_EXTRA_LISTENADDR|
              CL_PORT_TAKES_HOSTNAMES|gw_flag) < 0) {
     *msg = tor_strdup("Invalid SocksPort/SocksListenAddress configuration");

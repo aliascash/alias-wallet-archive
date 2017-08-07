@@ -9,6 +9,7 @@
 #include "strlcpy.h"
 #include "addrman.h"
 #include "ui_interface.h"
+#include <sys/stat.h>
 
 #ifdef WIN32
 #include <string.h>
@@ -1767,15 +1768,35 @@ static void run_tor() {
 
     std::string logDecl = "notice file " + GetDataDir().string() + "/tor/tor.log";
     char *argvLogDecl = (char*) logDecl.c_str();
+    std::string rc = GetDataDir().string() + "/tor/torrc";
+    char *rc_c = (char*) rc.c_str();
 
-    char* argv[] = {
+    struct stat sb;
+    if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
+      printf("Using OBFS4.\n");
+      char* argv[] = {
         "tor",
-        "--hush",
-        "--Log",
-        argvLogDecl
-    };
-
-    tor_main(4, argv);
+        "--Log", argvLogDecl,
+        "--ClientTransportPlugin", "obfs4 exec obfs4proxy",
+        "--UseBridges", "1",
+        "--Bridge", "obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0",
+        "--Bridge", "obfs4 138.68.21.138:9443 B5287C46B3011A27F2EE7002736EBD6542A9481C cert=52XzQbb3LRCSD6KzxPFJFru12tcQzU/1QVcpgmM4pAv9ONpWnxgr0z+IWG3YaA4vpjPpUQ iat-mode=0",
+        "--Bridge", "obfs4 91.219.239.174:56199 7398013C474F9F0AD9ADF3E2D61E184B3EB58D3F cert=I/jI9xgVNFO1oIarHeJLJDnwu7prtHdUdyDaOuxl4idP0DEqEkxhVMhxBwjaC/9vlgccQQ iat-mode=0",
+        "--ignore-missing-torrc",
+        "-f", rc_c,
+      };
+      tor_main(16, argv);
+    }
+    else {
+      printf("No OBFS4 found, not using it.\n");
+      char* argv[] = {
+        "tor",
+        "--Log", argvLogDecl,
+        "--ignore-missing-torrc",
+        "-f", rc_c,
+      };
+      tor_main(6, argv);
+    }
 }
 
 

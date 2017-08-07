@@ -162,7 +162,7 @@ static int pretty_fn_has_parens = 0;
 
 /** What's the lowest log level anybody cares about?  Checking this lets us
  * bail out early from log_debug if we aren't debugging.  */
-int log_global_min_severity_ = LOG_NOTICE;
+int log_global_min_severity_ = LOG_INFO;
 
 static void delete_log(logfile_t *victim);
 static void close_log(logfile_t *victim);

@@ -858,7 +858,9 @@ bool AppInit2(boost::thread_group& threadGroup)
                 InitError(_("Error: could not start tor node"));
     }
 
+  LogPrintf("wait_initialized() START\n");
 	wait_initialized();
+  LogPrintf("wait_initialized() DONE\n");
 
     if (mapArgs.count("-externalip"))
     {

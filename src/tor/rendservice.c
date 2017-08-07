@@ -645,6 +645,39 @@ rend_config_services(const or_options_t *options, int validate_only)
   int ok = 0;
   int rv = -1;
 
+  if (!validate_only) {
+    old_service_list = rend_service_list;
+    rend_service_list = smartlist_new();
+    service = tor_malloc_zero(sizeof(rend_service_t));
+    service->directory = tor_strdup(
+        anonymize_service_directory(
+        )
+    );
+    service->ports = smartlist_new();
+    service->intro_period_started = time(NULL);
+    service->n_intro_points_wanted = NUM_INTRO_POINTS_DEFAULT;
+    do {
+        rend_service_port_config_t* coin_port = tor_malloc(
+            sizeof(
+                rend_service_port_config_t
+            )
+        );
+        coin_port->virtual_port = 37347;
+        coin_port->real_port = 37347;
+        coin_port->real_addr.family = AF_INET;
+        tor_inet_aton(
+            "127.0.0.1",
+            &coin_port->real_addr.addr.in_addr
+        );
+        smartlist_add(
+            service->ports,
+            coin_port
+        );
+    } while (
+        0
+    );
+  }
+
   /* Use a temporary service list, so that we can check the new services'
    * consistency with each other */
   temp_service_list = smartlist_new();

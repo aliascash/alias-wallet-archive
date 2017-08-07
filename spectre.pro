@@ -7,31 +7,6 @@ CONFIG += no_include_pwd
 CONFIG += thread
 CONFIG += static
 
-#INCLUDEPATH += C:\MinGW\msys\1.0\local\include
-	
-    #LIBEVENT_INCLUDE_PATH=C:\MinGW\msys\1.0\local\include
-    #LIBEVENT_LIB_PATH=C:\deps\32\libevent-2.0.22\.libs
-    #LIBEVENT_LIB_PATH=C:\MinGW\msys\1.0\local\lib
-	
-    #BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
-    #BOOST_INCLUDE_PATH=C:\deps\32\boost_1_55_0
-    #BOOST_LIB_PATH=C:\deps\32\boost_1_55_0\stage\lib
-
-    #BDB_INCLUDE_PATH=C:\deps\32\db-4.8.30.NC\build_unix
-    #BDB_LIB_PATH=C:\deps\32\db-4.8.30.NC\build_unix
-	
-    #OPENSSL_INCLUDE_PATH=C:\deps\32\openssl-1.0.1j\include
-    #OPENSSL_LIB_PATH=C:\deps\32\openssl-1.0.1j
-
-#    MINIUPNPC_INCLUDE_PATH=C:\deps\32\miniupnpc
- #   MINIUPNPC_LIB_PATH=C:\deps\32\miniupnpc
-
-# Mobile devices
-android:ios{
-    CONFIG += mobility
-    MOBILITY =
-}
-
 greaterThan(QT_MAJOR_VERSION, 4) {
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0
 }
@@ -51,25 +26,7 @@ MOC_DIR = build
 UI_DIR = build
 RESOURCES = spectre.qrc
 
-android {
-    INCLUDEPATH += src/qt/android
-
-    QT += androidextras
-
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-
-    OTHER_FILES +=
-
-    HEADERS +=
-    SOURCES +=
-
-    OBJECTS_DIR = build-android
-    MOC_DIR = build-android
-    UI_DIR = build-android
-} else {
-
-    QT += widgets webkitwidgets
-}
+QT += widgets webkitwidgets
 
 build_macosx64 {
     QMAKE_TARGET_BUNDLE_PREFIX = co.spectrecoin
@@ -96,10 +53,6 @@ build_macosx64 {
 }
 build_win32 {
 
-    LIBEVENT_INCLUDE_PATH=C:\MinGW\msys\1.0\local\include
-    #LIBEVENT_LIB_PATH=C:\deps\32\libevent-2.0.22\.libs
-    LIBEVENT_LIB_PATH=C:\MinGW\msys\1.0\local\lib
-	
     BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
     BOOST_INCLUDE_PATH=C:\deps\32\boost_1_55_0
     BOOST_LIB_PATH=C:\deps\32\boost_1_55_0\stage\lib
@@ -137,33 +90,6 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
 win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--large-address-aware -Wl,--nxcompat -static
 win32:QMAKE_LFLAGS *= -static-libgcc -static-libstdc++
-
-# use: qmake "USE_UPNP=1" ( enabled by default; default)
-#  or: qmake "USE_UPNP=0" (disabled by default)
-#  or: qmake "USE_UPNP=-" (not supported)
-# miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
-contains(USE_UPNP, -) {
-    message(Building without UPNP support)
-} else {
-    message(Building with UPNP support)
-    count(USE_UPNP, 0) {
-        USE_UPNP=1
-    }
-    DEFINES += USE_UPNP=$$USE_UPNP MINIUPNP_STATICLIB STATICLIB
-    INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
-    LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
-    win32:LIBS += -liphlpapi
-}
-
-# use: qmake "USE_DBUS=1" or qmake "USE_DBUS=0"
-linux:count(USE_DBUS, 0) {
-    USE_DBUS=1
-}
-contains(USE_DBUS, 1) {
-    message(Building with DBUS (Freedesktop notifications) support)
-    DEFINES += USE_DBUS
-    QT += dbus
-}
 
 contains(SPECTRE_NEED_QT_PLUGINS, 1) {
     DEFINES += SPECTRE_NEED_QT_PLUGINS
@@ -402,7 +328,12 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/addressmap.c \
     src/tor/aes.c \
     src/tor/backtrace.c \
+    src/tor/blinding.c \
+    src/tor/bridges.c \
     src/tor/buffers.c \
+    src/tor/cell_common.c \
+    src/tor/cell_establish_intro.c \
+    src/tor/cell_introduce1.c \
     src/tor/channel.c \
     src/tor/channeltls.c \
     src/tor/circpathbias.c \
@@ -413,47 +344,107 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/circuitstats.c \
     src/tor/circuituse.c \
     src/tor/command.c \
-    src/tor/compat.c \
     src/tor/compat_libevent.c \
+    src/tor/compat_pthreads.c \
+    src/tor/compat_threads.c \
+    src/tor/compat_time.c \
     src/tor/config.c \
-    src/tor/config_codedigest.c \
     src/tor/confparse.c \
     src/tor/connection.c \
     src/tor/connection_edge.c \
     src/tor/connection_or.c \
     src/tor/container.c \
     src/tor/control.c \
-    src/tor/cpuworker.c \
     src/tor/crypto.c \
     src/tor/crypto_curve25519.c \
+    src/tor/crypto_ed25519.c \
     src/tor/crypto_format.c \
+    src/tor/crypto_pwbox.c \
+    src/tor/crypto_s2k.c \
+    src/tor/cpuworker.c \
+    src/tor/csiphash.c \
     src/tor/curve25519-donna.c \
     src/tor/di_ops.c \
+    src/tor/dircollate.c \
     src/tor/directory.c \
     src/tor/dirserv.c \
     src/tor/dirvote.c \
     src/tor/dns.c \
     src/tor/dnsserv.c \
+    src/tor/ed25519_cert.c \
+    src/tor/ed25519_tor.c \
     src/tor/entrynodes.c \
     src/tor/ext_orport.c \
+    src/tor/fe_copy.c \
+    src/tor/fe_cmov.c \
+    src/tor/fe_isnegative.c \
+    src/tor/fe_sq.c \
+    src/tor/fe_pow22523.c \
+    src/tor/fe_isnonzero.c \
+    src/tor/fe_neg.c \
+    src/tor/fe_frombytes.c \
+    src/tor/fe_invert.c \
+    src/tor/fe_sub.c \
+    src/tor/fe_add.c \
+    src/tor/fe_1.c \
+    src/tor/fe_mul.c \
+    src/tor/fe_tobytes.c \
+    src/tor/fe_0.c \
+    src/tor/fe_sq2.c \
     src/tor/fp_pair.c \
+    src/tor/ge_scalarmult_base.c \
+    src/tor/ge_p3_tobytes.c \
+    src/tor/ge_frombytes.c \
+    src/tor/ge_double_scalarmult.c \
+    src/tor/ge_tobytes.c \
+    src/tor/ge_p3_to_cached.c \
+    src/tor/ge_p3_to_p2.c \
+    src/tor/ge_p3_dbl.c \
+    src/tor/ge_p3_0.c \
+    src/tor/ge_p1p1_to_p2.c \
+    src/tor/ge_p1p1_to_p3.c \
+    src/tor/ge_add.c \
+    src/tor/ge_p2_0.c \
+    src/tor/ge_p2_dbl.c \
+    src/tor/ge_madd.c \
+    src/tor/ge_msub.c \
+    src/tor/ge_sub.c \
+    src/tor/ge_precomp_0.c \
     src/tor/geoip.c \
     src/tor/hibernate.c \
+    src/tor/hs_cache.c \
+    src/tor/hs_circuitmap.c \
+    src/tor/hs_common.c \
+    src/tor/hs_descriptor.c \
+    src/tor/hs_intropoint.c \
+    src/tor/hs_service.c \
+    src/tor/keyconv.c \
+    src/tor/keypair.c \
+    src/tor/keypin.c \
+    src/tor/keccak-tiny-unrolled.c \
+    src/tor/link_handshake.c \
     src/tor/log.c \
+    src/tor/tormain.c \
     src/tor/memarea.c \
-    src/tor/mempool.c \
     src/tor/microdesc.c \
     src/tor/networkstatus.c \
     src/tor/nodelist.c \
+    src/tor/ntmain.c \
     src/tor/onion.c \
     src/tor/onion_fast.c \
-    src/tor/onion_main.c \
     src/tor/onion_ntor.c \
     src/tor/onion_tap.c \
+    src/tor/open.c \
+    src/tor/parsecommon.c \
+    src/tor/periodic.c \
     src/tor/policies.c \
     src/tor/procmon.c \
+    src/tor/protover.c \
+    src/tor/pwbox.c \
     src/tor/reasons.c \
+    src/tor/readpassphrase.c \
     src/tor/relay.c \
+    src/tor/rendcache.c \
     src/tor/rendclient.c \
     src/tor/rendcommon.c \
     src/tor/rendmid.c \
@@ -461,23 +452,31 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/rephist.c \
     src/tor/replaycache.c \
     src/tor/router.c \
+    src/tor/routerkeys.c \
     src/tor/routerlist.c \
     src/tor/routerparse.c \
     src/tor/routerset.c \
     src/tor/sandbox.c \
+    src/tor/sc_reduce.c \
+    src/tor/sc_muladd.c \
+    src/tor/scheduler.c \
+    src/tor/shared_random.c \
+    src/tor/shared_random_state.c \
+    src/tor/sign.c \
     src/tor/statefile.c \
     src/tor/status.c \
-    src/tor/strlcat.c \
-    src/tor/strlcpy.c \
-    src/tor/tor_util.c \
+    src/tor/torcert.c \
+    src/tor/torcompat.c \
+    src/tor/tor_main.c \
     src/tor/torgzip.c \
     src/tor/tortls.c \
+    src/tor/torutil.c \
     src/tor/transports.c \
-    src/tor/util_codedigest.c \
-
-
-#### tor sources
-    
+    src/tor/trunnel.c \
+    src/tor/util_bug.c \
+    src/tor/util_format.c \
+    src/tor/util_process.c \
+    src/tor/workqueue.c \
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \
@@ -568,10 +567,10 @@ macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$LIBEVENT_INCLUDE_PATH
-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(LIBEVENT_LIB_PATH,,-L,)
+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH
+LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-LIBS += -levent -lz
+LIBS += -lz -levent
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
