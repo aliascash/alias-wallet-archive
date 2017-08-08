@@ -312,16 +312,15 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
 
         documentFrame->evaluateJavaScript("connectSignals();");
 
-        walletModel->getOptionsModel()->displayUnitChanged   (walletModel->getOptionsModel()->getDisplayUnit());
-        walletModel->getOptionsModel()->reserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-        walletModel->getOptionsModel()->rowsPerPageChanged   (walletModel->getOptionsModel()->getRowsPerPage());
+        walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+        walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+        walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
 
         // Keep up to date with client
         setNumConnections(clientModel->getNumConnections());
-        setNumBlocks     (clientModel->getNumBlocks(),
-                          clientModel->getNumBlocksOfPeers());
+        setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
         setEncryptionStatus(walletModel->getEncryptionStatus());
-        walletModel->encryptionStatusChanged(walletModel->getEncryptionStatus());
+        walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
 
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 

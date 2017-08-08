@@ -937,3 +937,9 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
 {
     return;
 }
+
+void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance) { emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
+void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
+void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
+void WalletModel::emitRequireUnlock() { emit requireUnlock(); }
+void WalletModel::emitError(const QString &title, const QString &message, bool modal) { emit error(title, message, modal); }

@@ -6,9 +6,11 @@
 #define BITCOIN_NET_H
 
 #include <deque>
+#ifndef Q_MOC_RUN
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
 #include <boost/signals2/signal.hpp>
+#endif
 #include <openssl/rand.h>
 
 #ifndef WIN32

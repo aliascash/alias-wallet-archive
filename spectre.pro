@@ -26,7 +26,7 @@ MOC_DIR = build
 UI_DIR = build
 RESOURCES = spectre.qrc
 
-QT += widgets webkitwidgets
+QT += webkit network
 
 build_macosx64 {
     QMAKE_TARGET_BUNDLE_PREFIX = co.spectrecoin
@@ -88,7 +88,8 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--large-address-aware -Wl,--nxcompat -static
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat -static
+#win32:QMAKE_LFLAGS *= -Wl,--large-address-aware  # for 32-bit only
 win32:QMAKE_LFLAGS *= -static-libgcc -static-libstdc++
 
 contains(SPECTRE_NEED_QT_PLUGINS, 1) {
@@ -107,7 +108,7 @@ win32 {
         QMAKE_RANLIB = $$replace(QMAKE_STRIP, strip, ranlib)
     }
     LIBS += -lshlwapi
-    #genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
+    genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
 } else:macx {
     # we use QMAKE_CXXFLAGS_RELEASE even without RELEASE=1 because we use RELEASE to indicate linking preferences not -O preferences
     genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX AR=$${QMAKE_HOST}-ar TARGET_OS=Darwin $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
@@ -345,7 +346,6 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/circuituse.c \
     src/tor/command.c \
     src/tor/compat_libevent.c \
-    src/tor/compat_pthreads.c \
     src/tor/compat_threads.c \
     src/tor/compat_time.c \
     src/tor/config.c \
@@ -442,7 +442,6 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/protover.c \
     src/tor/pwbox.c \
     src/tor/reasons.c \
-    src/tor/readpassphrase.c \
     src/tor/relay.c \
     src/tor/rendcache.c \
     src/tor/rendclient.c \
@@ -477,6 +476,13 @@ SOURCES += src/tor/anonymize.cpp \
     src/tor/util_format.c \
     src/tor/util_process.c \
     src/tor/workqueue.c \
+
+win32 {
+    SOURCES += src/tor/compat_winthreads.c
+} else {
+    SOURCES += src/tor/compat_pthreads.c \
+        src/tor/readpassphrase.c
+}
 
 FORMS += \
     src/qt/forms/coincontroldialog.ui \
@@ -540,7 +546,7 @@ isEmpty(BOOST_INCLUDE_PATH) {
     macx:BOOST_INCLUDE_PATH = /opt/local/include
 }
 
-windows:DEFINES += WIN32
+windows:DEFINES += WIN32 _WIN32
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {

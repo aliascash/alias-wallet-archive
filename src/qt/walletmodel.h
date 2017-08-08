@@ -151,6 +151,12 @@ public:
     void unlockCoin(COutPoint& output);
     void listLockedCoins(std::vector<COutPoint>& vOutpts);
     
+    void emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void emitNumTransactionsChanged(int count);
+    void emitEncryptionStatusChanged(int status);
+    void emitRequireUnlock();
+    void emitError(const QString &title, const QString &message, bool modal);
+
 private:
     CWallet *wallet;
 
@@ -177,7 +183,6 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
     void checkBalanceChanged();
-
 
 public slots:
     /* Wallet status might have changed */

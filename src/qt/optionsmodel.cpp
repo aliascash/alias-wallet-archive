@@ -394,3 +394,9 @@ bool OptionsModel::getAutoRingSize() { return fAutoRingSize; }
 bool OptionsModel::getAutoRedeemSpectre() { return fAutoRedeemSpectre; }
 int OptionsModel::getMinRingSize() { return nMinRingSize; }
 int OptionsModel::getMaxRingSize() { return nMaxRingSize; }
+
+void OptionsModel::emitDisplayUnitChanged(int unit) { emit displayUnitChanged(unit); }
+void OptionsModel::emitTransactionFeeChanged(qint64 fee) { emit transactionFeeChanged(fee); }
+void OptionsModel::emitReserveBalanceChanged(qint64 bal) { emit reserveBalanceChanged(bal); }
+void OptionsModel::emitRowsPerPageChanged(int rows) { emit rowsPerPageChanged(rows); }
+void OptionsModel::emitVisibleTransactionsChanged(QStringList txns) { emit visibleTransactionsChanged(txns); }

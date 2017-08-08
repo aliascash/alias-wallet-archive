@@ -21,8 +21,10 @@
 #include <QThread>
 #include <QSettings>
 
+#ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#endif
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT

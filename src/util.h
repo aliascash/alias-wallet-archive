@@ -20,11 +20,13 @@
 #include <vector>
 #include <string>
 
+#ifndef Q_MOC_RUN
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#endif
 
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>

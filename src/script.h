@@ -11,8 +11,10 @@
 
 #include <stdint.h>
 
+#ifndef Q_MOC_RUN
 #include <boost/foreach.hpp>
 #include <boost/variant.hpp>
+#endif
 
 #include "stealth.h"
 #include "extkey.h"

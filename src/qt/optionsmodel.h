@@ -78,6 +78,12 @@ public:
     QStringList getVisibleTransactions();
     QString getLanguage() { return language; }
 
+    void emitDisplayUnitChanged(int unit);
+    void emitTransactionFeeChanged(qint64);
+    void emitReserveBalanceChanged(qint64);
+    void emitRowsPerPageChanged(int);
+    void emitVisibleTransactionsChanged(QStringList);
+
 private:
     int nDisplayUnit;
     int nRowsPerPage;

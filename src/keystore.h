@@ -7,7 +7,10 @@
 
 #include "key.h"
 #include "sync.h"
+
+#ifndef Q_MOC_RUN
 #include <boost/signals2/signal.hpp>
+#endif
 
 class CScript;
 class CScriptID;

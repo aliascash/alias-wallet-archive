@@ -3,7 +3,9 @@
 #include "spectregui.h"
 #include "guiutil.h"
 
+#ifndef Q_MOC_RUN
 #include <boost/algorithm/string.hpp>
+#endif
 
 #include "editaddressdialog.h"
 
@@ -43,6 +45,7 @@
 #include <QVariantList>
 #include <QVariantMap>
 #include <QDir>
+#include <QtGui/qtextdocument.h>
 #include <list>
 #define ROWS_TO_REFRESH 200
 
@@ -272,13 +275,13 @@ public:
         //QString message = "{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},";
         return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
                 .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-                .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
-                .arg(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t()).toHtmlEscaped())
+                .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())))
+                .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())))
                 .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
                 .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
                 .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
                 .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
-                .arg(mtm->index(row, MessageModel::Message)         .data().toString().toHtmlEscaped().replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
+                .arg(Qt::escape(mtm->index(row, MessageModel::Message).data().toString()).replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
                 .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
                 .arg(mtm->index(row, MessageModel::Key)             .data().toString())
                 .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
@@ -868,17 +871,17 @@ void SpectreBridge::appendMessages(QString messages, bool reset)
 
 void SpectreBridge::appendMessage(int row)
 {
-    emitMessage(window->messageModel->index(row, MessageModel::Key)             .data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::Type)            .data().toString().toHtmlEscaped(),
+    emitMessage(Qt::escape(window->messageModel->index(row, MessageModel::Key).data().toString()),
+                Qt::escape(window->messageModel->index(row, MessageModel::Type).data().toString()),
                 window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
                 window->messageModel->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t(),
-                window->messageModel->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::Label)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::LabelTo)           .data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::ToAddress)       .data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::FromAddress)     .data().toString().toHtmlEscaped(),
+                Qt::escape(window->messageModel->index(row, MessageModel::Label).data(MessageModel::LabelRole).toString()),
+                Qt::escape(window->messageModel->index(row, MessageModel::Label).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/")),
+                Qt::escape(window->messageModel->index(row, MessageModel::LabelTo).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/")),
+                Qt::escape(window->messageModel->index(row, MessageModel::ToAddress).data().toString()),
+                Qt::escape(window->messageModel->index(row, MessageModel::FromAddress).data().toString()),
                 window->messageModel->index(row, MessageModel::Read)            .data().toBool(),
-                window->messageModel->index(row, MessageModel::Message)         .data().toString().toHtmlEscaped());
+                Qt::escape(window->messageModel->index(row, MessageModel::Message).data().toString()));
 }
 
 void SpectreBridge::populateMessageTable()
