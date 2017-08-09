@@ -1771,13 +1771,21 @@ static void run_tor() {
     std::string rc = GetDataDir().string() + "/tor/torrc";
     char *rc_c = (char*) rc.c_str();
 
+    char * clientTransportPlugin = NULL;
     struct stat sb;
     if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
+      clientTransportPlugin = "obfs4 exec obfs4proxy";
+    }
+    else if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
+      clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
+    }
+
+    if (clientTransportPlugin != NULL) {
       printf("Using OBFS4.\n");
       char* argv[] = {
         "tor",
         "--Log", argvLogDecl,
-        "--ClientTransportPlugin", "obfs4 exec obfs4proxy",
+        "--ClientTransportPlugin", clientTransportPlugin,
         "--UseBridges", "1",
         "--Bridge", "obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0",
         "--Bridge", "obfs4 138.68.21.138:9443 B5287C46B3011A27F2EE7002736EBD6542A9481C cert=52XzQbb3LRCSD6KzxPFJFru12tcQzU/1QVcpgmM4pAv9ONpWnxgr0z+IWG3YaA4vpjPpUQ iat-mode=0",

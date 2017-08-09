@@ -681,6 +681,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!bitdb.Open(GetDataDir()))
     {
+        LogPrintf("Failed to open data directory %s\n", strDataDir);
         std::string msg = strprintf(_("Error initializing database environment %s!"
             " To recover, BACKUP THAT DIRECTORY, then remove"
             " everything from it except for wallet.dat."), strDataDir.c_str());

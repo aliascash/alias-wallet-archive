@@ -70,6 +70,7 @@ bool CDBEnv::Open(boost::filesystem::path pathEnv_)
     boost::filesystem::path pathLogDir = pathDataDir / "database";
     boost::filesystem::create_directory(pathLogDir);
     boost::filesystem::path pathErrorFile = pathDataDir / "db.log";
+    LogPrintf("db version is %s\n", dbenv.version(NULL, NULL, NULL));
     LogPrintf("dbenv.open LogDir=%s ErrorFile=%s\n", pathLogDir.string().c_str(), pathErrorFile.string().c_str());
 
     unsigned int nEnvFlags = 0;

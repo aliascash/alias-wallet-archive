@@ -319,7 +319,7 @@
 /* #undef HAVE_RLIM_T */
 
 /* Define to 1 if you have the `RtlSecureZeroMemory' function. */
-/* #undef HAVE_RTLSECUREZEROMEMORY */
+#define HAVE_RTLSECUREZEROMEMORY 1
 
 /* Define to 1 if the system has the type `sa_family_t'. */
 /* #undef HAVE_SA_FAMILY_T */
@@ -605,7 +605,7 @@
 #define SIZEOF_INT8_T 1
 
 /* The size of `intptr_t', as computed by sizeof. */
-#define SIZEOF_INTPTR_T 4
+#define SIZEOF_INTPTR_T 8
 
 /* The size of `long', as computed by sizeof. */
 #define SIZEOF_LONG 4
@@ -614,19 +614,19 @@
 #define SIZEOF_LONG_LONG 8
 
 /* The size of `pid_t', as computed by sizeof. */
-#define SIZEOF_PID_T 4
+#define SIZEOF_PID_T 8
 
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 4
+#define SIZEOF_SIZE_T 8
 
 /* The size of `socklen_t', as computed by sizeof. */
 #define SIZEOF_SOCKLEN_T 0
 
 /* The size of `time_t', as computed by sizeof. */
-#define SIZEOF_TIME_T 4
+#define SIZEOF_TIME_T 8
 
 /* The size of `uint16_t', as computed by sizeof. */
 #define SIZEOF_UINT16_T 2
@@ -641,10 +641,10 @@
 #define SIZEOF_UINT8_T 1
 
 /* The size of `uintptr_t', as computed by sizeof. */
-#define SIZEOF_UINTPTR_T 4
+#define SIZEOF_UINTPTR_T 8
 
 /* The size of `void *', as computed by sizeof. */
-#define SIZEOF_VOID_P 4
+#define SIZEOF_VOID_P 8
 
 /* The size of `__int64', as computed by sizeof. */
 #define SIZEOF___INT64 8
