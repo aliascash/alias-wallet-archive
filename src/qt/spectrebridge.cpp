@@ -312,6 +312,8 @@ SpectreBridge::SpectreBridge(SpectreGUI *window, QObject *parent) :
     async           (new QThread())
 {
     async->start();
+    connect(transactionModel->getModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateTransactions(QModelIndex,QModelIndex)));
+    connect(transactionModel->getModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertTransactions(QModelIndex,int,int)));
 }
 
 SpectreBridge::~SpectreBridge()
@@ -334,21 +336,28 @@ void SpectreBridge::setClientModel()
     populateOptions();
 }
 
-// This is just a hook, we won't really be setting the model...
-void SpectreBridge::setWalletModel()
-{
-    populateTransactionTable();
-    populateAddressTable();
-
+void SpectreBridge::setWalletModel() {
     connect(window->clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
 }
 
+void SpectreBridge::jsReady() {
+    window->walletModel->getOptionsModel()->emitDisplayUnitChanged(window->walletModel->getOptionsModel()->getDisplayUnit());
+    window->walletModel->getOptionsModel()->emitReserveBalanceChanged(window->walletModel->getOptionsModel()->getReserveBalance());
+    window->walletModel->getOptionsModel()->emitRowsPerPageChanged(window->walletModel->getOptionsModel()->getRowsPerPage());
+    window->setNumConnections(window->clientModel->getNumConnections());
+    window->setNumBlocks(window->clientModel->getNumBlocks(), window->clientModel->getNumBlocksOfPeers());
+    window->setEncryptionStatus(window->walletModel->getEncryptionStatus());
+    window->walletModel->emitEncryptionStatusChanged(window->walletModel->getEncryptionStatus());
+    populateTransactionTable();
+    populateAddressTable();
+}
 
 // This is just a hook, we won't really be setting the model...
 void SpectreBridge::setMessageModel()
 {
     populateMessageTable();
-    connectSignals();
+    connect(thMessage->mtm, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(insertMessages(QModelIndex,int,int)));
+    connect(thMessage->mtm, SIGNAL(modelReset()),                      SLOT(populateMessageTable()));
 }
 
 void SpectreBridge::copy(QString text)
@@ -772,7 +781,8 @@ void SpectreBridge::populateAddressTable()
     if(addressModel->thread() == thread())
     {
         addressModel->atm = window->walletModel->getAddressTableModel();
-
+        connect(addressModel->atm,            SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateAddresses(QModelIndex,QModelIndex)));
+        connect(addressModel->atm,            SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertAddresses(QModelIndex,int,int)));
         connect(addressModel, SIGNAL(emitAddresses(QVariantList)), SIGNAL(emitAddresses(QVariantList)), Qt::QueuedConnection);
         addressModel->moveToThread(async);
     }
@@ -799,12 +809,9 @@ void SpectreBridge::insertAddresses(const QModelIndex & parent, int start, int e
 QString SpectreBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
 {
     // Generate a new address to associate with given label
-
-
     // NOTE: unlock happens in addRow
-
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
-
+    addressModel->populateAddressTable();
     return rv;
 }
 
@@ -1129,19 +1136,6 @@ QVariantList SpectreBridge::inviteGroupChat(QString qsaddress, QVariantList invi
 
     return invites;
 }
-
-void SpectreBridge::connectSignals()
-{
-    connect(transactionModel->getModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateTransactions(QModelIndex,QModelIndex)));
-    connect(transactionModel->getModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertTransactions(QModelIndex,int,int)));
-
-    connect(addressModel->atm,            SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateAddresses(QModelIndex,QModelIndex)));
-    connect(addressModel->atm,            SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertAddresses(QModelIndex,int,int)));
-
-    connect(thMessage->mtm, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(insertMessages(QModelIndex,int,int)));
-    connect(thMessage->mtm, SIGNAL(modelReset()),                      SLOT(populateMessageTable()));
-}
-
 
 QString SpectreBridge::translateHtmlString(QString string)
 {

@@ -28,7 +28,11 @@ public:
 
     void setClientModel();
     void setWalletModel();
+    void setTransactionModel();
+    void setAddressModel();
     void setMessageModel();
+
+    Q_INVOKABLE void jsReady();
 
     Q_INVOKABLE void copy(QString text);
     Q_INVOKABLE void paste();

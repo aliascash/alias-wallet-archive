@@ -162,7 +162,11 @@ void SpectreGUI::pageLoaded(bool ok)
 void SpectreGUI::addJavascriptObjects()
 {
     documentFrame->addToJavaScriptWindowObject("bridge", bridge);
-
+    if (walletModel != NULL) {
+        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
+        if (walletModel->getOptionsModel() != NULL)
+            documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
+    }
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -309,18 +313,6 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
 
         documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
         documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
-
-        documentFrame->evaluateJavaScript("connectSignals();");
-
-        walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
-        walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-        walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-
-        // Keep up to date with client
-        setNumConnections(clientModel->getNumConnections());
-        setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
-        setEncryptionStatus(walletModel->getEncryptionStatus());
-        walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
 
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
