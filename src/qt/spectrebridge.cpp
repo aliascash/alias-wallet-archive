@@ -536,7 +536,7 @@ bool SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             if (ringSizes == 1)
             {
                 QMessageBox::StandardButton retval = QMessageBox::question(window,
-                    tr("Confirm send coins"), tr("Are you sure you want to send?\nRing size of one is not anonymous, and harms the network.").arg(formatted.join(tr(" and "))),
+                    tr("Confirm send coins"), tr("Are you sure you want to send?\nRing size of one is not anonymous.").arg(formatted.join(tr(" and "))),
                     QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
                 if (retval != QMessageBox::Yes)
                     return false;
