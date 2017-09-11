@@ -1,33 +1,72 @@
 <!DOCTYPE html>
-<meta http-equiv=content-type content="text/html;charset=UTF-8">
-<meta charset=utf-8>
-<title>Spectre GUIv1 alpha</title>
-<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<script>
-    function preventDefault(e) {
-        e = e || event, e.preventDefault()
-    }
-    window.addEventListener("dragover", preventDefault, !1), window.addEventListener("drop", preventDefault, !1)
-</script>
-<link href=qrc:///assets/plugins/pace/pace-theme-flash.css rel=stylesheet>
-<link href=qrc:///assets/plugins/boostrapv3/css/bootstrap.min.css rel=stylesheet>
-<link href=qrc:///assets/plugins/jquery-scrollbar/jquery.scrollbar.css rel=stylesheet media=screen>
-<link href=qrc:///assets/css/font-awesome.min.css rel=stylesheet>
-<link href=qrc:///assets/css/font-awesome-buttons.min.css rel=stylesheet>
-<link href=qrc:///assets/plugins/contextMenu/contextMenu.css rel=stylesheet>
-<link href=qrc:///assets/css/normalize.css rel=stylesheet>
-<link href=qrc:///assets/css/spectre.min.css rel=stylesheet>
-<link href=qrc:///assets/css/framework.min.css class=main-stylesheet rel=stylesheet>
-<link href=qrc:///assets/css/framework-icons.min.css rel=stylesheet>
-<link rel=stylesheet href=qrc:///assets/plugins/emojione/assets/css/emojione.min.css media=all>
-
-<body class="fixed-header menu-pin">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Spectre</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="qrc:///assets/plugins/pace/pace-theme-flash.css" rel="stylesheet">
+    <link href="qrc:///assets/plugins/boostrapv3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="qrc:///assets/plugins/jquery-scrollbar/jquery.scrollbar.css" rel="stylesheet">
+    <link href="qrc:///assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="qrc:///assets/css/font-awesome-buttons.min.css" rel="stylesheet">
+    <link href="qrc:///assets/plugins/contextMenu/contextMenu.css" rel="stylesheet">
+    <link href="qrc:///assets/css/normalize.css" rel="stylesheet">
+    <link href="qrc:///assets/css/spectre.min.css" rel="stylesheet">
+    <link href="qrc:///assets/css/framework.min.css" class="main-stylesheet" rel="stylesheet">
+    <link href="qrc:///assets/css/framework-icons.min.css" rel="stylesheet">
+    <link href="qrc:///assets/plugins/emojione/assets/css/emojione.min.css" rel="stylesheet">
+    <script src=qrc:///assets/plugins/jquery/jquery-1.11.1.min.js></script>
+    <script src=qrc:///assets/plugins/jquery-ui/jquery-ui.min.js></script>
+    <script src=qrc:///assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js></script>
+    <script src=qrc:///assets/plugins/jquery-transit/jquery.transit.min.js></script>
+    <script src=qrc:///assets/plugins/pace/pace.min.js></script>
+    <script src=qrc:///assets/plugins/modernizr.custom.js></script>
+    <script src=qrc:///assets/plugins/boostrapv3/js/bootstrap.min.js></script>
+    <script src=qrc:///assets/plugins/classie/classie.js></script>
+    <script src=qrc:///assets/plugins/footable/footable.js></script>
+    <script src=qrc:///assets/plugins/footable/footable.sort.js></script>
+    <script src=qrc:///assets/plugins/footable/footable.filter.js></script>
+    <script src=qrc:///assets/plugins/footable/footable.paginate.js></script>
+    <script src=qrc:///assets/plugins/contextMenu/contextMenu.min.js></script>
+    <script src=qrc:///assets/plugins/iscroll/iscroll.js></script>
+    <script src=qrc:///assets/plugins/qrcode/qrcode.min.js></script>
+    <script src=qrc:///assets/plugins/markdown/markdown.min.js></script>
+    <script src=qrc:///assets/plugins/framework/framework.min.js></script>
+    <script src=qrc:///assets/plugins/pnglib/pnglib.js></script>
+    <script src=qrc:///assets/plugins/identicon/identicon.js></script>
+    <script src=qrc:///assets/plugins/shajs/shajs.js></script>
+    <script src=qrc:///assets/js/tooltip.min.js></script>
+    <script src=qrc:///assets/js/navigation.min.js></script>
+    <script src=qrc:///assets/js/qrcode.min.js></script>
+    <script src=qrc:///assets/js/pages/send.min.js></script>
+    <script src=qrc:///assets/js/spectre.min.js></script>
+    <script src=qrc:///assets/plugins/emojione/emojione.js></script>
+    <script type="text/javascript">
+      function preventDefault(e) {
+        e = e || event;
+        e.preventDefault();
+      }
+      window.addEventListener("dragover", preventDefault, !1);
+      window.addEventListener("drop", preventDefault, !1);
+      $(function() {
+        $(window).resize(function() {
+          $(".contact-discussion").height($(window).height() - 276);
+          $("#contact-list").height($(window).height() - 80);
+          $("#contact-group-list").height($(window).height() - 80);
+          $("#contact-book-list").height($(window).height() - 60);
+        });
+        $(window).trigger("resize");
+      });
+    </script>
+  </head>
+  <body class="fixed-header menu-pin">
     <div class=page-sidebar data-framework=sidebar>
-        <div id=appMenu class="sidebar-overlay-slide from-top"></div>
-        <div class=sidebar-header><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60>
-            <div class=sidebar-header-controls><button data-toggle-pin=sidebar class="btn btn-link visible-lg-inline" type=button><i class="fa fs-12"></i></button></div>
-            <div id=sidebar-header-collapsed class=sidebar-header-collapsed><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60 style=min-height:100%;min-width:100%></div>
-        </div>
+      <div id=appMenu class="sidebar-overlay-slide from-top"></div>
+      <div class=sidebar-header><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60>
+        <div class=sidebar-header-controls><button data-toggle-pin=sidebar class="btn btn-link visible-lg-inline" type=button><i class="fa fs-12"></i></button></div>
+        <div id=sidebar-header-collapsed class=sidebar-header-collapsed><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60 style=min-height:100%;min-width:100%></div>
+      </div>
         <div class=sidebar-menu>
             <ul class=menu-items id=navitems>
                 <li class=m-t-30><a href=#overview><span class="title translate">Overview</span> <span class=icon-thumbnail><i class="fa fa-circle-o"></i></span></a>
@@ -37,7 +76,6 @@
                                 <li><a href=#receive class=translate>Receive <span class=icon-thumbnail><i class="fa fa-arrow-left"></i></span></a>
                                     <li><a href=#transactions class=translate>Transactions <span class=icon-thumbnail><i class="fa fa-exchange"></i></span></a>
                                         <li><a href=#addressbook class=translate>Address Book <span class=icon-thumbnail><i class="fa fa-bars"></i></span></a></ul>
-                        <!-- <li><a href=#market><span class=title class=translate>Market</span> <span class=icon-thumbnail><i class="fa fa-shopping-cart"></i></span></a> -->
                         <li><a href=#messages id=chat-menu-link onclick=scrollMessages()><span class="title translate">Chat</span> <span class=icon-thumbnail><i class="fa fa-comment"></i> </span><span class=details><span class=user-notifications><span id=message-count>0</span> </span><span class=translate>Notifications</span></span></a>
                             <li><a href=#options><span class="title translate">Options</span> <span class=icon-thumbnail><i class="fa fa-wrench"></i></span></a>
                                 <li><a href=#><span class="title translate">Wallet Management</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa fa-key"></i></span></a>
@@ -112,7 +150,7 @@
                             <div class="modal-content p-b-25">
                                 <div class="modal-header clearfix text-left"><button type=button class=close data-dismiss=modal aria-hidden=true><i class="pg-close fs-20"></i></button>
                                     <h5 class="p-l-10 translate" style="border-bottom:1px solid #F0F1F3">QR code</h5>
-                                    <div id=qrcode></div>
+                                    <div id="qrcode"></div>
                                     <div class=form-group>
                                         <div class=col-sm-12>
                                             <div class=row>
@@ -535,30 +573,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </article>
-                    <article id=market class=bg-white style=background-color:#fff>
-                        <div class=bg-white style=position:fixed;top:0;bottom:0;left:0;right:0></div>
-                        <div class=page-content-wrapper>
-                            <nav class="navbar navbar-default nav-sub-menu p-t-10 p-r-35 p-l-35" style=min-height:75px;margin-bottom:0!important role=navigation>
-                                <div class=pull-left>
-                                    <h4 class="translate uppercase" style=font-weight:bolder>Market</h4>
-                                </div>
-                                <div class=pull-right></div>
-                                <div class=container-fluid>
-                                    <div class=navbar-header></div>
-                                </div>
-                            </nav>
-                            <div class=row>
-                                <div class="col-sm-12 bg-white" style=height:100px%;min-height:100%>
-                                    <div class="col-sm-6 col-sm-offset-3 bg-white p-t-30" style=text-align:center;padding-top:100px><img src=qrc:///assets/img/shoppingcart.png>
-                                        <h1>SPECTRE MARKETPLACE</h1>
-                                        <p>under development</div>
-                                    <div class="col-sm-6 col-sm-offset-3 bg-white" style=text-align:center;padding-top:100px>
-                                        <h5>GET IN TOUCH AND CONTRIBUTE</h5>
-                                        <p style=opacity:6>Join us on <a href=https://spectreproject.slack.com target=_blank>Slack</a> (get <a href=https://slack.spectreproject.io target=_blank>invite here</a>)</div>
-                                    <!--<div class="col-sm-6 bg-white m-t-130" style=padding-top:100px><h5>DONATE AND SUPPORT DEVELOPMENT</h5><p style=opacity:6><a href="javascript:sendPage.addRecipientDetail('SpecDevWEbq3CZgZc8UNbST1TaYLA5vLZTS', 'XSPEC Dev Fund', 'keep up the work!', 5)">SpecDevWEbq3CZgZc8UNbST1TaYLA5vLZTS</a><p style=opacity:6><a href="bitcoin:1GiosBkSpN8RS9pm1kgZU8AZUBEnLKYFem&label=XSPEC%20Dev%20Fund">1GiosBkSpN8RS9pm1kgZU8AZUBEnLKYFem</a></div>--></div>
                             </div>
                         </div>
                     </article>
@@ -1101,10 +1115,10 @@
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMinRingSize>Minimum Ring size:</label>
                                                                 <div class=col-sm-9>
-                                                                    <div class=option><input id=optMinRingSize class=form-control-options-page min=3 placeholder=3 type=number></div>
+                                                                    <div class=option><input id=optMinRingSize class=form-control-options-page min=1 placeholder=1 type=number></div>
                                                                 </div>
                                                             </div>
-                                                            <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMaxRingSize title="Minimum time in seconds between successful stakes">Maximum Ring size:</label>
+                                                            <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMaxRingSize>Maximum Ring size:</label>
                                                                 <div class=col-sm-9>
                                                                     <div class=option><input id=optMaxRingSize class=form-control-options-page max=200 placeholder=100 step=1 type=number></div>
                                                                 </div>
@@ -1473,34 +1487,5 @@
             </div>
         </div>
     </div>
-    <script src=qrc:///assets/plugins/pace/pace.min.js></script>
-    <script src=qrc:///assets/plugins/jquery/jquery-1.11.1.min.js></script>
-    <script src=qrc:///assets/plugins/modernizr.custom.js></script>
-    <script src=qrc:///assets/plugins/jquery-ui/jquery-ui.min.js></script>
-    <script src=qrc:///assets/plugins/boostrapv3/js/bootstrap.min.js></script>
-    <script src=qrc:///assets/plugins/jquery-scrollbar/jquery.scrollbar.min.js></script>
-    <script src=qrc:///assets/plugins/classie/classie.js></script>
-    <script src=qrc:///assets/plugins/footable/footable.js></script>
-    <script src=qrc:///assets/plugins/footable/footable.sort.js></script>
-    <script src=qrc:///assets/plugins/footable/footable.filter.js></script>
-    <script src=qrc:///assets/plugins/footable/footable.paginate.js></script>
-    <script src=qrc:///assets/plugins/contextMenu/contextMenu.min.js></script>
-    <script src=qrc:///assets/plugins/iscroll/iscroll.js></script>
-    <script src=qrc:///assets/plugins/jquery-transit/jquery.transit.min.js></script>
-    <script src=qrc:///assets/plugins/qrcode/qrcode.min.js></script>
-    <script src=qrc:///assets/plugins/markdown/markdown.min.js></script>
-    <script src=qrc:///assets/plugins/framework/framework.min.js></script>
-    <script src=qrc:///assets/js/tooltip.min.js></script>
-    <script src=qrc:///assets/js/navigation.min.js></script>
-    <script src=qrc:///assets/js/qrcode.min.js></script>
-    <script src=qrc:///assets/plugins/pnglib/pnglib.js></script>
-    <script src=qrc:///assets/plugins/identicon/identicon.js></script>
-    <script src=qrc:///assets/plugins/shajs/shajs.js></script>
-    <script src=qrc:///assets/js/pages/send.min.js></script>
-    <script src=qrc:///assets/js/spectre.min.js></script>
-    <script src=qrc:///assets/plugins/emojione/emojione.js></script>
-    <script>
-        $(window).resize(function() {
-            $(".contact-discussion").height($(window).height() - 276), $("#contact-list").height($(window).height() - 80), $("#contact-group-list").height($(window).height() - 80), $("#contact-book-list").height($(window).height() - 60)
-        }), $(window).trigger("resize")
-    </script>
+  </body>
+</html>
