@@ -516,9 +516,4 @@ windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
-#!windows:!macx:!android:!ios {
-#    DEFINES += LINUX
-#    LIBS += -lrt -ldl
-#}
-
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
