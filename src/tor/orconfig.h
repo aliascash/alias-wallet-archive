@@ -10,7 +10,11 @@
 #elif defined(__darwin__) || defined(__APPLE__)
 #include "orconfig_apple.h"
 #else
-#include "orconfig_linux.h"
+#if UINTPTR_MAX == 0xffffffff
+#include "orconfig_linux32.h"
+#else
+#include "orconfig_linux64.h"
+#endif
 #endif
 
 #endif  // GENERIC_ORCONFIG_H_
