@@ -1,0 +1,8 @@
+[submodule "tor"]
+	path = tor
+	url = https://git.torproject.org/tor.git
+	branch = c33db290a9d8d0f921ef8ce0f49803748b5e47e0
+[submodule "leveldb"]
+	path = leveldb
+  url = https://github.com/google/leveldb
+  branch = a53934a3ae1244679f812d998a4f16f2c7f309a6

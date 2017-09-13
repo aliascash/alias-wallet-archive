@@ -1,0 +1,36 @@
+AC_INIT([spectrecoind], [1.3.3])
+AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_AUX_DIR([.])
+AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects -Wall -Werror])
+AM_PROG_AS
+AC_PROG_CC
+AC_PROG_CXX
+AC_CONFIG_FILES([Makefile src/Makefile])
+ac_configure_args="$ac_configure_args --disable-unittests --disable-system-torrc --disable-systemd --disable-lzma"
+AC_CONFIG_SUBDIRS([tor])
+AC_CHECK_LIB([crypto], [BN_init], ,
+             [AC_MSG_ERROR([OpenSSL 1.0 not found.])])
+AC_CHECK_LIB([ssl], [main])
+AC_CHECK_LIB([event], [main], ,
+             [AC_MSG_ERROR([libevent not found.])])
+AC_CHECK_LIB([seccomp], [main], ,
+             [AC_MSG_ERROR([libseccomp not found.])])
+AC_CHECK_LIB([cap], [main], ,
+             [AC_MSG_ERROR([libcap not found.])])
+AC_CHECK_LIB([z], [main], ,
+             [AC_MSG_ERROR([zlib not found.])])
+AC_CHECK_LIB([pthread], [pthread_self], ,
+             [AC_MSG_ERROR([libpthread not found.])])
+AC_LANG_CPLUSPLUS
+AC_CHECK_LIB([snappy], [main])
+AC_CHECK_LIB([boost_system], [main], ,
+             [AC_MSG_ERROR([libboost_system not found.])])
+AC_CHECK_LIB([boost_filesystem], [main], ,
+             [AC_MSG_ERROR([libboost_filesystem not found.])])
+AC_CHECK_LIB([boost_program_options], [main], ,
+             [AC_MSG_ERROR([libboost_program_options not found.])])
+AC_CHECK_LIB([boost_thread], [main], ,
+             [AC_MSG_ERROR([libboost_thread not found.])])
+AC_CHECK_LIB([db_cxx-4.8], [main], ,
+             [AC_MSG_ERROR([libdb_cxx-4.8 not found.])])
+AC_OUTPUT

@@ -12,7 +12,7 @@
 #include "sync.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "tor/anonymize.h" //tor implementation
+#include "anonymize.h"
 #include "smessage.h"
 #include "ringsig.h"
 #include "miner.h"
