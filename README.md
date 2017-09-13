@@ -21,8 +21,6 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 To build the wallet, run the following commands:
 
     $ git submodule update --init  # to check out the Tor and LevelDB dependencies
-    $ autoconf
-    $ automake
     $ ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     $ make -j2
 

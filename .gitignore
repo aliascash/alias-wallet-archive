@@ -16,7 +16,6 @@ src/build.h
 .spectrecoin
 #compilation and Qt preprocessor part
 *.qm
-Makefile
 spectre
 #resources cpp
 qrc_*.cpp
@@ -29,5 +28,3 @@ ui_*.h
 #mac specific
 .DS_Store
 build
-
-!src/leveldb/Makefile
