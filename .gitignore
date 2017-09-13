@@ -20,6 +20,10 @@ Makefile
 spectre
 #resources cpp
 qrc_*.cpp
+#moc
+moc_*.cpp
+#ui
+ui_*.h
 #qt creator
 *.pro.user
 #mac specific

@@ -55,252 +55,208 @@ extern CBlockIndex* FindBlockByHeight(int nHeight);
 extern CBlockIndex *InsertBlockIndex(uint256 hash);
 extern double GetDifficulty(const CBlockIndex* blockindex);
 
-class TransactionModel : public QObject
-{
-    Q_OBJECT
-
-public:
-    TransactionModel(QObject *parent = 0) :
+TransactionModel::TransactionModel(QObject *parent) :
         QObject(parent),
         ttm(new QSortFilterProxyModel()),
         running(false)
-    { }
+{ }
 
-    ~TransactionModel()
-    {
-        delete ttm;
-    }
-
-    void init(ClientModel * clientModel, TransactionTableModel * transactionTableModel)
-    {
-        this->clientModel = clientModel;
-
-        ttm->setSourceModel(transactionTableModel);
-        ttm->setSortRole(Qt::EditRole);
-        ttm->sort(TransactionTableModel::Status, Qt::DescendingOrder);
-    }
-
-    QVariantMap addTransaction(int row)
-    {
-        QModelIndex status   = ttm->index    (row, TransactionTableModel::Status);
-        QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
-        QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
-        QModelIndex amount   = status.sibling(row, TransactionTableModel::Amount);
-
-        QVariantMap transaction;
-
-        transaction.insert("id",   status.data(TransactionTableModel::TxIDRole).toString());
-        transaction.insert("tt",   status.data(Qt::ToolTipRole).toString());
-        transaction.insert("c",    status.data(TransactionTableModel::ConfirmationsRole).toLongLong());
-        transaction.insert("s",    status.data(Qt::DecorationRole).toString());
-        transaction.insert("d",    date.data(Qt::EditRole).toInt());
-        transaction.insert("d_s",  date.data().toString());
-        transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));
-        transaction.insert("t_l",  status.sibling(row, TransactionTableModel::Type).data().toString());
-        transaction.insert("ad_c", address.data(Qt::ForegroundRole).value<QColor>().name());
-        transaction.insert("ad",   address.data(TransactionTableModel::AddressRole).toString());
-        transaction.insert("ad_l", address.data(TransactionTableModel::LabelRole).toString());
-        transaction.insert("ad_d", address.data().toString());
-        transaction.insert("n",    status.sibling(row, TransactionTableModel::Narration).data().toString());
-        transaction.insert("am_c", amount.data(Qt::ForegroundRole).value<QColor>().name());
-        transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toString());
-        transaction.insert("am_d", amount.data().toString());
-
-        return transaction;
-    }
-
-    void populateRows(int start, int end)
-    {
-        if(start > ROWS_TO_REFRESH)
-            return;
-
-        if(!prepare())
-            return;
-
-        if (end > ROWS_TO_REFRESH)
-            end = ROWS_TO_REFRESH;
-
-        QVariantList transactions;
-
-        while(start <= end)
-        {
-            if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
-                transactions.append(addTransaction(start));
-
-            start++;
-        }
-        if(!transactions.isEmpty())
-            emitTransactions(transactions);
-
-        running = false;
-    }
-
-    void populatePage()
-    {
-
-        if(!prepare())
-            return;
-
-        QVariantList transactions;
-
-        int row = -1;
-
-        while(++row < numRows && ttm->index(row, 0).isValid())
-            if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString()))
-                transactions.append(addTransaction(row));
-
-        if(!transactions.isEmpty())
-            emitTransactions(transactions);
-
-        running = false;
-
-    }
-    QSortFilterProxyModel * getModel()
-    {
-        return ttm;
-    }
-
-    bool isRunning() {
-        return running;
-    }
-
-signals:
-    void emitTransactions(const QVariantList & transactions, bool reset = false);
-
-private:
-    ClientModel *clientModel;
-    QSortFilterProxyModel *ttm;
-    QStringList visibleTransactions;
-    int numRows;
-    int rowsPerPage;
-    bool running;
-
-    bool prepare()
-    {
-        if (this->running)
-            return false;
-
-        numRows = ttm->rowCount();
-        ttm->sort(TransactionTableModel::Status, Qt::DescendingOrder);
-        rowsPerPage = clientModel->getOptionsModel()->getRowsPerPage();
-        visibleTransactions = clientModel->getOptionsModel()->getVisibleTransactions();
-
-        this->running = true;
-
-        return true;
-    }
-};
-
-
-class AddressModel : public QObject
+TransactionModel::~TransactionModel()
 {
-    Q_OBJECT
+  delete ttm;
+}
 
-public:
-    AddressTableModel *atm;
-
-    QVariantMap addAddress(int row)
-    {
-        QVariantMap address;
-        QModelIndex label = atm->index(row, AddressTableModel::Label);
-
-        address.insert("type",        label.data(AddressTableModel::TypeRole).toString());
-        address.insert("label_value", label.data(Qt::EditRole).toString());
-        address.insert("label",       label.data().toString());
-        address.insert("address",     label.sibling(row, AddressTableModel::Address).data().toString());
-        address.insert("pubkey",      label.sibling(row, AddressTableModel::Pubkey).data().toString());
-        address.insert("at",          label.sibling(row, AddressTableModel::AddressType).data().toString());
-
-        return address;
-    }
-
-    void poplateRows(int start, int end)
-    {
-        QVariantList addresses;
-
-        while(start <= end)
-        {
-            if(!atm->index(start, 0).isValid())
-                continue;
-
-            addresses.append(addAddress(start++));
-        }
-        emitAddresses(addresses);
-    }
-
-    void populateAddressTable()
-    {
-        running = true;
-
-        int row = -1;
-        int end = atm->rowCount();
-        QVariantList addresses;
-
-        while(++row < end)
-        {
-            if(!atm->index(row, 0).isValid())
-                continue;
-
-            addresses.append(addAddress(row));
-        }
-
-        emitAddresses(addresses, true);
-
-        running = false;
-    }
-
-    bool isRunning() {
-        return running;
-    }
-
-signals:
-    void emitAddresses(const QVariantList & addresses, bool reset = false);
-
-private:
-    bool running;
-};
-
-class MessageThread : public QThread
+void TransactionModel::init(ClientModel * clientModel, TransactionTableModel * transactionTableModel)
 {
-    Q_OBJECT
+    this->clientModel = clientModel;
 
-signals:
-    void emitMessages(const QString & messages, bool reset);
+    ttm->setSourceModel(transactionTableModel);
+    ttm->setSortRole(Qt::EditRole);
+    ttm->sort(TransactionTableModel::Status, Qt::DescendingOrder);
+}
 
-public:
-    MessageModel *mtm;
+QVariantMap TransactionModel::addTransaction(int row)
+{
+    QModelIndex status   = ttm->index    (row, TransactionTableModel::Status);
+    QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
+    QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
+    QModelIndex amount   = status.sibling(row, TransactionTableModel::Amount);
 
-    QString addMessage(int row)
+    QVariantMap transaction;
+
+    transaction.insert("id",   status.data(TransactionTableModel::TxIDRole).toString());
+    transaction.insert("tt",   status.data(Qt::ToolTipRole).toString());
+    transaction.insert("c",    status.data(TransactionTableModel::ConfirmationsRole).toLongLong());
+    transaction.insert("s",    status.data(Qt::DecorationRole).toString());
+    transaction.insert("d",    date.data(Qt::EditRole).toInt());
+    transaction.insert("d_s",  date.data().toString());
+    transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));
+    transaction.insert("t_l",  status.sibling(row, TransactionTableModel::Type).data().toString());
+    transaction.insert("ad_c", address.data(Qt::ForegroundRole).value<QColor>().name());
+    transaction.insert("ad",   address.data(TransactionTableModel::AddressRole).toString());
+    transaction.insert("ad_l", address.data(TransactionTableModel::LabelRole).toString());
+    transaction.insert("ad_d", address.data().toString());
+    transaction.insert("n",    status.sibling(row, TransactionTableModel::Narration).data().toString());
+    transaction.insert("am_c", amount.data(Qt::ForegroundRole).value<QColor>().name());
+    transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toString());
+    transaction.insert("am_d", amount.data().toString());
+
+    return transaction;
+}
+
+void TransactionModel::populateRows(int start, int end)
+{
+    if(start > ROWS_TO_REFRESH)
+        return;
+
+    if(!prepare())
+        return;
+
+    if (end > ROWS_TO_REFRESH)
+        end = ROWS_TO_REFRESH;
+
+    QVariantList transactions;
+
+    while(start <= end)
     {
-        //QString message = "{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},";
-        return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
-                .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-                .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())))
-                .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())))
-                .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
-                .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
-                .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
-                .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
-                .arg(Qt::escape(mtm->index(row, MessageModel::Message).data().toString()).replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
-                .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
-                .arg(mtm->index(row, MessageModel::Key)             .data().toString())
-                .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
+        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
+            transactions.append(addTransaction(start));
+
+        start++;
+    }
+    if(!transactions.isEmpty())
+        emitTransactions(transactions);
+
+    running = false;
+}
+
+void TransactionModel::populatePage()
+{
+
+    if(!prepare())
+        return;
+
+    QVariantList transactions;
+
+    int row = -1;
+
+    while(++row < numRows && ttm->index(row, 0).isValid())
+        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString()))
+            transactions.append(addTransaction(row));
+
+    if(!transactions.isEmpty())
+        emitTransactions(transactions);
+
+    running = false;
+
+}
+
+QSortFilterProxyModel * TransactionModel::getModel()
+{
+    return ttm;
+}
+
+bool TransactionModel::isRunning() {
+    return running;
+}
+
+bool TransactionModel::prepare()
+{
+    if (this->running)
+        return false;
+
+    numRows = ttm->rowCount();
+    ttm->sort(TransactionTableModel::Status, Qt::DescendingOrder);
+    rowsPerPage = clientModel->getOptionsModel()->getRowsPerPage();
+    visibleTransactions = clientModel->getOptionsModel()->getVisibleTransactions();
+
+    this->running = true;
+
+    return true;
+}
+
+
+QVariantMap AddressModel::addAddress(int row)
+{
+    QVariantMap address;
+    QModelIndex label = atm->index(row, AddressTableModel::Label);
+
+    address.insert("type",        label.data(AddressTableModel::TypeRole).toString());
+    address.insert("label_value", label.data(Qt::EditRole).toString());
+    address.insert("label",       label.data().toString());
+    address.insert("address",     label.sibling(row, AddressTableModel::Address).data().toString());
+    address.insert("pubkey",      label.sibling(row, AddressTableModel::Pubkey).data().toString());
+    address.insert("at",          label.sibling(row, AddressTableModel::AddressType).data().toString());
+
+    return address;
+}
+
+void AddressModel::poplateRows(int start, int end)
+{
+    QVariantList addresses;
+
+    while(start <= end)
+    {
+        if(!atm->index(start, 0).isValid())
+            continue;
+
+        addresses.append(addAddress(start++));
+    }
+    emitAddresses(addresses);
+}
+
+void AddressModel::populateAddressTable()
+{
+    running = true;
+
+    int row = -1;
+    int end = atm->rowCount();
+    QVariantList addresses;
+
+    while(++row < end)
+    {
+        if(!atm->index(row, 0).isValid())
+            continue;
+
+        addresses.append(addAddress(row));
     }
 
-protected:
-    void run()
-    {
-        int row = -1;
-        QString messages;
-        while (mtm->index(++row, 0, QModelIndex()).isValid())
-            messages.append(addMessage(row));
+    emitAddresses(addresses, true);
 
-        emitMessages(messages, true);
-    }
+    running = false;
+}
 
-};
+bool AddressModel::isRunning() {
+    return running;
+}
 
-#include "spectrebridge.moc"
+
+QString MessageThread::addMessage(int row)
+{
+    return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
+            .arg(mtm->index(row, MessageModel::Type)            .data().toString())
+            .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())))
+            .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())))
+            .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
+            .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
+            .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
+            .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
+            .arg(Qt::escape(mtm->index(row, MessageModel::Message).data().toString()).replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
+            .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
+            .arg(mtm->index(row, MessageModel::Key)             .data().toString())
+            .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
+}
+
+void MessageThread::run()
+{
+    int row = -1;
+    QString messages;
+    while (mtm->index(++row, 0, QModelIndex()).isValid())
+        messages.append(addMessage(row));
+
+    emitMessages(messages, true);
+}
+
 
 SpectreBridge::SpectreBridge(SpectreGUI *window, QObject *parent) :
     QObject         (parent),

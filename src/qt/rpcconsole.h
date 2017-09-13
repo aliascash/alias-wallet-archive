@@ -22,6 +22,19 @@ QT_BEGIN_NAMESPACE
 class QItemSelection;
 QT_END_NAMESPACE
 
+/* Object for executing console RPC commands in a separate thread.
+*/
+class RPCExecutor : public QObject
+{
+    Q_OBJECT
+
+public slots:
+    void request(const QString &command);
+
+signals:
+    void reply(int category, const QString &command);
+};
+
 /** Local RPC console. */
 class RPCConsole: public QDialog
 {

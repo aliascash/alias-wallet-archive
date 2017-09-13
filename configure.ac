@@ -1,8 +1,9 @@
 AC_INIT([spectrecoind], [1.3.3])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects -Wall -Werror])
+AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects -Wall -Werror -Wno-portability])
 AM_PROG_AS
+AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile src/Makefile])
@@ -33,4 +34,12 @@ AC_CHECK_LIB([boost_thread], [main], ,
              [AC_MSG_ERROR([libboost_thread not found.])])
 AC_CHECK_LIB([db_cxx-4.8], [main], ,
              [AC_MSG_ERROR([libdb_cxx-4.8 not found.])])
+AC_ARG_ENABLE([gui], [AS_HELP_STRING([--enable-gui], [Build the Qt GUI wallet])])
+AS_IF([test "$enable_gui" = "yes"],
+      [PKG_CHECK_MODULES(QT4, [QtCore QtGui QtWebKit >= 4.4.0],
+                         [AC_PATH_PROGS(MOC, [moc-qt4 moc], moc,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)
+                          AC_PATH_PROG(RCC, rcc, rcc,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)
+                          AC_PATH_PROGS(UIC, [uic-qt4 uic], uic,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)],
+                         [AC_MSG_ERROR([Qt 4 not found.])])])
+AM_CONDITIONAL([ENABLE_GUI], [test "$enable_gui" = "yes"])
 AC_OUTPUT

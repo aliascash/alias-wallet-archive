@@ -8,7 +8,7 @@
 
 #include "ui_interface.h"
 #include "base58.h"
-#include "json_spirit.h"
+#include "json/json_spirit.h"
 #include "init.h"
 
 #include <QSet>

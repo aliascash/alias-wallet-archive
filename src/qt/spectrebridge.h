@@ -2,18 +2,88 @@
 #define SPECTREBRIDGE_H
 
 class SpectreGUI;
+class ClientModel;
+class TransactionTableModel;
+class AddressTableModel;
 class TransactionModel;
+class QSortFilterProxyModel;
 class WalletModel;
 class BlockExplorerModel;
 class AddressModel;
+class MessageModel;
 class MessageThread;
 class SendCoinsRecipient;
 
 #include <stdint.h>
 #include <QObject>
 #include <QModelIndex>
+#include <QThread>
+#include <QStringList>
+
+class TransactionModel : public QObject
+{
+    Q_OBJECT
+
+public:
+    TransactionModel(QObject *parent = 0);
+    ~TransactionModel();
+    void init(ClientModel * clientModel, TransactionTableModel * transactionTableModel);
+    QVariantMap addTransaction(int row);
+    void populateRows(int start, int end);
+    void populatePage();
+    QSortFilterProxyModel * getModel();
+    bool isRunning();
+
+signals:
+    void emitTransactions(const QVariantList & transactions, bool reset = false);
+
+private:
+    ClientModel *clientModel;
+    QSortFilterProxyModel *ttm;
+    QStringList visibleTransactions;
+    int numRows;
+    int rowsPerPage;
+    bool running;
+
+    bool prepare();
+};
 
 
+class AddressModel : public QObject
+{
+    Q_OBJECT
+
+public:
+    AddressTableModel *atm;
+
+    QVariantMap addAddress(int row);
+    void poplateRows(int start, int end);
+    void populateAddressTable();
+    bool isRunning();
+
+signals:
+    void emitAddresses(const QVariantList & addresses, bool reset = false);
+
+private:
+    bool running;
+};
+
+
+class MessageThread : public QThread
+{
+    Q_OBJECT
+
+signals:
+    void emitMessages(const QString & messages, bool reset);
+
+public:
+    MessageModel *mtm;
+
+    QString addMessage(int row);
+
+protected:
+    void run();
+};
 
 
 class SpectreBridge : public QObject
