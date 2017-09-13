@@ -18,7 +18,7 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * boost
  * Qt 4 if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
-To build the wallet, run the following commands, adjusting the OpenSSL and Berkeley DB paths to suit your system. If you have many CPU cores, you can increase the `-j` option to speed up the build. On your system, `qmake-qt4` may be called `qmake4` or just `qmake`.
+To build the wallet, run the following commands:
 
     $ git submodule update --init  # to check out the Tor and LevelDB dependencies
     $ autoconf
