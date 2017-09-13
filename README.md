@@ -14,13 +14,20 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 
  * OpenSSL 1.0
  * Berkeley DB 4.8
- * Qt 4
  * libevent
  * boost
+ * Qt 4 if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
 To build the wallet, run the following commands, adjusting the OpenSSL and Berkeley DB paths to suit your system. If you have many CPU cores, you can increase the `-j` option to speed up the build. On your system, `qmake-qt4` may be called `qmake4` or just `qmake`.
 
-    $ qmake-qt4 OPENSSL_LIB_PATH=/usr/lib/openssl-1.0 OPENSSL_INCLUDE_PATH=/usr/include/openssl-1.0 BDB_INCLUDE_PATH=/usr/include/db4.8 BDB_LIB_SUFFIX=-4.8
+    $ git submodule update --init  # to check out the Tor and LevelDB dependencies
+    $ autoconf
+    $ automake
+    $ ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     $ make -j2
 
-The resulting binary will be called `spectre` in the current directory.
+The resulting binaries will be in the `src` directory and called `spectre` for the GUI wallet and `spectrecoind` for the console wallet.
+
+If your distro ships OpenSSL 1.1 as the default version of OpenSSL, you'll need to install OpenSSL 1.0 and pass the correct paths to `configure`. An example for Arch Linux is:
+
+    $ ./configure --enable-gui LDFLAGS="-L/usr/lib/openssl-1.0" CFLAGS="-I/usr/include/openssl-1.0 -O2" CPPFLAGS="-I/usr/include/openssl-1.0 -O2"
