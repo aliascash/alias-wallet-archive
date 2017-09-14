@@ -8,7 +8,7 @@ AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile src/Makefile])
-AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma]])
+AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma --disable-asciidoc]])
 AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared]])
 AC_CHECK_LIB([crypto], [BN_init], ,
              [AC_MSG_ERROR([OpenSSL 1.0 not found.])])
