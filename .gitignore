@@ -28,3 +28,6 @@ ui_*.h
 #mac specific
 .DS_Store
 build
+db4.8/build_unix
+
+!db4.8/build_unix/configure

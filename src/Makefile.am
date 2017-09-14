@@ -4,7 +4,8 @@ AM_CPPFLAGS = -pthread -fPIE -O2 \
 							-D_FORTIFY_SOURCE \
 							-Wall -Wextra -Wno-ignored-qualifiers \
 							-Wformat -Wformat-security -Wno-unused-parameter \
-							-I../leveldb/include -I../leveldb/helpers
+							-I../leveldb/include -I../leveldb/helpers \
+							-I../db4.8/build_unix
 AM_CFLAGS = -std=gnu99 $(AM_CPPFLAGS)
 
 common_SOURCES = anonymize.cpp \
@@ -67,6 +68,7 @@ spectrecoind_SOURCES = $(common_SOURCES) spectrecoind.cpp
 spectrecoind_LDADD = \
 						../leveldb/out-static/libmemenv.a \
 						../leveldb/out-static/libleveldb.a \
+						../db4.8/build_unix/libdb_cxx.a \
 						../tor/src/common/src_common_libor_ctime_a-di_ops.o \
 						../tor/src/common/confline.o \
 						../tor/src/common/crypto_pwbox.o \
