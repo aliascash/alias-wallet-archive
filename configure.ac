@@ -1,4 +1,5 @@
 AC_INIT([spectrecoind], [1.3.3])
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects -Wall -Werror -Wno-portability])
@@ -7,9 +8,8 @@ AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile src/Makefile])
-ac_configure_args="$ac_configure_args --disable-unittests --disable-system-torrc --disable-systemd --disable-lzma"
-ac_configure_args="$ac_configure_args --disable-cryptography --disable-partition --disable-compression --disable-replication --enable-cxx --enable-static --disable-shared"
-AC_CONFIG_SUBDIRS([tor db4.8/build_unix])
+AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma]])
+AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared]])
 AC_CHECK_LIB([crypto], [BN_init], ,
              [AC_MSG_ERROR([OpenSSL 1.0 not found.])])
 AC_CHECK_LIB([ssl], [main])
