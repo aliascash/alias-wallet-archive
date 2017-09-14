@@ -13,7 +13,6 @@ Building on Linux
 We do not currently provide Linux binary packages. To build the SpectreCoin wallet from source, you will need the following dependencies:
 
  * OpenSSL 1.0
- * Berkeley DB 4.8
  * libevent
  * boost
  * Qt 4 if you want to build the GUI wallet. Qt is not needed for the console wallet.
@@ -21,7 +20,9 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 To build the wallet, run the following commands:
 
     $ git submodule update --init  # to check out the Tor and LevelDB dependencies
+    $ aclocal
     $ autoconf
+    $ automake
     $ ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     $ make -j2
 
