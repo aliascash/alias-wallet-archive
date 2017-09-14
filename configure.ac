@@ -8,9 +8,8 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile src/Makefile])
 ac_configure_args="$ac_configure_args --disable-unittests --disable-system-torrc --disable-systemd --disable-lzma"
-AC_CONFIG_SUBDIRS([tor])
 ac_configure_args="$ac_configure_args --disable-cryptography --disable-partition --disable-compression --disable-replication --enable-cxx --enable-static --disable-shared"
-AC_CONFIG_SUBDIRS([db4.8/build_unix])
+AC_CONFIG_SUBDIRS([tor db4.8/build_unix])
 AC_CHECK_LIB([crypto], [BN_init], ,
              [AC_MSG_ERROR([OpenSSL 1.0 not found.])])
 AC_CHECK_LIB([ssl], [main])
