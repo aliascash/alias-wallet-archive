@@ -1,5 +1,5 @@
-AM_LDFLAGS = -Wl,-z,relro -Wl,-z,now -pie
-AM_CPPFLAGS = -pthread -fPIE -O2 \
+AM_LDFLAGS = -Wl,-z,relro -Wl,-z,now
+AM_CPPFLAGS = -pthread -O2 \
 							-fstack-protector-all -Wstack-protector \
 							-D_FORTIFY_SOURCE \
 							-Wall -Wextra -Wno-ignored-qualifiers \
