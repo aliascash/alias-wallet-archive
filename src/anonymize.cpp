@@ -50,5 +50,5 @@ void set_initialized() {
 }
 
 void wait_initialized() {
-    boost::unique_lock<boost::mutex> checking(initializing);
+    //boost::unique_lock<boost::mutex> checking(initializing);
 }

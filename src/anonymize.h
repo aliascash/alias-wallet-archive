@@ -13,20 +13,11 @@
 extern "C" {
 #endif
 
-    char const* anonymize_tor_data_directory(
-    );
-
-    char const* anonymize_service_directory(
-    );
-
-    int check_interrupted(
-    );
-
-    void set_initialized(
-    );
-
-    void wait_initialized(
-    );
+    char const* anonymize_tor_data_directory(void);
+    char const* anonymize_service_directory(void);
+    int check_interrupted(void);
+    void set_initialized(void);
+    void wait_initialized(void);
 
 #ifdef __cplusplus
 }
