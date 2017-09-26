@@ -10,7 +10,6 @@ src/build.h
 *.orig
 *.o
 *.P
-*.patch
 *.dat
 *.autosave
 .spectrecoin
