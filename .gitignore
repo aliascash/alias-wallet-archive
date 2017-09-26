@@ -28,5 +28,22 @@ ui_*.h
 .DS_Store
 build
 db4.8/build_unix
+.deps
+.dirstamp
+Makefile
+Makefile.in
+config.log
+configure
+depcomp
+missing
+install-sh
+config.guess
+config.status
+config.sub
+test-driver
+aclocal.m4
+autom4te.cache
+ar-lib
+compile
 
 !db4.8/build_unix/configure
