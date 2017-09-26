@@ -81,14 +81,14 @@ spectrecoind_LDADD = \
 						../tor/src/ext/keccak-tiny/libkeccak-tiny.a
 
 if ENABLE_GUI
+qt/qrc_%.cpp: ../%.qrc
+		@RCC@ $< -o $@
+
 qt/moc_%.cpp: qt/%.h
 		@MOC@ -o $@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MOC_CPPFLAGS) $<
 
 qt/ui_%.h: qt/forms/%.ui
 		@UIC@ -o $@ $<
-
-qt/qrc_%.cpp: ../%.qrc
-		@RCC@ --name spectre -o $@ $<
 
 BUILT_SOURCES = qt/ui_aboutdialog.h \
 								qt/ui_askpassphrasedialog.h \
@@ -159,4 +159,5 @@ spectre_SOURCES = $(common_SOURCES) \
 									qt/spectrebridge.cpp
 spectre_LDADD = $(spectrecoind_LDADD) $(QT4_LIBS)
 spectre_CPPFLAGS = $(AM_CPPFLAGS) $(QT4_CFLAGS)
+spectre_LDFLAGS = $(AM_LDFLAGS) $(QT4_LDFLAGS)
 endif

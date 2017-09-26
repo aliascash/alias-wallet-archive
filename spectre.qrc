@@ -1,4 +1,5 @@
-<RCC>
+<!DOCTYPE RCC>
+<RCC version="1.0">
     <qresource prefix="/">
         <file alias="assets/css/font-awesome-buttons.min.css">src/qt/res/assets/css/font-awesome-buttons.min.css</file>
         <file alias="assets/css/font-awesome.min.css">src/qt/res/assets/css/font-awesome.min.css</file>

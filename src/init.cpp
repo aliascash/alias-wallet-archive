@@ -12,7 +12,6 @@
 #include "sync.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "anonymize.h"
 #include "smessage.h"
 #include "ringsig.h"
 #include "miner.h"
@@ -858,10 +857,6 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (!NewThread(StartTor, NULL))
                 InitError(_("Error: could not start tor node"));
     }
-
-  LogPrintf("wait_initialized() START\n");
-	wait_initialized();
-  LogPrintf("wait_initialized() DONE\n");
 
     if (mapArgs.count("-externalip"))
     {

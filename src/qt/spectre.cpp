@@ -23,17 +23,6 @@
 #include <QLibraryInfo>
 #include <QTimer>
 
-#if defined(SPECTRE_NEED_QT_PLUGINS) && !defined(_SPECTRE_QT_PLUGINS_INCLUDED)
-#define _SPECTRE_NEED_QT_PLUGINS
-#define __INSURE__
-#include <QtPlugin>
-Q_IMPORT_PLUGIN(qcncodecs)
-Q_IMPORT_PLUGIN(qjpcodecs)
-Q_IMPORT_PLUGIN(qtwcodecs)
-Q_IMPORT_PLUGIN(qkrcodecs)
-Q_IMPORT_PLUGIN(qtaccessiblewidgets)
-#endif
-
 // Need a global reference for the notifications to find the GUI
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
@@ -123,9 +112,8 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings(QTextCodec::codecForTr());
 #endif
 
-    Q_INIT_RESOURCE(spectre);
     QApplication app(argc, argv);
-    
+
     // Do this early as we don't want to bother initializing if we are just calling IPC
     // ... but do it after creating app, so QCoreApplication::arguments is initialized:
     if (PaymentServer::ipcSendCommandLine())

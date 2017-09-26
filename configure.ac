@@ -34,11 +34,18 @@ AC_CHECK_LIB([boost_program_options], [main], ,
 AC_CHECK_LIB([boost_thread], [main], ,
              [AC_MSG_ERROR([libboost_thread not found.])])
 AC_ARG_ENABLE([gui], [AS_HELP_STRING([--enable-gui], [Build the Qt GUI wallet])])
-AS_IF([test "$enable_gui" = "yes"],
-      [PKG_CHECK_MODULES(QT4, [QtCore QtGui QtWebKit >= 4.4.0],
-                         [AC_PATH_PROGS(MOC, [moc-qt4 moc], moc,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)
-                          AC_PATH_PROG(RCC, rcc, rcc,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)
-                          AC_PATH_PROGS(UIC, [uic-qt4 uic], uic,`eval $PKG_CONFIG --variable=exec_prefix QtCore`/bin)],
-                         [AC_MSG_ERROR([Qt 4 not found.])])])
+if test "$enable_gui" = "yes" ; then
+  PKG_PROG_PKG_CONFIG
+  PKG_CHECK_MODULES(QT4, [QtCore QtGui QtWebKit >= 4.4.0], [], [AC_MSG_ERROR([Qt4 not found.])])
+  if ! `$PKG_CONFIG --atleast-version=4.8.0 QtCore`; then
+   AC_MSG_ERROR([Qt4 >= 4.8 not found.])
+  fi
+  AC_CHECK_PROGS(MOC, [moc-qt4 moc])
+  AC_CHECK_PROGS(UIC, [uic-qt4 uic])
+  AC_CHECK_PROGS(RCC, [rcc-qt4 rcc])
+  if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+    AC_MSG_ERROR([Qt utilities moc/uic/rcc not found.])
+  fi
+fi
 AM_CONDITIONAL([ENABLE_GUI], [test "$enable_gui" = "yes"])
 AC_OUTPUT

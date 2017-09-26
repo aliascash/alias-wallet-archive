@@ -1785,6 +1785,7 @@ static void run_tor() {
       char* argv[] = {
         "tor",
         "--Log", argvLogDecl,
+        "--SocksPort", "9089",
         "--ClientTransportPlugin", clientTransportPlugin,
         "--UseBridges", "1",
         "--Bridge", "obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0",
@@ -1800,6 +1801,7 @@ static void run_tor() {
       char* argv[] = {
         "tor",
         "--Log", argvLogDecl,
+        "--SocksPort", "9089",
         "--ignore-missing-torrc",
         "-f", rc_c,
       };
