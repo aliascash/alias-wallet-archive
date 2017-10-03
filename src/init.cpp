@@ -223,7 +223,7 @@ std::string HelpMessage()
     strUsage += "  -listen                " + _("Accept connections from outside (default: 1 if no -proxy or -connect)") + "\n";
     strUsage += "  -bind=<addr>           " + _("Bind to given address. Use [host]:port notation for IPv6") + "\n";
     strUsage += "  -dnsseed               " + _("Find peers using DNS lookup (default: 1)") + "\n";
-	strUsage += "  -onionseed             " + _("Find peers using .onion seeds (default: 1 unless -connect)") + "\n";
+    strUsage += "  -onionseed             " + _("Find peers using .onion seeds (default: 1 unless -connect)") + "\n";
     strUsage += "  -staking               " + _("Stake your coins to support network and gain reward (default: 1)") + "\n";
     strUsage += "  -minstakeinterval=<n>  " + _("Minimum time in seconds between successful stakes (default: 30)") + "\n";
     strUsage += "  -minersleep=<n>        " + _("Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)") + "\n";
@@ -285,7 +285,7 @@ std::string HelpMessage()
     strUsage += "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n";
     strUsage += "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n";
     strUsage += "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n";
-    strUsage += "  -maxorphanblocksmib=<n> " + strprintf(_("Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";	
+    strUsage += "  -maxorphanblocksmib=<n> " + strprintf(_("Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";    
     strUsage += "  -reindex               " + _("Rebuild block chain index from current blk000?.dat files on startup") + "\n";
 
     strUsage += "\n" + _("Thin options:") + "\n";
@@ -471,12 +471,12 @@ bool AppInit2(boost::thread_group& threadGroup)
         SoftSetBoolArg("-discover", false);
     }; */
 
-	if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
+    if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
     {
         // when only connecting to trusted nodes, do not seed via .onion, or listen by default
         SoftSetBoolArg("-onionseed", false);
     }
-	
+    
     if (GetBoolArg("-salvagewallet"))
     {
         // Rewrite just private keys: rescan to find transactions
@@ -715,10 +715,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     nMaxThinPeers = GetArg("-maxthinpeers", 8);
 
     nBloomFilterElements = GetArg("-bloomfilterelements", 1536);
-	
-	// Tor implementation
-	
-	do {
+    
+    // Tor implementation
+    
+    do {
         std::set<enum Network> nets;
         nets.insert(NET_TOR);
 
@@ -727,8 +727,8 @@ bool AppInit2(boost::thread_group& threadGroup)
             if (!nets.count(net))
                 SetLimited(net);
         }
-	} while (false);
-	
+    } while (false);
+    
 /*     if (mapArgs.count("-onlynet"))
     {
         std::set<enum Network> nets;
@@ -764,7 +764,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (!(mapArgs.count("-tor") && mapArgs["-tor"] == "0") && (fProxy || mapArgs.count("-tor")))
     {
         CService addrOnion;
-		
+        
         if (!mapArgs.count("-tor"))
             addrOnion = addrProxy;
         else
@@ -773,12 +773,12 @@ bool AppInit2(boost::thread_group& threadGroup)
             return InitError(strprintf(_("Invalid -tor address: '%s'"), mapArgs["-tor"]));
     } else {
         addrOnion = CService("127.0.0.1", onion_port);
-    }	*/
+    }    */
 
 
-	// Tor implementation
+    // Tor implementation
 
-	CService addrOnion;
+    CService addrOnion;
     //unsigned short const onion_port = 9075;
 
     if (mapArgs.count("-tor") && mapArgs["-tor"] != "0") {
@@ -789,20 +789,14 @@ bool AppInit2(boost::thread_group& threadGroup)
     } else {
         addrOnion = CService("127.0.0.1", onion_port);
 }
-	
-	if (true) {
-        //SetProxy(NET_TOR, addrOnion, 5);
-		SetProxy(NET_TOR, addrOnion);
-        SetReachable(NET_TOR);
-    }
+    
+    SetProxy(NET_TOR, addrOnion);
+    SetReachable(NET_TOR);
 
     // see Step 2: parameter interactions for more information about these
    // fNoListen = !GetBoolArg("-listen", true);
    // fDiscover = GetBoolArg("-discover", true);
     fNameLookup = GetBoolArg("-dns", true);
-#ifdef USE_UPNP
-    fUseUPnP = GetBoolArg("-upnp", USE_UPNP);
-#endif
 
     bool fBound = false;
 /*     if (!fNoListen)
@@ -829,33 +823,26 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (!fBound)
             return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
     }; */
-	
-	
-	// Tor implementation
-	if (true) 
-	{
-		std::string strError;
+    
+    
+    // Tor implementation
+    std::string strError;
 
-        if (true) 
-		{
-            do 
-			{
-                CService addrBind;
+    do 
+    {
+        CService addrBind;
+        if (!Lookup("127.0.0.1", addrBind, GetListenPort(), false))
+            return InitError(strprintf(_("Cannot resolve binding address: '%s'"), "127.0.0.1"));
 
-                if (!Lookup("127.0.0.1", addrBind, GetListenPort(), false))
-                    return InitError(strprintf(_("Cannot resolve binding address: '%s'"), "127.0.0.1"));
+        fBound |= Bind(addrBind);
+    } while (false);
 
-                fBound |= Bind(addrBind);
-            } while (false);
-        }
-
-        if (!fBound)
-			return InitError(_("Failed to listen on any port."));
-	}
-	
-	if (!(mapArgs.count("-tor") && mapArgs["-tor"] != "0")) {
+    if (!fBound)
+        return InitError(_("Failed to listen on any port."));
+    
+    if (!(mapArgs.count("-tor") && mapArgs["-tor"] != "0")) {
         if (!NewThread(StartTor, NULL))
-                InitError(_("Error: could not start tor node"));
+                return InitError(_("Error: could not start tor node"));
     }
 
     if (mapArgs.count("-externalip"))
@@ -868,19 +855,25 @@ bool AppInit2(boost::thread_group& threadGroup)
             AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
         }
     } else 
-	{
+    {
         string automatic_onion;
-        filesystem::path const hostname_path = GetDefaultDataDir() / "onion" / "hostname";
+        filesystem::path hostname_path = GetDataDir() / "tor" / "onion" / "hostname";
 
-        if (!filesystem::exists(hostname_path)) {
-            return InitError(_("No external address found."));
+        int attempts = 0;
+        while (1) {
+            if (filesystem::exists(hostname_path))
+                break;
+            ++attempts;
+            boost::this_thread::sleep(boost::posix_time::seconds(2));
+            if (attempts > 8)
+                return InitError(_("Timed out waiting for onion hostname."));
+            LogPrintf("No onion hostname yet, will retry in 2 seconds... (%d/8)\n", attempts);
         }
 
         ifstream file(hostname_path.string().c_str());
         file >> automatic_onion;
         AddLocal(CService(automatic_onion, GetListenPort(), fNameLookup), LOCAL_MANUAL);
     }
-
 
     if (mapArgs.count("-reservebalance")) // ppcoin: reserve balance amount
     {
@@ -1056,7 +1049,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         BOOST_FOREACH(std::string strFile, mapMultiArgs["-loadblock"])
             vImportFiles.push_back(strFile);
     };
-	threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
+    threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
     
     if (mapArgs.count("-reindex"))
     {

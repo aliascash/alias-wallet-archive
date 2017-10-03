@@ -27,7 +27,7 @@
 
 using namespace std;
 using namespace boost;
-
+namespace fs = boost::filesystem;
 
 extern "C" {
     int tor_main(int argc, char *argv[]);
@@ -1762,16 +1762,16 @@ void static Discover()
    // no network discovery
 }
 
+static char *convert_str(const std::string &s) {
+    char *pc = new char[s.size()+1];
+    std::strcpy(pc, s.c_str());
+    return pc;
+}
 
 static void run_tor() {
     printf("TOR thread started.\n");
 
-    std::string logDecl = "notice file " + GetDataDir().string() + "/tor/tor.log";
-    char *argvLogDecl = (char*) logDecl.c_str();
-    std::string rc = GetDataDir().string() + "/tor/torrc";
-    char *rc_c = (char*) rc.c_str();
-
-    char * clientTransportPlugin = NULL;
+    boost::optional<std::string> clientTransportPlugin;
     struct stat sb;
     if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
       clientTransportPlugin = "obfs4 exec obfs4proxy";
@@ -1780,33 +1780,45 @@ static void run_tor() {
       clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
     }
 
-    if (clientTransportPlugin != NULL) {
+    fs::path tor_dir = GetDataDir() / "tor";
+    fs::create_directory(tor_dir);
+    fs::path log_file = tor_dir / "tor.log";
+
+    std::vector<std::string> argv;
+    argv.push_back("tor");
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+    argv.push_back("--SocksPort");
+    argv.push_back("9089");
+    argv.push_back("--ignore-missing-torrc");
+    argv.push_back("-f");
+    argv.push_back((tor_dir / "torrc").string());
+    argv.push_back("--HiddenServiceDir");
+    argv.push_back((tor_dir / "onion").string());
+    argv.push_back("--HiddenServicePort");
+    argv.push_back("37347");
+
+    if (clientTransportPlugin) {
       printf("Using OBFS4.\n");
-      char* argv[] = {
-        "tor",
-        "--Log", argvLogDecl,
-        "--SocksPort", "9089",
-        "--ClientTransportPlugin", clientTransportPlugin,
-        "--UseBridges", "1",
-        "--Bridge", "obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0",
-        "--Bridge", "obfs4 138.68.21.138:9443 B5287C46B3011A27F2EE7002736EBD6542A9481C cert=52XzQbb3LRCSD6KzxPFJFru12tcQzU/1QVcpgmM4pAv9ONpWnxgr0z+IWG3YaA4vpjPpUQ iat-mode=0",
-        "--Bridge", "obfs4 91.219.239.174:56199 7398013C474F9F0AD9ADF3E2D61E184B3EB58D3F cert=I/jI9xgVNFO1oIarHeJLJDnwu7prtHdUdyDaOuxl4idP0DEqEkxhVMhxBwjaC/9vlgccQQ iat-mode=0",
-        "--ignore-missing-torrc",
-        "-f", rc_c,
-      };
-      tor_main(16, argv);
+      argv.push_back("--ClientTransportPlugin");
+      argv.push_back(*clientTransportPlugin);
+      argv.push_back("--UseBridges");
+      argv.push_back("1");
+      argv.push_back("--Bridge");
+      argv.push_back("obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0");
+      argv.push_back("--Bridge");
+      argv.push_back("obfs4 138.68.21.138:9443 B5287C46B3011A27F2EE7002736EBD6542A9481C cert=52XzQbb3LRCSD6KzxPFJFru12tcQzU/1QVcpgmM4pAv9ONpWnxgr0z+IWG3YaA4vpjPpUQ iat-mode=0");
+      argv.push_back("--Bridge");
+      argv.push_back("obfs4 91.219.239.174:56199 7398013C474F9F0AD9ADF3E2D61E184B3EB58D3F cert=I/jI9xgVNFO1oIarHeJLJDnwu7prtHdUdyDaOuxl4idP0DEqEkxhVMhxBwjaC/9vlgccQQ iat-mode=0");
     }
     else {
       printf("No OBFS4 found, not using it.\n");
-      char* argv[] = {
-        "tor",
-        "--Log", argvLogDecl,
-        "--SocksPort", "9089",
-        "--ignore-missing-torrc",
-        "-f", rc_c,
-      };
-      tor_main(6, argv);
     }
+
+    std::vector<char *> argv_c;
+    std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
+
+    tor_main(argv_c.size(), &argv_c[0]);
 }
 
 

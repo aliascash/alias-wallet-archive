@@ -28,6 +28,7 @@ leveldb::DB *txdb; // global pointer for LevelDB object instance
 static leveldb::Options GetOptions() {
     leveldb::Options options;
     int nCacheSizeMB = GetArg("-dbcache", 25);
+    options.create_if_missing = true;
     options.block_cache = leveldb::NewLRUCache(nCacheSizeMB * 1048576);
     options.filter_policy = leveldb::NewBloomFilterPolicy(10);
     return options;
@@ -39,9 +40,8 @@ static void init_blockindex(leveldb::Options& options, bool fRemoveOld = false)
     fs::path directory = GetDataDir() / "txleveldb";
 
     if (fRemoveOld)
-        fs::remove_all(directory); // remove directory
+        fs::remove_all(directory);
 
-    fs::create_directory(directory);
     LogPrintf("Opening LevelDB in %s\n", directory.string().c_str());
     leveldb::Status status = leveldb::DB::Open(options, directory.string(), &txdb);
     if (!status.ok()) {
@@ -62,12 +62,8 @@ CTxDB::CTxDB(const char* pszMode)
         return;
     }
 
-    bool fCreate = strchr(pszMode, 'c');
-
-    options = GetOptions();
-    options.create_if_missing = fCreate;
-
-    init_blockindex(options); // Init directory
+    openOptions = GetOptions();
+    init_blockindex(openOptions);
     pdb = txdb;
 
     LogPrintf("Opened LevelDB successfully\n");
@@ -77,11 +73,11 @@ void CTxDB::Close()
 {
     delete txdb;
     txdb = pdb = NULL;
-    delete options.filter_policy;
-    options.filter_policy = NULL;
-    delete options.block_cache;
-    options.block_cache = NULL;
 
+    delete openOptions.filter_policy;
+    openOptions.filter_policy = NULL;
+    delete openOptions.block_cache;
+    openOptions.block_cache = NULL;
 
     if (activeBatch)
     {
@@ -188,7 +184,13 @@ int CTxDB::RecreateDB()
     delete activeBatch;
     activeBatch = NULL;
 
-    init_blockindex(options, true); // Remove directory and create new database
+    delete openOptions.filter_policy;
+    openOptions.filter_policy = NULL;
+    delete openOptions.block_cache;
+    openOptions.block_cache = NULL;
+
+    openOptions = GetOptions();
+    init_blockindex(openOptions, true); // Remove directory and create new database
     pdb = txdb;
 
     bool fTmp = fReadOnly;
@@ -254,7 +256,6 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
     iterator->Seek(leveldb::Slice((const char*)data, nLenPrefix+1));
 
     leveldb::WriteOptions writeOptions;
-    writeOptions.sync = true;
     while (iterator->Valid())
     {
         if (iterator->key().size() < nLenPrefix+1

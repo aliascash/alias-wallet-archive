@@ -69,7 +69,7 @@ private:
     // A batch stores up writes and deletes for atomic application. When this
     // field is non-NULL, writes/deletes go there instead of directly to disk.
     leveldb::WriteBatch *activeBatch;
-    leveldb::Options options;
+    leveldb::Options openOptions;
     bool fReadOnly;
     int nVersion;
 
