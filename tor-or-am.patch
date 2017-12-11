@@ -1,5 +1,5 @@
---- src/or/include.am.orig	2017-09-25 18:07:25.586777155 +0200
-+++ src/or/include.am	2017-09-25 18:12:20.888149292 +0200
+--- src/or/include.am.orig	2017-12-11 20:39:32.100558063 +0100
++++ src/or/include.am	2017-12-11 20:41:36.963076860 +0100
 @@ -1,13 +1,5 @@
 -bin_PROGRAMS+= src/or/tor
  noinst_LIBRARIES += \
@@ -14,7 +14,7 @@
  
  if BUILD_NT_SERVICES
  tor_platform_source=src/or/ntmain.c
-@@ -106,51 +98,16 @@
+@@ -97,50 +89,16 @@
  	$(tor_platform_source)
  
  src_or_libtor_a_SOURCES = $(LIBTOR_A_SOURCES)
@@ -27,8 +27,8 @@
 -  src/or/src_or_tor_cov-tor_main.$(OBJEXT): micro-revision.i
  
 -AM_CPPFLAGS += -DSHARE_DATADIR="\"$(datadir)\""		\
-+AM_CPPFLAGS += -I$(srcdir)/src/or -Isrc/or	\
-+		-DSHARE_DATADIR="\"$(datadir)\""				\
++AM_CPPFLAGS += -I$(srcdir)/src/or -Isrc/or \
++		-DSHARE_DATADIR="\"$(datadir)\"" \
  		-DLOCALSTATEDIR="\"$(localstatedir)\""	\
  		-DBINDIR="\"$(bindir)\""
  
@@ -45,11 +45,10 @@
 -	src/common/libor-crypto.a $(LIBKECCAK_TINY) $(LIBDONNA) \
 -	src/common/libor-event.a src/trunnel/libor-trunnel.a \
 -	src/trace/libor-trace.a \
--	$(rust_ldadd) \
 -	@TOR_ZLIB_LIBS@ @TOR_LIB_MATH@ @TOR_LIBEVENT_LIBS@ @TOR_OPENSSL_LIBS@ \
--	@TOR_LIB_WS32@ @TOR_LIB_GDI@ @TOR_LIB_USERENV@ \
--	@CURVE25519_LIBS@ @TOR_SYSTEMD_LIBS@ \
--	@TOR_LZMA_LIBS@ @TOR_ZSTD_LIBS@
+-	@TOR_LIB_WS32@ @TOR_LIB_GDI@ @CURVE25519_LIBS@ @TOR_SYSTEMD_LIBS@ \
+-	@TOR_LZMA_LIBS@ @TOR_ZSTD_LIBS@ \
+-	$(rust_ldadd)
 -
 -if COVERAGE_ENABLED
 -src_or_tor_cov_SOURCES = src/or/tor_main.c
