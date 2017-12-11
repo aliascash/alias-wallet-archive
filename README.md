@@ -3,8 +3,6 @@ SpectreCoin
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
-Current development activity is on the dev-1.4 branch, for the upcoming 1.4 release.
-
 The latest release is [1.3.3](https://github.com/spectrecoin/spectre/releases/tag/v1.3.3), released on September 12, 2017.
 
 Building on Linux
@@ -19,13 +17,16 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 
 To build the wallet, run the following commands:
 
-    $ git submodule update --init  # to check out the Tor and LevelDB dependencies
     $ ./autogen.sh
     $ ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     $ make -j2
 
+If your distribution provides both OpenSSL 1.0 and OpenSSL 1.1, you'll need to use the `PKG_CONFIG_PATH` environment variable to point `configure` to the directory that contains the `openssl.pc` file for OpenSSL 1.0. For example:
+
+    $ PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig ./configure --enable-gui
+
+Please note that building with `clang` is not currently supported, due to a limitation in Berkeley DB. If `clang` is the default compiler on your system please use the `CC` and `CXX` environment variables when calling `configure` to select `gcc` instead like this:
+
+    $ CC=gcc CXX=g++ ./configure --enable-gui
+
 The resulting binaries will be in the `src` directory and called `spectre` for the GUI wallet and `spectrecoind` for the console wallet.
-
-If your distro ships OpenSSL 1.1 as the default version of OpenSSL, you'll need to install OpenSSL 1.0 and pass the correct paths to `configure`. An example for Arch Linux is:
-
-    $ ./configure --enable-gui LDFLAGS="-L/usr/lib/openssl-1.0" CFLAGS="-I/usr/include/openssl-1.0 -O2" CPPFLAGS="-I/usr/include/openssl-1.0 -O2"
