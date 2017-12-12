@@ -68,6 +68,8 @@ void OptionsModel::Init()
         SoftSetBoolArg("-staking", settings.value("fStaking").toBool());
     if (settings.contains("nMinStakeInterval"))
         SoftSetArg("-minstakeinterval", settings.value("nMinStakeInterval").toString().toStdString());
+    if (settings.contains("nStakingDonation"))
+        SoftSetArg("-stakingdonation", settings.value("nStakingDonation").toString().toStdString());
     if (settings.contains("fSecMsgEnabled"))
         SoftSetBoolArg("-nosmsg", !settings.value("fSecMsgEnabled").toBool());
     if (settings.contains("fThinMode"))
@@ -140,6 +142,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return nMaxRingSize;
         case Staking:
             return settings.value("fStaking", GetBoolArg("-staking", true)).toBool();
+        case StakingDonation:
+            return nStakingDonation;
         case MinStakeInterval:
             return nMinStakeInterval;
         case SecureMessaging:
@@ -169,6 +173,7 @@ QString OptionsModel::optionIDName(int row)
     case StartAtStartup: return "StartAtStartup";
     case DetachDatabases: return "DetachDatabases";
     case Staking: return "Staking";
+    case StakingDonation: return "StakingDonation";
     case MinStakeInterval: return "MinStakeInterval";
     case SecureMessaging: return "SecureMessaging";
     case ThinMode: return "ThinMode";
@@ -322,6 +327,10 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case Staking:
             settings.setValue("fStaking", value.toBool());
+            break;
+        case StakingDonation:
+            nStakingDonation = value.toInt();
+            settings.setValue("nStakingDonation", nStakingDonation);
             break;
         case MinStakeInterval:
             nMinStakeInterval = value.toInt();

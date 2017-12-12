@@ -68,8 +68,8 @@ extern int nNodeState;
 extern int nMaxThinPeers;
 extern int nBloomFilterElements;
 
-
 extern int nMinStakeInterval;
+extern int nStakingDonation;
 
 extern int nThinIndexWindow;
 

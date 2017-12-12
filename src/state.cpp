@@ -11,6 +11,7 @@ int nNodeState = NS_STARTUP;
 int nMaxThinPeers = 8;
 int nBloomFilterElements = 1536;
 int nMinStakeInterval = 0;         // in seconds, min time between successful stakes
+int nStakingDonation = 5;          // percentage of stakes that will be donated to the developers
 int nThinIndexWindow = 4096;        // no. of block headers to keep in memory
 
 // -- services provided by local node, initialise to all on

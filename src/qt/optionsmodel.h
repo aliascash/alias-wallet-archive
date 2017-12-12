@@ -25,6 +25,7 @@ public:
         StartAtStartup,      /**< Default Transaction Fee. bool */
         DetachDatabases,     /**< Default Transaction Fee. bool */
         Staking,             /**< Default Transaction Fee. bool */
+        StakingDonation,
         MinStakeInterval,
         SecureMessaging,     /**< Default Transaction Fee. bool */
         ThinMode,            /**< Default Transaction Fee. bool */
@@ -74,6 +75,7 @@ public:
     int getRowsPerPage();
     int getMinRingSize();
     int getMaxRingSize();
+    int getStakingDonation();
     QStringList getNotifications();
     QStringList getVisibleTransactions();
     QString getLanguage() { return language; }
@@ -89,6 +91,7 @@ private:
     int nRowsPerPage;
     int nMinRingSize;
     int nMaxRingSize;
+    int fStakingDonation;
     bool bDisplayAddresses;
     bool fMinimizeToTray;
     bool fMinimizeOnClose;

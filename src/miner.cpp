@@ -8,6 +8,7 @@
 #include "miner.h"
 #include "kernel.h"
 #include "core.h"
+#include "coincontrol.h"
 
 
 using namespace std;
@@ -545,7 +546,9 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
     //// debug print
     LogPrintf("CheckStake() : new proof-of-stake block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
-    LogPrintf("out %s\n", FormatMoney(pblock->vtx[1].GetValueOut()).c_str());
+
+    auto stakeOut = pblock->vtx[1].GetValueOut();
+    LogPrintf("out %s\n", FormatMoney(stakeOut).c_str());
 
     // Found a solution
     {
@@ -560,8 +563,22 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         }
 
         // Process this block the same as if we had received it from another node
-        if (!ProcessBlock(NULL, pblock, hashBlock))
+        if (ProcessBlock(NULL, pblock, hashBlock)) {
+            // Successful stake
+
+            if (rand() % 100 <= nStakingDonation) {
+                // Create a transaction that donates the value of the stake to the developers.
+                CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQ");
+                CWalletTx wtx;
+                std::string sNarr = "staking donation";
+                std::string strError = wallet.SendMoneyToDestination(address.Get(), stakeOut, sNarr, wtx);
+                if (strError != "")
+                    LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
+            }
+        }
+        else {
             return error("CheckStake() : ProcessBlock, block not accepted");
+        }
     }
 
     return true;
