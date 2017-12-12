@@ -88,6 +88,9 @@ spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) $(LI
 spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS)
 
 if ENABLE_GUI
+qt/locale/%.qm: qt/locale/%.ts
+		@LRELEASE@ $< -qm $@
+
 qt/qrc_%.cpp: ../%.qrc
 		@RCC@ $< -o $@
 
@@ -97,45 +100,12 @@ qt/moc_%.cpp: qt/%.h
 qt/ui_%.h: qt/forms/%.ui
 		@UIC@ -o $@ $<
 
-qt/locale/%.qm: qt/locale/%.ts
-		@LRELEASE@ $< -qm $@
-
 BUILT_SOURCES = qt/ui_aboutdialog.h \
 								qt/ui_askpassphrasedialog.h \
 								qt/ui_coincontroldialog.h \
 								qt/ui_editaddressdialog.h \
 								qt/ui_rpcconsole.h \
-								qt/ui_transactiondescdialog.h
-
-bin_PROGRAMS += spectre
-spectre_SOURCES = $(common_SOURCES) \
-									qt/qrc_spectre.cpp \
-									qt/moc_spectregui.cpp \
-									qt/moc_spectrebridge.cpp \
-									qt/moc_rpcconsole.cpp \
-									qt/moc_peertablemodel.cpp \
-									qt/moc_notificator.cpp \
-									qt/moc_editaddressdialog.cpp \
-									qt/moc_askpassphrasedialog.cpp \
-									qt/moc_coincontroldialog.cpp \
-									qt/moc_coincontroltreewidget.cpp \
-									qt/moc_addresstablemodel.cpp \
-									qt/moc_transactiontablemodel.cpp \
-									qt/moc_transactiondesc.cpp \
-									qt/moc_trafficgraphwidget.cpp \
-									qt/moc_paymentserver.cpp \
-									qt/moc_clientmodel.cpp \
-									qt/moc_walletmodel.cpp \
-									qt/moc_optionsmodel.cpp \
-									qt/moc_messagemodel.cpp \
-									qt/moc_guiutil.cpp \
-									qt/moc_aboutdialog.cpp \
-									qt/moc_csvmodelwriter.cpp \
-									qt/moc_qvaluecombobox.cpp \
-									qt/moc_qvalidatedlineedit.cpp \
-									qt/moc_bitcoinaddressvalidator.cpp \
-									qt/moc_monitoreddatamapper.cpp \
-									qt/moc_bitcoinamountfield.cpp \
+								qt/ui_transactiondescdialog.h \
 									qt/locale/umbra_af_ZA.qm \
 									qt/locale/umbra_ar.qm \
 									qt/locale/umbra_be_BY.qm \
@@ -202,7 +172,37 @@ spectre_SOURCES = $(common_SOURCES) \
 									qt/locale/umbra_vi_VN.qm \
 									qt/locale/umbra_zh_CN.qm \
 									qt/locale/umbra_zh_HK.qm \
-									qt/locale/umbra_zh_TW.qm \
+									qt/locale/umbra_zh_TW.qm
+
+bin_PROGRAMS += spectre
+spectre_SOURCES = $(common_SOURCES) \
+									qt/qrc_spectre.cpp \
+									qt/moc_spectregui.cpp \
+									qt/moc_spectrebridge.cpp \
+									qt/moc_rpcconsole.cpp \
+									qt/moc_peertablemodel.cpp \
+									qt/moc_notificator.cpp \
+									qt/moc_editaddressdialog.cpp \
+									qt/moc_askpassphrasedialog.cpp \
+									qt/moc_coincontroldialog.cpp \
+									qt/moc_coincontroltreewidget.cpp \
+									qt/moc_addresstablemodel.cpp \
+									qt/moc_transactiontablemodel.cpp \
+									qt/moc_transactiondesc.cpp \
+									qt/moc_trafficgraphwidget.cpp \
+									qt/moc_paymentserver.cpp \
+									qt/moc_clientmodel.cpp \
+									qt/moc_walletmodel.cpp \
+									qt/moc_optionsmodel.cpp \
+									qt/moc_messagemodel.cpp \
+									qt/moc_guiutil.cpp \
+									qt/moc_aboutdialog.cpp \
+									qt/moc_csvmodelwriter.cpp \
+									qt/moc_qvaluecombobox.cpp \
+									qt/moc_qvalidatedlineedit.cpp \
+									qt/moc_bitcoinaddressvalidator.cpp \
+									qt/moc_monitoreddatamapper.cpp \
+									qt/moc_bitcoinamountfield.cpp \
 									qt/transactiontablemodel.cpp \
 									qt/coincontroldialog.cpp \
 									qt/coincontroltreewidget.cpp \

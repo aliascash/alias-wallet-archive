@@ -119,10 +119,9 @@
                         <div id=status class=b-grey>
                             <ul class="no-margin hidden-sm hidden-xs no-style p-l-10 p-r-10 p-b-10">
                                 <li class="inline p-l-10"><progress id=syncProgressBar max=100 value=1 data-title="Catching up...
-                                downloaded 0 blocks of history..."></progress>
+downloaded 0 blocks of history..."></progress>
                                     <li class="inline p-l-10">
                                         <div id=tor class=tor data-title="Tor+OBFS4 connection online"></div>
-                                        <!-- <li class="inline p-l-10"><div id=i2p class=no-i2p data-title="i2p connection offline"></div> -->
                                         <li class="inline p-l-10">
                                             <div id=encryptionIcon class="no-encryption f-off" onclick='bridge.userAction(["toggleLock"])' data-title="Wallet is encrypted and currently locked"></div>
                                             <li class="inline p-l-10">
@@ -1099,9 +1098,15 @@
                                                                     <p class="small hint-text">Optional transaction fee per kB that helps make sure your transactions are processed quickly.
                                                                         <p class="small hint-text">Most transactions are 1kB. Fee 0.01 recommended.</p><input id=optFee class=form-control-options-page onchange='unit.parse(this,$("#optFeeunit").val())' placeholder=0.00000000 step=0.01 type=number value=0.00000000><select class=select-drop-down id=optFeeunit onchange='unit.format("#optFee",$(this).val())'><option title=Spectre value=0>XSPEC<option title="Milli-Spectre (1 / 1000)" value=1>mXSPEC<option title="Micro-Spectre (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
                                                             </div>
+
                                                             <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optStaking>Enable Staking</label>
                                                                 <div class=col-sm-9>
                                                                     <div class="checkbox option check-danger"><input data-linked="optReserveBalance optReserveBalanceunit" id=optStaking type=checkbox><label class=option for=optStaking></label></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group"><label class="col-sm-3 control-label p-l-20" for="optStakingDonation">Staking Donation</label>
+                                                                <div class="col-sm-9">
+                                                                    <p class="small hint-text">Donate a portion of your staking rewards to fund ongoing development.</p><input id="optStakingDonation" class="form-control-options-page" placeholder="5" step="1" type="number" value="5" max="100" min="0">%
                                                                 </div>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optReserveBalance>Reserve:</label>
@@ -1113,6 +1118,7 @@
                                                                     <div class=option><input id=optMinStakeInterval class=form-control-options-page placeholder=30 title="Minimum time in seconds between successful stakes" type=number></div>
                                                                 </div>
                                                             </div>
+
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMinRingSize>Minimum Ring size:</label>
                                                                 <div class=col-sm-9>
                                                                     <div class=option><input id=optMinRingSize class=form-control-options-page min=1 placeholder=1 type=number></div>
