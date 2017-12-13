@@ -1,4 +1,4 @@
-AC_INIT([spectrecoind], [1.3.3])
+AC_INIT([spectrecoind], [1.3.4])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
