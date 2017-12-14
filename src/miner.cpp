@@ -568,7 +568,7 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
 
             if (rand() % 100 <= nStakingDonation) {
                 // Create a transaction that donates the value of the stake to the developers.
-                CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQ");
+                CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
                 CWalletTx wtx;
                 std::string sNarr = "staking donation";
                 std::string strError = wallet.SendMoneyToDestination(address.Get(), stakeOut, sNarr, wtx);
