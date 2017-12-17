@@ -303,7 +303,7 @@ bool static Socks5(string strDest, int port, SOCKET& hSocket)
     if (!InterruptibleRecv(pchRet1, 2, SOCKS5_RECV_TIMEOUT, hSocket))
     {
         CloseSocket(hSocket);
-        return error("Error reading proxy response");
+        return false;
     }
     if (pchRet1[0] != 0x05 || pchRet1[1] != 0x00)
     {
@@ -326,7 +326,7 @@ bool static Socks5(string strDest, int port, SOCKET& hSocket)
     if (!InterruptibleRecv(pchRet2, 4, SOCKS5_RECV_TIMEOUT, hSocket))
     {
         CloseSocket(hSocket);
-        return error("Error reading proxy response");
+        return false;
     }
     if (pchRet2[0] != 0x05)
     {
