@@ -120,7 +120,7 @@ public:
 CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
 {
     // Create new block
-    auto_ptr<CBlock> pblock(new CBlock());
+    unique_ptr<CBlock> pblock(new CBlock());
     if (!pblock.get())
         return NULL;
 
@@ -547,8 +547,8 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
     LogPrintf("CheckStake() : new proof-of-stake block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
 
-    auto stakeOut = pblock->vtx[1].GetValueOut();
-    LogPrintf("out %s\n", FormatMoney(stakeOut).c_str());
+    int64_t vout = pblock->vtx[1].GetValueOut();
+    LogPrintf("out %s\n", FormatMoney(vout).c_str());
 
     // Found a solution
     {
@@ -567,13 +567,30 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
             // Successful stake
 
             if (rand() % 100 <= nStakingDonation) {
+                CTxDB txdb("r");
+                map<uint256, CTxIndex> mapTestPool;
+                MapPrevTx mapInputs;
+                bool fInvalid;
+                if (!pblock->vtx[1].FetchInputs(txdb, mapTestPool, false, true, mapInputs, fInvalid))
+                    return error("CheckStake() : invalid inputs");
+
+                int64_t vin = pblock->vtx[1].GetValueIn(mapInputs);
+                LogPrintf("in %s\n", FormatMoney(vin).c_str());
+
                 // Create a transaction that donates the value of the stake to the developers.
-                CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
-                CWalletTx wtx;
-                std::string sNarr = "staking donation";
-                std::string strError = wallet.SendMoneyToDestination(address.Get(), stakeOut, sNarr, wtx);
-                if (strError != "")
-                    LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
+                int64_t donation = vout - vin;
+                if (donation < 0) {
+                    LogPrintf("did not donate stake to developers: vin > vout!\n");
+                    return true;
+                }
+                LogPrintf("donate %s\n", FormatMoney(donation).c_str());
+                // Don't actually make the donation yet, just log.
+                // CWalletTx wtx;
+                // CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
+                // std::string sNarr = "staking donation";
+                // std::string strError = wallet.SendMoneyToDestination(address.Get(), donation, sNarr, wtx);
+                // if (strError != "")
+                //    LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
             }
         }
         else {
@@ -647,7 +664,7 @@ void ThreadStakeMiner(CWallet *pwallet)
         // Create new block
         //
         int64_t nFees;
-        auto_ptr<CBlock> pblock(CreateNewBlock(pwallet, true, &nFees));
+        unique_ptr<CBlock> pblock(CreateNewBlock(pwallet, true, &nFees));
         if (!pblock.get())
             return;
 
