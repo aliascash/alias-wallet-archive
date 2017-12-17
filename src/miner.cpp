@@ -566,7 +566,7 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         if (ProcessBlock(NULL, pblock, hashBlock)) {
             // Successful stake
 
-            if (rand() % 100 <= nStakingDonation) {
+            if (rand() % 100 < nStakingDonation) {
                 CTxDB txdb("r");
                 map<uint256, CTxIndex> mapTestPool;
                 MapPrevTx mapInputs;
