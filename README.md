@@ -8,12 +8,18 @@ The latest release is [1.3.3](https://github.com/spectrecoin/spectre/releases/ta
 Building on Linux
 -----------------
 
+**To build a stable wallet from source, please download the source code of the latest release from the [releases page](https://github.com/spectrecoin/spectre/releases). Building from the master branch (the development code for the next release) should only be done if you plan to work on the code and understand the risks.**
+
 We do not currently provide Linux binary packages. To build the SpectreCoin wallet from source, you will need the following dependencies:
 
  * OpenSSL 1.0
  * libevent
+ * libseccomp
+ * libcap
  * boost
  * Qt 4 if you want to build the GUI wallet. Qt is not needed for the console wallet.
+
+Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these; on Debian/Ubuntu it is called `build-essential`, on Fedora it is `@development-tools` and on Arch it is `base-devel`.
 
 To build the wallet, run the following commands:
 
