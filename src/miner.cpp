@@ -578,19 +578,20 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
                 LogPrintf("in %s\n", FormatMoney(vin).c_str());
 
                 // Create a transaction that donates the value of the stake to the developers.
+
                 int64_t donation = vout - vin;
                 if (donation < 0) {
                     LogPrintf("did not donate stake to developers: vin > vout!\n");
                     return true;
                 }
                 LogPrintf("donate %s\n", FormatMoney(donation).c_str());
-                // Don't actually make the donation yet, just log.
-                // CWalletTx wtx;
-                // CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
-                // std::string sNarr = "staking donation";
-                // std::string strError = wallet.SendMoneyToDestination(address.Get(), donation, sNarr, wtx);
-                // if (strError != "")
-                //    LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
+
+                CWalletTx wtx;
+                CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
+                std::string sNarr = "staking donation";
+                std::string strError = wallet.SendMoneyToDestination(address.Get(), donation, sNarr, wtx);
+                if (strError != "")
+                  LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
             }
         }
         else {
