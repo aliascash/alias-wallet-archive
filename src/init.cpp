@@ -226,6 +226,7 @@ std::string HelpMessage()
     strUsage += "  -onionseed             " + _("Find peers using .onion seeds (default: 1 unless -connect)") + "\n";
     strUsage += "  -staking               " + _("Stake your coins to support network and gain reward (default: 1)") + "\n";
     strUsage += "  -minstakeinterval=<n>  " + _("Minimum time in seconds between successful stakes (default: 30)") + "\n";
+    strUsage += "  -stakingdonation=<n>   " + _("Percentage of staking rewards to donate to the developers (between 0 and 100 inclusive, default 5)") + "\n";
     strUsage += "  -minersleep=<n>        " + _("Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)") + "\n";
     strUsage += "  -synctime              " + _("Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)") + "\n";
     strUsage += "  -banscore=<n>          " + _("Threshold for disconnecting misbehaving peers (default: 100)") + "\n";
@@ -389,6 +390,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     nNodeLifespan = GetArg("-addrlifespan", 7);
 
     nMinStakeInterval = GetArg("-minstakeinterval", 0);
+    nStakingDonation = GetArg("-stakingdonation", 5);
     nMinerSleep = GetArg("-minersleep", 500);
 
     fUseFastIndex = GetBoolArg("-fastindex", true);
