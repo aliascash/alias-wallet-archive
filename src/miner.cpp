@@ -9,7 +9,8 @@
 #include "kernel.h"
 #include "core.h"
 #include "coincontrol.h"
-
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 using namespace std;
 
@@ -528,6 +529,9 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     return true;
 }
 
+boost::random::mt19937 stakingDonationRng;
+boost::random::uniform_int_distribution<> stakingDonationDistribution(1, 100);
+
 bool CheckStake(CBlock* pblock, CWallet& wallet)
 {
     uint256 proofHash = 0, hashTarget = 0;
@@ -566,7 +570,12 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         if (ProcessBlock(NULL, pblock, hashBlock)) {
             // Successful stake
 
-            if (rand() % 100 < nStakingDonation) {
+            if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
+                if (fWalletUnlockStakingOnly) {
+                    LogPrintf("cannot donate stake to developers as wallet is unlocked for staking only\n");
+                    return true;
+                }
+
                 CTxDB txdb("r");
                 map<uint256, CTxIndex> mapTestPool;
                 MapPrevTx mapInputs;
@@ -580,18 +589,51 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
                 // Create a transaction that donates the value of the stake to the developers.
 
                 int64_t donation = vout - vin;
-                if (donation < 0) {
-                    LogPrintf("did not donate stake to developers: vin > vout!\n");
+                if (donation <= 0) {
+                    LogPrintf("did not donate stake to developers: vin >= vout!\n");
                     return true;
                 }
                 LogPrintf("donate %s\n", FormatMoney(donation).c_str());
 
-                CWalletTx wtx;
                 CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
-                std::string sNarr = "staking donation";
-                std::string strError = wallet.SendMoneyToDestination(address.Get(), donation, sNarr, wtx);
-                if (strError != "")
-                  LogPrintf("failed to donate stake to developers: %s\n", strError.c_str());
+                CTxDestination dest = address.Get();
+                CScript scriptPubKey;
+                uint32_t nChildKey;
+                CExtKeyPair ek;
+                if (dest.type() == typeid(CExtKeyPair)) {
+                    ek = boost::get<CExtKeyPair>(dest);
+                    CExtKey58 ek58;
+                    ek58.SetKeyP(ek);
+                    if (0 != wallet.ExtKeyGetDestination(ek, scriptPubKey, nChildKey)) {
+                        LogPrintf("failed to donate stake to developers: ExtKeyGetDestination failed\n");
+                        return true;
+                    }
+                }
+                else
+                    scriptPubKey.SetDestination(dest);
+
+                CCoinControl *coinControl = new CCoinControl();
+                unsigned int idx = 0;
+                uint256 txHash = pblock->vtx[1].GetHash();
+                BOOST_FOREACH(CTxOut unused, pblock->vtx[1].vout) {
+                    COutPoint outp(txHash, idx++);
+                    coinControl->Select(outp);
+                }
+
+                CWalletTx wtx;
+                int64_t feeRequired;
+                std::string narration = "staking donation";
+                if (!wallet.CreateTransaction(scriptPubKey, donation, narration, wtx, feeRequired, coinControl)) {
+                    LogPrintf("failed to donate stake to developers: CreateTransaction failed");
+                    return true;
+                }
+                if (!wallet.CommitTransaction(wtx)) {
+                    LogPrintf("failed to donate stake to developers: CommitTransaction failed");
+                    return true;
+                }
+
+                if (dest.type() == typeid(CExtKeyPair))
+                    wallet.ExtKeyUpdateLooseKey(ek, nChildKey, true);
             }
         }
         else {
