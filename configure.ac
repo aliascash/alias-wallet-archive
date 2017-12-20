@@ -14,8 +14,8 @@ AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-p
 PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES(LIBEVENT, [libevent], [], [AC_MSG_ERROR([libevent not found])])
 PKG_CHECK_MODULES(LIBSECCOMP, [libseccomp], [], [AC_MSG_ERROR([libseccomp not found])])
-PKG_CHECK_MODULES(LIBCAP, [libcap], [], [AC_MSG_ERROR([libcap not found])])
 PKG_CHECK_MODULES(ZLIB, [zlib], [], [AC_MSG_ERROR([zlib not found])])
+AC_CHECK_LIB([cap], [main], , [AC_MSG_ERROR([libcap not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found.])])
 AC_LANG_CPLUSPLUS
 AC_CHECK_LIB([snappy], [main])
