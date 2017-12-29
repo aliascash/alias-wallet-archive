@@ -1867,12 +1867,6 @@ static void run_tor() {
       argv.push_back(*clientTransportPlugin);
       argv.push_back("--UseBridges");
       argv.push_back("1");
-      argv.push_back("--Bridge");
-      argv.push_back("obfs4 104.234.220.21:27122 0B05CD79FD9CE9B952EB7C5E30CB5EDF5A9F0442 cert=REZSarYVMgcrpBh+Sp/kjXj8l7SCPg4AEP7eQgIxaqc6ieSvgBUFqgeifeoGIIsvM0U8Og iat-mode=0");
-      argv.push_back("--Bridge");
-      argv.push_back("obfs4 138.68.21.138:9443 B5287C46B3011A27F2EE7002736EBD6542A9481C cert=52XzQbb3LRCSD6KzxPFJFru12tcQzU/1QVcpgmM4pAv9ONpWnxgr0z+IWG3YaA4vpjPpUQ iat-mode=0");
-      argv.push_back("--Bridge");
-      argv.push_back("obfs4 91.219.239.174:56199 7398013C474F9F0AD9ADF3E2D61E184B3EB58D3F cert=I/jI9xgVNFO1oIarHeJLJDnwu7prtHdUdyDaOuxl4idP0DEqEkxhVMhxBwjaC/9vlgccQQ iat-mode=0");
     }
     else {
       printf("No OBFS4 found, not using it.\n");
