@@ -4079,8 +4079,8 @@ int LoadBlockIndex(bool fAllowNew)
         };
 
         // Start new block file
-        unsigned int nFile;
-        unsigned int nBlockPos;
+        unsigned int nFile = 0;
+        unsigned int nBlockPos = 0;
 
         if (nNodeMode == NT_FULL)
         {

@@ -79,11 +79,6 @@ static void InitMessage(const std::string &message)
     }
 }
 
-static void QueueShutdown()
-{
-    QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
-}
-
 /*
    Translate string to current locale using Qt.
  */

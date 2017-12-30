@@ -37,8 +37,6 @@ CClientUIInterface uiInterface;
 
 unsigned short const onion_port = 9089;
 
-static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown

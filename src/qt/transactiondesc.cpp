@@ -85,7 +85,8 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                     const CScript &s = txout.scriptPubKey;
                     CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
                     std::string sAnonPrefix("ao ");
-                    if (wallet->HaveKey(ckidD) && (wallet->mapAddressBook[ckidD].empty() || !wallet->mapAddressBook[ckidD].compare(0, sAnonPrefix.length(), sAnonPrefix) == 0))
+                    if (wallet->HaveKey(ckidD) && (wallet->mapAddressBook[ckidD].empty()
+                                                   || wallet->mapAddressBook[ckidD].compare(0, sAnonPrefix.length(), sAnonPrefix) == 0))
                     {
                         strHTML += "<b>" + tr("From") + ":</b> " + tr("unknown") + "<br>";
                         strHTML += "<b>" + tr("To") + ":</b> <a href='"+explorer+"address/";

@@ -4,6 +4,7 @@ AM_CPPFLAGS =	-pthread -O2 \
 		-D_FORTIFY_SOURCE \
 		-Wall -Wextra -Wno-ignored-qualifiers \
 		-Wformat -Wformat-security -Wno-unused-parameter \
+		-Werror \
 		-I../leveldb/include -I../leveldb/helpers \
 		-I../db4.8/build_unix
 AM_CFLAGS = -std=c17 $(AM_CPPFLAGS)

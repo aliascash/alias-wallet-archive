@@ -4500,7 +4500,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
             return false;
         };
 
-        if (txin.scriptSig.size() < nSigSize)
+        if (txin.scriptSig.size() < (unsigned long) nSigSize)
         {
             sError = "Error: scriptSig too small.";
             return false;
@@ -6880,7 +6880,6 @@ int CWallet::ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn, bool fBip4
 
         std::vector<uint8_t> v;
         sek.mapValue[EKVT_KEY_TYPE] = SetChar(v, EKT_BIP44_MASTER);
-        CKeyID idRoot = sek.GetID();
 
         CExtKey evDerivedKey;
         sek.kp.Derive(evDerivedKey, BIP44_PURPOSE);

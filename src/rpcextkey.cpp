@@ -425,7 +425,7 @@ public:
         };
         
         rvArray->push_back(obj);
-        
+        return 0;
     };
     
     int ProcessAccount(CKeyID &id, CExtKeyAccount &sea)
@@ -439,6 +439,7 @@ public:
         };
         
         rvArray->push_back(obj);
+        return 0;
     };
     
     std::string sError;
