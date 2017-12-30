@@ -6,7 +6,8 @@ AM_CPPFLAGS =	-pthread -O2 \
 		-Wformat -Wformat-security -Wno-unused-parameter \
 		-I../leveldb/include -I../leveldb/helpers \
 		-I../db4.8/build_unix
-AM_CFLAGS = -std=gnu99 $(AM_CPPFLAGS)
+AM_CFLAGS = -std=c17 $(AM_CPPFLAGS)
+AM_CPPFLAGS += -std=c++17
 
 common_SOURCES = anonymize.cpp \
 						json/json_spirit_reader.cpp \
