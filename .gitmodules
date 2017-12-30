@@ -5,4 +5,4 @@
 [submodule "leveldb"]
   path = leveldb
   url = https://github.com/bitcoin-core/leveldb
-  branch = bitcoin-fork
+  branch = 4c1e9e01688864a32217e541102fa8d2df9a3d59
