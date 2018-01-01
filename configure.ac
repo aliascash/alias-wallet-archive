@@ -7,28 +7,38 @@ AM_PROG_AS
 AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_LIBTOOL
+AC_CANONICAL_HOST
+AC_MSG_CHECKING([whether we are cross-compiling for Windows])
+AS_IF([test "x${host_os}" = "xmingw32"], AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+AM_CONDITIONAL([OS_WINDOWS_CROSSCOMPILE], [test "x${host_os}" = "xmingw32"])
+AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
 AC_CONFIG_FILES([Makefile src/Makefile])
-PKG_CHECK_MODULES(OPENSSL, [openssl < 1.1], [], [AC_MSG_ERROR([OpenSSL 1.0 not found])])
-AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$(pkg-config --variable=libdir openssl)], [CFLAGS=$(pkg-config --cflags openssl)]])
-AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [CC=gcc], [CXX=g++]])
 PKG_PROG_PKG_CONFIG
+PKG_CHECK_MODULES(OPENSSL, [openssl < 1.1], [], [AC_MSG_ERROR([OpenSSL 1.0 not found])])
+AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl)]])
+# TODO: there is surely a better way to do this. learn it!
+if test "x$host_os" = "xmingw32" ; then
+  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [--enable-mingw]])
+else
+  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared]])
+fi
 PKG_CHECK_MODULES(LIBEVENT, [libevent], [], [AC_MSG_ERROR([libevent not found])])
-PKG_CHECK_MODULES(LIBSECCOMP, [libseccomp], [], [AC_MSG_ERROR([libseccomp not found])])
 PKG_CHECK_MODULES(ZLIB, [zlib], [], [AC_MSG_ERROR([zlib not found])])
-AC_CHECK_LIB([cap], [main], , [AC_MSG_ERROR([libcap not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found.])])
 AC_LANG_CPLUSPLUS
 AC_CHECK_LIB([snappy], [main])
-AC_CHECK_LIB([boost_system], [main], ,
-             [AC_MSG_ERROR([libboost_system not found.])])
-AC_CHECK_LIB([boost_filesystem], [main], ,
-             [AC_MSG_ERROR([libboost_filesystem not found.])])
-AC_CHECK_LIB([boost_program_options], [main], ,
-             [AC_MSG_ERROR([libboost_program_options not found.])])
-AC_CHECK_LIB([boost_thread], [main], ,
-             [AC_MSG_ERROR([libboost_thread not found.])])
+BOOST_REQUIRE([1.66])
+BOOST_SYSTEM([mt])
+BOOST_CHRONO([mt])
+BOOST_FILESYSTEM([mt])
+BOOST_PROGRAM_OPTIONS([mt])
+BOOST_THREAD([mt])
+BOOST_ASIO
+BOOST_DATE_TIME([mt])
+BOOST_IOSTREAMS([mt])
 AC_ARG_ENABLE([gui], [AS_HELP_STRING([--enable-gui], [Build the Qt GUI wallet])])
-if test "$enable_gui" = "yes" ; then
+if test "x$enable_gui" = "xyes" ; then
   PKG_CHECK_MODULES(QT4, [QtCore QtGui QtWebKit >= 4.4.0], [], [AC_MSG_ERROR([Qt4 not found.])])
   if ! `$PKG_CONFIG --atleast-version=4.8.0 QtCore`; then
    AC_MSG_ERROR([Qt4 >= 4.8 not found.])

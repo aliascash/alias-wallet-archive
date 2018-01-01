@@ -42,7 +42,6 @@ Value mnemonic(const Array &params, bool fHelp)
     
     std::string mode = "";
     
-    uint32_t nParamOffset = 0;
     if (params.size() > 0)
     {
         std::string s = params[0].get_str();
@@ -53,8 +52,6 @@ Value mnemonic(const Array &params, bool fHelp)
         {
             st.erase(std::remove(st.begin(), st.end(), ' '), st.end());
             mode = st;
-            
-            nParamOffset = 1;
         } else
         {
             throw std::runtime_error("Unknown mode.");

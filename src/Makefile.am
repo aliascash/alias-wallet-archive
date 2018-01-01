@@ -1,14 +1,16 @@
-AM_LDFLAGS = -Wl,-z,relro -Wl,-z,now
+if OS_WINDOWS_CROSSCOMPILE
+#?
+else
+  AM_LDFLAGS = -Wl,-z,relro -Wl,-z,now
+endif
 AM_CPPFLAGS =	-pthread -O2 \
-		-fstack-protector-all -Wstack-protector \
 		-D_FORTIFY_SOURCE \
-		-Wall -Wextra -Wno-ignored-qualifiers \
+		-fstack-protector-all \
+		-Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
 		-Wformat -Wformat-security -Wno-unused-parameter \
-		-Werror \
 		-I../leveldb/include -I../leveldb/helpers \
 		-I../db4.8/build_unix
-AM_CFLAGS = -std=c17 $(AM_CPPFLAGS)
-AM_CPPFLAGS += -std=c++17
+AM_CFLAGS = $(AM_CPPFLAGS) -std=c11
 
 common_SOURCES = anonymize.cpp \
 						json/json_spirit_reader.cpp \
@@ -84,10 +86,24 @@ spectrecoind_LDADD =	../leveldb/out-static/libmemenv.a \
 			$(LIBEVENT_LIBS) \
 			$(LIBSECCOMP_LIBS) \
 			$(LIBCAP_LIBS) \
-			$(ZLIB_LIBS)
+			$(ZLIB_LIBS) \
+			$(BOOST_SYSTEM_LIBS) \
+			$(BOOST_CHRONO_LIBS) \
+			$(BOOST_FILESYSTEM_LIBS) \
+			$(BOOST_PROGRAM_OPTIONS_LIBS) \
+			$(BOOST_THREAD_LIBS)
 
-spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) $(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS)
-spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS)
+if OS_WINDOWS_CROSSCOMPILE
+# Add SSP (for stack smashing protection symbols) and Win32 API libraries
+spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
+endif
+
+spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
+			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CPPFLAGS) \
+			-DBOOST_ASIO_ENABLE_OLD_SERVICES
+spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
+		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) \
+		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 
 if ENABLE_GUI
 qt/locale/%.qm: qt/locale/%.ts

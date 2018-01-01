@@ -1,0 +1,35 @@
+diff --git a/Makefile b/Makefile
+index f7cc7d7..70832be 100644
+--- a/Makefile
++++ b/Makefile
+@@ -78,6 +78,9 @@ DEVICE_CFLAGS = -isysroot "$(DEVICESDK)" -arch armv6 -arch armv7 -arch armv7s -a
+ SIMULATOR_CFLAGS = -isysroot "$(SIMULATORSDK)" -arch i686 -arch x86_64
+ STATIC_OUTDIR=out-ios-universal
+ else
++ifeq ($(PLATFORM), OS_WINDOWS)
++AR=x86_64-w64-mingw32-ar
++endif
+ STATIC_OUTDIR=out-static
+ SHARED_OUTDIR=out-shared
+ STATIC_PROGRAMS := $(addprefix $(STATIC_OUTDIR)/, $(PROGNAMES))
+@@ -139,7 +142,7 @@ $(SHARED_OUTDIR)/$(SHARED_LIB3): $(SHARED_LIBOBJECTS)
+ 
+ endif  # PLATFORM_SHARED_EXT
+ 
+-all: $(SHARED_LIBS) $(SHARED_PROGRAMS) $(STATIC_OUTDIR)/libleveldb.a $(STATIC_OUTDIR)/libmemenv.a $(STATIC_PROGRAMS)
++all: $(SHARED_LIBS) $(STATIC_OUTDIR)/libleveldb.a $(STATIC_OUTDIR)/libmemenv.a
+ 
+ check: $(STATIC_PROGRAMS)
+ 	for t in $(notdir $(TESTS)); do echo "***** Running $$t"; $(STATIC_OUTDIR)/$$t || exit 1; done
+diff --git a/port/port_win.cc b/port/port_win.cc
+index 1b0f060..b1800ac 100644
+--- a/port/port_win.cc
++++ b/port/port_win.cc
+@@ -143,5 +143,7 @@ void AtomicPointer::NoBarrier_Store(void* v) {
+   rep_ = v;
+ }
+ 
++uint32_t AcceleratedCRC32C(uint32_t crc, const char* buf, size_t size) { return 0; }
++
+ }
+ }

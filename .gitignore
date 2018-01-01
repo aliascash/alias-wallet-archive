@@ -3,6 +3,7 @@ src/spectrecoin
 src/spectrecoind
 src/test_spectre
 src/build.h
+src/.libs
 .*.swp
 *.*~*
 *.bak
@@ -45,5 +46,7 @@ aclocal.m4
 autom4te.cache
 ar-lib
 compile
+libtool
+ltmain.sh
 
 !db4.8/build_unix/configure
