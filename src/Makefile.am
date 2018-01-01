@@ -96,6 +96,8 @@ spectrecoind_LDADD =	../leveldb/out-static/libmemenv.a \
 if OS_WINDOWS_CROSSCOMPILE
 # Add SSP (for stack smashing protection symbols) and Win32 API libraries
 spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
+else
+spectrecoind_LDADD += -lcap -lseccomp
 endif
 
 spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
