@@ -17,17 +17,29 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * libseccomp
  * libcap
  * boost
- * Qt 4 if you want to build the GUI wallet. Qt is not needed for the console wallet.
+ * Qt 4 and QtWebKit if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
-Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these; on Debian/Ubuntu it is called `build-essential`, on Fedora it is `@development-tools` and on Arch it is `base-devel`.
+Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these.
 
-To build the wallet, run the following commands:
+To check all dependencies and install missing ones on **Debian or Ubuntu**:
+
+    $ apt install build-essential libssl1.0-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev
+    $ apt install libqt4-dev libqtwebkit-dev  # only if building the GUI wallet
+
+To check all dependencies and install missing ones on **Arch Linux**:
+
+    $ pacman -S --needed base-devel openssl-1.0 libevent libseccomp libcap boost
+    $ pacman -S --needed qt4  # only if building the GUI wallet
+    $ # you will also need qtwebkit, which is in AUR. this example uses the pacaur helper:
+    $ pacaur -S --needed qtwebkit-bin  # only if building the GUI wallet
+
+On all platforms, to build the wallet run the following commands:
 
     $ ./autogen.sh
     $ ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
-    $ make -j2
+    $ make -j2  # use a higher number if you have many cores and memory
 
-If your distribution provides both OpenSSL 1.0 and OpenSSL 1.1, you'll need to use the `PKG_CONFIG_PATH` environment variable to point `configure` to the directory that contains the `openssl.pc` file for OpenSSL 1.0. For example:
+If your distribution provides both OpenSSL 1.0 and OpenSSL 1.1, you may need to use the `PKG_CONFIG_PATH` environment variable to point `configure` to the directory that contains the `openssl.pc` file for OpenSSL 1.0. For example, on Arch Linux it's necessary to do this:
 
     $ PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig ./configure --enable-gui
 
