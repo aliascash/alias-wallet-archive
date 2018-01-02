@@ -50,7 +50,7 @@
 #include <QUrl>
 #include <QTextStream>
 #include <QTextDocument>
-
+#include <QDesktopWidget>
 
 #include <iostream>
 
@@ -74,6 +74,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webView = new QWebView();
+
+    int dpiX = qApp->desktop()->logicalDpiX();
+    webView->setZoomFactor((qreal)dpiX / 96.0);
 
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
