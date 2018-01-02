@@ -1,9 +1,0 @@
-Building SpectreCoin
-
-See doc/readme-qt.rst for instructions on building SpectreCoin QT,
-the intended-for-end-users, nice-graphical-interface, reference
-implementation of SpectreCoin.
-
-See doc/build-*.txt for instructions on building spectrecoind,
-the intended-for-services, no-graphical-interface, reference
-implementation of SpectreCoin.
