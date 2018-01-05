@@ -27,8 +27,8 @@ PKG_CHECK_MODULES(LIBEVENT, [libevent], [], [AC_MSG_ERROR([libevent not found])]
 PKG_CHECK_MODULES(ZLIB, [zlib], [], [AC_MSG_ERROR([zlib not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found.])])
 AC_LANG_CPLUSPLUS
-AC_CHECK_LIB([snappy], [main])
-BOOST_REQUIRE([1.62])
+#AC_CHECK_LIB([snappy], [main])
+BOOST_REQUIRE([1.58])
 BOOST_SYSTEM([mt])
 BOOST_CHRONO([mt])
 BOOST_FILESYSTEM([mt])
