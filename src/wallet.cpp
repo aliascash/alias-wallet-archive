@@ -15,6 +15,8 @@
 #include "coincontrol.h"
 #include "pbkdf2.h"
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 using namespace std;
 
@@ -5775,6 +5777,9 @@ uint64_t CWallet::GetStakeWeight() const
     return nWeight;
 }
 
+boost::random::mt19937 stakingDonationRng;
+boost::random::uniform_int_distribution<> stakingDonationDistribution(1, 100);
+
 bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
 {
     CBlockIndex* pindexPrev = pindexBest;
@@ -5954,6 +5959,13 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
             return false;
 
         nCredit += nReward;
+    }
+
+    // (Possibly) donate the stake to developers, according to the configured probability
+    if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
+        LogPrintf("Donating this stake to the developers");
+        CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
+        txNew.vout[1].scriptPubKey.SetDestination(address.Get());
     }
 
     if (nCredit >= nStakeSplitThreshold)

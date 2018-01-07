@@ -10,8 +10,6 @@
 #include "core.h"
 #include "coincontrol.h"
 #include <queue>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 
 using namespace std;
 
@@ -530,16 +528,6 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     return true;
 }
 
-boost::random::mt19937 stakingDonationRng;
-boost::random::uniform_int_distribution<> stakingDonationDistribution(1, 100);
-
-struct StakingDonation {
-    int64_t time;
-    int64_t amount;
-    CCoinControl coinControl;
-};
-std::queue<StakingDonation> stakingDonationQueue;
-
 bool CheckStake(CBlock* pblock, CWallet& wallet)
 {
     uint256 proofHash = 0, hashTarget = 0;
@@ -577,40 +565,6 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         // Process this block the same as if we had received it from another node
         if (ProcessBlock(NULL, pblock, hashBlock)) {
             // Successful stake
-
-            if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
-                if (fWalletUnlockStakingOnly) {
-                    LogPrintf("cannot donate stake to developers as wallet is unlocked for staking only\n");
-                    return true;
-                }
-
-                CTxDB txdb("r");
-                map<uint256, CTxIndex> mapTestPool;
-                MapPrevTx mapInputs;
-                bool fInvalid;
-                if (!pblock->vtx[1].FetchInputs(txdb, mapTestPool, false, true, mapInputs, fInvalid))
-                    return error("CheckStake() : invalid inputs");
-
-                int64_t vin = pblock->vtx[1].GetValueIn(mapInputs);
-                LogPrintf("in %s\n", FormatMoney(vin).c_str());
-
-                int64_t donation = vout - vin;
-                if (donation <= 0) {
-                    LogPrintf("did not donate stake to developers: vin >= vout!\n");
-                    return true;
-                }
-
-                CCoinControl coinControl;
-                unsigned int idx = 0;
-                uint256 txHash = pblock->vtx[1].GetHash();
-                BOOST_FOREACH(CTxOut unused, pblock->vtx[1].vout) {
-                    COutPoint outp(txHash, idx++);
-                    coinControl.Select(outp);
-                }
-
-                LogPrintf("donation push %s\n", FormatMoney(donation).c_str());
-                stakingDonationQueue.push({ GetTime(), donation, coinControl });
-            }
         }
         else {
             return error("CheckStake() : ProcessBlock, block not accepted");
@@ -699,37 +653,5 @@ void ThreadStakeMiner(CWallet *pwallet)
         };
 
         MilliSleep(nMinerSleep);
-
-        // Check for pending staking donations and execute them if the min stake age has passed.
-        while (!stakingDonationQueue.empty()) {
-            StakingDonation donation = stakingDonationQueue.front();
-
-            if (GetTime() < donation.time + nStakeMinAge)
-                break;
-
-            CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
-            CTxDestination dest = address.Get();
-            if (dest.type() == typeid(CExtKeyPair)) {
-                LogPrintf("failed to donate stake to developers: dest should not be CExtKeyPair\n");
-                break;
-            }
-            CScript scriptPubKey;
-            scriptPubKey.SetDestination(dest);
-
-            LogPrintf("donation pop %s\n", FormatMoney(donation.amount).c_str());
-            stakingDonationQueue.pop();
-
-            CWalletTx wtx;
-            int64_t feeRequired;
-            std::string narration = "staking donation";
-            if (!pwallet->CreateTransaction(scriptPubKey, donation.amount, narration, wtx, feeRequired, &donation.coinControl)) {
-                LogPrintf("failed to donate stake to developers: CreateTransaction failed\n");
-                break;
-            }
-            if (!pwallet->CommitTransaction(wtx)) {
-                LogPrintf("failed to donate stake to developers: CommitTransaction failed\n");
-                break;
-            }
-        }
     };
 }
