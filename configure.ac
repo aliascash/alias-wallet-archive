@@ -1,8 +1,8 @@
 AC_INIT([spectrecoind], [1.3.4])
+AC_CONFIG_AUX_DIR([.])
+AM_INIT_AUTOMAKE([foreign 1.13 subdir-objects -Wall -Werror -Wno-portability])
 AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([src/main.cpp])
-AC_CONFIG_AUX_DIR([.])
-AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects -Wall -Werror -Wno-portability])
 AM_PROG_AS
 AC_PROG_MKDIR_P
 AC_PROG_CC
