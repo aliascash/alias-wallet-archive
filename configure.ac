@@ -7,11 +7,29 @@ AM_PROG_AS
 AC_PROG_MKDIR_P
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_OBJCXX
 AC_PROG_LIBTOOL
 AC_CANONICAL_HOST
-AC_MSG_CHECKING([whether we are cross-compiling for Windows])
-AS_IF([test "x${host_os}" = "xmingw32"], AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
-AM_CONDITIONAL([OS_WINDOWS_CROSSCOMPILE], [test "x${host_os}" = "xmingw32"])
+build_linux=no
+build_windows=no
+build_mac=no
+case "${host_os}" in
+    linux*)
+        build_linux=yes
+        ;;
+    cygwin*|mingw*)
+        build_windows=yes
+        ;;
+    darwin*)
+        build_mac=yes
+        ;;
+    *)
+        AC_MSG_ERROR(["OS $host_os is not supported"])
+        ;;
+esac
+AM_CONDITIONAL([OS_LINUX], [test "$build_linux" = "yes"])
+AM_CONDITIONAL([OS_WINDOWS_CROSSCOMPILE], [test "$build_windows" = "yes"])
+AM_CONDITIONAL([OS_MACOS], [test "$build_mac" = "yes"])
 AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
 AC_CONFIG_FILES([Makefile src/Makefile])
 PKG_PROG_PKG_CONFIG
