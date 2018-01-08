@@ -26,6 +26,10 @@
 #include "hash.h"
 
 
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0x0 // not necessary on systems where it is not defined
+#endif 
+
 class CRequestTracker;
 class CNode;
 class CBlockIndex;
