@@ -6,3 +6,7 @@
   path = leveldb
   url = https://github.com/bitcoin-core/leveldb
   branch = 64052c76c567cff3dad32d1db0ef969d97b5882f
+[submodule "libevent"]
+  path = libevent
+  url = https://github.com/libevent/libevent
+  branch = c51b159cff9f5e86696f5b9a4c6f517276056258
