@@ -26,7 +26,7 @@ Additionally, you'll need a C/C++ compiler and the basic dependencies needed for
 
 To check all dependencies and install missing ones on **Debian or Ubuntu**:
 
-    $ apt install build-essential libssl1.0-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev
+    $ apt install build-essential libssl1.0-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config
     $ apt install libqt4-dev libqtwebkit-dev  # only if building the GUI wallet
 
 To check all dependencies and install missing ones on **Arch Linux**:
