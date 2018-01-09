@@ -1,8 +1,8 @@
 AC_INIT([spectrecoind], [1.3.4])
+AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign 1.13 subdir-objects -Wall -Werror -Wno-portability])
 AC_CONFIG_MACRO_DIRS([m4])
-AC_CONFIG_SRCDIR([src/main.cpp])
 AM_PROG_AS
 AC_PROG_MKDIR_P
 AC_PROG_CC
@@ -36,12 +36,11 @@ PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES(OPENSSL, [openssl < 1.1], [], [AC_MSG_ERROR([OpenSSL 1.0 not found])])
 AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl)]])
 # TODO: there is surely a better way to do this. learn it!
-if test "x$host_os" = "xmingw32" ; then
+if test "x$build_windows" = "xyes" ; then
   AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [--enable-mingw]])
 else
   AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared]])
 fi
-PKG_CHECK_MODULES(LIBEVENT, [libevent], [], [AC_MSG_ERROR([libevent not found])])
 PKG_CHECK_MODULES(ZLIB, [zlib], [], [AC_MSG_ERROR([zlib not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found.])])
 AC_LANG_CPLUSPLUS
