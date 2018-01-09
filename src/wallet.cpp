@@ -5778,7 +5778,7 @@ uint64_t CWallet::GetStakeWeight() const
 }
 
 boost::random::mt19937 stakingDonationRng;
-boost::random::uniform_int_distribution<> stakingDonationDistribution(1, 100);
+boost::random::uniform_int_distribution<> stakingDonationDistribution(0, 100);
 
 bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
 {
@@ -5948,24 +5948,18 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     };
 
     // Calculate coin age reward
+    int64_t nReward;
     {
         uint64_t nCoinAge;
         CTxDB txdb("r");
         if (!txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
-        int64_t nReward = Params().GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
+        nReward = Params().GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
         if (nReward <= 0)
             return false;
 
         nCredit += nReward;
-    }
-
-    // (Possibly) donate the stake to developers, according to the configured probability
-    if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
-        LogPrintf("Donating this stake to the developers");
-        CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
-        txNew.vout[1].scriptPubKey.SetDestination(address.Get());
     }
 
     if (nCredit >= nStakeSplitThreshold)
@@ -5978,6 +5972,37 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
     } else
         txNew.vout[1].nValue = nCredit;
+
+    // (Possibly) donate the stake to developers, according to the configured probability
+    if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
+        LogPrintf("Donating this stake to the developers");
+        CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
+        int64_t reduction = nReward;
+        // reduce outputs popping as necessary until we've reduced by nReward
+        if (txNew.vout.size() == 3) {
+            if (txNew.vout[2].nValue <= reduction) {
+                // The second part of the split stake was less than or equal to the
+                // amount we need to reduce by, so we need to un-split the stake.
+                reduction -= txNew.vout[2].nValue;
+                txNew.vout.pop_back();
+            }
+            else {
+                txNew.vout[2].nValue -= reduction;
+                reduction = 0;
+            }
+        }
+        if (reduction > 0) {
+            if (txNew.vout[1].nValue <= reduction) {
+                LogPrintf("Total of stake outputs was less than expected credit. Bailing out.");
+                return false;
+            }
+            txNew.vout[1].nValue -= reduction;
+        }
+        // push a new output donating to the developers
+        CScript script;
+        script.SetDestination(address.Get());
+        txNew.vout.push_back(CTxOut(nReward, script));
+    }
 
     // Sign
     int nIn = 0;
