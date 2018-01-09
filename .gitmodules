@@ -1,7 +1,7 @@
 [submodule "tor"]
   path = tor
-  url = https://github.com/torproject/tor
-  branch = 63b84335dc590499e5f22498383d6a3432e91ec4
+  url = https://git.torproject.org/tor.git
+  branch = 1f7f930f9ef27a5fd289df23695df97d0fe262b7
 [submodule "leveldb"]
   path = leveldb
   url = https://github.com/bitcoin-core/leveldb
