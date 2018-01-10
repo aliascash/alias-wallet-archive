@@ -12,5 +12,5 @@ patch --no-backup-if-mismatch -f -p0 < ../tor-am.patch
 popd
 
 pushd leveldb
-patch --no-backup-if-mismatch -f -p1 < ../leveldb.patch
+patch --no-backup-if-mismatch -f -p1 < ../leveldb-win32.patch
 popd
