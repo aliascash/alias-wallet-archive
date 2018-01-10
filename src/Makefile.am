@@ -92,17 +92,6 @@ spectrecoind_LDADD =	../leveldb/libmemenv.a \
 			$(BOOST_PROGRAM_OPTIONS_LIBS) \
 			$(BOOST_THREAD_LIBS)
 
-if OS_WINDOWS_CROSSCOMPILE
-# Add SSP (for stack smashing protection symbols) and Win32 API libraries
-spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
-else
-if OS_MACOS
-# 
-else
-spectrecoind_LDADD += -lcap -lseccomp
-endif
-endif
-
 spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
 			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CPPFLAGS) \
 			-DBOOST_ASIO_ENABLE_OLD_SERVICES
@@ -110,7 +99,19 @@ spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) \
 		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 
-if ENABLE_GUI
+iif OS_WINDOWS_CROSSCOMPILE
+# Add SSP (for stack smashing protection symbols) and Win32 API libraries
+spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
+spectrecoind_CPPFLAGS += -DWIN32
+else
+if OS_MACOS
+spectrecoind_CPPFLAGS += -DMAC_OSX
+else
+spectrecoind_LDADD += -lcap -lseccomp
+endif
+endif
+
+f ENABLE_GUI
 qt/locale/%.qm: qt/locale/%.ts
 		@LRELEASE@ $< -qm $@
 
