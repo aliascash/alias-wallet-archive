@@ -3,7 +3,7 @@ if OS_LINUX
 endif
 
 AM_CPPFLAGS =	-pthread -O2 \
-		-D_FORTIFY_SOURCE \
+		-D_FORTIFY_SOURCE -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
 		-fstack-protector-all \
 		-Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
 		-Wformat -Wformat-security -Wno-unused-parameter \
@@ -107,6 +107,7 @@ spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 if OS_WINDOWS_CROSSCOMPILE
 # Add SSP (for stack smashing protection symbols) and Win32 API libraries
 spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
+spectrecoind_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
 spectrecoind_CPPFLAGS += -DWIN32
 else
 if OS_MACOS
@@ -269,7 +270,7 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/spectrebridge.cpp
 
 spectre_LDADD = $(spectrecoind_LDADD) $(QT4_LIBS)
-spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT4_CFLAGS)
+spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT4_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
 spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT4_LDFLAGS)
 
 if OS_MACOS
