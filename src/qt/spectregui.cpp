@@ -76,7 +76,7 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     webView = new QWebView();
 
     int dpiX = qApp->desktop()->logicalDpiX();
-    webView->setZoomFactor((qreal)dpiX / 96.0);
+    webView->setZoomFactor((qreal)dpiX / 112.0);
 
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
