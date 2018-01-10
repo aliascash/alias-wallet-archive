@@ -68,8 +68,8 @@ common_SOURCES = anonymize.cpp \
 bin_PROGRAMS = spectrecoind
 spectrecoind_SOURCES = $(common_SOURCES) spectrecoind.cpp
 
-spectrecoind_LDADD =	../leveldb/out-static/libmemenv.a \
-			../leveldb/out-static/libleveldb.a \
+spectrecoind_LDADD =	../leveldb/libmemenv.a \
+			../leveldb/libleveldb.a \
 			../db4.8/build_unix/libdb_cxx.a \
 			../tor/src/or/libtor.a \
 			../tor/src/common/libor.a \

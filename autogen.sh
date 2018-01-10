@@ -1,6 +1,10 @@
 #!/bin/bash -e
-pushd tor && git checkout -f . && popd
-pushd leveldb && git checkout -f . && popd
+
+[ -d .git ] && [ -f ./tor/.git ] && [ -f ./leveldb/.git ] || \
+  { echo "Please run this command from the root of a recursive Git clone of the Spectrecoin repository." && exit 1; }
+
+pushd tor && git checkout -f . && git clean -fdx . && popd
+pushd leveldb && git checkout -f . && git clean -fdx . && popd
 git submodule update --init
 
 autoreconf --no-recursive --install
