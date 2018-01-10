@@ -4,5 +4,5 @@
   branch = 9e8b762fcecfece64aae70ae640aaa59fd227ca5
 [submodule "leveldb"]
   path = leveldb
-  url = https://github.com/bitcoin-core/leveldb
-  branch = 64052c76c567cff3dad32d1db0ef969d97b5882f
+  url = https://github.com/google/leveldb
+  branch = e353fbc7ea81f12a5694991b708f8f45343594b1
