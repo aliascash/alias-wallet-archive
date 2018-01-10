@@ -9,6 +9,11 @@ AM_CPPFLAGS =	-pthread -O2 \
 		-Wformat -Wformat-security -Wno-unused-parameter \
 		-I../leveldb/include -I../leveldb/helpers \
 		-I../db4.8/build_unix
+
+if OS_MACOS
+AM_CPPFLAGS += -mmacosx-version-min=10.9
+endif
+
 AM_CFLAGS = $(AM_CPPFLAGS) -std=c11
 
 common_SOURCES = anonymize.cpp \
@@ -99,7 +104,7 @@ spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) \
 		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 
-iif OS_WINDOWS_CROSSCOMPILE
+if OS_WINDOWS_CROSSCOMPILE
 # Add SSP (for stack smashing protection symbols) and Win32 API libraries
 spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32
 spectrecoind_CPPFLAGS += -DWIN32
@@ -111,7 +116,7 @@ spectrecoind_LDADD += -lcap -lseccomp
 endif
 endif
 
-f ENABLE_GUI
+if ENABLE_GUI
 qt/locale/%.qm: qt/locale/%.ts
 		@LRELEASE@ $< -qm $@
 
