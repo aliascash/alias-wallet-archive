@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index f8903b6..cc9be81 100644
+--- a/Makefile
++++ b/Makefile
+@@ -88,7 +88,7 @@ $(SHARED3):
+ 
+ endif  # PLATFORM_SHARED_EXT
+ 
+-all: $(SHARED) $(LIBRARY)
++all: $(SHARED) $(LIBRARY) $(MEMENVLIBRARY)
+ 
+ check: all $(PROGRAMS) $(TESTS)
+ 	for t in $(TESTS); do echo "***** Running $$t"; ./$$t || exit 1; done
