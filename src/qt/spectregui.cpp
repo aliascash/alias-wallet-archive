@@ -76,7 +76,8 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     webView = new QWebView();
 
     int dpiX = qApp->desktop()->logicalDpiX();
-    webView->setZoomFactor((qreal)dpiX / 112.0);
+    qreal zoomFactor = dpiX > 112 ? (qreal)dpiX / 112.0 : 1.0;
+    webView->setZoomFactor(zoomFactor);
 
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
@@ -88,7 +89,7 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     setCentralWidget(webView);
 
-    resize(1280, 720);
+    resize((int)(zoomFactor * 1280), (int)(zoomFactor * 720));
     setWindowTitle(tr("Spectre") + " - " + tr("Client"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/spectre"));
