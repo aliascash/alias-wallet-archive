@@ -5778,7 +5778,7 @@ uint64_t CWallet::GetStakeWeight() const
 }
 
 boost::random::mt19937 stakingDonationRng;
-boost::random::uniform_int_distribution<> stakingDonationDistribution(0, 100);
+boost::random::uniform_int_distribution<> stakingDonationDistribution(0, 99);
 
 bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
 {
@@ -5974,8 +5974,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         txNew.vout[1].nValue = nCredit;
 
     // (Possibly) donate the stake to developers, according to the configured probability
-    if (stakingDonationDistribution(stakingDonationRng) % 100 < nStakingDonation) {
-        LogPrintf("Donating this stake to the developers");
+    int sample = stakingDonationDistribution(stakingDonationRng);
+    LogPrintf("sample: %d, donation%: %d", sample, nStakingDonation);
+    if (sample < nStakingDonation) {
+        LogPrintf("Donating this (potential) stake to the developers");
         CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
         int64_t reduction = nReward;
         // reduce outputs popping as necessary until we've reduced by nReward
@@ -6002,6 +6004,9 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         CScript script;
         script.SetDestination(address.Get());
         txNew.vout.push_back(CTxOut(nReward, script));
+    }
+    else {
+        LogPrintf("Not donating this (potential) stake to the developers");
     }
 
     // Sign
