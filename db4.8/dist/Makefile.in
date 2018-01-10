@@ -754,7 +754,7 @@ install: all @INSTALL_TARGET@
 ##################################################
 # Library and standard utilities build.
 ##################################################
-library_build: @INSTALL_LIBS@ @ADDITIONAL_LANG@ $(UTIL_PROGS)
+library_build: @INSTALL_LIBS@ @ADDITIONAL_LANG@
 
 # Static C library named libdb.a.
 $(libdb): $(DEF_LIB)

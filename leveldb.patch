@@ -2,16 +2,6 @@ diff --git a/Makefile b/Makefile
 index f7cc7d7..70832be 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -78,6 +78,9 @@ DEVICE_CFLAGS = -isysroot "$(DEVICESDK)" -arch armv6 -arch armv7 -arch armv7s -a
- SIMULATOR_CFLAGS = -isysroot "$(SIMULATORSDK)" -arch i686 -arch x86_64
- STATIC_OUTDIR=out-ios-universal
- else
-+ifeq ($(PLATFORM), OS_WINDOWS)
-+AR=x86_64-w64-mingw32-ar
-+endif
- STATIC_OUTDIR=out-static
- SHARED_OUTDIR=out-shared
- STATIC_PROGRAMS := $(addprefix $(STATIC_OUTDIR)/, $(PROGNAMES))
 @@ -139,7 +142,7 @@ $(SHARED_OUTDIR)/$(SHARED_LIB3): $(SHARED_LIBOBJECTS)
  
  endif  # PLATFORM_SHARED_EXT
