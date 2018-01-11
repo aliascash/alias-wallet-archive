@@ -1,116 +1,112 @@
+AM_LDFLAGS = -fstack-protector
 if OS_LINUX
-  AM_LDFLAGS = -Wl,-z,relro -Wl,-z,now
-endif
-
-AM_CPPFLAGS =	-pthread -O2 \
-		-D_FORTIFY_SOURCE -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
-		-Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
-		-Wformat -Wformat-security -Wno-unused-parameter \
-		-I../leveldb/include -I../leveldb/helpers \
-		-I../db4.8/build_unix
-
-if OS_WINDOWS_CROSSCOMPILE
-#
+AM_LDFLAGS += -Wl,-z,relro -Wl,-z,now
 else
-AM_CPPFLAGS += -fstack-protector-all --param ssp-buffer-size=1
+if OS_WINDOWS_CROSSCOMPILE
+AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
+endif
+endif
+AM_CPPFLAGS = -pthread -O2 -fstack-protector \
+	      -Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
+	      -Wformat -Wformat-security -Wno-unused-parameter
 if OS_MACOS
 AM_CPPFLAGS += -mmacosx-version-min=10.9
 endif
-endif
-
-AM_CFLAGS = $(AM_CPPFLAGS) -std=c11
 
 common_SOURCES = anonymize.cpp \
-						json/json_spirit_reader.cpp \
-						json/json_spirit_writer.cpp \
-						alert.cpp \
-						version.cpp \
-						checkpoints.cpp \
-						netbase.cpp \
-						addrman.cpp \
-						crypter.cpp \
-						key.cpp \
-						eckey.cpp \
-						extkey.cpp \
-						db.cpp \
-						init.cpp \
-						keystore.cpp \
-						miner.cpp \
-						main.cpp \
-						net.cpp \
-						protocol.cpp \
-						rpcprotocol.cpp \
-						rpcserver.cpp \
-						rpcclient.cpp \
-						rpcdump.cpp \
-						rpcnet.cpp \
-						rpcmining.cpp \
-						rpcwallet.cpp \
-						rpcblockchain.cpp \
-						rpcrawtransaction.cpp \
-						rpcsmessage.cpp \
-						rpcextkey.cpp \
-						rpcmnemonic.cpp \
-						script.cpp \
-						sync.cpp \
-						util.cpp \
-						hash.cpp \
-						wallet.cpp \
-						walletdb.cpp \
-						noui.cpp \
-						kernel.cpp \
-						pbkdf2.cpp \
-						scrypt.cpp \
-						scrypt-arm.S \
-						scrypt-x86.S \
-						scrypt-x86_64.S \
-						smessage.cpp \
-						stealth.cpp \
-						ringsig.cpp \
-						core.cpp \
-						txdb-leveldb.cpp \
-						txmempool.cpp \
-						chainparams.cpp \
-						state.cpp \
-						bloom.cpp
+		 json/json_spirit_reader.cpp \
+		 json/json_spirit_writer.cpp \
+		 alert.cpp \
+		 version.cpp \
+		 checkpoints.cpp \
+		 netbase.cpp \
+		 addrman.cpp \
+		 crypter.cpp \
+		 key.cpp \
+		 eckey.cpp \
+		 extkey.cpp \
+		 db.cpp \
+		 init.cpp \
+		 keystore.cpp \
+		 miner.cpp \
+		 main.cpp \
+		 net.cpp \
+		 protocol.cpp \
+		 rpcprotocol.cpp \
+		 rpcserver.cpp \
+		 rpcclient.cpp \
+		 rpcdump.cpp \
+		 rpcnet.cpp \
+		 rpcmining.cpp \
+		 rpcwallet.cpp \
+		 rpcblockchain.cpp \
+		 rpcrawtransaction.cpp \
+		 rpcsmessage.cpp \
+		 rpcextkey.cpp \
+		 rpcmnemonic.cpp \
+		 script.cpp \
+		 sync.cpp \
+		 util.cpp \
+		 hash.cpp \
+		 wallet.cpp \
+		 walletdb.cpp \
+		 noui.cpp \
+		 kernel.cpp \
+		 pbkdf2.cpp \
+		 scrypt.cpp \
+		 scrypt-arm.S \
+		 scrypt-x86.S \
+		 scrypt-x86_64.S \
+		 smessage.cpp \
+		 stealth.cpp \
+		 ringsig.cpp \
+		 core.cpp \
+		 txdb-leveldb.cpp \
+		 txmempool.cpp \
+		 chainparams.cpp \
+		 state.cpp \
+		 bloom.cpp
 
 bin_PROGRAMS = spectrecoind
 spectrecoind_SOURCES = $(common_SOURCES) spectrecoind.cpp
 
-spectrecoind_LDADD =	../leveldb/libmemenv.a \
-			../leveldb/libleveldb.a \
-			../db4.8/build_unix/libdb_cxx.a \
-			../tor/src/or/libtor.a \
-			../tor/src/common/libor.a \
-			../tor/src/common/libor-ctime.a \
-			../tor/src/common/libor-crypto.a \
-			../tor/src/common/libor-event.a \
-			../tor/src/trunnel/libor-trunnel.a \
-			../tor/src/common/libcurve25519_donna.a \
-			../tor/src/ext/ed25519/donna/libed25519_donna.a \
-			../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-			../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
-			$(OPENSSL_LIBS) \
-			$(LIBEVENT_LIBS) \
-			$(LIBSECCOMP_LIBS) \
-			$(LIBCAP_LIBS) \
-			$(ZLIB_LIBS) \
-			$(BOOST_SYSTEM_LIBS) \
-			$(BOOST_CHRONO_LIBS) \
-			$(BOOST_FILESYSTEM_LIBS) \
-			$(BOOST_PROGRAM_OPTIONS_LIBS) \
-			$(BOOST_THREAD_LIBS)
+spectrecoind_LDADD = ../leveldb/libmemenv.a \
+		     ../leveldb/libleveldb.a \
+		     ../db4.8/build_unix/libdb_cxx.a \
+		     ../tor/src/or/libtor.a \
+		     ../tor/src/common/libor.a \
+		     ../tor/src/common/libor-ctime.a \
+		     ../tor/src/common/libor-crypto.a \
+		     ../tor/src/common/libor-event.a \
+		     ../tor/src/trunnel/libor-trunnel.a \
+		     ../tor/src/common/libcurve25519_donna.a \
+		     ../tor/src/ext/ed25519/donna/libed25519_donna.a \
+		     ../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
+		     ../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
+		     $(OPENSSL_LIBS) \
+		     $(LIBEVENT_LIBS) \
+		     $(LIBSECCOMP_LIBS) \
+		     $(LIBCAP_LIBS) \
+		     $(ZLIB_LIBS) \
+		     $(BOOST_SYSTEM_LIBS) \
+		     $(BOOST_CHRONO_LIBS) \
+		     $(BOOST_FILESYSTEM_LIBS) \
+		     $(BOOST_PROGRAM_OPTIONS_LIBS) \
+		     $(BOOST_THREAD_LIBS)
 
 spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
 			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CPPFLAGS) \
+			-I../leveldb/include -I../leveldb/helpers -I../db4.8/build_unix \
+			-D_FORTIFY_SOURCE -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
 			-DBOOST_ASIO_ENABLE_OLD_SERVICES
+spectrecoind_CFLAGS = $(spectrecoind_CPPFLAGS) -std=c11
 spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) \
-		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
+		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) \
+		       $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 
 if OS_WINDOWS_CROSSCOMPILE
 spectrecoind_LDADD += -lmswsock -lshlwapi -luuid -lole32 -lgdi32
-spectrecoind_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
 spectrecoind_CPPFLAGS += -DWIN32 -D_WIN32
 else
 if OS_MACOS
