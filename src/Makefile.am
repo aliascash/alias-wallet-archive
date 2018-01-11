@@ -12,7 +12,7 @@ AM_CPPFLAGS =	-pthread -O2 \
 if OS_WINDOWS_CROSSCOMPILE
 #
 else
-AM_CPPFLAGS += -fstack-protector-all --param ssp-buffer-size=1 \
+AM_CPPFLAGS += -fstack-protector-all --param ssp-buffer-size=1
 if OS_MACOS
 AM_CPPFLAGS += -mmacosx-version-min=10.9
 endif
