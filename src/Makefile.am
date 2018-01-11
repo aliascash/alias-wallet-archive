@@ -4,14 +4,18 @@ endif
 
 AM_CPPFLAGS =	-pthread -O2 \
 		-D_FORTIFY_SOURCE -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
-		-fstack-protector-all --param ssp-buffer-size=1 \
 		-Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
 		-Wformat -Wformat-security -Wno-unused-parameter \
 		-I../leveldb/include -I../leveldb/helpers \
 		-I../db4.8/build_unix
 
+if OS_WINDOWS_CROSSCOMPILE
+#
+else
+AM_CPPFLAGS += -fstack-protector-all --param ssp-buffer-size=1 \
 if OS_MACOS
 AM_CPPFLAGS += -mmacosx-version-min=10.9
+endif
 endif
 
 AM_CFLAGS = $(AM_CPPFLAGS) -std=c11
@@ -105,8 +109,7 @@ spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 
 if OS_WINDOWS_CROSSCOMPILE
-# Add SSP (for stack smashing protection symbols) and Win32 API libraries
-spectrecoind_LDADD += -lssp -lmswsock -lshlwapi -luuid -lole32 -loleaut32 -lgdi32 -lws2_32
+spectrecoind_LDADD += -lmswsock -lshlwapi -luuid -lole32 -lgdi32
 spectrecoind_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
 spectrecoind_CPPFLAGS += -DWIN32 -D_WIN32
 else
