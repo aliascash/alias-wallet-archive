@@ -8,7 +8,7 @@ The latest release is [1.3.3](https://github.com/spectrecoin/spectre/releases/ta
 Building from source
 ====================
 
-**To build a stable wallet from source, please download the source code of the latest release from the [releases page](https://github.com/spectrecoin/spectre/releases). Building from the master branch (the development code for the next release) should only be done if you plan to work on the code and understand the risks.**
+**To build a stable wallet from source, please check out the tag corresponding to the latest release from the [releases page](https://github.com/spectrecoin/spectre/releases) and follow the instructions in the README.md from that tag. Building from the master branch (the development code for the next release) should only be done if you plan to work on the code and understand the risks.**
 
 Dependencies
 ------------
@@ -20,9 +20,9 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * libseccomp
  * libcap
  * boost
- * Qt 4 and QtWebKit if you want to build the GUI wallet. Qt is not needed for the console wallet.
+ * Qt 5 and QtWebKit if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
-Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these.
+Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
 To check all dependencies and install missing ones on **Debian or Ubuntu**:
 
@@ -40,9 +40,8 @@ To check all dependencies and install missing ones on **macOS** (this uses the [
 
     brew install autoconf automake libtool pkg-config openssl libevent boost gcc
     # the following commands are only needed if building the GUI wallet
-    brew tap cartr/qt4
-    brew tap-pin cartr/qt4
-    brew install qt@4 qt-webkit@2.3
+    brew tap KDE-mac/homebrew-kde
+    brew install qt qt-webkit
 
 Building
 --------
@@ -53,7 +52,7 @@ To fetch the source code and build the wallet run the following commands:
     cd spectre
     ./autogen.sh
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
-    make -j2  # use a higher number if you have many cores and memory
+    make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
 
 The resulting binaries will be in the `src` directory and called `spectre` for the GUI wallet and `spectrecoind` for the console wallet.
 
