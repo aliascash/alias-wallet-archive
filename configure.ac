@@ -58,14 +58,11 @@ BOOST_DATE_TIME([mt])
 BOOST_IOSTREAMS([mt])
 AC_ARG_ENABLE([gui], [AS_HELP_STRING([--enable-gui], [Build the Qt GUI wallet])])
 if test "x$enable_gui" = "xyes" ; then
-  PKG_CHECK_MODULES(QT4, [QtCore QtGui QtWebKit >= 4.4.0], [], [AC_MSG_ERROR([Qt4 not found.])])
-  if ! `$PKG_CONFIG --atleast-version=4.8.0 QtCore`; then
-   AC_MSG_ERROR([Qt4 >= 4.8 not found.])
-  fi
-  AC_CHECK_PROGS(MOC, [moc-qt4 moc])
-  AC_CHECK_PROGS(UIC, [uic-qt4 uic])
-  AC_CHECK_PROGS(RCC, [rcc-qt4 rcc])
-  AC_CHECK_PROGS(LRELEASE, [lrelease-qt4 lrelease])
+  PKG_CHECK_MODULES(QT5, [Qt5Core Qt5Gui Qt5Widgets Qt5WebKit Qt5WebKitWidgets], [], [AC_MSG_ERROR([Qt5 not found.])])
+  AC_CHECK_PROGS(MOC, [moc-qt5 moc])
+  AC_CHECK_PROGS(UIC, [uic-qt5 uic])
+  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
+  AC_CHECK_PROGS(LRELEASE, [lrelease-qt5 lrelease])
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC" || test -z "$LRELEASE"; then
     AC_MSG_ERROR([Qt utilities moc/uic/rcc/lrelease not found.])
   fi

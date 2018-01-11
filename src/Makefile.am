@@ -6,7 +6,7 @@ if OS_WINDOWS_CROSSCOMPILE
 AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
 endif
 endif
-AM_CPPFLAGS = -pthread -O2 -fstack-protector \
+AM_CPPFLAGS = -pthread -O2 -fstack-protector -fPIC \
 	      -Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
 	      -Wformat -Wformat-security -Wno-unused-parameter
 if OS_MACOS
@@ -109,6 +109,7 @@ if OS_WINDOWS_CROSSCOMPILE
 spectrecoind_LDADD += -lmswsock -lshlwapi -luuid -lole32 -lgdi32
 spectrecoind_CPPFLAGS += -DWIN32 -D_WIN32
 else
+spectrecoind_LDFLAGS += -pie
 if OS_MACOS
 spectrecoind_CPPFLAGS += -DMAC_OSX
 else
@@ -268,9 +269,9 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp
 
-spectre_LDADD = $(spectrecoind_LDADD) $(QT4_LIBS)
-spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT4_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
-spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT4_LDFLAGS)
+spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS)
+spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
+spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT5_LDFLAGS)
 
 if OS_MACOS
   spectre_SOURCES += qt/moc_macnotificationhandler.cpp \
