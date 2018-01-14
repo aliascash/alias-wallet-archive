@@ -67,39 +67,51 @@
         <div class=sidebar-header-controls><button data-toggle-pin=sidebar class="btn btn-link visible-lg-inline" type=button><i class="fa fs-12"></i></button></div>
         <div id=sidebar-header-collapsed class=sidebar-header-collapsed><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60 style=min-height:100%;min-width:100%></div>
       </div>
-        <div class=sidebar-menu>
-            <ul class=menu-items id=navitems>
-                <li class=m-t-30><a href=#overview><span class="title translate">Overview</span> <span class=icon-thumbnail><i class="fa fa-circle-o"></i></span></a>
-                    <li><a href=#><span class="title translate">Wallet</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-user"></i></span></a>
-                        <ul class=sub-menu>
-                            <li><a href=#send class=translate>Send <span class=icon-thumbnail><i class="fa fa-arrow-right"></i></span></a>
-                                <li><a href=#receive class=translate>Receive <span class=icon-thumbnail><i class="fa fa-arrow-left"></i></span></a>
-                                    <li><a href=#transactions class=translate>Transactions <span class=icon-thumbnail><i class="fa fa-exchange"></i></span></a>
-                                        <li><a href=#addressbook class=translate>Address Book <span class=icon-thumbnail><i class="fa fa-bars"></i></span></a></ul>
-                        <li><a href=#messages id=chat-menu-link onclick=scrollMessages()><span class="title translate">Chat</span> <span class=icon-thumbnail><i class="fa fa-comment"></i> </span><span class=details><span class=user-notifications><span id=message-count>0</span> </span><span class=translate>Notifications</span></span></a>
-                            <li><a href=#options><span class="title translate">Options</span> <span class=icon-thumbnail><i class="fa fa-wrench"></i></span></a>
-                                <li><a href=#><span class="title translate">Wallet Management</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa fa-key"></i></span></a>
-                                    <ul class=sub-menu>
-                                        <li><a href=#walletmanagement onclick='$("#walletmanagement-advanced").hide(),$("#key-options").hide(),$("#wizards").show(),gotoWizard("new-key-wizard",0,!0)'><span class=translate>Add New Wallet</span> <span class=icon-thumbnail><i class="fa fa-key"></i></span></a>
-                                            <li><a href=#walletmanagement onclick='$("#walletmanagement-advanced").hide(),$("#key-options").hide(),$("#wizards").show(),gotoWizard("recover-key-wizard",0,!0)'><span class=translate>Import Wallet</span> <span class=icon-thumbnail><i class="fa fa-repeat"></i></span></a>
-                                                <li><a href=#walletmanagement onclick='$("#key-options").hide(),$("#wizards").hide(),$("#walletmanagement-advanced").show(),walletManagementPage.updateKeyList(),walletManagementPage.updateAccountList()'><span class=translate>Advanced</span> <span class=icon-thumbnail><i class="fa fa-laptop"></i></span></a></ul>
-                                    <li><a href=#><span class="title translate">Backup</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-floppy-o"></i></span></a>
-                                        <ul class=sub-menu>
-                                            <li><a href=# onclick='bridge.userAction(["backupWallet"])'><span class=translate>Backup Wallet</span> <span class=icon-thumbnail><i class="fa fa-floppy-o"></i></span></a>
-                                                <li class=encryptWallet><a href=# onclick='bridge.userAction(["encryptWallet"])'><span class=translate>Encrypt Wallet</span> <span class=icon-thumbnail><i id=encryptWallet class="fa fa-lock"></i></span></a>
-                                                    <li id=changePassphrase><a href=# onclick='bridge.userAction(["changePassphrase"])'><span class=translate>Change Passphrase</span> <span class=icon-thumbnail><i class="fa fa-user-secret"></i></span></a>
-                                                        <li id=toggleLock><a href=# onclick='bridge.userAction(["toggleLock"])'><span class=translate>(Un)lock Wallet</span> <span class=icon-thumbnail><i class="fa fa-unlock-alt"></i></span></a></ul>
-                                        <li><a href=#><span class="title translate">Tools</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-cogs"></i></span></a>
-                                            <ul class=sub-menu>
-                                                <li><a href=#chaindata onclick=chainDataPage.updateAnonOutputs()><span class=translate>Chain Data</span> <span class=icon-thumbnail><i class="fa fa-link"></i></span></a>
-                                                    <li><a href=#blockdata onclick=blockExplorerPage.updateLatestBlocks()><span class=translate>Block Explorer</span> <span class=icon-thumbnail><i class="fa fa-th-large"></i></span></a>
-                                                        <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#sign-href").click(),$("#sign-address")'><span class=translate>Sign Message</span> <span class=icon-thumbnail><i class="fa fa-pencil"></i></span></a>
-                                                            <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#verify-href").click(),$("#verify-address")'><span class=translate>Verify Message</span> <span class=icon-thumbnail><i class="fa fa-check-square-o"></i></span></a>
-                                                                <li><a href=# onclick='bridge.userAction(["debugClicked"])'><span class=translate>Debug</span> <span class=icon-thumbnail><i class="fa fa-bug"></i></span></a>
-                                                                    <li><a href=#b onclick='bridge.userAction(["aboutClicked"])'><span class=translate>About Spectre</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a>
-                                                                        <li><a href=# onclick='bridge.userAction(["aboutQtClicked"])'><span class=translate>About QT</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></ul>
-            </ul>
-            <div class=clearfix></div>
+      <div class=sidebar-menu>
+        <ul class=menu-items id=navitems>
+            <li class=m-t-30><a href=#overview><span class="title translate">Overview</span> <span class=icon-thumbnail><i class="fa fa-circle-o"></i></span></a></li>
+            <li>
+              <a href=#><span class="title translate">Wallet</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-user"></i></span></a>
+              <ul class=sub-menu>
+                <li><a href=#send class=translate>Send <span class=icon-thumbnail><i class="fa fa-arrow-right"></i></span></a></li>
+                <li><a href=#receive class=translate>Receive <span class=icon-thumbnail><i class="fa fa-arrow-left"></i></span></a></li>
+                <li><a href=#transactions class=translate>Transactions <span class=icon-thumbnail><i class="fa fa-exchange"></i></span></a></li>
+                <li><a href=#addressbook class=translate>Address Book <span class=icon-thumbnail><i class="fa fa-bars"></i></span></a></li>
+              </ul>
+            </li>
+            <li><a href=#messages id=chat-menu-link onclick=scrollMessages()><span class="title translate">Chat</span> <span class=icon-thumbnail><i class="fa fa-comment"></i> </span><span class=details><span class=user-notifications><span id=message-count>0</span> </span><span class=translate>Notifications</span></span></a></li>
+            <li><a href=#options><span class="title translate">Options</span> <span class=icon-thumbnail><i class="fa fa-wrench"></i></span></a></li>
+            <li>
+              <a href=#><span class="title translate">Wallet Encryption</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-floppy-o"></i></span></a>
+              <ul class=sub-menu>
+                <li class=encryptWallet><a href=# onclick='bridge.userAction(["encryptWallet"])'><span class=translate>Encrypt Wallet</span> <span class=icon-thumbnail><i id=encryptWallet class="fa fa-lock"></i></span></a></li>
+                <li id=changePassphrase><a href=# onclick='bridge.userAction(["changePassphrase"])'><span class=translate>Change Passphrase</span> <span class=icon-thumbnail><i class="fa fa-user-secret"></i></span></a></li>
+                <li id=toggleLock><a href=# onclick='bridge.userAction(["toggleLock"])'><span class=translate>(Un)lock Wallet</span> <span class=icon-thumbnail><i class="fa fa-unlock-alt"></i></span></a></li>
+              </ul>
+            </li>
+            <li>
+              <a href=#><span class="title translate">Sub-Wallets</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa fa-key"></i></span></a>
+              <ul class=sub-menu>
+                <li><a href=#walletmanagement onclick='$("#walletmanagement-advanced").hide(),$("#key-options").hide(),$("#wizards").show(),gotoWizard("new-key-wizard",0,!0)'><span class=translate>Add Sub-Wallet</span> <span class=icon-thumbnail><i class="fa fa-key"></i></span></a></li>
+                <li><a href=#walletmanagement onclick='$("#walletmanagement-advanced").hide(),$("#key-options").hide(),$("#wizards").show(),gotoWizard("recover-key-wizard",0,!0)'><span class=translate>Restore Sub-Wallet</span> <span class=icon-thumbnail><i class="fa fa-repeat"></i></span></a></li>
+                <li><a href=#walletmanagement onclick='$("#key-options").hide(),$("#wizards").hide(),$("#walletmanagement-advanced").show(),walletManagementPage.updateKeyList(),walletManagementPage.updateAccountList()'><span class=translate>Advanced</span> <span class=icon-thumbnail><i class="fa fa-laptop"></i></span></a></li>
+              </ul>
+            </li>
+            <li>
+              <a href=#><span class="title translate">Tools</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-cogs"></i></span></a>
+              <ul class=sub-menu>
+                <li><a href=# onclick='bridge.userAction(["backupWallet"])'><span class=translate>Backup Wallet</span> <span class=icon-thumbnail><i class="fa fa-floppy-o"></i></span></a></li>
+                <li><a href=#chaindata onclick=chainDataPage.updateAnonOutputs()><span class=translate>Chain Data</span> <span class=icon-thumbnail><i class="fa fa-link"></i></span></a></li>
+                <li><a href=#blockdata onclick=blockExplorerPage.updateLatestBlocks()><span class=translate>Block Explorer</span> <span class=icon-thumbnail><i class="fa fa-th-large"></i></span></a></li>
+                <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#sign-href").click(),$("#sign-address")'><span class=translate>Sign Message</span> <span class=icon-thumbnail><i class="fa fa-pencil"></i></span></a></li>
+                <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#verify-href").click(),$("#verify-address")'><span class=translate>Verify Message</span> <span class=icon-thumbnail><i class="fa fa-check-square-o"></i></span></a></li>
+                <li><a href=# onclick='bridge.userAction(["debugClicked"])'><span class=translate>Debug</span> <span class=icon-thumbnail><i class="fa fa-bug"></i></span></a></li>
+                <li><a href=#b onclick='bridge.userAction(["aboutClicked"])'><span class=translate>About Spectre</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></li>
+                <li><a href=# onclick='bridge.userAction(["aboutQtClicked"])'><span class=translate>About QT</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></li>
+              </ul>
+            </li>
+          </ul>
+          <div class=clearfix></div>
         </div>
     </div>
     <div class=page-container>
@@ -1073,7 +1085,6 @@ downloaded 0 blocks of history..."></progress>
                                     <form autocomplete=off class=form-horizontal id=form-work name=form-work>
                                         <ul class="nav nav-tabs nav-tabs-simple nav-tabs-simple-bg">
                                             <li class=active style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1main>Main</a>
-                                                <li style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1network>Network</a>
                                                     <li style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1window>Window</a>
                                                         <li style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1display>Display</a>
                                                             <!-- <li style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1i2p>I2P</a>  <li style=font-weight:bolder;color:#333><a data-toggle=tab href=#tab1tor>Tor</a> -->
@@ -1152,29 +1163,6 @@ downloaded 0 blocks of history..."></progress>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optThinIndexWindow title="When not thinfullindex, the max number of block headers to keep in memory">Thin Index Window</label>
                                                                 <div class=col-sm-9>
                                                                     <div class=option><input id=optThinIndexWindow class=form-control-options-page placeholder=4096 step=64 title="When not thinfullindex, the max number of block headers to keep in memory" type=number></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class=tab-pane id=tab1network>
-                                                <div class=row>
-                                                    <div class=col-md-12>
-                                                        <div id=options-network>
-                                                            <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optMapPortUPnP>Map port using UPnP</label>
-                                                                <div class=col-sm-9>
-                                                                    <div class="checkbox option check-danger"><input id=optMapPortUPnP type=checkbox><label class=option for=optMapPortUPnP></label></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optProxyUse>Connect through SOCKS proxy:</label>
-                                                                <div class=col-sm-9>
-                                                                    <div class="checkbox option check-danger"><input data-linked="optProxyIP optProxyPort optProxySocksVersion" id=optProxyUse type=checkbox><label class=option for=optProxyUse></label></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class=form-group><label class="col-sm-3 control-label option p-l-20">Details</label>
-                                                                <div class=col-sm-9>
-                                                                    <div class=option><label class="option m-r-10" for=optProxyIP>Proxy IP:</label><input class="input_box form-control-options-page" id=optProxyIP placeholder=127.0.0.1><label class="option m-r-10 m-l-10" for=optProxyPort>Port:</label><input class="input_box form-control-options-page" id=optProxyPort placeholder=9050><label class="option m-r-10 m-l-10" for=optProxySocksVersion>SOCKS Version:</label><select class=select-drop-down-small id=optProxySocksVersion><option>4<option>5</select></div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1275,11 +1263,15 @@ downloaded 0 blocks of history..."></progress>
                                         <div id=new-key-wizard class=wizardblock style=background:#fff>
                                             <div>
                                                 <div class="panel panel-spectre panel-default no-border" id=portlet-linear-color>
-                                                    <div class=panel-heading>
-                                                        <div class=panel-title>
-                                                          <p style=font-weight:bolder>NOTE: This feature is <em>experimental</em>, and is intended for advanced users only. Please do not use it unless you know what you are doing and want to have multiple sub-wallets within your Spectre wallet.</div>
-                                                    </div>
-                                                    <hr class=no-margin>
+                                                  <div class=panel-heading>
+                                                    <div class=panel-title><p><strong>Add new Sub-Wallet</strong></p></div>
+                                                    <p>
+                                                      NOTE: This feature is <em>experimental</em>, and is intended for advanced users only.<br>
+                                                      Please do not use it unless you know what you are doing and want to have multiple sub-wallets within your Spectre wallet.<br>
+                                                      You are responsible of keeping track of which sub-wallets you have made and received payments using.
+                                                    </p>
+                                                  </div>
+                                                  <hr class=no-margin>
                                                 </div>
                                                 <form autocomplete=off class="form-horizontal m-l-15 m-r-15" id=form-work name=form-work>
                                                     <div class=form-group><label for=new-account-label class="col-sm-3 control-label option p-l-20 recipient" placeholder="Family vacation funds">Wallet Name</label>
@@ -1388,8 +1380,13 @@ downloaded 0 blocks of history..."></progress>
                                             <div validatejs=walletManagementPage.recoverKey(); style=background:#fff>
                                                 <div class="panel panel-spectre panel-default no-border" id=portlet-linear-color>
                                                     <div class=panel-heading>
-                                                        <div class=panel-title>
-                                                            <p style=font-weight:bolder>Lets import your Wallet</div>
+                                                      <div class=panel-title><p><strong>Restore BIP32 sub-wallet</strong></p></div>
+                                                      <p>
+                                                        NOTE: BIP32 support and sub-wallets are <em>experimental</em> and intended for advanced users.<br>
+                                                        If you created a sub-wallet with a recovery phrase on another system, you can restore it here.<br>
+                                                        You will need to re-sync the blockchain in order for your transactions and balance to appear within the wallet.<br>
+                                                        If you have a wallet.dat file, you can simply copy it to your SpectreCoin data directory to restore it.
+                                                      </p>
                                                     </div>
                                                     <hr class=no-margin>
                                                 </div>
