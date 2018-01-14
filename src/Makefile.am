@@ -108,6 +108,7 @@ spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
 		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) $(ZSTD_LDFLAGS) \
 		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) \
 		       $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
+spectrecoind_LIBTOOLFLAGS = --tag CXX
 
 if OS_WINDOWS_CROSSCOMPILE
 spectrecoind_LDADD += -lmswsock -lshlwapi -luuid -lole32 -lgdi32
@@ -276,6 +277,7 @@ spectre_SOURCES = $(common_SOURCES) \
 spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS)
 spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
 spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT5_LDFLAGS)
+spectre_LIBTOOLFLAGS = $(spectrecoind_LIBTOOLFLAGS)
 
 if OS_MACOS
   spectre_SOURCES += qt/moc_macnotificationhandler.cpp \
