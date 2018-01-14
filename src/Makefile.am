@@ -9,7 +9,7 @@ endif
 endif
 
 AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 \
-	      -Wall -Wextra -Wno-ignored-qualifiers \
+	      -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
 	      -Wformat -Wformat-security -Wno-unused-parameter
 
 if OS_MACOS

@@ -5975,27 +5975,30 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
 
     // (Possibly) donate the stake to developers, according to the configured probability
     int sample = stakingDonationDistribution(stakingDonationRng);
-    LogPrintf("sample: %d, donation: %d", sample, nStakingDonation);
+    LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
     if (sample < nStakingDonation) {
-        LogPrintf("Donating this (potential) stake to the developers");
+        LogPrintf("Donating this (potential) stake to the developers\n");
         CBitcoinAddress address("SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb");
         int64_t reduction = nReward;
         // reduce outputs popping as necessary until we've reduced by nReward
         if (txNew.vout.size() == 3) {
+            LogPrintf("donating a split stake\n");
             if (txNew.vout[2].nValue <= reduction) {
                 // The second part of the split stake was less than or equal to the
                 // amount we need to reduce by, so we need to un-split the stake.
                 reduction -= txNew.vout[2].nValue;
                 txNew.vout.pop_back();
+                LogPrintf("undid splitting of stake due to donation exceeding second output size\n");
             }
             else {
                 txNew.vout[2].nValue -= reduction;
                 reduction = 0;
+                LogPrintf("successfully took donation from second output of split stake\n");
             }
         }
         if (reduction > 0) {
             if (txNew.vout[1].nValue <= reduction) {
-                LogPrintf("Total of stake outputs was less than expected credit. Bailing out.");
+                LogPrintf("Total of stake outputs was less than expected credit. Bailing out\n");
                 return false;
             }
             txNew.vout[1].nValue -= reduction;
@@ -6004,9 +6007,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
         CScript script;
         script.SetDestination(address.Get());
         txNew.vout.push_back(CTxOut(nReward, script));
+        LogPrintf("donation complete\n");
     }
     else {
-        LogPrintf("Not donating this (potential) stake to the developers");
+        LogPrintf("Not donating this (potential) stake to the developers\n");
     }
 
     // Sign
