@@ -8556,7 +8556,7 @@ int CWallet::NewExtKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, std:
     CExtKey evNewKey;
 
     uint32_t nOldGen = sekAccount->GetCounter(fHardened);
-    uint32_t nNewChildNo;
+    uint32_t nNewChildNo = 0;
     if (sekAccount->DeriveNextKey(evNewKey, nNewChildNo, fHardened) != 0)
         return errorN(1, "DeriveNextKey failed.");
 
