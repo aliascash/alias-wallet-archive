@@ -1011,7 +1011,7 @@ int SecureMsgReadIni()
     char cLine[512];
     char *pName, *pValue;
 
-    char cAddress[64];
+    char cAddress[65];
     int addrRecv, addrRecvAnon;
 
     while (fgets(cLine, 512, fp))
