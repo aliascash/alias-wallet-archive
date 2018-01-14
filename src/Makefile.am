@@ -1,14 +1,18 @@
 AM_LDFLAGS = -fstack-protector
+
 if OS_LINUX
-AM_LDFLAGS += -Wl,-z,relro -Wl,-z,now
+AM_LDFLAGS += -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,noexecheap -Wl,-z,nodlopen -Wl,-z,nodump
 else
 if OS_WINDOWS_CROSSCOMPILE
 AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
 endif
 endif
-AM_CPPFLAGS = -pthread -O2 -fstack-protector -fPIC \
-	      -Wall -Wextra -Wno-ignored-qualifiers -Wstack-protector \
-	      -Wformat -Wformat-security -Wno-unused-parameter
+
+AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 \
+	      -Wall -Wextra -Wno-ignored-qualifiers \
+	      -Wformat -Wformat-security -Wno-unused-parameter \
+	      -Werror
+
 if OS_MACOS
 AM_CPPFLAGS += -mmacosx-version-min=10.9
 endif
@@ -98,7 +102,7 @@ spectrecoind_LDADD = ../leveldb/libmemenv.a \
 spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
 			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CPPFLAGS) \
 			-I../leveldb/include -I../leveldb/helpers -I../db4.8/build_unix \
-			-D_FORTIFY_SOURCE -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
+			-D_FORTIFY_SOURCE=1 -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
 			-DBOOST_ASIO_ENABLE_OLD_SERVICES
 spectrecoind_CFLAGS = $(spectrecoind_CPPFLAGS) -std=c11
 spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \

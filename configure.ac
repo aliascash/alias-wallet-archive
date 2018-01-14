@@ -35,12 +35,11 @@ AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
 AC_CONFIG_FILES([Makefile src/Makefile])
 PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES(OPENSSL, [openssl < 1.1], [], [AC_MSG_ERROR([OpenSSL 1.0 not found])])
-AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl)]])
-# TODO: there is surely a better way to do this. learn it!
+AX_SUBDIRS_CONFIGURE([tor], [[--disable-unittests], [--disable-system-torrc], [--disable-systemd], [--disable-lzma], [--disable-asciidoc], [--with-openssl-dir=$($PKG_CONFIG --variable=libdir openssl)], [CFLAGS=$($PKG_CONFIG --cflags openssl) -O2]])
 if test "x$build_windows" = "xyes" ; then
-  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [--enable-mingw]])
+  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [--enable-mingw], [CFLAGS=-fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1], [CPPFLAGS=-fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1]])
 else
-  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared]])
+  AX_SUBDIRS_CONFIGURE([db4.8/build_unix], [[--disable-cryptography], [--disable-partition], [--disable-compression], [--disable-replication], [--enable-cxx], [--enable-static], [--disable-shared], [CFLAGS=-fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1], [CPPFLAGS=-fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1]])
 fi
 PKG_CHECK_MODULES(LIBEVENT, [libevent], [], [AC_MSG_ERROR([libevent not found])])
 PKG_CHECK_MODULES(ZLIB, [zlib], [], [AC_MSG_ERROR([zlib not found])])
