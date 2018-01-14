@@ -7298,7 +7298,7 @@ int CWallet::ExtKeyCreateAccount(CStoredExtKey *sekAccount, CKeyID &idMaster, CE
         ekaOut.nFlags |= EAF_HAVE_SECRET;
 
     CExtKey evExternal, evInternal, evStealth;
-    uint32_t nExternal, nInternal, nStealth;
+    uint32_t nExternal = 0, nInternal = 0, nStealth = 0;
     if (sekAccount->DeriveNextKey(evExternal, nExternal, false) != 0
         || sekAccount->DeriveNextKey(evInternal, nInternal, false) != 0
         || sekAccount->DeriveNextKey(evStealth, nStealth, true) != 0)
@@ -8357,7 +8357,7 @@ int CWallet::NewKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, CPubKey
         return errorN(1, "%s Unknown chain.", __func__);
 
     uint32_t nChildBkp = fHardened ? sek->nHGenerated : sek->nGenerated;
-    uint32_t nChildOut;
+    uint32_t nChildOut = 0;
     if (0 != sek->DeriveNextKey(pkOut, nChildOut, fHardened))
         return errorN(1, "%s Derive failed.", __func__);
 
@@ -8444,7 +8444,7 @@ int CWallet::NewStealthKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, 
     uint32_t nChildBkp = sek->nHGenerated;
 
     CKey kScan, kSpend;
-    uint32_t nScanOut, nSpendOut;
+    uint32_t nScanOut = 0, nSpendOut = 0;
     if (0 != sek->DeriveNextKey(kScan, nScanOut, true))
         return errorN(1, "%s Derive failed.", __func__);
 
