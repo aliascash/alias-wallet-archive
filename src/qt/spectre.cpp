@@ -175,7 +175,6 @@ int main(int argc, char *argv[])
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
     // Under no circumstances should any browser plugins be loaded.
-    QWebSettings::globalSettings()->setPluginSearchPaths(QStringList());
     QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, false);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, false);
 
