@@ -10,8 +10,7 @@ endif
 
 AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 \
 	      -Wall -Wextra -Wno-ignored-qualifiers \
-	      -Wformat -Wformat-security -Wno-unused-parameter \
-	      -Werror
+	      -Wformat -Wformat-security -Wno-unused-parameter
 
 if OS_MACOS
 AM_CPPFLAGS += -mmacosx-version-min=10.9

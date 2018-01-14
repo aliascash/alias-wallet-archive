@@ -108,7 +108,6 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
     QApplication app(argc, argv);
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
@@ -172,6 +171,13 @@ int main(int argc, char *argv[])
     // Load e.g. bitcoin_de_DE.qm (shortcut "de_DE" needs to be defined in bitcoin.qrc)
     if (translator.load(lang_territory, ":/translations/"))
         app.installTranslator(&translator);
+
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+
+    // Under no circumstances should any browser plugins be loaded.
+    QWebSettings::globalSettings()->setPluginPaths(QStringList());
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, false);
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, false);
 
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);

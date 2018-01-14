@@ -116,8 +116,6 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     documentFrame = webView->page()->mainFrame();
 
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-
     //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
 
     connect(webView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
