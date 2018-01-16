@@ -1207,53 +1207,67 @@ static const char *strMainNetOnionSeed[][1] = {
     {"m7llkwjbwyfykb5m.onion"},
 
 // other stable nodes that are monitored by the project
-    {"2na44tu4oijy5bpj.onion"},
-    {"2uyfzdmv4aqyzzoq.onion"},
-    {"36cjhdc4nopyfren.onion"},
-    {"36quoae7cpmuv565.onion"},
-    {"4eblnapjvvnjtkan.onion"},
-    {"4hpfcwkaobzjyuoh.onion"},
-    {"4jgbousxxdfl5hix.onion"},
-    {"65ny62gavihydr4c.onion"},
-    {"6m6vciwrtbhlag5f.onion"},
-    {"6pmv4kvnjcdw3cra.onion"},
-    {"7o3ceabjxh7sylim.onion"},
-    {"ap2r6xfrlu2nrx3l.onion"},
-    {"bav2ooy623w6vxdk.onion"},
-    {"bpxcmzhorez4xd4q.onion"},
-    {"bq26m6fxc3ugckxs.onion"},
-    {"bzruomj2yt4owfnr.onion"},
-    {"cfhkovwvg74r5iop.onion"},
-    {"fsdb7rdaokq4dt6g.onion"},
-    {"hok3l3q2tqht53p2.onion"},
-    {"hronjye4bnb6vf3p.onion"},
-    {"iwdazhip3lh4vppd.onion"},
-    {"j3juniimvkg34ih7.onion"},
-    {"jbng3uie2xhqei54.onion"},
-    {"jhxcr2yowncfv7p4.onion"},
-    {"jrfrkgdek5jflcrm.onion"},
-    {"jxj7b5nxwnxz5ky2.onion"},
-    {"kooornvgjmkui7zc.onion"},
-    {"kvur7ffwcjn3c2on.onion"},
-    {"l7ja6nk6ti6zh726.onion"},
-    {"ledtz2ah5o6rblau.onion"},
-    {"lv6slfpywwwrmew6.onion"},
-    {"mzf2t432tgstk5ti.onion"},
-    {"nisshlgnryo3mllv.onion"},
-    {"o22i72rnjhusfjp7.onion"},
-    {"q65ek7y4newplom5.onion"},
-    {"qcl64kqn2cguy7pv.onion"},
-    {"qnbrodzgtvfgye3s.onion"},
-    {"qxx6mdfpqwlybqr3.onion"},
-    {"ruvgo6bnydzq5ggo.onion"},
-    {"tiqwi3hfp4oqi4gs.onion"},
-    {"tmwk7t7ut7blobyk.onion"},
-    {"v2pf6ubkl3mnbdvt.onion"},
-    {"vejf7v272yckl7gq.onion"},
-    {"vge5eb7vteckvgrx.onion"},
-    {"vh6jx5cwxrpy76fc.onion"},
-    {"wfoxmw3zxp54ajcx.onion"},
-    {"zkfnhawtnhrpjqk2.onion"},
+    {"wfwyo2ibfhp7ovew.onion"},
+    {"2hwcpyytiniyirri.onion"},
+    {"3pmf3ods7w4mugkg.onion"},
+    {"47ienvn7mmp5b2es.onion"},
+    {"4bp4juvhwlxburwr.onion"},
+    {"4m7bimkb3n7pwpqg.onion"},
+    {"4q53d33dz4elf2ax.onion"},
+    {"4wlll7cf4xkcjtjd.onion"},
+    {"564fbpxocdunvpyc.onion"},
+    {"5b3j37fpxrinvejy.onion"},
+    {"7322mgoklqfnqiiz.onion"},
+    {"a2dtuw6sjluxeqqd.onion"},
+    {"adh7wd5h4mu2k4b5.onion"},
+    {"aivldz4dzqkgvxic.onion"},
+    {"bnaovkarabffyyke.onion"},
+    {"chnsankgcn5kvvd3.onion"},
+    {"cike2zwns64ffgt3.onion"},
+    {"cmp6or5uo3nnnvly.onion"},
+    {"dj3l2tfrofsvybom.onion"},
+    {"dnllkj5iifdqhnym.onion"},
+    {"dvk6rwg3zvxdwfdx.onion"},
+    {"gak7xnfhngioiaoj.onion"},
+    {"gtlism2dffmp4i4t.onion"},
+    {"h3es2be7kq5mjlti.onion"},
+    {"i3bdv26mbuipj6us.onion"},
+    {"ic3deuehchlk6knh.onion"},
+    {"jddecdsuy4e3uclk.onion"},
+    {"je5wlr7uqc4h43wa.onion"},
+    {"jelmjxy7omonfs5n.onion"},
+    {"jib4gtrtwdi7wai5.onion"},
+    {"jjoeh3xlb5nelohw.onion"},
+    {"ktg4wm4ndufzvs3j.onion"},
+    {"kw6tgzhoorhjnwix.onion"},
+    {"mc33zi235lz3ci4l.onion"},
+    {"ml6fp7xyozbxi2ua.onion"},
+    {"ni6we2yv3apenk6t.onion"},
+    {"nmgfhtys6t57wrtk.onion"},
+    {"ol4h57uspvn3qtpn.onion"},
+    {"pepshxrtyaqqpw6z.onion"},
+    {"q2uwu5oijrtvpv4r.onion"},
+    {"qx62zrmkilsdrhnd.onion"},
+    {"r7rlu6ikjsa5qpwk.onion"},
+    {"rgfsiysh5qqky22u.onion"},
+    {"rgqy2fiqpqtkoeaq.onion"},
+    {"ryqdfdltth3zs6xx.onion"},
+    {"s7cfhu7hvnsbjq6u.onion"},
+    {"symx7alasrc427x2.onion"},
+    {"ts7u5unjljv2w2yu.onion"},
+    {"ttf65jv5divwc6a6.onion"},
+    {"tw2i25z4ck2ahexr.onion"},
+    {"uwcz5wlkaspecnck.onion"},
+    {"w3thio6uo73osdnb.onion"},
+    {"wgqve7afg2tlgdzx.onion"},
+    {"wrh5owyu434fyczq.onion"},
+    {"wrvg3eibf5eoixk4.onion"},
+    {"wsitvuitaluj4od3.onion"},
+    {"xch2lllybxqc726g.onion"},
+    {"z2aa4y5ir4jarpc3.onion"},
+    {"ze66ptnzkdwiutmu.onion"},
+    {"zm5awsmhsf5wux67.onion"},
+    {"zus5noyoukc6g4zg.onion"},
     {NULL}
 };
 
@@ -1810,16 +1824,17 @@ static char *convert_str(const std::string &s) {
 }
 
 static void run_tor() {
-    printf("TOR thread started.\n");
-
     boost::optional<std::string> clientTransportPlugin;
     struct stat sb;
+#ifdef WIN32
+    if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
+      clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
+    }
+#else
     if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
       clientTransportPlugin = "obfs4 exec obfs4proxy";
     }
-    else if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
-      clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
-    }
+#endif
 
     fs::path tor_dir = GetDataDir() / "tor";
     fs::create_directory(tor_dir);
@@ -1833,21 +1848,25 @@ static void run_tor() {
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
-    argv.push_back((tor_dir / "torrc").string());
+    std::string torrc = (tor_dir / "torrc").string();
+    argv.push_back(torrc);
+    argv.push_back("--DataDirectory");
+    argv.push_back(tor_dir.string());
+    argv.push_back("--GeoIPFile");
+    argv.push_back((tor_dir / "geoip").string());
+    argv.push_back("--GeoIPv6File");
+    argv.push_back((tor_dir / "geoipv6").string());
     argv.push_back("--HiddenServiceDir");
     argv.push_back((tor_dir / "onion").string());
     argv.push_back("--HiddenServicePort");
     argv.push_back("37347");
 
     if (clientTransportPlugin) {
-      printf("Using OBFS4.\n");
+      LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
       argv.push_back("--ClientTransportPlugin");
       argv.push_back(*clientTransportPlugin);
       argv.push_back("--UseBridges");
       argv.push_back("1");
-    }
-    else {
-      printf("No OBFS4 found, not using it.\n");
     }
 
     std::vector<char *> argv_c;
