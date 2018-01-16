@@ -31,7 +31,7 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case Generated:
         return SpectreGUI::tr("Staked");
     case GeneratedDonation:
-        return SpectreGUI::tr("Donated Stake");
+        return SpectreGUI::tr("Donated");
     case RecvSpectre:
         return SpectreGUI::tr("Received spectre");
     case SendSpectre:
@@ -203,15 +203,26 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     if (hashPrev == hash)
                         continue; // last coinstake output
 
-                    sub.credit = nNet > 0 ? nNet : wtx.GetValueOut() - nDebit;
-                    if (sub.address == "SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb")
-                        sub.type = TransactionRecord::GeneratedDonation;
-                    else
-                        sub.type = TransactionRecord::Generated;
+                    sub.credit = nNet > 0 ? nNet : fabs(wtx.GetValueOut() - nDebit);
+                    sub.type = TransactionRecord::Generated;
                     hashPrev = hash;
                 };
 
                 parts.append(sub);
+            }
+            else if (wtx.IsCoinStake()) {
+                CTxDestination address;
+                if (ExtractDestination(txout.scriptPubKey, address)) {
+                    std::string strAddress = CBitcoinAddress(address).ToString();
+                    if (strAddress == "SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb") {
+                        TransactionRecord sub(hash, nTime);
+                        sub.address = strAddress;
+                        sub.type = TransactionRecord::GeneratedDonation;
+                        sub.credit = txout.nValue;
+                        sub.idx = parts.size(); // sequence number
+                        parts.append(sub);
+                    }
+                }
             }
         }
     } else
