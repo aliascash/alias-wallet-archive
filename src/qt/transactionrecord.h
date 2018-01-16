@@ -65,6 +65,7 @@ public:
     {
         Other,
         Generated,
+        GeneratedDonation,
         SendToAddress,
         SendToOther,
         RecvWithAddress,

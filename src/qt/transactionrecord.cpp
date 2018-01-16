@@ -29,7 +29,9 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case SendToSelf:
         return SpectreGUI::tr("Payment to yourself");
     case Generated:
-        return SpectreGUI::tr("Mined");
+        return SpectreGUI::tr("Staked");
+    case GeneratedDonation:
+        return SpectreGUI::tr("Donated Stake");
     case RecvSpectre:
         return SpectreGUI::tr("Received spectre");
     case SendSpectre:
@@ -46,7 +48,9 @@ QString TransactionRecord::getTypeShort(const int &type)
     switch(type)
     {
     case TransactionRecord::Generated:
-        return "mined";
+        return "staked";
+    case TransactionRecord::GeneratedDonation:
+        return "donated";
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -199,8 +203,11 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     if (hashPrev == hash)
                         continue; // last coinstake output
 
-                    sub.type = TransactionRecord::Generated;
                     sub.credit = nNet > 0 ? nNet : wtx.GetValueOut() - nDebit;
+                    if (sub.address == "SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb")
+                        sub.type = TransactionRecord::GeneratedDonation;
+                    else
+                        sub.type = TransactionRecord::Generated;
                     hashPrev = hash;
                 };
 
@@ -421,7 +428,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.open_for = wtx.nLockTime;
         };
     } else
-    if (type == TransactionRecord::Generated)
+    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedDonation)
     {
         // For generated transactions, determine maturity
         if (wtx.GetBlocksToMaturity() > 0)
