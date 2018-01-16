@@ -4,7 +4,7 @@ if OS_LINUX
 AM_LDFLAGS += -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,noexecheap -Wl,-z,nodlopen -Wl,-z,nodump
 else
 if OS_WINDOWS_CROSSCOMPILE
-AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat
+AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat -Wl,--subsystem,windows
 endif
 endif
 
