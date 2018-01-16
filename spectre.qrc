@@ -75,7 +75,8 @@
         <file alias="assets/icons/transaction0.png">src/qt/res/assets/icons/transaction0.png</file>
         <file alias="assets/icons/tx_inout.png">src/qt/res/assets/icons/tx_inout.png</file>
         <file alias="assets/icons/tx_input.png">src/qt/res/assets/icons/tx_input.png</file>
-        <file alias="assets/icons/tx_mined.png">src/qt/res/assets/icons/tx_mined.png</file>
+        <file alias="assets/icons/tx_staked.png">src/qt/res/assets/icons/tx_staked.png</file>
+        <file alias="assets/icons/tx_donated.png">src/qt/res/assets/icons/tx_donated.png</file>
         <file alias="assets/icons/tx_output.png">src/qt/res/assets/icons/tx_output.png</file>
         <file alias="assets/img/about.png">src/qt/res/assets/img/about.png</file>
         <file alias="assets/img/avatars/kewde.png">src/qt/res/assets/img/avatars/kewde.png</file>
@@ -2003,7 +2004,8 @@
         <file alias="toolbar_testnet">src/qt/res/icons/spectrecoin-16.png</file>
         <file alias="export">src/qt/res/icons/export.png</file>
         <file alias="remove">src/qt/res/icons/remove.png</file>
-        <file alias="tx_mined">src/qt/res/icons/tx_mined.png</file>
+        <file alias="tx_staked">src/qt/res/icons/tx_staked.png</file>
+        <file alias="tx_donated">src/qt/res/icons/tx_donated.png</file>
         <file alias="tx_input">src/qt/res/icons/tx_input.png</file>
         <file alias="tx_output">src/qt/res/icons/tx_output.png</file>
         <file alias="tx_inout">src/qt/res/icons/tx_inout.png</file>
