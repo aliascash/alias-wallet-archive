@@ -20,6 +20,7 @@ pushd leveldb
 patch --no-backup-if-mismatch -f -p1 < ../leveldb-memenv.patch
 patch --no-backup-if-mismatch -f -p1 < ../leveldb-harden.patch
 patch --no-backup-if-mismatch -f -p1 < ../leveldb-win32.patch
+patch --no-backup-if-mismatch -f -p1 < ../leveldb-arm64.patch
 popd
 
 pushd db4.8
