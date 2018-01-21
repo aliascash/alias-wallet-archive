@@ -107,7 +107,10 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings(QTextCodec::codecForTr());
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
     QApplication app(argc, argv);
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
