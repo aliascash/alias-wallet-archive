@@ -58,13 +58,24 @@ BOOST_DATE_TIME([mt])
 BOOST_IOSTREAMS([mt])
 AC_ARG_ENABLE([gui], [AS_HELP_STRING([--enable-gui], [Build the Qt GUI wallet])])
 if test "x$enable_gui" = "xyes" ; then
-  PKG_CHECK_MODULES(QT5, [Qt5Core Qt5Gui Qt5Widgets Qt5WebKit Qt5WebKitWidgets], [], [AC_MSG_ERROR([Qt5 not found.])])
-  AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-  AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
-  AC_CHECK_PROGS(LRELEASE, [lrelease-qt5 lrelease])
-  if test -z "$MOC" || test -z "$UIC" || test -z "$RCC" || test -z "$LRELEASE"; then
-    AC_MSG_ERROR([Qt utilities moc/uic/rcc/lrelease not found.])
+  PKG_CHECK_MODULES(QT5, [Qt5Core Qt5Gui Qt5Widgets], [], [AC_MSG_ERROR([Qt5 not found.])])
+  PKG_CHECK_MODULES(QT5WEBKIT, [Qt5WebKit Qt5WebKitWidgets], [], [AC_MSG_ERROR([Qt5WebKit not found.])])
+  beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+  AC_CHECK_TOOLS(MOC, [moc-qt5 moc])
+  if beginswith "$($MOC -v)" "$MOC 5." ; then
+    AC_MSG_ERROR([Cannot find Qt5 tool "moc" - please install the Qt5 development tools.])
+  fi
+  AC_CHECK_TOOLS(UIC, [uic-qt5 uic])
+  if beginswith "$($UIC -v)" "$UIC 5." ; then
+    AC_MSG_ERROR([Cannot find Qt5 tool "uic" - please install the Qt5 development tools.])
+  fi
+  AC_CHECK_TOOLS(RCC, [rcc-qt5 rcc])
+  if beginswith "$($RCC -v)" "$RCC 5." ; then
+    AC_MSG_ERROR([Cannot find Qt5 tool "rcc" - please install the Qt5 development tools.])
+  fi
+  AC_CHECK_TOOLS(LRELEASE, [lrelease-qt5 lrelease])
+  if beginswith "$($LRELEASE -version)" "lrelease version 5." ; then
+    AC_MSG_ERROR([Cannot find Qt5 tool "lrelease" - please install the Qt5 development tools.])
   fi
 fi
 AM_CONDITIONAL([ENABLE_GUI], [test "$enable_gui" = "yes"])

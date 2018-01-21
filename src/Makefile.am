@@ -274,9 +274,9 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp
 
-spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS)
-spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
-spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT5_LDFLAGS)
+spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS) $(QT5WEBKIT_LIBS)
+spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) $(QT5WEBKIT_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
+spectre_LDFLAGS = $(spectrecoind_LDFLAGS) $(QT5_LDFLAGS) $(QT5WEBKIT_LDFLAGS)
 spectre_LIBTOOLFLAGS = $(spectrecoind_LIBTOOLFLAGS)
 
 if OS_MACOS

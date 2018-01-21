@@ -3,12 +3,10 @@ SpectreCoin
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
-The latest release is [1.3.3](https://github.com/spectrecoin/spectre/releases/tag/v1.3.3), released on September 12, 2017.
+The latest release is [1.3.5](https://github.com/spectrecoin/spectre/releases/tag/v1.3.5), released on January 16, 2018.
 
 Building from source
 ====================
-
-**To build a stable wallet from source, please check out the tag corresponding to the latest release from the [releases page](https://github.com/spectrecoin/spectre/releases) and follow the instructions in the README.md from that tag. Building from the master branch (the development code for the next release) should only be done if you plan to work on the code and understand the risks.**
 
 Dependencies
 ------------

@@ -1,28 +1,33 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
-[ -d .git ] && [ -f ./tor/.git ] && [ -f ./leveldb/.git ] || \
-  { echo "Please run this command from the root of a recursive Git clone of the Spectrecoin repository." && exit 1; }
+[ -d .git ] && [ -d tor ] && [ -d leveldb ] || \
+  { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
 
-pushd tor && git checkout -f . && git clean -fdx . && popd
-pushd leveldb && git checkout -f . && git clean -fdx . && popd
+git submodule init
+git submodule sync --recursive
+git submodule update --recursive --force
+
+pushd tor && git clean -fdx . && popd
+pushd leveldb && git clean -fdx . && popd
 pushd db4.8 && git checkout -f . && git clean -fdx . && popd
-git submodule update --init
 
 autoreconf --no-recursive --install
 
+PATCH="patch --no-backup-if-mismatch -f"
+
 pushd tor
-patch --no-backup-if-mismatch -f -p0 < ../tor-or-am.patch
-patch --no-backup-if-mismatch -f -p0 < ../tor-am.patch
+$PATCH -p0 < ../tor-or-am.patch
+$PATCH -p0 < ../tor-am.patch
 ./autogen.sh
 popd
 
 pushd leveldb
-patch --no-backup-if-mismatch -f -p1 < ../leveldb-memenv.patch
-patch --no-backup-if-mismatch -f -p1 < ../leveldb-harden.patch
-patch --no-backup-if-mismatch -f -p1 < ../leveldb-win32.patch
-patch --no-backup-if-mismatch -f -p1 < ../leveldb-arm64.patch
+$PATCH -p1 < ../leveldb-memenv.patch
+$PATCH -p1 < ../leveldb-harden.patch
+$PATCH -p1 < ../leveldb-win32.patch
+$PATCH -p1 < ../leveldb-arm64.patch
 popd
 
 pushd db4.8
-patch --no-backup-if-mismatch -f -p1 < ../db-atomic.patch
+$PATCH -p1 < ../db-atomic.patch
 popd
