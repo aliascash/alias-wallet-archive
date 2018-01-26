@@ -44,7 +44,7 @@ Building
 
 To fetch the source code and build the wallet run the following commands:
 
-    git clone --recursive https://github.com/spectrecoin/spectre
+    git clone --recursive https://github.com/XSPECOfficial/spectre
     cd spectre
     ./autogen.sh
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
