@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-[ -d .git ] && [ -d tor ] && [ -d leveldb ] || \
+[ -d .git ] && [ -d tor ] && [ -d leveldb ] && [ -d db4.8 ] || \
   { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
 
 git submodule init
@@ -9,7 +9,7 @@ git submodule update --recursive --force
 
 pushd tor && git clean -fdx . && popd
 pushd leveldb && git clean -fdx . && popd
-pushd db4.8 && git checkout -f . && git clean -fdx . && popd
+pushd db4.8 && git clean -fdx . && popd
 
 autoreconf --no-recursive --install
 
@@ -19,8 +19,4 @@ pushd tor
 $PATCH -p0 < ../tor-or-am.patch
 $PATCH -p0 < ../tor-am.patch
 ./autogen.sh
-popd
-
-pushd db4.8
-$PATCH -p1 < ../db-atomic.patch
 popd
