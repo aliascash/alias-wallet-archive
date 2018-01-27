@@ -15,12 +15,6 @@ autoreconf --no-recursive --install
 
 PATCH="patch --no-backup-if-mismatch -f"
 
-pushd tor
-$PATCH -p0 < ../tor-or-am.patch
-$PATCH -p0 < ../tor-am.patch
-./autogen.sh
-popd
-
 pushd leveldb
 $PATCH -p1 < ../leveldb-memenv.patch
 $PATCH -p1 < ../leveldb-harden.patch
