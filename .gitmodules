@@ -1,7 +1,9 @@
-[submodule "leveldb"]
-  path = leveldb
-  url = https://github.com/google/leveldb
-  branch = e353fbc7ea81f12a5694991b708f8f45343594b1
 [submodule "tor"]
 	path = tor
 	url = https://github.com/XSPECOfficial/tor
+[submodule "leveldb"]
+	path = leveldb
+	url = https://github.com/XSPECOfficial/leveldb
+[submodule "db4.8"]
+	path = db4.8
+	url = https://github.com/XSPECOfficial/db4.8

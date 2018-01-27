@@ -5,15 +5,21 @@ AM_LDFLAGS += -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,-z,noexecheap -Wl,-
 else
 if OS_WINDOWS_CROSSCOMPILE
 AM_LDFLAGS += -Wl,--dynamicbase -Wl,--nxcompat -Wl,--subsystem,windows
+else
+if OS_MACOS
+AM_LDFLAGS += $(MACOS_RPATH)
+endif
 endif
 endif
 
-AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 \
+AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 -std=c++14 \
+	      -D_FORTIFY_SOURCE=1 \
 	      -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
 	      -Wformat -Wformat-security -Wno-unused-parameter
 
 if OS_MACOS
-AM_CPPFLAGS += -mmacosx-version-min=10.9
+AM_CPPFLAGS += -mmacosx-version-min=10.10
+
 endif
 
 common_SOURCES = anonymize.cpp \
@@ -214,6 +220,7 @@ BUILT_SOURCES = qt/ui_aboutdialog.h \
 		qt/locale/umbra_zh_TW.qm
 
 bin_PROGRAMS += spectre
+
 spectre_SOURCES = $(common_SOURCES) \
 		  qt/qrc_spectre.cpp \
 		  qt/moc_spectregui.cpp \
@@ -287,3 +294,8 @@ if OS_MACOS
   spectre_LDFLAGS += -framework Foundation -framework AppKit -framework CoreServices
 endif
 endif
+
+clean-local:
+	rm qt/moc_*.cpp
+	rm qt/ui_*.cpp
+	rm qt/qrc_*.cpp
