@@ -6,3 +6,6 @@
   path = leveldb
   url = https://github.com/google/leveldb
   branch = e353fbc7ea81f12a5694991b708f8f45343594b1
+[submodule "db4.8"]
+	path = db4.8
+	url = https://github.com/XSPECOfficial/db4.8
