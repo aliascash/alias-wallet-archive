@@ -5,7 +5,7 @@
 
 git submodule init
 git submodule sync --recursive
-git submodule update --recursive --force
+git submodule update --recursive --force --remote
 
 autoreconf --no-recursive --install
 

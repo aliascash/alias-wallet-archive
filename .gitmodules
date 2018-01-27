@@ -1,9 +1,11 @@
 [submodule "tor"]
 	path = tor
 	url = https://github.com/XSPECOfficial/tor
+	branch = spectre
 [submodule "leveldb"]
 	path = leveldb
 	url = https://github.com/XSPECOfficial/leveldb
+	branch = spectre
 [submodule "db4.8"]
 	path = db4.8
 	url = https://github.com/XSPECOfficial/db4.8
