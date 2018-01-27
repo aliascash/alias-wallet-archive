@@ -65,7 +65,7 @@ if test "x$enable_gui" = "xyes" ; then
       QT5_LIBDIR="$with_qt5/lib"
       MACOS_RPATH="-Wl,-rpath,$QT5_LIBDIR"
       QT5_LDFLAGS="-F$QT5_LIBDIR"
-      QT5_CFLAGS="$QT5_LDFLAGS -I$QT5_LIBDIR/QtCore.framework/Headers -I$QT5_LIBDIR/QtGui.framework/Headers -I$QT5_LIBDIR/QtWidgets.framework/Headers -I$QT5_LIBDIR/lib/QtNetwork.framework/Headers"
+      QT5_CFLAGS="$QT5_LDFLAGS -I$QT5_LIBDIR/QtCore.framework/Headers -I$QT5_LIBDIR/QtGui.framework/Headers -I$QT5_LIBDIR/QtWidgets.framework/Headers -I$QT5_LIBDIR/QtNetwork.framework/Headers"
       QT5_LIBS="-framework QtCore -framework QtGui -framework QtWidgets -framework QtNetwork"
       MACDEPLOYQT="$with_qt5/bin/macdeployqt"
       AC_SUBST([MACDEPLOYQT])
