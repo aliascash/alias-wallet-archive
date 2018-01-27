@@ -296,6 +296,6 @@ endif
 endif
 
 clean-local:
-	rm qt/moc_*.cpp
-	rm qt/ui_*.cpp
-	rm qt/qrc_*.cpp
+	rm -f qt/moc_*.cpp
+	rm -f qt/ui_*.cpp
+	rm -f qt/qrc_*.cpp
