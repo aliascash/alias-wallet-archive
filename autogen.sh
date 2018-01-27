@@ -21,13 +21,6 @@ $PATCH -p0 < ../tor-am.patch
 ./autogen.sh
 popd
 
-pushd leveldb
-$PATCH -p1 < ../leveldb-memenv.patch
-$PATCH -p1 < ../leveldb-harden.patch
-$PATCH -p1 < ../leveldb-win32.patch
-$PATCH -p1 < ../leveldb-arm64.patch
-popd
-
 pushd db4.8
 $PATCH -p1 < ../db-atomic.patch
 popd
