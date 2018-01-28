@@ -24,10 +24,11 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
-To check all dependencies and install missing ones on **Debian or Ubuntu**:
+To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
     apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config
-    apt install qtbase5-dev libqt5webkit5-dev  # only if building the GUI wallet
+    # the following commands should only be run if building the GUI wallet
+    apt install qtbase5-dev qttools5-dev-tools libqt5webkit5-dev qtchooser
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
@@ -49,6 +50,7 @@ To fetch the source code and build the wallet run the following commands:
     git clone --recursive https://github.com/XSPECOfficial/spectre
     cd spectre
     ./autogen.sh
+    export QT_SELECT=qt5  # only necessary on Debian/Ubuntu/Mint/etc
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
 
