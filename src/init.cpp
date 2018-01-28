@@ -198,6 +198,7 @@ void ThreadSignalHandler(void *nothing)
             case SIGHUP:
                 fprintf(stderr, "Received SIGHUP, re-opening debug log\n");
                 HandleSIGHUP();
+                break;
             default:
                 fprintf(stderr, "Unexpected signal %d\n", sig);
                 break;
