@@ -79,8 +79,8 @@ spectrecoind_SOURCES = $(common_SOURCES) \
 		       spectrecoind.cpp \
 		       noui.cpp
 
-spectrecoind_LDADD = ../leveldb/libmemenv.a \
-		     ../leveldb/libleveldb.a \
+spectrecoind_LDADD = ../leveldb/out-static/libmemenv.a \
+		     ../leveldb/out-static/libleveldb.a \
 		     ../db4.8/build_unix/libdb_cxx.a \
 		     ../tor/src/or/libtor.a \
 		     ../tor/src/common/libor.a \
