@@ -15,11 +15,11 @@ endif
 AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 \
 	      -D_FORTIFY_SOURCE=1 \
 	      -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
-	      -Wformat -Wformat-security -Wno-unused-parameter
+	      -Wformat -Wformat-security -Wno-unused-parameter \
+	      -Werror
 
 if OS_MACOS
 AM_CPPFLAGS += -std=c++14 -mmacosx-version-min=10.10
-
 endif
 
 common_SOURCES = anonymize.cpp \
@@ -59,7 +59,6 @@ common_SOURCES = anonymize.cpp \
 		 hash.cpp \
 		 wallet.cpp \
 		 walletdb.cpp \
-		 noui.cpp \
 		 kernel.cpp \
 		 pbkdf2.cpp \
 		 scrypt.cpp \
@@ -77,7 +76,9 @@ common_SOURCES = anonymize.cpp \
 		 bloom.cpp
 
 bin_PROGRAMS = spectrecoind
-spectrecoind_SOURCES = $(common_SOURCES) spectrecoind.cpp
+spectrecoind_SOURCES = $(common_SOURCES) \
+		       spectrecoind.cpp \
+		       noui.cpp
 
 spectrecoind_LDADD = ../leveldb/libmemenv.a \
 		     ../leveldb/libleveldb.a \
@@ -98,6 +99,7 @@ spectrecoind_LDADD = ../leveldb/libmemenv.a \
 		     $(LIBCAP_LIBS) \
 		     $(ZLIB_LIBS) \
 		     $(ZSTD_LIBS) \
+		     $(LZMA_LIBS) \
 		     $(BOOST_SYSTEM_LIBS) \
 		     $(BOOST_CHRONO_LIBS) \
 		     $(BOOST_FILESYSTEM_LIBS) \
@@ -105,13 +107,14 @@ spectrecoind_LDADD = ../leveldb/libmemenv.a \
 		     $(BOOST_THREAD_LIBS)
 
 spectrecoind_CPPFLAGS = $(AM_CPPFLAGS) $(OPENSSL_CFLAGS) $(LIBEVENT_CFLAGS) \
-			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(BOOST_CPPFLAGS) \
+			$(LIBSECCOMP_CFLAGS) $(LIBCAP_CFLAGS) $(ZLIB_CFLAGS) $(ZSTD_CPPFLAGS) $(LZMA_CPPFLAGS) \
+			$(BOOST_CPPFLAGS) \
 			-I../leveldb/include -I../leveldb/helpers -I../db4.8/build_unix \
 			-D_FORTIFY_SOURCE=1 -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE \
 			-DBOOST_ASIO_ENABLE_OLD_SERVICES
 spectrecoind_CFLAGS = $(spectrecoind_CPPFLAGS) -std=c11
 spectrecoind_LDFLAGS = $(AM_LDFLAGS) $(OPENSSL_LDFLAGS) $(LIBEVENT_LDFLAGS) \
-		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) $(ZSTD_LDFLAGS) \
+		       $(LIBSECCOMP_LDFLAGS) $(LIBCAP_LDFLAGS) $(ZLIB_LDFLAGS) $(ZSTD_LDFLAGS) $(LZMA_LDFLAGS) \
 		       $(BOOST_SYSTEM_LDFLAGS) $(BOOST_CHRONO_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS) \
 		       $(BOOST_PROGRAM_OPTIONS_LDFLAGS) $(BOOST_THREAD_LDFLAGS)
 spectrecoind_LIBTOOLFLAGS = --tag CXX
@@ -120,10 +123,10 @@ if OS_WINDOWS_CROSSCOMPILE
 spectrecoind_LDADD += -lmswsock -lshlwapi -luuid -lole32 -lgdi32
 spectrecoind_CPPFLAGS += -DWIN32 -D_WIN32
 else
-spectrecoind_LDFLAGS += -pie
 if OS_MACOS
 spectrecoind_CPPFLAGS += -DMAC_OSX
 else
+spectrecoind_LDFLAGS += -pie
 spectrecoind_LDADD += -lcap -lseccomp
 endif
 endif

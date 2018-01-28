@@ -8,6 +8,7 @@
 #include "init.h"
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <signal.h>
 
 #include "protocol.h"
 
@@ -250,6 +251,11 @@ bool AppInit(int argc, char* argv[])
 extern void noui_connect();
 int main(int argc, char* argv[])
 {
+#ifndef WIN32
+    if (BlockSignals() != 0)
+        return 1;
+#endif
+
     bool fRet = false;
     fHaveGUI = false;
     

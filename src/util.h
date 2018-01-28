@@ -551,11 +551,6 @@ inline void SetThreadPriority(int nPriority)
     setpriority(PRIO_PROCESS, 0, nPriority);
 #endif
 }
-
-inline void ExitThread(size_t nExitCode)
-{
-    pthread_exit((void*)nExitCode);
-}
 #endif
 
 void RenameThread(const char* name);

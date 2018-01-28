@@ -66,7 +66,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *strDest = NULL);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError=REF(std::string()));
-void StartTor(void* parg);
+void StartTor(void *);
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
@@ -391,7 +391,7 @@ public:
         fOneShot = false;
         fClient = false; // set by version message
         fInbound = fInboundIn;
-		fVerified = false;  // tor implementation
+	fVerified = false;  // tor implementation
         fNetworkNode = false;
         fSuccessfullyConnected = false;
         fDisconnect = false;
@@ -567,8 +567,9 @@ public:
             return;
         }
 
-        if (ssSend.size() == 0)
+        if (ssSend.size() == 0) {
             return;
+        }
 
         // Set the size
         unsigned int nSize = ssSend.size() - CMessageHeader::HEADER_SIZE;

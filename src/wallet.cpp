@@ -4178,7 +4178,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
     if (!pdb)
         throw runtime_error("CWallet::PickHidingOutputs() : cannot get leveldb instance");
 
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
 
     std::vector<CPubKey> vHideKeys;
 
@@ -5284,7 +5284,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
     if (!pdb)
         throw runtime_error("CWallet::CountAnonOutputs() : cannot get leveldb instance");
 
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
 
 
     // Seek to start key.
@@ -5345,7 +5345,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
     if (!pdb)
         throw runtime_error("CWallet::CountAnonOutputs() : cannot get leveldb instance");
 
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
 
 
     // Seek to start key.
@@ -5417,7 +5417,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
 
     // -- count spends
 
-    iterator = pdb->NewIterator(leveldb::ReadOptions());
+    iterator = pdb->NewIterator(txdb.GetReadOptions());
     ssStartKey.clear();
     ssStartKey << make_pair(string("ki"), pkZero);
     iterator->Seek(ssStartKey.str());

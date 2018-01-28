@@ -154,16 +154,57 @@ void Shutdown()
     LogPrintf("Shutdown complete.\n\n");
 }
 
-void HandleSIGTERM(int)
+#ifndef WIN32
+// Note: this also handles SIGINT
+void HandleSIGTERM()
 {
     fRequestShutdown = true;
 }
 
-void HandleSIGHUP(int)
+void HandleSIGHUP()
 {
     fReopenDebugLog = true;
 }
 
+static sigset_t blockedSignals;
+
+int BlockSignals()
+{
+    sigemptyset(&blockedSignals);
+    sigaddset(&blockedSignals, SIGINT);
+    sigaddset(&blockedSignals, SIGTERM);
+    sigaddset(&blockedSignals, SIGHUP);
+    return pthread_sigmask(SIG_BLOCK, &blockedSignals, NULL);
+}
+
+void ThreadSignalHandler(void *nothing)
+{
+    RenameThread("signals");
+
+    fprintf(stderr, "Waiting for signals\n");
+    while (1) {
+        int sig, rc;
+        rc = sigwait(&blockedSignals, &sig);
+        if (rc != 0) {
+            fprintf(stderr, "Failed to wait for signals: %d\n", rc);
+            return;
+        }
+        switch (sig) {
+            case SIGINT:
+            case SIGTERM:
+                fprintf(stderr, "Shutting down on signal %d\n", sig);
+                HandleSIGTERM();
+                return;
+            case SIGHUP:
+                fprintf(stderr, "Received SIGHUP, re-opening debug log\n");
+                HandleSIGHUP();
+            default:
+                fprintf(stderr, "Unexpected signal %d\n", sig);
+                break;
+        }
+    }
+}
+#endif
 
 bool static InitError(const std::string &str)
 {
@@ -364,20 +405,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 #ifndef WIN32
     umask(077);
 
-    // Clean shutdown on SIGTERM
-    struct sigaction sa;
-    sa.sa_handler = HandleSIGTERM;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    sigaction(SIGTERM, &sa, NULL);
-    sigaction(SIGINT, &sa, NULL);
-
-    // Reopen debug.log on SIGHUP
-    struct sigaction sa_hup;
-    sa_hup.sa_handler = HandleSIGHUP;
-    sigemptyset(&sa_hup.sa_mask);
-    sa_hup.sa_flags = 0;
-    sigaction(SIGHUP, &sa_hup, NULL);
+    // Start a thread to wait for SIGINT, SIGTERM and SIGHUP and handle them appropriately
+    NewThread(&ThreadSignalHandler, NULL);
 #endif
 
     if (!CheckDiskSpace())
@@ -419,7 +448,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fDebug)
         LogPrintf("nMinerSleep %u\n", nMinerSleep);
 
-
     nDerivationMethodIndex = 0;
 
     fTestNet = GetBoolArg("-testnet", false);
@@ -433,44 +461,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (GetBoolArg("-thinmode"))
         nNodeMode = NT_THIN;
     
-    /* if (fTestNet)
-    {
-        SoftSetBoolArg("-irc", true);
-    };
-
-    if (mapArgs.count("-bind"))
-    {
-        // when specifying an explicit binding address, you want to listen on it
-        // even when -connect or -proxy is specified
-        SoftSetBoolArg("-listen", true);
-    }; */
-
-/*     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
-    {
-        // when only connecting to trusted nodes, do not seed via DNS, or listen by default
-        SoftSetBoolArg("-dnsseed", false);
-        SoftSetBoolArg("-listen", false);
-    }
-
-    if (mapArgs.count("-proxy"))
-    {
-        // to protect privacy, do not listen by default if a proxy server is specified
-        SoftSetBoolArg("-listen", false);
-    };
-
-    if (!GetBoolArg("-listen", true))
-    {
-        // do not map ports or try to retrieve public IP when not listening (pointless)
-        SoftSetBoolArg("-upnp", false);
-        SoftSetBoolArg("-discover", false);
-    };
-
-    if (mapArgs.count("-externalip"))
-    {
-        // if an explicit public IP is specified, do not try to find others
-        SoftSetBoolArg("-discover", false);
-    }; */
-
     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
     {
         // when only connecting to trusted nodes, do not seed via .onion, or listen by default
@@ -563,7 +553,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (!InitSanityCheck())
         return InitError(_("Initialization sanity check failed. SpectreCoin is shutting down."));
 
-    
     std::string strDataDir = GetDataDir().string();
     std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
 
@@ -604,8 +593,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
     
     int64_t nStart;
-
-
 
     /* *********************************************************
         Step 4.5: adjust parameters for nNodeMode
@@ -729,53 +716,6 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
     } while (false);
     
-/*     if (mapArgs.count("-onlynet"))
-    {
-        std::set<enum Network> nets;
-        BOOST_FOREACH(std::string snet, mapMultiArgs["-onlynet"])
-        {
-            enum Network net = ParseNetwork(snet);
-            if (net == NET_UNROUTABLE)
-                return InitError(strprintf(_("Unknown network specified in -onlynet: '%s'"), snet.c_str()));
-            nets.insert(net);
-        };
-        for (int n = 0; n < NET_MAX; n++)
-        {
-            enum Network net = (enum Network)n;
-            if (!nets.count(net))
-                SetLimited(net);
-        };
-    }; 
-
-    CService addrProxy;
-    bool fProxy = false;
-    if (mapArgs.count("-proxy")) {
-        addrProxy = CService(mapArgs["-proxy"], 9050);
-        if (!addrProxy.IsValid())
-            return InitError(strprintf(_("Invalid -proxy address: '%s'"), mapArgs["-proxy"]));
-        
-        SetProxy(NET_IPV4, addrProxy);
-        SetProxy(NET_IPV6, addrProxy);
-        SetNameProxy(addrProxy);
-        fProxy = true;
-    }
-
-    // -tor can override normal proxy, -notor disables tor entirely
-    if (!(mapArgs.count("-tor") && mapArgs["-tor"] == "0") && (fProxy || mapArgs.count("-tor")))
-    {
-        CService addrOnion;
-        
-        if (!mapArgs.count("-tor"))
-            addrOnion = addrProxy;
-        else
-            addrOnion = CService(mapArgs["-tor"], onion_port);
-        if (!addrOnion.IsValid())
-            return InitError(strprintf(_("Invalid -tor address: '%s'"), mapArgs["-tor"]));
-    } else {
-        addrOnion = CService("127.0.0.1", onion_port);
-    }    */
-
-
     // Tor implementation
 
     CService addrOnion;
@@ -794,36 +734,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     SetReachable(NET_TOR);
 
     // see Step 2: parameter interactions for more information about these
-   // fNoListen = !GetBoolArg("-listen", true);
-   // fDiscover = GetBoolArg("-discover", true);
     fNameLookup = GetBoolArg("-dns", true);
 
     bool fBound = false;
-/*     if (!fNoListen)
-    {
-        std::string strError;
-        if (mapArgs.count("-bind"))
-        {
-            BOOST_FOREACH(std::string strBind, mapMultiArgs["-bind"])
-            {
-                CService addrBind;
-                if (!Lookup(strBind.c_str(), addrBind, GetListenPort(), false))
-                    return InitError(strprintf(_("Cannot resolve -bind address: '%s'"), strBind.c_str()));
-                fBound |= Bind(addrBind);
-            };
-        } else
-        {
-            struct in_addr inaddr_any;
-            inaddr_any.s_addr = INADDR_ANY;
-            if (!IsLimited(NET_IPV6))
-                fBound |= Bind(CService(in6addr_any, GetListenPort()), false);
-            if (!IsLimited(NET_IPV4))
-                fBound |= Bind(CService(inaddr_any, GetListenPort()), !fBound);
-        };
-        if (!fBound)
-            return InitError(_("Failed to listen on any port. Use -listen=0 if you want this."));
-    }; */
-    
     
     // Tor implementation
     std::string strError;
@@ -841,8 +754,8 @@ bool AppInit2(boost::thread_group& threadGroup)
         return InitError(_("Failed to listen on any port."));
     
     if (!(mapArgs.count("-tor") && mapArgs["-tor"] != "0")) {
-        if (!NewThread(StartTor, NULL))
-                return InitError(_("Error: could not start tor node"));
+        if (!NewThread(&StartTor, NULL))
+            return InitError(_("Error: could not start tor node"));
     }
 
     if (mapArgs.count("-externalip"))
@@ -1011,11 +924,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     pwalletMain->ExtKeyLoadAccounts();
     pwalletMain->ExtKeyLoadAccountPacks();
     
-    
-    
     LogPrintf("%s", strErrors.str().c_str());
     LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
-
 
     RegisterWallet(pwalletMain);
 
@@ -1039,7 +949,6 @@ bool AppInit2(boost::thread_group& threadGroup)
         pwalletMain->ScanForWalletTransactions(pindexRescan, true);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
     };
-
 
     // ********************************************************* Step 9: import blocks
 

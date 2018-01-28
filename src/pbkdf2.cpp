@@ -3,15 +3,6 @@
 #include <string.h>
 #include "pbkdf2.h"
 
-static inline uint32_t
-be32dec(const void *pp)
-{
-    const uint8_t *p = (uint8_t const *)pp;
-
-    return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
-        ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
-}
-
 static inline void
 be32enc(void *pp, uint32_t x)
 {
@@ -22,8 +13,6 @@ be32enc(void *pp, uint32_t x)
     p[1] = (x >> 16) & 0xff;
     p[0] = (x >> 24) & 0xff;
 }
-
-
 
 /* Initialize an HMAC-SHA256 operation with the given key. */
 void

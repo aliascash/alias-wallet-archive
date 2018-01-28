@@ -102,7 +102,7 @@ protected:
 
         if (readFromDb)
         {
-            leveldb::Status status = pdb->Get(leveldb::ReadOptions(),
+            leveldb::Status status = pdb->Get(GetReadOptions(),
                                               ssKey.str(), &strValue);
             if (!status.ok())
             {
@@ -144,7 +144,7 @@ protected:
             return true;
         };
 
-        leveldb::Status status = pdb->Put(leveldb::WriteOptions(), ssKey.str(), ssValue.str());
+        leveldb::Status status = pdb->Put(GetWriteOptions(), ssKey.str(), ssValue.str());
         if (!status.ok())
         {
             LogPrintf("LevelDB write failure: %s\n", status.ToString().c_str());
@@ -171,7 +171,7 @@ protected:
             return true;
         };
 
-        leveldb::Status status = pdb->Delete(leveldb::WriteOptions(), ssKey.str());
+        leveldb::Status status = pdb->Delete(GetWriteOptions(), ssKey.str());
         return (status.ok() || status.IsNotFound());
     }
 
@@ -192,7 +192,7 @@ protected:
             }
         }
 
-        leveldb::Status status = pdb->Get(leveldb::ReadOptions(), ssKey.str(), &unused);
+        leveldb::Status status = pdb->Get(GetReadOptions(), ssKey.str(), &unused);
         return status.IsNotFound() == false;
     }
 
@@ -223,6 +223,18 @@ public:
         return Write(std::string("version"), nVersion);
     }
 
+    static leveldb::ReadOptions GetReadOptions()
+    {
+        leveldb::ReadOptions readOptions;
+        return readOptions;
+    }   
+
+    static leveldb::WriteOptions GetWriteOptions()
+    {
+        leveldb::WriteOptions writeOptions;
+        writeOptions.sync = true;
+        return writeOptions;
+    }
 
     int CheckVersion();
     int RecreateDB();
