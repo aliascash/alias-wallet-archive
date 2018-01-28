@@ -8,8 +8,6 @@
 #include "util.h"
 
 #include <boost/filesystem.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
 #include <string>
 #include <cstring>
 
@@ -36,8 +34,4 @@ char const* anonymize_service_directory(
     );
     return retrieved.c_str(
     );
-}
-
-int check_interrupted() {
-    return boost::this_thread::interruption_requested() ? 1 : 0;
 }

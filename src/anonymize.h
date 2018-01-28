@@ -15,7 +15,6 @@ extern "C" {
 
     char const* anonymize_tor_data_directory(void);
     char const* anonymize_service_directory(void);
-    int check_interrupted(void);
 
 #ifdef __cplusplus
 }

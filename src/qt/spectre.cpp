@@ -23,6 +23,10 @@
 #include <QLibraryInfo>
 #include <QTimer>
 
+#ifndef WIN32
+#include <signal.h>
+#endif
+
 // Need a global reference for the notifications to find the GUI
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
@@ -99,6 +103,12 @@ static void handleRunawayException(std::exception *e)
 #ifndef SPECTRE_QT_TEST
 int main(int argc, char *argv[])
 {
+#ifndef WIN32
+    // Block signals. We handle them in a thread.
+    if (BlockSignals() != 0)
+        return 1;
+#endif
+
     fHaveGUI = true;
 
 #if QT_VERSION < 0x050000
@@ -267,8 +277,11 @@ int main(int argc, char *argv[])
             }
             // Shutdown the core and its threads, but don't exit Qt here
             LogPrintf("SpectreCoin shutdown.\n\n");
+            std::cout << "interrupt_all\n";
             threadGroup.interrupt_all();
+            std::cout << "join_all\n";
             threadGroup.join_all();
+            std::cout << "Shutdown\n";
             Shutdown();
         } else
         {

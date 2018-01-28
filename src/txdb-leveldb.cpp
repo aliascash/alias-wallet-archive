@@ -25,7 +25,7 @@ namespace fs = boost::filesystem;
 
 leveldb::DB *txdb; // global pointer for LevelDB object instance
 
-static leveldb::Options GetOptions() {
+static leveldb::Options GetOpenOptions() {
     leveldb::Options options;
     int nCacheSizeMB = GetArg("-dbcache", 25);
     options.create_if_missing = true;
@@ -62,7 +62,7 @@ CTxDB::CTxDB(const char* pszMode)
         return;
     }
 
-    openOptions = GetOptions();
+    openOptions = GetOpenOptions();
     init_blockindex(openOptions);
     pdb = txdb;
 
@@ -74,16 +74,23 @@ void CTxDB::Close()
     delete txdb;
     txdb = pdb = NULL;
 
-    delete openOptions.filter_policy;
-    openOptions.filter_policy = NULL;
-    delete openOptions.block_cache;
-    openOptions.block_cache = NULL;
-
     if (activeBatch)
     {
         delete activeBatch;
         activeBatch = NULL;
-    };
+    }
+
+    if (openOptions.block_cache)
+    {
+        delete openOptions.block_cache;
+        openOptions.block_cache = NULL;
+    }
+
+    if (openOptions.filter_policy)
+    {
+        openOptions.filter_policy = NULL;
+    }
+
 }
 
 bool CTxDB::TxnBegin()
@@ -96,7 +103,7 @@ bool CTxDB::TxnBegin()
 bool CTxDB::TxnCommit()
 {
     assert(activeBatch);
-    leveldb::Status status = pdb->Write(leveldb::WriteOptions(), activeBatch);
+    leveldb::Status status = pdb->Write(GetWriteOptions(), activeBatch);
     delete activeBatch;
     activeBatch = NULL;
     if (!status.ok()) {
@@ -181,15 +188,23 @@ int CTxDB::RecreateDB()
 
     delete txdb;
     txdb = pdb = NULL;
-    delete activeBatch;
-    activeBatch = NULL;
 
-    delete openOptions.filter_policy;
-    openOptions.filter_policy = NULL;
-    delete openOptions.block_cache;
-    openOptions.block_cache = NULL;
+    if (activeBatch)
+    {
+        delete activeBatch;
+        activeBatch = NULL;
+    }
 
-    openOptions = GetOptions();
+    if (openOptions.block_cache) {
+        delete openOptions.block_cache;
+        openOptions.block_cache = NULL;
+    }
+
+    if (openOptions.filter_policy) {
+        openOptions.filter_policy = NULL;
+    }
+
+    openOptions = GetOpenOptions();
     init_blockindex(openOptions, true); // Remove directory and create new database
     pdb = txdb;
 
@@ -236,7 +251,7 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
 
     TxnBegin();
 
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *iterator = pdb->NewIterator(GetReadOptions());
     if (!iterator)
         LogPrintf("EraseRange(%s) - NewIterator failed.\n", sPrefix.c_str());
 
@@ -255,7 +270,7 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
 
     iterator->Seek(leveldb::Slice((const char*)data, nLenPrefix+1));
 
-    leveldb::WriteOptions writeOptions;
+    leveldb::WriteOptions writeOptions = GetWriteOptions();
     while (iterator->Valid())
     {
         if (iterator->key().size() < nLenPrefix+1
@@ -422,7 +437,7 @@ bool CTxDB::LoadBlockIndex()
     // The block index is an in-memory structure that maps hashes to on-disk
     // locations where the contents of the block can be found. Here, we scan it
     // out of the DB and into mapBlockIndex.
-    leveldb::Iterator *iterator = pdb->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *iterator = pdb->NewIterator(GetReadOptions());
     // Seek to start key.
     CDataStream ssStartKey(SER_DISK, CLIENT_VERSION);
     ssStartKey << make_pair(string("bidx"), uint256(0));
