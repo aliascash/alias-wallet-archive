@@ -103,10 +103,8 @@
         <file alias="assets/js/qrcode.min.js">src/qt/res/assets/js/qrcode.min.js</file>
         <file alias="assets/js/spectre.min.js">src/qt/res/assets/js/spectre.min.js</file>
         <file alias="assets/js/tooltip.min.js">src/qt/res/assets/js/tooltip.min.js</file>
-        <file alias="assets/plugins/boostrapv3/css/bootstrap.css.map">src/qt/res/assets/plugins/boostrapv3/css/bootstrap.css.map</file>
         <file alias="assets/plugins/boostrapv3/css/bootstrap.min.css">src/qt/res/assets/plugins/boostrapv3/css/bootstrap.min.css</file>
         <file alias="assets/plugins/boostrapv3/css/bootstrap-theme.css">src/qt/res/assets/plugins/boostrapv3/css/bootstrap-theme.css</file>
-        <file alias="assets/plugins/boostrapv3/css/bootstrap-theme.css.map">src/qt/res/assets/plugins/boostrapv3/css/bootstrap-theme.css.map</file>
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.eot">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.eot</file>
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.svg">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.svg</file>
         <file alias="assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.ttf">src/qt/res/assets/plugins/boostrapv3/fonts/glyphicons-halflings-regular.ttf</file>
