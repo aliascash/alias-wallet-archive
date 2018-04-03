@@ -41,6 +41,18 @@ To check all dependencies and install missing ones on **macOS** (this uses the [
     # the following commands are only needed if building the GUI wallet
     brew tap KDE-mac/homebrew-kde
     brew install qt qt-webkit
+    
+Open SSL on Ubuntu
+------------
+
+For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the repositories and has Version 1.0 installed by default. To install the [latest stable version](https://www.openssl.org/source/) you can build this dependency from source:
+
+    wget https://www.openssl.org/source/openssl-1.1.0h.tar.gz
+    tar xzvf openssl-1.1.0h.tar.gz
+    cd openssl-1.1.0h
+    ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)'
+    make
+    sudo make install
 
 Building
 --------
