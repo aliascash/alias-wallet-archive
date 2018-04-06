@@ -3,7 +3,7 @@ SpectreCoin
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
-The latest release is [1.3.5](https://github.com/XSPECOfficial/spectre/releases/tag/v1.3.5), released on January 16, 2018.
+The latest release is [1.3.8](https://github.com/spectrecoin/spectre/releases/tag/v1.3.8), released on April 6, 2018.
 
 Building from source
 ====================
@@ -59,7 +59,7 @@ Building
 
 To fetch the source code and build the wallet run the following commands:
 
-    git clone --recursive https://github.com/XSPECOfficial/spectre
+    git clone --recursive https://github.com/spectreproject/spectre
     cd spectre
     ./autogen.sh
     export QT_SELECT=qt5  # only necessary on Debian/Ubuntu/Mint/etc
