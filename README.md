@@ -59,7 +59,7 @@ Building
 
 To fetch the source code and build the wallet run the following commands:
 
-    git clone --recursive https://github.com/spectreproject/spectre
+    git clone --recursive https://github.com/spectrecoin/spectre
     cd spectre
     ./autogen.sh
     export QT_SELECT=qt5  # only necessary on Debian/Ubuntu/Mint/etc
