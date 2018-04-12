@@ -6,6 +6,7 @@
 #define SPECTREGUI_H
 
 #include <QMainWindow>
+#include <QWebEngineView>
 #include <QWebView>
 #include <QWebElement>
 #include <QSystemTrayIcon>
@@ -67,6 +68,7 @@ protected:
 private:
     QWebView *webView;
     QWebFrame *documentFrame;
+    QWebEngineView* webEngineView;
 
     SpectreBridge *bridge;
 

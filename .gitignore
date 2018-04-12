@@ -50,3 +50,15 @@ libtool
 ltmain.sh
 
 !db4.8/build_unix/configure
+openssl-1.1.0h
+spectre.config
+spectre.creator
+spectre.creator.user
+spectre.files
+spectre.includes
+=
+m4/libtool.m4
+m4/ltoptions.m4
+m4/ltsugar.m4
+m4/ltversion.m4
+m4/lt~obsolete.m4

@@ -37,12 +37,12 @@ To check all dependencies and install missing ones on **Arch Linux**:
 
 To check all dependencies and install missing ones on **macOS** (this uses the [Homebrew](https://brew.sh/) package manager; if you use something else then adjust the commands accordingly):
 
-    brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc
+    brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc wget
     # the following commands are only needed if building the GUI wallet
     brew tap KDE-mac/homebrew-kde
     brew install qt qt-webkit
     
-Open SSL on Ubuntu
+Open SSL on Ubuntu and OSX (If you do not have OpenSSL 1.1)
 ------------
 
 For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the repositories and has Version 1.0 installed by default. To install the [latest stable version](https://www.openssl.org/source/) you can build this dependency from source:
