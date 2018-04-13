@@ -51,12 +51,62 @@
 #include <QTextStream>
 #include <QTextDocument>
 #include <QDesktopWidget>
-//#include "webenginepage.h"
-
+#include <QWebChannel>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
 #include <iostream>
 
 extern CWallet* pwalletMain;
 double GetPoSKernelPS();
+
+WebEnginePage::WebEnginePage(SpectreGUI* gui) : QWebEnginePage(this->prepareProfile(gui))
+{
+
+}
+
+WebEnginePage::~WebEnginePage()
+{
+}
+
+bool WebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool)
+{
+    if (type == QWebEnginePage::NavigationTypeLinkClicked)
+    {
+        emit linkClicked(url);
+        return false;
+    }
+    return true;
+}
+
+//http://lists.qt-project.org/pipermail/qtwebengine/2016-March/000338.html
+//https://meetingcpp.com/blog/items/refactoring-the-html-text-editor-for-qwebengine.html
+QWebEngineProfile *WebEnginePage::prepareProfile(SpectreGUI* gui)
+{
+    QWebEngineProfile *profile = new QWebEngineProfile("Profile", gui);
+
+
+    // Preparing qwebchannel.js for injection
+    QFile qWebChannelJsFile(":/qtwebchannel/qwebchannel.js");
+
+    if(! qWebChannelJsFile.open(QIODevice::ReadOnly)) {
+        qDebug() << ("Failed to load qwebchannel.js with error: " + qWebChannelJsFile.errorString());
+    } else {
+        QByteArray webChannelJs = qWebChannelJsFile.readAll();
+        webChannelJs.append("\nnew QWebChannel(qt.webChannelTransport, function(channel) {window.bridge = channel.objects.bridge;});");
+
+        QWebEngineScript script;
+
+        script.setSourceCode(webChannelJs);
+        script.setName("qwebchannel.js");
+        script.setWorldId(QWebEngineScript::MainWorld);
+        script.setInjectionPoint(QWebEngineScript::DocumentCreation);
+        script.setRunsOnSubFrames(false);
+
+        profile->scripts()->insert(script);
+    }
+
+    return profile;
+}
 
 SpectreGUI::SpectreGUI(QWidget *parent):
     QMainWindow(parent),
@@ -75,17 +125,14 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webEngineView = new QWebEngineView();
-//    webEngineView->setPage(new WebEnginePage());
 
-    //    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    webEngineView->setPage(new WebEnginePage(this));
 
     webEngineView->page()->action(QWebEnginePage::Reload)->setVisible(false);
     webEngineView->page()->action(QWebEnginePage::Back)->setVisible(false);
     webEngineView->page()->action(QWebEnginePage::Forward)->setVisible(false);
     
-//    connect(webEngineView->page(),SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
-
-    //    connect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(urlClicked(const QUrl&)));
+    connect(webEngineView->page(),SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
 
     setCentralWidget(webEngineView);
 
@@ -118,13 +165,16 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
-//    documentFrame = webView->page()->mainFrame();
 
     //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
 
-//    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
+    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
+//    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(addJavascriptObjects()));
+    //TODO: https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
 //    connect(documentFrame, SIGNAL(javaScriptWindowObjectCleared()), SLOT(addJavascriptObjects()));
-//    connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
+    connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
+
+    addJavascriptObjects();
 
 #ifdef Q_OS_WIN
     QFile html("C:/spectre/index.html");
@@ -140,29 +190,37 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
 SpectreGUI::~SpectreGUI()
 {
-//    if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
-//        trayIcon->hide();
+    if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
+        trayIcon->hide();
 
-//    delete webView;
-//#ifdef Q_OS_MAC
-//    delete appMenuBar;
-//#endif
+    delete webView;
+#ifdef Q_OS_MAC
+    delete appMenuBar;
+#endif
 }
 
 void SpectreGUI::pageLoaded(bool ok)
 {
-//    if (GetBoolArg("-staking", true))
-//    {
-//        QTimer *timerStakingIcon = new QTimer(this);
-//        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-//        timerStakingIcon->start(15 * 1000);
-//        updateStakingIcon();
-//    }
+    if (GetBoolArg("-staking", true))
+    {
+        QTimer *timerStakingIcon = new QTimer(this);
+        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
+        timerStakingIcon->start(15 * 1000);
+        updateStakingIcon();
+    }
 
 }
 
 void SpectreGUI::addJavascriptObjects()
-{
+{        
+    qDebug() << "SpectreGUI::addJavascriptObjects!";
+    //Following the example at https://doc.qt.io/qt-5.10/qtwebengine-webenginewidgets-markdowneditor-example.html
+    QWebChannel *channel = new QWebChannel(this);
+    //register a QObject to be exposed to JavaScript
+    channel->registerObject(QStringLiteral("bridge"), bridge);
+    //attach it to the QWebEnginePage
+    webEngineView->page()->setWebChannel(channel);
+
 //    documentFrame->addToJavaScriptWindowObject("bridge", bridge);
 //    if (walletModel != NULL) {
 //        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
@@ -173,136 +231,136 @@ void SpectreGUI::addJavascriptObjects()
 
 void SpectreGUI::urlClicked(const QUrl & link)
 {
-//    if(link.scheme() == "qrc" || link.scheme() == "file")
-//        return;
+    if(link.scheme() == "qrc" || link.scheme() == "file")
+        return;
 
-//    QDesktopServices::openUrl(link);
+    QDesktopServices::openUrl(link);
 }
 
 void SpectreGUI::createActions()
 {
 
-//    quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
-//    quitAction->setToolTip(tr("Quit application"));
-//    quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
-//    quitAction->setMenuRole(QAction::QuitRole);
-//    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About SpectreCoin"), this);
-//    aboutAction->setToolTip(tr("Show information about SpectreCoin"));
-//    aboutAction->setMenuRole(QAction::AboutRole);
-//    aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
-//    aboutQtAction->setToolTip(tr("Show information about Qt"));
-//    aboutQtAction->setMenuRole(QAction::AboutQtRole);
-//    optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-//    optionsAction->setToolTip(tr("Modify configuration options for SpectreCoin"));
-//    optionsAction->setMenuRole(QAction::PreferencesRole);
-//    toggleHideAction = new QAction(QIcon(":/icons/spectre"), tr("&Show / Hide"), this);
-//    encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
-//    encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
-//    encryptWalletAction->setCheckable(true);
-//    backupWalletAction = new QAction(QIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
-//    backupWalletAction->setToolTip(tr("Backup wallet to another location"));
-//    changePassphraseAction = new QAction(QIcon(":/icons/key"), tr("&Change Passphrase..."), this);
-//    changePassphraseAction->setToolTip(tr("Change the passphrase used for wallet encryption"));
-//    unlockWalletAction = new QAction(QIcon(":/icons/lock_open"), tr("&Unlock Wallet..."), this);
-//    unlockWalletAction->setToolTip(tr("Unlock wallet"));
-//    lockWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Lock Wallet"), this);
-//    lockWalletAction->setToolTip(tr("Lock wallet"));
+    quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
+    quitAction->setToolTip(tr("Quit application"));
+    quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
+    quitAction->setMenuRole(QAction::QuitRole);
+    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About SpectreCoin"), this);
+    aboutAction->setToolTip(tr("Show information about SpectreCoin"));
+    aboutAction->setMenuRole(QAction::AboutRole);
+    aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
+    aboutQtAction->setToolTip(tr("Show information about Qt"));
+    aboutQtAction->setMenuRole(QAction::AboutQtRole);
+    optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
+    optionsAction->setToolTip(tr("Modify configuration options for SpectreCoin"));
+    optionsAction->setMenuRole(QAction::PreferencesRole);
+    toggleHideAction = new QAction(QIcon(":/icons/spectre"), tr("&Show / Hide"), this);
+    encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
+    encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
+    encryptWalletAction->setCheckable(true);
+    backupWalletAction = new QAction(QIcon(":/icons/filesave"), tr("&Backup Wallet..."), this);
+    backupWalletAction->setToolTip(tr("Backup wallet to another location"));
+    changePassphraseAction = new QAction(QIcon(":/icons/key"), tr("&Change Passphrase..."), this);
+    changePassphraseAction->setToolTip(tr("Change the passphrase used for wallet encryption"));
+    unlockWalletAction = new QAction(QIcon(":/icons/lock_open"), tr("&Unlock Wallet..."), this);
+    unlockWalletAction->setToolTip(tr("Unlock wallet"));
+    lockWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Lock Wallet"), this);
+    lockWalletAction->setToolTip(tr("Lock wallet"));
 
-//    //exportAction = new QAction(QIcon(":/icons/export"), tr("&Export..."), this);
-//    //exportAction->setToolTip(tr("Export the data in the current tab to a file"));
-//    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
-//    openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
+    //exportAction = new QAction(QIcon(":/icons/export"), tr("&Export..."), this);
+    //exportAction->setToolTip(tr("Export the data in the current tab to a file"));
+    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
+    openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
 
-//    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-//    connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
-//    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-//    connect(optionsAction, SIGNAL(triggered()), SLOT(optionsClicked()));
-//    connect(toggleHideAction, SIGNAL(triggered()), SLOT(toggleHidden()));
-//    connect(encryptWalletAction, SIGNAL(triggered(bool)), SLOT(encryptWallet(bool)));
-//    connect(backupWalletAction, SIGNAL(triggered()), SLOT(backupWallet()));
-//    connect(changePassphraseAction, SIGNAL(triggered()), SLOT(changePassphrase()));
-//    connect(unlockWalletAction, SIGNAL(triggered()), SLOT(unlockWallet()));
-//    connect(lockWalletAction, SIGNAL(triggered()), SLOT(lockWallet()));
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
+    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(optionsAction, SIGNAL(triggered()), SLOT(optionsClicked()));
+    connect(toggleHideAction, SIGNAL(triggered()), SLOT(toggleHidden()));
+    connect(encryptWalletAction, SIGNAL(triggered(bool)), SLOT(encryptWallet(bool)));
+    connect(backupWalletAction, SIGNAL(triggered()), SLOT(backupWallet()));
+    connect(changePassphraseAction, SIGNAL(triggered()), SLOT(changePassphrase()));
+    connect(unlockWalletAction, SIGNAL(triggered()), SLOT(unlockWallet()));
+    connect(lockWalletAction, SIGNAL(triggered()), SLOT(lockWallet()));
 }
 
 void SpectreGUI::createMenuBar()
 {
-//#ifdef Q_OS_MAC
-//    // Create a decoupled menu bar on Mac which stays even if the window is closed
-//    appMenuBar = new QMenuBar();
-//#else
-//    // Get the main window's menu bar on other platforms
-//    appMenuBar = menuBar();
-//    appMenuBar->hide();
-//#endif
+#ifdef Q_OS_MAC
+    // Create a decoupled menu bar on Mac which stays even if the window is closed
+    appMenuBar = new QMenuBar();
+#else
+    // Get the main window's menu bar on other platforms
+    appMenuBar = menuBar();
+    appMenuBar->hide();
+#endif
 
-//    // Configure the menus
-//    QMenu *file = appMenuBar->addMenu(tr("&File"));
-//    file->addAction(backupWalletAction);
-//    //file->addAction(exportAction);
-//    file->addSeparator();
-//    file->addAction(quitAction);
+    // Configure the menus
+    QMenu *file = appMenuBar->addMenu(tr("&File"));
+    file->addAction(backupWalletAction);
+    //file->addAction(exportAction);
+    file->addSeparator();
+    file->addAction(quitAction);
 
-//    QMenu *settings = appMenuBar->addMenu(tr("&Settings"));
-//    settings->addAction(encryptWalletAction);
-//    settings->addAction(changePassphraseAction);
-//    settings->addAction(unlockWalletAction);
-//    settings->addAction(lockWalletAction);
-//    settings->addSeparator();
-//    settings->addAction(optionsAction);
+    QMenu *settings = appMenuBar->addMenu(tr("&Settings"));
+    settings->addAction(encryptWalletAction);
+    settings->addAction(changePassphraseAction);
+    settings->addAction(unlockWalletAction);
+    settings->addAction(lockWalletAction);
+    settings->addSeparator();
+    settings->addAction(optionsAction);
 
-//    QMenu *help = appMenuBar->addMenu(tr("&Help"));
-//    help->addAction(openRPCConsoleAction);
-//    help->addSeparator();
-//    help->addAction(aboutAction);
-//    help->addAction(aboutQtAction);
+    QMenu *help = appMenuBar->addMenu(tr("&Help"));
+    help->addAction(openRPCConsoleAction);
+    help->addSeparator();
+    help->addAction(aboutAction);
+    help->addAction(aboutQtAction);
 }
 
 void SpectreGUI::setClientModel(ClientModel *clientModel)
 {
-//    this->clientModel = clientModel;
-//    if (clientModel)
-//    {
-//        int mode = clientModel->getClientMode();
-//        if (mode != NT_FULL)
-//        {
-//            QString sMode = QString::fromLocal8Bit(GetNodeModeName(mode));
-//            if (sMode.length() > 0)
-//                sMode[0] = sMode[0].toUpper();
+    this->clientModel = clientModel;
+    if (clientModel)
+    {
+        int mode = clientModel->getClientMode();
+        if (mode != NT_FULL)
+        {
+            QString sMode = QString::fromLocal8Bit(GetNodeModeName(mode));
+            if (sMode.length() > 0)
+                sMode[0] = sMode[0].toUpper();
 
-//            setWindowTitle(tr("Spectre") + " - " + tr("Wallet") + ", " + sMode);
-//        };
+            setWindowTitle(tr("Spectre") + " - " + tr("Wallet") + ", " + sMode);
+        };
 
-//        // Replace some strings and icons, when using the testnet
-//        if (clientModel->isTestNet())
-//        {
-//            setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
-//#ifndef Q_OS_MAC
-//            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
-//            setWindowIcon(QIcon(":icons/spectre_testnet"));
-//#else
-//            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
-//#endif
-//            if(trayIcon)
-//            {
-//                trayIcon->setToolTip(tr("Spectre client") + QString(" ") + tr("[testnet]"));
-//                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
-//                toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
-//            }
+        // Replace some strings and icons, when using the testnet
+        if (clientModel->isTestNet())
+        {
+            setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
+#ifndef Q_OS_MAC
+            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
+            setWindowIcon(QIcon(":icons/spectre_testnet"));
+#else
+            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
+#endif
+            if(trayIcon)
+            {
+                trayIcon->setToolTip(tr("Spectre client") + QString(" ") + tr("[testnet]"));
+                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
+                toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
+            }
 
-//            aboutAction->setIcon(QIcon(":/icons/toolbar_testnet"));
-//        }
+            aboutAction->setIcon(QIcon(":/icons/toolbar_testnet"));
+        }
 
-//        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-//        connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
+        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+        connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
-//        // Report errors from network/worker thread
-//        connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
+        // Report errors from network/worker thread
+        connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
-//        rpcConsole->setClientModel(clientModel);
+        rpcConsole->setClientModel(clientModel);
 
-//        bridge->setClientModel();
-//    }
+        bridge->setClientModel();
+    }
 }
 
 void SpectreGUI::setWalletModel(WalletModel *walletModel)
@@ -330,64 +388,64 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
 
 void SpectreGUI::setMessageModel(MessageModel *messageModel)
 {
-//    this->messageModel = messageModel;
-//    if(messageModel)
-//    {
-//        // Balloon pop-up for new message
-//        connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(incomingMessage(QModelIndex,int,int)));
-//        bridge->setMessageModel();
-//    }
+    this->messageModel = messageModel;
+    if(messageModel)
+    {
+        // Balloon pop-up for new message
+        connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(incomingMessage(QModelIndex,int,int)));
+        bridge->setMessageModel();
+    }
 }
 
 void SpectreGUI::createTrayIcon()
 {
-//    QMenu *trayIconMenu;
-//#ifndef Q_OS_MAC
-//    trayIcon = new QSystemTrayIcon(this);
-//    trayIconMenu = new QMenu(this);
-//    trayIcon->setContextMenu(trayIconMenu);
-//    trayIcon->setToolTip(tr("Spectre client"));
-//    trayIcon->setIcon(QIcon(":/icons/spectre"));
-//    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-//          this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
-//    trayIcon->show();
-//#else
-//    // Note: On Mac, the dock icon is used to provide the tray's functionality.
-//    MacDockIconHandler *dockIconHandler = MacDockIconHandler::instance();
-//    dockIconHandler->setMainWindow((QMainWindow *)this);
-//    trayIconMenu = dockIconHandler->dockMenu();
-//#endif
+    QMenu *trayIconMenu;
+#ifndef Q_OS_MAC
+    trayIcon = new QSystemTrayIcon(this);
+    trayIconMenu = new QMenu(this);
+    trayIcon->setContextMenu(trayIconMenu);
+    trayIcon->setToolTip(tr("Spectre client"));
+    trayIcon->setIcon(QIcon(":/icons/spectre"));
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+          this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+    trayIcon->show();
+#else
+    // Note: On Mac, the dock icon is used to provide the tray's functionality.
+    MacDockIconHandler *dockIconHandler = MacDockIconHandler::instance();
+    dockIconHandler->setMainWindow((QMainWindow *)this);
+    trayIconMenu = dockIconHandler->dockMenu();
+#endif
 
-//    // Configuration of the tray icon (or dock icon) icon menu
-//    trayIconMenu->addAction(toggleHideAction);
-//    trayIconMenu->addSeparator();
-//    trayIconMenu->addSeparator();
-//    trayIconMenu->addAction(optionsAction);
-//    trayIconMenu->addAction(openRPCConsoleAction);
-//#ifndef Q_OS_MAC // This is built-in on Mac
-//    trayIconMenu->addSeparator();
-//    trayIconMenu->addAction(quitAction);
-//#endif
+    // Configuration of the tray icon (or dock icon) icon menu
+    trayIconMenu->addAction(toggleHideAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(optionsAction);
+    trayIconMenu->addAction(openRPCConsoleAction);
+#ifndef Q_OS_MAC // This is built-in on Mac
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+#endif
 
-//    notificator = new Notificator(qApp->applicationName(), trayIcon, this);
+    notificator = new Notificator(qApp->applicationName(), trayIcon, this);
 }
 
 #ifndef Q_OS_MAC
 void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
-//    if(reason == QSystemTrayIcon::Trigger)
-//    {
-//        // Click on system tray icon triggers show/hide of the main window
-//        toggleHideAction->trigger();
-//    }
+    if(reason == QSystemTrayIcon::Trigger)
+    {
+        // Click on system tray icon triggers show/hide of the main window
+        toggleHideAction->trigger();
+    }
 }
 #endif
 
 void SpectreGUI::aboutClicked()
 {
-//    AboutDialog dlg;
-//    dlg.setModel(clientModel);
-//    dlg.exec();
+    AboutDialog dlg;
+    dlg.setModel(clientModel);
+    dlg.exec();
 }
 
 void SpectreGUI::setNumConnections(int count)
