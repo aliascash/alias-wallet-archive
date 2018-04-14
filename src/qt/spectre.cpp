@@ -22,6 +22,7 @@
 #include <QSplashScreen>
 #include <QLibraryInfo>
 #include <QTimer>
+#include <QWebEngineSettings>
 
 #ifndef WIN32
 #include <signal.h>
@@ -185,11 +186,9 @@ int main(int argc, char *argv[])
     if (translator.load(lang_territory, ":/translations/"))
         app.installTranslator(&translator);
 
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 
     // Under no circumstances should any browser plugins be loaded.
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::PluginsEnabled, false);
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::JavaEnabled, false);
+    QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, false);
 
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);

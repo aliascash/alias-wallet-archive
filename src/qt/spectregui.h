@@ -6,8 +6,6 @@
 #define SPECTREGUI_H
 
 #include <QMainWindow>
-#include <QWebView>
-#include <QWebElement>
 #include <QWebEngineView>
 #include <QWebEngineProfile>
 #include <QSystemTrayIcon>
@@ -86,8 +84,6 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
-    QWebView *webView;
-    QWebFrame *documentFrame;
     QWebEngineView* webEngineView;
 
     SpectreBridge *bridge;

@@ -19,6 +19,8 @@ class SendCoinsRecipient;
 #include <QModelIndex>
 #include <QThread>
 #include <QStringList>
+#include <QJsonValue>
+#include <QJsonArray>
 
 class TransactionModel : public QObject
 {
@@ -118,7 +120,7 @@ public:
     Q_INVOKABLE QString getPubKey(QString address);
 
     /** Show debug dialog */
-    Q_INVOKABLE QVariantMap userAction(QVariantMap action);
+    Q_INVOKABLE QJsonValue userAction(QJsonValue action);
 
     Q_INVOKABLE void populateTransactionTable();
 

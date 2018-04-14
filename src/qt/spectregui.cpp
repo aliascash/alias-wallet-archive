@@ -92,7 +92,7 @@ QWebEngineProfile *WebEnginePage::prepareProfile(SpectreGUI* gui)
         qDebug() << ("Failed to load qwebchannel.js with error: " + qWebChannelJsFile.errorString());
     } else {
         QByteArray webChannelJs = qWebChannelJsFile.readAll();
-        webChannelJs.append("\nnew QWebChannel(qt.webChannelTransport, function(channel) {window.bridge = channel.objects.bridge;});");
+        webChannelJs.append("\nnew QWebChannel(qt.webChannelTransport, function(channel) {window.bridge = channel.objects.bridge;window.walletModel = channel.objects.walletModel;window.optionsModel = channel.objects.optionsModel;});");
 
         QWebEngineScript script;
 
@@ -169,11 +169,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
 
     connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
-//    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(addJavascriptObjects()));
-    //TODO: https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
-//    connect(documentFrame, SIGNAL(javaScriptWindowObjectCleared()), SLOT(addJavascriptObjects()));
     connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
 
+    //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
 
 #ifdef Q_OS_WIN
@@ -193,7 +191,7 @@ SpectreGUI::~SpectreGUI()
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
 
-    delete webView;
+    delete webEngineView;
 #ifdef Q_OS_MAC
     delete appMenuBar;
 #endif
@@ -208,25 +206,25 @@ void SpectreGUI::pageLoaded(bool ok)
         timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
     }
-
 }
 
 void SpectreGUI::addJavascriptObjects()
 {        
-    qDebug() << "SpectreGUI::addJavascriptObjects!";
     //Following the example at https://doc.qt.io/qt-5.10/qtwebengine-webenginewidgets-markdowneditor-example.html
     QWebChannel *channel = new QWebChannel(this);
     //register a QObject to be exposed to JavaScript
     channel->registerObject(QStringLiteral("bridge"), bridge);
+
+    if (walletModel != NULL) {
+        //register a QObject to be exposed to JavaScript
+        channel->registerObject(QStringLiteral("walletModel"), walletModel);
+        if (walletModel->getOptionsModel() != NULL)
+            //register a QObject to be exposed to JavaScript
+            channel->registerObject(QStringLiteral("optionsModel"), walletModel->getOptionsModel());
+    }
+
     //attach it to the QWebEnginePage
     webEngineView->page()->setWebChannel(channel);
-
-//    documentFrame->addToJavaScriptWindowObject("bridge", bridge);
-//    if (walletModel != NULL) {
-//        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
-//        if (walletModel->getOptionsModel() != NULL)
-//            documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
-//    }
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -365,25 +363,24 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
 
 void SpectreGUI::setWalletModel(WalletModel *walletModel)
 {
-//    this->walletModel = walletModel;
-//    if(walletModel)
-//    {
-//        // Report errors from wallet thread
-//        connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
+    this->walletModel = walletModel;
+    if(walletModel)
+    {
+        // Report errors from wallet thread
+        connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
-//        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
-//        documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
+        addJavascriptObjects();
 
-//        connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
+        connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
-//        // Balloon pop-up for new transaction
-//        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
+        // Balloon pop-up for new transaction
+        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
 
-//        // Ask for passphrase if needed
-//        connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
+        // Ask for passphrase if needed
+        connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
 
-//        bridge->setWalletModel();
-//    }
+        bridge->setWalletModel();
+    }
 }
 
 void SpectreGUI::setMessageModel(MessageModel *messageModel)
@@ -450,24 +447,29 @@ void SpectreGUI::aboutClicked()
 
 void SpectreGUI::setNumConnections(int count)
 {
-//    QWebElement connectionsIcon = documentFrame->findFirstElement("#connectionsIcon");
+    QString className;
 
-//    QString className;
+    switch(count)
+    {
+    case 0:          className = "connect-0"; break;
+    case 1: case 2:  className = "connect-1"; break;
+    case 3: case 4:  className = "connect-2"; break;
+    case 5: case 6:  className = "connect-3"; break;
+    case 7: case 8:  className = "connect-4"; break;
+    case 9: case 10: className = "connect-5"; break;
+    default:         className = "connect-6"; break;
+    }
 
-//    switch(count)
-//    {
-//    case 0:          className = "connect-0"; break;
-//    case 1: case 2:  className = "connect-1"; break;
-//    case 3: case 4:  className = "connect-2"; break;
-//    case 5: case 6:  className = "connect-3"; break;
-//    case 7: case 8:  className = "connect-4"; break;
-//    case 9: case 10: className = "connect-5"; break;
-//    default:         className = "connect-6"; break;
-//    }
+    QString javascriptCode = "document.getElementById(\"connectionsIcon\").className = \"" + className + "\";";
+    webEngineView->page()->runJavaScript(javascriptCode);
 
-//    connectionsIcon.setAttribute("class", className);
-//    connectionsIcon.setAttribute("src", "qrc:///icons/" + className.replace("-", "_"));
-//    connectionsIcon.setAttribute("data-title", tr("%n active connection(s) to SpectreCoin network", "", count));
+    QString source = "qrc:///icons/" + className.replace("-", "_");
+    javascriptCode = "document.getElementById(\"connectionsIcon\").src = \"" + source + "\";";
+    webEngineView->page()->runJavaScript(javascriptCode);
+
+    QString dataTitle = tr("%n active connection(s) to SpectreCoin network", "", count);
+    javascriptCode = "document.getElementById('connectionsIcon').setAttribute('data-title', '" + dataTitle + "');";
+    webEngineView->page()->runJavaScript(javascriptCode);
 }
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)

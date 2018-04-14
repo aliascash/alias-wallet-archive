@@ -1107,16 +1107,11 @@ QString SpectreBridge::translateHtmlString(QString string)
     return string;
 }
 
-QVariantMap SpectreBridge::userAction(QVariantMap action)
+QJsonValue SpectreBridge::userAction(QJsonValue action)
 {
-    QVariantMap::iterator it(action.begin());
+    QJsonArray array;
 
-    QString key(it.key());
-    bool fOK;
-    key.toInt(&fOK);
-
-    if(fOK)
-        key = it.value().toString();
+    QString key = action.toArray().at(0).toString();
 
     if(key == "backupWallet")
         window->backupWallet();
@@ -1129,7 +1124,7 @@ QVariantMap SpectreBridge::userAction(QVariantMap action)
     if(key == "toggleLock")
         window->toggleLock();
     if(key == "developerConsole")
-        window->webView->page()->triggerAction(QWebPage::InspectElement);
+        window->webEngineView->page()->triggerAction(QWebEnginePage::InspectElement);
     if(key == "aboutClicked")
         window->aboutClicked();
     if(key == "aboutQtClicked")
@@ -1138,19 +1133,20 @@ QVariantMap SpectreBridge::userAction(QVariantMap action)
         window->rpcConsole->show();
     if(key == "clearRecipients")
         clearRecipients();
-    if(key == "optionsChanged")
-    {
-        OptionsModel * optionsModel(window->clientModel->getOptionsModel());
-        QVariantMap value(it.value().toMap());
+    //TODO: Port this part of the code to the new json based system
+//    if(key == "optionsChanged")
+//    {
+//        OptionsModel * optionsModel(window->clientModel->getOptionsModel());
+//        QVariantMap value(it.value().toMap());
 
-        for(int option = 0;option < optionsModel->rowCount(); option++)
-            if(value.contains(optionsModel->optionIDName(option)))
-                optionsModel->setData(optionsModel->index(option), value.value(optionsModel->optionIDName(option)));
+//        for(int option = 0;option < optionsModel->rowCount(); option++)
+//            if(value.contains(optionsModel->optionIDName(option)))
+//                optionsModel->setData(optionsModel->index(option), value.value(optionsModel->optionIDName(option)));
 
-        populateOptions();
-    }
+//        populateOptions();
+//    }
 
-    return QVariantMap();
+    return QJsonValue();
 }
 
 // Blocks
