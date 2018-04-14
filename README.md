@@ -20,7 +20,7 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * libseccomp
  * libcap
  * boost
- * Qt 5 and QtWebKit if you want to build the GUI wallet. Qt is not needed for the console wallet.
+ * Qt 5 if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
@@ -28,7 +28,7 @@ To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**
 
     apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config
     # the following commands should only be run if building the GUI wallet
-    apt install qtbase5-dev qttools5-dev-tools libqt5webkit5-dev qtchooser
+    apt install qtbase5-dev qttools5-dev-tools qtchooser
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
@@ -40,7 +40,7 @@ To check all dependencies and install missing ones on **macOS** (this uses the [
     brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc wget
     # the following commands are only needed if building the GUI wallet
     brew tap KDE-mac/homebrew-kde
-    brew install qt qt-webkit
+    brew install qt
     
 Open SSL on Ubuntu and OSX (If you do not have OpenSSL 1.1)
 ------------

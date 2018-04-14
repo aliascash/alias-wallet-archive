@@ -27,9 +27,6 @@
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QWebElementCollection>
-#include <QWebFrame>
-#include <QWebInspector>
 #include <QMenuBar>
 #include <QMenu>
 #include <QVBoxLayout>

@@ -37,7 +37,6 @@
 
 #include <QApplication>
 #include <QThread>
-#include <QWebFrame>
 #include <QClipboard>
 #include <QMessageBox>
 #include <QSortFilterProxyModel>

@@ -95,30 +95,6 @@ if test "x$enable_gui" = "xyes" ; then
     ])
   ])
   MACDEPLOYQT_LIBPATH=""
-  AC_ARG_WITH([qt5webkit], [AS_HELP_STRING([--with-qt5webkit], [Manually specify the path to a stand-alone Qt5WebKit installation (pkg-config will be used if not set). This has no effect if --enable-gui is not also specified.])], [
-    if test "x$build_mac" = "xyes" ; then
-      QT5WEBKIT_LIBDIR="$with_qt5webkit/lib"
-      MACOS_RPATH="$MACOS_RPATH -Wl,-rpath,$QT5WEBKIT_LIBDIR"
-      QT5WEBKIT_LDFLAGS="-F$QT5WEBKIT_LIBDIR"
-      QT5WEBKIT_CFLAGS="$QT5WEBKIT_LDFLAGS -I$QT5WEBKIT_LIBDIR/QtWebKit.framework/Headers -I$QT5WEBKIT_LIBDIR/QtWebKitWidgets.framework/Headers"
-      QT5WEBKIT_LIBS="-framework QtWebKit -framework QtWebKitWidgets"
-      MACDEPLOYQT_LIBPATH="-libpath=$QT5WEBKIT_LIBDIR"  # this seems to be ignored - file a bug with Qt
-    else
-      QT5WEBKIT_CFLAGS="-I$with_qt5webkit/include"
-      QT5WEBKIT_LDFLAGS="-L$with_qt5webkit/lib"
-      QT5WEBKIT_LIBS="-lQtWebKit -lQtWebKitWidgets"
-    fi
-    AC_SUBST([QT5WEBKIT_CFLAGS])
-    AC_SUBST([QT5WEBKIT_LDFLAGS])
-    AC_SUBST([QT5WEBKIT_LIBS])
-    AC_MSG_NOTICE([Using Qt5WebKit at $with_qt5webkit])
-  ], [
-    PKG_CHECK_MODULES(QT5WEBKIT, [Qt5WebKit Qt5WebKitWidgets], [AC_MSG_NOTICE([Found Qt5WebKit using pkg-config.])], [
-      PKG_CHECK_MODULES(QT5WEBKIT, [QtWebKit >= 5 QtWebKitWidgets >= 5], [AC_MSG_NOTICE([Found QtWebKit >= 5 using pkg-config.])], [
-        AC_MSG_ERROR([Qt5WebKit not found.])
-      ])
-    ])
-  ])
   AC_SUBST([MACDEPLOYQT_LIBPATH])
   notbeginswith() { case $2 in "$1"*) true;; *) false;; esac; }
   if test "x$MOC" = "x" ; then
