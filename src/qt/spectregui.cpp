@@ -447,6 +447,8 @@ void SpectreGUI::aboutClicked()
 
 void SpectreGUI::setNumConnections(int count)
 {
+    const QString connectionsIconJSElement = "document.getElementById('connectionsIcon').";
+
     QString className;
 
     switch(count)
@@ -460,350 +462,370 @@ void SpectreGUI::setNumConnections(int count)
     default:         className = "connect-6"; break;
     }
 
-    QString javascriptCode = "document.getElementById(\"connectionsIcon\").className = \"" + className + "\";";
+    QString javascriptCode = connectionsIconJSElement + "className = '" + className + "';";
     webEngineView->page()->runJavaScript(javascriptCode);
 
     QString source = "qrc:///icons/" + className.replace("-", "_");
-    javascriptCode = "document.getElementById(\"connectionsIcon\").src = \"" + source + "\";";
+    javascriptCode = connectionsIconJSElement + "src = '" + source + "';";
     webEngineView->page()->runJavaScript(javascriptCode);
 
     QString dataTitle = tr("%n active connection(s) to SpectreCoin network", "", count);
-    javascriptCode = "document.getElementById('connectionsIcon').setAttribute('data-title', '" + dataTitle + "');";
+    javascriptCode = connectionsIconJSElement + "setAttribute('data-title', '" + dataTitle + "');";
     webEngineView->page()->runJavaScript(javascriptCode);
 }
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-//    QWebElement blocksIcon  = documentFrame->findFirstElement("#blocksIcon");
-//    QWebElement syncingIcon = documentFrame->findFirstElement("#syncingIcon");
-//    QWebElement syncProgressBar = documentFrame->findFirstElement("#syncProgressBar");
+    const QString blocksIconJSElement = "document.getElementById('blocksIcon').";
+    const QString syncingIconJSElement = "document.getElementById('syncingIcon').";
+    const QString syncProgressBarJSElement = "document.getElementById('syncProgressBar').";
 
-//    // don't show / hide progress bar and its label if we have no connection to the network
-//    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
-//    {
-//        syncProgressBar.setAttribute("style", "display:none;");
+    // don't show / hide progress bar and its label if we have no connection to the network
+    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
+    {
+        webEngineView->page()->runJavaScript(
+                    syncProgressBarJSElement + "setAttribute('style', 'display:none;');");
+        return;
+    }
 
-//        return;
-//    }
+    // -- translation (tr()) makes it difficult to neatly pick block/header
+    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
+    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
 
-//    // -- translation (tr()) makes it difficult to neatly pick block/header
-//    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
-//    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
+    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
+    QString tooltip;
 
-//    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
-//    QString tooltip;
+    if (nNodeMode != NT_FULL
+        && nNodeState == NS_GET_FILTERED_BLOCKS)
+    {
+        tooltip = tr("Synchronizing with network...");
+                + "\n"
+                + tr("Downloading filtered blocks...");
 
-//    if (nNodeMode != NT_FULL
-//        && nNodeState == NS_GET_FILTERED_BLOCKS)
-//    {
-//        tooltip = tr("Synchronizing with network...");
-//                + "\n"
-//                + tr("Downloading filtered blocks...");
+        int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
+        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
 
-//        int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
-//        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
+        tooltip += "\n"
+                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
-//        tooltip += "\n"
-//                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
+        count = pwalletMain->nLastFilteredHeight;
+        webEngineView->page()->runJavaScript(
+                    syncProgressBarJSElement + "removeAttribute('style');");
+    } else
+    if (count < nTotalBlocks)
+    {
+        int nRemainingBlocks = nTotalBlocks - count;
+        float nPercentageDone = count / (nTotalBlocks * 0.01f);
+        webEngineView->page()->runJavaScript(
+                    syncProgressBarJSElement + "removeAttribute('style');");
 
-//        count = pwalletMain->nLastFilteredHeight;
-//        syncProgressBar.removeAttribute("style");
-//    } else
-//    if (count < nTotalBlocks)
-//    {
-//        int nRemainingBlocks = nTotalBlocks - count;
-//        float nPercentageDone = count / (nTotalBlocks * 0.01f);
-//        syncProgressBar.removeAttribute("style");
+        if (strStatusBarWarnings.isEmpty())
+        {
+            bridge->networkAlert("");
+            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
 
-//        if (strStatusBarWarnings.isEmpty())
-//        {
-//            bridge->networkAlert("");
-//            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
+            if (nNodeMode == NT_FULL)
+            {
+                tooltip += "\n"
+                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
+            } else
+            {
+                char temp[128];
+                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
 
-//            if (nNodeMode == NT_FULL)
-//            {
-//                tooltip += "\n"
-//                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
-//            } else
-//            {
-//                char temp[128];
-//                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
+                tooltip += "\n"
+                         + tr(temp, "", nRemainingBlocks);
 
-//                tooltip += "\n"
-//                         + tr(temp, "", nRemainingBlocks);
+            };
+        }
 
-//            };
-//        }
+        tooltip += (tooltip.isEmpty()? "" : "\n")
+         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
+                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+    } else
+    {
+        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+    }
 
-//        tooltip += (tooltip.isEmpty()? "" : "\n")
-//		 + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-//                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
-//    } else
-//    {
-//        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
-//    }
+    // Override progressBarLabel text when we have warnings to display
+    if (!strStatusBarWarnings.isEmpty())
+        bridge->networkAlert(strStatusBarWarnings);
 
-//    // Override progressBarLabel text when we have warnings to display
-//    if (!strStatusBarWarnings.isEmpty())
-//        bridge->networkAlert(strStatusBarWarnings);
+    QDateTime lastBlockDate;
+    if (nNodeMode == NT_FULL)
+        lastBlockDate = clientModel->getLastBlockDate();
+    else
+        lastBlockDate = clientModel->getLastBlockThinDate();
 
-//    QDateTime lastBlockDate;
-//    if (nNodeMode == NT_FULL)
-//        lastBlockDate = clientModel->getLastBlockDate();
-//    else
-//        lastBlockDate = clientModel->getLastBlockThinDate();
+    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
+    QString text;
 
-//    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
-//    QString text;
+    // Represent time from last generated block in human readable text
+    if (secs <= 0)
+    {
+        // Fully up to date. Leave text empty.
+    } else
+    if (secs < 60)
+    {
+        text = tr("%n second(s) ago","",secs);
+    } else
+    if (secs < 60*60)
+    {
+        text = tr("%n minute(s) ago","",secs/60);
+    } else
+    if (secs < 24*60*60)
+    {
+        text = tr("%n hour(s) ago","",secs/(60*60));
+    } else
+    {
+        text = tr("%n day(s) ago","",secs/(60*60*24));
+    }
 
-//    // Represent time from last generated block in human readable text
-//    if (secs <= 0)
-//    {
-//        // Fully up to date. Leave text empty.
-//    } else
-//    if (secs < 60)
-//    {
-//        text = tr("%n second(s) ago","",secs);
-//    } else
-//    if (secs < 60*60)
-//    {
-//        text = tr("%n minute(s) ago","",secs/60);
-//    } else
-//    if (secs < 24*60*60)
-//    {
-//        text = tr("%n hour(s) ago","",secs/(60*60));
-//    } else
-//    {
-//        text = tr("%n day(s) ago","",secs/(60*60*24));
-//    }
+    // Set icon state: spinning if catching up, tick otherwise
+    if (secs < 90*60 && count >= nTotalBlocks
+        && nNodeState != NS_GET_FILTERED_BLOCKS)
+    {
+        tooltip = tr("Up to date") + "\n" + tooltip;
+        webEngineView->page()->runJavaScript(
+                    blocksIconJSElement + "classList.remove('none');");
+        webEngineView->page()->runJavaScript(
+                    syncingIconJSElement + "classList.add('none');");
 
-//    // Set icon state: spinning if catching up, tick otherwise
-//    if (secs < 90*60 && count >= nTotalBlocks
-//        && nNodeState != NS_GET_FILTERED_BLOCKS)
-//    {
-//        tooltip = tr("Up to date") + "\n" + tooltip;
-//        blocksIcon.removeClass("none");
-//        syncingIcon.addClass("none");
+        //a js script to change the style property display to none for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'none';";
+                javascript+= "}";
 
-//        QWebElementCollection outOfSyncElements = documentFrame->findAllElements(".outofsync");
+        webEngineView->page()->runJavaScript(javascript);
 
-//        foreach(QWebElement outOfSync, outOfSyncElements)
-//            outOfSync.setStyleProperty("display", "none");
+        webEngineView->page()->runJavaScript(
+                    syncProgressBarJSElement + "setAttribute('style', 'display:none;');");
+    } else
+    {
+        tooltip = tr("Catching up...") + "\n" + tooltip;
 
-//        syncProgressBar.setAttribute("style", "display:none;");
-//    } else
-//    {
-//        tooltip = tr("Catching up...") + "\n" + tooltip;
+        webEngineView->page()->runJavaScript(
+                    syncingIconJSElement + "classList.remove('none');");
+        webEngineView->page()->runJavaScript(
+                    blocksIconJSElement + "classList.add('none');");
 
-//        blocksIcon.addClass("none");
-//        syncingIcon.removeClass("none");
+        //a js script to change the style property display to inline for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'inline';";
+                javascript+= "}";
 
-//        QWebElementCollection outOfSyncElements = documentFrame->findAllElements(".outofsync");
+        webEngineView->page()->runJavaScript(javascript);
 
-//        foreach(QWebElement outOfSync, outOfSyncElements)
-//            outOfSync.setStyleProperty("display", "inline");
+        webEngineView->page()->runJavaScript(
+                    syncProgressBarJSElement + "removeAttribute('style');");
+    }
 
-//        syncProgressBar.removeAttribute("style");
-//    }
+    if (!text.isEmpty())
+    {
+        tooltip += "\n";
+        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
+    };
 
-//    if (!text.isEmpty())
-//    {
-//        tooltip += "\n";
-//        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
-//    };
+    webEngineView->page()->runJavaScript(
+                blocksIconJSElement + "setAttribute('data-title', '"+tooltip+"');");
+    webEngineView->page()->runJavaScript(
+                syncingIconJSElement + "setAttribute('data-title', '"+tooltip+"');");
+    webEngineView->page()->runJavaScript(
+                syncProgressBarJSElement + "setAttribute('data-title', '"+tooltip+"');");
 
-//    blocksIcon     .setAttribute("data-title", tooltip);
-//    syncingIcon    .setAttribute("data-title", tooltip);
-//    syncProgressBar.setAttribute("data-title", tooltip);
-//    syncProgressBar.setAttribute("value", QString::number(count));
-//    syncProgressBar.setAttribute("max",   QString::number(nTotalBlocks));
+
+    webEngineView->page()->runJavaScript(
+                syncProgressBarJSElement + "setAttribute('value', '"+QString::number(count)+"');");
+    webEngineView->page()->runJavaScript(
+                syncProgressBarJSElement + "setAttribute('max', '"+QString::number(nTotalBlocks)+"');");
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
 {
-//    // Report errors from network/worker thread
-//    if(modal)
-//    {
-//        QMessageBox::critical(this, title, message, QMessageBox::Ok, QMessageBox::Ok);
-//    } else
-//    {
-//        notificator->notify(Notificator::Critical, title, message);
-//    }
+    // Report errors from network/worker thread
+    if(modal)
+    {
+        QMessageBox::critical(this, title, message, QMessageBox::Ok, QMessageBox::Ok);
+    } else
+    {
+        notificator->notify(Notificator::Critical, title, message);
+    }
 }
 
 void SpectreGUI::changeEvent(QEvent *e)
 {
-//    QMainWindow::changeEvent(e);
-//#ifndef Q_OS_MAC // Ignored on Mac
-//    if(e->type() == QEvent::WindowStateChange)
-//    {
-//        if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
-//        {
-//            QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
-//            if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
-//            {
-//                QTimer::singleShot(0, this, SLOT(hide()));
-//                e->ignore();
-//            }
-//        }
-//    }
-//#endif
+    QMainWindow::changeEvent(e);
+#ifndef Q_OS_MAC // Ignored on Mac
+    if(e->type() == QEvent::WindowStateChange)
+    {
+        if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
+        {
+            QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
+            if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
+            {
+                QTimer::singleShot(0, this, SLOT(hide()));
+                e->ignore();
+            }
+        }
+    }
+#endif
 }
 
 void SpectreGUI::closeEvent(QCloseEvent *event)
 {
-//    if(clientModel)
-//    {
-//#ifndef Q_OS_MAC // Ignored on Mac
-//        if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
-//           !clientModel->getOptionsModel()->getMinimizeOnClose())
-//        {
-//            qApp->quit();
-//        }
-//#endif
-//    }
-//    QMainWindow::closeEvent(event);
+    if(clientModel)
+    {
+#ifndef Q_OS_MAC // Ignored on Mac
+        if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
+           !clientModel->getOptionsModel()->getMinimizeOnClose())
+        {
+            qApp->quit();
+        }
+#endif
+    }
+    QMainWindow::closeEvent(event);
 }
 
 void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
 {
-//    QString strMessage =
-//        tr("This transaction is over the size limit.  You can still send it for a fee of %1, "
-//          "which goes to the nodes that process your transaction and helps to support the network.  "
-//          "Do you want to pay the fee?").arg(
-//                BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nFeeRequired));
-//    QMessageBox::StandardButton retval = QMessageBox::question(
-//          this, tr("Confirm transaction fee"), strMessage,
-//          QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Yes);
-//    *payFee = (retval == QMessageBox::Yes);
+    QString strMessage =
+        tr("This transaction is over the size limit.  You can still send it for a fee of %1, "
+          "which goes to the nodes that process your transaction and helps to support the network.  "
+          "Do you want to pay the fee?").arg(
+                BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nFeeRequired));
+    QMessageBox::StandardButton retval = QMessageBox::question(
+          this, tr("Confirm transaction fee"), strMessage,
+          QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Yes);
+    *payFee = (retval == QMessageBox::Yes);
 }
 
 void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
-//    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
-//        return;
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
+        return;
 
-//    TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+    TransactionTableModel *ttm = walletModel->getTransactionTableModel();
 
-//    QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
+    QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
 
-//    // Ignore staking transactions... We should create an Option, and allow people to select/deselect what
-//    // type of transactions they want to see
-//    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-//    && ! clientModel->getOptionsModel()->getNotifications().contains(type))
-//        return;
+    // Ignore staking transactions... We should create an Option, and allow people to select/deselect what
+    // type of transactions they want to see
+    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
+    && ! clientModel->getOptionsModel()->getNotifications().contains(type))
+        return;
 
-//    // On new transaction, make an info balloon
-//    // Unless the initial block download is in progress, to prevent balloon-spam
-//    QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
-//    QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
-//    qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
-//    QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
+    // On new transaction, make an info balloon
+    // Unless the initial block download is in progress, to prevent balloon-spam
+    QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
+    QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
+    qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
+    QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
 
-//    notificator->notify(Notificator::Information,
-//                        (amount)<0 ? tr("Sent transaction") :
-//                                     tr("Incoming transaction"),
-//                          tr("Date: %1\n"
-//                             "Amount: %2\n"
-//                             "Type: %3\n"
-//                             "Address: %4\n")
-//                          .arg(date)
-//                          .arg(BitcoinUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
-//                          .arg(type)
-//                          .arg(address), icon);
+    notificator->notify(Notificator::Information,
+                        (amount)<0 ? tr("Sent transaction") :
+                                     tr("Incoming transaction"),
+                          tr("Date: %1\n"
+                             "Amount: %2\n"
+                             "Type: %3\n"
+                             "Address: %4\n")
+                          .arg(date)
+                          .arg(BitcoinUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
+                          .arg(type)
+                          .arg(address), icon);
 }
 
 void SpectreGUI::incomingMessage(const QModelIndex & parent, int start, int end)
 {
-//    if(!messageModel)
-//        return;
+    if(!messageModel)
+        return;
 
-//    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-//    && ! clientModel->getOptionsModel()->getNotifications().contains(tr("Incoming Message")))
-//        return;
+    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
+    && ! clientModel->getOptionsModel()->getNotifications().contains(tr("Incoming Message")))
+        return;
 
-//    MessageModel *mm = messageModel;
+    MessageModel *mm = messageModel;
 
-//    if (mm->index(start, MessageModel::TypeInt, parent).data().toInt() == MessageTableEntry::Received)
-//    {
-//        QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
-//        QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
-//        QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
-//        QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
-//        QTextDocument html;
-//        html.setHtml(message);
-//        QString messageText(html.toPlainText());
-//        notificator->notify(Notificator::Information,
-//                            tr("Incoming Message"),
-//                            tr("Date: %1\n"
-//                               "From Address: %2\n"
-//                               "To Address: %3\n"
-//                               "Message: %4\n")
-//                              .arg(sent_datetime)
-//                              .arg(from_address)
-//                              .arg(to_address)
-//                              .arg(messageText));
-//    };
+    if (mm->index(start, MessageModel::TypeInt, parent).data().toInt() == MessageTableEntry::Received)
+    {
+        QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
+        QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
+        QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
+        QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
+        QTextDocument html;
+        html.setHtml(message);
+        QString messageText(html.toPlainText());
+        notificator->notify(Notificator::Information,
+                            tr("Incoming Message"),
+                            tr("Date: %1\n"
+                               "From Address: %2\n"
+                               "To Address: %3\n"
+                               "Message: %4\n")
+                              .arg(sent_datetime)
+                              .arg(from_address)
+                              .arg(to_address)
+                              .arg(messageText));
+    };
 }
 
 void SpectreGUI::optionsClicked()
 {
-//    bridge->triggerElement("#navitems a[href=#options]", "click");
-//    showNormalIfMinimized();
+    bridge->triggerElement("#navitems a[href=#options]", "click");
+    showNormalIfMinimized();
 }
 
 void SpectreGUI::dragEnterEvent(QDragEnterEvent *event)
 {
-//    // Accept only URIs
-//    if(event->mimeData()->hasUrls())
-//        event->acceptProposedAction();
+    // Accept only URIs
+    if(event->mimeData()->hasUrls())
+        event->acceptProposedAction();
 }
 
 void SpectreGUI::dragMoveEvent(QDragMoveEvent *event)
 {
-//    event->accept();
+    event->accept();
 }
 
 void SpectreGUI::dropEvent(QDropEvent *event)
 {
-//    if(event->mimeData()->hasUrls())
-//    {
-//        int nValidUrisFound = 0;
-//        QList<QUrl> uris = event->mimeData()->urls();
-//        foreach(const QUrl &uri, uris)
-//        {
-//            handleURI(uri.toString());
-//            nValidUrisFound++;
-//        }
+    if(event->mimeData()->hasUrls())
+    {
+        int nValidUrisFound = 0;
+        QList<QUrl> uris = event->mimeData()->urls();
+        foreach(const QUrl &uri, uris)
+        {
+            handleURI(uri.toString());
+            nValidUrisFound++;
+        }
 
-//        // if valid URIs were found
-//        if (nValidUrisFound)
-//            bridge->triggerElement("#navitems a[href=#send]", "click");
-//        else
-//            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
-//    }
+        // if valid URIs were found
+        if (nValidUrisFound)
+            bridge->triggerElement("#navitems a[href=#send]", "click");
+        else
+            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
+    }
 
-//    event->acceptProposedAction();
+    event->acceptProposedAction();
 }
 
 void SpectreGUI::handleURI(QString strURI)
 {
+    SendCoinsRecipient rv;
 
-//    SendCoinsRecipient rv;
+    // URI has to be valid
+    if(GUIUtil::parseBitcoinURI(strURI, &rv))
+    {
+        CBitcoinAddress address(rv.address.toStdString());
+        if (!address.IsValid())
+            return;
 
-//    // URI has to be valid
-//    if(GUIUtil::parseBitcoinURI(strURI, &rv))
-//    {
-//        CBitcoinAddress address(rv.address.toStdString());
-//        if (!address.IsValid())
-//            return;
+        bridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
 
-//        bridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
-
-//        showNormalIfMinimized();
-//    }
-//    else
-//        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
+        showNormalIfMinimized();
+    }
+    else
+        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
 }
 
 void SpectreGUI::setEncryptionStatus(int status)
