@@ -54,7 +54,8 @@ signals:
  */
 class WebElement {
 public:
-    WebElement(WebEnginePage* webEnginePage, QString name);
+    enum SelectorType {ID,CLASS};
+    WebElement(WebEnginePage* webEnginePage, QString name, SelectorType type = SelectorType::ID);
     void setAttribute(QString attribute, QString value);
     void removeAttribute(QString attribute);
     void addClass(QString className);

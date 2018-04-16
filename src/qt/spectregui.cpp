@@ -106,11 +106,21 @@ QWebEngineProfile *WebEnginePage::prepareProfile(SpectreGUI* gui)
 }
 
 
-WebElement::WebElement(WebEnginePage* webEnginePage, QString name)
+WebElement::WebElement(WebEnginePage* webEnginePage, QString name, SelectorType type)
 {
     this->webEnginePage = webEnginePage;
     this->name = name;
-    this->getElementJS = "document.getElementById('" + this->name +"').";
+    switch (type) {
+    case SelectorType::ID:
+        this->getElementJS = "document.getElementById('" + this->name +"').";
+        break;
+    case SelectorType::CLASS:
+        this->getElementJS = "document.getElementsByClassName('" + this->name +"').elements[0].";
+        break;
+    default:
+        qFatal("SelectorType not reconized at WebElement::WebElement");
+        break;
+    }
 }
 
 void WebElement::setAttribute(QString attribute, QString value)
@@ -842,263 +852,262 @@ void SpectreGUI::handleURI(QString strURI)
 
 void SpectreGUI::setEncryptionStatus(int status)
 {
-//    QWebElement encryptionIcon    = documentFrame->findFirstElement("#encryptionIcon");
-//    QWebElement encryptButton     = documentFrame->findFirstElement("#encryptWallet");
-//    QWebElement encryptMenuItem   = documentFrame->findFirstElement(".encryptWallet");
-//    QWebElement changePassphrase  = documentFrame->findFirstElement("#changePassphrase");
-//    QWebElement toggleLock        = documentFrame->findFirstElement("#toggleLock");
-//    QWebElement toggleLockIcon    = documentFrame->findFirstElement("#toggleLock i");
-//    switch(status)
-//    {
-//    case WalletModel::Unencrypted:
-//        encryptionIcon.setAttribute("style", "display:none;");
-//        changePassphrase.addClass("none");
-//        toggleLock.addClass("none");
-//        encryptMenuItem.removeClass("none");
-//        encryptWalletAction->setChecked(false);
-//        changePassphraseAction->setEnabled(false);
-//        unlockWalletAction->setVisible(false);
-//        lockWalletAction->setVisible(false);
-//        encryptWalletAction->setEnabled(true);
-//        break;
-//    case WalletModel::Unlocked:
-//        encryptMenuItem  .addClass("none");
-//        encryptionIcon.removeAttribute("style");
-//        encryptionIcon.removeClass("fa-lock");
-//        encryptionIcon.removeClass("encryption");
-//        encryptionIcon.   addClass("fa-unlock");
-//        encryptionIcon.   addClass("no-encryption");
-//        encryptMenuItem  .addClass("none");
-//        toggleLockIcon.removeClass("fa-unlock");
-//        toggleLockIcon.removeClass("fa-unlock-alt");
-//        toggleLockIcon.   addClass("fa-lock");
-//        encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
+    WebElement encryptionIcon    = WebElement(webEnginePage, "encryptionIcon");
+    WebElement encryptButton     = WebElement(webEnginePage, "encryptWallet");
+    WebElement encryptMenuItem   = WebElement(webEnginePage, "encryptWallet", WebElement::SelectorType::CLASS);
+    WebElement changePassphrase  = WebElement(webEnginePage, "changePassphrase");
+    WebElement toggleLock        = WebElement(webEnginePage, "toggleLock");
+    WebElement toggleLockIcon    = WebElement(webEnginePage, "toggleLock i");
+    switch(status)
+    {
+    case WalletModel::Unencrypted:
+        encryptionIcon.setAttribute("style", "display:none;");
+        changePassphrase.addClass("none");
+        toggleLock.addClass("none");
+        encryptMenuItem.removeClass("none");
+        encryptWalletAction->setChecked(false);
+        changePassphraseAction->setEnabled(false);
+        unlockWalletAction->setVisible(false);
+        lockWalletAction->setVisible(false);
+        encryptWalletAction->setEnabled(true);
+        break;
+    case WalletModel::Unlocked:
+        encryptMenuItem  .addClass("none");
+        encryptionIcon.removeAttribute("style");
+        encryptionIcon.removeClass("fa-lock");
+        encryptionIcon.removeClass("encryption");
+        encryptionIcon.   addClass("fa-unlock");
+        encryptionIcon.   addClass("no-encryption");
+        encryptMenuItem  .addClass("none");
+        toggleLockIcon.removeClass("fa-unlock");
+        toggleLockIcon.removeClass("fa-unlock-alt");
+        toggleLockIcon.   addClass("fa-lock");
+        encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
-//        if (fWalletUnlockStakingOnly)
-//        {
-//            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
-//            encryptionIcon.removeClass("red");
-//            encryptionIcon.addClass("orange");
-//            encryptionIcon.addClass("encryption-stake");
+        if (fWalletUnlockStakingOnly)
+        {
+            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
+            encryptionIcon.removeClass("red");
+            encryptionIcon.addClass("orange");
+            encryptionIcon.addClass("encryption-stake");
 
-//            toggleLockIcon  .removeClass("red");
-//            toggleLockIcon     .addClass("orange");
-//        } else
-//        {
-//            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
-//            encryptionIcon.addClass("red");
-//            encryptionIcon.removeClass("orange");
-//            encryptionIcon.removeClass("encryption-stake");
+            toggleLockIcon  .removeClass("red");
+            toggleLockIcon     .addClass("orange");
+        } else
+        {
+            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
+            encryptionIcon.addClass("red");
+            encryptionIcon.removeClass("orange");
+            encryptionIcon.removeClass("encryption-stake");
 
-//            toggleLockIcon  .removeClass("orange");
-//            toggleLockIcon     .addClass("red");
-//        };
+            toggleLockIcon  .removeClass("orange");
+            toggleLockIcon     .addClass("red");
+        };
 
-//        encryptButton.addClass("none");
-//        changePassphrase.removeClass("none");
-//        toggleLock.removeClass("none");
-//        encryptWalletAction->setChecked(true);
-//        changePassphraseAction->setEnabled(true);
-//        unlockWalletAction->setVisible(false);
-//        lockWalletAction->setVisible(true);
-//        encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
-//        break;
-//    case WalletModel::Locked:
-//        encryptionIcon.removeAttribute("style");
-//        encryptionIcon.removeClass("fa-unlock");
-//        encryptionIcon.removeClass("no-encryption");
-//        encryptionIcon.removeClass("encryption-stake");
-//        encryptionIcon.   addClass("fa-lock");
-//        encryptionIcon.   addClass("encryption");
-//        toggleLockIcon.removeClass("fa-lock");
-//        toggleLockIcon.   addClass("fa-unlock-alt");
-//        encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
+        encryptButton.addClass("none");
+        changePassphrase.removeClass("none");
+        toggleLock.removeClass("none");
+        encryptWalletAction->setChecked(true);
+        changePassphraseAction->setEnabled(true);
+        unlockWalletAction->setVisible(false);
+        lockWalletAction->setVisible(true);
+        encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
+        break;
+    case WalletModel::Locked:
+        encryptionIcon.removeAttribute("style");
+        encryptionIcon.removeClass("fa-unlock");
+        encryptionIcon.removeClass("no-encryption");
+        encryptionIcon.removeClass("encryption-stake");
+        encryptionIcon.   addClass("fa-lock");
+        encryptionIcon.   addClass("encryption");
+        toggleLockIcon.removeClass("fa-lock");
+        toggleLockIcon.   addClass("fa-unlock-alt");
+        encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
 
-//        encryptionIcon     .addClass("red");
-//        encryptionIcon  .removeClass("orange");
-//        encryptButton      .addClass("none");
-//        encryptMenuItem    .addClass("none");
-//        changePassphrase.removeClass("none");
-//        toggleLockIcon  .removeClass("orange");
-//        toggleLockIcon     .addClass("red");
-//        encryptWalletAction->setChecked(true);
-//        changePassphraseAction->setEnabled(true);
-//        unlockWalletAction->setVisible(true);
-//        lockWalletAction->setVisible(false);
-//        encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
-//        break;
-//    }
+        encryptionIcon     .addClass("red");
+        encryptionIcon  .removeClass("orange");
+        encryptButton      .addClass("none");
+        encryptMenuItem    .addClass("none");
+        changePassphrase.removeClass("none");
+        toggleLockIcon  .removeClass("orange");
+        toggleLockIcon     .addClass("red");
+        encryptWalletAction->setChecked(true);
+        changePassphraseAction->setEnabled(true);
+        unlockWalletAction->setVisible(true);
+        lockWalletAction->setVisible(false);
+        encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
+        break;
+    }
 }
 
 void SpectreGUI::encryptWallet(bool status)
 {
-//    if(!walletModel)
-//        return;
-//    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
-//                                     AskPassphraseDialog::Decrypt, this);
-//    dlg.setModel(walletModel);
-//    dlg.exec();
+    if(!walletModel)
+        return;
+    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
+                                     AskPassphraseDialog::Decrypt, this);
+    dlg.setModel(walletModel);
+    dlg.exec();
 
-//    setEncryptionStatus(walletModel->getEncryptionStatus());
+    setEncryptionStatus(walletModel->getEncryptionStatus());
 }
 
 void SpectreGUI::backupWallet()
 {
-//    QString saveDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-//    QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
-//    if(!filename.isEmpty())
-//    {
-//        if(!walletModel->backupWallet(filename))
-//        {
-//            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
-//        }
-//    }
+    QString saveDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
+    if(!filename.isEmpty())
+    {
+        if(!walletModel->backupWallet(filename))
+        {
+            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
+        }
+    }
 }
 
 void SpectreGUI::changePassphrase()
 {
-//    AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
-//    dlg.setModel(walletModel);
-//    dlg.exec();
+    AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
+    dlg.setModel(walletModel);
+    dlg.exec();
 }
 
 void SpectreGUI::unlockWallet()
 {
-//    if(!walletModel)
-//        return;
+    if(!walletModel)
+        return;
 
-//    // Unlock wallet when requested by wallet model
-//    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
-//    {
+    // Unlock wallet when requested by wallet model
+    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
+    {
 
-//        AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
-//              AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
-//        AskPassphraseDialog dlg(mode, this);
-//        dlg.setModel(walletModel);
-//        dlg.exec();
-//    }
+        AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
+              AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
+        AskPassphraseDialog dlg(mode, this);
+        dlg.setModel(walletModel);
+        dlg.exec();
+    }
 }
 
 void SpectreGUI::lockWallet()
 {
-//    if(!walletModel)
-//        return;
+    if(!walletModel)
+        return;
 
-//    walletModel->setWalletLocked(true);
+    walletModel->setWalletLocked(true);
 }
 
 void SpectreGUI::toggleLock()
 {
-//    if(!walletModel)
-//        return;
-//    WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
+    if(!walletModel)
+        return;
+    WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
 
-//    switch(status)
-//    {
-//        case WalletModel::Locked:       unlockWalletAction->trigger(); break;
-//        case WalletModel::Unlocked:     lockWalletAction->trigger();   break;
-//        default: // unencrypted wallet
-//            QMessageBox::warning(this, tr("Lock Wallet"),
-//                tr("Error: Wallet must first be encrypted to be locked."),
-//                QMessageBox::Ok, QMessageBox::Ok);
-//            break;
-//    };
-
+    switch(status)
+    {
+        case WalletModel::Locked:       unlockWalletAction->trigger(); break;
+        case WalletModel::Unlocked:     lockWalletAction->trigger();   break;
+        default: // unencrypted wallet
+            QMessageBox::warning(this, tr("Lock Wallet"),
+                tr("Error: Wallet must first be encrypted to be locked."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            break;
+    };
 }
 
 void SpectreGUI::showNormalIfMinimized(bool fToggleHidden)
 {
-//    // activateWindow() (sometimes) helps with keyboard focus on Windows
-//    if (isHidden())
-//    {
-//        show();
-//        activateWindow();
-//    }
-//    else if (isMinimized())
-//    {
-//        showNormal();
-//        activateWindow();
-//    }
-//    else if (GUIUtil::isObscured(this))
-//    {
-//        raise();
-//        activateWindow();
-//    }
-//    else if(fToggleHidden)
-//        hide();
+    // activateWindow() (sometimes) helps with keyboard focus on Windows
+    if (isHidden())
+    {
+        show();
+        activateWindow();
+    }
+    else if (isMinimized())
+    {
+        showNormal();
+        activateWindow();
+    }
+    else if (GUIUtil::isObscured(this))
+    {
+        raise();
+        activateWindow();
+    }
+    else if(fToggleHidden)
+        hide();
 }
 
 void SpectreGUI::toggleHidden()
 {
-//    showNormalIfMinimized(true);
+    showNormalIfMinimized(true);
 }
 
 void SpectreGUI::updateWeight()
 {
-//    if (!pwalletMain)
-//        return;
+    if (!pwalletMain)
+        return;
 
-//    TRY_LOCK(cs_main, lockMain);
-//    if (!lockMain)
-//        return;
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain)
+        return;
 
-//    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-//    if (!lockWallet)
-//        return;
+    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+    if (!lockWallet)
+        return;
 
-//    nWeight = pwalletMain->GetStakeWeight();
+    nWeight = pwalletMain->GetStakeWeight();
 }
 
 void SpectreGUI::updateStakingIcon()
 {
-//    QWebElement stakingIcon = documentFrame->findFirstElement("#stakingIcon");
-//    uint64_t nNetworkWeight = 0;
+    WebElement stakingIcon = WebElement(webEnginePage, "stakingIcon");
+    uint64_t nNetworkWeight = 0;
 
-//    if(fIsStaking)
-//    {
-//        updateWeight();
-//        nNetworkWeight = GetPoSKernelPS();
-//    } else
-//        nWeight = 0;
+    if(fIsStaking)
+    {
+        updateWeight();
+        nNetworkWeight = GetPoSKernelPS();
+    } else
+        nWeight = 0;
 
-//    if (fIsStaking && nWeight)
-//    {
-//        uint64_t nWeight = this->nWeight;
+    if (fIsStaking && nWeight)
+    {
+        uint64_t nWeight = this->nWeight;
 
-//        unsigned nEstimateTime = GetTargetSpacing(nBestHeight) * nNetworkWeight / nWeight;
-//        QString text;
+        unsigned nEstimateTime = GetTargetSpacing(nBestHeight) * nNetworkWeight / nWeight;
+        QString text;
 
-//        text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
-//               (nEstimateTime < 60 * 60)      ? tr("%n minute(s)", "", nEstimateTime / 60) : \
-//               (nEstimateTime < 24 * 60 * 60) ? tr("%n hour(s)",   "", nEstimateTime / (60 * 60)) : \
-//                                                tr("%n day(s)",    "", nEstimateTime / (60 * 60 * 24));
+        text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
+               (nEstimateTime < 60 * 60)      ? tr("%n minute(s)", "", nEstimateTime / 60) : \
+               (nEstimateTime < 24 * 60 * 60) ? tr("%n hour(s)",   "", nEstimateTime / (60 * 60)) : \
+                                                tr("%n day(s)",    "", nEstimateTime / (60 * 60 * 24));
 
-//        stakingIcon.removeClass("not-staking");
-//        stakingIcon.   addClass("staking");
-//        //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
+        stakingIcon.removeClass("not-staking");
+        stakingIcon.   addClass("staking");
+        //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
-//        nWeight        /= COIN,
-//        nNetworkWeight /= COIN;
+        nWeight        /= COIN,
+        nNetworkWeight /= COIN;
 
-//        stakingIcon.setAttribute("data-title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
-//    } else
-//    {
-//        stakingIcon.   addClass("not-staking");
-//        stakingIcon.removeClass("staking");
-//        //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
+        stakingIcon.setAttribute("data-title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+    } else
+    {
+        stakingIcon.   addClass("not-staking");
+        stakingIcon.removeClass("staking");
+        //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
-//        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-//                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
-//                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
-//                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-//                                               (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
-//                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
-//                                                                                          tr("Not staking"));
-//    }
+        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
+                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
+                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
+                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
+                                               (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
+                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
+                                                                                          tr("Not staking"));
+    }
 }
 
 void SpectreGUI::detectShutdown()
 {
-//    if (ShutdownRequested())
-//        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+    if (ShutdownRequested())
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 }
