@@ -30,7 +30,6 @@ class QToolBar;
 class QUrl;
 QT_END_NAMESPACE
 
-
 /**
  * @brief The WebEnginePage class is written to override and provide the linkClicked signal as from the previous QtWebKit inspired from
  * https://stackoverflow.com/questions/36446246/how-to-emulate-linkclickedqurl-signal-in-qwebengineview
@@ -48,6 +47,22 @@ public:
 signals:
     void linkClicked(const QUrl&);
 
+};
+
+/**
+ * @brief The WebElement class is written to provide easy access for modifying HTML objects with Javascript
+ */
+class WebElement {
+public:
+    WebElement(WebEnginePage* webEnginePage, QString name);
+    void setAttribute(QString attribute, QString value);
+    void removeAttribute(QString attribute);
+    void addClass(QString className);
+    void removeClass(QString className);
+private:
+    WebEnginePage* webEnginePage;
+    QString name;
+    QString getElementJS;
 };
 
 /**
@@ -85,6 +100,7 @@ protected:
 
 private:
     QWebEngineView* webEngineView;
+    WebEnginePage* webEnginePage;
 
     SpectreBridge *bridge;
 

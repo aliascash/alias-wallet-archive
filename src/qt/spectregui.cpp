@@ -105,6 +105,40 @@ QWebEngineProfile *WebEnginePage::prepareProfile(SpectreGUI* gui)
     return profile;
 }
 
+
+WebElement::WebElement(WebEnginePage* webEnginePage, QString name)
+{
+    this->webEnginePage = webEnginePage;
+    this->name = name;
+    this->getElementJS = "document.getElementById('" + this->name +"').";
+}
+
+void WebElement::setAttribute(QString attribute, QString value)
+{
+    //"setAttribute('data-title', '" + dataTitle + "');";
+    QString javascriptCode = getElementJS + "setAttribute('" + attribute + "', '" + value + "');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::removeAttribute(QString attribute)
+{
+    //"setAttribute('data-title', '" + dataTitle + "');";
+    QString javascriptCode = getElementJS + "removeAttribute('" + attribute + "');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::addClass(QString className)
+{
+    QString javascriptCode = getElementJS + "classList.add('"+className+"');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::removeClass(QString className)
+{
+    QString javascriptCode = getElementJS + "classList.remove('"+className+"');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
 SpectreGUI::SpectreGUI(QWidget *parent):
     QMainWindow(parent),
     bridge(new SpectreBridge(this)),
@@ -122,14 +156,14 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webEngineView = new QWebEngineView();
+    webEnginePage = new WebEnginePage(this);
+    webEngineView->setPage(webEnginePage);
 
-    webEngineView->setPage(new WebEnginePage(this));
-
-    webEngineView->page()->action(QWebEnginePage::Reload)->setVisible(false);
-    webEngineView->page()->action(QWebEnginePage::Back)->setVisible(false);
-    webEngineView->page()->action(QWebEnginePage::Forward)->setVisible(false);
+    webEnginePage->action(QWebEnginePage::Reload)->setVisible(false);
+    webEnginePage->action(QWebEnginePage::Back)->setVisible(false);
+    webEnginePage->action(QWebEnginePage::Forward)->setVisible(false);
     
-    connect(webEngineView->page(),SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
+    connect(webEnginePage,SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
 
     setCentralWidget(webEngineView);
 
@@ -221,7 +255,7 @@ void SpectreGUI::addJavascriptObjects()
     }
 
     //attach it to the QWebEnginePage
-    webEngineView->page()->setWebChannel(channel);
+    webEnginePage->setWebChannel(channel);
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -444,7 +478,7 @@ void SpectreGUI::aboutClicked()
 
 void SpectreGUI::setNumConnections(int count)
 {
-    const QString connectionsIconJSElement = "document.getElementById('connectionsIcon').";
+    WebElement connectionIcon = WebElement(webEnginePage, "connectionsIcon");
 
     QString className;
 
@@ -459,29 +493,25 @@ void SpectreGUI::setNumConnections(int count)
     default:         className = "connect-6"; break;
     }
 
-    QString javascriptCode = connectionsIconJSElement + "className = '" + className + "';";
-    webEngineView->page()->runJavaScript(javascriptCode);
+    connectionIcon.setAttribute("class", className);
 
     QString source = "qrc:///icons/" + className.replace("-", "_");
-    javascriptCode = connectionsIconJSElement + "src = '" + source + "';";
-    webEngineView->page()->runJavaScript(javascriptCode);
+    connectionIcon.setAttribute("src", source);
 
     QString dataTitle = tr("%n active connection(s) to SpectreCoin network", "", count);
-    javascriptCode = connectionsIconJSElement + "setAttribute('data-title', '" + dataTitle + "');";
-    webEngineView->page()->runJavaScript(javascriptCode);
+    connectionIcon.setAttribute("data-title", dataTitle);
 }
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-    const QString blocksIconJSElement = "document.getElementById('blocksIcon').";
-    const QString syncingIconJSElement = "document.getElementById('syncingIcon').";
-    const QString syncProgressBarJSElement = "document.getElementById('syncProgressBar').";
+    WebElement blocksIcon = WebElement(webEnginePage, "blocksIcon");
+    WebElement syncingIcon = WebElement(webEnginePage, "syncingIcon");
+    WebElement syncProgressBar = WebElement(webEnginePage, "syncProgressBar");
 
     // don't show / hide progress bar and its label if we have no connection to the network
     if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
     {
-        webEngineView->page()->runJavaScript(
-                    syncProgressBarJSElement + "setAttribute('style', 'display:none;');");
+        syncProgressBar.setAttribute("style", "display:none;");
         return;
     }
 
@@ -506,15 +536,13 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                  + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
         count = pwalletMain->nLastFilteredHeight;
-        webEngineView->page()->runJavaScript(
-                    syncProgressBarJSElement + "removeAttribute('style');");
+        syncProgressBar.removeAttribute("style");
     } else
     if (count < nTotalBlocks)
     {
         int nRemainingBlocks = nTotalBlocks - count;
         float nPercentageDone = count / (nTotalBlocks * 0.01f);
-        webEngineView->page()->runJavaScript(
-                    syncProgressBarJSElement + "removeAttribute('style');");
+        syncProgressBar.removeAttribute("style");
 
         if (strStatusBarWarnings.isEmpty())
         {
@@ -583,10 +611,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Up to date") + "\n" + tooltip;
-        webEngineView->page()->runJavaScript(
-                    blocksIconJSElement + "classList.remove('none');");
-        webEngineView->page()->runJavaScript(
-                    syncingIconJSElement + "classList.add('none');");
+        blocksIcon.removeClass("none");
+        syncingIcon.addClass("none");
 
         //a js script to change the style property display to none for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -594,18 +620,15 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                 javascript+= "     divsToHide[i].style.display = 'none';";
                 javascript+= "}";
 
-        webEngineView->page()->runJavaScript(javascript);
+        webEnginePage->runJavaScript(javascript);
 
-        webEngineView->page()->runJavaScript(
-                    syncProgressBarJSElement + "setAttribute('style', 'display:none;');");
+        syncProgressBar.setAttribute("style", "display:none;");
     } else
     {
         tooltip = tr("Catching up...") + "\n" + tooltip;
 
-        webEngineView->page()->runJavaScript(
-                    syncingIconJSElement + "classList.remove('none');");
-        webEngineView->page()->runJavaScript(
-                    blocksIconJSElement + "classList.add('none');");
+        blocksIcon.addClass("none");
+        syncingIcon.removeClass("none");
 
         //a js script to change the style property display to inline for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -613,10 +636,9 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                 javascript+= "     divsToHide[i].style.display = 'inline';";
                 javascript+= "}";
 
-        webEngineView->page()->runJavaScript(javascript);
+        webEnginePage->runJavaScript(javascript);
 
-        webEngineView->page()->runJavaScript(
-                    syncProgressBarJSElement + "removeAttribute('style');");
+        syncProgressBar.removeAttribute("style");
     }
 
     if (!text.isEmpty())
@@ -625,18 +647,11 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
 
-    webEngineView->page()->runJavaScript(
-                blocksIconJSElement + "setAttribute('data-title', '"+tooltip+"');");
-    webEngineView->page()->runJavaScript(
-                syncingIconJSElement + "setAttribute('data-title', '"+tooltip+"');");
-    webEngineView->page()->runJavaScript(
-                syncProgressBarJSElement + "setAttribute('data-title', '"+tooltip+"');");
-
-
-    webEngineView->page()->runJavaScript(
-                syncProgressBarJSElement + "setAttribute('value', '"+QString::number(count)+"');");
-    webEngineView->page()->runJavaScript(
-                syncProgressBarJSElement + "setAttribute('max', '"+QString::number(nTotalBlocks)+"');");
+    blocksIcon.setAttribute("data-title", tooltip);
+    syncingIcon.setAttribute("data-title", tooltip);
+    syncProgressBar.setAttribute("data-title", tooltip);
+    syncProgressBar.setAttribute("value", QString::number(count));
+    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
