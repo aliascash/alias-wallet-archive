@@ -234,13 +234,13 @@ QString MessageThread::addMessage(int row)
 {
     return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
             .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-            .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t())))
-            .arg(Qt::escape(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t())))
+            .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
+            .arg(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t()).toHtmlEscaped())
             .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
             .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
             .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
             .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
-            .arg(Qt::escape(mtm->index(row, MessageModel::Message).data().toString()).replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
+            .arg(mtm->index(row, MessageModel::Message).data().toString().toHtmlEscaped().replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
             .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
             .arg(mtm->index(row, MessageModel::Key)             .data().toString())
             .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
@@ -435,21 +435,21 @@ bool SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnTypeInd)
         {
             case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> to SPECTRE %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to SPECTRE %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to SPECTRE %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to XSPEC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), Qt::escape(rcp.label), rcp.address));
+                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to XSPEC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 1;
                 break;
             default:
@@ -833,17 +833,17 @@ void SpectreBridge::appendMessages(QString messages, bool reset)
 
 void SpectreBridge::appendMessage(int row)
 {
-    emitMessage(Qt::escape(window->messageModel->index(row, MessageModel::Key).data().toString()),
-                Qt::escape(window->messageModel->index(row, MessageModel::Type).data().toString()),
+    emitMessage(window->messageModel->index(row, MessageModel::Key).data().toString().toHtmlEscaped(),
+                window->messageModel->index(row, MessageModel::Type).data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
                 window->messageModel->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t(),
-                Qt::escape(window->messageModel->index(row, MessageModel::Label).data(MessageModel::LabelRole).toString()),
-                Qt::escape(window->messageModel->index(row, MessageModel::Label).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/")),
-                Qt::escape(window->messageModel->index(row, MessageModel::LabelTo).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/")),
-                Qt::escape(window->messageModel->index(row, MessageModel::ToAddress).data().toString()),
-                Qt::escape(window->messageModel->index(row, MessageModel::FromAddress).data().toString()),
+                window->messageModel->index(row, MessageModel::Label).data(MessageModel::LabelRole).toString().toHtmlEscaped(),
+                window->messageModel->index(row, MessageModel::Label).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
+                window->messageModel->index(row, MessageModel::LabelTo).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
+                window->messageModel->index(row, MessageModel::ToAddress).data().toString().toHtmlEscaped(),
+                window->messageModel->index(row, MessageModel::FromAddress).data().toString().toHtmlEscaped(),
                 window->messageModel->index(row, MessageModel::Read)            .data().toBool(),
-                Qt::escape(window->messageModel->index(row, MessageModel::Message).data().toString()));
+                window->messageModel->index(row, MessageModel::Message).data().toString().toHtmlEscaped());
 }
 
 void SpectreBridge::populateMessageTable()

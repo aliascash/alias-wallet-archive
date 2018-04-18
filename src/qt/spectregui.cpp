@@ -954,7 +954,10 @@ void SpectreGUI::encryptWallet(bool status)
 
 void SpectreGUI::backupWallet()
 {
-    QString saveDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    if (QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0) {
+        qFatal("QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0");
+    }
+    QString saveDir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
     QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
     if(!filename.isEmpty())
     {

@@ -568,9 +568,9 @@ void MessageModel::setEncryptionStatus(int status)
     if(status == WalletModel::Unlocked && QObject::sender()!=NULL)
         return;
 
-    priv->refreshMessageTable();
-
-    reset(); // reload table view
+    emit beginResetModel();
+    priv->refreshMessageTable();    
+    emit endResetModel(); // reload table view
 }
 
 bool MessageModel::markMessageAsRead(const QString &key) const
