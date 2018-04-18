@@ -119,6 +119,30 @@ if test "x$enable_gui" = "xyes" ; then
       ])
     ])
   ])
+  AC_ARG_WITH([qt5webenginewidgets], [AS_HELP_STRING([--with-qt5webenginewidgets], [Manually specify the path to a stand-alone Qt5WebEngineWidgets installation (pkg-config will be used if not set). This has no effect if --enable-gui is not also specified.])], [
+    if test "x$build_mac" = "xyes" ; then
+      QT5WEBENGINEWIDGETS_LIBDIR="$with_qt5webenginewidgets/lib"
+      MACOS_RPATH="$MACOS_RPATH -Wl,-rpath,$QT5WEBENGINEWIDGETS_LIBDIR"
+      QT5WEBENGINEWIDGETS_LDFLAGS="-F$QT5WEBENGINEWIDGETS_LIBDIR"
+      QT5WEBENGINEWIDGETS_CFLAGS="$QT5WEBENGINEWIDGETS_LDFLAGS -I$QT5WEBENGINEWIDGETS_LIBDIR/QtWebEngineWidgets.framework/Headers -I$QT5WEBENGINEWIDGETS_LIBDIR/QtWebEngineWidgets.framework/Headers"
+      QT5WEBENGINEWIDGETS_LIBS="-framework QtWebEngineWidgets -framework QtWebEngineWidgets"
+      MACDEPLOYQT_LIBPATH="-libpath=$QT5WEBENGINEWIDGETS_LIBDIR"  # this seems to be ignored - file a bug with Qt
+    else
+      QT5WEBENGINEWIDGETS_CFLAGS="-I$with_qt5webenginewidgets/include"
+      QT5WEBENGINEWIDGETS_LDFLAGS="-L$with_qt5webenginewidgets/lib"
+      QT5WEBENGINEWIDGETS_LIBS="-lQtWebEngineWidgets -lQtWebEngineWidgets"
+    fi
+    AC_SUBST([QT5WEBENGINEWIDGETS_CFLAGS])
+    AC_SUBST([QT5WEBENGINEWIDGETS_LDFLAGS])
+    AC_SUBST([QT5WEBENGINEWIDGETS_LIBS])
+    AC_MSG_NOTICE([Using Qt5WebEngineWidgets at $with_qt5webenginewidgets])
+  ], [
+    PKG_CHECK_MODULES(QT5WEBENGINEWIDGETS, [Qt5WebEngineWidgets Qt5WebEngineWidgets], [AC_MSG_NOTICE([Found Qt5WebEngineWidgets using pkg-config.])], [
+      PKG_CHECK_MODULES(QT5WEBENGINEWIDGETS, [QtWebEngineWidgets >= 5 QtWebEngineWidgets >= 5], [AC_MSG_NOTICE([Found QtWebEngineWidgets >= 5 using pkg-config.])], [
+        AC_MSG_ERROR([Qt5WebEngineWidgets not found.])
+      ])
+    ])
+  ])
   AC_SUBST([MACDEPLOYQT_LIBPATH])
   notbeginswith() { case $2 in "$1"*) true;; *) false;; esac; }
   if test "x$MOC" = "x" ; then
