@@ -1,6 +1,6 @@
 [submodule "tor"]
 	path = tor
-	url = https://github.com/XSPECOfficial/tor
+url=https://github.com/shbli/tor.git
 	branch = spectre
 [submodule "leveldb"]
 	path = leveldb

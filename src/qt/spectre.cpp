@@ -104,6 +104,7 @@ static void handleRunawayException(std::exception *e)
 #ifndef SPECTRE_QT_TEST
 int main(int argc, char *argv[])
 {
+    qDebug() << "App start in main.cpp";
 #ifndef WIN32
     // Block signals. We handle them in a thread.
     if (BlockSignals() != 0)
