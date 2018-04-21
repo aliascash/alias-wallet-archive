@@ -448,7 +448,7 @@ SOURCES +=     tor/src/adapter/breakout.cpp \
     tor/src/test/test-child.c \
     tor/src/test/test-memwipe.c \
     tor/src/test/test-timers.c \
-    tor/src/test/test.c \
+#    tor/src/test/test.c \
     tor/src/test/test_accounting.c \
     tor/src/test/test_addr.c \
     tor/src/test/test_address.c \

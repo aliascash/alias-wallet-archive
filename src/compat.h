@@ -50,7 +50,7 @@ typedef int socklen_t;
 #define SOCKET_ERROR        -1
 #endif
 
-int myclosesocket(SOCKET& hSocket)
+inline int myclosesocket(SOCKET& hSocket)
 {
     if (hSocket == INVALID_SOCKET)
         return WSAENOTSOCK;

@@ -5,9 +5,9 @@
 TEMPLATE = app
 TARGET = spectre
 #find . -type d
-INCLUDEPATH += . ./src ./src/obj ./src/test ./src/test/other ./src/test/data ./src/wordlists ./src/qt ./src/qt/res ./src/qt/res/css ./src/qt/res/css/fonts ./src/qt/res/images ./src/qt/res/images/avatars ./src/qt/res/icons ./src/qt/res/assets ./src/qt/res/assets/css ./src/qt/res/assets/plugins ./src/qt/res/assets/plugins/md5 ./src/qt/res/assets/plugins/identicon ./src/qt/res/assets/plugins/boostrapv3 ./src/qt/res/assets/plugins/boostrapv3/css ./src/qt/res/assets/plugins/boostrapv3/js ./src/qt/res/assets/plugins/boostrapv3/fonts ./src/qt/res/assets/plugins/framework ./src/qt/res/assets/plugins/markdown ./src/qt/res/assets/plugins/shajs ./src/qt/res/assets/plugins/pnglib ./src/qt/res/assets/plugins/iscroll ./src/qt/res/assets/plugins/jquery ./src/qt/res/assets/plugins/classie ./src/qt/res/assets/plugins/pace ./src/qt/res/assets/plugins/contextMenu ./src/qt/res/assets/plugins/jquery-scrollbar ./src/qt/res/assets/plugins/jdenticon ./src/qt/res/assets/plugins/qrcode ./src/qt/res/assets/plugins/emojione ./src/qt/res/assets/plugins/emojione/assets ./src/qt/res/assets/plugins/emojione/assets/svg ./src/qt/res/assets/plugins/emojione/assets/css ./src/qt/res/assets/plugins/jquery-transit ./src/qt/res/assets/plugins/footable ./src/qt/res/assets/plugins/jquery-ui ./src/qt/res/assets/plugins/jquery-ui/images ./src/qt/res/assets/js ./src/qt/res/assets/js/pages ./src/qt/res/assets/img ./src/qt/res/assets/img/progress ./src/qt/res/assets/img/avatars ./src/qt/res/assets/icons ./src/qt/res/assets/fonts ./src/qt/res/assets/fonts/Framework-icon ./src/qt/res/assets/fonts/FontAwesome ./src/qt/res/assets/fonts/Montserrat ./src/qt/res/assets/fonts/Footable ./src/qt/res/src ./src/qt/locale ./src/qt/forms ./src/qt/test ./src/lz4 ./src/json ./src/xxhash ./src/obj-test ./leveldb/helpers
+INCLUDEPATH += . ./src ./src/obj ./src/test ./src/test/other ./src/test/data ./src/wordlists ./src/qt ./src/qt/res ./src/qt/res/css ./src/qt/res/css/fonts ./src/qt/res/images ./src/qt/res/images/avatars ./src/qt/res/icons ./src/qt/res/assets ./src/qt/res/assets/css ./src/qt/res/assets/plugins ./src/qt/res/assets/plugins/md5 ./src/qt/res/assets/plugins/identicon ./src/qt/res/assets/plugins/boostrapv3 ./src/qt/res/assets/plugins/boostrapv3/css ./src/qt/res/assets/plugins/boostrapv3/js ./src/qt/res/assets/plugins/boostrapv3/fonts ./src/qt/res/assets/plugins/framework ./src/qt/res/assets/plugins/markdown ./src/qt/res/assets/plugins/shajs ./src/qt/res/assets/plugins/pnglib ./src/qt/res/assets/plugins/iscroll ./src/qt/res/assets/plugins/jquery ./src/qt/res/assets/plugins/classie ./src/qt/res/assets/plugins/pace ./src/qt/res/assets/plugins/contextMenu ./src/qt/res/assets/plugins/jquery-scrollbar ./src/qt/res/assets/plugins/jdenticon ./src/qt/res/assets/plugins/qrcode ./src/qt/res/assets/plugins/emojione ./src/qt/res/assets/plugins/emojione/assets ./src/qt/res/assets/plugins/emojione/assets/svg ./src/qt/res/assets/plugins/emojione/assets/css ./src/qt/res/assets/plugins/jquery-transit ./src/qt/res/assets/plugins/footable ./src/qt/res/assets/plugins/jquery-ui ./src/qt/res/assets/plugins/jquery-ui/images ./src/qt/res/assets/js ./src/qt/res/assets/js/pages ./src/qt/res/assets/img ./src/qt/res/assets/img/progress ./src/qt/res/assets/img/avatars ./src/qt/res/assets/icons ./src/qt/res/assets/fonts ./src/qt/res/assets/fonts/Framework-icon ./src/qt/res/assets/fonts/FontAwesome ./src/qt/res/assets/fonts/Montserrat ./src/qt/res/assets/fonts/Footable ./src/qt/res/src ./src/qt/locale ./src/qt/forms ./src/qt/test ./src/lz4 ./src/json ./src/xxhash ./src/obj-test
 QT += testlib webenginewidgets webchannel
-CONFIG += c++14
+CONFIG += c++11
 
 RESOURCES += \
     spectre.qrc
@@ -243,10 +243,33 @@ SOURCES += \
     src/xxhash/xxhash.c \
     leveldb/helpers/memenv/memenv.cc \
     src/qt/macdockiconhandler.mm \
-    src/qt/macnotificationhandler.mm
+    src/qt/macnotificationhandler.mm \
+
+INCLUDEPATH += leveldb/include leveldb/helpers db4.8/build_unix
+
+DEFINES += FORTIFY_SOURCE=1
+QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 \
+              -D_FORTIFY_SOURCE=1 \
+              -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
+              -Wformat -Wformat-security -Wno-unused-parameter
+
+LIBS += leveldb/out-static/libmemenv.a \
+                     leveldb/out-static/libleveldb.a \
+                     db4.8/build_unix/libdb_cxx.a \
+                     tor/src/or/libtor.a \
+                     tor/src/common/libor.a \
+                     tor/src/common/libor-ctime.a \
+                     tor/src/common/libor-crypto.a \
+                     tor/src/common/libor-event.a \
+                     tor/src/trunnel/libor-trunnel.a \
+                     tor/src/common/libcurve25519_donna.a \
+                     tor/src/ext/ed25519/donna/libed25519_donna.a \
+                     tor/src/ext/ed25519/ref10/libed25519_ref10.a \
+                     tor/src/ext/keccak-tiny/libkeccak-tiny.a \
 
 macx {
-    QMAKE_CXXFLAGS += -std=c++11
+    DEFINES += MAC_OSX
+    QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10
 
     #add in core foundation framework
     QMAKE_LFLAGS += -F /System/Library/Frameworks/CoreFoundation.framework/
@@ -255,12 +278,17 @@ macx {
     QMAKE_LFLAGS += -F /System/Library/Frameworks/AppKit.framework/
     LIBS += -framework AppKit
 
+    QMAKE_LFLAGS += -F /System/Library/Frameworks/ApplicationServices.framework/
+    LIBS += -framework ApplicationServices
+    # Mac: compile for maximum compatibility (10.5, 32-bit)
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -isysroot
+
     #brew install boost
     _BOOST_PATH = /usr/local/Cellar/boost/1.67.0_1
     INCLUDEPATH += "$${_BOOST_PATH}/include/"
     LIBS += -L$${_BOOST_PATH}/lib
-    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt -lboost_date_time-mt -lboost_iostreams-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
-    DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES
+    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
+    DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
@@ -282,12 +310,20 @@ macx {
     LIBS += -lleveldb
     DEFINES += LEVELDB_PLATFORM_POSIX OS_MACOSX
 
+    #libevent-2.1.6.dylib
     #brew install libevent
     _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.8
     INCLUDEPATH += "$${_LIBEVENT_PATH}/include/"
     LIBS += -L$${_LIBEVENT_PATH}/lib
     #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
     LIBS += -levent_extra -levent -levent_core -levent_openssl -levent_pthreads
+
+#    #brew install lua
+#    _LUA_PATH = /usr/local/Cellar/lua/5.3.4_3
+#    INCLUDEPATH += "$${_LUA_PATH}/include/"
+#    LIBS += -L$${_LUA_PATH}/lib
+#    #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
+#    LIBS += -levent_extra -levent -levent_core -levent_openssl -levent_pthreads
 }
 
 FORMS += \
