@@ -6,11 +6,10 @@
 #define SPECTREGUI_H
 
 #include <QMainWindow>
-#include <QWebView>
-#include <QWebElement>
+#include <QWebEngineView>
+#include <QWebEngineProfile>
 #include <QSystemTrayIcon>
 #include <QLabel>
-
 #include <QModelIndex>
 
 #include "spectrebridge.h"
@@ -30,6 +29,42 @@ class QMenuBar;
 class QToolBar;
 class QUrl;
 QT_END_NAMESPACE
+
+/**
+ * @brief The WebEnginePage class is written to override and provide the linkClicked signal as from the previous QtWebKit inspired from
+ * https://stackoverflow.com/questions/36446246/how-to-emulate-linkclickedqurl-signal-in-qwebengineview
+ */
+class WebEnginePage : public QWebEnginePage
+{
+    Q_OBJECT
+public:
+    WebEnginePage(SpectreGUI* gui);
+    ~WebEnginePage();
+
+    bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool);
+    QWebEngineProfile *prepareProfile(SpectreGUI* gui);
+
+signals:
+    void linkClicked(const QUrl&);
+
+};
+
+/**
+ * @brief The WebElement class is written to provide easy access for modifying HTML objects with Javascript
+ */
+class WebElement {
+public:
+    enum SelectorType {ID,CLASS};
+    WebElement(WebEnginePage* webEnginePage, QString name, SelectorType type = SelectorType::ID);
+    void setAttribute(QString attribute, QString value);
+    void removeAttribute(QString attribute);
+    void addClass(QString className);
+    void removeClass(QString className);
+private:
+    WebEnginePage* webEnginePage;
+    QString name;
+    QString getElementJS;
+};
 
 /**
   Spectre GUI main class. This class represents the main window of the Spectre UI. It communicates with both the client and
@@ -65,8 +100,8 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
-    QWebView *webView;
-    QWebFrame *documentFrame;
+    QWebEngineView* webEngineView;
+    WebEnginePage* webEnginePage;
 
     SpectreBridge *bridge;
 

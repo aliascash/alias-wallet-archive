@@ -20,6 +20,7 @@
 #include <QDesktopWidget>
 #include <QThread>
 #include <QSettings>
+#include <QUrlQuery>
 
 #ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
@@ -165,7 +166,10 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     SendCoinsRecipient rv;
     rv.address = uri.path();
     rv.amount = 0;
-    QList<QPair<QString, QString> > items = uri.queryItems();
+    QUrlQuery urlQuery;
+    urlQuery.setQuery(uri.query());
+
+    QList<QPair<QString, QString> > items = urlQuery.queryItems();
     for (QList<QPair<QString, QString> >::iterator i = items.begin(); i != items.end(); i++)
     {
         bool fShouldReturnFalse = false;
@@ -241,7 +245,7 @@ void restoreWindowGeometry(const QString& strSetting, const QSize& defaultSize, 
 
 QString HtmlEscape(const QString& str, bool fMultiLine)
 {
-    QString escaped = Qt::escape(str);
+    QString escaped = str.toHtmlEscaped();
     if(fMultiLine)
     {
         escaped = escaped.replace("\n", "<br>\n");
@@ -276,7 +280,10 @@ QString getSaveFileName(QWidget *parent, const QString &caption,
     QString myDir;
     if(dir.isEmpty()) // Default to user documents location
     {
-        myDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+        if (QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0) {
+            qFatal("QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0");
+        }
+        myDir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
     }
     else
     {

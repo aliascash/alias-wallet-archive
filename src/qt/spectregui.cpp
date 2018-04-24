@@ -27,9 +27,6 @@
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QWebElementCollection>
-#include <QWebFrame>
-#include <QWebInspector>
 #include <QMenuBar>
 #include <QMenu>
 #include <QVBoxLayout>
@@ -51,11 +48,106 @@
 #include <QTextStream>
 #include <QTextDocument>
 #include <QDesktopWidget>
-
+#include <QWebChannel>
+#include <QWebEngineScript>
+#include <QWebEngineScriptCollection>
 #include <iostream>
 
 extern CWallet* pwalletMain;
 double GetPoSKernelPS();
+
+WebEnginePage::WebEnginePage(SpectreGUI* gui) : QWebEnginePage(this->prepareProfile(gui))
+{
+
+}
+
+WebEnginePage::~WebEnginePage()
+{
+}
+
+bool WebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool)
+{
+    if (type == QWebEnginePage::NavigationTypeLinkClicked)
+    {
+        emit linkClicked(url);
+        return false;
+    }
+    return true;
+}
+
+//http://lists.qt-project.org/pipermail/qtwebengine/2016-March/000338.html
+//https://meetingcpp.com/blog/items/refactoring-the-html-text-editor-for-qwebengine.html
+QWebEngineProfile *WebEnginePage::prepareProfile(SpectreGUI* gui)
+{
+    QWebEngineProfile *profile = new QWebEngineProfile("Profile", gui);
+
+
+    // Preparing qwebchannel.js for injection
+    QFile qWebChannelJsFile(":/qtwebchannel/qwebchannel.js");
+
+    if(! qWebChannelJsFile.open(QIODevice::ReadOnly)) {
+        qDebug() << ("Failed to load qwebchannel.js with error: " + qWebChannelJsFile.errorString());
+    } else {
+        QByteArray webChannelJs = qWebChannelJsFile.readAll();
+        webChannelJs.append("\nnew QWebChannel(qt.webChannelTransport, function(channel) {window.bridge = channel.objects.bridge;window.walletModel = channel.objects.walletModel;window.optionsModel = channel.objects.optionsModel;});");
+
+        QWebEngineScript script;
+
+        script.setSourceCode(webChannelJs);
+        script.setName("qwebchannel.js");
+        script.setWorldId(QWebEngineScript::MainWorld);
+        script.setInjectionPoint(QWebEngineScript::DocumentCreation);
+        script.setRunsOnSubFrames(false);
+
+        profile->scripts()->insert(script);
+    }
+
+    return profile;
+}
+
+
+WebElement::WebElement(WebEnginePage* webEnginePage, QString name, SelectorType type)
+{
+    this->webEnginePage = webEnginePage;
+    this->name = name;
+    switch (type) {
+    case SelectorType::ID:
+        this->getElementJS = "document.getElementById('" + this->name +"').";
+        break;
+    case SelectorType::CLASS:
+        this->getElementJS = "document.getElementsByClassName('" + this->name +"').elements[0].";
+        break;
+    default:
+        qFatal("SelectorType not reconized at WebElement::WebElement");
+        break;
+    }
+}
+
+void WebElement::setAttribute(QString attribute, QString value)
+{
+    //"setAttribute('data-title', '" + dataTitle + "');";
+    QString javascriptCode = getElementJS + "setAttribute('" + attribute + "', '" + value + "');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::removeAttribute(QString attribute)
+{
+    //"setAttribute('data-title', '" + dataTitle + "');";
+    QString javascriptCode = getElementJS + "removeAttribute('" + attribute + "');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::addClass(QString className)
+{
+    QString javascriptCode = getElementJS + "classList.add('"+className+"');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
+
+void WebElement::removeClass(QString className)
+{
+    QString javascriptCode = getElementJS + "classList.remove('"+className+"');";
+    webEnginePage->runJavaScript(javascriptCode);
+}
 
 SpectreGUI::SpectreGUI(QWidget *parent):
     QMainWindow(parent),
@@ -73,17 +165,17 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     rpcConsole(0),
     nWeight(0)
 {
-    webView = new QWebView();
+    webEngineView = new QWebEngineView();
+    webEnginePage = new WebEnginePage(this);
+    webEngineView->setPage(webEnginePage);
 
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    webEnginePage->action(QWebEnginePage::Reload)->setVisible(false);
+    webEnginePage->action(QWebEnginePage::Back)->setVisible(false);
+    webEnginePage->action(QWebEnginePage::Forward)->setVisible(false);
+    
+    connect(webEnginePage,SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
 
-    webView->page()->action(QWebPage::Reload )->setVisible(false);
-    webView->page()->action(QWebPage::Back   )->setVisible(false);
-    webView->page()->action(QWebPage::Forward)->setVisible(false);
-
-    connect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(urlClicked(const QUrl&)));
-
-    setCentralWidget(webView);
+    setCentralWidget(webEngineView);
 
     resize(1280, 720);
     setWindowTitle(tr("Spectre") + " - " + tr("Client"));
@@ -114,13 +206,14 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
-    documentFrame = webView->page()->mainFrame();
 
     //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
 
-    connect(webView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
-    connect(documentFrame, SIGNAL(javaScriptWindowObjectCleared()), SLOT(addJavascriptObjects()));
-    connect(documentFrame, SIGNAL(urlChanged(QUrl)),                SLOT(urlClicked(const QUrl&)));
+    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
+    connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
+
+    //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
+    addJavascriptObjects();
 
 #ifdef Q_OS_WIN
     QFile html("C:/spectre/index.html");
@@ -129,9 +222,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 #endif
 
     if(html.exists())
-        webView->setUrl(QUrl("file:///" + html.fileName()));
+        webEngineView->setUrl(QUrl("file:///" + html.fileName()));
     else
-        webView->setUrl(QUrl("qrc:///src/qt/res/index.html"));
+        webEngineView->setUrl(QUrl("qrc:///src/qt/res/index.html"));
 }
 
 SpectreGUI::~SpectreGUI()
@@ -139,7 +232,7 @@ SpectreGUI::~SpectreGUI()
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
 
-    delete webView;
+    delete webEngineView;
 #ifdef Q_OS_MAC
     delete appMenuBar;
 #endif
@@ -154,17 +247,25 @@ void SpectreGUI::pageLoaded(bool ok)
         timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
     }
-
 }
 
 void SpectreGUI::addJavascriptObjects()
-{
-    documentFrame->addToJavaScriptWindowObject("bridge", bridge);
+{        
+    //Following the example at https://doc.qt.io/qt-5.10/qtwebengine-webenginewidgets-markdowneditor-example.html
+    QWebChannel *channel = new QWebChannel(this);
+    //register a QObject to be exposed to JavaScript
+    channel->registerObject(QStringLiteral("bridge"), bridge);
+
     if (walletModel != NULL) {
-        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
+        //register a QObject to be exposed to JavaScript
+        channel->registerObject(QStringLiteral("walletModel"), walletModel);
         if (walletModel->getOptionsModel() != NULL)
-            documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
+            //register a QObject to be exposed to JavaScript
+            channel->registerObject(QStringLiteral("optionsModel"), walletModel->getOptionsModel());
     }
+
+    //attach it to the QWebEnginePage
+    webEnginePage->setWebChannel(channel);
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -309,8 +410,7 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
         // Report errors from wallet thread
         connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
-        documentFrame->addToJavaScriptWindowObject("walletModel",  walletModel);
-        documentFrame->addToJavaScriptWindowObject("optionsModel", walletModel->getOptionsModel());
+        addJavascriptObjects();
 
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
@@ -388,7 +488,7 @@ void SpectreGUI::aboutClicked()
 
 void SpectreGUI::setNumConnections(int count)
 {
-    QWebElement connectionsIcon = documentFrame->findFirstElement("#connectionsIcon");
+    WebElement connectionIcon = WebElement(webEnginePage, "connectionsIcon");
 
     QString className;
 
@@ -403,22 +503,25 @@ void SpectreGUI::setNumConnections(int count)
     default:         className = "connect-6"; break;
     }
 
-    connectionsIcon.setAttribute("class", className);
-    connectionsIcon.setAttribute("src", "qrc:///icons/" + className.replace("-", "_"));
-    connectionsIcon.setAttribute("data-title", tr("%n active connection(s) to SpectreCoin network", "", count));
+    connectionIcon.setAttribute("class", className);
+
+    QString source = "qrc:///icons/" + className.replace("-", "_");
+    connectionIcon.setAttribute("src", source);
+
+    QString dataTitle = tr("%n active connection(s) to SpectreCoin network", "", count);
+    connectionIcon.setAttribute("data-title", dataTitle);
 }
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-    QWebElement blocksIcon  = documentFrame->findFirstElement("#blocksIcon");
-    QWebElement syncingIcon = documentFrame->findFirstElement("#syncingIcon");
-    QWebElement syncProgressBar = documentFrame->findFirstElement("#syncProgressBar");
+    WebElement blocksIcon = WebElement(webEnginePage, "blocksIcon");
+    WebElement syncingIcon = WebElement(webEnginePage, "syncingIcon");
+    WebElement syncProgressBar = WebElement(webEnginePage, "syncProgressBar");
 
     // don't show / hide progress bar and its label if we have no connection to the network
     if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
     {
         syncProgressBar.setAttribute("style", "display:none;");
-
         return;
     }
 
@@ -472,7 +575,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         }
 
         tooltip += (tooltip.isEmpty()? "" : "\n")
-		 + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
+         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
                  + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
     } else
     {
@@ -521,10 +624,13 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         blocksIcon.removeClass("none");
         syncingIcon.addClass("none");
 
-        QWebElementCollection outOfSyncElements = documentFrame->findAllElements(".outofsync");
+        //a js script to change the style property display to none for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'none';";
+                javascript+= "}";
 
-        foreach(QWebElement outOfSync, outOfSyncElements)
-            outOfSync.setStyleProperty("display", "none");
+        webEnginePage->runJavaScript(javascript);
 
         syncProgressBar.setAttribute("style", "display:none;");
     } else
@@ -534,10 +640,13 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         blocksIcon.addClass("none");
         syncingIcon.removeClass("none");
 
-        QWebElementCollection outOfSyncElements = documentFrame->findAllElements(".outofsync");
+        //a js script to change the style property display to inline for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'inline';";
+                javascript+= "}";
 
-        foreach(QWebElement outOfSync, outOfSyncElements)
-            outOfSync.setStyleProperty("display", "inline");
+        webEnginePage->runJavaScript(javascript);
 
         syncProgressBar.removeAttribute("style");
     }
@@ -548,11 +657,11 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
 
-    blocksIcon     .setAttribute("data-title", tooltip);
-    syncingIcon    .setAttribute("data-title", tooltip);
+    blocksIcon.setAttribute("data-title", tooltip);
+    syncingIcon.setAttribute("data-title", tooltip);
     syncProgressBar.setAttribute("data-title", tooltip);
     syncProgressBar.setAttribute("value", QString::number(count));
-    syncProgressBar.setAttribute("max",   QString::number(nTotalBlocks));
+    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
@@ -724,7 +833,6 @@ void SpectreGUI::dropEvent(QDropEvent *event)
 
 void SpectreGUI::handleURI(QString strURI)
 {
-
     SendCoinsRecipient rv;
 
     // URI has to be valid
@@ -744,12 +852,12 @@ void SpectreGUI::handleURI(QString strURI)
 
 void SpectreGUI::setEncryptionStatus(int status)
 {
-    QWebElement encryptionIcon    = documentFrame->findFirstElement("#encryptionIcon");
-    QWebElement encryptButton     = documentFrame->findFirstElement("#encryptWallet");
-    QWebElement encryptMenuItem   = documentFrame->findFirstElement(".encryptWallet");
-    QWebElement changePassphrase  = documentFrame->findFirstElement("#changePassphrase");
-    QWebElement toggleLock        = documentFrame->findFirstElement("#toggleLock");
-    QWebElement toggleLockIcon    = documentFrame->findFirstElement("#toggleLock i");
+    WebElement encryptionIcon    = WebElement(webEnginePage, "encryptionIcon");
+    WebElement encryptButton     = WebElement(webEnginePage, "encryptWallet");
+    WebElement encryptMenuItem   = WebElement(webEnginePage, "encryptWallet", WebElement::SelectorType::CLASS);
+    WebElement changePassphrase  = WebElement(webEnginePage, "changePassphrase");
+    WebElement toggleLock        = WebElement(webEnginePage, "toggleLock");
+    WebElement toggleLockIcon    = WebElement(webEnginePage, "toggleLock i");
     switch(status)
     {
     case WalletModel::Unencrypted:
@@ -846,7 +954,10 @@ void SpectreGUI::encryptWallet(bool status)
 
 void SpectreGUI::backupWallet()
 {
-    QString saveDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    if (QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0) {
+        qFatal("QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0");
+    }
+    QString saveDir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
     QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
     if(!filename.isEmpty())
     {
@@ -905,7 +1016,6 @@ void SpectreGUI::toggleLock()
                 QMessageBox::Ok, QMessageBox::Ok);
             break;
     };
-
 }
 
 void SpectreGUI::showNormalIfMinimized(bool fToggleHidden)
@@ -953,7 +1063,7 @@ void SpectreGUI::updateWeight()
 
 void SpectreGUI::updateStakingIcon()
 {
-    QWebElement stakingIcon = documentFrame->findFirstElement("#stakingIcon");
+    WebElement stakingIcon = WebElement(webEnginePage, "stakingIcon");
     uint64_t nNetworkWeight = 0;
 
     if(fIsStaking)

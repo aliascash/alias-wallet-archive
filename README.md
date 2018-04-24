@@ -20,7 +20,7 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * libseccomp
  * libcap
  * boost
- * Qt 5 and QtWebKit if you want to build the GUI wallet. Qt is not needed for the console wallet.
+ * Qt 5 if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
@@ -28,7 +28,7 @@ To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**
 
     apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config
     # the following commands should only be run if building the GUI wallet
-    apt install qtbase5-dev qttools5-dev-tools libqt5webkit5-dev qtchooser
+    apt install qtbase5-dev qttools5-dev-tools qtchooser
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
@@ -37,12 +37,12 @@ To check all dependencies and install missing ones on **Arch Linux**:
 
 To check all dependencies and install missing ones on **macOS** (this uses the [Homebrew](https://brew.sh/) package manager; if you use something else then adjust the commands accordingly):
 
-    brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc
+    brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc wget
     # the following commands are only needed if building the GUI wallet
     brew tap KDE-mac/homebrew-kde
-    brew install qt qt-webkit
+    brew install qt
     
-Open SSL on Ubuntu
+Open SSL on Ubuntu and OSX (If you do not have OpenSSL 1.1)
 ------------
 
 For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the repositories and has Version 1.0 installed by default. To install the [latest stable version](https://www.openssl.org/source/) you can build this dependency from source:
@@ -63,6 +63,7 @@ To fetch the source code and build the wallet run the following commands:
     cd spectre
     ./autogen.sh
     export QT_SELECT=qt5  # only necessary on Debian/Ubuntu/Mint/etc
+    autoreconf -f -i
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
 
