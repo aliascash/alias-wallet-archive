@@ -50,7 +50,14 @@ const unsigned char vchMaxModHalfOrder[32] = {
     0xDF,0xE9,0x2F,0x46,0x68,0x1B,0x20,0xA0
 };
 
-const unsigned char vchZero[0] = {};
+
+#ifdef _MSC_VER
+#define vchZeroSize 1
+#else
+#define vchZeroSize 0
+#endif
+
+const unsigned char vchZero[vchZeroSize] = {};
 
 
 

@@ -22,6 +22,12 @@
 #include <miniupnpc/upnperrors.h>
 #endif
 
+#ifdef _MSC_BUILD
+#ifndef	S_IXUSR
+#define	S_IXUSR		0		/* X for owner */
+#endif
+#endif
+
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 

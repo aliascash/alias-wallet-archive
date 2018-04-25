@@ -10,7 +10,9 @@
 #include "kernel.h"
 #include "checkpoints.h"
 #include <errno.h>
-
+#ifdef _MSC_BUILD
+#include "unistd.h"
+#endif
 
 using namespace json_spirit;
 using namespace std;

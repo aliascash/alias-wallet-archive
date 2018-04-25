@@ -1,12 +1,57 @@
-include(../tor/tor.pri)
-include(../db4.8/db4.8.pri)
-include(../leveldb/leveldb.pri)
-
 TEMPLATE = app
 TARGET = spectre
+CONFIG += c++14
+CONFIG += static
+DESTDIR = $$PWD
 
-#find . -type d
-INCLUDEPATH += $$PWD $$PWD/obj $$PWD/test $$PWD/test/other $$PWD/test/data $$PWD/wordlists $$PWD/qt $$PWD/qt/res $$PWD/qt/res/css $$PWD/qt/res/css/fonts $$PWD/qt/res/images $$PWD/qt/res/images/avatars $$PWD/qt/res/icons $$PWD/qt/res/assets $$PWD/qt/res/assets/css $$PWD/qt/res/assets/plugins $$PWD/qt/res/assets/plugins/md5 $$PWD/qt/res/assets/plugins/identicon $$PWD/qt/res/assets/plugins/boostrapv3 $$PWD/qt/res/assets/plugins/boostrapv3/css $$PWD/qt/res/assets/plugins/boostrapv3/js $$PWD/qt/res/assets/plugins/boostrapv3/fonts $$PWD/qt/res/assets/plugins/framework $$PWD/qt/res/assets/plugins/markdown $$PWD/qt/res/assets/plugins/shajs $$PWD/qt/res/assets/plugins/pnglib $$PWD/qt/res/assets/plugins/iscroll $$PWD/qt/res/assets/plugins/jquery $$PWD/qt/res/assets/plugins/classie $$PWD/qt/res/assets/plugins/pace $$PWD/qt/res/assets/plugins/contextMenu $$PWD/qt/res/assets/plugins/jquery-scrollbar $$PWD/qt/res/assets/plugins/jdenticon $$PWD/qt/res/assets/plugins/qrcode $$PWD/qt/res/assets/plugins/emojione $$PWD/qt/res/assets/plugins/emojione/assets $$PWD/qt/res/assets/plugins/emojione/assets/svg $$PWD/qt/res/assets/plugins/emojione/assets/css $$PWD/qt/res/assets/plugins/jquery-transit $$PWD/qt/res/assets/plugins/footable $$PWD/qt/res/assets/plugins/jquery-ui $$PWD/qt/res/assets/plugins/jquery-ui/images $$PWD/qt/res/assets/js $$PWD/qt/res/assets/js/pages $$PWD/qt/res/assets/img $$PWD/qt/res/assets/img/progress $$PWD/qt/res/assets/img/avatars $$PWD/qt/res/assets/icons $$PWD/qt/res/assets/fonts $$PWD/qt/res/assets/fonts/Framework-icon $$PWD/qt/res/assets/fonts/FontAwesome $$PWD/qt/res/assets/fonts/Montserrat $$PWD/qt/res/assets/fonts/Footable $$PWD/qt/res/src $$PWD/qt/locale $$PWD/qt/forms $$PWD/qt/test $$PWD/lz4 $$PWD/json $$PWD/xxhash $$PWD/obj-test
+#Command to install dependencies
+#vcpkg.exe install boost:x64-windows-static berkeleydb:x64-windows-static leveldb:x64-windows-static libevent:x64-windows-static lua:x64-windows-static openssl:x64-windows-static zlib:x64-windows-static
+DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB
+#DEFINES += BOOST_DISABLE_CURRENT_FUNCTION
+
+
+INCLUDEPATH += $$PWD/../packages64bit/include
+DEPENDPATH += $$PWD/../packages64bit/include
+
+LIBS += -L$$PWD/../packages64bit/lib/ -llua
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/lua.lib
+LIBS += -L$$PWD/../packages64bit/lib -lboost_chrono-vc140-mt
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_chrono-vc140-mt.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lboost_filesystem-vc140-mt
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_filesystem-vc140-mt.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lboost_program_options-vc140-mt
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_program_options-vc140-mt.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lboost_system-vc140-mt
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_system-vc140-mt.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lboost_thread-vc140-mt
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_thread-vc140-mt.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lzlib
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/zlib.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -llibcryptoMT
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libcryptoMT.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -llibsslMT
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libsslMT.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -levent
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -levent_core
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event_core.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -levent_extra
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event_extra.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lWS2_32
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/WS2_32.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lAdvAPI32
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/AdvAPI32.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lshell32
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/shell32.lib
+LIBS += -L$$PWD/../packages64bit/lib/ -lUser32
+PRE_TARGETDEPS += $$PWD/../packages64bit/lib/User32.lib
+LIBS += -L$$PWD/../tor/ -ltorlib
+PRE_TARGETDEPS += $$PWD/../tor/torlib.lib
+LIBS += -L$$PWD/../leveldb/ -lleveldblib
+PRE_TARGETDEPS += $$PWD/../leveldb/leveldblib.lib
+LIBS += -L$$PWD/../db4.8/ -lberkeleydblib
+PRE_TARGETDEPS += $$PWD/../db4.8/berkeleydblib.lib
+
 QT += testlib webenginewidgets webchannel
 
 HEADERS += \
@@ -35,8 +80,6 @@ HEADERS += \
     $$PWD/qt/editaddressdialog.h \
     $$PWD/qt/guiconstants.h \
     $$PWD/qt/guiutil.h \
-    $$PWD/qt/macdockiconhandler.h \
-    $$PWD/qt/macnotificationhandler.h \
     $$PWD/qt/messagemodel.h \
     $$PWD/qt/monitoreddatamapper.h \
     $$PWD/qt/notificator.h \
@@ -61,7 +104,6 @@ HEADERS += \
     $$PWD/wordlists/japanese.h \
     $$PWD/wordlists/spanish.h \
     $$PWD/xxhash/xxhash.h \
-    $$PWD/addrman.h \
     $$PWD/alert.h \
     $$PWD/allocators.h \
     $$PWD/anonymize.h \
@@ -115,6 +157,8 @@ HEADERS += \
     $$PWD/version.h \
     $$PWD/wallet.h \
     $$PWD/walletdb.h \
+    $$PWD/addrman.h \
+    unistd.h
 
 SOURCES += \
     $$PWD/json/json_spirit_reader.cpp \
@@ -186,7 +230,6 @@ SOURCES += \
 #    $$PWD/test/uint256_tests.cpp \
 #    $$PWD/test/util_tests.cpp \
 #    $$PWD/test/wallet_tests.cpp \
-    $$PWD/addrman.cpp \
     $$PWD/alert.cpp \
     $$PWD/anonymize.cpp \
     $$PWD/bloom.cpp \
@@ -237,17 +280,35 @@ SOURCES += \
     $$PWD/walletdb.cpp \
     $$PWD/lz4/lz4.c \
     $$PWD/xxhash/xxhash.c \
-    $$PWD/qt/macdockiconhandler.mm \
-    $$PWD/qt/macnotificationhandler.mm \
+    $$PWD/addrman.cpp \
 
-DEFINES += FORTIFY_SOURCE=1
-QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 \
-              -D_FORTIFY_SOURCE=1 \
-              -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
-              -Wformat -Wformat-security -Wno-unused-parameter
+    DEFINES += FORTIFY_SOURCE=1
+    QMAKE_CXXFLAGS += -O2 \
+                  -D_FORTIFY_SOURCE=1 \
 
+QMAKE_CFLAGS_WARN_ON -= -W3
+QMAKE_CFLAGS_WARN_ON += -W2
+
+QMAKE_CXXFLAGS_WARN_ON -= -W3
+QMAKE_CXXFLAGS_WARN_ON += -W2
+
+#levelDB additional headers
+INCLUDEPATH += $$PWD/../leveldb/helpers
+#find . -type d
+INCLUDEPATH += $$PWD $$PWD/obj $$PWD/test $$PWD/test/other $$PWD/test/data $$PWD/wordlists $$PWD/qt $$PWD/qt/res $$PWD/qt/res/css $$PWD/qt/res/css/fonts $$PWD/qt/res/images $$PWD/qt/res/images/avatars $$PWD/qt/res/icons $$PWD/qt/res/assets $$PWD/qt/res/assets/css $$PWD/qt/res/assets/plugins $$PWD/qt/res/assets/plugins/md5 $$PWD/qt/res/assets/plugins/identicon $$PWD/qt/res/assets/plugins/boostrapv3 $$PWD/qt/res/assets/plugins/boostrapv3/css $$PWD/qt/res/assets/plugins/boostrapv3/js $$PWD/qt/res/assets/plugins/boostrapv3/fonts $$PWD/qt/res/assets/plugins/framework $$PWD/qt/res/assets/plugins/markdown $$PWD/qt/res/assets/plugins/shajs $$PWD/qt/res/assets/plugins/pnglib $$PWD/qt/res/assets/plugins/iscroll $$PWD/qt/res/assets/plugins/jquery $$PWD/qt/res/assets/plugins/classie $$PWD/qt/res/assets/plugins/pace $$PWD/qt/res/assets/plugins/contextMenu $$PWD/qt/res/assets/plugins/jquery-scrollbar $$PWD/qt/res/assets/plugins/jdenticon $$PWD/qt/res/assets/plugins/qrcode $$PWD/qt/res/assets/plugins/emojione $$PWD/qt/res/assets/plugins/emojione/assets $$PWD/qt/res/assets/plugins/emojione/assets/svg $$PWD/qt/res/assets/plugins/emojione/assets/css $$PWD/qt/res/assets/plugins/jquery-transit $$PWD/qt/res/assets/plugins/footable $$PWD/qt/res/assets/plugins/jquery-ui $$PWD/qt/res/assets/plugins/jquery-ui/images $$PWD/qt/res/assets/js $$PWD/qt/res/assets/js/pages $$PWD/qt/res/assets/img $$PWD/qt/res/assets/img/progress $$PWD/qt/res/assets/img/avatars $$PWD/qt/res/assets/icons $$PWD/qt/res/assets/fonts $$PWD/qt/res/assets/fonts/Framework-icon $$PWD/qt/res/assets/fonts/FontAwesome $$PWD/qt/res/assets/fonts/Montserrat $$PWD/qt/res/assets/fonts/Footable $$PWD/qt/res/src $$PWD/qt/locale $$PWD/qt/forms $$PWD/qt/test $$PWD/lz4 $$PWD/json $$PWD/xxhash $$PWD/obj-test
 
 macx {
+
+HEADERS +=              $$PWD/qt/macdockiconhandler.h \
+                        $$PWD/qt/macnotificationhandler.h \
+
+OBJECTIVE_SOURCES +=    $$PWD/qt/macdockiconhandler.mm \
+                        $$PWD/qt/macnotificationhandler.mm \
+
+    QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 \
+                  -D_FORTIFY_SOURCE=1 \
+                  -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual \
+                  -Wformat -Wformat-security -Wno-unused-parameter
 
     DEFINES += MAC_OSX
     # Mac: compile for maximum compatibility (10.0, 32-bit)
@@ -300,3 +361,4 @@ FORMS += \
 
 RESOURCES += \
     ../spectre.qrc
+

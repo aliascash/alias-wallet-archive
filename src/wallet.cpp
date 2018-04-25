@@ -3267,7 +3267,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
                 return error("%s: Input %u AnonOutput %s not found, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
-            if (IsAnonCoinCompromised(ptxdb, pkRingCoin, ao, vchImage) and Params().IsProtocolV3(nBestHeight))
+            if (IsAnonCoinCompromised(ptxdb, pkRingCoin, ao, vchImage) && Params().IsProtocolV3(nBestHeight))
                 return error("%s: Found spent pubkey at index %u: AnonOutput: %s, rsType: %d.", __func__, i, HexStr(pkRingCoin).c_str(), rsType);
 
             if (nCoinValue == -1)
