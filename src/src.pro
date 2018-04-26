@@ -1,13 +1,26 @@
 TEMPLATE = app
 TARGET = spectre
 CONFIG += c++14
-DESTDIR = $$PWD
 #static for VS
 #CONFIG += static
 #QMAKE_LFLAGS += -static
 #QMAKE_CXXFLAGS += /MT
 #QMAKE_CFLAGS += -O2 -MT
 #QMAKE_CXXFLAGS += -O2 -MT
+
+
+
+CONFIG(release, debug|release) {
+    message( "release" )
+    LIBSPATH = $$PWD/../packages64bit/lib
+    DESTDIR = $$PWD/bin
+}
+CONFIG(debug, debug|release) {
+    message( "debug" )
+    LIBSPATH = $$PWD/../packages64bit/debug/lib
+    DESTDIR = $$PWD/bin/debug
+}
+
 
 #Command to install dependencies (Static)
 #vcpkg.exe install boost:x64-windows-static berkeleydb:x64-windows-static leveldb:x64-windows-static libevent:x64-windows-static lua:x64-windows-static openssl:x64-windows-static zlib:x64-windows-static
@@ -17,56 +30,57 @@ DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_U
 #DEFINES += BOOST_DISABLE_CURRENT_FUNCTION
 
 
+
 INCLUDEPATH += $$PWD/../packages64bit/include
 DEPENDPATH += $$PWD/../packages64bit/include
 
-LIBS += -L$$PWD/../packages64bit/lib/ -llua
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/lua.lib
-LIBS += -L$$PWD/../packages64bit/lib -lboost_chrono-vc140-mt
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_chrono-vc140-mt.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lboost_filesystem-vc140-mt
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_filesystem-vc140-mt.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lboost_program_options-vc140-mt
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_program_options-vc140-mt.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lboost_system-vc140-mt
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_system-vc140-mt.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lboost_thread-vc140-mt
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/boost_thread-vc140-mt.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lzlib
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/zlib.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -llibcryptoMD
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libcryptoMD.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -llibsslMD
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libsslMD.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -levent
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -levent_core
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event_core.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -levent_extra
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/event_extra.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lWS2_32
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/WS2_32.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lAdvAPI32
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/AdvAPI32.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lshell32
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/shell32.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lUser32
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/User32.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -lCrypt32
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/Crypt32.lib
+LIBS += -L$${LIBSPATH}/ -llua
+PRE_TARGETDEPS += $${LIBSPATH}/lua.lib
+LIBS += -L$${LIBSPATH} -lboost_chrono-vc140-mt
+PRE_TARGETDEPS += $${LIBSPATH}/boost_chrono-vc140-mt.lib
+LIBS += -L$${LIBSPATH}/ -lboost_filesystem-vc140-mt
+PRE_TARGETDEPS += $${LIBSPATH}/boost_filesystem-vc140-mt.lib
+LIBS += -L$${LIBSPATH}/ -lboost_program_options-vc140-mt
+PRE_TARGETDEPS += $${LIBSPATH}/boost_program_options-vc140-mt.lib
+LIBS += -L$${LIBSPATH}/ -lboost_system-vc140-mt
+PRE_TARGETDEPS += $${LIBSPATH}/boost_system-vc140-mt.lib
+LIBS += -L$${LIBSPATH}/ -lboost_thread-vc140-mt
+PRE_TARGETDEPS += $${LIBSPATH}/boost_thread-vc140-mt.lib
+LIBS += -L$${LIBSPATH}/ -lzlib
+PRE_TARGETDEPS += $${LIBSPATH}/zlib.lib
+LIBS += -L$${LIBSPATH}/ -llibcryptoMD
+PRE_TARGETDEPS += $${LIBSPATH}/libcryptoMD.lib
+LIBS += -L$${LIBSPATH}/ -llibsslMD
+PRE_TARGETDEPS += $${LIBSPATH}/libsslMD.lib
+LIBS += -L$${LIBSPATH}/ -levent
+PRE_TARGETDEPS += $${LIBSPATH}/event.lib
+LIBS += -L$${LIBSPATH}/ -levent_core
+PRE_TARGETDEPS += $${LIBSPATH}/event_core.lib
+LIBS += -L$${LIBSPATH}/ -levent_extra
+PRE_TARGETDEPS += $${LIBSPATH}/event_extra.lib
+LIBS += -L$${LIBSPATH}/ -lWS2_32
+PRE_TARGETDEPS += $${LIBSPATH}/WS2_32.lib
+LIBS += -L$${LIBSPATH}/ -lAdvAPI32
+PRE_TARGETDEPS += $${LIBSPATH}/AdvAPI32.lib
+LIBS += -L$${LIBSPATH}/ -lshell32
+PRE_TARGETDEPS += $${LIBSPATH}/shell32.lib
+LIBS += -L$${LIBSPATH}/ -lUser32
+PRE_TARGETDEPS += $${LIBSPATH}/User32.lib
+LIBS += -L$${LIBSPATH}/ -lCrypt32
+PRE_TARGETDEPS += $${LIBSPATH}/Crypt32.lib
 #ShLwApi
-LIBS += -L$$PWD/../packages64bit/lib/ -lShLwApi
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/ShLwApi.lib
+LIBS += -L$${LIBSPATH}/ -lShLwApi
+PRE_TARGETDEPS += $${LIBSPATH}/ShLwApi.lib
 
 #LevelDB from VCPKG
-LIBS += -L$$PWD/../packages64bit/lib/ -llibleveldb
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libleveldb.lib
-#BerklyDB4.8 from our project (VCPKG version is not supported)
-LIBS += -L$$PWD/../packages64bit/lib/ -llibdb48
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libdb48.lib
-#libdb_stl48.lib
-LIBS += -L$$PWD/../packages64bit/lib/ -llibdb_stl48
-PRE_TARGETDEPS += $$PWD/../packages64bit/lib/libdb_stl48.lib
+LIBS += -L$${LIBSPATH}/ -llibleveldb
+PRE_TARGETDEPS += $${LIBSPATH}/libleveldb.lib
+#BerklyDB4.8 from our project repo (VCPKG version is not supported)
+LIBS += -L$${LIBSPATH}/ -llibdb48
+PRE_TARGETDEPS += $${LIBSPATH}/libdb48.lib
+#libdb_stl48.lib (We need both libdb and libdbstl (Standered library)
+LIBS += -L$${LIBSPATH}/ -llibdb_stl48
+PRE_TARGETDEPS += $${LIBSPATH}/libdb_stl48.lib
 
 LIBS += -L$$PWD/../tor/ -ltorlib
 PRE_TARGETDEPS += $$PWD/../tor/torlib.lib
@@ -317,8 +331,7 @@ INCLUDEPATH += $$PWD/../leveldb/helpers
 #find . -type d
 INCLUDEPATH += $$PWD $$PWD/obj $$PWD/test $$PWD/test/other $$PWD/test/data $$PWD/wordlists $$PWD/qt $$PWD/qt/res $$PWD/qt/res/css $$PWD/qt/res/css/fonts $$PWD/qt/res/images $$PWD/qt/res/images/avatars $$PWD/qt/res/icons $$PWD/qt/res/assets $$PWD/qt/res/assets/css $$PWD/qt/res/assets/plugins $$PWD/qt/res/assets/plugins/md5 $$PWD/qt/res/assets/plugins/identicon $$PWD/qt/res/assets/plugins/boostrapv3 $$PWD/qt/res/assets/plugins/boostrapv3/css $$PWD/qt/res/assets/plugins/boostrapv3/js $$PWD/qt/res/assets/plugins/boostrapv3/fonts $$PWD/qt/res/assets/plugins/framework $$PWD/qt/res/assets/plugins/markdown $$PWD/qt/res/assets/plugins/shajs $$PWD/qt/res/assets/plugins/pnglib $$PWD/qt/res/assets/plugins/iscroll $$PWD/qt/res/assets/plugins/jquery $$PWD/qt/res/assets/plugins/classie $$PWD/qt/res/assets/plugins/pace $$PWD/qt/res/assets/plugins/contextMenu $$PWD/qt/res/assets/plugins/jquery-scrollbar $$PWD/qt/res/assets/plugins/jdenticon $$PWD/qt/res/assets/plugins/qrcode $$PWD/qt/res/assets/plugins/emojione $$PWD/qt/res/assets/plugins/emojione/assets $$PWD/qt/res/assets/plugins/emojione/assets/svg $$PWD/qt/res/assets/plugins/emojione/assets/css $$PWD/qt/res/assets/plugins/jquery-transit $$PWD/qt/res/assets/plugins/footable $$PWD/qt/res/assets/plugins/jquery-ui $$PWD/qt/res/assets/plugins/jquery-ui/images $$PWD/qt/res/assets/js $$PWD/qt/res/assets/js/pages $$PWD/qt/res/assets/img $$PWD/qt/res/assets/img/progress $$PWD/qt/res/assets/img/avatars $$PWD/qt/res/assets/icons $$PWD/qt/res/assets/fonts $$PWD/qt/res/assets/fonts/Framework-icon $$PWD/qt/res/assets/fonts/FontAwesome $$PWD/qt/res/assets/fonts/Montserrat $$PWD/qt/res/assets/fonts/Footable $$PWD/qt/res/src $$PWD/qt/locale $$PWD/qt/forms $$PWD/qt/test $$PWD/lz4 $$PWD/json $$PWD/xxhash $$PWD/obj-test
 
-    QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 \
-                  -D_FORTIFY_SOURCE=1
+    QMAKE_CXXFLAGS += -O2 -D_FORTIFY_SOURCE=1
 
 macx {
 

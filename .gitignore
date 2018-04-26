@@ -82,3 +82,5 @@ src/debug/
 src/release/moc_predefs.h.cbt
 src/release/mocinclude.opt
 src/release/moc_predefs.h
+src/spectre.ilk
+packages64bit.zip
