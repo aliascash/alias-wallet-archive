@@ -187,7 +187,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-56"/>
-        <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
+        <source>Wallet encryption failed due to an internal .ts. Your wallet was not encrypted.</source>
         <translation>شل تشفير المحفظة بسبب خطأ داخلي. لم يتم تشفير محفظتك.</translation>
     </message>
     <message>
@@ -1074,7 +1074,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+10"/>
         <location line="+12"/>
         <location line="+8"/>
-        <source>Error:</source>
+        <source>.ts:</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1174,17 +1174,17 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="-346"/>
-        <source>Error: Transaction creation failed.</source>
+        <source>.ts: Transaction creation failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
-        <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <source>.ts: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+5"/>
-        <source>Error: Narration is too long.</source>
+        <source>.ts: Narration is too long.</source>
         <translation type="unfinished"/>
     </message>
     <message>
