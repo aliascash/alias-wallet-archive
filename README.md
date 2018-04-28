@@ -1,5 +1,6 @@
 SpectreCoin
 ===========
+[![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre)
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
