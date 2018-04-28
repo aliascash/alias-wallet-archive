@@ -4,8 +4,6 @@ SpectreCoin
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
-[Download](https://github.com/spectrecoin/spectre/releases/tag/v1.3.8)
-
 Building from source
 ====================
 
