@@ -5,6 +5,10 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
+#ifdef _MSC_BUILD
+#define __PRETTY_FUNCTION__ BOOST_CURRENT_FUNCTION
+#endif
+
 #include "core.h"
 #include "bignum.h"
 #include "sync.h"
@@ -402,7 +406,7 @@ public:
             filein >> *this;
         } catch (std::exception &e)
         {
-            return error("%s() : deserialize or I/O error", BOOST_CURRENT_FUNCTION);
+            return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
         };
 
         // Return file pointer
@@ -902,7 +906,7 @@ public:
             filein >> *this;
         }
         catch (std::exception &e) {
-            return error("%s() : deserialize or I/O error", BOOST_CURRENT_FUNCTION);
+            return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
         }
 
         // Check the header
@@ -1068,7 +1072,7 @@ public:
             filein >> *this;
         } catch (std::exception &e)
         {
-            return error("%s() : deserialize or I/O error", BOOST_CURRENT_FUNCTION);
+            return error("%s() : deserialize or I/O error", __PRETTY_FUNCTION__);
         }
 
         return true;

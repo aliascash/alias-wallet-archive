@@ -6,6 +6,10 @@
 
 // json spirit version 4.03
 
+#ifdef __APPLE__
+#define BOOST_HAS_THREADS
+#endif
+
 #include "json_spirit_value.h"
 #include "json_spirit_error_position.h"
 

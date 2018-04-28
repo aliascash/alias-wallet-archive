@@ -5,6 +5,12 @@ QT += testlib webenginewidgets webchannel
 
 TEMPLATE = subdirs
 
+macx {
+SUBDIRS = \
+    src \   # sub-project names
+}
+
+win32 {
 SUBDIRS = \
     tor \   # sub-project names
     leveldb \   # sub-project names
@@ -12,5 +18,4 @@ SUBDIRS = \
     src \   # sub-project names
 
 src.depends = tor leveldb db4.8
-
-#  CONFIG += ordered
+}
