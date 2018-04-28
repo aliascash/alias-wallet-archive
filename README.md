@@ -1,10 +1,10 @@
 SpectreCoin
 ===========
-[![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre)
+[![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre) [Download](https://github.com/spectrecoin/spectre/releases/)
 
 This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
 
-The latest release is [1.3.8](https://github.com/spectrecoin/spectre/releases/tag/v1.3.8), released on April 6, 2018.
+[Download](https://github.com/spectrecoin/spectre/releases/tag/v1.3.8)
 
 Building from source
 ====================
