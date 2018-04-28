@@ -1,5 +1,5 @@
-SpectreCoin
-===========
+SpectreCoin (XSPEC)
+===================
 [![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre)
 
 Spectrecoin (XSPEC) is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
