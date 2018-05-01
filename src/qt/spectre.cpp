@@ -252,6 +252,7 @@ int main(int argc, char *argv[])
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
                 window.setMessageModel(&messageModel);
+                window.loadIndex();
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))

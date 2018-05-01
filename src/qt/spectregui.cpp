@@ -214,7 +214,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
+}
 
+void SpectreGUI::loadIndex() {
 #ifdef Q_OS_WIN
     QFile html("C:/spectre/index.html");
 #else

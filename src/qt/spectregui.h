@@ -92,6 +92,8 @@ public:
     */
     void setMessageModel(MessageModel *messageModel);
 
+    void loadIndex();
+
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *event);
