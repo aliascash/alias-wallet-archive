@@ -2,7 +2,18 @@ TEMPLATE = app
 TARGET = spectre
 CONFIG += c++14
 
+DEFINES += DEBUGGER_CONNECTED
+
 QT += testlib webenginewidgets webchannel
+
+CONFIG(release, debug|release) {
+    message( "release" )
+    DESTDIR = $$PWD/bin
+}
+CONFIG(debug, debug|release) {
+    message( "debug" )
+    DESTDIR = $$PWD/bin/debug
+}
 
 macx {
     message(Mac build)

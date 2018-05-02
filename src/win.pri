@@ -11,12 +11,10 @@
 CONFIG(release, debug|release) {
     message( "release" )
     LIBSPATH = $$PWD/../packages64bit/lib
-    DESTDIR = $$PWD/bin
 }
 CONFIG(debug, debug|release) {
     message( "debug" )
     LIBSPATH = $$PWD/../packages64bit/debug/lib
-    DESTDIR = $$PWD/bin/debug
 }
 
 
