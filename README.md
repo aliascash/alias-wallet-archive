@@ -5,15 +5,23 @@ SpectreCoin (XSPEC)
 Spectrecoin (XSPEC) is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
 XSPEC utilizes a range of proven cryptographic techniques to achieve un-linkable and anonymous transactions on its underlaying blockchain and also protects the users identity.
-- Built-in integration of Tor ([The Tor Project](https://www.torproject.org/)).
-- Zerocoin protocol implementation provides the ability to generate ‘anonymous tokens’ by burning coins and hence eliminate any transaction history.
-- Cryptonote protocol implementation of dual-key stealth addresses and ring signatures.
 
+Social
+=======
 - Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC).
 - Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
-### Coin Specs
+### Key Privacy Technology
+<table>
+<tr><td>Zerocoin Protocol</td><td>Provides the ability to generate ‘anonymous tokens’ (SPECTRE) by burning coins and hence eliminate any transaction history. SPECTRE can then be sent anonymously.</td></tr>
+<tr><td>Cryptonote Protocol</td><td>Provides dual-key stealth addresses and ring signatures to further anonymise the transactions conducted with SPECTRE.</td></tr>
+<tr><td>Built in Tor</td><td>Full integration of Tor ([The Tor Project](https://www.torproject.org/)) so that the whole network runs as hidden services only. There are no exit nodes and your identity is protected at all times.</td></tr>
+</table>
+
+
+
+### Basic Coin Specs
 <table>
 <tr><td>Algo</td><td>PoSv3</td></tr>
 <tr><td>Block Time</td><td>60 Seconds</td></tr>
