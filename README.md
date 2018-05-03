@@ -4,11 +4,23 @@ SpectreCoin (XSPEC)
 
 Spectrecoin (XSPEC) is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
-XSPEC utilizes a range of proven cryptographic techniques to achieve un-linkable and anonymous transactions on its underlaying blockchain and also protects the users identity by a built-in integration of Tor ([The Tor Project](https://www.torproject.org/)). XSPEC integrates features from the Zerocoin protocol such as the ability to generate ‘anonymous tokens’ by burning coins and hence eliminate any transaction history. XSPEC also integrates features from the Cryptonote protocol such as dual-key stealth addresses and ring signatures.
+XSPEC utilizes a range of proven cryptographic techniques to achieve un-linkable and anonymous transactions on its underlaying blockchain and also protects the users identity.
+- Built-in integration of Tor ([The Tor Project](https://www.torproject.org/)).
+- Zerocoin protocol implementation provides the ability to generate ‘anonymous tokens’ by burning coins and hence eliminate any transaction history.
+- Cryptonote protocol implementation of dual-key stealth addresses and ring signatures.
 
-This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
+- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC).
+- Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
+- Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
-Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
+### Coin Specs
+<table>
+<tr><td>Algo</td><td>PoSv3</td></tr>
+<tr><td>Block Time</td><td>60 Seconds</td></tr>
+<tr><td>Difficulty Retargeting</td><td>Every Block</td></tr>
+<tr><td>Initial Coin Supply</td><td>20,000,000 XSPEC</td></tr>
+<tr><td>Max Coin Supply (PoS Phase)</td><td>5% annual inflation</td></tr>
+</table>
 
 Building from source
 ====================
