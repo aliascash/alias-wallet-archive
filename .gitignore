@@ -85,3 +85,4 @@ src/release/moc_predefs.h
 src/spectre.ilk
 packages64bit.zip
 src/src.sln
+packages64bit_static/

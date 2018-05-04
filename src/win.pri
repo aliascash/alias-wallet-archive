@@ -1,10 +1,17 @@
 #Include libs the windows way, for visual studio 64 bit compiler
 #static for VS
-#CONFIG += static
-#QMAKE_LFLAGS += -static
-#QMAKE_CXXFLAGS += /MT
-#QMAKE_CFLAGS += -O2 -MT
-#QMAKE_CXXFLAGS += -O2 -MT
+#Compile Qt from source
+#Refrences for MSVC
+# http://amin-ahmadi.com/2016/09/22/how-to-build-qt-5-7-statically-using-msvc14-microsoft-visual-studio-2015/
+# https://stackoverflow.com/questions/32735678/how-to-build-qt-5-5-qtwebengine-on-windows-msvc-2015
+# configure -prefix "C:\D\QtSDK\5.10.1\msvc2017_64_static" -platform win64-msvc2017 -developer-build -opensource -confirm-license -nomake examples -nomake tests -opengl desktop -debug-and-release -qt-zlib -qt-pcre -qt-libpng -qt-libjpeg -qt-freetype -sql-sqlite -sql-odbc -make libs
+# nmake
+# nmake install
+CONFIG += static
+QMAKE_LFLAGS += -static
+QMAKE_CXXFLAGS += /MT
+QMAKE_CFLAGS += -O2 -MT
+QMAKE_CXXFLAGS += -O2 -MT
 
 
 
