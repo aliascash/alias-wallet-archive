@@ -82,23 +82,23 @@ function connectSignals() {
     return;
   }
 
-  bridge.emitPaste.connect(this, pasteValue);
-  bridge.emitTransactions.connect(this, appendTransactions);
-  bridge.emitAddresses.connect(this, appendAddresses);
-  bridge.emitMessages.connect(this, appendMessages);
-  bridge.emitMessage.connect(this, appendMessage);
-  bridge.emitCoinControlUpdate.connect(sendPage, "updateCoinControlInfo");
-  bridge.triggerElement.connect(this, triggerElement);
-  bridge.emitReceipient.connect(sendPage, "addRecipientDetail");
-  bridge.networkAlert.connect(this, networkAlert);
+  bridge.emitPaste.connect(pasteValue);
+  bridge.emitTransactions.connect(appendTransactions);
+  bridge.emitAddresses.connect(appendAddresses);
+  bridge.emitMessages.connect(appendMessages);
+  bridge.emitMessage.connect(appendMessage);
+  bridge.emitCoinControlUpdate.connect(sendPage.updateCoinControlInfo);
+  bridge.triggerElement.connect(triggerElement);
+  bridge.emitReceipient.connect(sendPage.addRecipientDetail);
+  bridge.networkAlert.connect(networkAlert);
 
-  optionsModel.displayUnitChanged.connect(unit, "setType");
-  optionsModel.reserveBalanceChanged.connect(overviewPage, "updateReserved");
-  optionsModel.rowsPerPageChanged.connect(this, "updateRowsPerPage");
-  optionsModel.visibleTransactionsChanged.connect(this, "visibleTransactions");
+  optionsModel.displayUnitChanged.connect(unit.setType);
+  optionsModel.reserveBalanceChanged.connect(overviewPage.updateReserved);
+  optionsModel.rowsPerPageChanged.connect(updateRowsPerPage);
+  optionsModel.visibleTransactionsChanged.connect(visibleTransactions);
 
-  walletModel.encryptionStatusChanged.connect(overviewPage, "encryptionStatusChanged");
-  walletModel.balanceChanged.connect(overviewPage, "updateBalance");
+  walletModel.encryptionStatusChanged.connect(overviewPage.encryptionStatusChanged);
+  walletModel.balanceChanged.connect(overviewPage.updateBalance);
 
   overviewPage.clientInfo();
   optionsPage.update();
