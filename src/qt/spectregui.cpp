@@ -52,6 +52,7 @@
 #include <QWebEngineScript>
 #include <QWebEngineScriptCollection>
 #include <iostream>
+#include <QNetworkProxy>
 
 extern CWallet* pwalletMain;
 double GetPoSKernelPS();
@@ -216,6 +217,8 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     addJavascriptObjects();
 }
 
+unsigned short const onion_port = 9089;
+
 void SpectreGUI::loadIndex() {
 #ifdef Q_OS_WIN
     QFile html("C:/spectre/index.html");
@@ -227,6 +230,17 @@ void SpectreGUI::loadIndex() {
         webEngineView->setUrl(QUrl("file:///" + html.fileName()));
     else
         webEngineView->setUrl(QUrl("qrc:///src/qt/res/index.html"));
+
+#ifdef TEST_TOR
+    QNetworkProxy proxy;
+    proxy.setType(QNetworkProxy::Socks5Proxy);
+    proxy.setHostName("127.0.0.1");
+    proxy.setPort(onion_port);
+    QNetworkProxy::setApplicationProxy(proxy);
+
+    //https://check.torproject.org
+    webEngineView->setUrl(QUrl("https://check.torproject.org"));
+#endif
 }
 
 SpectreGUI::~SpectreGUI()
