@@ -331,7 +331,7 @@ bool static Socks5(string strDest, int port, SOCKET& hSocket)
     if (!InterruptibleRecv(pchRet2, 4, SOCKS5_RECV_TIMEOUT, hSocket))
     {
         CloseSocket(hSocket);
-        return false;
+        return error("Error timeout");
     }
     if (pchRet2[0] != 0x05)
     {
