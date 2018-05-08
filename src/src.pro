@@ -3,7 +3,7 @@ TARGET = spectre
 CONFIG += c++14
 
 DEFINES += DEBUGGER_CONNECTED
-DEFINES += TEST_TOR
+#DEFINES += TEST_TOR
 
 QT += testlib webenginewidgets webchannel
 

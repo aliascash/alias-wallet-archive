@@ -87,26 +87,52 @@ function connectSignals() {
   bridge.emitAddresses.connect(appendAddresses);
   bridge.emitMessages.connect(appendMessages);
   bridge.emitMessage.connect(appendMessage);
-  bridge.emitCoinControlUpdate.connect(sendPage.updateCoinControlInfo);
+  bridge.emitCoinControlUpdate.connect(updateCoinControlInfo);
   bridge.triggerElement.connect(triggerElement);
-  bridge.emitReceipient.connect(sendPage.addRecipientDetail);
+  bridge.emitReceipient.connect(addRecipientDetail);
   bridge.networkAlert.connect(networkAlert);
 
-  optionsModel.displayUnitChanged.connect(unit.setType);
-  optionsModel.reserveBalanceChanged.connect(overviewPage.updateReserved);
+  optionsModel.displayUnitChanged.connect(unit_setType);
+  optionsModel.reserveBalanceChanged.connect(updateReserved);
   optionsModel.rowsPerPageChanged.connect(updateRowsPerPage);
   optionsModel.visibleTransactionsChanged.connect(visibleTransactions);
 
-  walletModel.encryptionStatusChanged.connect(overviewPage.encryptionStatusChanged);
-  walletModel.balanceChanged.connect(overviewPage.updateBalance);
+  walletModel.encryptionStatusChanged.connect(encryptionStatusChanged);
+  walletModel.balanceChanged.connect(updateBalance);
 
   overviewPage.clientInfo();
   optionsPage.update();
   chainDataPage.updateAnonOutputs();
   translateStrings();
 
+
   bridge.jsReady();
 }
+
+function encryptionStatusChanged(status) {
+    overviewPage.encryptionStatusChanged(status)
+}
+
+function unit_setType(unitType) {
+    unit.setType(unitType)
+}
+
+function updateCoinControlInfo(quantity, amount, fee, afterfee, bytes, priority, low, change) {
+    sendPage.updateCoinControlInfo(quantity, amount, fee, afterfee, bytes, priority, low, change)
+}
+
+function addRecipientDetail(address, label, narration, amount) {
+    sendPage.addRecipientDetail(address, label, narration, amount)
+}
+
+function updateReserved(name) {
+    overviewPage.updateReserved(name);
+}
+
+function updateBalance(ns, key, id, name, type) {
+    overviewPage.updateBalance(ns, key, id, name, type);
+}
+
 function triggerElement($window, completeEvent) {
   $($window).trigger(completeEvent);
 }

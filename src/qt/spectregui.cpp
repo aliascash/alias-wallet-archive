@@ -231,16 +231,16 @@ void SpectreGUI::loadIndex() {
     else
         webEngineView->setUrl(QUrl("qrc:///src/qt/res/index.html"));
 
-#ifdef TEST_TOR
-    QNetworkProxy proxy;
-    proxy.setType(QNetworkProxy::Socks5Proxy);
-    proxy.setHostName("127.0.0.1");
-    proxy.setPort(onion_port);
-    QNetworkProxy::setApplicationProxy(proxy);
+//#ifdef TEST_TOR
+//    QNetworkProxy proxy;
+//    proxy.setType(QNetworkProxy::Socks5Proxy);
+//    proxy.setHostName("127.0.0.1");
+//    proxy.setPort(onion_port);
+//    QNetworkProxy::setApplicationProxy(proxy);
 
-    //https://check.torproject.org
-    webEngineView->setUrl(QUrl("https://check.torproject.org"));
-#endif
+//    //https://check.torproject.org
+//    webEngineView->setUrl(QUrl("https://check.torproject.org"));
+//#endif
 }
 
 SpectreGUI::~SpectreGUI()
@@ -262,6 +262,10 @@ void SpectreGUI::pageLoaded(bool ok)
         connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
         timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
+    }
+
+    if (walletModel != NULL) {
+        walletModel->checkBalanceChanged(true);
     }
 }
 

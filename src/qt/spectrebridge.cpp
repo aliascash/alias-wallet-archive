@@ -289,6 +289,8 @@ void SpectreBridge::setClientModel()
     info->insert("name",    window->clientModel->clientName());
 
     populateOptions();
+
+    emit infoChanged();
 }
 
 void SpectreBridge::setWalletModel() {

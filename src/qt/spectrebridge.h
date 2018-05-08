@@ -93,7 +93,7 @@ class SpectreBridge : public QObject
     Q_OBJECT
 
     /** Information about the client */
-    Q_PROPERTY(QVariantMap info READ getInfo);
+    Q_PROPERTY(QVariantMap info READ getInfo NOTIFY infoChanged)
 public:
     explicit SpectreBridge(SpectreGUI *window, QObject *parent = 0);
     ~SpectreBridge();
@@ -177,6 +177,7 @@ signals:
     void emitReceipient(QString address, QString label, QString narration, qint64 amount);
     void triggerElement(QString element, QString trigger);
     void networkAlert(QString alert);
+    void infoChanged();
 
 private:
     SpectreGUI *window;
@@ -189,7 +190,7 @@ private:
 
     friend class SpectreGUI;
 
-    inline QVariantMap getInfo() const { return *info; };
+    inline QVariantMap getInfo() const { return *info; }
 
     void populateOptions();
     void populateAddressTable();

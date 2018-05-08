@@ -113,7 +113,8 @@ void WalletModel::pollBalanceChanged()
     }
 }
 
-void WalletModel::checkBalanceChanged()
+
+void WalletModel::checkBalanceChanged(bool force)
 {
     qint64 newBalance = getBalance();
     qint64 newSpectreBal = getSpectreBalance();
@@ -125,7 +126,8 @@ void WalletModel::checkBalanceChanged()
         || cachedSpectreBal != newSpectreBal
         || cachedStake != newStake
         || cachedUnconfirmedBalance != newUnconfirmedBalance
-        || cachedImmatureBalance != newImmatureBalance)
+        || cachedImmatureBalance != newImmatureBalance
+        || force == true)
     {
         cachedBalance = newBalance;
         cachedSpectreBal = newSpectreBal;
@@ -135,6 +137,8 @@ void WalletModel::checkBalanceChanged()
         emit balanceChanged(newBalance, newSpectreBal, newStake, newUnconfirmedBalance, newImmatureBalance);
     }
 }
+
+
 
 void WalletModel::updateTransaction(const QString &hash, int status)
 {
@@ -938,7 +942,8 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
     return;
 }
 
-void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance) { emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
+void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance) {
+    emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
 void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
 void WalletModel::emitRequireUnlock() { emit requireUnlock(); }

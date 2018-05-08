@@ -156,6 +156,7 @@ public:
     void emitEncryptionStatusChanged(int status);
     void emitRequireUnlock();
     void emitError(const QString &title, const QString &message, bool modal);
+    void checkBalanceChanged(bool force = false);
 
 private:
     CWallet *wallet;
@@ -182,7 +183,6 @@ private:
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
-    void checkBalanceChanged();
 
 public slots:
     /* Wallet status might have changed */
