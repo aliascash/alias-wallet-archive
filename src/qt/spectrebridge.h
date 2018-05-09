@@ -125,7 +125,7 @@ public:
     Q_INVOKABLE void populateTransactionTable();
 
     Q_INVOKABLE void updateAddressLabel(QString address, QString label);
-    Q_INVOKABLE bool validateAddress(QString own);
+    Q_INVOKABLE void validateAddress(QString own);
     Q_INVOKABLE bool deleteAddress(QString address);
 
     Q_INVOKABLE bool deleteMessage(QString key);
@@ -133,8 +133,8 @@ public:
 
     Q_INVOKABLE void openCoinControl();
 
-    Q_INVOKABLE bool addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
-    Q_INVOKABLE bool sendCoins(bool fUseCoinControl, QString sChangeAddr);
+    Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
+    Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
     Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
     Q_INVOKABLE bool sendMessage(const QString &address, const QString &message, const QString &from);
     Q_INVOKABLE QString joinGroupChat(QString privkey, QString label);
@@ -178,6 +178,10 @@ signals:
     void triggerElement(QString element, QString trigger);
     void networkAlert(QString alert);
     void infoChanged();
+
+    void validateAddressResult(bool result);
+    void addRecipientResult(bool result);
+    void sendCoinsResult(bool result);
 
 private:
     SpectreGUI *window;

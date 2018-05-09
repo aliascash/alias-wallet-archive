@@ -116,7 +116,7 @@ WebElement::WebElement(WebEnginePage* webEnginePage, QString name, SelectorType 
         this->getElementJS = "document.getElementById('" + this->name +"').";
         break;
     case SelectorType::CLASS:
-        this->getElementJS = "document.getElementsByClassName('" + this->name +"').elements[0].";
+        this->getElementJS = "document.getElementsByClassName('" + this->name +"')[0].";
         break;
     default:
         qFatal("SelectorType not reconized at WebElement::WebElement");
@@ -127,26 +127,27 @@ WebElement::WebElement(WebEnginePage* webEnginePage, QString name, SelectorType 
 void WebElement::setAttribute(QString attribute, QString value)
 {
     //"setAttribute('data-title', '" + dataTitle + "');";
-    QString javascriptCode = getElementJS + "setAttribute('" + attribute + "', '" + value + "');";
+    value = value.replace("\n"," ");
+    QString javascriptCode = getElementJS + "setAttribute(\"" + attribute + "\", \"" + value + "\");";
     webEnginePage->runJavaScript(javascriptCode);
 }
 
 void WebElement::removeAttribute(QString attribute)
 {
     //"setAttribute('data-title', '" + dataTitle + "');";
-    QString javascriptCode = getElementJS + "removeAttribute('" + attribute + "');";
+    QString javascriptCode = getElementJS + "removeAttribute(\"" + attribute + "\");";
     webEnginePage->runJavaScript(javascriptCode);
 }
 
 void WebElement::addClass(QString className)
 {
-    QString javascriptCode = getElementJS + "classList.add('"+className+"');";
+    QString javascriptCode = getElementJS + "classList.add(\""+className+"\");";
     webEnginePage->runJavaScript(javascriptCode);
 }
 
 void WebElement::removeClass(QString className)
 {
-    QString javascriptCode = getElementJS + "classList.remove('"+className+"');";
+    QString javascriptCode = getElementJS + "classList.remove(\""+className+"\");";
     webEnginePage->runJavaScript(javascriptCode);
 }
 

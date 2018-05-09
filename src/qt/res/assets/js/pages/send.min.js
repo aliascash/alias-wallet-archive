@@ -153,17 +153,51 @@ $(function() {
       }
       $("#ring_size").val(x);
     }
-    function update() {
+
+      function resetGlobalVariables() {
+          validateAddressResultBool = undefined;
+          sendCoinsResultBool = undefined;
+          addRecipientResultBool = undefined;
+      }
+
+      function sendCoinsClicked() {
+          resetGlobalVariables();
+          update();
+      }
+
+    function update(sendCoinsResult, validateAddressResult, addRecipientResult) {
       function check() {
         var context = $(this).find(".pay_to");
         var jElm = $(this).find(".amount");
-        if (tag = tag && invalid(context, bridge.validateAddress(context.val())), 0 != unit.parse(jElm.val()) || (invalid(jElm) || (tag = false)), !tag || !bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), $(this).find(".narration").val(), unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val())) {
+          if (typeof validateAddressResult === 'undefined' && typeof addRecipientResult === 'undefined') {
+              bridge.validateAddress(context.val());
+              return
+          }
+
+          if (validateAddressResult !== 'undefined') {
+              if (validateAddressResult === false) {
+                  resetGlobalVariables();
+              }
+          }
+
+          if (validateAddressResult && typeof addRecipientResult === 'undefined') {
+              bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), $(this).find(".narration").val(), unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val());
+              return
+          }
+
+          if (typeof validateAddressResult === 'undefined' || typeof addRecipientResult === 'undefined') {
+              return
+          }
+
+        if (tag = tag && invalid(context, validateAddressResult), 0 != unit.parse(jElm.val()) || (invalid(jElm) || (tag = false)), !tag || !addRecipientResult) {
           return false;
         }
       }
       var datas = load();
       var tag = true;
-      bridge.userAction(["clearRecipients"]);
+      if (typeof validateAddressResult === 'undefined') {
+        bridge.userAction(["clearRecipients"]);
+      }
       if (bridge.info.options.AutoRingSize) {
         if (datas > 1) {
           handler();
@@ -175,7 +209,22 @@ $(function() {
         $("div.recipient").each(check);
       }
       if (tag) {
-        if (bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())) {
+          console.log(validateAddressResult, addRecipientResult, sendCoinsResult);
+          if (typeof validateAddressResult === 'undefined' || typeof addRecipientResult === 'undefined') {
+              //wait for the results of these two to come back from C++ then to move forward to send coins
+              return;
+          }
+
+          if (typeof validateAddressResult !== 'undefined' && typeof addRecipientResult !== 'undefined' && typeof sendCoinsResult === 'undefined') {
+              bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())
+              return;
+          }
+
+          if (typeof sendCoinsResult !== 'undefined') {
+              resetGlobalVariables();
+          }
+
+        if (sendCoinsResult) {
           reset();
         }
       }
@@ -225,7 +274,8 @@ $(function() {
       clearRecipients: reset,
       removeRecipient: setup,
       suggestRingSize: handler,
-      sendCoins: update,
+      sendCoins: sendCoinsClicked,
+      update: update,
       updateCoinControl: onSuccess,
       updateCoinControlInfo: color,
       changeTransactionType: toggle

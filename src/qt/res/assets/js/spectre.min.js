@@ -92,6 +92,11 @@ function connectSignals() {
   bridge.emitReceipient.connect(addRecipientDetail);
   bridge.networkAlert.connect(networkAlert);
 
+
+  bridge.validateAddressResult.connect(validateAddressResult);
+  bridge.addRecipientResult.connect(addRecipientResult);
+  bridge.sendCoinsResult.connect(sendCoinsResult);
+
   optionsModel.displayUnitChanged.connect(unit_setType);
   optionsModel.reserveBalanceChanged.connect(updateReserved);
   optionsModel.rowsPerPageChanged.connect(updateRowsPerPage);
@@ -108,6 +113,29 @@ function connectSignals() {
 
   bridge.jsReady();
 }
+
+var validateAddressResultBool = undefined;
+var sendCoinsResultBool = undefined;
+var addRecipientResultBool = undefined;
+
+function validateAddressResult(result) {
+    validateAddressResultBool = result
+    sendPage.update(sendCoinsResultBool, validateAddressResultBool, addRecipientResultBool);
+}
+
+function sendCoinsResult(result) {
+    console.log('sendCoinsResult')
+    console.log(result)
+    sendCoinsResultBool = result
+    sendPage.update(sendCoinsResultBool, validateAddressResultBool, addRecipientResultBool);
+}
+
+
+function addRecipientResult(result) {
+    addRecipientResultBool = result
+    sendPage.update(sendCoinsResultBool, validateAddressResultBool, addRecipientResultBool);
+}
+
 
 function encryptionStatusChanged(status) {
     overviewPage.encryptionStatusChanged(status)

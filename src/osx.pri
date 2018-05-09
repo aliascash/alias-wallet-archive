@@ -8,8 +8,6 @@
 # https://stackoverflow.com/questions/48839127/qmake-derived-clang-in-osx-10-13-cannot-find-string-h
 #INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
 
-CONFIG-=app_bundle
-
     LIBS += -L$$PWD/../tor/src/or -ltor \
     -L$$PWD/../tor/src/common -lor \
     -L$$PWD/../tor/src/common -lor-ctime \
