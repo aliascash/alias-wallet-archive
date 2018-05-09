@@ -418,7 +418,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     nNodeLifespan = GetArg("-addrlifespan", 7);
 
     nMinStakeInterval = GetArg("-minstakeinterval", 0);
-    nStakingDonation = GetArg("-stakingdonation", 5);
+    nStakingDonation = GetArg("-stakingdonation", 10);
     nMinerSleep = GetArg("-minersleep", 500);
 
     fUseFastIndex = GetBoolArg("-fastindex", true);

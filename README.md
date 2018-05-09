@@ -1,9 +1,34 @@
-SpectreCoin
-===========
+SpectreCoin (XSPEC)
+===================
+[![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre)
 
-This is the official source code repository for [Spectrecoin](https://spectreproject.io/) (XSPEC).
+Spectrecoin (XSPEC) is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
-The latest release is [1.3.8](https://github.com/spectrecoin/spectre/releases/tag/v1.3.8), released on April 6, 2018.
+XSPEC utilizes a range of proven cryptographic techniques to achieve un-linkable and anonymous transactions on its underlaying blockchain and also protects the users identity.
+
+Social
+=======
+- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC).
+- Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
+- Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
+
+### Key Privacy Technology
+<table>
+<tr><td>Zerocoin Protocol</td><td>Provides the ability to generate ‘anonymous tokens’ (SPECTRE) by burning coins and hence eliminate any transaction history. SPECTRE can then be sent anonymously.</td></tr>
+<tr><td>Cryptonote Protocol</td><td>Provides dual-key stealth addresses and ring signatures to further anonymise the transactions conducted with SPECTRE.</td></tr>
+<tr><td>Built in Tor</td><td>Full integration of Tor ([The Tor Project](https://www.torproject.org/)) so that the whole network runs as hidden services only. There are no exit nodes and your identity is protected at all times.</td></tr>
+</table>
+
+
+
+### Basic Coin Specs
+<table>
+<tr><td>Algo</td><td>PoSv3</td></tr>
+<tr><td>Block Time</td><td>60 Seconds</td></tr>
+<tr><td>Difficulty Retargeting</td><td>Every Block</td></tr>
+<tr><td>Initial Coin Supply</td><td>20,000,000 XSPEC</td></tr>
+<tr><td>Max Coin Supply (PoS Phase)</td><td>5% annual inflation</td></tr>
+</table>
 
 Building from source
 ====================
