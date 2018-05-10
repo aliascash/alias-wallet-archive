@@ -98,6 +98,9 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         case Staking:
             return settings.value("fStaking", GetBoolArg("-staking", true)).toBool();
         case StakingDonation:
+            if (nStakingDonation < 10) {
+                nStakingDonation = 10;
+            }
             return nStakingDonation;
         case MinStakeInterval:
             return nMinStakeInterval;
@@ -250,6 +253,9 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case StakingDonation:
             nStakingDonation = value.toInt();
+            if (nStakingDonation < 10) {
+                nStakingDonation = 10;
+            }
             settings.setValue("nStakingDonation", nStakingDonation);
             break;
         case MinStakeInterval:
