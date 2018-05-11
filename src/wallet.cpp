@@ -2001,7 +2001,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >&
                             position--;
                         };
                     };
-                    wtxNew.vout.insert(position, CTxOut(nChange, scriptChange));
+                    position = wtxNew.vout.insert(position, CTxOut(nChange, scriptChange));
                     nChangePos = std::distance(wtxNew.vout.begin(), position);
                 };
 
