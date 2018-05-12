@@ -754,9 +754,9 @@ void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, in
     transactionModel->populateRows(start, end);
 }
 
-QString SpectreBridge::transactionDetails(QString txid)
+void SpectreBridge::transactionDetails(QString txid)
 {
-    return window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
+    emit transactionDetailsResult(window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString());
 }
 
 // Addresses

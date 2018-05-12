@@ -96,6 +96,7 @@ function connectSignals() {
   bridge.validateAddressResult.connect(validateAddressResult);
   bridge.addRecipientResult.connect(addRecipientResult);
   bridge.sendCoinsResult.connect(sendCoinsResult);
+  bridge.transactionDetailsResult.connect(transactionDetailsResult);
 
   optionsModel.displayUnitChanged.connect(unit_setType);
   optionsModel.reserveBalanceChanged.connect(updateReserved);
@@ -112,6 +113,10 @@ function connectSignals() {
 
 
   bridge.jsReady();
+}
+
+function transactionDetailsResult(result) {
+    $("#transaction-info").html(result);
 }
 
 var validateAddressResultBool = undefined;

@@ -115,7 +115,7 @@ public:
     Q_INVOKABLE QString newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
     Q_INVOKABLE QString lastAddressError();
     /** Get the full transaction details */
-    Q_INVOKABLE QString transactionDetails(QString txid);
+    Q_INVOKABLE void transactionDetails(QString txid);
     /** Get the pubkey for an address */
     Q_INVOKABLE QString getPubKey(QString address);
 
@@ -182,6 +182,8 @@ signals:
     void validateAddressResult(bool result);
     void addRecipientResult(bool result);
     void sendCoinsResult(bool result);
+
+    void transactionDetailsResult(QString result);
 
 private:
     SpectreGUI *window;
