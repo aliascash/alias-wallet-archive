@@ -146,11 +146,11 @@ public:
 
     Q_INVOKABLE QVariantMap listAnonOutputs();
 
-    Q_INVOKABLE QVariantMap findBlock(QString searchID);
-    Q_INVOKABLE QVariantMap listLatestBlocks();
-    Q_INVOKABLE QVariantMap blockDetails(QString blkid);
-    Q_INVOKABLE QVariantMap listTransactionsForBlock(QString blkid);
-    Q_INVOKABLE QVariantMap txnDetails(QString blkHash, QString txnHash);
+    Q_INVOKABLE void findBlock(QString searchID);
+    Q_INVOKABLE void listLatestBlocks();
+    Q_INVOKABLE void blockDetails(QString blkid);
+    Q_INVOKABLE void listTransactionsForBlock(QString blkid);
+    Q_INVOKABLE void txnDetails(QString blkHash, QString txnHash);
 
     Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
     Q_INVOKABLE QVariantMap verifyMessage(QString address, QString message, QString signature);
@@ -184,6 +184,13 @@ signals:
     void sendCoinsResult(bool result);
 
     void transactionDetailsResult(QString result);
+
+
+    void findBlockResult(QVariantMap result);
+    void listLatestBlocksResult(QVariantMap result);
+    void blockDetailsResult(QVariantMap result);
+    void listTransactionsForBlockResult(QVariantMap result);
+    void txnDetailsResult(QVariantMap result);
 
 private:
     SpectreGUI *window;

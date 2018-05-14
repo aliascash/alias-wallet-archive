@@ -1179,7 +1179,7 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
 }
 
 // Blocks
-QVariantMap SpectreBridge::listLatestBlocks()
+void SpectreBridge::listLatestBlocks()
 {
     CBlockIndex* recentBlock = pindexBest;
     CBlock block;
@@ -1194,7 +1194,8 @@ QVariantMap SpectreBridge::listLatestBlocks()
         if (block.IsNull() || block.vtx.size() < 1)
         {
             latestBlocks.insert("error_msg", "Block not found.");
-            return latestBlocks;
+            emit listLatestBlocksResult(latestBlocks);
+            return;
         };
 
         QVariantMap latestBlock;
@@ -1206,10 +1207,11 @@ QVariantMap SpectreBridge::listLatestBlocks()
         latestBlocks.insert(QString::number(x) , latestBlock);
         recentBlock = recentBlock->pprev;
     }
-    return latestBlocks;
+    emit listLatestBlocksResult(latestBlocks);
+    return;
 }
 
-QVariantMap SpectreBridge::findBlock(QString searchID)
+void SpectreBridge::findBlock(QString searchID)
 {
     CBlockIndex* findBlock;
 
@@ -1242,7 +1244,8 @@ QVariantMap SpectreBridge::findBlock(QString searchID)
     if (!findBlock)
     {
         foundBlock.insert("error_msg", "Block / transaction not found.");
-        return foundBlock;
+        emit findBlockResult(foundBlock);
+        return;
     };
 
     CBlock block;
@@ -1251,7 +1254,8 @@ QVariantMap SpectreBridge::findBlock(QString searchID)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         foundBlock.insert("error_msg", "Block not found.");
-        return foundBlock;
+        emit findBlockResult(foundBlock);
+        return;
     };
 
     foundBlock.insert("block_hash"        , QString::fromStdString(findBlock->GetBlockHash().ToString()));
@@ -1261,10 +1265,10 @@ QVariantMap SpectreBridge::findBlock(QString searchID)
     foundBlock.insert("block_size"        , findBlock->nBits);
     foundBlock.insert("error_msg"         , "");
 
-    return foundBlock;
+    emit findBlockResult(foundBlock);
 }
 
-QVariantMap SpectreBridge::blockDetails(QString blkHash)
+void SpectreBridge::blockDetails(QString blkHash)
 {
     QVariantMap blockDetail;
 
@@ -1278,7 +1282,8 @@ QVariantMap SpectreBridge::blockDetails(QString blkHash)
     if (mi == mapBlockIndex.end())
     {
         blockDetail.insert("error_msg", "Block not found.");
-        return blockDetail;
+        emit blockDetailsResult(blockDetail);
+        return;
     };
 
     blkIndex  = mi->second;
@@ -1287,7 +1292,8 @@ QVariantMap SpectreBridge::blockDetails(QString blkHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blockDetail.insert("error_msg", "Block not found.");
-        return blockDetail;
+        emit blockDetailsResult(blockDetail);
+        return;
     };
 
     CTxDB txdb("r");
@@ -1342,10 +1348,11 @@ QVariantMap SpectreBridge::blockDetails(QString blkHash)
     blockDetail.insert("block_nonce"       , blkIndex->nNonce);
     blockDetail.insert("error_msg"         , "");
 
-    return blockDetail;
+    emit blockDetailsResult(blockDetail);
+    return;
 }
 
-QVariantMap SpectreBridge::listTransactionsForBlock(QString blkHash)
+void SpectreBridge::listTransactionsForBlock(QString blkHash)
 {
     QVariantMap blkTransactions;
 
@@ -1359,7 +1366,8 @@ QVariantMap SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (mi == mapBlockIndex.end())
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        return blkTransactions;
+        emit listTransactionsForBlockResult(blkTransactions);
+        return;
     };
 
     selectedBlkIndex  = mi->second;
@@ -1368,7 +1376,8 @@ QVariantMap SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        return blkTransactions;
+        emit listTransactionsForBlockResult(blkTransactions);
+        return;
     };
 
     for (uint x = 0; x < block.vtx.size(); x++)
@@ -1385,10 +1394,11 @@ QVariantMap SpectreBridge::listTransactionsForBlock(QString blkHash)
         blkTransactions.insert(QString::number(x), blockTxn);
     }
 
-    return blkTransactions;
+    emit listTransactionsForBlockResult(blkTransactions);
+    return;
 }
 
-QVariantMap SpectreBridge::txnDetails(QString blkHash, QString txnHash)
+void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 {
     QVariantMap txnDetail;
 
@@ -1405,7 +1415,8 @@ QVariantMap SpectreBridge::txnDetails(QString blkHash, QString txnHash)
     if (mi == mapBlockIndex.end())
     {
         txnDetail.insert("error_msg", "Block not found.");
-        return txnDetail;
+        emit txnDetailsResult(txnDetail);
+        return;
     };
     selectedBlkIndex  = mi->second;
     block.ReadFromDisk(selectedBlkIndex, true);
@@ -1413,7 +1424,8 @@ QVariantMap SpectreBridge::txnDetails(QString blkHash, QString txnHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         txnDetail.insert("error_msg", "Block not found.");
-        return txnDetail;
+        emit txnDetailsResult(txnDetail);
+        return;
     };
 
     for (uint x = 0; x < block.vtx.size(); x++)
@@ -1537,7 +1549,8 @@ QVariantMap SpectreBridge::txnDetails(QString blkHash, QString txnHash)
         break;
     }
 
-    return txnDetail;
+    emit txnDetailsResult(txnDetail);
+    return;
 }
 
 QVariantMap SpectreBridge::signMessage(QString address, QString message)
