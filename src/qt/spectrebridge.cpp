@@ -790,13 +790,13 @@ void SpectreBridge::insertAddresses(const QModelIndex & parent, int start, int e
     addressModel->poplateRows(start, end);
 }
 
-QString SpectreBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
+void SpectreBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
 {
     // Generate a new address to associate with given label
     // NOTE: unlock happens in addRow
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
     addressModel->populateAddressTable();
-    return rv;
+    emit newAddressResult(rv);
 }
 
 QString SpectreBridge::lastAddressError()
@@ -1649,7 +1649,7 @@ QVariantMap SpectreBridge::verifyMessage(QString address, QString message, QStri
     return result;
 }
 
-QVariantMap SpectreBridge::getNewMnemonic(QString password, QString language)
+void SpectreBridge::getNewMnemonic(QString password, QString language)
 {
     QVariantMap result;
     int nLanguage = language.toInt();
@@ -1674,13 +1674,15 @@ QVariantMap SpectreBridge::getNewMnemonic(QString password, QString language)
         if (0 != MnemonicEncode(nLanguage, vEntropy, sMnemonic, sError))
         {
             result.insert("error_msg", strprintf("MnemonicEncode failed %s.", sError.c_str()).c_str());
-            return result;
+            emit getNewMnemonicResult(result);
+            return;
         }
 
         if (0 != MnemonicToSeed(sMnemonic, sPassword, vSeed))
         {
           result.insert("error_msg", "MnemonicToSeed failed.");
-          return result;
+          emit getNewMnemonicResult(result);
+          return;
         }
 
         ekMaster.SetMaster(&vSeed[0], vSeed.size());
@@ -1706,10 +1708,11 @@ QVariantMap SpectreBridge::getNewMnemonic(QString password, QString language)
     result.insert("mnemonic", QString::fromStdString(sMnemonic));
     //result.insert("master", QString::fromStdString(sKey));
 
-    return result;
+    emit getNewMnemonicResult(result);
+    return;
 }
 
-QVariantMap SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, int64_t nCreateTime)
 {
     std::string sPassword = inPassword.toStdString();
     std::string sMnemonic = inMnemonic.toStdString();
@@ -1722,13 +1725,15 @@ QVariantMap SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPass
     if (0 != MnemonicDecode(-1, sMnemonic, vEntropy, sError))
     {
         result.insert("error_msg", QString::fromStdString(strprintf("MnemonicDecode failed %s.", sError.c_str()).c_str() ));
-        return result;
+        emit importFromMnemonicResult(result);
+        return;
     }
 
     if (0 != MnemonicToSeed(sMnemonic, sPassword, vSeed))
     {
         result.insert("error_msg", "MnemonicToSeed failed.");
-        return result;
+        emit importFromMnemonicResult(result);
+        return;
     }
 
     CExtKey ekMaster;
@@ -1738,7 +1743,8 @@ QVariantMap SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPass
     if (!ekMaster.IsValid())
     {
         result.insert("error_msg", "Invalid key.");
-        return result;
+        emit importFromMnemonicResult(result);
+        return;
     }
 
     eKey58.SetKey(ekMaster, CChainParams::EXT_SECRET_KEY);
@@ -1767,8 +1773,9 @@ QVariantMap SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPass
     // - in c++11 strings are definitely contiguous, and before they're very unlikely not to be
     //    OPENSSL_cleanse(&sMnemonic[0], sMnemonic.size());
     //    OPENSSL_cleanse(&sPassword[0], sPassword.size());
-    return result = extKeyImport(QString::fromStdString(eKey58.ToString()), inLabel, fBip44, nCreateTime);
-
+    connect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+    extKeyImport(QString::fromStdString(eKey58.ToString()), inLabel, fBip44, nCreateTime);
+    return;
 }
 
 inline uint32_t reversePlace(uint8_t *p)
@@ -2010,7 +2017,7 @@ public:
     QVariantMap *resultMap;
 };
 
-QVariantMap SpectreBridge::extKeyAccList() {
+void SpectreBridge::extKeyAccList() {
     QVariantMap result;
 
     GUIListExtCallback extKeys(&result, 10 );
@@ -2024,10 +2031,11 @@ QVariantMap SpectreBridge::extKeyAccList() {
 
     addr.GetKeyID(extKeys.idMaster);
 
-    return result;
+    emit extKeyAccListResult(result);
+    return;
 }
 
-QVariantMap SpectreBridge::extKeyList() {
+void SpectreBridge::extKeyList() {
     QVariantMap result;
 
     GUIListExtCallback extKeys(&result, 10 );
@@ -2037,10 +2045,11 @@ QVariantMap SpectreBridge::extKeyList() {
         LoopExtKeysInDB(true, false, extKeys);
     } //cs_wallet
 
-    return result;
+    emit extKeyListResult(result);
+    return;
 }
 
-QVariantMap SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, int64_t nCreateTime)
 {
     QVariantMap result;
     std::string sInKey = inKey.toStdString();
@@ -2057,14 +2066,17 @@ QVariantMap SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBi
          && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
             result.insert("error_msg", "Import failed - Key must begin with Spectrecoin prefix.");
-            return result;
+            emit extKeyImportResult(result);
+            return;
         }
 
         sek.kp = eKey58.GetKey();
     } else
     {
         result.insert("error_msg", "Import failed - Invalid key.");
-        return result;
+        emit extKeyImportResult(result);
+        disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+        return;
     };
 
     {
@@ -2073,19 +2085,25 @@ QVariantMap SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBi
         if (!wdb.TxnBegin())
         {
             result.insert("error_msg", "TxnBegin failed.");
-            return result;
+            emit extKeyImportResult(result);
+            disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+            return;
         }
         int rv;
         if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, false)))
         {
             wdb.TxnAbort();
             result.insert("error_msg", QString("ExtKeyImportLoose failed, %1").arg(ExtKeyGetString(rv)));
-            return result;
+            emit extKeyImportResult(result);
+            disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+            return;
         } else
             if (!wdb.TxnCommit())
             {
                 result.insert("error_msg", "TxnCommit failed.");
-                return result;
+                emit extKeyImportResult(result);
+                disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+                return;
             };
     } // cs_wallet
 
@@ -2116,7 +2134,9 @@ QVariantMap SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBi
             if (!wdb.TxnCommit())
             {
                 result.insert("error_msg", "TxnCommit failed!");
-                return result;
+                emit extKeyImportResult(result);
+                disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+                return;
             };
     } // cs_wallet
 
@@ -2128,10 +2148,12 @@ QVariantMap SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBi
     // If we get here all went well and the message is valid
     result.insert("error_msg", "");
 
-    return result;
+    emit extKeyImportResult(result);
+    disconnect(this, SIGNAL(extKeyImportResult(QVariantMap)), this, SIGNAL(importFromMnemonicResult(QVariantMap)));
+    return;
 }
 
-QVariantMap SpectreBridge::extKeySetDefault(QString extKeyID)
+void SpectreBridge::extKeySetDefault(QString extKeyID)
 {
     QVariantMap result;
 
@@ -2139,7 +2161,8 @@ QVariantMap SpectreBridge::extKeySetDefault(QString extKeyID)
     if (extKeyID.length() == 0)
     {
         result.insert("error_msg", "Must specify ext key or id.");
-        return result;
+        emit extKeySetDefaultResult(result);
+        return;
     };
 
     CKeyID idNewDefault;
@@ -2157,25 +2180,29 @@ QVariantMap SpectreBridge::extKeySetDefault(QString extKeyID)
         if (!wdb.TxnBegin())
         {
             result.insert("error_msg", "TxnBegin failed.");
-            return result;
+            emit extKeySetDefaultResult(result);
+            return;
         }
 
         if (!wdb.ReadExtAccount(idNewDefault, *sea))
         {
             result.insert("error_msg", "Account not in wallet.");
-            return result;
+            emit extKeySetDefaultResult(result);
+            return;
         }
 
         if (!wdb.WriteNamedExtKeyId("defaultAccount", idNewDefault))
         {
             wdb.TxnAbort();
             result.insert("error_msg", "WriteNamedExtKeyId failed.");
-            return result;
+            emit extKeySetDefaultResult(result);
+            return;
         };
         if (!wdb.TxnCommit())
         {
             result.insert("error_msg", "TxnCommit failed.");
-            return result;
+            emit extKeySetDefaultResult(result);
+            return;
         }
 
         pwalletMain->idDefaultAccount = idNewDefault;
@@ -2192,18 +2219,19 @@ QVariantMap SpectreBridge::extKeySetDefault(QString extKeyID)
 
     // If we get here all went well
     result.insert("error_msg", "");
-    return result;
+    emit extKeySetDefaultResult(result);
+    return;
 }
 
-QVariantMap SpectreBridge::extKeySetMaster(QString extKeyID)
+void SpectreBridge::extKeySetMaster(QString extKeyID)
 {
     QVariantMap result;
     std::string sInKey = extKeyID.toStdString();
     if (extKeyID.length() == 0)
     {
         result.insert("error_msg", "Must specify ext key or id.");
-
-        return result;
+        emit extKeySetMasterResult(result);
+        return;
     };
 
     CKeyID idNewMaster;
@@ -2224,7 +2252,8 @@ QVariantMap SpectreBridge::extKeySetMaster(QString extKeyID)
     } else
     {
         result.insert("error_msg", "Invalid key: " + extKeyID);
-        return result;
+        emit extKeySetMasterResult(result);
+        return;
     };
 
     {
@@ -2233,7 +2262,8 @@ QVariantMap SpectreBridge::extKeySetMaster(QString extKeyID)
         if (!wdb.TxnBegin())
         {
             result.insert("error_msg", "TxnBegin failed.");
-            return result;
+            emit extKeySetMasterResult(result);
+            return;
         }
 
         int rv;
@@ -2241,12 +2271,14 @@ QVariantMap SpectreBridge::extKeySetMaster(QString extKeyID)
         {
             wdb.TxnAbort();
             result.insert("error_msg", QString::fromStdString(strprintf("ExtKeySetMaster failed, %s.", ExtKeyGetString(rv))));
-            return result;
+            emit extKeySetMasterResult(result);
+            return;
         };
         if (!wdb.TxnCommit())
         {
             result.insert("error_msg", "TxnCommit failed.");
-            return result;
+            emit extKeySetMasterResult(result);
+            return;
         }
     } // cs_wallet
 
@@ -2254,10 +2286,11 @@ QVariantMap SpectreBridge::extKeySetMaster(QString extKeyID)
     result.insert("error_msg", "");
     result.insert("result", "Success.");
 
-    return result;
+    emit extKeySetMasterResult(result);
+    return;
 }
 
-QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
+void SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
 {
     QVariantMap result;
     std::string sInKey = extKeyID.toStdString();
@@ -2265,7 +2298,8 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
     if (extKeyID.length() == 0)
     {
         result.insert("error_msg", "Must specify ext key or id.");
-        return result;
+        emit extKeySetActiveResult(result);
+        return;
     };
 
 
@@ -2275,7 +2309,8 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
     if (!addr.SetString(sInKey))
     {
         result.insert("error_msg", "Invalid key or account id.");
-        return result;
+        emit extKeySetActiveResult(result);
+        return;
     }
 
     bool fAccount = false;
@@ -2294,7 +2329,8 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
     } else
     {
         result.insert("error_msg", "Invalid key or account id.");
-        return result;
+        emit extKeySetActiveResult(result);
+        return;
     }
 
     CStoredExtKey sek;
@@ -2305,7 +2341,8 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
         if (!wdb.TxnBegin())
         {
             result.insert("error_msg", "TxnBegin failed.");
-            return result;
+            emit extKeySetActiveResult(result);
+            return;
         }
 
 
@@ -2324,13 +2361,15 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
                 {
                     wdb.TxnAbort();
                     result.insert("error_msg", "Write failed.");
-                    return result;
+                    emit extKeySetActiveResult(result);
+                    return;
                 };
             } else
             {
                 wdb.TxnAbort();
                 result.insert("error_msg", "Account not in wallet.");
-                return result;
+                emit extKeySetActiveResult(result);
+                return;
             };
         };
 
@@ -2349,20 +2388,23 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
                 {
                     wdb.TxnAbort();
                     result.insert("error_msg", "Write failed.");
-                    return result;
+                    emit extKeySetActiveResult(result);
+                    return;
                 };
             } else
             {
                 wdb.TxnAbort();
                 result.insert("error_msg", "Account not in wallet.");
-                return result;
+                emit extKeySetActiveResult(result);
+                return;
             };
         };
 
         if (!wdb.TxnCommit())
         {
             result.insert("error_msg", "TxnCommit failed.");
-            return result;
+            emit extKeySetActiveResult(result);
+            return;
         }
 
     } // cs_wallet
@@ -2370,5 +2412,6 @@ QVariantMap SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
     // If we get here all went well
     result.insert("error_msg", "");
     result.insert("result", "Success.");
-    return result;
+    emit extKeySetActiveResult(result);
+    return;
 }

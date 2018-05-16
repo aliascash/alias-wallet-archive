@@ -112,7 +112,7 @@ public:
     /** Get the label belonging to an address */
     Q_INVOKABLE QString getAddressLabel(QString address);
     /** Create a new address or add an existing address to your Address book */
-    Q_INVOKABLE QString newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
+    Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
     Q_INVOKABLE QString lastAddressError();
     /** Get the full transaction details */
     Q_INVOKABLE void transactionDetails(QString txid);
@@ -155,14 +155,14 @@ public:
     Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
     Q_INVOKABLE QVariantMap verifyMessage(QString address, QString message, QString signature);
 
-    Q_INVOKABLE QVariantMap importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
-    Q_INVOKABLE QVariantMap getNewMnemonic(QString password, QString language);
-    Q_INVOKABLE QVariantMap extKeyAccList();
-    Q_INVOKABLE QVariantMap extKeyList();
-    Q_INVOKABLE QVariantMap extKeyImport(QString inKey, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
-    Q_INVOKABLE QVariantMap extKeySetDefault(QString extKeyID);
-    Q_INVOKABLE QVariantMap extKeySetMaster(QString extKeyID);
-    Q_INVOKABLE QVariantMap extKeySetActive(QString extKeySetActive, QString isActive);
+    Q_INVOKABLE void importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
+    Q_INVOKABLE void getNewMnemonic(QString password, QString language);
+    Q_INVOKABLE void extKeyAccList();
+    Q_INVOKABLE void extKeyList();
+    Q_INVOKABLE void extKeyImport(QString inKey, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
+    Q_INVOKABLE void extKeySetDefault(QString extKeyID);
+    Q_INVOKABLE void extKeySetMaster(QString extKeyID);
+    Q_INVOKABLE void extKeySetActive(QString extKeySetActive, QString isActive);
 
     Q_INVOKABLE QString translateHtmlString(QString string);
 
@@ -191,6 +191,19 @@ signals:
     void blockDetailsResult(QVariantMap result);
     void listTransactionsForBlockResult(QVariantMap result);
     void txnDetailsResult(QVariantMap result);
+
+    void newAddressResult(QString result);
+
+
+    void importFromMnemonicResult(QVariantMap result);
+    void getNewMnemonicResult(QVariantMap result);
+    void extKeyAccListResult(QVariantMap result);
+    void extKeyListResult(QVariantMap result);
+    void extKeyImportResult(QVariantMap result);
+    void extKeySetDefaultResult(QVariantMap result);
+    void extKeySetMasterResult(QVariantMap result);
+    void extKeySetActiveResult(QVariantMap result);
+
 
 private:
     SpectreGUI *window;
