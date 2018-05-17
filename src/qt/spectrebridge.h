@@ -110,10 +110,11 @@ public:
     Q_INVOKABLE void paste();
 
     /** Get the label belonging to an address */
-    Q_INVOKABLE QString getAddressLabel(QString address);
+    Q_INVOKABLE void getAddressLabel(QString address);
     /** Create a new address or add an existing address to your Address book */
     Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
-    Q_INVOKABLE QString lastAddressError();
+    Q_INVOKABLE void newAddress_2(QString addressLabel, int addressType, QString address = "", bool send = false);
+    Q_INVOKABLE void lastAddressError();
     /** Get the full transaction details */
     Q_INVOKABLE void transactionDetails(QString txid);
     /** Get the pubkey for an address */
@@ -128,8 +129,8 @@ public:
     Q_INVOKABLE void validateAddress(QString own);
     Q_INVOKABLE bool deleteAddress(QString address);
 
-    Q_INVOKABLE bool deleteMessage(QString key);
-    Q_INVOKABLE bool markMessageAsRead(QString key);
+    Q_INVOKABLE void deleteMessage(QString key);
+    Q_INVOKABLE void markMessageAsRead(QString key);
 
     Q_INVOKABLE void openCoinControl();
 
@@ -193,7 +194,8 @@ signals:
     void txnDetailsResult(QVariantMap result);
 
     void newAddressResult(QString result);
-
+    void newAddress_2Result(QString result);
+    void lastAddressErrorResult(QString result);
 
     void importFromMnemonicResult(QVariantMap result);
     void getNewMnemonicResult(QVariantMap result);
@@ -204,6 +206,7 @@ signals:
     void extKeySetMasterResult(QVariantMap result);
     void extKeySetActiveResult(QVariantMap result);
 
+    void getAddressLabelResult(QString result);
 
 private:
     SpectreGUI *window;

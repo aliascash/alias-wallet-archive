@@ -799,7 +799,17 @@ void SpectreBridge::newAddress(QString addressLabel, int addressType, QString ad
     emit newAddressResult(rv);
 }
 
-QString SpectreBridge::lastAddressError()
+//replica  of the above method for Javascript to diffrentiate when call backs are needed
+void SpectreBridge::newAddress_2(QString addressLabel, int addressType, QString address, bool send)
+{
+    // Generate a new address to associate with given label
+    // NOTE: unlock happens in addRow
+    QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
+    addressModel->populateAddressTable();
+    emit newAddress_2Result(rv);
+}
+
+void SpectreBridge::lastAddressError()
 {
     QString sError;
     AddressTableModel::EditStatus status = addressModel->atm->getEditStatus();
@@ -824,12 +834,17 @@ QString SpectreBridge::lastAddressError()
             break;
     };
 
-    return sError;
+    emit lastAddressErrorResult(sError);
 }
 
-QString SpectreBridge::getAddressLabel(QString address)
+void SpectreBridge::getAddressLabel(QString address)
 {
-    return addressModel->atm->labelForAddress(address);
+    emit getAddressLabelResult(addressModel->atm->labelForAddress(address));
+}
+
+void SpectreBridge::getAddressLabel_2(QString address)
+{
+    emit getAddressLabel_2Result(addressModel->atm->labelForAddress(address));
 }
 
 void SpectreBridge::updateAddressLabel(QString address, QString label)
@@ -893,14 +908,14 @@ void SpectreBridge::insertMessages(const QModelIndex & parent, int start, int en
     }
 }
 
-bool SpectreBridge::deleteMessage(QString key)
+void SpectreBridge::deleteMessage(QString key)
 {
-    return window->messageModel->removeRow(thMessage->mtm->lookupMessage(key));
+    window->messageModel->removeRow(thMessage->mtm->lookupMessage(key));
 }
 
-bool SpectreBridge::markMessageAsRead(QString key)
+void SpectreBridge::markMessageAsRead(QString key)
 {
-    return window->messageModel->markMessageAsRead(key);
+    window->messageModel->markMessageAsRead(key);
 }
 
 QString SpectreBridge::getPubKey(QString address)
@@ -917,7 +932,7 @@ bool SpectreBridge::setPubKey(QString address, QString pubkey)
     return res == 0||res == 4;
 }
 
-bool SpectreBridge::sendMessage(const QString &address, const QString &message, const QString &from)
+void SpectreBridge::sendMessage(const QString &address, const QString &message, const QString &from)
 {
     WalletModel::UnlockContext ctx(window->walletModel->requestUnlock());
 
@@ -933,39 +948,47 @@ bool SpectreBridge::sendMessage(const QString &address, const QString &message, 
         QMessageBox::warning(window, tr("Send Message"),
             tr("The recipient address is not valid, please recheck."),
             QMessageBox::Ok, QMessageBox::Ok);
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::InvalidMessage:
         QMessageBox::warning(window, tr("Send Message"),
             tr("The message can't be empty."),
             QMessageBox::Ok, QMessageBox::Ok);
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::DuplicateAddress:
         QMessageBox::warning(window, tr("Send Message"),
             tr("Duplicate address found, can only send to each address once per send operation."),
             QMessageBox::Ok, QMessageBox::Ok);
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::MessageCreationFailed:
         QMessageBox::warning(window, tr("Send Message"),
             tr("Error: Message creation failed."),
             QMessageBox::Ok, QMessageBox::Ok);
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::MessageCommitFailed:
         QMessageBox::warning(window, tr("Send Message"),
             tr("Error: The message was rejected."),
             QMessageBox::Ok, QMessageBox::Ok);
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::Aborted:             // User aborted, nothing to do
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::FailedErrorShown:    // Send failed, error message was displayed
-        return false;
+        emit sendMessageResult(false);
+        return;
     case MessageModel::OK:
         break;
     }
 
-    return true;
+    emit sendMessageResult(true);
+    return;
 }
 
-QString SpectreBridge::createGroupChat(QString label)
+void SpectreBridge::createGroupChat(QString label)
 {
     //return address to invite to people to.
     LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -985,12 +1008,14 @@ QString SpectreBridge::createGroupChat(QString label)
 
     pwalletMain->SetAddressBookName(addr.Get(), strLabel, NULL, true, true);
 
-    if (!pwalletMain->AddKeyPubKey(secret, pubkey))
-        return "false";
+    if (!pwalletMain->AddKeyPubKey(secret, pubkey)) {
+        emit createGroupChatResult("false");
+        return;
+    }
 
     SecureMsgAddWalletAddresses();
 
-    return QString::fromStdString(strAddress);
+    emit createGroupChatResult(QString::fromStdString(strAddress));
 }
 
 
