@@ -110,7 +110,8 @@ public:
     Q_INVOKABLE void paste();
 
     /** Get the label belonging to an address */
-    Q_INVOKABLE void getAddressLabel(QString address);
+    Q_INVOKABLE QString getAddressLabel(QString address);
+    Q_INVOKABLE void getAddressLabel_2(QString address);
     /** Create a new address or add an existing address to your Address book */
     Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
     Q_INVOKABLE void newAddress_2(QString addressLabel, int addressType, QString address = "", bool send = false);
@@ -137,9 +138,9 @@ public:
     Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
     Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
     Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
-    Q_INVOKABLE bool sendMessage(const QString &address, const QString &message, const QString &from);
+    Q_INVOKABLE void sendMessage(const QString &address, const QString &message, const QString &from);
     Q_INVOKABLE QString joinGroupChat(QString privkey, QString label);
-    Q_INVOKABLE QString createGroupChat(QString label);
+    Q_INVOKABLE void createGroupChat(QString label);
     Q_INVOKABLE QVariantList inviteGroupChat(QString address, QVariantList invites, QString from);
 
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
@@ -207,6 +208,11 @@ signals:
     void extKeySetActiveResult(QVariantMap result);
 
     void getAddressLabelResult(QString result);
+    void getAddressLabel_2Result(QString result);
+
+    void createGroupChatResult(QString result);
+
+    void sendMessageResult(bool result);
 
 private:
     SpectreGUI *window;

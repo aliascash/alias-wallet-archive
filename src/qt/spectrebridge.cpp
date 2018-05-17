@@ -837,9 +837,11 @@ void SpectreBridge::lastAddressError()
     emit lastAddressErrorResult(sError);
 }
 
-void SpectreBridge::getAddressLabel(QString address)
+QString SpectreBridge::getAddressLabel(QString address)
 {
-    emit getAddressLabelResult(addressModel->atm->labelForAddress(address));
+    QString result = addressModel->atm->labelForAddress(address);
+    emit getAddressLabelResult(result);
+    return result;
 }
 
 void SpectreBridge::getAddressLabel_2(QString address)
@@ -937,8 +939,10 @@ void SpectreBridge::sendMessage(const QString &address, const QString &message, 
     WalletModel::UnlockContext ctx(window->walletModel->requestUnlock());
 
     // Unlock wallet was cancelled
-    if(!ctx.isValid())
-        return false;
+    if(!ctx.isValid()) {
+        emit sendMessageResult(false);
+        return;
+    }
 
     MessageModel::StatusCode sendstatus = thMessage->mtm->sendMessage(address, message, from);
 
