@@ -12,6 +12,12 @@ Here is the components from Qt SDK that we really need to compile our applicatio
 
 ![alt text](https://github.com/spectrecoin/spectre/raw/master/doc/Qt%20windows.png)
 
+Once you install Visual studio. Go to Windows start menu and find "Visual studio installer"
+
+Modify visual studio and make sure all those components are picked.
+
+![alt text](https://github.com/spectrecoin/spectre/raw/master/doc/Visual%20studio%20installer%20components.png)
+
 
 
 Easy (Prebuilt libs)
