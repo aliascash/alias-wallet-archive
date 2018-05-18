@@ -49,7 +49,7 @@ AC_CHECK_LIB([snappy], [main], , [AC_MSG_NOTICE([snappy not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found])])
 AC_LANG_CPLUSPLUS
 # TODO investigate whether earlier Boost versions will still work.
-BOOST_REQUIRE([1.58])
+BOOST_REQUIRE([1.62])
 BOOST_SYSTEM([mt])
 BOOST_CHRONO([mt])
 BOOST_FILESYSTEM([mt])
@@ -71,9 +71,9 @@ if test "x$enable_gui" = "xyes" ; then
       MACDEPLOYQT="$with_qt5/bin/macdeployqt"
       AC_SUBST([MACDEPLOYQT])
     else
-      QT5_CFLAGS="-I$with_qt5/include"
+      QT5_CFLAGS="-I$with_qt5/include -I$with_qt5/include/QtGui -I$with_qt5/include/QtWidgets -I$with_qt5/include/QtWebEngineWidgets -I$with_qt5/include/QtCore -I$with_qt5/include/QtWebChannel -I$with_qt5/include/QtNetwork"
       QT5_LDFLAGS="-L$with_qt5/lib"
-      QT5_LIBS="-lQtCore -lQtGui -lQtWidgets -lQtNetwork -lQtWebEngineWidgets -lQtWebChannel"
+      QT5_LIBS="-lQt5Core -lQt5Gui -lQt5Widgets -lQt5Network -lQt5WebEngineWidgets -lQt5WebChannel"
     fi
     AC_SUBST([QT5_CFLAGS])
     AC_SUBST([QT5_LDFLAGS])
@@ -95,54 +95,6 @@ if test "x$enable_gui" = "xyes" ; then
     ])
   ])
   MACDEPLOYQT_LIBPATH=""
-  AC_ARG_WITH([qt5webengine], [AS_HELP_STRING([--with-qt5webengine], [Manually specify the path to a stand-alone Qt5WebEngine installation (pkg-config will be used if not set). This has no effect if --enable-gui is not also specified.])], [
-    if test "x$build_mac" = "xyes" ; then
-      QT5WEBENGINE_LIBDIR="$with_qt5webengine/lib"
-      MACOS_RPATH="$MACOS_RPATH -Wl,-rpath,$QT5WEBENGINE_LIBDIR"
-      QT5WEBENGINE_LDFLAGS="-F$QT5WEBENGINE_LIBDIR"
-      QT5WEBENGINE_CFLAGS="$QT5WEBENGINE_LDFLAGS -I$QT5WEBENGINE_LIBDIR/QtWebEngine.framework/Headers -I$QT5WEBENGINE_LIBDIR/QtWebEngineWidgets.framework/Headers"
-      QT5WEBENGINE_LIBS="-framework QtWebEngine -framework QtWebEngineWidgets"
-      MACDEPLOYQT_LIBPATH="-libpath=$QT5WEBENGINE_LIBDIR"  # this seems to be ignored - file a bug with Qt
-    else
-      QT5WEBENGINE_CFLAGS="-I$with_qt5webengine/include"
-      QT5WEBENGINE_LDFLAGS="-L$with_qt5webengine/lib"
-      QT5WEBENGINE_LIBS="-lQtWebEngine -lQtWebEngineWidgets"
-    fi
-    AC_SUBST([QT5WEBENGINE_CFLAGS])
-    AC_SUBST([QT5WEBENGINE_LDFLAGS])
-    AC_SUBST([QT5WEBENGINE_LIBS])
-    AC_MSG_NOTICE([Using Qt5WebEngine at $with_qt5webengine])
-  ], [
-    PKG_CHECK_MODULES(QT5WEBENGINE, [Qt5WebEngine Qt5WebEngineWidgets], [AC_MSG_NOTICE([Found Qt5WebEngine using pkg-config.])], [
-      PKG_CHECK_MODULES(QT5WEBENGINE, [QtWebEngine >= 5 QtWebEngineWidgets >= 5], [AC_MSG_NOTICE([Found QtWebEngine >= 5 using pkg-config.])], [
-        AC_MSG_ERROR([Qt5WebEngine not found.])
-      ])
-    ])
-  ])
-  AC_ARG_WITH([qt5webenginewidgets], [AS_HELP_STRING([--with-qt5webenginewidgets], [Manually specify the path to a stand-alone Qt5WebEngineWidgets installation (pkg-config will be used if not set). This has no effect if --enable-gui is not also specified.])], [
-    if test "x$build_mac" = "xyes" ; then
-      QT5WEBENGINEWIDGETS_LIBDIR="$with_qt5webenginewidgets/lib"
-      MACOS_RPATH="$MACOS_RPATH -Wl,-rpath,$QT5WEBENGINEWIDGETS_LIBDIR"
-      QT5WEBENGINEWIDGETS_LDFLAGS="-F$QT5WEBENGINEWIDGETS_LIBDIR"
-      QT5WEBENGINEWIDGETS_CFLAGS="$QT5WEBENGINEWIDGETS_LDFLAGS -I$QT5WEBENGINEWIDGETS_LIBDIR/QtWebEngineWidgets.framework/Headers -I$QT5WEBENGINEWIDGETS_LIBDIR/QtWebEngineWidgets.framework/Headers"
-      QT5WEBENGINEWIDGETS_LIBS="-framework QtWebEngineWidgets -framework QtWebEngineWidgets"
-      MACDEPLOYQT_LIBPATH="-libpath=$QT5WEBENGINEWIDGETS_LIBDIR"  # this seems to be ignored - file a bug with Qt
-    else
-      QT5WEBENGINEWIDGETS_CFLAGS="-I$with_qt5webenginewidgets/include"
-      QT5WEBENGINEWIDGETS_LDFLAGS="-L$with_qt5webenginewidgets/lib"
-      QT5WEBENGINEWIDGETS_LIBS="-lQtWebEngineWidgets -lQtWebEngineWidgets"
-    fi
-    AC_SUBST([QT5WEBENGINEWIDGETS_CFLAGS])
-    AC_SUBST([QT5WEBENGINEWIDGETS_LDFLAGS])
-    AC_SUBST([QT5WEBENGINEWIDGETS_LIBS])
-    AC_MSG_NOTICE([Using Qt5WebEngineWidgets at $with_qt5webenginewidgets])
-  ], [
-    PKG_CHECK_MODULES(QT5WEBENGINEWIDGETS, [Qt5WebEngineWidgets Qt5WebEngineWidgets], [AC_MSG_NOTICE([Found Qt5WebEngineWidgets using pkg-config.])], [
-      PKG_CHECK_MODULES(QT5WEBENGINEWIDGETS, [QtWebEngineWidgets >= 5 QtWebEngineWidgets >= 5], [AC_MSG_NOTICE([Found QtWebEngineWidgets >= 5 using pkg-config.])], [
-        AC_MSG_ERROR([Qt5WebEngineWidgets not found.])
-      ])
-    ])
-  ])
   AC_SUBST([MACDEPLOYQT_LIBPATH])
   notbeginswith() { case $2 in "$1"*) true;; *) false;; esac; }
   if test "x$MOC" = "x" ; then
