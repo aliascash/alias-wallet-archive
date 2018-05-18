@@ -49,7 +49,7 @@ AC_CHECK_LIB([snappy], [main], , [AC_MSG_NOTICE([snappy not found])])
 AC_CHECK_LIB([pthread], [pthread_self], , [AC_MSG_ERROR([libpthread not found])])
 AC_LANG_CPLUSPLUS
 # TODO investigate whether earlier Boost versions will still work.
-BOOST_REQUIRE([1.58])
+BOOST_REQUIRE([1.62])
 BOOST_SYSTEM([mt])
 BOOST_CHRONO([mt])
 BOOST_FILESYSTEM([mt])
