@@ -51,7 +51,7 @@ Additionally, you'll need a C/C++ compiler and the basic dependencies needed for
 
 To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
-    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config
+    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config autoconf
     # the following commands should only be run if building the GUI wallet
     apt install qtbase5-dev qttools5-dev-tools qtchooser
 
