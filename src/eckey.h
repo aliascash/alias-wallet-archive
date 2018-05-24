@@ -13,6 +13,8 @@
 #include <openssl/obj_mac.h>
 
 #include "key.h"
+#include "util.h"
+#include <stdlib.h> 
 
 // RAII Wrapper around OpenSSL's EC_KEY
 class CECKey {
@@ -22,6 +24,10 @@ private:
 public:
     CECKey() {
         pkey = EC_KEY_new_by_curve_name(NID_secp256k1);
+		if (!EC_KEY_generate_key(pkey)) {
+			LogPrintf("EC_KEY_GENERATE_KEY FAIL");
+			exit(EXIT_FAILURE);
+		}
         assert(pkey != NULL);
     }
 
