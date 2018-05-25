@@ -49,6 +49,10 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
+**Windows**
+
+    To compile for windows we have a new docs for that. Head to https://github.com/spectrecoin/spectre/blob/master/doc/Windows-build-instructions-README.md
+
 To build a GUI wallet for **All platforms (Ignore if you just want to build a CLI/Non GUI version of the wallet)**:
 
     If you are trying to compile the GUI wallet. Install Qt from https://www.qt.io/download-qt-installer and write down the installation path to use in the below ./configure command. Make sure to pick QtWebEngine as well when installing Qt
