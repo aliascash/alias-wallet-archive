@@ -49,13 +49,13 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
 
+To build a GUI wallet for **All platforms (Ignore if you just want to build a CLI/Non GUI version of the wallet)**:
+
+    If you are trying to compile the GUI wallet. Install Qt from https://www.qt.io/download-qt-installer and write down the installation path to use in the below ./configure command. Make sure to pick QtWebEngine as well when installing Qt
+
 To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
     apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf libtool
-
-To build a GUI wallet for **Debian/Ubuntu/Mint/etc**:
-
-    Work in progress
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
@@ -83,8 +83,6 @@ For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the reposi
 
 Building
 --------
-
-If you are trying to install the GUI wallet. Install Qt from https://www.qt.io/download-qt-installer and write down the installation path to use in the below ./configure command. Make sure to pick QtWebEngine as well when installing Qt
 
 To fetch the source code and build the wallet run the following commands:
 
