@@ -90,7 +90,6 @@ To fetch the source code and build the wallet run the following commands:
     cd spectre
     ./install_boost_1_67  # only necessary on Debian/Ubuntu/Mint/etc. If you have installed Boost 1_67 before, you may ignore this command for now
     ./autogen.sh
-    autoreconf -f -i
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
 
