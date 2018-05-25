@@ -51,9 +51,11 @@ Additionally, you'll need a C/C++ compiler and the basic dependencies needed for
 
 To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
-    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev libboost-all-dev pkg-config autoconf
-    # the following commands should only be run if building the GUI wallet
-    apt install qtbase5-dev qttools5-dev-tools qtchooser
+    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf
+
+To build a GUI wallet for **Debian/Ubuntu/Mint/etc**:
+
+    Work in progress
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
@@ -87,7 +89,7 @@ To fetch the source code and build the wallet run the following commands:
     git clone --recursive https://github.com/spectrecoin/spectre
     cd spectre
     ./autogen.sh
-    export QT_SELECT=qt5  # only necessary on Debian/Ubuntu/Mint/etc
+    ./install_boost_1_67  # only necessary on Debian/Ubuntu/Mint/etc. If you have installed Boost 1_67 before, you may ignore this command for now
     autoreconf -f -i
     ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
     make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
