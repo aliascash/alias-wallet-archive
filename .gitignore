@@ -89,3 +89,9 @@ packages64bit_static/
 doc/Windows build instructions.docx
 doc/Windows build instructions.pdf
 doc/~$ndows build instructions.docx
+
+openssl-1\.1\.0h\.tar\.gz
+
+boost_1_67_0\.tar\.gz
+
+Makefile\.am\.user
