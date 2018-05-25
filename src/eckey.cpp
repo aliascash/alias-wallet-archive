@@ -168,18 +168,12 @@ bool CECKey::SetPrivKey(const CPrivKey &privkey, bool fSkipCheck) {
     return false;
 }
 
-#include <QDebug>
-
 void CECKey::GetPubKey(CPubKey &pubkey, bool fCompressed) {
     EC_KEY_set_conv_form(pkey, fCompressed ? POINT_CONVERSION_COMPRESSED : POINT_CONVERSION_UNCOMPRESSED);
     int nSize = i2o_ECPublicKey(pkey, NULL);
-    qDebug() << "nSize: " << nSize;
     assert(nSize);
     assert(nSize <= 65);
     unsigned char c[65];
-    for (int i = 0; i < 65; i++) {
-        qDebug() << "c" << i << ":" << c[i];
-    }
     unsigned char *pbegin = c;
     int nSize2 = i2o_ECPublicKey(pkey, &pbegin);
     assert(nSize == nSize2);
