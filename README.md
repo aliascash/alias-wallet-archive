@@ -84,13 +84,15 @@ For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the reposi
 Building
 --------
 
+If you are trying to install the GUI wallet. Install Qt from https://www.qt.io/download-qt-installer and write down the installation path to use in the below ./configure command. Make sure to pick QtWebEngine as well when installing Qt
+
 To fetch the source code and build the wallet run the following commands:
 
     git clone --recursive https://github.com/spectrecoin/spectre
     cd spectre
     ./install_boost_1_67  # only necessary on Debian/Ubuntu/Mint/etc. If you have installed Boost 1_67 before, you may ignore this command for now
     ./autogen.sh
-    ./configure --enable-gui  # leave out --enable-gui to build only the console wallet
+    ./configure --enable-gui --with-qt5=/path/to/qt/version/compiler  # leave out --enable-gui to build only the console wallet
     make -j2  # use a higher number if you have many cores and memory, leave -j2 out if you are on a very low-powered system like Raspberry Pi
 
 The resulting binaries will be in the `src` directory and called `spectre` for the GUI wallet and `spectrecoind` for the console wallet.
