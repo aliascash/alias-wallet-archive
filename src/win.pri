@@ -12,8 +12,8 @@ QMAKE_LFLAGS += -static
 QMAKE_CXXFLAGS += /MT
 QMAKE_CFLAGS += -O2 -MT
 QMAKE_CXXFLAGS += -O2 -MT
-RC_ICONS = $$PWD/../spectre.icns
 
+DEFINES -= NDEBUG
 
 
 CONFIG(release, debug|release) {

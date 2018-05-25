@@ -23,13 +23,8 @@ private:
 
 public:
     CECKey() {
+        //PKEY will crash if NDEBUG is enabled. Make sure the calls to "asserts" are turned on"
         pkey = EC_KEY_new_by_curve_name(NID_secp256k1);
-#ifdef _MSC_VER
-		if (!EC_KEY_generate_key(pkey)) {
-			LogPrintf("EC_KEY_GENERATE_KEY FAIL");
-			exit(EXIT_FAILURE);
-		}
-#endif
         assert(pkey != NULL);
     }
 
