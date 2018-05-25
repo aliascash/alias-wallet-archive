@@ -7,6 +7,7 @@ DEFINES += DEBUGGER_CONNECTED
 
 QT += testlib webenginewidgets webchannel
 
+
 CONFIG(release, debug|release) {
     message( "release" )
     DESTDIR = $$PWD/bin

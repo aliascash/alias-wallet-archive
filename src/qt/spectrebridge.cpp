@@ -1023,7 +1023,7 @@ void SpectreBridge::createGroupChat(QString label)
 }
 
 
-QString SpectreBridge::joinGroupChat(QString privkey, QString label)
+void SpectreBridge::joinGroupChat(QString privkey, QString label)
 {
     /*
     EXPERIMENTAL CODE, UNTESTED.
@@ -1035,8 +1035,14 @@ QString SpectreBridge::joinGroupChat(QString privkey, QString label)
     CBitcoinSecret vchSecret;
     bool fGood = vchSecret.SetString(strSecret);
 
-    if (!fGood) return "false"; //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
-    if (fWalletUnlockStakingOnly) return "false"; //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
+    if (!fGood) {
+        emit joinGroupChatResult("false");
+        return;
+    } //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
+    if (fWalletUnlockStakingOnly) {
+        emit joinGroupChatResult("false");
+        return;
+    } //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
 
     CKey key = vchSecret.GetKey();
     CPubKey pubkey = key.GetPubKey();
@@ -1048,13 +1054,17 @@ QString SpectreBridge::joinGroupChat(QString privkey, QString label)
         pwalletMain->SetAddressBookName(vchAddress, strLabel);
 
         // Don't throw error in case a key is already there
-        if (pwalletMain->HaveKey(vchAddress))
-            return "false";
+        if (pwalletMain->HaveKey(vchAddress)) {
+            emit joinGroupChatResult("false");
+            return;
+        }
 
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
 
-        if (!pwalletMain->AddKeyPubKey(key, pubkey))
-            return "false";
+        if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
+            emit joinGroupChatResult("false");
+            return;
+        }
             //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
 
         // whenever a key is imported, we need to scan the whole chain
@@ -1065,7 +1075,8 @@ QString SpectreBridge::joinGroupChat(QString privkey, QString label)
     SecureMsgAddWalletAddresses();
     //TODO: return address and appendAddress with javascript
     CBitcoinAddress addr(vchAddress);
-    return QString::fromStdString(addr.ToString());
+    emit joinGroupChatResult(QString::fromStdString(addr.ToString()));
+    return;
 }
 
 

@@ -139,7 +139,7 @@ public:
     Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
     Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
     Q_INVOKABLE void sendMessage(const QString &address, const QString &message, const QString &from);
-    Q_INVOKABLE QString joinGroupChat(QString privkey, QString label);
+    Q_INVOKABLE void joinGroupChat(QString privkey, QString label);
     Q_INVOKABLE void createGroupChat(QString label);
     Q_INVOKABLE QVariantList inviteGroupChat(QString address, QVariantList invites, QString from);
 
@@ -213,6 +213,9 @@ signals:
     void createGroupChatResult(QString result);
 
     void sendMessageResult(bool result);
+
+    void joinGroupChatResult(QString result);
+
 
 private:
     SpectreGUI *window;

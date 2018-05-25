@@ -1909,7 +1909,11 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
             vchData.reserve(4 + nBuckets*16); // timestamp + size + hash
 
             uint32_t nBucketsShown = 0;
+#if _MSC_VER
+            vchData.resize(5);
+#else
             vchData.resize(4);
+#endif
             uint8_t* p = &vchData[4];
 
 
