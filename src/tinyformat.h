@@ -118,6 +118,7 @@ namespace tfm = tinyformat;
 
 //------------------------------------------------------------------------------
 // Implementation details.
+#undef NDEBUG
 #include <cassert>
 #include <iostream>
 #include <sstream>

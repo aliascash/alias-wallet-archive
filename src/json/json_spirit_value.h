@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#undef NDEBUG
 #include <cassert>
 #include <sstream>
 #include <stdexcept>

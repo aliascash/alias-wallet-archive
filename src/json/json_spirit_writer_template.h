@@ -8,6 +8,7 @@
 
 #include "json_spirit_value.h"
 
+#undef NDEBUG
 #include <cassert>
 #include <sstream>
 #include <iomanip>

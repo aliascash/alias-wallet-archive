@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#undef NDEBUG
 #include <cassert>
 #include <limits>
 #include <stdint.h>
