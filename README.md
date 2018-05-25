@@ -51,7 +51,7 @@ Additionally, you'll need a C/C++ compiler and the basic dependencies needed for
 
 To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
-    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf
+    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf libtool
 
 To build a GUI wallet for **Debian/Ubuntu/Mint/etc**:
 
