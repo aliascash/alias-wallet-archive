@@ -286,12 +286,14 @@ function clearRecvAddress() {
   $("#new-addresstype").val(1);
 }
 function addAddress() {
+    console.log('addAddress');
   var throughArgs = $("#new-addresstype").val();
   var r20 = "4" == throughArgs ? "group_" + $("#new-address-label").val() : $("#new-address-label").val();
-  newAdd = bridge.newAddress(r20, throughArgs);
+  newAdd = bridge.newAddress(r20, throughArgs, '', false);
 }
 
 function newAddressResult(result) {
+    console.log('newAddressResult');
     newAdd = result;
     $("#add-address-modal").modal("hide");
 }
@@ -303,20 +305,22 @@ function clearSendAddress() {
   $("#new-send-address").removeClass("inputError");
 }
 function addSendAddress() {
-  var name;
-  var udataCur;
-  var g;
-  var data;
+    var udataCur;
     bridge.getAddressLabel(udataCur);
 }
 function getAddressLabelResult(result) {
+    console.log("getAddressLabelResult");
+    var udataCur = result;
+    var name;
+    var g;
+    var data;
     if (name = $("#new-send-label").val(), udataCur = $("#new-send-address").val(), g = result, "" !== g) {
       return $("#new-send-address-error").text('Error: address already in addressbook under "' + g + '"'), void $("#new-send-address").addClass("inputError");
     }
     var camelKey = 0;
     bridge.newAddress_2(name, camelKey, udataCur, true);
 }
-function newAddress_2Result() {
+function newAddress_2Result(result) {
     if (data = result, "" === data) {
       bridge.lastAddressError();
     } else {
