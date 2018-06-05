@@ -25,7 +25,7 @@ Easy (Prebuilt libs)
 
 Since quit many of our users found it hard to compile. Especially on Windows. We are adding an easy way and provided prebuilt package for all the libraries required to compile Spectre wallet. Go ahead and download all the libraries from the following link:
 
-https://drive.google.com/file/d/1uH7D3eZHJ3nA73rsNFBYgdaCLtcbKDly/view?usp=sharing
+https://github.com/spectrecoin/spectre/releases/download/v1.4.0-alpha/Prebuild.Spectre.libraries.zip
 
 Clone Spectre source. You can simply download a “Zip” from github.
 
