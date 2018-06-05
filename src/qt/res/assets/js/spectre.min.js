@@ -321,6 +321,7 @@ function getAddressLabelResult(result) {
     bridge.newAddress_2(name, camelKey, udataCur, true);
 }
 function newAddress_2Result(result) {
+    var udataCur = result;
     if (data = result, "" === data) {
       bridge.lastAddressError();
     } else {
