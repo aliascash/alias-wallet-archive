@@ -40,6 +40,7 @@
 #include <QClipboard>
 #include <QMessageBox>
 #include <QSortFilterProxyModel>
+#include <QJsonObject>
 
 #include <QVariantList>
 #include <QVariantMap>
@@ -1176,11 +1177,17 @@ QString SpectreBridge::translateHtmlString(QString string)
     return string;
 }
 
+void SpectreBridge::getOptions()
+{
+    emit getOptionResult(info->value("options"));
+}
+
 QJsonValue SpectreBridge::userAction(QJsonValue action)
 {
-    QJsonArray array;
-
     QString key = action.toArray().at(0).toString();
+    if (key == "") {
+        key = action.toObject().keys().at(0);
+    }
 
     if(key == "backupWallet")
         window->backupWallet();
@@ -1202,18 +1209,24 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         window->rpcConsole->show();
     if(key == "clearRecipients")
         clearRecipients();
-    //TODO: Port this part of the code to the new json based system
-//    if(key == "optionsChanged")
-//    {
-//        OptionsModel * optionsModel(window->clientModel->getOptionsModel());
-//        QVariantMap value(it.value().toMap());
 
-//        for(int option = 0;option < optionsModel->rowCount(); option++)
-//            if(value.contains(optionsModel->optionIDName(option)))
-//                optionsModel->setData(optionsModel->index(option), value.value(optionsModel->optionIDName(option)));
+    if(key == "optionsChanged")
+    {
+        OptionsModel * optionsModel(window->clientModel->getOptionsModel());
 
-//        populateOptions();
-//    }
+        QJsonObject object = action.toObject().value("optionsChanged").toObject();
+
+        for(int option = 0;option < optionsModel->rowCount(); option++) {
+            if(object.contains(optionsModel->optionIDName(option))) {
+                optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
+            }
+        }
+
+        populateOptions();
+
+        //update options in javascript
+        getOptions();
+    }
 
     return QJsonValue();
 }

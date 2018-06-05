@@ -167,6 +167,7 @@ public:
     Q_INVOKABLE void extKeySetActive(QString extKeySetActive, QString isActive);
 
     Q_INVOKABLE QString translateHtmlString(QString string);
+    Q_INVOKABLE void getOptions();
 
 signals:
     void emitPaste(QString text);
@@ -215,7 +216,7 @@ signals:
     void sendMessageResult(bool result);
 
     void joinGroupChatResult(QString result);
-
+    void getOptionResult(QVariant result);
 
 private:
     SpectreGUI *window;
