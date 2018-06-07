@@ -219,6 +219,8 @@ signals:
     void joinGroupChatResult(QString result);
     void getOptionResult(QVariant result);
 
+    void listAnonOutputsResult(QVariantMap result);
+
 private:
     SpectreGUI *window;
     TransactionModel *transactionModel;

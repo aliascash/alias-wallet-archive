@@ -697,6 +697,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
      || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, true)  != 0)
     {
         LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
+        emit listAnonOutputsResult(anonOutputs);
         return anonOutputs;
     };
 
@@ -706,6 +707,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
     if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, true) != 0)
     {
         LogPrintf("Error: CountAnonOutputs failed.\n");
+        emit listAnonOutputsResult(anonOutputs);
         return anonOutputs;
     };
 
@@ -727,6 +729,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
         anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
     };
 
+    emit listAnonOutputsResult(anonOutputs);
     return anonOutputs;
 };
 

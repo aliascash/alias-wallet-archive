@@ -102,6 +102,7 @@ function connectSignals() {
   blockExplorerPage.connectSignals();
   walletManagementPage.connectSignals();
   optionsPage.connectSignals();
+  chainDataPage.connectSignals();
 
 
   bridge.validateAddressResult.connect(validateAddressResult);
@@ -1897,6 +1898,10 @@ var messagesScroller;
 
 var chainDataPage = {
   anonOutputs : {},
+    connectSignals: function() {
+        console.log("chainDataPage.connectSignals");
+        bridge.listAnonOutputsResult.connect(this.listAnonOutputsResult);
+    },
   init : function() {
     $("#show-own-outputs,#show-all-outputs").on("click", function(ev) {
       $(ev.target).hide().siblings("a").show();
@@ -1913,15 +1918,17 @@ var chainDataPage = {
     });
   },
   updateAnonOutputs : function() {
-      //TODO: SIGNAL bridge
-    chainDataPage.anonOutputs = bridge.listAnonOutputs();
-    var tagList = $("#chaindata .footable tbody");
-    tagList.html("");
-    for (value in chainDataPage.anonOutputs) {
-      var state = chainDataPage.anonOutputs[value];
-      tagList.append("<tr>                    <td data-value=" + value + ">" + state.value_s + "</td>                    <td>" + state.owned_outputs + (state.owned_outputs == state.owned_mature ? "" : " (<b>" + state.owned_mature + "</b>)") + "</td>                    <td>" + state.system_outputs + " (" + state.system_mature + ")</td>                    <td>" + state.system_spends + "</td>                    <td>" + state.least_depth + "</td>                </tr>");
-    }
-    $("#chaindata .footable").trigger("footable_initialize");
+      bridge.listAnonOutputs();
+  },
+  listAnonOutputsResult : function(result) {
+      chainDataPage.anonOutputs = result;
+      var tagList = $("#chaindata .footable tbody");
+      tagList.html("");
+      for (value in chainDataPage.anonOutputs) {
+        var state = chainDataPage.anonOutputs[value];
+        tagList.append("<tr>                    <td data-value=" + value + ">" + state.value_s + "</td>                    <td>" + state.owned_outputs + (state.owned_outputs == state.owned_mature ? "" : " (<b>" + state.owned_mature + "</b>)") + "</td>                    <td>" + state.system_outputs + " (" + state.system_mature + ")</td>                    <td>" + state.system_spends + "</td>                    <td>" + state.least_depth + "</td>                </tr>");
+      }
+      $("#chaindata .footable").trigger("footable_initialize");
   }
 };
 var blockExplorerPage = {
