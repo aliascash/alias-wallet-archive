@@ -97,6 +97,7 @@ function connectSignals() {
   bridge.lastAddressErrorResult.connect(lastAddressErrorResult);
   bridge.createGroupChatResult.connect(createGroupChatResult);
   bridge.getAddressLabel_2Result.connect(getAddressLabel_2Result);
+  bridge.getAddressLabelToSendBalanceResult.connect(getAddressLabelToSendBalanceResult);
 
   blockExplorerPage.connectSignals();
   walletManagementPage.connectSignals();
@@ -307,6 +308,9 @@ function clearSendAddress() {
 function addSendAddress() {
     var udataCur;
     bridge.getAddressLabel(udataCur);
+}
+function getAddressLabelToSendBalanceResult(result) {
+    $("#recipient1 .pay_to_label").val(result)
 }
 function getAddressLabelResult(result) {
     console.log("getAddressLabelResult");
