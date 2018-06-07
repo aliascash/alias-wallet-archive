@@ -391,6 +391,7 @@ void SpectreBridge::populateOptions()
     }
 
     options.insert("optLanguage", languages);
+    options.insert("Fee", ((double)options.value("Fee").toLongLong()) / 100000000 );
 
     info->insert("options", options);
 }
@@ -1192,6 +1193,8 @@ void SpectreBridge::getOptions()
 
 QJsonValue SpectreBridge::userAction(QJsonValue action)
 {
+    qDebug() << "SpectreBridge::userAction action";
+    qDebug() << action;
     QString key = action.toArray().at(0).toString();
     if (key == "") {
         key = action.toObject().keys().at(0);
@@ -1222,11 +1225,27 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
     {
         OptionsModel * optionsModel(window->clientModel->getOptionsModel());
 
+        qDebug() << "Options";
+        qDebug() << getInfo()["options"];
+
         QJsonObject object = action.toObject().value("optionsChanged").toObject();
 
         for(int option = 0;option < optionsModel->rowCount(); option++) {
             if(object.contains(optionsModel->optionIDName(option))) {
-                optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
+                qDebug() << "value of the option as a variant " << object.value(optionsModel->optionIDName(option)).toVariant();
+                if (optionsModel->optionIDName(option) == "Fee") {
+                    //smallest number is 0.00000001
+                    //convert to long before saving it
+                    QString feeAsString = object.value(optionsModel->optionIDName(option)).toString();
+                    QVariant longFee;
+                    longFee.setValue((qlonglong)(feeAsString.toDouble() * 100000000));
+                    qDebug() << "Fee as string is " << feeAsString;
+                    qDebug() << "Fee as long is " << longFee.toLongLong();
+                    qDebug() << "QVariant longFee is " << longFee;
+                    optionsModel->setData(optionsModel->index(option), longFee);
+                } else {
+                    optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
+                }
             }
         }
 

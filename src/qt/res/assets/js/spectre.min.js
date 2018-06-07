@@ -1747,7 +1747,6 @@ var optionsPage = {
       bridge.getOptions();
   },
   save : function() {
-      //TODO: SIGNAL bridge
     var o = bridge.info.options;
     var cache = {};
     var prop;
