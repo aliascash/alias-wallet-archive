@@ -88,7 +88,7 @@ if test "x$enable_gui" = "xyes" ; then
     AC_SUBST([LRELEASE])
     AC_MSG_NOTICE([Using Qt5 at $with_qt5])
   ], [
-    PKG_CHECK_MODULES(QT5, [Qt5Core Qt5Gui Qt5Widgets Qt5Network], [AC_MSG_NOTICE([Found Qt5 using pkg-config.])], [
+    PKG_CHECK_MODULES(QT5, [Qt5Core Qt5Gui Qt5Widgets Qt5Network Qt5WebEngineWidgets Qt5WebChannel], [AC_MSG_NOTICE([Found Qt5 using pkg-config.])], [
       PKG_CHECK_MODULES(QT5, [QtCore >= 5 QtGui >= 5 QtWidgets >= 5 QtNetwork >= 5 QtWebEngineWidgets >= 5 QtWebChannel >= 5], [AC_MSG_NOTICE([Found Qt >= 5 using pkg-config.])], [
         AC_MSG_ERROR([Qt5 not found.])
       ])
