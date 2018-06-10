@@ -13,13 +13,10 @@ Social
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
 ### Key Privacy Technology
-<table>
-<tr><td>Zerocoin Protocol</td><td>Provides the ability to generate ‘anonymous tokens’ (SPECTRE) by burning coins and hence eliminate any transaction history. SPECTRE can then be sent anonymously.</td></tr>
-<tr><td>Cryptonote Protocol</td><td>Provides dual-key stealth addresses and ring signatures to further anonymise the transactions conducted with SPECTRE.</td></tr>
-<tr><td>Built in Tor</td><td>Full integration of Tor ([The Tor Project](https://www.torproject.org/)) so that the whole network runs as hidden services only. There are no exit nodes and your identity is protected at all times.</td></tr>
-</table>
 
+Anonymous token creation: Through the use of dual key stealth technology Spectre provides the ability to generate ‘anonymous tokens’ (SPECTRE) by consuming XSPEC. SPECTRE can then be sent anonymously through an implementation of ring signatures based on the Cryptonote protocol to eliminate any transaction history. The wallet offers the opportunity to transfer your balance between public coins, XSPEC, and ‘anonymous tokens’, SPECTRE. We are currently working on improving this technology to improve functionality and privacy.
 
+Built in Tor: The Spectre software offers a full integration of Tor (https://www.torproject.org/) so that the Spectre client runs as a Tor hidden service using a .onion address to connect to other clients in the network. Your real IP address is therefore protected at all times.
 
 ### Basic Coin Specs
 <table>
