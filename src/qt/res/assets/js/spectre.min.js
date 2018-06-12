@@ -1658,7 +1658,6 @@ var overviewPage = {
   },
   clientInfo : function() {
     $("#version").text(bridge.info.build.replace(/\-[\w\d]*$/, ""));
-      //TODO: SIGNAL bridge
     $("#clientinfo").attr("data-title", "Build Desc: " + bridge.info.build + "\nBuild Date: " + bridge.info.date).tooltip();
   },
   encryptionStatusChanged : function(dataAndEvents) {

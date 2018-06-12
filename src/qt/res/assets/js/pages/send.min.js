@@ -88,72 +88,6 @@ $(function() {
         $("#tooltip").remove();
       }
     }
-    function handler() {
-      function round(method, expectedNumberOfNonCommentArgs) {
-        if (!(void 0 != expectedNumberOfNonCommentArgs && $.isNumeric(expectedNumberOfNonCommentArgs))) {
-          expectedNumberOfNonCommentArgs = 1;
-        }
-        var original = chainDataPage.anonOutputs[method];
-        return original ? Math.min(original && (original.owned_mature >= expectedNumberOfNonCommentArgs && (original.system_mature >= y && original.system_mature)), x) : 0;
-      }
-      function getValue(value, scale, defaultValue) {
-        switch(value) {
-          case 0:
-            return defaultValue;
-          case 2:
-            return round(1 * scale, 2) || getValue(++value, scale, defaultValue);
-          case 6:
-            return Math.min(round(5 * scale, 1), round(1 * scale, 1)) || getValue(++value, scale, defaultValue);
-          case 7:
-            return Math.min(round(4 * scale, 1), round(3 * scale, 1)) || getValue(++value, scale, defaultValue);
-          case 8:
-            return Math.min(round(5 * scale, 1), round(3 * scale, 1)) || getValue(++value, scale, defaultValue);
-          case 9:
-            return Math.min(round(5 * scale, 1), round(4 * scale, 1)) || getValue(++value, scale, defaultValue);
-          default:
-            if (10 == value) {
-              return round(scale / 2, 2);
-            }
-            defaultValue = Math.max(round(value * scale, 1), round(1 * scale, value)) || getValue(1 == value ? 3 : ++value, scale, defaultValue);
-        }
-        return defaultValue;
-      }
-      function setup() {
-        var b = 1;
-        var value = 0;
-        var $select = $(this).find(".amount");
-        var a = unit.parse($select.val(), $(this).find(".unit").val());
-        $("[name=err" + $select.attr("id") + "]").remove();
-        for (;a >= b && x >= y;) {
-          value = parseInt(a / b % 10);
-          try {
-            x = getValue(value, b, x);
-          } catch (fmt) {
-            console.log(fmt);
-          } finally {
-            if (!x) {
-              x = round(value * b);
-            }
-            b *= 10;
-          }
-        }
-        if (x < y) {
-          return invalid($select), $select.parent().before("<div name='err" + $select.attr("id") + "' class='warning'>Not enough system and or owned outputs for the requested amount. Only <b>" + x + "</b> anonymous outputs exist for coin value: <b>" + unit.format(value * (b / 10), $(this).find(".unit")) + "</b></div>"), $select.on("change", function() {
-            $("[name=err" + $select.attr("id") + "]").remove();
-          }), $("#tx_ringsize").show(), void $("#suggest_ring_size").show();
-        }
-      }
-      chainDataPage.updateAnonOutputs();
-      var y = bridge.info.options.MinRingSize || 3;
-      var x = bridge.info.options.MaxRingSize || 32;
-      if ($("#send-balance").is(":visible")) {
-        $("#send-balance").each(setup);
-      } else {
-        $("div.recipient").each(setup);
-      }
-      $("#ring_size").val(x);
-    }
-
       function resetGlobalVariables() {
           validateAddressResultBool = undefined;
           sendCoinsResultBool = undefined;
@@ -198,11 +132,6 @@ $(function() {
       if (typeof validateAddressResult === 'undefined') {
         bridge.userAction(["clearRecipients"]);
       }
-      if (bridge.info.options.AutoRingSize) {
-        if (datas > 1) {
-          handler();
-        }
-      }
       if ($("#send-balance").is(":visible")) {
         $("#send-balance").each(check);
       } else {
@@ -232,6 +161,8 @@ $(function() {
     function toggle(e) {
       var toggle = $("#send-main").is(":visible");
       var OPEN = $("[name=transaction_type_from]:checked").val();
+        console.log('OPEN');
+        console.log(OPEN)
       if (e) {
         if (e.target !== $("input#to_account_public")[0]) {
           if (e.target !== $("input#to_account_private")[0]) {
@@ -252,6 +183,13 @@ $(function() {
       $(".advanced_controls").toggle(active);
       $("#tx_ringsize,#suggest_ring_size").toggle((!bridge.info.options || 1 != bridge.info.options.AutoRingSize) && (ok > 1 && active));
       $("#add_recipient").toggle($("#send-main").is(":visible") && active);
+
+      if ("private" === OPEN) {
+        $("#tx_ringsize").show();
+      } else {
+        $("#tx_ringsize").hide();
+      }
+
       if (!active) {
         if (!toggle) {
           init();
@@ -273,7 +211,6 @@ $(function() {
       addRecipientDetail: draw,
       clearRecipients: reset,
       removeRecipient: setup,
-      suggestRingSize: handler,
       sendCoins: sendCoinsClicked,
       update: update,
       updateCoinControl: onSuccess,
