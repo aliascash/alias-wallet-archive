@@ -594,7 +594,8 @@ downloaded 0 blocks of history..."></progress>
                             <div class=pull-left>
                                 <h4 class="translate uppercase" style=font-weight:bolder>Send</h4>
                             </div>
-                            <div class="p-t-10 pull-right show-advanced-controls"><button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),sendPage.changeTransactionType()'><i class="fa fa-wrench"></i> Advanced Options</button></div>
+                            <div class="p-t-10 pull-right show-advanced-controls">
+                            <button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),$(this).html(($(this).text() == " Advanced Options") ? $(this).html().replace("Advanced","Basic") : $(this).html().replace("Basic","Advanced")),sendPage.changeTransactionType()'><i class="fa fa-wrench"></i> Advanced Options</button></div>
                             <div class="p-t-10 pull-right show-coin-control"><button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),sendPage.toggleCoinControl()'><i class="fa fa-repeat"></i> Coin Control</button></div>
                             <div class=container-fluid>
                                 <div class=navbar-header></div>
@@ -700,7 +701,8 @@ downloaded 0 blocks of history..."></progress>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="pull-right m-r-15 m-t-10 m-b-25"><a id=add_recipient class="btn btn-default btn-cons" data-title="Send to multiple recipients at once" onclick=sendPage.addRecipient()>Add Recipient</a> <a class="btn btn-default btn-cons" onclick=sendPage.clearRecipients()><i class="fa fa-close"></i> Clear All </a><a class="btn btn-default btn-cons" href=javascript:sendPage.suggestRingSize(); id=suggest_ring_size><i class="fa fa-calculator"></i> Suggest Ring Size</a> <a class="btn btn-primary btn-cons" onclick=sendPage.sendCoins()>Send Payment <i class="fa fa-arrow-right"></i></a></div>
+                                    <div class="pull-right m-r-15 m-t-10 m-b-25"><a id=add_recipient class="btn btn-default btn-cons" data-title="Send to multiple recipients at once" onclick=sendPage.addRecipient()>Add Recipient</a> <a class="btn btn-default btn-cons" onclick=sendPage.clearRecipients()><i class="fa fa-close"></i> Clear All </a>
+                                    <a class="btn btn-primary btn-cons" onclick=sendPage.sendCoins()>Send Payment <i class="fa fa-arrow-right"></i></a></div>
                                     <div class=clearfix></div>
                                 </form>
                             </div>
