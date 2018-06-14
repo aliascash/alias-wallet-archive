@@ -2730,14 +2730,13 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
 
 
-        LogPrintf("fDevStake donation check invoked\n");
         CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
         CScript scriptPubKey;
         scriptPubKey.SetDestination(address.Get());
 
         if (vtx[0].vout[2].scriptPubKey != scriptPubKey){
             LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
-            return error("ConnectBlock() : stake does not pay to the donation address");
+            return error("ConnectBlock() : stake does not pay to the donation address %s"), vtx[0].vout[2].scriptPubKey;
         }
 
 

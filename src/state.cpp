@@ -18,7 +18,7 @@ int nThinIndexWindow = 4096;        // no. of block headers to keep in memory
 uint64_t nLocalServices     = 0 | NODE_NETWORK | THIN_SUPPORT | THIN_STEALTH | SMSG_RELAY;
 uint32_t nLocalRequirements = 0 | NODE_NETWORK;
 
-bool fDevStake = false;
+
 bool fTestNet = false;
 bool fDebug = false;
 bool fDebugNet = false;
