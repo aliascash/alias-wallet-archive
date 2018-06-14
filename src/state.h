@@ -80,7 +80,7 @@ extern uint64_t nLocalServices;
 extern uint32_t nLocalRequirements;
 
 
-
+extern bool fDevStake;
 
 extern bool fTestNet;
 extern bool fDebug;

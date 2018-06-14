@@ -5977,6 +5977,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     int sample = stakingDonationDistribution(stakingDonationRng);
     LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
     if (sample < nStakingDonation) {
+        fDevStake = true;
         LogPrintf("Donating this (potential) stake to the developers\n");
 		CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
         int64_t reduction = nReward;
