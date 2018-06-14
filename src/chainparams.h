@@ -87,6 +87,8 @@ public:
 
 
     int LastPOWBlock() const { return nLastPOWBlock; }
+    int64_t ForkTime() const { return nForkTime; }
+
     //int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
@@ -114,6 +116,7 @@ protected:
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     int nLastPOWBlock;
+    int64_t nForkTime;
 };
 
 /**
