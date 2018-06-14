@@ -135,6 +135,7 @@ public:
        
 		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
 		nLastPOWBlock = 17000;
+        nForkTime = 2000000000; // temporary epoch time set for chain fork
 		
 		nFirstPosv2Block = 17001;
         nFirstPosv3Block = 17010;
