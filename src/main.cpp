@@ -4991,6 +4991,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return false;
         }
 
+
+
+		
+
         if (nNodeMode != NT_FULL
             && !(pfrom->nServices & THIN_SUPPORT))
         {
