@@ -634,6 +634,7 @@ function bindTransactionTableEvents() {
   }).attr("data-title", "Double click to edit").tooltip();
 }
 function appendTransactions(f) {
+    console.log(f);
   if ("string" == typeof f) {
     if ("[]" == f) {
       return;

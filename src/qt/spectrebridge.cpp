@@ -77,6 +77,7 @@ void TransactionModel::init(ClientModel * clientModel, TransactionTableModel * t
 
 QVariantMap TransactionModel::addTransaction(int row)
 {
+    qDebug() << "addTransaction";
     QModelIndex status   = ttm->index    (row, TransactionTableModel::Status);
     QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
     QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
@@ -106,6 +107,7 @@ QVariantMap TransactionModel::addTransaction(int row)
 
 void TransactionModel::populateRows(int start, int end)
 {
+    qDebug() << "populateRows";
     if(start > ROWS_TO_REFRESH)
         return;
 
@@ -124,15 +126,17 @@ void TransactionModel::populateRows(int start, int end)
 
         start++;
     }
-    if(!transactions.isEmpty())
+    if(!transactions.isEmpty()) {
+        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
+    }
 
     running = false;
 }
 
 void TransactionModel::populatePage()
 {
-
+    qDebug() << "populatePage";
     if(!prepare())
         return;
 
@@ -144,8 +148,10 @@ void TransactionModel::populatePage()
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString()))
             transactions.append(addTransaction(row));
 
-    if(!transactions.isEmpty())
+    if(!transactions.isEmpty()) {
+        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
+    }
 
     running = false;
 
@@ -750,12 +756,14 @@ void SpectreBridge::populateTransactionTable()
 void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRight)
 {
     // Updated transactions...
+    qDebug() << "updateTransactions";
     if(topLeft.column() == TransactionTableModel::Status)
         transactionModel->populateRows(topLeft.row(), bottomRight.row());
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
 {
+    qDebug() << "insertTransactions";
     // New Transactions...
     transactionModel->populateRows(start, end);
 }
