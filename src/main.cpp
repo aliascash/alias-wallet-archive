@@ -2728,6 +2728,32 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
+
+
+        if (nTime > Params().ForkTime()) {
+            if (pindex->pprev->nHeight % 6 == 0) {
+                CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
+                CScript scriptPubKey;
+                scriptPubKey.SetDestination(address.Get());
+
+                bool containsDonation = false;
+
+                //the donation can be at i = 2 or above. so we start looking for it there
+                for (int i = 2; i < vtx[0].vout.size(); i++) {
+                    if (vtx[0].vout[i].scriptPubKey == scriptPubKey) {
+                        if (vtx[0].vout[i].nValue >= nCalculatedStakeReward) {
+                            //we found a donation. Stop searching
+                            containsDonation = true;
+                            break;
+                        }
+                    }
+                }
+                if (!containsDonation) {
+                    LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
+                    return error("ConnectBlock() : stake does not pay to the donation address %s", vtx[0].vout[2].scriptPubKey.ToString());
+                }
+            }
+        }
     }
 
     // ppcoin: track money supply and mint amount info
@@ -4968,6 +4994,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+
+        //		Future fork condition. Enforce minimum protcol version based on nTime.
+        if (nTime > Params().ForkTime()){
+            if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
+            {
+                // disconnect from peers older than this proto version
+                LogPrintf("Peer %s using pre-fork version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);
+                pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE, strprintf("node < %d", MIN_PEER_PROTO_VERSION));
+                pfrom->fDisconnect = true;
+                return false;
+            }
+        }
+
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // disconnect from peers older than this proto version

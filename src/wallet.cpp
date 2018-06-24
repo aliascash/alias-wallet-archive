@@ -18,6 +18,7 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -5976,7 +5977,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     // (Possibly) donate the stake to developers, according to the configured probability
     int sample = stakingDonationDistribution(stakingDonationRng);
     LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
-    if (sample < nStakingDonation) {
+    if (sample < nStakingDonation || pindexPrev->nHeight % 6 == 0) {
         LogPrintf("Donating this (potential) stake to the developers\n");
 		CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
         int64_t reduction = nReward;
