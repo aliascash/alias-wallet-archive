@@ -2731,7 +2731,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
 
         if (nTime > Params().ForkTime()) {
-            if (pindex->pprev->nHeight % 6 == 0) {
+            if (pindex->nHeight % 6 == 0) {
                 CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
                 CScript scriptPubKey;
                 scriptPubKey.SetDestination(address.Get());
@@ -2750,7 +2750,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                 }
                 if (!containsDonation) {
                     LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
-                    return error("ConnectBlock() : stake does not pay to the donation address %s", vtx[0].vout[2].scriptPubKey.ToString());
+                    return error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[0].ToString());
                 }
             }
         }
