@@ -2730,7 +2730,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
 
 
-        if (nTime > Params().ForkTime()) {
+        if (nTime > Params().ForkV2Time()) {
             if (pindex->nHeight % 6 == 0) {
                 CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
                 CScript scriptPubKey;
@@ -4996,7 +4996,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
         //		Future fork condition. Enforce minimum protcol version based on nTime.
-        if (nTime > Params().ForkTime()){
+        if (nTime > Params().ForkV2Time()){
             if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
             {
                 // disconnect from peers older than this proto version

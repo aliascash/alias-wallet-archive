@@ -1328,12 +1328,19 @@ uint256 SignatureHash(CScript scriptCode, const CTransaction& txTo, unsigned int
         txTmp.vin.resize(1);
     }
 
+	// Get forkId
+	int forkId = 0;
+	if (txTo.nTime > Params().ForkV2Time()) {
+		forkId = 2;
+	}
+
     // Serialize and hash
     CHashWriter ss(SER_GETHASH, 0);
-    ss << txTmp << nHashType;
+    ss << txTmp;
+	// The sighash type is altered to include a 24-bit fork id in its most significant bits.
+	ss << ((forkId << 8) | nHashType);
     return ss.GetHash();
 }
-
 
 // Valid signature cache, to avoid doing expensive ECDSA signature checking
 // twice for every transaction (once when accepted into memory pool, and
