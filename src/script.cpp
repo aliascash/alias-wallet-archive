@@ -1328,17 +1328,17 @@ uint256 SignatureHash(CScript scriptCode, const CTransaction& txTo, unsigned int
         txTmp.vin.resize(1);
     }
 
-	// Get forkId
-	int forkId = 0;
-	if (txTo.nTime > Params().ForkV2Time()) {
-		forkId = 2;
-	}
-
-    // Serialize and hash
+    // Serialize
     CHashWriter ss(SER_GETHASH, 0);
-    ss << txTmp;
-	// The sighash type is altered to include a 24-bit fork id in its most significant bits.
-	ss << ((forkId << 8) | nHashType);
+	ss << txTmp << nHashType;
+
+	// If forkId is greater 0, add forkId into the hash.
+	int forkId = Params().GetForkId(txTo.nTime);
+	if (forkId > 0) {
+		ss << forkId;
+	}
+	
+	// Hash
     return ss.GetHash();
 }
 

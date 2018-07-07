@@ -36,59 +36,63 @@ struct CDNSSeedData {
 class CChainParams
 {
 public:
-    enum Network {
-        MAIN,
-        TESTNET,
-        REGTEST,
+	enum Network {
+		MAIN,
+		TESTNET,
+		REGTEST,
 
-        MAX_NETWORK_TYPES
-    };
+		MAX_NETWORK_TYPES
+	};
 
-    enum Base58Type {
-        PUBKEY_ADDRESS,
-        SCRIPT_ADDRESS,
-        SECRET_KEY,
-        STEALTH_ADDRESS,
-        EXT_PUBLIC_KEY,
-        EXT_SECRET_KEY,
-        EXT_KEY_HASH,
-        EXT_ACC_HASH,
-        EXT_PUBLIC_KEY_BTC,
-        EXT_SECRET_KEY_BTC,
+	enum Base58Type {
+		PUBKEY_ADDRESS,
+		SCRIPT_ADDRESS,
+		SECRET_KEY,
+		STEALTH_ADDRESS,
+		EXT_PUBLIC_KEY,
+		EXT_SECRET_KEY,
+		EXT_KEY_HASH,
+		EXT_ACC_HASH,
+		EXT_PUBLIC_KEY_BTC,
+		EXT_SECRET_KEY_BTC,
 
-        MAX_BASE58_TYPES
-    };
+		MAX_BASE58_TYPES
+	};
 
-    const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
-    const MessageStartChars& MessageStart() const { return pchMessageStart; }
-    const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
-    int GetDefaultPort() const { return nDefaultPort; }
+	const uint256& HashGenesisBlock() const { return hashGenesisBlock; }
+	const MessageStartChars& MessageStart() const { return pchMessageStart; }
+	const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
+	int GetDefaultPort() const { return nDefaultPort; }
 
-    const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
-    const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
+	const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
+	const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
-    const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
-    const CBigNum& ProofOfStakeLimit(int nHeight) const { return IsProtocolV2(nHeight) ? bnProofOfStakeLimitV2 : bnProofOfStakeLimit; }
-
-
-    virtual const CBlock& GenesisBlock() const = 0;
-    virtual bool RequireRPCPassword() const { return true; }
-    const std::string& DataDir() const { return strDataDir; }
-    virtual Network NetworkID() const = 0;
-    const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
-    const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
-    virtual const std::vector<CAddress>& FixedSeeds() const = 0;
-
-    std::string NetworkIDString() const { return strNetworkID; }
-
-    int RPCPort() const { return nRPCPort; }
-
-    int BIP44ID() const { return nBIP44ID; }
+	const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+	const CBigNum& ProofOfStakeLimit(int nHeight) const { return IsProtocolV2(nHeight) ? bnProofOfStakeLimitV2 : bnProofOfStakeLimit; }
 
 
-    int LastPOWBlock() const { return nLastPOWBlock; }
-    int64_t ForkV2Time() const { return nForkV2Time; }
-    //int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
+	virtual const CBlock& GenesisBlock() const = 0;
+	virtual bool RequireRPCPassword() const { return true; }
+	const std::string& DataDir() const { return strDataDir; }
+	virtual Network NetworkID() const = 0;
+	const std::vector<CDNSSeedData>& DNSSeeds() const { return vSeeds; }
+	const std::vector<unsigned char> &Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
+	virtual const std::vector<CAddress>& FixedSeeds() const = 0;
+
+	std::string NetworkIDString() const { return strNetworkID; }
+
+	int RPCPort() const { return nRPCPort; }
+
+	int BIP44ID() const { return nBIP44ID; }
+
+
+	int LastPOWBlock() const { return nLastPOWBlock; }
+	//int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
+
+
+	unsigned int ForkV2Time() const { return nForkV2Time; }
+	int GetForkId(unsigned int nTime) const { return (nTime > ForkV2Time()) ? 2 : 0; }
+    
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
@@ -115,7 +119,8 @@ protected:
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     int nLastPOWBlock;
-    int64_t nForkV2Time;
+
+	unsigned int nForkV2Time;
 };
 
 /**
