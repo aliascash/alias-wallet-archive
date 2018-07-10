@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
 #endif
 
     fHaveGUI = true;
+    FreeConsole();
 
 #if QT_VERSION < 0x050000
     // Internal string conversion is all UTF-8

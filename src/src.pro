@@ -7,6 +7,7 @@ DEFINES += DEBUGGER_CONNECTED
 
 QT += testlib webenginewidgets webchannel
 
+RC_ICONS = spectrecoin.ico
 
 CONFIG(release, debug|release) {
     message( "release" )
