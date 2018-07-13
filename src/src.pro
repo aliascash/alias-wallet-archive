@@ -7,6 +7,7 @@ DEFINES += DEBUGGER_CONNECTED
 
 QT += testlib webenginewidgets webchannel
 
+RC_FILE = src.rc
 
 CONFIG(release, debug|release) {
     message( "release" )
