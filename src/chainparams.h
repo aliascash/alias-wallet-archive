@@ -64,6 +64,8 @@ public:
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
+    const std::string getDevContributionAddress() const { return NetworkID() == CChainParams::TESTNET ? "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h" : "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr"; };
+
     const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
     const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
@@ -148,7 +150,7 @@ void SelectParams(CChainParams::Network network);
  */
 bool SelectParamsFromCommandLine();
 
-inline bool TestNet() {
+const inline bool TestNet() {
     // Note: it's deliberate that this returns "false" for regression test mode.
     return Params().NetworkID() == CChainParams::TESTNET;
 }

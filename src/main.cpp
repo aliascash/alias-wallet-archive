@@ -2732,7 +2732,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
         if (nTime > Params().ForkV2Time()) {
             if (pindex->nHeight % 6 == 0) {
-                CBitcoinAddress address("SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr");
+                CBitcoinAddress address(Params().getDevContributionAddress());
                 CScript scriptPubKey;
                 scriptPubKey.SetDestination(address.Get());
 
