@@ -204,10 +204,10 @@ public:
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce = 52419;
+        genesis.nNonce = 1001;
 		
-        hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00004351133a2c6c1f7277b0d684192b605bc62c03727bba81e4d20863944049"));
+        hashGenesisBlock = genesis.GetHash();      
+        assert(hashGenesisBlock == uint256("0x0eaef840827189830c177c345f53a26ad87e0770b200a83d7ff6a928d725d882"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(127).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(196).convert_to_container<std::vector<unsigned char> >();
