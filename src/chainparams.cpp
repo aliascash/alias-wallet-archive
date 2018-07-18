@@ -136,7 +136,7 @@ public:
 		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
 		nLastPOWBlock = 17000;
 
-        nForkV2Time = 1531947600000; // temporary epoch time set for chain fork (GMT: Wednesday, 18. July 2018 21.00)
+        nForkV2Time = 1532034000000; // temporary epoch time set for chain fork (GMT: Thursday, 19. July 2018 21.00)
 
 		nFirstPosv2Block = 17001;
         nFirstPosv3Block = 17010;
@@ -194,9 +194,8 @@ public:
         nRPCPort = 36757;
         nBIP44ID = 0x80000001;
 
-        nLastPOWBlock = 110;
-
-        nFirstPosv2Block = 110;
+        nLastPOWBlock = 500;
+        nFirstPosv2Block = 500;
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);

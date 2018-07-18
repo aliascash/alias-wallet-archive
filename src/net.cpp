@@ -1097,6 +1097,10 @@ static const char *strMainNetOnionSeed[][1] = {
 };
 
 static const char *strTestNetOnionSeed[][1] = {
+    // project-maintained nodes
+    {"iw5cbprcpm2md7l2.onion"},
+    {"rojwxoxeins7caov.onion"},
+    {"slci562nifh3yuqk.onion"},
     {NULL}
 };
 
