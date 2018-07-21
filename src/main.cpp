@@ -2730,7 +2730,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
 
 
-        if (nTime > Params().ForkV2Time() && pindex->nHeight % 6 == 0) {            
+        if (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0) {
             CBitcoinAddress address(Params().GetDevContributionAddress());
             CScript scriptPubKey;
             scriptPubKey.SetDestination(address.Get());
@@ -3118,7 +3118,7 @@ std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChainINTERNAL(CBlockThinIn
 std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChain(CBlockThinIndex* &pindexRet) const
 {
     AssertLockHeld(cs_main);
-    std::pair<int, int> nResult = GetDepthAndHeightInMainChain(pindexRet);
+    std::pair<int, int> nResult = GetDepthAndHeightInMainChainINTERNAL(pindexRet);
     if (nResult.first == 0 && !mempool.exists(GetHash()))
         return std::make_pair(-1, -1); // Not in chain, not in mempool
 
@@ -5000,7 +5000,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
         //		Future fork condition. Enforce minimum protcol version based on nTime.
-        if (nTime > Params().ForkV2Time()){
+        if (Params().IsForkV2(nTime)) {
             if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
             {
                 // disconnect from peers older than this proto version

@@ -94,8 +94,8 @@ public:
 
     const std::string GetDevContributionAddress() const { return devContributionAddress; };
 
-    unsigned int ForkV2Time() const { return nForkV2Time; }
-    int GetForkId(unsigned int nTime) const { return (nTime > ForkV2Time()) ? 2 : 0; }
+    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; };
+    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; };
 
 protected:
     CChainParams() {};
