@@ -109,10 +109,12 @@ int main(int argc, char *argv[])
     // Block signals. We handle them in a thread.
     if (BlockSignals() != 0)
         return 1;
+#else
+    // Hide the console for windows
+    FreeConsole();
 #endif
 
     fHaveGUI = true;
-    FreeConsole();
 
 #if QT_VERSION < 0x050000
     // Internal string conversion is all UTF-8
