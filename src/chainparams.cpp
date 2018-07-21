@@ -164,6 +164,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY_BTC]  = list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >(); // xpub
 
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
+
+        devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
 
     virtual Network NetworkID() const { return CChainParams::MAIN; }
@@ -220,6 +222,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY_BTC]  = list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >(); // tpub
 
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
+
+        devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
