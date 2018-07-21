@@ -5977,9 +5977,9 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     // (Possibly) donate the stake to developers, according to the configured probability
     int sample = stakingDonationDistribution(stakingDonationRng);
     LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
-    if (sample < nStakingDonation || pindexPrev->nHeight % 6 == 0) {
+    if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
         LogPrintf("Donating this (potential) stake to the developers\n");
-		CBitcoinAddress address(Params().getDevContributionAddress());
+        CBitcoinAddress address(Params().GetDevContributionAddress());
         int64_t reduction = nReward;
         // reduce outputs popping as necessary until we've reduced by nReward
         if (txNew.vout.size() == 3) {

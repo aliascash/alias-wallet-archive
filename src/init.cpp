@@ -476,7 +476,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (fTestNet)
     {
-        nStakeMinAge = 1 * 60 * 60; // test net min age is 1 hour
+        nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
         nStakeMinConfirmations = 10; // test maturity is 10 blocks
     };

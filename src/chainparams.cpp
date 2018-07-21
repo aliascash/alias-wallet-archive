@@ -194,8 +194,8 @@ public:
         nRPCPort = 36757;
         nBIP44ID = 0x80000001;
 
-        nLastPOWBlock = 500;
-        nFirstPosv2Block = 500;
+        nLastPOWBlock = 110;
+        nFirstPosv2Block = 110;
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);

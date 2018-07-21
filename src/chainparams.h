@@ -64,8 +64,6 @@ public:
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
-    const std::string getDevContributionAddress() const { return NetworkID() == CChainParams::TESTNET ? "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h" : "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr"; };
-
     const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
     const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
@@ -91,13 +89,13 @@ public:
     int LastPOWBlock() const { return nLastPOWBlock; }
     //int LastFairLaunchBlock() const { return nLastFairLaunchBlock; }
 
+    int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
+    int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
+
+    const std::string GetDevContributionAddress() const { return devContributionAddress; };
 
     unsigned int ForkV2Time() const { return nForkV2Time; }
     int GetForkId(unsigned int nTime) const { return (nTime > ForkV2Time()) ? 2 : 0; }
-
-
-    int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
-    int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
 
 protected:
     CChainParams() {};
@@ -121,6 +119,8 @@ protected:
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     int nLastPOWBlock;
+
+    std::string devContributionAddress;
 
     unsigned int nForkV2Time;
 };
