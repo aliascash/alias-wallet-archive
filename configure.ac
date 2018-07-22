@@ -71,17 +71,17 @@ if test "x$enable_gui" = "xyes" ; then
       MACDEPLOYQT="$with_qt5/bin/macdeployqt"
       AC_SUBST([MACDEPLOYQT])
     else
-      QT5_CFLAGS="-I$with_qt5/include -I$with_qt5/include/QtGui -I$with_qt5/include/QtWidgets -I$with_qt5/include/QtWebEngineWidgets -I$with_qt5/include/QtCore -I$with_qt5/include/QtWebChannel -I$with_qt5/include/QtNetwork"
+      QT5_CFLAGS="-I$with_qt5 -I$with_qt5/QtGui -I$with_qt5/QtWidgets -I$with_qt5/QtWebEngineWidgets -I$with_qt5/QtCore -I$with_qt5/QtWebChannel -I$with_qt5/QtNetwork"
       QT5_LDFLAGS="-L$with_qt5/lib"
       QT5_LIBS="-lQt5Core -lQt5Gui -lQt5Widgets -lQt5Network -lQt5WebEngineWidgets -lQt5WebChannel"
     fi
     AC_SUBST([QT5_CFLAGS])
     AC_SUBST([QT5_LDFLAGS])
     AC_SUBST([QT5_LIBS])
-    MOC="$with_qt5/bin/moc"
-    UIC="$with_qt5/bin/uic"
-    RCC="$with_qt5/bin/rcc"
-    LRELEASE="$with_qt5/bin/lrelease"
+    MOC="${with_qt5//\/include\//\/lib\//}/bin/moc"
+    UIC="${with_qt5//\/include\//\/lib\//}/bin/uic"
+    RCC="${with_qt5//\/include\//\/lib\//}/bin/rcc"
+    LRELEASE="${with_qt5//\/include\//\/lib\//}/bin/lrelease"
     AC_SUBST([MOC])
     AC_SUBST([UIC])
     AC_SUBST([RCC])
