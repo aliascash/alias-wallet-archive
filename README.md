@@ -99,19 +99,6 @@ spectrecoind. The image is based on our spectre base image [hlxeasy/spectre-base
 and so the dedicated user _spectre_ with UID _1000_ and GID _1000_ is used to run
 spectrecoind.
 
-#### How to build
-```
-docker build -t hlxeasy/spectre:latest .
-```
-
-#### Using more than one core
-If multiple cores available for build, you can pass the amount of cores
-to use to the build command:
-
-```
-docker build -t hlxeasy/spectre:latest --build-arg BUILD_THREADS=6 .
-```
-
 #### Start new container
 You should prepare a directory on the host machine, which contains all 
 spectrecoind data. Per default this is the directory _~/.spectrecoin_ and you
@@ -159,3 +146,17 @@ After _docker stop_ the container can be removed using
 ```
 docker rm spectre
 ```
+
+#### Build image yourself
+```
+docker build -t hlxeasy/spectre:latest .
+```
+
+#### Using more than one core
+If multiple cores available for build, you can pass the amount of cores
+to use to the build command:
+
+```
+docker build -t hlxeasy/spectre:latest --build-arg BUILD_THREADS=6 .
+```
+
