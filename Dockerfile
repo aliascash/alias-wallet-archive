@@ -1,13 +1,19 @@
 ### At first perform source build ###
 FROM hlxeasy/spectre-builder-part2:latest as build
 
+# Build parameters
+ARG BUILD_THREADS="1"
+
+# Runtime parameters
+ENV BUILD_THREADS=$BUILD_THREADS
+
 COPY . /spectre
 
 RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
  && ./autogen.sh \
  && ./configure \
- && make -j6
+ && make -j${BUILD_THREADS}
 #        --enable-gui \
 #        --with-qt5=/usr/include/x86_64-linux-gnu/qt5 \
 
