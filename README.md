@@ -95,8 +95,8 @@ Cross-compiling for Windows is supported using MingW64, by passing the appropria
 ### Using Docker
 
 This repository contains a Dockerfile to create a ready to use image with 
-spectrecoind. The image is based on our spectre base image hlxeasy/spectre-base
-and so the dedicated user _spectre_ with UID 1000 and GID 1000 is used to run
+spectrecoind. The image is based on our spectre base image [hlxeasy/spectre-base](https://github.com/HLXEasy/spectre-base)
+and so the dedicated user _spectre_ with UID _1000_ and GID _1000_ is used to run
 spectrecoind.
 
 #### How to build
