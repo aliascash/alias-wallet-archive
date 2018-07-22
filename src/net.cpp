@@ -1097,6 +1097,11 @@ static const char *strMainNetOnionSeed[][1] = {
 };
 
 static const char *strTestNetOnionSeed[][1] = {
+    // project-maintained nodes
+    {"iw5cbprcpm2md7l2.onion"},
+    {"rojwxoxeins7caov.onion"},
+    {"almrpkxuhk2r35sw.onion"},
+    {"vwxv3bstufb7kfsr.onion"},    
     {NULL}
 };
 
@@ -1628,7 +1633,12 @@ static void run_tor() {
     argv.push_back("--HiddenServiceDir");
     argv.push_back((tor_dir / "onion").string());
     argv.push_back("--HiddenServicePort");
-    argv.push_back("37347");
+    if (TestNet()) {
+        argv.push_back("37111");
+    }
+    else {
+        argv.push_back("37347");
+    }
 
     if (clientTransportPlugin) {
       LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
