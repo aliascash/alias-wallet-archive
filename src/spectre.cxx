@@ -8,11 +8,12 @@ int main (int argc, char *argv[])
 {
     if (argc < 2)
     {
-        fprintf(stdout,"%s Version %d.%d.%d\n",
+        fprintf(stdout,"%s Version %d.%d.%d (%s)\n",
                 argv[0],
                 Spectre_VERSION_MAJOR,
                 Spectre_VERSION_MINOR,
-                Spectre_VERSION_BUGFIX);
+                Spectre_VERSION_BUGFIX,
+                Spectre_COMMIT_HASH);
         fprintf(stdout,"Usage: %s number\n",argv[0]);
         return 1;
     }

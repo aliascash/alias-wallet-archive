@@ -2,3 +2,4 @@
 #define Spectre_VERSION_MAJOR  @Spectre_VERSION_MAJOR@
 #define Spectre_VERSION_MINOR  @Spectre_VERSION_MINOR@
 #define Spectre_VERSION_BUGFIX @Spectre_VERSION_BUGFIX@
+#define Spectre_COMMIT_HASH    @Spectre_COMMIT_HASH@
