@@ -92,10 +92,10 @@ public:
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
 
-    const std::string GetDevContributionAddress() const { return devContributionAddress; };
+    const std::string GetDevContributionAddress() const { return devContributionAddress; }
 
-    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; };
-    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; };
+    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
+    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
 
 protected:
     CChainParams() {};

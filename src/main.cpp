@@ -2749,7 +2749,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             }
             if (!containsDonation) {
                 LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
-                return error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[0].ToString());
+                return DoS(100, error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[0].ToString()));
             }            
         }
     }
