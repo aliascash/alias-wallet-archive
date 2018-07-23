@@ -15,5 +15,10 @@ target_sources(Spectre
             "${CMAKE_CURRENT_LIST_DIR}/spectre.cxx"
 )
 
+include(${CMAKE_CURRENT_LIST_DIR}/json/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/lz4/CMakeLists.txt)
+#include(${CMAKE_CURRENT_LIST_DIR}/qt/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/win/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/wordlists/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/xxhash/CMakeLists.txt)
