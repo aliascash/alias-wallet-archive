@@ -14,7 +14,7 @@ get_git_head_revision(GIT_REFSPEC Spectre_GIT_SHA1)
 
 # Add the binary tree to the search path for include files
 # so that we will find SpectreConfig.h
-include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}" "leveldb/include/" "db4.8/dbinc/" )
 
 # Add the executable
 add_executable(Spectre "")
