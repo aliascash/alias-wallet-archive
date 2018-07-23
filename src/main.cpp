@@ -3133,7 +3133,7 @@ int CMerkleTx::GetBlocksToMaturity() const
     std::pair<int, int> pDepthAndHeight = GetDepthAndHeightInMainChain();
 
     // Block to maturity is only relevant for PoSv3 according to the consensus rule in CheckProofOfStake
-    if (!Params().IsProtocolV3(pDepthAndHeight.second))
+    if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
         return 0;
 
     return max(0, (nCoinbaseMaturity + 5) - pDepthAndHeight.first);
