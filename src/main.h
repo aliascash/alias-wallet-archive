@@ -564,7 +564,7 @@ public:
     // -1  : not in blockchain, and not in memory pool (conflicted transaction)
     //  0  : in memory pool, waiting to be included in a block
     // >=1 : this many blocks deep in the main chain
-    // seconds contains the height of the block
+    // seconds contains the height of the block or -1 if the block is not in the blockchain
     std::pair<int, int> GetDepthAndHeightInMainChain(CBlockIndex* &pindexRet) const;
     std::pair<int, int> GetDepthAndHeightInMainChain(CBlockThinIndex* &pindexRet) const;
     std::pair<int, int> GetDepthAndHeightInMainChain() const
