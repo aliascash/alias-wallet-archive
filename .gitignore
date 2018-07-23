@@ -102,3 +102,6 @@ Makefile\.am\.user
 # CLion files
 *.iml
 cmake-build-debug/
+
+# CMake generated stuff
+src/spectreconfig.h
