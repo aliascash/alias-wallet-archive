@@ -13,7 +13,7 @@ int main (int argc, char *argv[])
                 Spectre_VERSION_MAJOR,
                 Spectre_VERSION_MINOR,
                 Spectre_VERSION_BUGFIX,
-                Spectre_COMMIT_HASH);
+                Spectre_GIT_SHA1);
         fprintf(stdout,"Usage: %s number\n",argv[0]);
         return 1;
     }
