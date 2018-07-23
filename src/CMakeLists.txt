@@ -1,3 +1,6 @@
+cmake_minimum_required (VERSION 2.6)
+project (Spectre)
+
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
 configure_file(
@@ -46,8 +49,7 @@ target_sources(Spectre
         "${CMAKE_CURRENT_LIST_DIR}/scrypt.h"
         "${CMAKE_CURRENT_LIST_DIR}/serialize.h"
         "${CMAKE_CURRENT_LIST_DIR}/smessage.h"
-        "${CMAKE_CURRENT_LIST_DIR}/spectreconfig.h"
-        "${CMAKE_CURRENT_LIST_DIR}/spectreconfig.h" .in
+#        "${CMAKE_CURRENT_LIST_DIR}/spectreconfig.h"
         "${CMAKE_CURRENT_LIST_DIR}/state.h"
         "${CMAKE_CURRENT_LIST_DIR}/stealth.h"
         "${CMAKE_CURRENT_LIST_DIR}/strlcpy.h"
@@ -64,7 +66,6 @@ target_sources(Spectre
         "${CMAKE_CURRENT_LIST_DIR}/version.h"
         "${CMAKE_CURRENT_LIST_DIR}/wallet.h"
         "${CMAKE_CURRENT_LIST_DIR}/walletdb.h"
-
         PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/addrman.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/alert.cpp"
