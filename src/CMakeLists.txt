@@ -1,6 +1,3 @@
-cmake_minimum_required (VERSION 2.6)
-project (Spectre)
-
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
 configure_file(
