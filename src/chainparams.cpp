@@ -162,7 +162,7 @@ public:
 
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
-        nForkV2Time = 2000000000000; // temporary epoch time set for chain fork
+        nForkV2Time = 2000000000; // temporary epoch time set for chain fork
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
@@ -221,8 +221,8 @@ public:
         base58Prefixes[EXT_SECRET_KEY_BTC]  = list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >(); // tpub
 
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
-
-        nForkV2Time = 1532034000000; // TESTNET V2 chain fork (GMT: Thursday, 19. July 2018 21.00)
+                      
+        nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
 
         devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
     }
