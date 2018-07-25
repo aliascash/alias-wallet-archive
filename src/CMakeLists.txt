@@ -1,8 +1,8 @@
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
 configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/spectreconfig.h.in"
-        "${CMAKE_CURRENT_LIST_DIR}/spectreconfig.h"
+        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h.in"
+        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
 )
 
 target_sources(Spectre
@@ -17,7 +17,7 @@ target_sources(Spectre
         "${CMAKE_CURRENT_LIST_DIR}/chainparams.h"
         "${CMAKE_CURRENT_LIST_DIR}/chainparamsseeds.h"
         "${CMAKE_CURRENT_LIST_DIR}/checkpoints.h"
-        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
+        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h.obsolete"
         "${CMAKE_CURRENT_LIST_DIR}/coincontrol.h"
         "${CMAKE_CURRENT_LIST_DIR}/compat.h"
         "${CMAKE_CURRENT_LIST_DIR}/core.h"
