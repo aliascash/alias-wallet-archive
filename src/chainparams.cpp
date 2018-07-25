@@ -162,7 +162,7 @@ public:
 
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
-        nForkV2Time = 2000000000; // temporary epoch time set for chain fork
+        nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
