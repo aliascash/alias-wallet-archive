@@ -507,8 +507,11 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB& txdb, bool *p
 class CMerkleTx : public CTransaction
 {
 private:
-    int GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const;
-    int GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const;
+    int GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const { return GetDepthAndHeightInMainChainINTERNAL(pindexRet).first; };
+    int GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const { return GetDepthAndHeightInMainChainINTERNAL(pindexRet).first; };
+
+    std::pair<int, int> GetDepthAndHeightInMainChainINTERNAL(CBlockIndex* &pindexRet) const;
+    std::pair<int, int> GetDepthAndHeightInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const;
 public:
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
@@ -552,19 +555,30 @@ public:
     // -1  : not in blockchain, and not in memory pool (conflicted transaction)
     //  0  : in memory pool, waiting to be included in a block
     // >=1 : this many blocks deep in the main chain
-    int GetDepthInMainChain(CBlockIndex* &pindexRet) const;
-    int GetDepthInMainChain(CBlockThinIndex* &pindexRet) const;
-    int GetDepthInMainChain() const
+    int GetDepthInMainChain(CBlockIndex* &pindexRet) const { return GetDepthAndHeightInMainChain(pindexRet).first; };
+    int GetDepthInMainChain(CBlockThinIndex* &pindexRet) const { return GetDepthAndHeightInMainChain(pindexRet).first; };
+    int GetDepthInMainChain() const { return GetDepthAndHeightInMainChain().first; };
+
+    // Return depth and height of transaction in blockchain as pair.
+    // first contains the depth:
+    // -1  : not in blockchain, and not in memory pool (conflicted transaction)
+    //  0  : in memory pool, waiting to be included in a block
+    // >=1 : this many blocks deep in the main chain
+    // seconds contains the height of the block or -1 if the block is not in the blockchain
+    std::pair<int, int> GetDepthAndHeightInMainChain(CBlockIndex* &pindexRet) const;
+    std::pair<int, int> GetDepthAndHeightInMainChain(CBlockThinIndex* &pindexRet) const;
+    std::pair<int, int> GetDepthAndHeightInMainChain() const
     {
         if (nNodeMode == NT_FULL)
         {
             CBlockIndex *pindexRet;
-            return GetDepthInMainChain(pindexRet);
+            return GetDepthAndHeightInMainChain(pindexRet);
         };
 
         CBlockThinIndex *pindexRet;
-        return GetDepthInMainChain(pindexRet);
+        return GetDepthAndHeightInMainChain(pindexRet);
     }
+
     bool IsInMainChain() const
     {
         if (nNodeMode == NT_THIN)

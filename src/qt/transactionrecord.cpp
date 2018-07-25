@@ -214,7 +214,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 CTxDestination address;
                 if (ExtractDestination(txout.scriptPubKey, address)) {
                     std::string strAddress = CBitcoinAddress(address).ToString();
-                    if (strAddress == "SgGmhnxnf6x93PJo5Nj3tty4diPNwEEiQb") {
+                    if (strAddress == Params().GetDevContributionAddress()) {
                         TransactionRecord sub(hash, nTime);
                         sub.address = strAddress;
                         sub.type = TransactionRecord::GeneratedDonation;

@@ -794,14 +794,13 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
         return false;
 
-    if (Params().IsProtocolV3(nTime))
+    if (Params().IsProtocolV3(pindexPrev->nHeight+1))
     {
         int nDepth;
         if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
             return false;
     }
-    else
-        if (block.GetBlockTime() + nStakeMinAge > nTime)
+    else if (block.GetBlockTime() + nStakeMinAge > nTime)
             return false; // only count coins meeting min age requirement
 
     if (pBlockTime)

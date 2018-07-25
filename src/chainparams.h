@@ -92,6 +92,11 @@ public:
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
 
+    const std::string GetDevContributionAddress() const { return devContributionAddress; }
+
+    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
+    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
+
 protected:
     CChainParams() {};
 
@@ -114,6 +119,10 @@ protected:
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     int nLastPOWBlock;
+
+    std::string devContributionAddress;
+
+    unsigned int nForkV2Time;
 };
 
 /**
@@ -141,7 +150,7 @@ void SelectParams(CChainParams::Network network);
  */
 bool SelectParamsFromCommandLine();
 
-inline bool TestNet() {
+const inline bool TestNet() {
     // Note: it's deliberate that this returns "false" for regression test mode.
     return Params().NetworkID() == CChainParams::TESTNET;
 }

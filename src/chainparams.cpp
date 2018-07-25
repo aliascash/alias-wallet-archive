@@ -135,7 +135,6 @@ public:
        
 		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
 		nLastPOWBlock = 17000;
-		
 		nFirstPosv2Block = 17001;
         nFirstPosv3Block = 17010;
 
@@ -162,6 +161,10 @@ public:
         base58Prefixes[EXT_SECRET_KEY_BTC]  = list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >(); // xpub
 
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
+
+        nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
+
+        devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
 
     virtual Network NetworkID() const { return CChainParams::MAIN; }
@@ -193,19 +196,18 @@ public:
         nBIP44ID = 0x80000001;
 
         nLastPOWBlock = 110;
-
         nFirstPosv2Block = 110;
         nFirstPosv3Block = 500;
 
-        bnProofOfWorkLimit = CBigNum(~uint256(0) >> 16);
+        bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce = 52419;
+        genesis.nNonce = 1001;
 		
-        hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x00004351133a2c6c1f7277b0d684192b605bc62c03727bba81e4d20863944049"));
+        hashGenesisBlock = genesis.GetHash();      
+        assert(hashGenesisBlock == uint256("0x0eaef840827189830c177c345f53a26ad87e0770b200a83d7ff6a928d725d882"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(127).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(196).convert_to_container<std::vector<unsigned char> >();
@@ -219,6 +221,10 @@ public:
         base58Prefixes[EXT_SECRET_KEY_BTC]  = list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >(); // tpub
 
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
+                      
+        nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
+
+        devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };

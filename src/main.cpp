@@ -2443,21 +2443,21 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 
             if (prevout.n >= txPrev.vout.size() || prevout.n >= txindex.vSpent.size())
                 return DoS(100, error("ConnectInputs() : %s prevout.n out of range %d %u %u prev tx %s\n%s", GetHash().ToString(), prevout.n, txPrev.vout.size(), txindex.vSpent.size(), prevout.hash.ToString(), txPrev.ToString()));
-
-            // If prev is coinbase or coinstake, check that it's matured
-            if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
-            {
-                int nSpendDepth;
-                if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, nCoinbaseMaturity, nSpendDepth))
-                    return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
-            }
-
+       
             // ppcoin: check transaction timestamp
             if (txPrev.nTime > nTime)
                 return DoS(100, error("ConnectInputs() : transaction timestamp earlier than input transaction"));
 
             if (Params().IsProtocolV3(pindexBlock->nHeight))
             {
+                // If prev is coinbase or coinstake, check that it's matured
+                if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
+                {
+                    int nSpendDepth;
+                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, nCoinbaseMaturity, nSpendDepth))
+                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
+                }
+
                 if (txPrev.vout[prevout.n].IsEmpty())
                     return DoS(1, error("ConnectInputs() : special marker is not spendable"));
             }
@@ -2728,6 +2728,30 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
+
+
+        if (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0) {
+            CBitcoinAddress address(Params().GetDevContributionAddress());
+            CScript scriptPubKey;
+            scriptPubKey.SetDestination(address.Get());
+
+            bool containsDonation = false;
+
+            //the donation can be at i = 2 or above. so we start looking for it there
+            for (int i = 2; i < vtx[1].vout.size(); i++) {
+                if (vtx[1].vout[i].scriptPubKey == scriptPubKey) {
+                    if (vtx[1].vout[i].nValue >= nCalculatedStakeReward) {
+                        //we found a donation. Stop searching
+                        containsDonation = true;
+                        break;
+                    }
+                }
+            }
+            if (!containsDonation) {
+                LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
+                return DoS(100, error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[1].ToString()));
+            }            
+        }
     }
 
     // ppcoin: track money supply and mint amount info
@@ -3009,48 +3033,48 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     return true;
 }
 
-int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockIndex* &pindexRet) const
+std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChainINTERNAL(CBlockIndex* &pindexRet) const
 {
     if (hashBlock == 0 || nIndex == -1)
-        return 0;
+        return std::make_pair(0, -1);
 
     AssertLockHeld(cs_main);
 
     // Find the block it claims to be in
     map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
     if (mi == mapBlockIndex.end())
-        return 0;
+        return std::make_pair(0, -1);
     CBlockIndex* pindex = (*mi).second;
     if (!pindex || !pindex->IsInMainChain())
-        return 0;
+        return std::make_pair(0, -1);
 
     // Make sure the merkle branch connects to this block
     if (!fMerkleVerified)
     {
         if (CBlock::CheckMerkleBranch(GetHash(), vMerkleBranch, nIndex) != pindex->hashMerkleRoot)
-            return 0;
+            return  std::make_pair(0, -1);
         fMerkleVerified = true;
     }
 
     pindexRet = pindex;
-    return pindexBest->nHeight - pindex->nHeight + 1;
+    return std::make_pair(pindexBest->nHeight - pindex->nHeight + 1, pindex->nHeight);
 }
 
-int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
+std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChain(CBlockIndex* &pindexRet) const
 {
     AssertLockHeld(cs_main);
-    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
-    if (nResult == 0 && !mempool.exists(GetHash()))
-        return -1; // Not in chain, not in mempool
+    pair<int, int> nResult = GetDepthAndHeightInMainChainINTERNAL(pindexRet);
+    if (nResult.first == 0 && !mempool.exists(GetHash()))
+        return std::make_pair(-1, -1); // Not in chain, not in mempool
 
     return nResult;
 }
 
-int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const
+std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const
 {
     //if (hashBlock == 0 || nIndex == -1)
     if (hashBlock == 0)
-        return 0;
+        return std::make_pair(0, -1);
 
     AssertLockHeld(cs_main);
 
@@ -3068,15 +3092,15 @@ int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const
             CDiskBlockThinIndex diskindex;
             if (txdb.ReadBlockThinIndex(hashBlock, diskindex)
                 && diskindex.hashNext != 0)
-                return pindexBestHeader->nHeight - diskindex.nHeight + 1;
+                return std::make_pair(pindexBestHeader->nHeight - diskindex.nHeight + 1, diskindex.nHeight);
         };
 
-        return 0;
+        return std::make_pair(0, -1);
     };
 
     CBlockThinIndex* pindex = (*mi).second;
     if (!pindex || !pindex->IsInMainChain())
-        return 0;
+        return std::make_pair(0, -1);
 
     /*
     // Make sure the merkle branch connects to this block
@@ -3088,15 +3112,15 @@ int CMerkleTx::GetDepthInMainChainINTERNAL(CBlockThinIndex* &pindexRet) const
     };
     */
     pindexRet = pindex;
-    return pindexBestHeader->nHeight - pindex->nHeight + 1;
+    return std::make_pair(pindexBestHeader->nHeight - pindex->nHeight + 1, pindex->nHeight);
 }
 
-int CMerkleTx::GetDepthInMainChain(CBlockThinIndex* &pindexRet) const
+std::pair<int, int> CMerkleTx::GetDepthAndHeightInMainChain(CBlockThinIndex* &pindexRet) const
 {
     AssertLockHeld(cs_main);
-    int nResult = GetDepthInMainChainINTERNAL(pindexRet);
-    if (nResult == 0 && !mempool.exists(GetHash()))
-        return -1; // Not in chain, not in mempool
+    std::pair<int, int> nResult = GetDepthAndHeightInMainChainINTERNAL(pindexRet);
+    if (nResult.first == 0 && !mempool.exists(GetHash()))
+        return std::make_pair(-1, -1); // Not in chain, not in mempool
 
     return nResult;
 }
@@ -3106,7 +3130,13 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
 
-    return max(0, (nCoinbaseMaturity + 5) - GetDepthInMainChain());
+    std::pair<int, int> pDepthAndHeight = GetDepthAndHeightInMainChain();
+
+    // Block to maturity is only relevant for PoSv3 according to the consensus rule in CheckProofOfStake
+    if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
+        return 0;
+
+    return max(0, (nCoinbaseMaturity + 5) - pDepthAndHeight.first);
 }
 
 
@@ -4968,6 +4998,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
+
+        //		Future fork condition. Enforce minimum protcol version based on nTime.
+        if (Params().IsForkV2(nTime)) {
+            if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
+            {
+                // disconnect from peers older than this proto version
+                LogPrintf("Peer %s using pre-fork version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);
+                pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE, strprintf("node < %d", MIN_PEER_PROTO_VERSION));
+                pfrom->fDisconnect = true;
+                return false;
+            }
+        }
+
         if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // disconnect from peers older than this proto version
