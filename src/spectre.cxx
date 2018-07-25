@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "spectreconfig.h"
+#include "clientversion.h"
 
 int main (int argc, char *argv[])
 {
@@ -10,10 +10,10 @@ int main (int argc, char *argv[])
     {
         fprintf(stdout,"%s Version %d.%d.%d (%s)\n",
                 argv[0],
-                Spectre_VERSION_MAJOR,
-                Spectre_VERSION_MINOR,
-                Spectre_VERSION_BUGFIX,
-                Spectre_GIT_SHA1);
+                CLIENT_VERSION_MAJOR,
+                CLIENT_VERSION_MINOR,
+                CLIENT_VERSION_REVISION,
+                CLIENT_VERSION_BUILD);
         fprintf(stdout,"Usage: %s number\n",argv[0]);
         return 1;
     }

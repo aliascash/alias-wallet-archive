@@ -104,5 +104,4 @@ Makefile\.am\.user
 cmake-build-debug/
 
 # CMake generated stuff
-src/spectreconfig.h
 src/clientversion.h

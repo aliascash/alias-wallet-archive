@@ -1,5 +1,0 @@
-// Version definition
-#define Spectre_VERSION_MAJOR  @Spectre_VERSION_MAJOR@
-#define Spectre_VERSION_MINOR  @Spectre_VERSION_MINOR@
-#define Spectre_VERSION_BUGFIX @Spectre_VERSION_BUGFIX@
-#define Spectre_GIT_SHA1       "@Spectre_GIT_SHA1@"
