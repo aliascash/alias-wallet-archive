@@ -5,6 +5,7 @@ project (Spectre)
 set (CLIENT_VERSION_MAJOR      2)
 set (CLIENT_VERSION_MINOR      0)
 set (CLIENT_VERSION_REVISION   3)
+set (CLIENT_VERSION_BUILD      0)
 set (CLIENT_VERSION_GIT_SHA1   "---")
 
 # Determine current Git hash
