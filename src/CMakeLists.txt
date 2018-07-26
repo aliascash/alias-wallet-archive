@@ -37,7 +37,7 @@ target_sources(Spectre
         "${CMAKE_CURRENT_LIST_DIR}/netbase.h"
         "${CMAKE_CURRENT_LIST_DIR}/pbkdf2.h"
         "${CMAKE_CURRENT_LIST_DIR}/protocol.h"
-        "${CMAKE_CURRENT_LIST_DIR}/resource.h"
+#        "${CMAKE_CURRENT_LIST_DIR}/resource.h"
         "${CMAKE_CURRENT_LIST_DIR}/ringsig.h"
         "${CMAKE_CURRENT_LIST_DIR}/rpcclient.h"
         "${CMAKE_CURRENT_LIST_DIR}/rpcprotocol.h"
@@ -101,12 +101,12 @@ target_sources(Spectre
         "${CMAKE_CURRENT_LIST_DIR}/rpcwallet.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/script.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/scrypt.cpp"
-        "${CMAKE_CURRENT_LIST_DIR}/scrypt-arm.S"
-        "${CMAKE_CURRENT_LIST_DIR}/scrypt-x86.S"
-        "${CMAKE_CURRENT_LIST_DIR}/scrypt-x86_64.S"
+#        "${CMAKE_CURRENT_LIST_DIR}/scrypt-arm.S"
+#        "${CMAKE_CURRENT_LIST_DIR}/scrypt-x86.S"
+#        "${CMAKE_CURRENT_LIST_DIR}/scrypt-x86_64.S"
         "${CMAKE_CURRENT_LIST_DIR}/smessage.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/spectre.cxx"
-        "${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp"
+#        "${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/state.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/stealth.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/sync.cpp"
@@ -121,7 +121,7 @@ target_sources(Spectre
 include(${CMAKE_CURRENT_LIST_DIR}/json/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/lz4/CMakeLists.txt)
 #include(${CMAKE_CURRENT_LIST_DIR}/qt/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/win/CMakeLists.txt)
+#include(${CMAKE_CURRENT_LIST_DIR}/test/CMakeLists.txt)
+#include(${CMAKE_CURRENT_LIST_DIR}/win/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/wordlists/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/xxhash/CMakeLists.txt)

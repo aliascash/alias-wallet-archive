@@ -1,8 +1,4 @@
 target_sources(Spectre
-        PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_reader.cpp"
-            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_value.cpp"
-            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer.cpp"
         PUBLIC
             "${CMAKE_CURRENT_LIST_DIR}/json_spirit.h"
             "${CMAKE_CURRENT_LIST_DIR}/json_spirit_error_position.h"
@@ -13,4 +9,8 @@ target_sources(Spectre
             "${CMAKE_CURRENT_LIST_DIR}/json_spirit_value.h"
             "${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer.h"
             "${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer_template.h"
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_reader.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_value.cpp"
+            "${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer.cpp"
         )
