@@ -8,6 +8,9 @@ set (CLIENT_VERSION_REVISION   3)
 set (CLIENT_VERSION_BUILD      0)
 set (CLIENT_VERSION_GIT_SHA1   "---")
 
+# Compiler flags
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++0x")
+
 # Determine current Git hash
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
