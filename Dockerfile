@@ -1,5 +1,6 @@
 ### At first perform source build ###
-FROM hlxeasy/spectre-builder-part2:latest as build
+FROM spectreproject/spectre-builder-part2:latest as build
+MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
 ARG BUILD_THREADS="1"
@@ -13,15 +14,16 @@ RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
  && ./autogen.sh \
  && ./configure \
+        --enable-gui \
+        --with-qt5=/usr/include/x86_64-linux-gnu/qt5 \
  && make -j${BUILD_THREADS}
-#        --enable-gui \
-#        --with-qt5=/usr/include/x86_64-linux-gnu/qt5 \
 
 ### Now package binaries into new image ###
-FROM hlxeasy/spectre-base:latest
+FROM spectreproject/spectre-base:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
+COPY --from=build /spectre/src/spectre /usr/local/bin/
 
 USER spectre
 
