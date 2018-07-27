@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.12)
 project (Spectre)
 
 # The version number.
@@ -9,6 +9,7 @@ set (CLIENT_VERSION_BUILD      0)
 set (CLIENT_VERSION_GIT_SHA1   "---")
 
 # Compiler flags
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 # Determine current Git hash
