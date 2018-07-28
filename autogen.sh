@@ -7,8 +7,9 @@ git submodule init
 git submodule sync --recursive
 git submodule update --recursive --force --remote
 
-autoreconf --no-recursive --install
-
-pushd tor
-./autogen.sh
-popd
+# Disabled as we are using fully configured repos now!
+#autoreconf --no-recursive --install
+#
+#pushd tor
+#./autogen.sh
+#popd
