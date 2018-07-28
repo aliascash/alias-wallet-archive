@@ -3,7 +3,7 @@ FROM spectreproject/spectre-builder-part2:latest as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
-ARG BUILD_THREADS="1"
+ARG BUILD_THREADS="6"
 
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
