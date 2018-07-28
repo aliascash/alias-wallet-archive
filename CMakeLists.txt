@@ -25,6 +25,7 @@ include_directories("${PROJECT_BINARY_DIR}" "leveldb/include/" "db4.8/dbinc/" )
 add_executable(Spectre "")
 
 include(${CMAKE_CURRENT_LIST_DIR}/src/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/db4.8/CMakeLists.txt)
 include_directories(
         ${CMAKE_CURRENT_LIST_DIR}/leveldb/helpers
         ${CMAKE_CURRENT_LIST_DIR}/obj
