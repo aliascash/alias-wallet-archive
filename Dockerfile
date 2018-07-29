@@ -24,5 +24,3 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
 
 USER spectre
-
-CMD ["spectrecoind"]
