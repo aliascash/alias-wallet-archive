@@ -2,7 +2,7 @@ SpectreCoin Building from source for Windows (XSPEC)
 ====================================================
 
 
-Install MSVC 2017 and Qt SDK (Pick MSVC 64 bit and QtWebEngine)
+Install MSVC 2017 and Qt SDK 5.9.6 (Pick MSVC 64 bit and QtWebEngine)
 ------------
 
 - Visual studio: https://www.visualstudio.com/downloads/
