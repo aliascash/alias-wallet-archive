@@ -25,5 +25,3 @@ COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
 COPY --from=build /spectre/src/spectre /usr/local/bin/spectrecoin
 
 USER spectre
-
-CMD ["spectrecoind"]
