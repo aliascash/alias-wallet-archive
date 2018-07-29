@@ -1,9 +1,9 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-part2:latest as build
+FROM spectreproject/spectre-builder:latest as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
-ARG BUILD_THREADS="1"
+ARG BUILD_THREADS="6"
 
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
@@ -15,7 +15,6 @@ RUN cd /spectre \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
-        --with-qt5=/usr/include/x86_64-linux-gnu/qt5 \
  && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
@@ -23,7 +22,7 @@ FROM spectreproject/spectre-base:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
-COPY --from=build /spectre/src/spectre /usr/local/bin/
+COPY --from=build /spectre/src/spectre /usr/local/bin/spectrecoin
 
 USER spectre
 
