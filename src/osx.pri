@@ -10,6 +10,7 @@
 
 ICON = $$PWD/../spectre.icns
 
+    #to build tor use ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/ command in the subfolder of berklydb
     LIBS += -L$$PWD/../tor/src/or -ltor \
     -L$$PWD/../tor/src/common -lor \
     -L$$PWD/../tor/src/common -lor-ctime \

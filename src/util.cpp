@@ -1405,11 +1405,16 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
     namespace fs = boost::filesystem;
 
-    char pszPath[MAX_PATH] = "";
+	wchar_t wPszPath[MAX_PATH];
 
-    if(SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate))
+	// get the path in unicode to support also non standard characters (8bit) like cyrillic
+    if(SHGetSpecialFolderPathW(NULL, wPszPath, nFolder, fCreate))
     {
-        return fs::path(pszPath);
+		// shorten the unicode path to be representable in 8bit chars
+		wchar_t wPszPathShort[MAX_PATH];
+		GetShortPathNameW(wPszPath, wPszPathShort, MAX_PATH);
+
+        return fs::path(wPszPathShort);
     }
 
     LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");

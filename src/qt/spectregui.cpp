@@ -71,6 +71,7 @@ bool WebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::Nav
     if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
         emit linkClicked(url);
+        qDebug() << "linkClicked " << url;
         return false;
     }
     return true;
