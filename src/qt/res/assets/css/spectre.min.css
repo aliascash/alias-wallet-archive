@@ -205,3 +205,39 @@ progress::-webkit-progress-value{border-radius:50px;box-spectre:inset 0 1px 1px 
 .none{display:none!important}
 .radio label.form-controlring_size:before{display:none}
 
+/* Make tbody scrollable */
+#transactions > thead {
+    display: table;
+    width: calc( 100% - 1.25em );
+    table-layout: fixed; /* even columns width , fix width of table too*/
+}
+#transactions > tbody {
+    display: block;
+    height: 50vh;
+    overflow: auto;
+}
+#transactions > tbody > tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* even columns width , fix width of table too*/
+}
+
+/* Make page-content scrollable with fix header */
+body.fixed-header {
+    overflow-y: hidden;
+}
+.header {
+    position: static !important;
+}
+.page-container > .page-content-wrapper > .content {
+    padding-top: 0px !important;
+}
+.page-container > .page-content-wrapper {
+    position: absolute !important;
+    min-height: initial !important;
+    top: 60px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: auto;
+}
