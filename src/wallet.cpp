@@ -4388,7 +4388,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
 
     if (!fFound)
     {
-        sError = "No combination of coins matches amount and ring size.";
+        sError = "No combination of (mature) coins matches amount and ring size.";
         return false;
     };
 

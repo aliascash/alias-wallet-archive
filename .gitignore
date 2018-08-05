@@ -95,11 +95,12 @@ openssl-1\.1\.0h\.tar\.gz
 boost_1_67_0\.tar\.gz
 
 Makefile\.am\.user
-/build-src-Desktop_Qt_5_11_0_MSVC2017_64bit-Debug
+/build-src-Desktop_Qt*
 /Prebuild.Spectre.libraries.zip
-/build-src-Desktop_Qt_5_11_0_MSVC2017_64bit-Release
 
 # CLion/IntelliJ files
 .idea/
 *.iml
 cmake-build-debug/
+
+moc_predefs.h

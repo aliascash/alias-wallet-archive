@@ -77,7 +77,6 @@ void TransactionModel::init(ClientModel * clientModel, TransactionTableModel * t
 
 QVariantMap TransactionModel::addTransaction(int row)
 {
-    qDebug() << "addTransaction";
     QModelIndex status   = ttm->index    (row, TransactionTableModel::Status);
     QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
     QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
@@ -127,7 +126,6 @@ void TransactionModel::populateRows(int start, int end)
         start++;
     }
     if(!transactions.isEmpty()) {
-        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
     }
 
@@ -149,7 +147,6 @@ void TransactionModel::populatePage()
             transactions.append(addTransaction(row));
 
     if(!transactions.isEmpty()) {
-        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
     }
 
@@ -770,6 +767,7 @@ void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, in
 
 void SpectreBridge::transactionDetails(QString txid)
 {
+    qDebug() << "Emit transaction details " << window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
     emit transactionDetailsResult(window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString());
 }
 

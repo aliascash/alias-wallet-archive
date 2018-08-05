@@ -71,6 +71,7 @@
         <file alias="assets/icons/tx_input.png">src/qt/res/assets/icons/tx_input.png</file>
         <file alias="assets/icons/tx_staked.png">src/qt/res/assets/icons/tx_staked.png</file>
         <file alias="assets/icons/tx_donated.png">src/qt/res/assets/icons/tx_donated.png</file>
+		<file alias="assets/icons/tx_contributed.png">src/qt/res/assets/icons/tx_contributed.png</file>
         <file alias="assets/icons/tx_output.png">src/qt/res/assets/icons/tx_output.png</file>
         <file alias="assets/img/about.png">src/qt/res/assets/img/about.png</file>
         <file alias="assets/img/avatars/kewde.png">src/qt/res/assets/img/avatars/kewde.png</file>
@@ -1998,6 +1999,7 @@
         <file alias="remove">src/qt/res/icons/remove.png</file>
         <file alias="tx_staked">src/qt/res/icons/tx_staked.png</file>
         <file alias="tx_donated">src/qt/res/icons/tx_donated.png</file>
+		<file alias="tx_contributed">src/qt/res/icons/tx_contributed.png</file>
         <file alias="tx_input">src/qt/res/icons/tx_input.png</file>
         <file alias="tx_output">src/qt/res/icons/tx_output.png</file>
         <file alias="tx_inout">src/qt/res/icons/tx_inout.png</file>

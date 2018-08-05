@@ -511,8 +511,9 @@ function transactionPageInit() {
     }
   }, {
     name : "Copy&nbsp;transaction&nbsp;ID",
-    fun : function() {
-      copy("#transactions .footable .selected", "id");
+    fun: function () {
+        var trxId = $("#transactions .footable .selected").attr("id");
+        copy(trxId.substring(0, trxId.length-4), "copy");
     }
   }, {
     name : "Edit&nbsp;label",
