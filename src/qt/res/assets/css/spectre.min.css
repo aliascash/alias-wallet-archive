@@ -205,3 +205,18 @@ progress::-webkit-progress-value{border-radius:50px;box-spectre:inset 0 1px 1px 
 .none{display:none!important}
 .radio label.form-controlring_size:before{display:none}
 
+#transactions > thead {
+    display: table;
+    width: calc( 100% - 1.25em );
+    table-layout: fixed; /* even columns width , fix width of table too*/
+}
+#transactions > tbody {
+    display: block;
+    height: 50vh;
+    overflow: auto;
+}
+#transactions > tbody > tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* even columns width , fix width of table too*/
+}
