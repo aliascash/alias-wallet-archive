@@ -749,6 +749,10 @@ void RPCRunHandler(const boost::system::error_code& err, boost::function<void(vo
 
 void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds)
 {
+    if (rpc_io_service == NULL) {
+        throw std::runtime_error("To use the walletpassphrase you need to start the wallet with argument -server. Start the wallet with -server argument and try again.\n");
+        return;
+    }
     assert(rpc_io_service != NULL);
 
     if (deadlineTimers.count(name) == 0)

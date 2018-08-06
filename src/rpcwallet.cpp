@@ -1623,7 +1623,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
     int64_t nSleepTime = params[1].get_int64();
     LOCK(cs_nWalletUnlockTime);
     nWalletUnlockTime = GetTime() + nSleepTime;
-    RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    try {
+        RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    } catch (std::runtime_error &e) {
+        throw e;
+    }
 
     // ppcoin: if user OS account compromised prevent trivial sendmoney commands
     if (params.size() > 2)
