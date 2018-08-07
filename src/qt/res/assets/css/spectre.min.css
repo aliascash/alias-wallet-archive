@@ -241,3 +241,13 @@ body.fixed-header {
     bottom: 0px;
     overflow-y: auto;
 }
+@media (max-width:767px) {
+    .page-container > .page-content-wrapper {
+        position: absolute !important;
+        min-height: initial !important;
+        top: 48px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        overflow-y: auto;
+    }
