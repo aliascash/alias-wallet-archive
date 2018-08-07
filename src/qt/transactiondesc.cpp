@@ -132,7 +132,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     {
         // Online transaction
         std::string strAddress = wtx.mapValue["to"];
-        strHTML += "<b>" + tr("To") + ":</b> <a href='"+explorer + "address/" + GUIUtil::HtmlEscape(strAddress) + "'>";
+        strHTML += "<b>" + tr("To") + ":</b> <a href='"+explorer + "address.dws?" + GUIUtil::HtmlEscape(strAddress) + "'>";
         CTxDestination dest = CBitcoinAddress(strAddress).Get();
         if (wallet->mapAddressBook.count(dest) && !wallet->mapAddressBook[dest].empty())
             strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[dest]) + " ";
@@ -189,7 +189,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                     CTxDestination address;
                     if (ExtractDestination(txout.scriptPubKey, address))
                     {
-                        strHTML += "<b>" + tr("To") + ":</b> <a href='"+explorer+"address/"+GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString())+"'>";
+                        strHTML += "<b>" + tr("To") + ":</b> <a href='"+explorer+"address.dws?"+GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString())+"'>";
                         if (wallet->mapAddressBook.count(address) && !wallet->mapAddressBook[address].empty())
                             strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[address]) + " ";
                         strHTML += GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString());
@@ -312,7 +312,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                     CTxDestination address;
                     if (ExtractDestination(vout.scriptPubKey, address))
                     {
-                        strHTML +="<a href='"+explorer+"address/"+QString::fromStdString(CBitcoinAddress(address).ToString())+"'>";
+                        strHTML +="<a href='"+explorer+"address.dws?"+QString::fromStdString(CBitcoinAddress(address).ToString())+"'>";
                         if (wallet->mapAddressBook.count(address) && !wallet->mapAddressBook[address].empty())
                             strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[address]) + " ";
                         strHTML += QString::fromStdString(CBitcoinAddress(address).ToString()) + "</a>";
