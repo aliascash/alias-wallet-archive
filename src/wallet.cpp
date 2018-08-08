@@ -4625,7 +4625,7 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4739,7 +4739,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4752,7 +4752,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 
@@ -4841,7 +4841,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4854,7 +4854,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 
@@ -5172,7 +5172,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 

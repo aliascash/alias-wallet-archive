@@ -172,10 +172,10 @@ Value checkkernel(const Array& params, bool fHelp)
     bool fCreateBlockTemplate = params.size() > 1 ? params[1].get_bool() : false;
 
     if (vNodes.empty())
-        throw JSONRPCError(-9, "SpectreCoin is not connected!");
+        throw JSONRPCError(-9, "Spectrecoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "SpectreCoin is downloading blocks...");
+        throw JSONRPCError(-10, "Spectrecoin is downloading blocks...");
 
     COutPoint kernel;
     CBlockIndex* pindexPrev = pindexBest;
@@ -253,10 +253,10 @@ Value getworkex(const Array& params, bool fHelp)
         );
 
     if (vNodes.empty())
-        throw JSONRPCError(-9, "SpectreCoin is not connected!");
+        throw JSONRPCError(-9, "Spectrecoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(-10, "SpectreCoin is downloading blocks...");
+        throw JSONRPCError(-10, "Spectrecoin is downloading blocks...");
 
     if (pindexBest->nHeight >= Params().LastPOWBlock())
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
@@ -389,10 +389,10 @@ Value getwork(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_MISC_ERROR, "Not running as a full node!");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "SpectreCoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Spectrecoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "SpectreCoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Spectrecoin is downloading blocks...");
 
     if (pindexBest->nHeight >= Params().LastPOWBlock())
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
@@ -533,10 +533,10 @@ Value getblocktemplate(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "SpectreCoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Spectrecoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "SpectreCoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Spectrecoin is downloading blocks...");
 
     if (pindexBest->nHeight >= Params().LastPOWBlock())
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");

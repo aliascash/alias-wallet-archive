@@ -282,7 +282,7 @@ Value dumpprivkey(const Array& params, bool fHelp)
     } else
     {
         if (!address.SetString(strAddress))
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
         if (!address.GetKeyID(keyID))
             throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     };
@@ -324,7 +324,7 @@ Value dumpwallet(const Array& params, bool fHelp)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-    file << strprintf("# Wallet dump created by SpectreCoin %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
+    file << strprintf("# Wallet dump created by Spectrecoin %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", nBestHeight, hashBestChain.ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(pindexBest->nTime));
