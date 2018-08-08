@@ -1451,7 +1451,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (mi == mapBlockIndex.end())
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1461,7 +1461,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1479,7 +1479,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
         blkTransactions.insert(QString::number(x), blockTxn);
     }
 
-    emit listTransactionsForBlockResult(blkTransactions);
+    emit listTransactionsForBlockResult(blkHash, blkTransactions);
     return;
 }
 

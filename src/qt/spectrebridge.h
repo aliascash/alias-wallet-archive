@@ -193,7 +193,7 @@ signals:
     void findBlockResult(QVariantMap result);
     void listLatestBlocksResult(QVariantMap result);
     void blockDetailsResult(QVariantMap result);
-    void listTransactionsForBlockResult(QVariantMap result);
+    void listTransactionsForBlockResult(QString blkHash, QVariantMap result);
     void txnDetailsResult(QVariantMap result);
 
     void newAddressResult(QString result);
