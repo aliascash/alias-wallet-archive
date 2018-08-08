@@ -97,6 +97,9 @@ public:
     const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
     int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
 
+    const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+    const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
+
 protected:
     CChainParams() {};
 

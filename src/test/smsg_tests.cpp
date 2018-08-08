@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(smsg_test)
         std::string sAddrTo = addrFrom.ToString();
         std::string sAddrFail = addrFail.ToString();
         
-        BOOST_MESSAGE("sAddrFrom " << sAddrFrom);
-        BOOST_MESSAGE("sAddrTo " << sAddrTo);
+        BOOST_TEST_MESSAGE("sAddrFrom " << sAddrFrom);
+        BOOST_TEST_MESSAGE("sAddrTo " << sAddrTo);
         
         BOOST_CHECK_MESSAGE(0 == (rv = SecureMsgEncrypt(smsg, sAddrFrom, sAddrTo, sTestMessage)), "SecureMsgEncrypt " << rv);
         

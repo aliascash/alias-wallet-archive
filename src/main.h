@@ -171,6 +171,7 @@ bool GetWalletFile(CWallet* pwallet, std::string &strWalletFileOut);
 
 /** Get statistics from node state */
 bool GetNodeStateStats(NodeId nodeid, CNodeStateStats &stats);
+bool AddOrphanTx(const CTransaction& tx);
 
 /** Position on disk for a particular transaction. */
 class CDiskTxPos
