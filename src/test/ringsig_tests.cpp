@@ -44,11 +44,11 @@ void testRingSigs(int nRingSize)
 
     uint256 preimage;
     BOOST_CHECK(1 == RAND_bytes((uint8_t*) preimage.begin(), 32));
-    //BOOST_MESSAGE("Txn preimage: " << HexStr(preimage));
+    //BOOST_TEST_MESSAGE("Txn preimage: " << HexStr(preimage));
 
-    //BOOST_MESSAGE("nRingSize: " << nRingSize);
+    //BOOST_TEST_MESSAGE("nRingSize: " << nRingSize);
     int iSender = GetRandInt(nRingSize);
-    //BOOST_MESSAGE("sender: " << iSender);
+    //BOOST_TEST_MESSAGE("sender: " << iSender);
 
     ec_secret sSpend;
     ec_point pkSpend;
@@ -72,7 +72,7 @@ void testRingSigs(int nRingSize)
 
     int sigSize = EC_COMPRESSED_SIZE + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize;
 
-    BOOST_MESSAGE("nRingSize " << nRingSize << ", sigSize: " << bytesReadable(sigSize));
+    BOOST_TEST_MESSAGE("nRingSize " << nRingSize << ", sigSize: " << bytesReadable(sigSize));
 
     if (pPubkeys)
         free(pPubkeys);
@@ -102,10 +102,10 @@ void testRingSigABs(int nRingSize)
 
     uint256 preimage;
     BOOST_CHECK(1 == RAND_bytes((uint8_t*) preimage.begin(), 32));
-    //BOOST_MESSAGE("Txn preimage: " << HexStr(preimage));
+    //BOOST_TEST_MESSAGE("Txn preimage: " << HexStr(preimage));
 
     int iSender = GetRandInt(nRingSize);
-    //BOOST_MESSAGE("sender: " << iSender);
+    //BOOST_TEST_MESSAGE("sender: " << iSender);
 
     ec_point pSigC;
 
@@ -131,7 +131,7 @@ void testRingSigABs(int nRingSize)
 
     int sigSize = EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize;
 
-    BOOST_MESSAGE("nRingSize " << nRingSize << ", sigSize: " << bytesReadable(sigSize));
+    BOOST_TEST_MESSAGE("nRingSize " << nRingSize << ", sigSize: " << bytesReadable(sigSize));
 
     if (pPubkeys)
         free(pPubkeys);
@@ -148,33 +148,33 @@ BOOST_AUTO_TEST_CASE(ringsig)
 
     BOOST_REQUIRE(0 == initialiseRingSigs());
 
-    BOOST_MESSAGE("testRingSigs");
+    BOOST_TEST_MESSAGE("testRingSigs");
 
     for (int k = 1; k < 6; ++k)
     {
-        //BOOST_MESSAGE("ringSize " << (k % 126 + 2));
+        //BOOST_TEST_MESSAGE("ringSize " << (k % 126 + 2));
         testRingSigs(k % 126);
     };
-    BOOST_MESSAGE("ringSize " << 199);
+    BOOST_TEST_MESSAGE("ringSize " << 199);
     testRingSigs(199);
 
-    BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
-    BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
+    BOOST_TEST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
+    BOOST_TEST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
 
     totalGenerate = 0;
     totalVerify = 0;
-    BOOST_MESSAGE("testRingSigABs");
+    BOOST_TEST_MESSAGE("testRingSigABs");
 
     for (int k = 2; k < 6; ++k)
     {
-        BOOST_MESSAGE("ringSize " << (k % 126));
+        BOOST_TEST_MESSAGE("ringSize " << (k % 126));
         testRingSigABs(k % 126);
     };
-    BOOST_MESSAGE("ringSize " << 199);
+    BOOST_TEST_MESSAGE("ringSize " << 199);
     testRingSigABs(199);
 
-    BOOST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
-    BOOST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
+    BOOST_TEST_MESSAGE("totalGenerate " << (double(totalGenerate) / CLOCKS_PER_SEC));
+    BOOST_TEST_MESSAGE("totalVerify   " << (double(totalVerify)   / CLOCKS_PER_SEC));
 
     BOOST_CHECK(0 == finaliseRingSigs());
 
