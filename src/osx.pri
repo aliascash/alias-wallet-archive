@@ -103,7 +103,7 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     _BOOST_PATH = /usr/local/Cellar/boost/1.67.0_1
     INCLUDEPATH += "$${_BOOST_PATH}/include/"
     LIBS += -L$${_BOOST_PATH}/lib
-    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
+    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt -lboost_unit_test_framework-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
     DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB BOOST_THREAD_POSIX BOOST_HAS_THREADS
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
