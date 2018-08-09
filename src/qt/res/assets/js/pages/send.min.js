@@ -115,7 +115,12 @@ $(function() {
           }
 
           if (validateAddressResult && typeof addRecipientResult === 'undefined') {
-              bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), $(this).find(".narration").val(), unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val());
+              var narration = $(this).find(".narration").val();
+              // Fix if narration is undefined, addRecipient was never called on QT bridge (QT 5.9.6)
+              if (typeof narration === 'undefined') {
+                  narration = "";
+              }
+              bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), narration, unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val());
               return
           }
 
