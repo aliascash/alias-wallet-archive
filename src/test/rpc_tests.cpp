@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(rpc_rawsign)
     
     std::string stestA = std::string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+","+privkey2+"]";
     r = CallRPC(stestA);
-    //BOOST_MESSAGE("CallRPC %s\n", stestA.c_str());
+    //BOOST_TEST_MESSAGE("CallRPC %s\n", stestA.c_str());
     BOOST_CHECK(find_value(r.get_obj(), "complete").get_bool() == true);
     
     std::string stestB = std::string("signrawtransaction ")+notsigned+" "+prevout+" "+"["+privkey1+"]";

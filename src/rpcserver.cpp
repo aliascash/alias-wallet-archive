@@ -741,6 +741,10 @@ void StopRPCThreads()
     delete rpc_io_service; rpc_io_service = NULL;
 }
 
+bool IsRPCServerRunning() {
+	return rpc_io_service != NULL;
+}
+
 void RPCRunHandler(const boost::system::error_code& err, boost::function<void(void)> func)
 {
     if (!err)

@@ -89,13 +89,13 @@ void RunPathTest()
     std::string sTest;
     
     int al = sizeof(failTests)/sizeof(FailTest);
-    
-    BOOST_MESSAGE("Running " << al << " tests expected to fail.");
+        
+    BOOST_TEST_MESSAGE("Running " << al << " tests expected to fail.");
     
     for (int i = 0; i < al; ++i)
     {
         FailTest &ft = failTests[i];
-        BOOST_MESSAGE("Fail test " << i << ", path '"  << ft.sTest << "', expect return " << ft.rv);
+        BOOST_TEST_MESSAGE("Fail test " << i << ", path '"  << ft.sTest << "', expect return " << ft.rv);
         rv = ExtractExtKeyPath(ft.sTest, vPath);
         BOOST_CHECK(rv == ft.rv);
         //BOOST_CHECK_MESSAGE(rv != ft.rv, "rv   " << rv);
@@ -105,20 +105,20 @@ void RunPathTest()
     memset(tooMuchData, '/', 512);
     tooMuchData[512] = '\0';
     sTest = std::string(tooMuchData);
-    BOOST_MESSAGE("Testing Path 'tooMuchData'");
+    BOOST_TEST_MESSAGE("Testing Path 'tooMuchData'");
     rv = ExtractExtKeyPath(sTest, vPath);
     BOOST_CHECK(rv == 2);
     
     
     al = sizeof(passTests)/sizeof(PassTest);
     
-    BOOST_MESSAGE("Running " << al << " tests expected to pass.");
+    BOOST_TEST_MESSAGE("Running " << al << " tests expected to pass.");
     
     std::stringstream ss, ssE;
     for (int i = 0; i < al; ++i)
     {
         PassTest &pt = passTests[i];
-        BOOST_MESSAGE("Pass test " << i << ", path '" << pt.sTest << "', expect return " << pt.rv);
+        BOOST_TEST_MESSAGE("Pass test " << i << ", path '" << pt.sTest << "', expect return " << pt.rv);
         rv = ExtractExtKeyPath(pt.sTest, vPath);
         
         ss.str("");
@@ -128,7 +128,7 @@ void RunPathTest()
             if (it != vPath.end()-1)
                 ss << ", ";
         };
-        BOOST_MESSAGE("vPath   " << ss.str());
+        BOOST_TEST_MESSAGE("vPath   " << ss.str());
         
         ssE.str("");
         for (std::vector<uint32_t>::iterator it = pt.vExpect.begin(); it != pt.vExpect.end(); ++it)
@@ -137,14 +137,14 @@ void RunPathTest()
             if (it != pt.vExpect.end()-1)
                 ssE << ", ";
         };
-        BOOST_MESSAGE("vExpect " << ssE.str());
+        BOOST_TEST_MESSAGE("vExpect " << ssE.str());
         
         BOOST_CHECK(rv == pt.rv);
         BOOST_CHECK(vPath == pt.vExpect);
     };
     
     //for (std::vector<uint32_t>::iterator it = vPath.begin(); it != vPath.end(); ++it)
-    //    BOOST_MESSAGE("vPath " << *it);
+    //    BOOST_TEST_MESSAGE("vPath " << *it);
 }
 
 
@@ -186,7 +186,7 @@ void RunDeriveTest(std::vector<DeriveTestData> &vData)
             
             if (rv != 0)
             {
-                BOOST_MESSAGE("Set master failed, aborting test.");
+                BOOST_TEST_MESSAGE("Set master failed, aborting test.");
                 break;
             }
             continue;
@@ -205,7 +205,7 @@ void RunDeriveTest(std::vector<DeriveTestData> &vData)
         evkeyOut = evkey[dt.nDerives % 2];
         
         BOOST_CHECK(CBitcoinExtKey(evkeyOut).ToString().c_str());
-        BOOST_MESSAGE("evkeyOut.nDepth " << (int)evkeyOut.nDepth);
+        BOOST_TEST_MESSAGE("evkeyOut.nDepth " << (int)evkeyOut.nDepth);
         BOOST_CHECK(evkeyOut.nDepth == dt.nDerives % 256);
         
         BOOST_CHECK(0 == strcmp(CBitcoinExtKey(evkeyOut).ToString().c_str(), dt.vKey58.c_str()));
@@ -267,7 +267,7 @@ void RunDeriveTests()
     
     
     // - switch to testnet
-    BOOST_MESSAGE("Entering Testnet");
+    BOOST_TEST_MESSAGE("Entering Testnet");
     fTestNet = true;
     SelectParams(CChainParams::TESTNET);
     
@@ -299,7 +299,7 @@ void RunSerialiseTests()
     BOOST_CHECK(5 == GetNumBytesReqForInt(nTest5));
     BOOST_CHECK(8 == GetNumBytesReqForInt(nTest8));
     
-    //BOOST_MESSAGE(GetNumBytesReqForInt(nTest5));
+    //BOOST_TEST_MESSAGE(GetNumBytesReqForInt(nTest5));
     
     std::vector<uint8_t> v;
     SetCompressedInt64(v, nTest0);
@@ -511,7 +511,7 @@ void RunSerialiseTests()
     
     
     // - switch to testnet
-    BOOST_MESSAGE("Entering Testnet");
+    BOOST_TEST_MESSAGE("Entering Testnet");
     fTestNet = true;
     SelectParams(CChainParams::TESTNET);
     

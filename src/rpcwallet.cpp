@@ -1601,6 +1601,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
 
     if (!pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked, use walletlock first if need to change unlock settings.");
+
+	if (!IsRPCServerRunning()) {
+		throw JSONRPCError(RPC_SERVER_NOT_STARTED, "Error: To use the walletpassphrase you need to start the wallet with argument -server. Start the wallet with -server argument and try again.\n");	
+	}
+
     // Note that the walletpassphrase is stored in params[0] which is not mlock()ed
     SecureString strWalletPass;
     strWalletPass.reserve(100);
@@ -1623,7 +1628,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
     int64_t nSleepTime = params[1].get_int64();
     LOCK(cs_nWalletUnlockTime);
     nWalletUnlockTime = GetTime() + nSleepTime;
-    RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    try {
+        RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    } catch (std::runtime_error &e) {
+        throw e;
+    }
 
     // ppcoin: if user OS account compromised prevent trivial sendmoney commands
     if (params.size() > 2)

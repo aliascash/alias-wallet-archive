@@ -118,18 +118,12 @@
         <div class=header>
             <div class="pull-left full-height visible-sm visible-xs">
                 <div class=sm-action-bar><a href=# class="btn-link toggle-sidebar" data-toggle=sidebar><span class="icon-set menu-hambuger"></span></a></div>
-            </div>
-            <div class="pull-right full-height visible-sm visible-xs">
-                <div class=sm-action-bar></div>
-            </div>
-            <div class="pull-left sm-table">
-                <div class=header-inner></div>
-            </div>
+            </div>           
             <div class=pull-right>
-                <div class="visible-lg visible-md m-t-10">
+                <div class="visible-lg visible-md visible-sm visible-xs m-t-10">
                     <div class="dropdown pull-right">
                         <div id=status class=b-grey>
-                            <ul class="no-margin hidden-sm hidden-xs no-style p-l-10 p-r-10 p-b-10">
+                            <ul class="no-margin no-style p-l-10 p-r-10 p-b-10">
                                 <li class="inline p-l-10"><progress id=syncProgressBar max=100 value=1 data-title="Catching up...
 downloaded 0 blocks of history..."></progress>
                                     <li class="inline p-l-10">
@@ -283,7 +277,7 @@ downloaded 0 blocks of history..."></progress>
                                                 </div>
                                             </div>
                                         </div>
-                                        <table class="table table-hover spectre" width=100% style="margin-bottom:0;border-top:1px solid rgba(230,230,230,.7);border-bottom:1px solid rgba(230,230,230,.7)">
+                                        <table class="table table-hover spectre" width=100% style="border-top:1px solid rgba(230,230,230,.7);border-bottom:1px solid rgba(230,230,230,.7)">
                                             <thead>
                                                 <tr>
                                                     <th title=Label>Type
@@ -311,24 +305,19 @@ downloaded 0 blocks of history..."></progress>
                                                                                                                                             <td><strong>Value</strong>
                                                                                                                                                 <td class=text-muted id=txn-value>
                                         </table>
-                                        <table class="table spectre" width=100%>
-                                            <tr>
-                                                <td width=50% style=vertical-align:top>
-                                                    <table id=txn-detail-inputs class="table table-hover spectre" width=50%>
-                                                        <thead>
-                                                            <tr>
-                                                                <th data-toggle=true data-title=Inputs data-sort-initial=ascending>Inputs
-                                                                    <th data-toggle=true data-title=Values data-sort-initial=ascending>Values
-                                                                        <tbody>
-                                                    </table>
-                                                    <td width=50% style=vertical-align:top>
-                                                        <table id=txn-detail-outputs class="table table-hover spectre" width=50%>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th data-toggle=true data-title=Outputs data-sort-initial=ascending>Outputs
-                                                                        <th data-toggle=true data-title=Values data-sort-initial=ascending>Values
-                                                                            <tbody>
-                                                        </table>
+                                        <table id=txn-detail-inputs class="table table-hover spectre">
+                                            <thead>
+                                                <tr>
+                                                    <th width="70%" data-toggle=true data-title=Inputs data-sort-initial=ascending>Inputs
+                                                        <th width="30%" data-toggle=true data-title=Values data-sort-initial=ascending style="text-align:right">Values
+                                                            <tbody>
+                                        </table>                                        
+                                        <table id=txn-detail-outputs class="table table-hover spectre">
+                                            <thead>
+                                                <tr>
+                                                    <th width="70%" data-toggle=true data-title=Outputs data-sort-initial=ascending>Outputs
+                                                        <th width="30%" data-toggle=true data-title=Values data-sort-initial=ascending style="text-align:right">Values
+                                                            <tbody>
                                         </table>
                                         <div id=error-msg></div>
                                     </div>
@@ -601,7 +590,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=navbar-header></div>
                             </div>
                         </nav>
-                        <div class="row m-t-45 m-b-35 m-l-35 m-r-35">
+                        <div class="row m-t-45 m-b-0 m-l-35 m-r-35">
                             <div class="panel full-width">
                                 <form autocomplete=off class=form-horizontal id=form-work name=form-work>
                                     <ul class="nav nav-tabs nav-tabs-simple nav-tabs-simple-bg">
@@ -725,7 +714,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=navbar-header></div>
                             </div>
                         </nav>
-                        <div class="row m-t-45 m-b-35 m-l-35 m-r-35">
+                        <div class="row m-t-45 m-b-0 m-l-35 m-r-35">
                             <div class="panel full-width">
                                 <table cellspacing=0 class="footable spectre table table-hover" data-filter=#receive-filter data-page-size=20 id=receive-table width=100% style="border-bottom:1px solid rgba(230,230,230,.7)">
                                     <thead>
@@ -759,7 +748,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=navbar-header></div>
                             </div>
                         </nav>
-                        <div class="row m-t-45 m-b-35 m-l-35 m-r-35">
+                        <div class="row m-t-45 m-b-0 m-l-35 m-r-35">
                             <div class="panel full-width">
                                 <table class="footable spectre table table-hover" data-page-size=20 data-limit-navigation=5 id=transactions data-filter=#filter-transaction data-manual=true width=100% style="border-bottom:1px solid rgba(230,230,230,.7)">
                                     <thead>
@@ -1008,7 +997,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=navbar-header></div>
                             </div>
                         </nav>
-                        <div class="row m-t-45 m-b-35 m-l-35 m-r-35">
+                        <div class="row m-t-45 m-b-0 m-l-35 m-r-35">
                             <div class="panel full-width bg-transparent">
                                 <div class="panel full-width" style=padding:0>
                                     <table cellspacing=0 class="footable spectre table" data-filter=#filter-outputs data-page=false width=100%>
@@ -1042,7 +1031,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=navbar-header></div>
                             </div>
                         </nav>
-                        <div class="row m-t-45 m-b-35 m-l-35 m-r-35">
+                        <div class="row m-t-45 m-b-0 m-l-35 m-r-35">
                             <div class="panel full-width bg-transparent">
                                 <div class="panel full-width" style=padding:0>
                                     <table cellspacing=0 class="footable spectre table" data-filter=#filter-outputs data-page=false id=latest-blocks-table width=100%>
