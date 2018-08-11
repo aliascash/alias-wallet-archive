@@ -32,7 +32,7 @@ void testRingSigs(int nRingSize)
     BOOST_REQUIRE(NULL != pSigc);
     BOOST_REQUIRE(NULL != pSigr);
 
-    CKey key[nRingSize];
+    CKey *key = new CKey[nRingSize];
     for (int i = 0; i < nRingSize; ++i)
     {
         key[i].MakeNewKey(true);
@@ -90,7 +90,7 @@ void testRingSigABs(int nRingSize)
     BOOST_CHECK(NULL != pPubkeys);
     BOOST_CHECK(NULL != pSigS);
 
-    CKey key[nRingSize];
+    CKey *key = new CKey[nRingSize];
     for (int i = 0; i < nRingSize; ++i)
     {
         key[i].MakeNewKey(true);

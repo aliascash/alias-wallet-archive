@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(smsg_test)
     int rv;
     int nKeys = 4;
     CWallet keystore;
-    CKey keyOwn[nKeys];
+    CKey *keyOwn = new CKey[nKeys];
     for (int i = 0; i < nKeys; i++)
     {
         keyOwn[i].MakeNewKey(true);
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(smsg_test)
         keystore.AddKey(keyOwn[i]);
     };
     
-    CKey keyRemote[nKeys];
+    CKey *keyRemote = new CKey[nKeys];
     for (int i = 0; i < nKeys; i++)
     {
         keyRemote[i].MakeNewKey(true);
