@@ -5,6 +5,7 @@ CONFIG += c++14
 DEFINES += DEBUGGER_CONNECTED
 #DEFINES += TEST_TOR
 DEFINES += SPECTRE_QT_TEST
+DEFINES += CURRENT_PATH=\\\"$$PWD\\\"
 
 QT += testlib webenginewidgets webchannel
 
@@ -170,7 +171,7 @@ SOURCES += \
     $$PWD/qt/transactiontablemodel.cpp \
     $$PWD/qt/walletmodel.cpp \
     $$PWD/test/other/DoS_tests.cpp \
-    $$PWD/test/other/miner_tests.cpp \
+#    $$PWD/test/other/miner_tests.cpp \
     $$PWD/test/other/transaction_tests.cpp \
     $$PWD/test/accounting_tests.cpp \
     $$PWD/test/allocator_tests.cpp \

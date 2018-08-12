@@ -58,6 +58,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 
     // Simple block creation, nothing special yet:
 //    CreateNewBlock(CWallet *pwallet, bool fProofOfStake, int64_t *pFees)
+    BOOST_CHECK(pindexBest != NULL);
     BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
 
     // We can't make transactions until we have inputs
