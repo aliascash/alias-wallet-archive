@@ -8,7 +8,7 @@ node('docker') {
     }
 
     stage('Build image') {
-        spectre_base = docker.build("spectreproject/spectre", "Docker/Debian")
+        spectre_base = docker.build("spectreproject/spectre", "-f ./Docker/Debian/Dockerfile")
     }
 
     stage('Push image') {
