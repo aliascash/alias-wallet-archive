@@ -10,10 +10,6 @@ ENV BUILD_THREADS=$BUILD_THREADS
 
 COPY . /spectre
 
-RUN pwd
-RUN ls -la
-RUN ls -la /spectre/
-
 RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
  && ./autogen.sh \
