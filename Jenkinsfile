@@ -8,7 +8,11 @@ node('docker') {
     }
 
     stage('Build image') {
-        spectre_base = docker.build("spectreproject/spectre", "-f ./Docker/Debian/Dockerfile")
+        // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+        // So copy required Dockerfile to root dir for each build
+        sh "cp ./Docker/Debian/Dockerfile ."
+        spectre_base = docker.build("spectreproject/spectre")
+        sh "rm Dockerfile"
     }
 
     stage('Push image') {
