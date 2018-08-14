@@ -126,6 +126,9 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+    // Command-line options take precedence:
+    ParseParameters(argc, argv);
+
     QApplication app(argc, argv);
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
@@ -136,9 +139,6 @@ int main(int argc, char *argv[])
 
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
-
-    // Command-line options take precedence:
-    ParseParameters(argc, argv);
 
     // ... then spectrecoin.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
