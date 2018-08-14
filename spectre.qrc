@@ -53,8 +53,7 @@
         <file alias="assets/icons/spectrecoin-64.png">src/qt/res/assets/icons/spectrecoin-64.png</file>
         <file alias="assets/icons/spectrecoin-80.png">src/qt/res/assets/icons/spectrecoin-80.png</file>
         <file alias="assets/icons/spectrecoin.ico">src/qt/res/assets/icons/spectrecoin.ico</file>
-        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>
-        <file alias="assets/icons/spectrecoin.png">src/qt/res/assets/icons/spectrecoin.png</file>
+        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>       
         <file alias="assets/icons/spectre.icns">src/qt/res/assets/icons/spectre.icns</file>
         <file alias="assets/icons/staking_off.png">src/qt/res/assets/icons/staking_off.png</file>
         <file alias="assets/icons/staking.png">src/qt/res/assets/icons/staking.png</file>
@@ -1990,10 +1989,8 @@
         <file alias="src/qt/res/index.html">src/qt/res/index.html</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="spectre">src/qt/res/icons/spectrecoin-80.png</file>
-        <file alias="spectre_testnet">src/qt/res/icons/spectrecoin-80.png</file>
-        <file alias="toolbar">src/qt/res/icons/spectrecoin-16.png</file>
-        <file alias="toolbar_testnet">src/qt/res/icons/spectrecoin-16.png</file>
+        <file alias="spectre">src/qt/res/assets/icons/spectrecoin.ico</file>
+        <file alias="spectre_testnet">src/qt/res/assets/icons/spectrecoin.ico</file>
         <file alias="export">src/qt/res/icons/export.png</file>
         <file alias="remove">src/qt/res/icons/remove.png</file>
         <file alias="tx_staked">src/qt/res/icons/tx_staked.png</file>
