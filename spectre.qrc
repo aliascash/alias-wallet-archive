@@ -95,6 +95,7 @@
         <file alias="assets/img/progress/progress-circle-warning.svg">src/qt/res/assets/img/progress/progress-circle-warning.svg</file>
         <file alias="assets/img/spec-vertical.png">src/qt/res/assets/img/spec-vertical.png</file>
         <file alias="assets/img/spectre_logo.png">src/qt/res/assets/img/spectre_logo.png</file>
+		<file alias="assets/img/spectre_logo_collapsed.png">src/qt/res/assets/img/spectre_logo_collapsed.png</file>	
         <file alias="assets/img/shoppingcart.png">src/qt/res/assets/img/shoppingcart.png</file>
         <file alias="assets/img/splash.png">src/qt/res/assets/img/splash.png</file>
         <file alias="assets/js/navigation.min.js">src/qt/res/assets/js/navigation.min.js</file>
