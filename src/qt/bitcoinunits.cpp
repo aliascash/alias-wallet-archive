@@ -48,9 +48,9 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case XSPEC:  return QString("SpectreCoins");
-    case mXSPEC: return QString("Milli-SpectreCoins (1 / 1,000)");
-    case uXSPEC: return QString("Micro-SpectreCoins (1 / 1,000,000)");
+    case XSPEC:  return QString("XSPEC");
+    case mXSPEC: return QString("Milli-XSPEC (1 / 1,000)");
+    case uXSPEC: return QString("Micro-XSPEC (1 / 1,000,000)");
     case sXSPEC: return QString("spectoshi (1 / 100,000,000)");
     default:   return QString("???");
     }

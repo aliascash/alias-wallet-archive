@@ -1039,15 +1039,15 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\SpectreCoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\SpectreCoin
-    // Mac: ~/Library/Application Support/SpectreCoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Spectrecoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Spectrecoin
+    // Mac: ~/Library/Application Support/Spectrecoin
     // Unix: ~/.spectrecoin
     
     
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "SpectreCoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Spectrecoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1059,7 +1059,7 @@ boost::filesystem::path GetDefaultDataDir()
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
-        return pathRet / "SpectreCoin";
+        return pathRet / "Spectrecoin";
     #else
         // Unix
         return pathRet / ".spectrecoin";
@@ -1338,10 +1338,10 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong SpectreCoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Spectrecoin will not work properly.");
                     strMiscWarning = strMessage;
                     LogPrintf("*** %s\n", strMessage.c_str());
-                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("SpectreCoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
+                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
                 }
             }
         }

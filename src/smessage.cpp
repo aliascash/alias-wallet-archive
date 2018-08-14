@@ -697,7 +697,7 @@ void ThreadSecureMsg()
             } // cs_vNodes
 
             if(fDebugSmsg)
-                LogPrintf("spectre-smsg thread: ignoring - looked peer %d, status on search %u\n", nPeerId, fExists);
+                LogPrintf("spectrecoin-smsg thread: ignoring - looked peer %d, status on search %u\n", nPeerId, fExists);
         };
 
         MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds

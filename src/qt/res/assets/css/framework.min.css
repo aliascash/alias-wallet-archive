@@ -45,9 +45,10 @@ body.dashboard,body.dashboard .page-container{background:#f5f5f5}
 .page-sidebar a:active,.page-sidebar a:hover,.page-sidebar button:active,.page-sidebar button:hover{color:#fff}
 .page-sidebar a:focus,.page-sidebar a:visited,.page-sidebar button:focus,.page-sidebar button:visited{color:#4c4a55}
 .page-sidebar .scroll-element{visibility:hidden}
-.page-sidebar .sidebar-header{display:block;height:60px;line-height:60px;background-color:#111016;border-bottom:1px solid #0f0f13;color:#fff;width:100%;padding-left:30px;clear:both;z-index:10;position:relative}
-.sidebar-header-collapsed{float: right;height: 60px;width: 38px;overflow: hidden;display: none;}
-.sidebar-header-collapsed-visible{display:block!important}
+.page-sidebar .sidebar-header{display:block;height:60px;line-height:60px;background-color:#111016;border-bottom:1px solid #0f0f13;color:#fff;width:100%;padding-left:0px;clear:both;z-index:10;position:relative}
+.sidebar-header-hidden{display:none !important}
+.sidebar-header-collapsed{float: right;height: 60px;width: 40px;overflow: hidden;display: none;}
+.sidebar-header-collapsed-visible{display: block !important}
 .page-sidebar .sidebar-header .sidebar-header-controls{display:inline-block;-webkit-transition:-webkit-transform .4s cubic-bezier(.05,.74,.27,.99);transition:transform .4s cubic-bezier(.05,.74,.27,.99);-webkit-backface-visibility:hidden}
 .page-sidebar .sidebar-header .sidebar-slide-toggle i{-webkit-transition:all .12s ease;transition:all .12s ease}
 .page-sidebar .sidebar-header .sidebar-slide-toggle.active i{-webkit-transform:rotate(-180deg);-ms-transform:rotate(-180deg);transform:rotate(-180deg)}
