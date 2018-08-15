@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Spectre</title>
+    <title>Spectrecoin</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="qrc:///assets/plugins/pace/pace-theme-flash.css" rel="stylesheet">
     <link href="qrc:///assets/plugins/boostrapv3/css/bootstrap.min.css" rel="stylesheet">
@@ -63,10 +63,8 @@
   <body class="fixed-header menu-pin">
     <div class=page-sidebar data-framework=sidebar>
       <div id=appMenu class="sidebar-overlay-slide from-top"></div>
-      <div class=sidebar-header><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60>
-        <div class=sidebar-header-controls><button data-toggle-pin=sidebar class="btn btn-link visible-lg-inline" type=button><i class="fa fs-12"></i></button></div>
-        <div id=sidebar-header-collapsed class=sidebar-header-collapsed><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=150 height=60 style=min-height:100%;min-width:100%></div>
-      </div>
+      <div id=sidebar-header class=sidebar-header><img src=qrc:///assets/img/spectre_logo.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo.png width=250 height=60></div>
+      <div id=sidebar-header-collapsed class=sidebar-header-collapsed><img src=qrc:///assets/img/spectre_logo_collapsed.png alt=logo class=brand data-src=qrc:///assets/img/spectre_logo_collapsed.png width=40 height=60 style=min-height:100%;min-width:100%></div>     
       <div class=sidebar-menu>
         <ul class=menu-items id=navitems>
             <li class=m-t-30><a href=#overview><span class="title translate">Overview</span> <span class=icon-thumbnail><i class="fa fa-circle-o"></i></span></a></li>
@@ -106,7 +104,7 @@
                 <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#sign-href").click(),$("#sign-address")'><span class=translate>Sign Message</span> <span class=icon-thumbnail><i class="fa fa-pencil"></i></span></a></li>
                 <li><a href=# data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#verify-href").click(),$("#verify-address")'><span class=translate>Verify Message</span> <span class=icon-thumbnail><i class="fa fa-check-square-o"></i></span></a></li>
                 <li><a href=# onclick='bridge.userAction(["debugClicked"])'><span class=translate>Debug</span> <span class=icon-thumbnail><i class="fa fa-bug"></i></span></a></li>
-                <li><a href=#b onclick='bridge.userAction(["aboutClicked"])'><span class=translate>About Spectre</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></li>
+                <li><a href=#b onclick='bridge.userAction(["aboutClicked"])'><span class=translate>About Spectrecoin</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></li>
                 <li><a href=# onclick='bridge.userAction(["aboutQtClicked"])'><span class=translate>About QT</span> <span class=icon-thumbnail><i class="fa fa-info-circle"></i></span></a></li>
               </ul>
             </li>
@@ -115,10 +113,7 @@
         </div>
     </div>
     <div class=page-container>
-        <div class=header>
-            <div class="pull-left full-height visible-sm visible-xs">
-                <div class=sm-action-bar><a href=# class="btn-link toggle-sidebar" data-toggle=sidebar><span class="icon-set menu-hambuger"></span></a></div>
-            </div>           
+        <div class=header>           
             <div class=pull-right>
                 <div class="visible-lg visible-md visible-sm visible-xs m-t-10">
                     <div class="dropdown pull-right">
@@ -133,7 +128,7 @@ downloaded 0 blocks of history..."></progress>
                                             <li class="inline p-l-10">
                                                 <div id=stakingIcon class=not-staking data-title="Not staking because wallet is locked"></div>
                                                 <li class="inline p-l-10">
-                                                    <div id=connectionsIcon class=connect-0 data-title="0 active connection(s) to SpectreCoin network"></div>
+                                                    <div id=connectionsIcon class=connect-0 data-title="0 active connection(s) to Spectrecoin network"></div>
                                                     <li class="inline p-l-10">
                                                         <div id=syncingIcon class=syncing-spinner data-title="Wallet is syncing"></div>
                                                         <div id=blocksIcon class="no-syncing none" data-title="Wallet is syncing"></div>
@@ -166,7 +161,7 @@ downloaded 0 blocks of history..."></progress>
                                     <div class=form-group>
                                         <div class=col-sm-12>
                                             <div class=row>
-                                                <div class=col-sm-12><label for=qraddress class="p-t-10 recipient translate">Address:</label><input id=qraddress class="form-control pay_to input_box" placeholder="Enter a Spectre address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" onchange=showQRCode()></div>
+                                                <div class=col-sm-12><label for=qraddress class="p-t-10 recipient translate">Address:</label><input id=qraddress class="form-control pay_to input_box" placeholder="Enter a Spectrecoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" onchange=showQRCode()></div>
                                             </div>
                                         </div>
                                     </div>
@@ -187,7 +182,7 @@ downloaded 0 blocks of history..."></progress>
                                     <div class=form-group>
                                         <div class=col-sm-12><label for=qramount class="p-t-10 recipient translate">Amount:</label>
                                             <div class=row>
-                                                <div class=col-sm-8><input id=qramount class=form-control type=number placeholder=0.00000000 step=0.01 value=0.00000000 onchange='unit.parse(this,$("#qrunit").val()),showQRCode()'></div><select id=qrunit class="unit select-drop-down" style=width:167px onchange='unit.format("#qramount",$(this).val()),showQRCode()'><option value=0 title=Spectre>XSPEC<option value=1 title="Milli-Spectre (1 / 1000)">mXSPEC<option value=2 title="Micro-Spectre (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
+                                                <div class=col-sm-8><input id=qramount class=form-control type=number placeholder=0.00000000 step=0.01 value=0.00000000 onchange='unit.parse(this,$("#qrunit").val()),showQRCode()'></div><select id=qrunit class="unit select-drop-down" style=width:167px onchange='unit.format("#qramount",$(this).val()),showQRCode()'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
                                         </div>
                                     </div>
                                 </div>
@@ -407,7 +402,7 @@ downloaded 0 blocks of history..."></progress>
                                             <div class=form-group>
                                                 <div class="col-sm-12 p-t-15"><label class=recipient>Address:</label>
                                                     <div class=row>
-                                                        <div class=col-sm-12><input id=sign-address class="input_box form-control" data-title="Enter a SpectreCoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" placeholder="Enter a SpectreCoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" maxlength=128></div>
+                                                        <div class=col-sm-12><input id=sign-address class="input_box form-control" data-title="Enter a Spectrecoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" placeholder="Enter a Spectrecoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" maxlength=128></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -436,7 +431,7 @@ downloaded 0 blocks of history..."></progress>
                                             <div class=form-group>
                                                 <div class=col-sm-12><label class=recipient>Address:</label>
                                                     <div class=row>
-                                                        <div class=col-sm-12><input id=verify-address class="input_box form-control" data-title="Enter a SpectreCoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" placeholder="Enter a SpectreCoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" maxlength=128></div>
+                                                        <div class=col-sm-12><input id=verify-address class="input_box form-control" data-title="Enter a Spectrecoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" placeholder="Enter a Spectrecoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)" maxlength=128></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -450,7 +445,7 @@ downloaded 0 blocks of history..."></progress>
                                             <div class=form-group>
                                                 <div class=col-sm-12><label class=recipient>Signature:</label>
                                                     <div class=row>
-                                                        <div class=col-sm-10><input id=verify-signature class="input_box form-control" placeholder="Enter a SpectreCoin signature" data-title="Enter a SpectreCoin signature"></div>
+                                                        <div class=col-sm-10><input id=verify-signature class="input_box form-control" placeholder="Enter a Spectrecoin signature" data-title="Enter a Spectrecoin signature"></div>
                                                         <div class=col-sm-2>
                                                             <div class=btn-group><a class="btn btn-default" href="javascript:paste('#verify-signature');" data-title="Paste signature from clipboard"><i class="fa fa-copy"></i></a></div>
                                                         </div>
@@ -612,7 +607,7 @@ downloaded 0 blocks of history..."></progress>
                                                 <div class=form-group style="border-bottom:1px solid #F0F1F3"><label class="col-sm-3 p-l-20 control-label"><span class=translate>Custom change address</span> <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Optional address to receive transaction change" style=color:#626262></i></a></label>
                                                     <div class=col-sm-9>
                                                         <div class=row>
-                                                            <div class=col-sm-9><input class=form-control id=change_address data-title="Optional address to receive transaction change" maxlength=128 oninput=base58.check(this) placeholder="Enter a Spectre address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)"></div>
+                                                            <div class=col-sm-9><input class=form-control id=change_address data-title="Optional address to receive transaction change" maxlength=128 oninput=base58.check(this) placeholder="Enter a Spectrecoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)"></div>
                                                             <div class="btn-group col-sm-3 sm-m-t-10"><a id=cust-add-lkp data-title="Choose from address book" data-toggle=modal data-target=#address-lookup-modal href=# onclick='addressLookup("change_address",!0)' class="btn btn-default"><i class="fa fa-book"></i> </a><a data-title="Paste address from clipboard" class="btn btn-default" onclick='paste("#change_address")'><i class="fa fa-files-o"></i> </a><a data-title="Remove this recipient" class="btn btn-default" onclick='$("#change_address").val("").css("background","").css("color","")'><i class="fa fa-close"></i></a></div>
                                                         </div>
                                                     </div>
@@ -661,7 +656,7 @@ downloaded 0 blocks of history..."></progress>
                                                         <div class=form-group><label class="col-sm-3 control-label option p-l-20 translate" for=recipient-template-amount class=recipient>Amount <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Amount to send." style=color:#626262></i></a></label>
                                                             <div class=col-sm-9>
                                                                 <div class=row>
-                                                                    <div class=col-sm-9><input class="form-control amount" id=recipient-template-amount placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#recipient-template .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#recipient-template .amount",$(this).val())'><option value=0 title=Spectre>XSPEC<option value=1 title="Milli-Spectre (1 / 1000)">mXSPEC<option value=2 title="Micro-Spectre (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
+                                                                    <div class=col-sm-9><input class="form-control amount" id=recipient-template-amount placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#recipient-template .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#recipient-template .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -683,7 +678,7 @@ downloaded 0 blocks of history..."></progress>
                                                     <div class=form-group style="border-bottom:1px solid #F0F1F3"><label class="col-sm-3 control-label option p-l-20" for=send-balance-amount class=recipient>Amount <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Amount to transfer" style=color:#626262></i></a></label>
                                                         <div class=col-sm-9>
                                                             <div class=row>
-                                                                <div class=col-sm-9><input id=send-balance-amount class="form-control amount" placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#send-balance .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#send-balance .amount",$(this).val())'><option value=0 title=Spectre>XSPEC<option value=1 title="Milli-Spectre (1 / 1000)">mXSPEC<option value=2 title="Micro-Spectre (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
+                                                                <div class=col-sm-9><input id=send-balance-amount class="form-control amount" placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#send-balance .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#send-balance .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -813,7 +808,7 @@ downloaded 0 blocks of history..."></progress>
                                 <div class=form-group>
                                     <div class=col-sm-12><label for=new-contact-address>Address:</label>
                                         <div class=row>
-                                            <div class=col-sm-8><input id=new-contact-address class="recipient form-control input_box" data-title="The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" placeholder="Enter a Spectre address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" onchange='base58.check(this)&&($("#new-contact-name").val(bridge.getAddressLabel(this.value)),$("#new-contact-pubkey").val(bridge.getPubKey(this.value)).change())' maxlength=128 oninput=base58.check(this),this.value.trim()></div>
+                                            <div class=col-sm-8><input id=new-contact-address class="recipient form-control input_box" data-title="The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" placeholder="Enter a Spectrecoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" onchange='base58.check(this)&&($("#new-contact-name").val(bridge.getAddressLabel(this.value)),$("#new-contact-pubkey").val(bridge.getPubKey(this.value)).change())' maxlength=128 oninput=base58.check(this),this.value.trim()></div>
                                             <div class=col-sm-4>
                                                 <div class=btn-group><a class="btn btn-default" data-title="Choose address from address book" data-toggle=modal data-target=#address-lookup-modal href=# onclick='addressLookup("new-contact-address,new-contact-name",!1,"Normal")'><i class="fa fa-book"></i> </a><a class="btn btn-default" data-title="Paste address from clipboard" onclick='paste("#new-contact-address")'><i class="fa fa-files-o"></i> </a><a class="btn btn-default" data-title="Remove this recipient" onclick='$("#new-contact-address").val("").css("background","").css("color","")'><i class="fa fa-times"></i></a></div>
                                             </div>
@@ -1085,7 +1080,7 @@ downloaded 0 blocks of history..."></progress>
                                                 <div class=row>
                                                     <div class=col-md-12>
                                                         <div id=options-main>
-                                                            <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optStartAtStartup>Start Spectre on system login</label>
+                                                            <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optStartAtStartup>Start Spectrcoine on system login</label>
                                                                 <div class=col-sm-9>
                                                                     <div class="checkbox option check-danger"><input id=optStartAtStartup type=checkbox><label class=option for=optStartAtStartup></label></div>
                                                                 </div>
@@ -1098,7 +1093,7 @@ downloaded 0 blocks of history..."></progress>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optFee>Pay transaction fee:</label>
                                                                 <div class=col-sm-9>
                                                                     <p class="small hint-text">Optional transaction fee per kB that helps make sure your transactions are processed quickly.
-                                                                        <p class="small hint-text">Most transactions are 1kB. Fee 0.01 recommended.</p><input id=optFee class=form-control-options-page onchange='unit.parse(this,$("#optFeeunit").val())' placeholder=0.00000000 step=0.01 type=number value=0.00000000><select class=select-drop-down id=optFeeunit onchange='unit.format("#optFee",$(this).val())'><option title=Spectre value=0>XSPEC<option title="Milli-Spectre (1 / 1000)" value=1>mXSPEC<option title="Micro-Spectre (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
+                                                                        <p class="small hint-text">Most transactions are 1kB. Fee 0.01 recommended.</p><input id=optFee class=form-control-options-page onchange='unit.parse(this,$("#optFeeunit").val())' placeholder=0.00000000 step=0.01 type=number value=0.00000000><select class=select-drop-down id=optFeeunit onchange='unit.format("#optFee",$(this).val())'><option title=XSPEC value=0>XSPEC<option title="Milli-XSPEC (1 / 1000)" value=1>mXSPEC<option title="Micro-XSPEC (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
                                                             </div>
 
                                                             <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optStaking>Enable Staking</label>
@@ -1114,7 +1109,7 @@ downloaded 0 blocks of history..."></progress>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optReserveBalance>Reserve:</label>
                                                                 <div class=col-sm-9>
-                                                                    <p class="small hint-text">Reserved amount does not participate in staking and is therefore spendable at any time.</p><input id=optReserveBalance class=form-control-options-page onchange='unit.parse(this,$("#optReserveBalanceunit").val())' placeholder=0.00000000 step=0.01 type=number value=0.00000000><select class=select-drop-down id=optReserveBalanceunit onchange='unit.format("#optReserveBalance",$(this).val())'><option title=Spectre value=0>XSPEC<option title="Milli-Spectre (1 / 1000)" value=1>mXSPEC<option title="Micro-Spectre (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
+                                                                    <p class="small hint-text">Reserved amount does not participate in staking and is therefore spendable at any time.</p><input id=optReserveBalance class=form-control-options-page onchange='unit.parse(this,$("#optReserveBalanceunit").val())' placeholder=0.00000000 step=0.01 type=number value=0.00000000><select class=select-drop-down id=optReserveBalanceunit onchange='unit.format("#optReserveBalance",$(this).val())'><option title=XSPEC value=0>XSPEC<option title="Milli-XSPEC (1 / 1000)" value=1>mXSPEC<option title="Micro-XSPEC (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMinStakeInterval title="Minimum time in seconds between successful stakes">Minimum Stake Interval</label>
                                                                 <div class=col-sm-9>
@@ -1190,7 +1185,7 @@ downloaded 0 blocks of history..."></progress>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optDisplayUnit>Unit to show amounts in:</label>
                                                                 <div class=col-sm-9>
-                                                                    <div class=option><select class=select-drop-down id=optDisplayUnit><option title=Spectre value=0>XSPEC<option title="Milli-Spectre (1 / 1000)" value=1>mXSPEC<option title="Micro-Spectre (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
+                                                                    <div class=option><select class=select-drop-down id=optDisplayUnit><option title=XSPEC value=0>XSPEC<option title="Milli-XSPEC (1 / 1000)" value=1>mXSPEC<option title="Micro-XSPEC (1 / 1000000)" value=2>&micro;XSPEC<option title="spectoshi (1 / 100000000)" value=3>spectoshi</select></div>
                                                                 </div>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optRowsPerPage>Rows per page:</label>
@@ -1259,7 +1254,7 @@ downloaded 0 blocks of history..."></progress>
                                                     <div class=panel-title><p><strong>Add new Sub-Wallet</strong></p></div>
                                                     <p>
                                                       NOTE: This feature is <em>experimental</em>, and is intended for advanced users only.<br>
-                                                      Please do not use it unless you know what you are doing and want to have multiple sub-wallets within your Spectre wallet.<br>
+                                                      Please do not use it unless you know what you are doing and want to have multiple sub-wallets within your Spectrecoin wallet.<br>
                                                       You are responsible of keeping track of which sub-wallets you have made and received payments using.
                                                     </p>
                                                   </div>
@@ -1377,7 +1372,7 @@ downloaded 0 blocks of history..."></progress>
                                                         NOTE: BIP32 support and sub-wallets are <em>experimental</em> and intended for advanced users.<br>
                                                         If you created a sub-wallet with a recovery phrase on another system, you can restore it here.<br>
                                                         You will need to re-sync the blockchain in order for your transactions and balance to appear within the wallet.<br>
-                                                        If you have a wallet.dat file, you can simply copy it to your SpectreCoin data directory to restore it.
+                                                        If you have a wallet.dat file, you can simply copy it to your Spectrecoin data directory to restore it.
                                                       </p>
                                                     </div>
                                                     <hr class=no-margin>

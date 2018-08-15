@@ -20,7 +20,7 @@ extern uint256 SignatureHash(CScript scriptCode, const CTransaction& txTo, unsig
 static std::vector<unsigned char>
 Serialize(const CScript& s)
 {
-    std::vector<unsigned char> sSerialized(s);
+    std::vector<unsigned char> sSerialized((std::vector<unsigned char>) s);
     return sSerialized;
 }
 

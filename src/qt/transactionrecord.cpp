@@ -35,9 +35,9 @@ QString TransactionRecord::getTypeLabel(const int &type)
 	case GeneratedContribution:
 		return SpectreGUI::tr("Contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("Received spectre");
+        return SpectreGUI::tr("Received SPECTRE");
     case SendSpectre:
-        return SpectreGUI::tr("Sent spectre");
+        return SpectreGUI::tr("Sent SPECTRE");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -250,7 +250,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
                 {
                     fAllFromMe = false;
-                    break; // display as send/recv spectre
+                    break; // display as send/recv SPECTRE
                 };
                 continue;
             };
@@ -268,7 +268,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 && txout.IsAnonOutput())
             {
                 fAllToMe = false;
-                break; // display as send/recv spectre
+                break; // display as send/recv SPECTRE
             }
             opcodetype firstOpCode;
             CScript::const_iterator pc = txout.scriptPubKey.begin();

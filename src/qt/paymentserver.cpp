@@ -32,7 +32,7 @@ const QString BITCOIN_IPC_PREFIX("spectrecoin:");
 //
 static QString ipcServerName()
 {
-    QString name("Spectre");
+    QString name("Spectrecoin");
 
     // Append a simple hash of the datadir
     // Note that GetDataDir(true) returns a different path
@@ -104,7 +104,7 @@ PaymentServer::PaymentServer(QApplication* parent) : QObject(parent), saveURIs(t
     uriServer = new QLocalServer(this);
 
     if (!uriServer->listen(name))
-        qDebug() << tr("Cannot start spectre: click-to-pay handler");
+        qDebug() << tr("Cannot start Spectrecoin: click-to-pay handler");
     else
         connect(uriServer, SIGNAL(newConnection()), this, SLOT(handleURIConnection()));
 }
