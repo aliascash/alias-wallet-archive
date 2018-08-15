@@ -66,6 +66,7 @@ public:
         InputTypeError,
         SCR_NeedFullMode,
         SCR_StealthAddressFail,
+		SCR_AmountExceedsBalance,
         SCR_AmountWithFeeExceedsSpectreBalance,
         SCR_Error,
         SCR_ErrorWithMsg,
