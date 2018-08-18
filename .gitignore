@@ -104,3 +104,4 @@ Makefile\.am\.user
 cmake-build-debug/
 
 moc_predefs.h
+/build-tests-Desktop_Qt*

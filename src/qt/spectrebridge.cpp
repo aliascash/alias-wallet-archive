@@ -630,6 +630,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+		case WalletModel::SCR_AmountExceedsBalance:
+			QMessageBox::warning(window, tr("Send Coins"),
+				tr("The amount exceeds your SPECTRE balance."),
+				QMessageBox::Ok, QMessageBox::Ok);
+			emit sendCoinsResult(false);
+			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
                 tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
