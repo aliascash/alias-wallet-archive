@@ -1,7 +1,6 @@
 #include <QTest>
 #include <QObject>
 
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Spectre_tests
 #include <boost/test/unit_test.hpp>
 
