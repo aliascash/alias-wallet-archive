@@ -137,7 +137,7 @@ public:
     Q_INVOKABLE void openCoinControl();
 
     Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
-    Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
+    Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr, int feeMode);
     Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
     Q_INVOKABLE void sendMessage(const QString &address, const QString &message, const QString &from);
     Q_INVOKABLE void joinGroupChat(QString privkey, QString label);

@@ -430,7 +430,7 @@ void SpectreBridge::clearRecipients()
     recipients.clear();
 }
 
-void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
+void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr, int feeMode)
 {
     int inputTypes = -1;
     int nAnonOutputs = 0;
@@ -551,9 +551,9 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     }
 
     if (inputTypes == 1 || nAnonOutputs > 0)
-        sendstatus = window->walletModel->sendCoinsAnon(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
+        sendstatus = window->walletModel->sendCoinsAnon(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL, feeMode);
     else
-        sendstatus = window->walletModel->sendCoins    (recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
+        sendstatus = window->walletModel->sendCoins    (recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL, feeMode);
 
     switch(sendstatus.status)
     {

@@ -110,8 +110,8 @@ public:
     };
 
     // Send coins to a list of recipients
-    SendCoinsReturn sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL);
-    SendCoinsReturn sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL);
+    SendCoinsReturn sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL, int feeMode=0);
+    SendCoinsReturn sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL, int feeMode=0);
     
     
     // Wallet encryption

@@ -1903,7 +1903,7 @@ bool CWallet::SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTim
 }
 
 
-bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, int64_t& nFeeRet, int32_t& nChangePos, const CCoinControl* coinControl)
+bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, int64_t& nFeeRet, int32_t& nChangePos, const CCoinControl* coinControl, int feeMode)
 {
     int64_t nValue = 0;
     BOOST_FOREACH (const PAIRTYPE(CScript, int64_t)& s, vecSend)
@@ -1930,7 +1930,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >&
                 wtxNew.vout.clear();
                 wtxNew.fFromMe = true;
 
-                int64_t nTotalValue = nValue + nFeeRet;
+                int64_t nTotalValue = feeMode == 1 ? nValue : nValue + nFeeRet;
                 double dPriority = 0;
                 // vouts to the payees
                 BOOST_FOREACH(const PAIRTYPE(CScript, int64_t)& s, vecSend)
@@ -1950,7 +1950,7 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >&
                     dPriority += (double)nCredit * pcoin.first->GetDepthInMainChain();
                 };
 
-                int64_t nChange = nValueIn - nValue - nFeeRet;
+                int64_t nChange = feeMode == 1 ? nValueIn - nValue : nValueIn - nValue - nFeeRet;
                 // if sub-cent change is required, the fee must be raised to at least MIN_TX_FEE
                 // or until nChange becomes zero
                 // NOTE: this depends on the exact behaviour of GetMinFee
@@ -4344,7 +4344,7 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
     };
 }
 
-bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
+bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError, int feeMode)
 {
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
@@ -4407,7 +4407,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     for (int k = 0; k < 50; ++k) // safety
     {
         // -- nExpectChangeOuts is raised if needed (rv == 2)
-        int rv = PickAnonInputs(rsType, nTotalOut, nFee, nRingSize, wtxNew, vecSend.size(), nSizeOutputs, nExpectChangeOuts, lAvailableCoins, vPickedCoins, vecChange, false, sPickError);
+        int rv = PickAnonInputs(rsType, nTotalOut, nFee, nRingSize, wtxNew, vecSend.size(), nSizeOutputs, nExpectChangeOuts, lAvailableCoins, vPickedCoins, vecChange, false, sPickError, feeMode);
         if (rv == 0)
             break;
         if (rv == 3)
@@ -4504,6 +4504,19 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
         };
         ii++;
     };
+
+	if (feeMode == 1)
+	{
+		if (vecSend.size() > 0 && vecSend[0].second > nFeeRequired)
+		{
+			// feeMode=1: substract fees from first vOut if amount convers the fees
+			vecSend[0].second = vecSend[0].second - nFeeRequired;
+		}
+		else {
+			sError = "feeMode=1 not supported for outputs\n";
+			return false;
+		}
+	}
 
     for (uint32_t i = 0; i < vecSend.size(); ++i)
         wtxNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));

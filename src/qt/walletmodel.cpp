@@ -169,7 +169,7 @@ bool WalletModel::validateAddress(const QString &address)
     return addressParsed.IsValid();
 }
 
-WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
+WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl, int feeMode)
 {
     qint64 total = 0;
     QSet<QString> setAddress;
@@ -436,7 +436,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     return SendCoinsReturn(OK, 0, hex);
 }
 
-WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
+WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl, int feeMode)
 {
     if (fDebugRingSig)
         LogPrintf("sendCoinsAnon()\n");
@@ -581,7 +581,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
             int nChangePos = -1;
 
-            if (!wallet->CreateTransaction(vecSend, wtxNew, nFeeRequired, nChangePos, coinControl))
+            if (!wallet->CreateTransaction(vecSend, wtxNew, nFeeRequired, nChangePos, coinControl, feeMode))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
@@ -609,7 +609,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             // -- in SPECTRE
 
             std::string sError;
-            if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
+            if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError, feeMode))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired);
