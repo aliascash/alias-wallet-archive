@@ -34,6 +34,7 @@ input,optgroup,select,textarea{padding:3px 9px;height:34px;border:1px solid #F0F
 button{border:1px solid #F0F1F3;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}
 .newval{background:#fff;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;width:99%}
 .select-drop-down,.select-drop-down-chat{width:145px;border:none;-webkit-appearance:none;-moz-appearance:none;font-size:13px;height:35px}
+.unit.select-drop-down{width:110px;border:none;-webkit-appearance:none;-moz-appearance:none;font-size:13px;height:35px}
 ::-webkit-input-placeholder,:placeholder-shown{color:#626262}
 .padding-right-forms{margin-right:25px}
 .select-drop-down{appearance:none;background:url(qrc:///assets/icons/chevron.png) 95% no-repeat #F0F1F3;border:1px solid rgba(0,0,0,.07)}
