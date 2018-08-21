@@ -656,7 +656,13 @@ downloaded 0 blocks of history..."></progress>
                                                         <div class=form-group><label class="col-sm-3 control-label option p-l-20 translate" for=recipient-template-amount class=recipient>Amount <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Amount to send." style=color:#626262></i></a></label>
                                                             <div class=col-sm-9>
                                                                 <div class=row>
-                                                                    <div class=col-sm-9><input class="form-control amount" id=recipient-template-amount placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#recipient-template .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#recipient-template .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
+                                                                    <div class=col-sm-9>
+                                                                        <input class="form-control amount" id=recipient-template-amount placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#recipient-template .unit").val()),sendPage.updateCoinControl()'>
+                                                                    </div>
+                                                                    <div class=col-sm-3>
+                                                                        <select class="unit select-drop-down" onchange='unit.format("#recipient-template .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
