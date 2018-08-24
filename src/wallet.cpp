@@ -1710,11 +1710,10 @@ int64_t CWallet::GetStake() const
 {
     int64_t nTotal = 0;
     LOCK2(cs_main, cs_wallet);
-	int64_t currentTime = GetTime();
     for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
     {
         const CWalletTx* pcoin = &(*it).second;
-        if (pcoin->IsCoinStake() && pcoin->GetDepthInMainChain() > 0 && (pcoin->GetBlocksToMaturity() > 0 || pcoin->nTime + nStakeMinAge > currentTime))
+        if (pcoin->IsCoinStake() && pcoin->GetBlocksToMaturity() > 0 && pcoin->GetDepthInMainChain() > 0)
             nTotal += CWallet::GetCredit(*pcoin);
     };
     return nTotal;
