@@ -835,7 +835,7 @@ public:
     bool GetCredit(int64_t& nCredSPEC, int64_t& nCredSpectre, bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
-        if ((IsCoinBase() || IsCoinStake()) && (GetBlocksToMaturity() > 0 || nTime + nStakeMinAge > GetTime()))
+        if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
         {
             nCredSPEC = nCredSpectre = 0;
             return true;
@@ -858,7 +858,7 @@ public:
     int64_t GetAvailableCredit(bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
-        if ((IsCoinBase() || IsCoinStake()) && (GetBlocksToMaturity() > 0 || nTime + nStakeMinAge > GetTime()))
+        if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
             return 0;
 
         if (fUseCache && fAvailableCreditCached)
@@ -884,7 +884,7 @@ public:
     int64_t GetAvailableSpectreCredit(bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
-        if ((IsCoinBase() || IsCoinStake()) && (GetBlocksToMaturity() > 0 || nTime + nStakeMinAge < GetTime()))
+        if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
             return 0;
         
         if (fUseCache && fAvailableSpectreCreditCached)
