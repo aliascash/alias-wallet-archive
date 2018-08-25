@@ -3,13 +3,13 @@
     <name>AboutDialog</name>
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
-        <source>About SpectreCoin</source>
-        <translation>Au sujet de SpectreCoin</translation>
+        <source>About Spectrecoin</source>
+        <translation>Au sujet de Spectrecoin</translation>
     </message>
     <message>
         <location line="+39"/>
-        <source>&lt;b&gt;SpectreCoin&lt;/b&gt; version</source>
-        <translation>Version de &lt;b&gt;SpectreCoin&lt;/b&gt;</translation>
+        <source>&lt;b&gt;Spectrecoin&lt;/b&gt; version</source>
+        <translation>Version de &lt;b&gt;Spectrecoin&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -19,7 +19,7 @@ Copyright © 2014 The BlackCoin developers
 Copyright © 2015 The Shadow developers</source>
         <translation>Copyright © 2009-2014 Les développeurs Bitcoin
 Copyright © 2012-2014 Les développeurs NovaCoin
-Copyright © 2014-2015 Les développeurs SpectreCoin</translation>
+Copyright © 2014-2015 Les développeurs Spectrecoin</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -150,7 +150,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
-        <translation>Avertissement : Si vous chiffrez votre portefeuille et perdez votre passphrase, vous ne pourrez &lt;b&gt;plus accéder à vos SpectreCoins&lt;/b&gt;!</translation>
+        <translation>Avertissement : Si vous chiffrez votre portefeuille et perdez votre passphrase, vous ne pourrez &lt;b&gt;plus accéder à vos Spectrecoins&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -176,8 +176,8 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
     <message>
         <location line="-58"/>
-        <source>SpectreCoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>L&apos;application SpectreCoin va désormais se terminer afin de finaliser le processus de chiffrage. Merci de noter que le chiffrage du portefeuille ne garantit pas de se prémunir du vol via utilisation de malware, qui auraient pu infecter votre ordinateur. </translation>
+        <source>Spectrecoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
+        <translation>L&apos;application Spectrecoin va désormais se terminer afin de finaliser le processus de chiffrage. Merci de noter que le chiffrage du portefeuille ne garantit pas de se prémunir du vol via utilisation de malware, qui auraient pu infecter votre ordinateur. </translation>
     </message>
     <message>
         <location line="+13"/>
@@ -249,7 +249,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+48"/>
         <source>Amount:</source>
-        <translation>Montant :</translation>
+        <translation>Montant :</translation>
     </message>
     <message>
         <location line="+32"/>
@@ -555,12 +555,12 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location line="+82"/>
         <source>The entered address &quot;%1&quot; is already in the address book.</source>
-        <translation>L’adresse fournie « %1 » est déjà présente dans le carnet d&apos;adresses.</translation>
+        <translation>L’adresse fournie « %1 » est déjà présente dans le carnet d&apos;adresses.</translation>
     </message>
     <message>
         <location line="-5"/>
-        <source>The entered address &quot;%1&quot; is not a valid SpectreCoin address.</source>
-        <translation>L&apos;adresse &quot;%1&quot; renseignée n&apos;est pas une adresse SpectreCoin valide.</translation>
+        <source>The entered address &quot;%1&quot; is not a valid Spectrecoin address.</source>
+        <translation>L&apos;adresse &quot;%1&quot; renseignée n&apos;est pas une adresse Spectrecoin valide.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -583,7 +583,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location line="+0"/>
         <location line="+12"/>
-        <source>Spectre</source>
+        <source>Spectrecoin</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -604,7 +604,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location line="+1"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation>Définir la langue, par exemple « fr_FR » (par défaut: la langue du système)</translation>
+        <translation>Définir la langue, par exemple « fr_FR » (par défaut: la langue du système)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -675,7 +675,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <name>PaymentServer</name>
     <message>
         <location filename="../paymentserver.cpp" line="+107"/>
-        <source>Cannot start spectre: click-to-pay handler</source>
+        <source>Cannot start Spectrecoin: click-to-pay handler</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -785,12 +785,12 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     </message>
     <message>
         <location line="-10"/>
-        <source>Spectre - Debug window</source>
+        <source>Spectrecoin - Debug window</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+25"/>
-        <source>Spectre Core</source>
+        <source>Spectrecoin Core</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -825,7 +825,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     </message>
     <message>
         <location line="+157"/>
-        <source>Show the Spectre help message to get a list with possible Spectre command-line options.</source>
+        <source>Show the Spectrecoin help message to get a list with possible Spectrecoin command-line options.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -964,7 +964,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     </message>
     <message>
         <location line="+49"/>
-        <source>Open the Spectre debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <source>Open the Spectrecoin debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1004,7 +1004,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     </message>
     <message>
         <location filename="../rpcconsole.cpp" line="-197"/>
-        <source>Welcome to the Spectre Core RPC console.</source>
+        <source>Welcome to the Spectrecoin Core RPC console.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1222,7 +1222,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+5"/>
-        <source>The total exceeds your spectre balance when the %1 transaction fee is included.</source>
+        <source>The total exceeds your SPECTRE balance when the %1 transaction fee is included.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1391,7 +1391,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>About Spectre</source>
+        <source>About Spectrecoin</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1636,7 +1636,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>0 active connection(s) to SpectreCoin network</source>
+        <source>0 active connection(s) to Spectrecoin network</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1676,7 +1676,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Enter a SpectreCoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
+        <source>Enter a Spectrecoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1696,7 +1696,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Enter a SpectreCoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
+        <source>Enter a Spectrecoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1706,7 +1706,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Enter a SpectreCoin signature</source>
+        <source>Enter a Spectrecoin signature</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1929,7 +1929,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     <name>SpectreGUI</name>
     <message>
         <location filename="../spectre.cpp" line="+111"/>
-        <source>A fatal error occurred. Spectre can no longer continue safely and will quit.</source>
+        <source>A fatal error occurred. Spectrecoin can no longer continue safely and will quit.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1955,12 +1955,12 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+3"/>
-        <source>&amp;About SpectreCoin</source>
+        <source>&amp;About Spectrecoin</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
-        <source>Show information about SpectreCoin</source>
+        <source>Show information about Spectrecoin</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1980,7 +1980,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Modify configuration options for SpectreCoin</source>
+        <source>Modify configuration options for Spectrecoin</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2082,7 +2082,7 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message numerus="yes">
         <location line="+63"/>
-        <source>%n active connection(s) to SpectreCoin network</source>
+        <source>%n active connection(s) to Spectrecoin network</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
@@ -2241,7 +2241,7 @@ Message: %4
     <message>
         <location line="-23"/>
         <location line="+23"/>
-        <source>URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters.</source>
+        <source>URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2379,12 +2379,12 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Received spectre</source>
+        <source>Received SPECTRE</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
-        <source>Sent spectre</source>
+        <source>Sent SPECTRE</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2720,8 +2720,8 @@ Expected time to earn reward is %3</source>
     <name>bitcoin-core</name>
     <message>
         <location filename="../bitcoinstrings.cpp" line="+33"/>
-        <source>SpectreCoin version</source>
-        <translation>Version SpectreCoin</translation>
+        <source>Spectrecoin version</source>
+        <translation>Version Spectrecoin</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2771,12 +2771,12 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+2"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation>Définir la taille du tampon de base de données en mégaoctets (par défaut : 25)</translation>
+        <translation>Définir la taille du tampon de base de données en mégaoctets (par défaut : 25)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Set database disk log size in megabytes (default: 100)</source>
-        <translation>Définir la taille du journal de base de données en mégaoctets (par défaut : 100)</translation>
+        <translation>Définir la taille du journal de base de données en mégaoctets (par défaut : 100)</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2786,7 +2786,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+1"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Garder au plus &lt;n&gt; connexions avec les pairs (par défaut : 125)</translation>
+        <translation>Garder au plus &lt;n&gt; connexions avec les pairs (par défaut : 125)</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2811,12 +2811,12 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="+5"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Seuil de déconnexion des pairs de mauvaise qualité (par défaut : 100)</translation>
+        <translation>Seuil de déconnexion des pairs de mauvaise qualité (par défaut : 100)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Délai en secondes de refus de reconnexion aux pairs de mauvaise qualité (par défaut : 86400)</translation>
+        <translation>Délai en secondes de refus de reconnexion aux pairs de mauvaise qualité (par défaut : 86400)</translation>
     </message>
     <message>
         <location line="-44"/>
@@ -2881,7 +2881,7 @@ Expected time to earn reward is %3</source>
     <message>
         <location line="-24"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation>Accepter les connexions entrantes (par défaut : 1 si aucun -proxy ou -connect )</translation>
+        <translation>Accepter les connexions entrantes (par défaut : 1 si aucun -proxy ou -connect )</translation>
     </message>
     <message>
         <location line="-38"/>
@@ -2905,8 +2905,8 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+61"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong SpectreCoin will not work properly.</source>
-        <translation>Avertissement: Veuillez vérifier la date et l&apos;heure de votre ordinateur. SpectreCoin ne pourra pas fonctionner correctement si l&apos;horloge est réglée de façon incorrecte</translation>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Spectrecoin will not work properly.</source>
+        <translation>Avertissement: Veuillez vérifier la date et l&apos;heure de votre ordinateur. Spectrecoin ne pourra pas fonctionner correctement si l&apos;horloge est réglée de façon incorrecte</translation>
     </message>
     <message>
         <location line="-31"/>
@@ -3101,7 +3101,7 @@ rpcpassword=%s
 The username and password MUST NOT be the same.
 If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;SpectreCoin Alert&quot; admin@foo.com
+for example: alertnotify=echo %%s | mail -s &quot;Spectrecoin Alert&quot; admin@foo.com
 </source>
         <translation>%s, vous devez définir un mot de passe rpc &apos;rpcpassword&apos; au sein du fichier de configuration:
  %s
@@ -3112,7 +3112,7 @@ rpcpassword=%s
 Le nom d&apos;utilisateur et le mot de passe doivent IMPERATIVEMENT être différents.
 Si le fichier n&apos;existe pas, il est nécessaire de le créer, avec les droit de lecture au propriétaire seulement.
 Il est également recommandé d&apos;utiliser l&apos;option alertnotify afin d&apos;être notifié des problèmes;
-par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin@foo.com
+par exemple: alertnotify=echo %%s | mail -s &quot;Alerte Spectrecoin&quot; admin@foo.com
 </translation>
     </message>
     <message>
@@ -3138,7 +3138,7 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     <message>
         <location line="+1"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>Envoyer des commandes au nœud fonctionnant sur &lt;ip&gt; (par défaut : 127.0.0.1)</translation>
+        <translation>Envoyer des commandes au nœud fonctionnant sur &lt;ip&gt; (par défaut : 127.0.0.1)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3173,7 +3173,7 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     <message>
         <location line="+1"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Régler la taille de la réserve de clefs sur &lt;n&gt; (par défaut : 100)</translation>
+        <translation>Régler la taille de la réserve de clefs sur &lt;n&gt; (par défaut : 100)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3203,12 +3203,12 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     <message>
         <location line="+1"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation>Fichier de certificat serveur (par défaut : server.cert)</translation>
+        <translation>Fichier de certificat serveur (par défaut : server.cert)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Server private key (default: server.pem)</source>
-        <translation>Clef privée du serveur (par défaut : server.pem)</translation>
+        <translation>Clef privée du serveur (par défaut : server.pem)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3237,13 +3237,13 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     </message>
     <message>
         <location line="+1"/>
-        <source>Cannot obtain a lock on data directory %s.  SpectreCoin is probably already running.</source>
-        <translation>Echec lors de la tentative de verrou des données du répertoire %s. L&apos;application SpectreCoin est probablement déjà en cours d&apos;exécution</translation>
+        <source>Cannot obtain a lock on data directory %s.  Spectrecoin is probably already running.</source>
+        <translation>Echec lors de la tentative de verrou des données du répertoire %s. L&apos;application Spectrecoin est probablement déjà en cours d&apos;exécution</translation>
     </message>
     <message>
         <location line="-98"/>
-        <source>SpectreCoin</source>
-        <translation>SpectreCoin</translation>
+        <source>Spectrecoin</source>
+        <translation>Spectrecoin</translation>
     </message>
     <message>
         <location line="+140"/>
@@ -3277,13 +3277,13 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     </message>
     <message>
         <location line="+4"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of SpectreCoin</source>
-        <translation>Erreur de chargement du fichier wallet.dat: le portefeuille nécessite une version plus récente de l&apos;application SpectreCoin</translation>
+        <source>Error loading wallet.dat: Wallet requires newer version of Spectrecoin</source>
+        <translation>Erreur de chargement du fichier wallet.dat: le portefeuille nécessite une version plus récente de l&apos;application Spectrecoin</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart SpectreCoin to complete</source>
-        <translation>Le portefeuille nécessite d&apos;être réédité : Merci de relancer l&apos;application SpectreCoin</translation>
+        <source>Wallet needed to be rewritten: restart Spectrecoin to complete</source>
+        <translation>Le portefeuille nécessite d&apos;être réédité : Merci de relancer l&apos;application Spectrecoin</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3293,32 +3293,32 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     <message>
         <location line="-16"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation>Adresse -proxy invalide : « %s »</translation>
+        <translation>Adresse -proxy invalide : « %s »</translation>
     </message>
     <message>
         <location line="-1"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation>Réseau inconnu spécifié sur -onlynet : « %s »</translation>
+        <translation>Réseau inconnu spécifié sur -onlynet : « %s »</translation>
     </message>
     <message>
         <location line="-1"/>
         <source>Unknown -socks proxy version requested: %i</source>
-        <translation>Version inconnue de serveur mandataire -socks demandée : %i</translation>
+        <translation>Version inconnue de serveur mandataire -socks demandée : %i</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation>Impossible de résoudre l&apos;adresse -bind : « %s »</translation>
+        <translation>Impossible de résoudre l&apos;adresse -bind : « %s »</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation>Impossible de résoudre l&apos;adresse -externalip : « %s »</translation>
+        <translation>Impossible de résoudre l&apos;adresse -externalip : « %s »</translation>
     </message>
     <message>
         <location line="-24"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Montant invalide pour -paytxfee=&lt;montant&gt; : « %s »</translation>
+        <translation>Montant invalide pour -paytxfee=&lt;montant&gt; : « %s »</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -3352,8 +3352,8 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
     </message>
     <message>
         <location line="+122"/>
-        <source>Unable to bind to %s on this computer. SpectreCoin is probably already running.</source>
-        <translation>Connexion au port %s impossible. L&apos;application SpectreCoin est probablement déjà en cours d&apos;exécution</translation>
+        <source>Unable to bind to %s on this computer. Spectrecoin is probably already running.</source>
+        <translation>Connexion au port %s impossible. L&apos;application Spectrecoin est probablement déjà en cours d&apos;exécution</translation>
     </message>
     <message>
         <location line="-97"/>
@@ -3410,7 +3410,7 @@ par exemple: alertnotify=echo %%s | mail -s &quot;Alerte SpectreCoin&quot; admin
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation>Vous devez ajouter la ligne rpcpassword=&lt;mot-de-passe&gt; au fichier de configuration :
+        <translation>Vous devez ajouter la ligne rpcpassword=&lt;mot-de-passe&gt; au fichier de configuration :
 %s
 Si le fichier n&apos;existe pas, créez-le avec les droits de lecture seule accordés au propriétaire.</translation>
     </message>

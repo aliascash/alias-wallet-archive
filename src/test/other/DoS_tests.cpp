@@ -15,17 +15,18 @@
 
 #include <stdint.h>
 
+#define int64 int64_t
+
 // Tests this internal-to-main.cpp method:
-extern bool AddOrphanTx(const CDataStream& vMsg);
 extern unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans);
-extern std::map<uint256, CDataStream*> mapOrphanTransactions;
-extern std::map<uint256, std::map<uint256, CDataStream*> > mapOrphanTransactionsByPrev;
+extern std::map<uint256, CTransaction> mapOrphanTransactions;
+extern std::map<uint256, std::set<uint256> > mapOrphanTransactionsByPrev;
 
 CService ip(uint32_t i)
 {
     struct in_addr s;
     s.s_addr = i;
-    return CService(CNetAddr(s), GetDefaultPort());
+    return CService(CNetAddr(s), Params().GetDefaultPort());
 }
 
 BOOST_AUTO_TEST_SUITE(DoS_tests)
@@ -108,7 +109,7 @@ unsigned int ComputeMaxBits(CBigNum bnTargetLimit, unsigned int nBase, int64_t n
 //
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime)
 {
-    return ComputeMaxBits(bnProofOfWorkLimit, nBase, nTime);
+    return ComputeMaxBits(Params().BnProofOfWorkLimit(), nBase, nTime);
 }
 
 //
@@ -117,7 +118,7 @@ unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime)
 //
 unsigned int ComputeMinStake(unsigned int nBase, int64_t nTime, unsigned int nBlockTime)
 {
-    return ComputeMaxBits(bnProofOfStakeLimit, nBase, nTime);
+    return ComputeMaxBits(Params().BnProofOfStakeLimit(), nBase, nTime);
 }
 
 static bool CheckNBits(unsigned int nbits1, int64 time1, unsigned int nbits2, int64 time2)\
@@ -172,13 +173,11 @@ BOOST_AUTO_TEST_CASE(DoS_checknbits)
 
 CTransaction RandomOrphan()
 {
-    std::map<uint256, CDataStream*>::iterator it;
+    std::map<uint256, CTransaction>::iterator it;
     it = mapOrphanTransactions.lower_bound(GetRandHash());
     if (it == mapOrphanTransactions.end())
         it = mapOrphanTransactions.begin();
-    const CDataStream* pvMsg = it->second;
-    CTransaction tx;
-    CDataStream(*pvMsg) >> tx;
+    const CTransaction tx = it->second;
     return tx;
 }
 
@@ -203,7 +202,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 
         CDataStream ds(SER_DISK, CLIENT_VERSION);
         ds << tx;
-        AddOrphanTx(ds);
+        AddOrphanTx(tx);
     }
 
     // ... and 50 that depend on other orphans:
@@ -222,7 +221,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 
         CDataStream ds(SER_DISK, CLIENT_VERSION);
         ds << tx;
-        AddOrphanTx(ds);
+        AddOrphanTx(tx);
     }
 
     // This really-big orphan should be ignored:
@@ -248,7 +247,7 @@ BOOST_AUTO_TEST_CASE(DoS_mapOrphans)
 
         CDataStream ds(SER_DISK, CLIENT_VERSION);
         ds << tx;
-        BOOST_CHECK(!AddOrphanTx(ds));
+        BOOST_CHECK(!AddOrphanTx(tx));
     }
 
     // Test LimitOrphanTxSize() function:
@@ -286,7 +285,7 @@ BOOST_AUTO_TEST_CASE(DoS_checkSig)
 
         CDataStream ds(SER_DISK, CLIENT_VERSION);
         ds << tx;
-        AddOrphanTx(ds);
+        AddOrphanTx(tx);
     }
 
     // Create a transaction that depends on orphans:

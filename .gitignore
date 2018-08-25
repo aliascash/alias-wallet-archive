@@ -98,3 +98,4 @@ Makefile\.am\.user
 /build-src-Desktop_Qt*
 /Prebuild.Spectre.libraries.zip
 moc_predefs.h
+/build-tests-Desktop_Qt*

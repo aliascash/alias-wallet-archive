@@ -5,6 +5,7 @@
 #include "uint256.h"
 #include "util.h"
 #include "wallet.h"
+#include "miner.h"
 
 extern void SHA256Transform(void* pstate, void* pinput, const void* pinit);
 
@@ -53,9 +54,12 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     CTransaction tx;
     CScript script;
     uint256 hash;
+    int64_t *nFees;
 
     // Simple block creation, nothing special yet:
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+//    CreateNewBlock(CWallet *pwallet, bool fProofOfStake, int64_t *pFees)
+    BOOST_CHECK(pindexBest != NULL);
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
 
     // We can't make transactions until we have inputs
     // Therefore, load 100 blocks :)
@@ -72,13 +76,15 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
             txFirst.push_back(new CTransaction(pblock->vtx[0]));
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
         pblock->nNonce = blockinfo[i].nonce;
-        assert(ProcessBlock(NULL, pblock));
+        uint256 hashBlock = pblock->GetHash();
+
+        assert(ProcessBlock(NULL, pblock, hashBlock));
         pblock->hashPrevBlock = pblock->GetHash();
     }
     delete pblock;
 
     // Just to make sure we can still make simple blocks
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
 
     // block sigops > limit: 1000 CHECKMULTISIG + 1
     tx.vin.resize(1);
@@ -95,7 +101,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
         mempool.addUnchecked(hash, tx);
         tx.vin[0].prevout.hash = hash;
     }
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
@@ -115,14 +121,14 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
         mempool.addUnchecked(hash, tx);
         tx.vin[0].prevout.hash = hash;
     }
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
     // orphan in mempool
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
@@ -140,7 +146,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue = 5900000000LL;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
@@ -151,7 +157,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue = 0;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
@@ -169,7 +175,7 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].nValue -= 1000000;
     hash = tx.GetHash();
     mempool.addUnchecked(hash,tx);
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
@@ -183,17 +189,17 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
     tx.vout[0].scriptPubKey = CScript() << OP_2;
     hash = tx.GetHash();
     mempool.addUnchecked(hash, tx);
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     mempool.clear();
 
     // subsidy changing
     int nHeight = pindexBest->nHeight;
     pindexBest->nHeight = 209999;
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     pindexBest->nHeight = 210000;
-    BOOST_CHECK(pblock = CreateNewBlock(reservekey));
+    BOOST_CHECK(pblock = CreateNewBlock(pwalletMain, true, nFees));
     delete pblock;
     pindexBest->nHeight = nHeight;
 }

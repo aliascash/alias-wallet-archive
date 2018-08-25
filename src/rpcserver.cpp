@@ -252,10 +252,10 @@ Value stop(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
             "stop\n"
-            "Stop SpectreCoin server.");
+            "Stop Spectrecoin server.");
     // Shutdown will take long enough that the response should get back
     StartShutdown();
-    return "SpectreCoin server stopping";
+    return "Spectrecoin server stopping";
 }
 
 
@@ -627,7 +627,7 @@ void StartRPCThreads()
               "The username and password MUST NOT be the same.\n"
               "If the file does not exist, create it with owner-readable-only file permissions.\n"
               "It is also recommended to set alertnotify so you are notified of problems;\n"
-              "for example: alertnotify=echo %%s | mail -s \"SpectreCoin Alert\" admin@foo.com\n"),
+              "for example: alertnotify=echo %%s | mail -s \"Spectrecoin Alert\" admin@foo.com\n"),
                 strWhatAmI,
                 GetConfigFile().string(),
                 EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32)),
@@ -739,6 +739,10 @@ void StopRPCThreads()
     delete rpc_worker_group; rpc_worker_group = NULL;
     delete rpc_ssl_context; rpc_ssl_context = NULL;
     delete rpc_io_service; rpc_io_service = NULL;
+}
+
+bool IsRPCServerRunning() {
+	return rpc_io_service != NULL;
 }
 
 void RPCRunHandler(const boost::system::error_code& err, boost::function<void(void)> func)

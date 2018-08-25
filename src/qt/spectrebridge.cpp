@@ -630,9 +630,15 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+		case WalletModel::SCR_AmountExceedsBalance:
+			QMessageBox::warning(window, tr("Send Coins"),
+				tr("The amount exceeds your SPECTRE balance."),
+				QMessageBox::Ok, QMessageBox::Ok);
+			emit sendCoinsResult(false);
+			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your spectre balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -1451,7 +1457,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (mi == mapBlockIndex.end())
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1461,7 +1467,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1479,7 +1485,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
         blkTransactions.insert(QString::number(x), blockTxn);
     }
 
-    emit listTransactionsForBlockResult(blkTransactions);
+    emit listTransactionsForBlockResult(blkHash, blkTransactions);
     return;
 }
 
@@ -1550,7 +1556,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
             if (txn.nVersion == ANON_TXN_VERSION
                 && txin.IsAnonInput())
             {
-                sAddr = "Spectre";
+                sAddr = "SPECTRE";
                 std::vector<uint8_t> vchImage;
                 txin.ExtractKeyImage(vchImage);
 
@@ -1606,7 +1612,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 
              if( txn.nVersion == ANON_TXN_VERSION
                  && txout.IsAnonOutput() )
-                 sAddr = "Spectre";
+                 sAddr = "SPECTRE";
              else
              {
                  CTxDestination address;

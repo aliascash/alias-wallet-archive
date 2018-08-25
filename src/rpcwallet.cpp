@@ -230,7 +230,7 @@ Value getnewaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
             "getnewaddress [account]\n"
-            "Returns a new SpectreCoin address for receiving payments.  "
+            "Returns a new Spectrecoin address for receiving payments.  "
             "If [account] is specified, it is added to the address book "
             "so payments received with the address will be credited to [account].");
 
@@ -256,7 +256,7 @@ Value getnewextaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
             "getnewextaddress [label]\n"
-            "Returns a new SpectreCoin ext address for receiving payments."
+            "Returns a new Spectrecoin ext address for receiving payments."
             "If [label] is specified, it is added to the address book. ");
 
     std::string strLabel;
@@ -327,7 +327,7 @@ Value getaccountaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() != 1)
         throw std::runtime_error(
             "getaccountaddress <account>\n"
-            "Returns the current SpectreCoin address for receiving payments to this account.");
+            "Returns the current Spectrecoin address for receiving payments to this account.");
 
     // Parse the account first so we don't generate a key if there's an error
     std::string strAccount = AccountFromValue(params[0]);
@@ -350,7 +350,7 @@ Value setaccount(const Array& params, bool fHelp)
 
     CBitcoinAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
 
 
     std::string strAccount;
@@ -380,7 +380,7 @@ Value getaccount(const Array& params, bool fHelp)
 
     CBitcoinAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
 
     std::string strAccount;
     std::map<CTxDestination, std::string>::iterator mi = pwalletMain->mapAddressBook.find(address.Get());
@@ -430,7 +430,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
     std::string sAddrIn = params[0].get_str();
     CBitcoinAddress address(sAddrIn);
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
 
     // Amount
     int64_t nAmount = AmountFromValue(params[1]);
@@ -570,7 +570,7 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
     CScript scriptPubKey;
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
     scriptPubKey.SetDestination(address.Get());
     if (!IsMine(*pwalletMain,scriptPubKey))
         return (double)0.0;
@@ -801,7 +801,7 @@ Value sendfrom(const Array& params, bool fHelp)
     std::string strAccount = AccountFromValue(params[0]);
     CBitcoinAddress address(params[1].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SpectreCoin address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
     int64_t nAmount = AmountFromValue(params[2]);
 
     int nMinDepth = 1;
@@ -864,7 +864,7 @@ Value sendmany(const Array& params, bool fHelp)
     {
         CBitcoinAddress address(s.name_);
         if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid SpectreCoin address: ")+s.name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Spectrecoin address: ")+s.name_);
 
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ")+s.name_);
@@ -970,7 +970,7 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     {
         std::string msg = "addmultisigaddress <nrequired> <'[\"key\",\"key\"]'> [account]\n"
             "Add a nrequired-to-sign multisignature address to the wallet\"\n"
-            "each key is a SpectreCoin address or hex-encoded public key\n"
+            "each key is a Spectrecoin address or hex-encoded public key\n"
             "If [account] is specified, assign address to [account].";
         throw std::runtime_error(msg);
     };
@@ -999,7 +999,7 @@ Value createmultisig(const Array& params, bool fHelp)
         std::string msg = "addmultisigaddress <nrequired> <'[\"key\",\"key\"]'> [account]\n"
             "\nCreates a multi-signature address with n signature of m keys required.\n"
             "Returns a json object with the address and redeemScript.\n"
-            "Each key is a SpectreCoin address or hex-encoded public key.\n"
+            "Each key is a Spectrecoin address or hex-encoded public key.\n"
             "\nArguments:\n"
             "1. nrequired      (numeric, required) The number of required signatures out of the n keys or addresses.\n"
             "2. \"keys\"       (string, required) A json array of keys which are bitcoin addresses or hex-encoded public keys\n"
@@ -1601,6 +1601,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
 
     if (!pwalletMain->IsLocked())
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked, use walletlock first if need to change unlock settings.");
+
+	if (!IsRPCServerRunning()) {
+		throw JSONRPCError(RPC_SERVER_NOT_STARTED, "Error: To use the walletpassphrase you need to start the wallet with argument -server. Start the wallet with -server argument and try again.\n");	
+	}
+
     // Note that the walletpassphrase is stored in params[0] which is not mlock()ed
     SecureString strWalletPass;
     strWalletPass.reserve(100);
@@ -1623,7 +1628,11 @@ Value walletpassphrase(const Array& params, bool fHelp)
     int64_t nSleepTime = params[1].get_int64();
     LOCK(cs_nWalletUnlockTime);
     nWalletUnlockTime = GetTime() + nSleepTime;
-    RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    try {
+        RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    } catch (std::runtime_error &e) {
+        throw e;
+    }
 
     // ppcoin: if user OS account compromised prevent trivial sendmoney commands
     if (params.size() > 2)
@@ -1720,7 +1729,7 @@ Value encryptwallet(const Array& params, bool fHelp)
     // slack space in .dat files; that is bad if the old data is
     // unencrypted private keys. So:
     StartShutdown();
-    return "wallet encrypted; SpectreCoin server stopping, restart to run with encrypted wallet.  The keypool has been flushed, you need to make a new backup.";
+    return "wallet encrypted; Spectrecoin server stopping, restart to run with encrypted wallet.  The keypool has been flushed, you need to make a new backup.";
 }
 
 class DescribeAddressVisitor : public boost::static_visitor<Object>
@@ -1969,7 +1978,7 @@ Value getnewstealthaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
             "getnewstealthaddress [label]\n"
-            "Returns a new SpectreCoin stealth address for receiving payments anonymously."
+            "Returns a new Spectrecoin stealth address for receiving payments anonymously."
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2219,7 +2228,7 @@ Value sendtostealthaddress(const Array& params, bool fHelp)
     CStealthAddress sxAddr;
 
     if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid SpectreCoin stealth address.");
+        throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
     CWalletTx wtx;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -2524,7 +2533,7 @@ Value sendspectoanon(const Array& params, bool fHelp)
     CStealthAddress sxAddr;
 
     if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid SpectreCoin stealth address.");
+        throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
     CWalletTx wtx;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -2578,7 +2587,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
     CStealthAddress sxAddr;
 
     if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid SpectreCoin stealth address.");
+        throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
     CWalletTx wtx;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
@@ -2634,7 +2643,7 @@ Value sendanontospec(const Array& params, bool fHelp)
     CStealthAddress sxAddr;
 
     if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid SpectreCoin stealth address.");
+        throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
     CWalletTx wtx;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
@@ -3035,7 +3044,7 @@ Value txnreport(const Array& params, bool fHelp)
                 if (pwtx->nVersion == ANON_TXN_VERSION
                     && txin.IsAnonInput())
                 {
-                    entry.push_back("spectre in");
+                    entry.push_back("SPECTRE in");
                     entry.push_back("");
                     std::vector<uint8_t> vchImage;
                     txin.ExtractKeyImage(vchImage);
@@ -3068,7 +3077,7 @@ Value txnreport(const Array& params, bool fHelp)
                     if (txin.prevout.IsNull()) // coinbase
                         continue;
 
-                    entry.push_back("spec in");
+                    entry.push_back("XSPEC in");
                     entry.push_back(fCoinBase ? "coinbase" : fCoinStake ? "coinstake" : "");
 
                     if (pwalletMain->IsMine(txin))
@@ -3135,7 +3144,7 @@ Value txnreport(const Array& params, bool fHelp)
                 if (pwtx->nVersion == ANON_TXN_VERSION
                     && txout.IsAnonOutput())
                 {
-                    entry.push_back("spectre out");
+                    entry.push_back("SPECTRE out");
                     entry.push_back("");
 
                     CPubKey pkCoin    = txout.ExtractAnonPk();
@@ -3162,7 +3171,7 @@ Value txnreport(const Array& params, bool fHelp)
                     };
                 } else
                 {
-                    entry.push_back("spec out");
+                    entry.push_back("XSPEC out");
                     entry.push_back(fCoinBase ? "coinbase" : fCoinStake ? "coinstake" : "");
 
 

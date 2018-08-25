@@ -91,6 +91,11 @@ read_json(const std::string& filename)
 {
     namespace fs = boost::filesystem;
     fs::path testFile = fs::current_path() / "test" / "data" / filename;
+#ifdef CURRENT_PATH
+    std::stringstream ss;
+    ss << CURRENT_PATH << "/test/data/" << filename;
+    testFile = ss.str();
+#endif
 
 #ifdef TEST_DATA_DIR
     if (!fs::exists(testFile))

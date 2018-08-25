@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(coin_selection_tests)
     
     if (!pwallet)
     {
-        BOOST_MESSAGE("new wallet failed.");
+        BOOST_TEST_MESSAGE("new wallet failed.");
         return;
     }
     
