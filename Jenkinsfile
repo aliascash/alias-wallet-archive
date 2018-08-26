@@ -21,6 +21,7 @@ node('docker') {
         }
     }
 
+/*
     stage('Build CentOS image') {
         // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
         // So copy required Dockerfile to root dir for each build
@@ -34,6 +35,7 @@ node('docker') {
             spectre_base.push("latest")
         }
     }
+*/
 
     stage('Build Fedora image') {
         // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
