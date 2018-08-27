@@ -2424,6 +2424,9 @@ Value scanforalltxns(const Array& params, bool fHelp)
     if (pindex == NULL)
         throw std::runtime_error("Genesis Block is not set.");
 
+    pwalletMain->nStealth = 0;
+    pwalletMain->nFoundStealth = 0;
+
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -2433,68 +2436,7 @@ Value scanforalltxns(const Array& params, bool fHelp)
         pwalletMain->ReacceptWalletTransactions();
     } // cs_main, pwalletMain->cs_wallet
 
-    result.push_back(Pair("result", "Scan complete."));
-
-    return result;
-}
-
-Value scanforstealthtxns(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 1)
-        throw std::runtime_error(
-            "scanforstealthtxns [fromHeight]\n"
-            "Scan blockchain for owned stealth transactions.");
-
-    Object result;
-    uint32_t nBlocks = 0;
-    uint32_t nTransactions = 0;
-    int32_t nFromHeight = 0;
-
-    CBlockIndex *pindex = pindexGenesisBlock;
-
-
-    if (params.size() > 0)
-        nFromHeight = params[0].get_int();
-
-
-    if (nFromHeight > 0)
-    {
-        pindex = mapBlockIndex[hashBestChain];
-        while (pindex->nHeight > nFromHeight
-            && pindex->pprev)
-            pindex = pindex->pprev;
-    };
-
-    if (pindex == NULL)
-        throw std::runtime_error("Genesis Block is not set.");
-
-    // -- locks in AddToWalletIfInvolvingMe
-
-    bool fUpdate = true; // todo: option?
-
-    pwalletMain->nStealth = 0;
-    pwalletMain->nFoundStealth = 0;
-
-    while (pindex)
-    {
-        nBlocks++;
-        CBlock block;
-        block.ReadFromDisk(pindex, true);
-
-        BOOST_FOREACH(CTransaction& tx, block.vtx)
-        {
-            if (!tx.IsStandard())
-                continue; // leave out coinbase and others
-            nTransactions++;
-
-            uint256 hash = tx.GetHash();
-            pwalletMain->AddToWalletIfInvolvingMe(tx, hash, &block, fUpdate);
-        };
-
-        pindex = pindex->pnext;
-    };
-
-    LogPrintf("Scanned %u blocks, %u transactions\n", nBlocks, nTransactions);
+       
     LogPrintf("Found %u stealth transactions in blockchain.\n", pwalletMain->nStealth);
     LogPrintf("Found %u new owned stealth transactions.\n", pwalletMain->nFoundStealth);
 
@@ -2506,7 +2448,6 @@ Value scanforstealthtxns(const Array& params, bool fHelp)
 
     return result;
 }
-
 
 Value sendspectoanon(const Array& params, bool fHelp)
 {
