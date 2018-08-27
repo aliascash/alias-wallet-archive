@@ -457,7 +457,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+1"/>
         <source>This label turns red, if any recipient receives an amount smaller than %1.
 
- This means a fee of at least %2 is required. 
+ This means a fee of at least %2 is required.
 
  Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
         <translation type="unfinished"/>
@@ -662,7 +662,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <name>PaymentServer</name>
     <message>
         <location filename="../paymentserver.cpp" line="+107"/>
-        <source>Cannot start spectrecoin: click-to-pay handler</source>
+        <source>Cannot start Spectrecoin: click-to-pay handler</source>
         <translation type="unfinished"/>
     </message>
 </context>
