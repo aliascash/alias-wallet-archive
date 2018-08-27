@@ -94,11 +94,10 @@ Cross-compiling for Windows is supported using MingW64, by passing the appropria
 
 ### Using Docker
 
-This repository contains a Dockerfile to create a ready to use image with 
-spectrecoind. The image is based on our spectre base image 
-[spectreproject/spectre-builder](https://github.com/spectrecoin/spectre-builder)
-and so the dedicated user _spectre_ with UID _1000_ and GID _1000_ is used to run
-spectrecoind.
+This repository contains a Dockerfile to create a ready to use image with spectrecoind. The image is based on our 
+spectre base image [spectreproject/spectre-base](https://github.com/spectrecoin/spectre-base), which is based on 
+Debian on his side. A dedicated user _spectre_ with UID _1000_ and GID _1000_ is used to run [spectrecoind](https://github.com/spectrecoin/spectre).
+
 
 #### Start new container
 You should prepare a directory on the host machine, which contains all 
