@@ -51,6 +51,20 @@ node('docker') {
         }
     }
 
+    stage('Build Raspberry Pi image') {
+        // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+        // So copy required Dockerfile to root dir for each build
+        sh "cp ./Docker/RaspberryPi/Dockerfile ."
+        spectre_base = docker.build("spectreproject/spectre-raspi")
+        sh "rm Dockerfile"
+    }
+    stage('Push Raspberry Pi image') {
+        docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//            spectre_base.push("${env.BUILD_NUMBER}")
+            spectre_base.push("latest")
+        }
+    }
+
     stage('Build Ubuntu image') {
         // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
         // So copy required Dockerfile to root dir for each build
