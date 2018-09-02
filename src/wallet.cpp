@@ -3351,19 +3351,22 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             {
                 if (fDebugRingSig)
                     LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
-                return UpdateAnonTransaction(ptxdb, tx, blockHash);
+                if (!UpdateAnonTransaction(ptxdb, tx, blockHash))
+                    return false;
+            }
+            else {
+                return error("%s: Found duplicate anon output.", __func__);
+            }
+        }
+        else {
+            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
+            if (!ptxdb->WriteAnonOutput(pkCoin, ao))
+            {
+                LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
+                continue;
             };
-            return error("%s: Found duplicate anon output.", __func__);
-        };
-
-        ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
-        if (!ptxdb->WriteAnonOutput(pkCoin, ao))
-        {
-            LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
-            continue;
-        };
-
-        mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue);
+            mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue);
+        }
 
         memcpy(&vchEphemPK[0], &s[2+EC_COMPRESSED_SIZE+2], EC_COMPRESSED_SIZE);
 
