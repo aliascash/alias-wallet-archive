@@ -6,6 +6,9 @@ sudo: required
 dist: trusty
 matrix:
   fast_finish: true
+branches:
+  only:
+  - continuous-integration
 env:
   global:
     - MAKEJOBS=-j3
