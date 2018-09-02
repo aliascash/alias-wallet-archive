@@ -27,7 +27,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh "cp ./Docker/CentOS/Dockerfile ."
+                            sh "cp ./Docker/Debian/Dockerfile ."
                             docker.build("spectreproject/spectre-base", "--rm .")
                             sh "rm Dockerfile"
                         }
@@ -38,25 +38,25 @@ pipeline {
                         }
                     }
                 }
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/CentOS/Dockerfile ."
-                            docker.build("spectreproject/spectre-base-centos", "--rm .")
-                            sh "rm Dockerfile"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
+//                stage('CentOS') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/CentOS/Dockerfile ."
+//                            docker.build("spectreproject/spectre-base-centos", "--rm .")
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
                 stage('Fedora') {
                     agent {
                         label "docker"
@@ -127,28 +127,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            def spectre_base = docker.build("spectreproject/spectre-base", "--rm .")
-                            docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-                                spectre_base.push("latest")
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
                             // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
                             // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/CentOS/Dockerfile ."
-                            def spectre_base = docker.build("spectreproject/spectre-base-centos", "--rm .")
+                            sh "cp ./Docker/Debian/Dockerfile ."
+                            def spectre_base = docker.build("spectreproject/spectre-base", "--rm .")
                             docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
                                 spectre_base.push("latest")
                             }
@@ -161,6 +143,28 @@ pipeline {
                         }
                     }
                 }
+//                stage('CentOS') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/CentOS/Dockerfile ."
+//                            def spectre_base = docker.build("spectreproject/spectre-base-centos", "--rm .")
+//                            docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//                                spectre_base.push("latest")
+//                            }
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
                 stage('Fedora') {
                     agent {
                         label "docker"
@@ -240,28 +244,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            def spectre_base = docker.build("spectreproject/spectre-base", "--rm .")
-                            docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-                                spectre_base.push("${SPECTRECOIN_VERSION}")
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
                             // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
                             // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/CentOS/Dockerfile ."
-                            def spectre_base = docker.build("spectreproject/spectre-base-centos", "--rm .")
+                            sh "cp ./Docker/Debian/Dockerfile ."
+                            def spectre_base = docker.build("spectreproject/spectre-base", "--rm .")
                             docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
                                 spectre_base.push("${SPECTRECOIN_VERSION}")
                             }
@@ -274,6 +260,28 @@ pipeline {
                         }
                     }
                 }
+//                stage('CentOS') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/CentOS/Dockerfile ."
+//                            def spectre_base = docker.build("spectreproject/spectre-base-centos", "--rm .")
+//                            docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//                                spectre_base.push("${SPECTRECOIN_VERSION}")
+//                            }
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
                 stage('Fedora') {
                     agent {
                         label "docker"
