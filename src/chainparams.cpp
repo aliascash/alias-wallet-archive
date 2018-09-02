@@ -131,7 +131,7 @@ public:
         
         nDefaultPort = 37347;
         nRPCPort = 36657;
-        nBIP44ID = 0x80000023;
+        nBIP44ID = 0x800000d5;
        
 		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
 		nLastPOWBlock = 17000;

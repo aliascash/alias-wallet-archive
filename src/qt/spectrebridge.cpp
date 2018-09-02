@@ -690,7 +690,7 @@ void SpectreBridge::updateCoinControlAmount(qint64 amount)
     CoinControlDialog::updateLabels(window->walletModel, 0, this);
 }
 
-void SpectreBridge::updateCoinControlLabels(unsigned int &quantity, int64_t &amount, int64_t &fee, int64_t &afterfee, unsigned int &bytes, QString &priority, QString low, int64_t &change)
+void SpectreBridge::updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change)
 {
     emitCoinControlUpdate(quantity, amount, fee, afterfee, bytes, priority, low, change);
 }
@@ -1803,7 +1803,7 @@ void SpectreBridge::getNewMnemonic(QString password, QString language)
     return;
 }
 
-void SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, quint64 nCreateTime)
 {
     std::string sPassword = inPassword.toStdString();
     std::string sMnemonic = inMnemonic.toStdString();
@@ -2140,7 +2140,7 @@ void SpectreBridge::extKeyList() {
     return;
 }
 
-void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, quint64 nCreateTime)
 {
     QVariantMap result;
     std::string sInKey = inKey.toStdString();
@@ -2181,7 +2181,7 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, in
             return;
         }
         int rv;
-        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, false)))
+        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fBip44)))
         {
             wdb.TxnAbort();
             result.insert("error_msg", QString("ExtKeyImportLoose failed, %1").arg(ExtKeyGetString(rv)));

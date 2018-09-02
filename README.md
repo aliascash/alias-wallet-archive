@@ -27,7 +27,7 @@ Built in Tor: The Spectre software offers a full integration of Tor (https://www
 
 ## Building from source
 
-**NOTE** that these instructions are relevant for building from master, which is the latest code in development. It is generally stable but can contain features that have had less testing than released versions. If you want to build a stable version of Spectre, please check out the latest release tag (v1.3.5) before you start building.
+**NOTE** that these instructions are relevant for building from master, which is the latest code in development. It is generally stable but can contain features that have had less testing than released versions. If you want to build a stable version of Spectre, please check out the latest release tag before you start building.
 
 ### Dependencies
 
