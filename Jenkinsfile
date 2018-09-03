@@ -351,4 +351,76 @@ pipeline {
             }
         }
     }
+    post {
+        success {
+            script {
+                /*
+                 * Disabled until email notification requirements where set up
+                if (!hudson.model.Result.SUCCESS.equals(currentBuild.getPreviousBuild()?.getResult())) {
+                    emailext(
+                            subject: "GREEN: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                            body: '${JELLY_SCRIPT,template="html"}',
+                            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                            to: "to@be.defined",
+                            replyTo: "to@be.defined"
+                    )
+                }
+                */
+                discordSend(
+                        description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Success\n",
+                        footer: 'Jenkins - the builder',
+                        image: '',
+                        link: "$env.BUILD_URL",
+                        successful: true,
+                        thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                        title: "$env.JOB_NAME",
+                        webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+                )
+            }
+        }
+        unstable {
+            /*
+             * Disabled until email notification requirements where set up
+            emailext(
+                    subject: "YELLOW: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                    to: "to@be.defined",
+                    replyTo: "to@be.defined"
+            )
+            */
+            discordSend(
+                    description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Unstable\n",
+                    footer: 'Jenkins - the builder',
+                    image: '',
+                    link: "$env.BUILD_URL",
+                    successful: true,
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+            )
+        }
+        failure {
+            /*
+             * Disabled until email notification requirements where set up
+            emailext(
+                    subject: "RED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                    to: "to@be.defined",
+                    replyTo: "to@be.defined"
+            )
+            */
+            discordSend(
+                    description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Failed\n",
+                    footer: 'Jenkins - the builder',
+                    image: '',
+                    link: "$env.BUILD_URL",
+                    successful: true,
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+            )
+        }
+    }
 }
