@@ -1,1 +1,7 @@
 src/version.cpp export-subst
+
+# Shell scripts etc
+*.sh eol=lf
+configure eol=lf
+configure.ac eol=lf
+Makefile.am eol=lf
