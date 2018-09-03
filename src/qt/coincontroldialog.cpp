@@ -436,10 +436,10 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, Spectr
     }
 
     QString sPriorityLabel      = "";
-    int64_t nAmount             = 0;
-    int64_t nPayFee             = 0;
-    int64_t nAfterFee           = 0;
-    int64_t nChange             = 0;
+    qint64 nAmount = 0;
+    qint64 nPayFee = 0;
+    qint64 nAfterFee = 0;
+    qint64 nChange = 0;
     unsigned int nBytes         = 0;
     unsigned int nBytesInputs   = 0;
     double dPriority            = 0;
