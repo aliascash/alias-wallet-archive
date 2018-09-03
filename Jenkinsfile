@@ -12,8 +12,23 @@ pipeline {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = 'xyz'
         SPECTRECOIN_VERSION='2.0.7'
+        DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
     }
     stages {
+        stage('Notification') {
+            steps {
+                discordSend(
+                        description: "**Started build of branch $BRANCH_NAME**\n",
+                        footer: 'Jenkins - the builder',
+                        image: '',
+                        link: "$env.BUILD_URL",
+                        successful: true,
+                        thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                        title: "$env.JOB_NAME",
+                        webhookURL: "${DISCORD_WEBHOOK}"
+                )
+            }
+        }
         stage('Build Spectrecoin image') {
             when {
                 not {
@@ -374,7 +389,7 @@ pipeline {
                         successful: true,
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
-                        webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+                        webhookURL: "${DISCORD_WEBHOOK}"
                 )
             }
         }
@@ -397,7 +412,7 @@ pipeline {
                     successful: true,
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+                    webhookURL: "${DISCORD_WEBHOOK}"
             )
         }
         failure {
@@ -419,7 +434,7 @@ pipeline {
                     successful: true,
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: 'https://discordapp.com/api/webhooks/486047110265962497/VOFINPxxtPSPMSl81xXE0ajJ17bbTgwyolCdmrSbd5RPR_aaERZZqQ3DKVxv86apn8SG'
+                    webhookURL: "${DISCORD_WEBHOOK}"
             )
         }
     }
