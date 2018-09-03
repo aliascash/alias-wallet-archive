@@ -2152,7 +2152,7 @@ var walletManagementPage = {
       walletManagementPage.prepareKeyTable();
   },
   newKey : function() {
-    bridge.importFromMnemonic($("#new-key-mnemonic").val().trim(), $("#new-account-passphrase").val().trim(), $("#new-account-label").val().trim(), $("#new-account-bip44").prop("checked"));
+    bridge.importFromMnemonic($("#new-key-mnemonic").val().trim(), $("#new-account-passphrase").val().trim(), $("#new-account-label").val().trim(), $("#new-account-bip44").prop("checked"), 0);
   },
   importFromMnemonicResult : function(result) {
       if (result, "" !== result.error_msg) {
