@@ -1,0 +1,5 @@
+# Ignore git submodules as they produce an error
+# if the clone is copied to the intermediate docker build container!
+db4.8
+leveldb
+tor
