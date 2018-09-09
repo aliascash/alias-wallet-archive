@@ -108,7 +108,7 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
-    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0h
+    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0i
     INCLUDEPATH += "$${_OPENSSL_PATH}/include/"
     LIBS += -L$${_OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)
