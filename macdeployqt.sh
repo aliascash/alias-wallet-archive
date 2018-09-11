@@ -3,7 +3,7 @@
 # - Replaces openssl 1.0.0 references with 1.1
 
 # Change paths before executing
-QT_PATH=/Users/teknex/Qt/5.9.6
+QT_PATH=~/Qt/5.9.6
 OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.0i
 
 $QT_PATH/clang_64/bin/macdeployqt src/bin/spectrecoin.app
