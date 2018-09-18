@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-fedora:latest as build
+FROM spectreproject/spectre-builder-fedora:1.0 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,14 +13,16 @@ COPY . /spectre
 RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
- && ./autogen.sh \
- && ./configure \
+ && ./autogen.sh
+
+WORKDIR /spectre
+RUN ./configure \
         --enable-gui \
-        --with-qt5=/usr/include/qt5 \
- && make -j${BUILD_THREADS}
+        --with-qt5=/usr/include/qt5
+RUN make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
-FROM spectreproject/spectre-base-fedora:latest
+FROM spectreproject/spectre-base-fedora:1.0
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
