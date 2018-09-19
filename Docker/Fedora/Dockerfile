@@ -13,13 +13,11 @@ COPY . /spectre
 RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
- && ./autogen.sh
-
-WORKDIR /spectre
-RUN ./configure \
+ && ./autogen.sh \
+ && ./configure \
         --enable-gui \
-        --with-qt5=/usr/include/qt5
-RUN make -j${BUILD_THREADS}
+        --with-qt5=/usr/include/qt5 \
+ && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
 FROM spectreproject/spectre-base-fedora:1.0
