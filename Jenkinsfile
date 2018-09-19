@@ -91,6 +91,7 @@ pipeline {
                         }
                     }
                 }
+                /* Raspi build disabled on all branches different than develop and master to increase build speed
                 stage('Raspberry Pi') {
                     agent {
                         label "docker"
@@ -110,6 +111,7 @@ pipeline {
                         }
                     }
                 }
+                */
                 stage('Ubuntu') {
                     agent {
                         label "docker"
