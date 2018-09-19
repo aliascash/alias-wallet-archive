@@ -9,3 +9,4 @@ url=https://github.com/spectrecoin/tor.git
 [submodule "db4.8"]
 	path = db4.8
 	url = https://github.com/spectrecoin/db4.8
+	branch = new-db-atomic-patch
