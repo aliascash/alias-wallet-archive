@@ -44,15 +44,14 @@ ICON = $$PWD/../spectre.icns
     #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
     LIBS += -lz
 
-    # brew install berkeley-db4
-    _BERKELEY_PATH = /usr/local/Cellar/berkeley-db@4/4.8.30
-    LIBS += -L$${_BERKELEY_PATH}/lib -ldb_cxx \   # use dynamic libraries
-    -L$${_BERKELEY_PATH}/lib -ldb
-    #LIBS += $${_BERKELEY_PATH}/lib/libdb_cxx.a \ # link static
-    #$${_BERKELEY_PATH}/lib/libdb.a
+    # to build BerkeleyDB with autotools, call in subfolder db4.8:
+    # ./configure --enable-cxx --disable-shared --disable-replication --with-pic && make
+    _BERKELEY_PATH = $$PWD/../db4.8/build_unix
+    LIBS += $${_BERKELEY_PATH}/libdb_cxx.a \ # link static
+    $${_BERKELEY_PATH}/libdb.a
 
-    DEPENDPATH += $${_BERKELEY_PATH}/lib
-    INCLUDEPATH += $${_BERKELEY_PATH}/include
+    DEPENDPATH += $${_BERKELEY_PATH}
+    INCLUDEPATH += $${_BERKELEY_PATH}
 
     # to build leveldb call in subfolder leveldb:
     # ./build_detect_platform build_config.mk ./ && make
