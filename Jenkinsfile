@@ -399,7 +399,7 @@ pipeline {
                     footer: 'Jenkins - the builder',
                     image: '',
                     link: "$env.BUILD_URL",
-                    successful: true,
+                    successful: false,
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
                     webhookURL: "${DISCORD_WEBHOOK}"
