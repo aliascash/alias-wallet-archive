@@ -13,6 +13,7 @@
 
 #ifdef WIN32
 #include <string.h>
+#include <Windows.h>
 #endif
 
 #ifdef USE_UPNP
@@ -35,9 +36,11 @@ using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
 
+#ifndef WIN32
 extern "C" {
     int tor_main(int argc, char *argv[]);
 }
+#endif
 
 static const int MAX_OUTBOUND_CONNECTIONS = 16;
 
@@ -1617,7 +1620,7 @@ static void run_tor() {
     std::vector<std::string> argv;
     argv.push_back("tor");
     argv.push_back("--Log");
-    argv.push_back("notice file " + log_file.string());
+    argv.push_back("\"notice file " + log_file.string()+"\"");
     argv.push_back("--SocksPort");
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
@@ -1648,10 +1651,58 @@ static void run_tor() {
       argv.push_back("1");
     }
 
+#ifdef WIN32
+    HANDLE                               hJob;
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+    PROCESS_INFORMATION                  pi = { 0 };
+    STARTUPINFOA                         si = { 0 };
+
+    // Create a job object.
+    hJob = CreateJobObject(NULL, NULL);
+
+    // Causes all processes associated with the job to terminate when the last handle to the job is closed.
+    jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
+
+    // Hide the console window
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+
+    // Build concatenated commandline string for CreateProcess
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start separate tor process with: %s\n", strCommandLine);
+
+    // Create the process suspended
+    if (!CreateProcessA(NULL, const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
+        CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
+        LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
+        exit(1); // TODO improved termination
+    }
+
+    // Add the process to our job object.
+    AssignProcessToJobObject(hJob, pi.hProcess); // Does not work if without CREATE_BREAKAWAY_FROM_JOB
+
+    // Start our suspended process.
+    ResumeThread(pi.hThread);
+
+    /*
+     * At this point, if we are closed, windows will automatically clean up
+     * by closing any handles we have open. When the handle to the job object
+     * is closed, any processes belonging to the job will be terminated.
+     * Note: Grandchild processes automatically become part of the job and
+     * will also be terminated. This behaviour can be avoided by using the
+     * JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK limit flag.
+     */
+
+     // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+    WaitForSingleObject(pi.hProcess, INFINITE);
+#else
     std::vector<char *> argv_c;
     std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
-
     tor_main(argv_c.size(), &argv_c[0]);
+#endif
 }
 
 
