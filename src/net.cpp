@@ -1607,7 +1607,7 @@ static void run_tor() {
 #ifdef WIN32
     fs::path obfs4proxy_file = dll::program_location().parent_path() / "obfs4proxy.exe";
     if (boost::filesystem::exists(obfs4proxy_file)) {
-      clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
+      clientTransportPlugin = "\"obfs4 exec obfs4proxy.exe\"";
     }
 #else
     if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
