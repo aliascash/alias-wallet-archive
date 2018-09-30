@@ -10,6 +10,7 @@
 #include "addrman.h"
 #include "ui_interface.h"
 #include <sys/stat.h>
+#include <boost/dll.hpp>
 
 #ifdef WIN32
 #include <string.h>
@@ -1604,7 +1605,8 @@ static void run_tor() {
     boost::optional<std::string> clientTransportPlugin;
     struct stat sb;
 #ifdef WIN32
-    if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
+    fs::path obfs4proxy_file = dll::program_location().parent_path() / "obfs4proxy.exe";
+    if (boost::filesystem::exists(obfs4proxy_file)) {
       clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
     }
 #else
