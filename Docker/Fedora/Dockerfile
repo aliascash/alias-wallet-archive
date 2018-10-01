@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-fedora:1.1 as build
+FROM spectreproject/spectre-builder-fedora:1.0 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
