@@ -8,7 +8,7 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY latest /spectre
+COPY . /spectre
 
 RUN cd /spectre \
  && mkdir db4.8 leveldb tor \
