@@ -1604,16 +1604,6 @@ static char *convert_str(const std::string &s) {
 static void run_tor() {
     boost::optional<std::string> clientTransportPlugin;
     struct stat sb;
-#ifdef WIN32
-    fs::path obfs4proxy_file = dll::program_location().parent_path() / "obfs4proxy.exe";
-    if (boost::filesystem::exists(obfs4proxy_file)) {
-      clientTransportPlugin = "\"obfs4 exec obfs4proxy.exe\"";
-    }
-#else
-    if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
-      clientTransportPlugin = "obfs4 exec obfs4proxy";
-    }
-#endif
 
     fs::path tor_dir = GetDataDir() / "tor";
     fs::create_directory(tor_dir);
@@ -1621,8 +1611,6 @@ static void run_tor() {
 
     std::vector<std::string> argv;
     argv.push_back("tor");
-    argv.push_back("--Log");
-    argv.push_back("\"notice file " + log_file.string()+"\"");
     argv.push_back("--SocksPort");
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
@@ -1645,15 +1633,13 @@ static void run_tor() {
         argv.push_back("37347");
     }
 
-    if (clientTransportPlugin) {
-      LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
-      argv.push_back("--ClientTransportPlugin");
-      argv.push_back(*clientTransportPlugin);
-      argv.push_back("--UseBridges");
-      argv.push_back("1");
-    }
-
 #ifdef WIN32
+    argv.push_back("--Log");
+    argv.push_back("\"notice file " + log_file.string() + "\"");
+    argv.push_back("--defaults-torrc");
+    fs::path torrc_defaults_file = dll::program_location().parent_path() / "Tor" / "torrc-defaults";
+    argv.push_back(torrc_defaults_file.string());
+
     HANDLE                               hJob;
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
     PROCESS_INFORMATION                  pi = { 0 };
@@ -1677,7 +1663,8 @@ static void run_tor() {
     LogPrintf("Start separate tor process with: %s\n", strCommandLine);
 
     // Create the process suspended
-    if (!CreateProcessA(NULL, const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
+    fs::path tor_exe_file = dll::program_location().parent_path() / "Tor" / "tor.exe";
+    if (!CreateProcessA(tor_exe_file.string().c_str(), const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
         CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
         LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
         exit(1); // TODO improved termination
@@ -1701,6 +1688,16 @@ static void run_tor() {
      // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
     WaitForSingleObject(pi.hProcess, INFINITE);
 #else
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+    if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
+        clientTransportPlugin = "obfs4 exec obfs4proxy";
+        LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
+        argv.push_back("--ClientTransportPlugin");
+        argv.push_back(*clientTransportPlugin);
+        argv.push_back("--UseBridges");
+        argv.push_back("1");
+    }
     std::vector<char *> argv_c;
     std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
     tor_main(argv_c.size(), &argv_c[0]);
