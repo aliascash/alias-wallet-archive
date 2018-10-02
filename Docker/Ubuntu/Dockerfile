@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-ubuntu-16LTS:latest as build
+FROM spectreproject/spectre-builder-ubuntu:1.1 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -18,7 +18,7 @@ RUN cd /spectre \
  && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
-FROM spectreproject/spectre-base-ubuntu-16LTS:latest
+FROM spectreproject/spectre-base-ubuntu:1.1
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
