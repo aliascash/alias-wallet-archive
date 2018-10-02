@@ -20,7 +20,7 @@ RUN cd /spectre \
  && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
-FROM spectreproject/spectre-base-fedora:1.0
+FROM spectreproject/spectre-base-fedora:1.1
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/

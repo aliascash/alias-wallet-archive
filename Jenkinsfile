@@ -91,6 +91,7 @@ pipeline {
                         }
                     }
                 }
+                /* Raspi build disabled on all branches different than develop and master to increase build speed
                 stage('Raspberry Pi') {
                     agent {
                         label "docker"
@@ -110,6 +111,7 @@ pipeline {
                         }
                     }
                 }
+                */
                 stage('Ubuntu') {
                     agent {
                         label "docker"
@@ -118,7 +120,7 @@ pipeline {
                         script {
                             // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
                             // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Ubuntu/latest/Dockerfile ."
+                            sh "cp ./Docker/Ubuntu/Dockerfile ."
                             docker.build("spectreproject/spectre-ubuntu", "--rm .")
                             sh "rm Dockerfile"
                         }
@@ -232,7 +234,7 @@ pipeline {
                         script {
                             // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
                             // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Ubuntu/latest/Dockerfile ."
+                            sh "cp ./Docker/Ubuntu/Dockerfile ."
                             def spectre_base = docker.build("spectreproject/spectre-ubuntu", "--rm .")
                             docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
                                 spectre_base.push("latest")
@@ -349,7 +351,7 @@ pipeline {
                         script {
                             // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
                             // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Ubuntu/latest/Dockerfile ."
+                            sh "cp ./Docker/Ubuntu/Dockerfile ."
                             def spectre_base = docker.build("spectreproject/spectre-ubuntu", "--rm .")
                             docker.withRegistry('https://registry.hub.docker.com', '051efa8c-aebd-40f7-9cfd-0053c413266e') {
                                 spectre_base.push("${SPECTRECOIN_VERSION}")
