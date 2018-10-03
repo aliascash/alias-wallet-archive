@@ -24,8 +24,11 @@ install_name_tool -change $OPENSSL_PATH/lib/libcrypto.1.1.dylib @executable_path
 otool -l src/bin/spectrecoin.app/Contents/Frameworks/libssl.1.1.dylib | grep dylib
 
 
-
 echo -e "\nPlease check for non included lib references:"
 for f in src/bin/spectrecoin.app/Contents/Frameworks/*.dylib; do otool -l $f | grep dylib | grep -v @; done
+
+
+echo -e "\nCreate dmg package..."
+$QT_PATH/clang_64/bin/macdeployqt src/bin/spectrecoin.app -dmg
 
 
