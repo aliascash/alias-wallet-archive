@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-fedora:latest as build
+FROM spectreproject/spectre-builder-fedora:1.0 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -20,7 +20,7 @@ RUN cd /spectre \
  && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
-FROM spectreproject/spectre-base-fedora:latest
+FROM spectreproject/spectre-base-fedora:1.1
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
