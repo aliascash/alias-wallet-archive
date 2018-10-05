@@ -249,6 +249,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                success {
+                    build job: 'Spectrecoin/spectre-distribution/develop', wait: false
+                }
+            }
         }
         stage('Build and upload Spectrecoin image (release)') {
             when {
@@ -364,6 +369,11 @@ pipeline {
                             sh "docker system prune --all --force"
                         }
                     }
+                }
+            }
+            post {
+                success {
+                    build job: 'Spectrecoin/spectre-distribution/master', wait: false
                 }
             }
         }
