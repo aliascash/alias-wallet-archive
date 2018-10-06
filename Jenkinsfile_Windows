@@ -13,12 +13,14 @@ pipeline {
                 label "windows"
             }
             steps {
-                def exists = fileExists 'packages64bit'
+                script {
+                    def exists = fileExists 'packages64bit'
 
-                if (exists) {
-                    echo 'Folder \'packages64bit\' exists, nothing to download'
-                } else {
-                    echo 'No'
+                    if (exists) {
+                        echo 'Folder \'packages64bit\' exists, nothing to download'
+                    } else {
+                        echo 'No'
+                    }
                 }
             }
         }
