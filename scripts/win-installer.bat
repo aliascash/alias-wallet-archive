@@ -14,7 +14,7 @@ echo on
 copy "%SRC_DIR%\qt\res\assets\icons\spectrecoin.ico" "%OUT_DIR%"
 cd %MSI_TARGET_DIR%
 del Spectrecoin.msi
-C:\Jenkins\tools\mkmsi\mkmsi.py --auto-create qt --source-dir "%OUT_DIR%" --wix-root "C:\Program Files (x86)\WiX Toolset v3.10" --license C:\devel\mkmsi\licenses\GPL3.rtf --merge-module "C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC140_CRT_x64.msm" --add-desktop-shortcut --project-version %SPECTRECOIN_VERSION% --description "Spectrecoin - A privacy focused cryptocurrency" --manufacturer "The Spectrecoin Team" Spectrecoin
+C:\Jenkins\tools\mkmsi\mkmsi.py --auto-create qt --source-dir "%OUT_DIR%" --wix-root "C:\Program Files (x86)\WiX Toolset v3.10" --license C:\Jenkins\tools\mkmsi\\licenses\GPL3.rtf --merge-module "C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC140_CRT_x64.msm" --add-desktop-shortcut --project-version %SPECTRECOIN_VERSION% --description "Spectrecoin - A privacy focused cryptocurrency" --manufacturer "The Spectrecoin Team" Spectrecoin
 if %errorlevel% neq 0 exit /b %errorlevel%
 copy Spectrecoin.msi %OUT_DIR%\Spectrecoin-%SPECTRECOIN_VERSION%-x64.msi
 if %errorlevel% neq 0 exit /b %errorlevel%
