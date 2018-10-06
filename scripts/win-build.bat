@@ -26,13 +26,9 @@ nmake
 
 popd
 
-::echo "Copying: %BUILD_DIR%\release\Spectrecoin.exe" "%OUT_DIR%"
-::copy "%BUILD_DIR%\release\Spectrecoin.exe" "%OUT_DIR%"
-::copy "%SRC_DIR%\qt\res\assets\icons\spectrecoin.ico" "%OUT_DIR%"
-
 %QTDIR%\bin\windeployqt "%OUT_DIR%\Spectrecoin.exe"
 
-MOVE "%OUT_DIR%" Spectrecoin
+ren "%OUT_DIR%" Spectrecoin
 echo "The prepared package is in: "%SRC_DIR%\Spectrecoin"
 
 echo "Everything is OK"
