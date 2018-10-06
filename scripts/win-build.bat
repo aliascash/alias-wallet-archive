@@ -2,7 +2,6 @@ set SRC_DIR=%cd%\src
 set DIST_DIR=%SRC_DIR%\dist
 set BUILD_DIR=%SRC_DIR%\build
 set OUT_DIR=%SRC_DIR%\bin
-set MSI_TARGET_DIR=C:\jenkins\build\whid-x64
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 cd
 cd %SRC_DIR%
