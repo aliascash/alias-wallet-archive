@@ -7,6 +7,9 @@ pipeline {
         timeout(time: 3, unit: 'HOURS')
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
+    environment {
+        SPECTRECOIN_VERSION='2.0.8.RC1'
+    }
     stages {
         stage('Build Windows wallet') {
             agent {
@@ -71,6 +74,7 @@ pipeline {
                                     targetLocation: "${WORKSPACE}/src/Spectrecoin/"),
                             fileZipOperation("${WORKSPACE}/src/Spectrecoin")
                     ])
+                    bat 'scripts\\win-installer.bat'
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip'
                 }
             }
