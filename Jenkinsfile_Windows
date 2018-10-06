@@ -32,7 +32,7 @@ pipeline {
                                         userName: ''),
                                 fileDownloadOperation(
                                         password: '',
-                                        targetFileName: '',
+                                        targetFileName: 'Tor.zip',
                                         targetLocation: "${WORKSPACE}",
                                         url: 'https://github.com/spectrecoin/spectre/releases/download/latest/Tor.zip',
                                         userName: ''),
