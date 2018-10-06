@@ -75,7 +75,7 @@ pipeline {
                             fileZipOperation("${WORKSPACE}/src/Spectrecoin")
                     ])
                     bat 'scripts\\win-installer.bat'
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip'
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip src/installer/Spectrecoin.msi'
                 }
             }
         }
