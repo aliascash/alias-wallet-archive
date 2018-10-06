@@ -51,7 +51,20 @@ pipeline {
                         )
                     }
                     bat 'scripts\\win-build.bat'
-                    fileOperations([fileZipOperation("${WORKSPACE}/src/Spectrecoin")])
+                    fileOperations(
+                            [fileDownloadOperation(
+                                    password: '',
+                                    targetFileName: '',
+                                    targetLocation: "${WORKSPACE}",
+                                    url: 'https://github.com/spectrecoin/spectre/releases/download/latest/Tor.zip',
+                                    userName: ''),
+                             fileUnZipOperation(
+                                     filePath: "${WORKSPACE}/Tor.zip",
+                                     targetLocation: '${WORKSPACE}/src/Spectrecoin/'),
+                             fileDeleteOperation(
+                                     excludes: '',
+                                     includes: "${WORKSPACE}/Tor.zip"),
+                             fileZipOperation('${WORKSPACE}/src/Spectrecoin')])
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip'
                 }
             }
