@@ -1,0 +1,26 @@
+#!groovy
+
+pipeline {
+    agent any
+    options {
+        timestamps()
+        timeout(time: 3, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+    }
+    stages {
+        stage('Get dependencies') {
+            agent {
+                label "windows"
+            }
+            steps {
+                def exists = fileExists 'packages64bit'
+
+                if (exists) {
+                    echo 'Folder \'packages64bit\' exists, nothing to download'
+                } else {
+                    echo 'No'
+                }
+            }
+        }
+    }
+}
