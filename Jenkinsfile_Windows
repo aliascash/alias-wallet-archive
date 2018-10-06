@@ -51,6 +51,8 @@ pipeline {
                         )
                     }
                     bat 'scripts\\win-build.bat'
+                    fileOperations([fileZipOperation("${WORKSPACE}/src/Spectrecoin")])
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip'
                 }
             }
         }
