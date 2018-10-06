@@ -14,12 +14,38 @@ pipeline {
             }
             steps {
                 script {
-                    def exists = fileExists 'packages64bit'
+                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
 
                     if (exists) {
-                        echo 'Folder \'packages64bit\' exists, nothing to download'
+                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
                     } else {
-                        echo 'No'
+                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+                        fileOperations(
+                                [fileDownloadOperation(
+                                        password: '',
+                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+                                        targetLocation: "${WORKSPACE}",
+                                        url: 'https://github.com/spectrecoin/spectre/releases/download/v2.0.7/Spectre.Prebuild.libraries.zip',
+                                        userName: ''),
+                                 fileUnZipOperation(
+                                        filePath: 'Spectre.Prebuild.libraries.zip',
+                                        targetLocation: '.'),
+                                 folderCopyOperation(
+                                        destinationFolderPath: 'leveldb',
+                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+                                 folderCopyOperation(
+                                         destinationFolderPath: 'packages64bit',
+                                         sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+                                 folderCopyOperation(
+                                         destinationFolderPath: 'src',
+                                         sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+                                 folderCopyOperation(
+                                         destinationFolderPath: 'tor',
+                                         sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+                                 folderDeleteOperation(
+                                         './Spectre.Prebuild.libraries'
+                                 )]
+                        )
                     }
                 }
             }
