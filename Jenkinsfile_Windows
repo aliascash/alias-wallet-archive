@@ -8,7 +8,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
     stages {
-        stage('Get dependencies') {
+        stage('Build Windows wallet') {
             agent {
                 label "windows"
             }
@@ -30,12 +30,6 @@ pipeline {
                                         targetLocation: "${WORKSPACE}",
                                         url: 'https://github.com/spectrecoin/spectre/releases/download/v2.0.7/Spectre.Prebuild.libraries.zip',
                                         userName: ''),
-                                fileDownloadOperation(
-                                        password: '',
-                                        targetFileName: 'Tor.zip',
-                                        targetLocation: "${WORKSPACE}",
-                                        url: 'https://github.com/spectrecoin/spectre/releases/download/latest/Tor.zip',
-                                        userName: ''),
                                 fileUnZipOperation(
                                         filePath: 'Spectre.Prebuild.libraries.zip',
                                         targetLocation: '.'),
@@ -56,15 +50,26 @@ pipeline {
                                 )
                         ])
                     }
+                    exists = fileExists 'Tor.zip'
+                    if (exists) {
+                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                    } else {
+                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                        fileOperations([
+                                fileDownloadOperation(
+                                        password: '',
+                                        targetFileName: 'Tor.zip',
+                                        targetLocation: "${WORKSPACE}",
+                                        url: 'https://github.com/spectrecoin/spectre/releases/download/latest/Tor.zip',
+                                        userName: '')
+                        ])
+                    }
                     bat 'scripts\\win-build.bat'
                     fileOperations([
                             fileUnZipOperation(
                                     filePath: "${WORKSPACE}/Tor.zip",
-                                    targetLocation: '${WORKSPACE}/src/Spectrecoin/'),
-                            fileDeleteOperation(
-                                    excludes: '',
-                                    includes: "${WORKSPACE}/Tor.zip"),
-                            fileZipOperation('${WORKSPACE}/src/Spectrecoin')
+                                    targetLocation: "${WORKSPACE}/src/Spectrecoin/"),
+                            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
                     ])
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip'
                 }
