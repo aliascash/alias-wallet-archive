@@ -1,6 +1,7 @@
 IF "%SPECTRECOIN_VERSION%" == "" GOTO NOVERSION
 :YESVERSION
 
+set CALL_DIR=%cd%
 set SRC_DIR=%cd%\src
 set OUT_DIR=%SRC_DIR%\Spectrecoin
 set MSI_TARGET_DIR=%SRC_DIR%\installer
@@ -22,7 +23,7 @@ copy Spectrecoin.json %OUT_DIR%\Spectrecoin-%SPECTRECOIN_VERSION%-x64.json
 if %errorlevel% neq 0 exit /b %errorlevel%
 echo "Everything is OK"
 
-echo "The prepared package is in: "%OUT_DIR%"
+echo "The prepared package is in: %OUT_DIR%"
 
 echo "Everything is OK"
 cd %cd%
@@ -30,4 +31,6 @@ GOTO END
 
 :NOVERSION
 @ECHO The SPECTRECOIN_VERSION environment variable was NOT detected!
+
 :END
+cd %CALL_DIR%

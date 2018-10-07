@@ -1,3 +1,9 @@
+:: Helper script to build Spectrecoin on Windows using VS2017 and QT.
+
+IF "%QTDIR%" == "" GOTO NOQT
+:YESQT
+
+set CALL_DIR=%cd%
 set SRC_DIR=%cd%\src
 set DIST_DIR=%SRC_DIR%\dist
 set BUILD_DIR=%SRC_DIR%\build
@@ -27,7 +33,14 @@ popd
 
 %QTDIR%\bin\windeployqt "%OUT_DIR%\Spectrecoin.exe"
 
-ren "%OUT_DIR%" Spectrecoin
-echo "The prepared package is in: "%SRC_DIR%\Spectrecoin"
+::ren "%OUT_DIR%" Spectrecoin
+::echo "The prepared package is in: %SRC_DIR%\Spectrecoin"
 
 echo "Everything is OK"
+GOTO END
+
+:NOQT
+@ECHO The QTDIR environment variable was NOT detected!
+
+:END
+cd %CALL_DIR%
