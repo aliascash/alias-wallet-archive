@@ -15,6 +15,10 @@
 #ifdef WIN32
 #include <string.h>
 #include <Windows.h>
+#elif __APPLE__
+// Tor separate process via boost::process
+#include <boost/process.hpp>
+boost::process::group gTor;
 #endif
 
 #ifdef USE_UPNP
@@ -37,7 +41,8 @@ using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__APPLE__)
+// Tor embedded
 extern "C" {
     int tor_main(int argc, char *argv[]);
 }
@@ -1601,6 +1606,14 @@ static char *convert_str(const std::string &s) {
     return pc;
 }
 
+/**
+ * Run tor as separate process for Windows and macOS
+ * - Windows with windows specific CreateProcess()
+ * - macOS with boost::process:child
+ * All other platforms run Tor embedded.
+ *
+ * @brief run_tor
+ */
 static void run_tor() {
     boost::optional<std::string> clientTransportPlugin;
     struct stat sb;
@@ -1610,13 +1623,20 @@ static void run_tor() {
     fs::path log_file = tor_dir / "tor.log";
 
     std::vector<std::string> argv;
+#ifndef __APPLE__
+    // Windows CreateProcess() and main() when embedding tor need 'tor' as first argument
+    // Tor separate process via boost::process does not need 'tor' as first argument
     argv.push_back("tor");
+#endif
     argv.push_back("--SocksPort");
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
     std::string torrc = (tor_dir / "torrc").string();
     argv.push_back(torrc);
+    argv.push_back("--defaults-torrc");
+    fs::path torrc_defaults_file = dll::program_location().parent_path() / "Tor" / "torrc-defaults";
+    argv.push_back(torrc_defaults_file.string());
     argv.push_back("--DataDirectory");
     argv.push_back(tor_dir.string());
     argv.push_back("--GeoIPFile");
@@ -1634,11 +1654,9 @@ static void run_tor() {
     }
 
 #ifdef WIN32
+    // Tor separate process via CreateProcess
     argv.push_back("--Log");
     argv.push_back("\"notice file " + log_file.string() + "\"");
-    argv.push_back("--defaults-torrc");
-    fs::path torrc_defaults_file = dll::program_location().parent_path() / "Tor" / "torrc-defaults";
-    argv.push_back(torrc_defaults_file.string());
 
     HANDLE                               hJob;
     JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
@@ -1660,7 +1678,7 @@ static void run_tor() {
     // Build concatenated commandline string for CreateProcess
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
-    LogPrintf("Start separate tor process with: %s\n", strCommandLine);
+    LogPrintf("Start tor as separate process (CreateProcess) with: %s\n", strCommandLine);
 
     // Create the process suspended
     fs::path tor_exe_file = dll::program_location().parent_path() / "Tor" / "tor.exe";
@@ -1687,9 +1705,25 @@ static void run_tor() {
 
      // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
     WaitForSingleObject(pi.hProcess, INFINITE);
-#else
+#elif __APPLE__
+    // Tor separate process via boost::process
     argv.push_back("--Log");
     argv.push_back("notice file " + log_file.string());
+
+    fs::path pathTorDir = dll::program_location().parent_path() / "Tor";
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor as separate process (process::child) with: %s\n", strCommandLine);
+
+    process::child pChildTor(process::start_dir = pathTorDir, "./tor.real", argv, gTor);
+    pChildTor.detach();
+    gTor.wait();
+#else
+    // Tor embedded
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+
     if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
         clientTransportPlugin = "obfs4 exec obfs4proxy";
         LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
@@ -1698,6 +1732,11 @@ static void run_tor() {
         argv.push_back("--UseBridges");
         argv.push_back("1");
     }
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor embedded (tor_main) with: %s\n", strCommandLine);
+
     std::vector<char *> argv_c;
     std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
     tor_main(argv_c.size(), &argv_c[0]);
@@ -1767,6 +1806,15 @@ bool StopNode()
         for (int i=0; i<MAX_OUTBOUND_CONNECTIONS; i++)
             semOutbound->post();
     DumpAddresses();
+
+#ifdef __APPLE__
+    // Tor separate process via boost::process
+    if (gTor) {
+        LogPrintf("Terminate tor process group\n");
+        gTor.terminate();
+    }
+#endif
+
     return true;
 }
 
