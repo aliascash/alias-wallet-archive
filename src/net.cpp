@@ -1634,9 +1634,6 @@ static void run_tor() {
     argv.push_back("-f");
     std::string torrc = (tor_dir / "torrc").string();
     argv.push_back(torrc);
-    argv.push_back("--defaults-torrc");
-    fs::path torrc_defaults_file = dll::program_location().parent_path() / "Tor" / "torrc-defaults";
-    argv.push_back(torrc_defaults_file.string());
     argv.push_back("--DataDirectory");
     argv.push_back(tor_dir.string());
     argv.push_back("--GeoIPFile");
@@ -1653,6 +1650,15 @@ static void run_tor() {
         argv.push_back("37347");
     }
 
+#if defined(WIN32) || defined(__APPLE__)
+    // Tor separate process
+    fs::path pathApplicationDir = dll::program_location().parent_path();
+    fs::path pathTorDir = pathApplicationDir / "Tor";
+
+    argv.push_back("--defaults-torrc");
+    fs::path torrc_defaults_file = pathTorDir / "torrc-defaults";
+    argv.push_back(torrc_defaults_file.string());
+#endif
 #ifdef WIN32
     // Tor separate process via CreateProcess
     argv.push_back("--Log");
@@ -1681,7 +1687,7 @@ static void run_tor() {
     LogPrintf("Start tor as separate process (CreateProcess) with: %s\n", strCommandLine);
 
     // Create the process suspended
-    fs::path tor_exe_file = dll::program_location().parent_path() / "Tor" / "tor.exe";
+    fs::path tor_exe_file = pathTorDir / "tor.exe";
     if (!CreateProcessA(tor_exe_file.string().c_str(), const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
         CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
         LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
@@ -1709,8 +1715,6 @@ static void run_tor() {
     // Tor separate process via boost::process
     argv.push_back("--Log");
     argv.push_back("notice file " + log_file.string());
-
-    fs::path pathTorDir = dll::program_location().parent_path() / "Tor";
 
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
