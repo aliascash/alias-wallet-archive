@@ -8,9 +8,29 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
     environment {
-        SPECTRECOIN_VERSION='2.0.8.RC1'
+        SPECTRECOIN_VERSION = '2.0.8.RC1'
     }
     stages {
+        stage('Start Windows slave') {
+            agent {
+                label "housekeeping"
+            }
+            steps {
+                withCredentials([[
+                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                 ]]) {
+                    sh "docker run --rm \\\n" +
+                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
+                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
+                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
+                            "garland/aws-cli-docker \\\n" +
+                            "aws ec2 describe-instance-status --instance-ids i-0216e564fa17a9fbd"
+                }
+            }
+        }
         stage('Build Windows wallet') {
             agent {
                 label "windows"
