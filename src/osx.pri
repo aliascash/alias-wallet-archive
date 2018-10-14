@@ -12,30 +12,30 @@ ICON = $$PWD/../spectre.icns
 
     # to build tor with autotools, call in subfolder tor:
     # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.0i --disable-asciidoc --disable-lzma
-    LIBS += -L$$PWD/../tor/src/or -ltor \
-    -L$$PWD/../tor/src/common -lor \
-    -L$$PWD/../tor/src/common -lor-ctime \
-    -L$$PWD/../tor/src/common -lor-crypto \
-    -L$$PWD/../tor/src/common -lor-event \
-    -L$$PWD/../tor/src/trunnel -lor-trunnel \
-    -L$$PWD/../tor/src/common -lcurve25519_donna \
-    -L$$PWD/../tor/src/ext/ed25519/donna -led25519_donna \
-    -L$$PWD/../tor/src/ext/ed25519/ref10 -led25519_ref10 \
-    -L$$PWD/../tor/src/ext/keccak-tiny -lkeccak-tiny \
+#    LIBS += -L$$PWD/../tor/src/or -ltor \
+#    -L$$PWD/../tor/src/common -lor \
+#    -L$$PWD/../tor/src/common -lor-ctime \
+#    -L$$PWD/../tor/src/common -lor-crypto \
+#    -L$$PWD/../tor/src/common -lor-event \
+#    -L$$PWD/../tor/src/trunnel -lor-trunnel \
+#    -L$$PWD/../tor/src/common -lcurve25519_donna \
+#    -L$$PWD/../tor/src/ext/ed25519/donna -led25519_donna \
+#    -L$$PWD/../tor/src/ext/ed25519/ref10 -led25519_ref10 \
+#    -L$$PWD/../tor/src/ext/keccak-tiny -lkeccak-tiny \
 
-    INCLUDEPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
-    DEPENDPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
+#    INCLUDEPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
+#    DEPENDPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
 
-    PRE_TARGETDEPS += $$PWD/../tor/src/or/libtor.a \
-    $$PWD/../tor/src/common/libor.a \
-    $$PWD/../tor/src/common/libor-ctime.a \
-    $$PWD/../tor/src/common/libor-crypto.a \
-    $$PWD/../tor/src/common/libor-event.a \
-    $$PWD/../tor/src/trunnel/libor-trunnel.a \
-    $$PWD/../tor/src/common/libcurve25519_donna.a \
-    $$PWD/../tor/src/ext/ed25519/donna/libed25519_donna.a \
-    $$PWD/../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-    $$PWD/../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
+#    PRE_TARGETDEPS += $$PWD/../tor/src/or/libtor.a \
+#    $$PWD/../tor/src/common/libor.a \
+#    $$PWD/../tor/src/common/libor-ctime.a \
+#    $$PWD/../tor/src/common/libor-crypto.a \
+#    $$PWD/../tor/src/common/libor-event.a \
+#    $$PWD/../tor/src/trunnel/libor-trunnel.a \
+#    $$PWD/../tor/src/common/libcurve25519_donna.a \
+#    $$PWD/../tor/src/ext/ed25519/donna/libed25519_donna.a \
+#    $$PWD/../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
+#    $$PWD/../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
 
     # brew install zlib
     _ZLIB_PATH = /usr/local/opt/zlib
