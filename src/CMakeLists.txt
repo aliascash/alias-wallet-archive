@@ -1,3 +1,117 @@
-add_executable(app
-        src/app.cpp
-        src/quux.cpp)
+add_executable(Spectrecoin)
+
+target_include_directories(Spectrecoin
+        PUBLIC
+        addrman.h
+        alert.h
+        allocators.h
+        anonymize.h
+        base58.h
+        bignum.h
+        bloom.h
+        chainparams.h
+        chainparamsseeds.h
+        checkpoints.h
+        clientversion.h
+        coincontrol.h
+        compat.h
+        core.h
+        crypter.h
+        db.h
+        eckey.h
+        extkey.h
+        hash.h
+        init.h
+        kernel.h
+        key.h
+        keystore.h
+        main.h
+        miner.h
+        mruset.h
+        netbase.h
+        net.h
+        pbkdf2.h
+        protocol.h
+        resource.h
+        ringsig.h
+        rpcclient.h
+        rpcprotocol.h
+        rpcserver.h
+        script.h
+        scrypt.h
+        serialize.h
+        smessage.h
+        state.h
+        stealth.h
+        strlcpy.h
+        sync.h
+        threadsafety.h
+        tinyformat.h
+        txdb.h
+        txdb-leveldb.h
+        txmempool.h
+        types.h
+        ui_interface.h
+        uint256.h
+        util.h
+        version.h
+        walletdb.h
+        wallet.h
+
+        PRIVATE
+        addrman.cpp
+        alert.cpp
+        anonymize.cpp
+        bloom.cpp
+        chainparams.cpp
+        checkpoints.cpp
+        core.cpp
+        crypter.cpp
+        db.cpp
+        eckey.cpp
+        extkey.cpp
+        hash.cpp
+        init.cpp
+        kernel.cpp
+        key.cpp
+        keystore.cpp
+        main.cpp
+        miner.cpp
+        netbase.cpp
+        net.cpp
+        noui.cpp
+        pbkdf2.cpp
+        protocol.cpp
+        ringsig.cpp
+        rpcblockchain.cpp
+        rpcclient.cpp
+        rpcdump.cpp
+        rpcextkey.cpp
+        rpcmining.cpp
+        rpcmnemonic.cpp
+        rpcnet.cpp
+        rpcprotocol.cpp
+        rpcrawtransaction.cpp
+        rpcserver.cpp
+        rpcsmessage.cpp
+        rpcwallet.cpp
+        script.cpp
+        scrypt.cpp
+        smessage.cpp
+        spectrecoind.cpp
+        state.cpp
+        stealth.cpp
+        sync.cpp
+        txdb-leveldb.cpp
+        txmempool.cpp
+        util.cpp
+        version.cpp
+        wallet.cpp
+        walletdb.cpp
+        )
+
+add_subdirectory(json)
+add_subdirectory(lz4)
+add_subdirectory(qt)
+add_subdirectory(wordlists)
+add_subdirectory(xxhash)
