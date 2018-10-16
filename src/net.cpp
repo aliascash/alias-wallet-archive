@@ -1606,9 +1606,10 @@ static char *convert_str(const std::string &s) {
 }
 
 /**
- * Run tor as separate process for Windows and macOS
+ * Run tor as separate process for Windows, macOS and Linux
  * - Windows with windows specific CreateProcess()
  * - macOS with boost::process:child
+ * - Linux with fork() and execvp()
  * All other platforms run Tor embedded.
  *
  * @brief run_tor
@@ -1729,32 +1730,36 @@ static void run_tor() {
     for (auto const& s : argv) { strCommandLine += s + " "; }
     LogPrintf("Start tor as separate process (fork,execvp) with: %s\n", strCommandLine);
 
+    std::string torResult;
     pid_t ppid_before_fork = getpid();
     pid_t pid = fork();
     if (pid == -1) {
-        perror("fork() for tor failed");
-        kill(ppid_before_fork, SIGTERM);
+        torResult = "Terminating - Error: fork() for tor failed: ";
+        torResult += strerror(errno);
+        torResult += "\n";
     }
     else if (pid) {
         // continue parent execution...
         // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
         int status;
         if (waitpid(pid, &status, 0) > 0) {
-            if (WIFEXITED(status) && !WEXITSTATUS(status))
-                printf("Tor shutdown successfull\n");
+            if (WIFEXITED(status) && !WEXITSTATUS(status)) {
+                torResult = "Tor shutdown successfull\n";
+            }
             else if (WIFEXITED(status) && WEXITSTATUS(status)) {
                 if (WEXITSTATUS(status) == 127) {
-                    printf("Could not start tor. Is tor installed and available in PATH?\n");
-                    kill(ppid_before_fork, SIGTERM);
+                    torResult = "Terminating - Error: Could not start tor. Is tor installed and available in PATH?\n";
                 }
-                else
-                    printf("Tor did exit with status %d\n", WEXITSTATUS(status));
+                else {
+                    torResult = "Terminating - Error: Tor did exit with status " + std::to_string(WEXITSTATUS(status)) + "\n";
+                }
             }
-            else
-                printf("Tor didn't terminate normally\n");
+            else {
+                torResult = "Terminating - Error: Tor was terminated\n";
+            }
         }
         else {
-            printf("waitpid() for tor failed\n");
+            torResult = "Terminating - Error: waitpid() for tor failed\n";
         }
     } else {
         // continue child execution...
@@ -1773,10 +1778,15 @@ static void run_tor() {
         std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
         argv_c.push_back(nullptr);
 
-        execvp("tor2", &argv_c[0]);
+        execvp("tor", &argv_c[0]);
         perror("execvp(\"tor\", ...) failed");
         _exit(127);
     }
+
+    // If tor could not be started or exits for any reason, shutdown the application
+    LogPrintf(torResult.c_str());
+    printf("%s", torResult.c_str());
+    kill(getpid(), SIGTERM);
 #else
     // Tor embedded
     argv.push_back("--Log");
@@ -1806,7 +1816,6 @@ void StartTor(void *nothing)
     }
 
     printf("Onion thread exited.\n");
-
 }
 
 void StartNode(boost::thread_group& threadGroup)
