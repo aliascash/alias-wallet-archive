@@ -32,10 +32,13 @@ https://github.com/spectrecoin/spectre/releases/download/2.1.0/Spectrecoin.Tor.l
 Clone Spectre repository. You can simply download the “Zip”s from github.
 
 Now unzip Prebuild, QT and Tor libraries.zip that you just downloaded into the source root folder. Once done properly you should end up with “src” and “packages64bit” all into one folder. 
-Note the Tor libraries zip contains simply the official Tor binaries and are only required at runtime.
 
 Now go ahead and open a the file src/src.pro (It should open up with Qt Creator). Make sure our MSVC 64 bit compiler is selected. Click configure and build and run as usual with Qt.
 
-Note: the libraries contained in Spectrecoin.QT.libraries.win64.zip have been automatically gathered by QT with the windeployqt tool.
-See http://doc.qt.io/qt-5/windows-deployment.html
+
+Library Notes
+------------
+
+- The Tor libraries zip contains simply the official Tor binaries and are only required at runtime.
+- The libraries contained in Spectrecoin.QT.libraries.win64.zip have been automatically gathered by QT with the windeployqt tool. See http://doc.qt.io/qt-5/windows-deployment.html
 
