@@ -78,7 +78,7 @@ For Ubuntu 16.04 LTS through to 17.10 Open SSL 1.1 isn't available in the reposi
     make
     sudo make install
 
-### Building
+### Building (ATTENTION: Instructions are not update! For building Linux check the commands in the corresponding docker build files.)
 
 To fetch the source code and build the wallet run the following commands:
 
