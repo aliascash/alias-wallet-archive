@@ -38,6 +38,7 @@ We do not currently provide Linux binary packages. To build the SpectreCoin wall
  * libseccomp
  * libcap
  * boost
+ * tor & obfs4proxy (since 2.1.0 tor is run as separate process and thus tor is only a runtime dependency)
  * Qt 5 if you want to build the GUI wallet. Qt is not needed for the console wallet.
 
 Additionally, you'll need a C/C++ compiler and the basic dependencies needed for any kind of development. On most Linux distributions there is a metapackage that installs these. On macOS this means you will need Xcode and the Command Line Tools.
@@ -52,7 +53,7 @@ If you are trying to compile the GUI wallet. Install Qt from https://www.qt.io/d
 
 To check all dependencies and install missing ones on **Debian/Ubuntu/Mint/etc**:
 
-    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf libtool
+    apt install build-essential libssl-dev libevent-dev libseccomp-dev libcap-dev pkg-config autoconf libtool tor obfs4proxy
 
 To check all dependencies and install missing ones on **Arch Linux**:
 
