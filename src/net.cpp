@@ -1733,6 +1733,7 @@ static void run_tor() {
     pid_t pid = fork();
     if (pid == -1) {
         perror("fork() for tor failed");
+        kill(ppid_before_fork, SIGTERM);
     }
     else if (pid) {
         // continue parent execution...
@@ -1742,8 +1743,10 @@ static void run_tor() {
             if (WIFEXITED(status) && !WEXITSTATUS(status))
                 printf("Tor shutdown successfull\n");
             else if (WIFEXITED(status) && WEXITSTATUS(status)) {
-                if (WEXITSTATUS(status) == 127)
-                    printf("Could not start tor. Is tor installed?\n");
+                if (WEXITSTATUS(status) == 127) {
+                    printf("Could not start tor. Is tor installed and available in PATH?\n");
+                    kill(ppid_before_fork, SIGTERM);
+                }
                 else
                     printf("Tor did exit with status %d\n", WEXITSTATUS(status));
             }
@@ -1759,19 +1762,19 @@ static void run_tor() {
         int r = prctl(PR_SET_PDEATHSIG, SIGKILL);
         if (r == -1) {
             perror("Could not install PDEATHSIG.");
-            _exit(50);
+            _exit(1);
         }
         if (getppid() != ppid_before_fork) {
             printf("Original parent exited just before the prctl() call\n");
-            _exit(51);
+            _exit(1);
         }
 
         std::vector<char *> argv_c;
         std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
         argv_c.push_back(nullptr);
 
-        execvp("tor", &argv_c[0]);
-        perror("Error: Could not start tor (execvp)");
+        execvp("tor2", &argv_c[0]);
+        perror("execvp(\"tor\", ...) failed");
         _exit(127);
     }
 #else
