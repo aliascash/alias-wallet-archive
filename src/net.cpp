@@ -19,6 +19,11 @@
 // Tor separate process via boost::process
 #include <boost/process.hpp>
 boost::process::group gTor;
+#elif __linux__
+#include <sys/prctl.h>
+#include <signal.h>     // signals
+#include <unistd.h>     // fork()
+#include <sys/wait.h>   // waitpid()
 #endif
 
 #ifdef USE_UPNP
@@ -28,12 +33,6 @@ boost::process::group gTor;
 #include <miniupnpc/upnperrors.h>
 #endif
 
-#ifdef _MSC_BUILD
-#ifndef	S_IXUSR
-#define	S_IXUSR		0		/* X for owner */
-#endif
-#endif
-
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -41,7 +40,7 @@ using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
 
-#if !defined(WIN32) && !defined(__APPLE__)
+#if !defined(WIN32) && !defined(__APPLE__) && !defined(__linux__)
 // Tor embedded
 extern "C" {
     int tor_main(int argc, char *argv[]);
@@ -1607,24 +1606,22 @@ static char *convert_str(const std::string &s) {
 }
 
 /**
- * Run tor as separate process for Windows and macOS
+ * Run tor as separate process for Windows, macOS and Linux
  * - Windows with windows specific CreateProcess()
  * - macOS with boost::process:child
+ * - Linux with fork() and execvp()
  * All other platforms run Tor embedded.
  *
  * @brief run_tor
  */
 static void run_tor() {
-    boost::optional<std::string> clientTransportPlugin;
-    struct stat sb;
-
     fs::path tor_dir = GetDataDir() / "tor";
     fs::create_directory(tor_dir);
     fs::path log_file = tor_dir / "tor.log";
 
     std::vector<std::string> argv;
 #ifndef __APPLE__
-    // Windows CreateProcess() and main() when embedding tor need 'tor' as first argument
+    // Windows CreateProcess(), exec() and main() when embedding tor need 'tor' as first argument
     // Tor separate process via boost::process does not need 'tor' as first argument
     argv.push_back("tor");
 #endif
@@ -1722,20 +1719,78 @@ static void run_tor() {
 
     process::child pChildTor(process::start_dir = pathTorDir, "./tor.real", argv, gTor);
     pChildTor.detach();
+     // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
     gTor.wait();
+#elif __linux__
+    // Tor separate process via fork,execvp
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor as separate process (fork,execvp) with: %s\n", strCommandLine);
+
+    std::string torResult;
+    pid_t ppid_before_fork = getpid();
+    pid_t pid = fork();
+    if (pid == -1) {
+        torResult = "Terminating - Error: fork() for tor failed: ";
+        torResult += strerror(errno);
+        torResult += "\n";
+    }
+    else if (pid) {
+        // continue parent execution...
+        // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+        int status;
+        if (waitpid(pid, &status, 0) > 0) {
+            if (WIFEXITED(status) && !WEXITSTATUS(status)) {
+                torResult = "Tor shutdown successfull\n";
+            }
+            else if (WIFEXITED(status) && WEXITSTATUS(status)) {
+                if (WEXITSTATUS(status) == 127) {
+                    torResult = "Terminating - Error: Could not start tor. Is tor installed and available in PATH?\n";
+                }
+                else {
+                    torResult = "Terminating - Error: Tor did exit with status " + std::to_string(WEXITSTATUS(status)) + "\n";
+                }
+            }
+            else {
+                torResult = "Terminating - Error: Tor was terminated\n";
+            }
+        }
+        else {
+            torResult = "Terminating - Error: waitpid() for tor failed\n";
+        }
+    } else {
+        // continue child execution...
+        // Make sure tor gets terminated when parent process dies
+        int r = prctl(PR_SET_PDEATHSIG, SIGKILL);
+        if (r == -1) {
+            perror("Could not install PDEATHSIG.");
+            _exit(1);
+        }
+        if (getppid() != ppid_before_fork) {
+            printf("Original parent exited just before the prctl() call\n");
+            _exit(1);
+        }
+
+        std::vector<char *> argv_c;
+        std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
+        argv_c.push_back(nullptr);
+
+        execvp("tor", &argv_c[0]);
+        perror("execvp(\"tor\", ...) failed");
+        _exit(127);
+    }
+
+    // If tor could not be started or exits for any reason, shutdown the application
+    LogPrintf(torResult.c_str());
+    printf("%s", torResult.c_str());
+    kill(getpid(), SIGTERM);
 #else
     // Tor embedded
     argv.push_back("--Log");
     argv.push_back("notice file " + log_file.string());
-
-    if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
-        clientTransportPlugin = "obfs4 exec obfs4proxy";
-        LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
-        argv.push_back("--ClientTransportPlugin");
-        argv.push_back(*clientTransportPlugin);
-        argv.push_back("--UseBridges");
-        argv.push_back("1");
-    }
 
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
@@ -1746,7 +1801,6 @@ static void run_tor() {
     tor_main(argv_c.size(), &argv_c[0]);
 #endif
 }
-
 
 void StartTor(void *nothing)
 {
@@ -1761,8 +1815,7 @@ void StartTor(void *nothing)
       PrintException(&e, "StartTor()");
     }
 
-    printf("Onion thread exited.");
-
+    printf("Onion thread exited.\n");
 }
 
 void StartNode(boost::thread_group& threadGroup)
