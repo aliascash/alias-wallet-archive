@@ -44,8 +44,8 @@ To build the Spectrecoin wallet from source, you will need the following depende
 
 Additionally, you'll need the native C/C++ compiler for your platform and the basic dependencies needed for any kind of development. Because of Qt Webengine cross compiling is currently not possible:
 
- * macOS - Xcode with clang
- * Windows - MSVC
+ * macOS - Xcode with Command Line Tools and clang, QTs QMAKE
+ * Windows - [vcpkg](https://github.com/Microsoft/vcpkg) and MSVC, QTs QMAKE
  * Linux - GCC
 
 ### Windows
