@@ -96,7 +96,6 @@ pipeline {
                     ])
 //                    bat 'scripts\\win-installer.bat'
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
-                    bat "start scripts\\win-startShutdownTimer.bat"
                 }
             }
         }
