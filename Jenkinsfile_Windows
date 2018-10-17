@@ -51,7 +51,7 @@ pipeline {
                                         password: '',
                                         targetFileName: 'Spectre.Prebuild.libraries.zip',
                                         targetLocation: "${WORKSPACE}",
-                                        url: 'https://github.com/spectrecoin/resources/blob/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
                                         userName: ''),
                                 fileUnZipOperation(
                                         filePath: 'Spectre.Prebuild.libraries.zip',
@@ -83,7 +83,7 @@ pipeline {
                                         password: '',
                                         targetFileName: 'Tor.zip',
                                         targetLocation: "${WORKSPACE}",
-                                        url: 'https://github.com/spectrecoin/resources/blob/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
                                         userName: '')
                         ])
                     }
