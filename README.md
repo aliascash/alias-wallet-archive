@@ -88,13 +88,19 @@ https://github.com/spectrecoin/spectre/blob/develop/src/osx.pri for instructions
 Check the dockerfile of your corresponding platform for which packages must be installed
 using the package manager:
 
- * CentOS - https://github.com/spectrecoin/spectre-builder/blob/develop/CentOS/Dockerfile
+To _build_ Spectrecoin (build time dependencies):
+ * Debian - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile
+ * Fedora - https://github.com/spectrecoin/spectre-builder/blob/develop/Fedora/Dockerfile
+ * RasperryPi - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile
+ * Ubuntu - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile
+  
+To _run_ Spectrecoin (run time dependencies):
  * Debian - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile
  * Fedora - https://github.com/spectrecoin/spectre-base/blob/develop/Fedora/Dockerfile
  * RasperryPi - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile
  * Ubuntu - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile
-  
-#### Building 
+
+#### Building
 
 To fetch the source code and build the wallet run the following commands:
 
