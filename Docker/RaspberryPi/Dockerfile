@@ -18,7 +18,7 @@ RUN cd /spectre \
  && make -j${BUILD_THREADS}
 
 ### Now package binaries into new image ###
-FROM spectreproject/spectre-base-raspi:1.1
+FROM spectreproject/spectre-base-raspi:1.2
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 COPY --from=build /spectre/src/spectrecoind /usr/local/bin/
