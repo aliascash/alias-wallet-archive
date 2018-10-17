@@ -91,7 +91,9 @@ pipeline {
                     fileOperations([
                             fileUnZipOperation(
                                     filePath: "${WORKSPACE}/Tor.zip",
-                                    targetLocation: "${WORKSPACE}/src/bin/"),
+                                    targetLocation: "${WORKSPACE}/"),
+                            folderDeleteOperation(
+                                    folderPath: "${WORKSPACE}/src/bin/debug"),
                             folderRenameOperation(
                                     source: "${WORKSPACE}/src/bin",
                                     destination: "${WORKSPACE}/src/Spectrecoin"),
