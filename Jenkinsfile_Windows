@@ -224,7 +224,7 @@ pipeline {
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin.zip"
+                                                    source: "${WORKSPACE}/src/Spectrecoin.zip",
                                                     destination: "${WORKSPACE}/src/Spectrecoin-latest.zip"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
