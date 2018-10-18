@@ -17,8 +17,9 @@ pipeline {
     stages {
         stage('Notification') {
             steps {
+//                      description: "**Started build of branch $BRANCH_NAME**\n",
                 discordSend(
-                        description: "**Started build of branch $BRANCH_NAME**\n",
+                        description: "**Started build of branch ...**\n",
                         footer: 'Jenkins - the builder',
                         image: '',
                         link: "$env.BUILD_URL",
