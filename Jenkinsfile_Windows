@@ -225,8 +225,8 @@ pipeline {
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin-latest.zip"),
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
@@ -448,8 +448,8 @@ pipeline {
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin-latest.zip"),
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
@@ -676,8 +676,8 @@ pipeline {
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
