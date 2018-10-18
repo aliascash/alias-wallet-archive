@@ -131,6 +131,112 @@ pipeline {
                         }
                     }
                 }
+                stage('Windows') {
+                    agent {
+                        label "housekeeping"
+                    }
+                    stages {
+                        stage('Start Windows slave') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh "docker run --rm \\\n" +
+                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
+                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
+                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
+                                            "garland/aws-cli-docker \\\n" +
+                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                }
+                            }
+                        }
+                        stage('Build Windows wallet') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
+                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
+
+                                    if (exists) {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+                                                        userName: ''),
+                                                fileUnZipOperation(
+                                                        filePath: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: '.'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'leveldb',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'packages64bit',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'src',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'tor',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+                                                folderDeleteOperation(
+                                                        './Spectre.Prebuild.libraries'
+                                                )
+                                        ])
+                                    }
+                                    exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    bat 'scripts\\win-build.bat'
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/bin",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin",
+                                                    destination: "${WORKSPACE}/src/bin")
+                                    ])
+//                                    bat 'scripts\\win-installer.bat'
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         stage('Build and upload Spectrecoin image (develop)') {
@@ -245,6 +351,112 @@ pipeline {
                     post {
                         always {
                             sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Windows') {
+                    agent {
+                        label "housekeeping"
+                    }
+                    stages {
+                        stage('Start Windows slave') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh "docker run --rm \\\n" +
+                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
+                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
+                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
+                                            "garland/aws-cli-docker \\\n" +
+                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                }
+                            }
+                        }
+                        stage('Build Windows wallet') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
+                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
+
+                                    if (exists) {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+                                                        userName: ''),
+                                                fileUnZipOperation(
+                                                        filePath: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: '.'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'leveldb',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'packages64bit',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'src',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'tor',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+                                                folderDeleteOperation(
+                                                        './Spectre.Prebuild.libraries'
+                                                )
+                                        ])
+                                    }
+                                    exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    bat 'scripts\\win-build.bat'
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/bin",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin",
+                                                    destination: "${WORKSPACE}/src/bin")
+                                    ])
+//                                    bat 'scripts\\win-installer.bat'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-latest.zip, src/installer/Spectrecoin.msi'
+                                }
+                            }
                         }
                     }
                 }
@@ -367,6 +579,112 @@ pipeline {
                     post {
                         always {
                             sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Windows') {
+                    agent {
+                        label "housekeeping"
+                    }
+                    stages {
+                        stage('Start Windows slave') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh "docker run --rm \\\n" +
+                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
+                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
+                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
+                                            "garland/aws-cli-docker \\\n" +
+                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                }
+                            }
+                        }
+                        stage('Build Windows wallet') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
+                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
+
+                                    if (exists) {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+                                                        userName: ''),
+                                                fileUnZipOperation(
+                                                        filePath: 'Spectre.Prebuild.libraries.zip',
+                                                        targetLocation: '.'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'leveldb',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'packages64bit',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'src',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+                                                folderCopyOperation(
+                                                        destinationFolderPath: 'tor',
+                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+                                                folderDeleteOperation(
+                                                        './Spectre.Prebuild.libraries'
+                                                )
+                                        ])
+                                    }
+                                    exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    bat 'scripts\\win-build.bat'
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/bin",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                            folderRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin",
+                                                    destination: "${WORKSPACE}/src/bin")
+                                    ])
+//                                    bat 'scripts\\win-installer.bat'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-${SPECTRECOIN_VERSION}.zip, src/installer/Spectrecoin.msi'
+                                }
+                            }
                         }
                     }
                 }
