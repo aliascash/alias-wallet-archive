@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,9 +11,20 @@
 #include "addrman.h"
 #include "ui_interface.h"
 #include <sys/stat.h>
+#include <boost/dll.hpp>
 
 #ifdef WIN32
 #include <string.h>
+#include <Windows.h>
+#elif __APPLE__
+// Tor separate process via boost::process
+#include <boost/process.hpp>
+boost::process::group gTor;
+#elif __linux__
+#include <sys/prctl.h>
+#include <signal.h>     // signals
+#include <unistd.h>     // fork()
+#include <sys/wait.h>   // waitpid()
 #endif
 
 #ifdef USE_UPNP
@@ -22,12 +34,6 @@
 #include <miniupnpc/upnperrors.h>
 #endif
 
-#ifdef _MSC_BUILD
-#ifndef	S_IXUSR
-#define	S_IXUSR		0		/* X for owner */
-#endif
-#endif
-
 // Dump addresses to peers.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 
@@ -35,9 +41,12 @@ using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
 
+#if !defined(WIN32) && !defined(__APPLE__) && !defined(__linux__)
+// Tor embedded
 extern "C" {
     int tor_main(int argc, char *argv[]);
 }
+#endif
 
 static const int MAX_OUTBOUND_CONNECTIONS = 16;
 
@@ -1566,7 +1575,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. SpectreCoin is probably already running."), addrBind.ToString());
+            strError = strprintf(_("Unable to bind to %s on this computer. Spectrecoin is probably already running."), addrBind.ToString());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %d, %s)"), addrBind.ToString(), nErr, strerror(nErr));
         LogPrintf("%s\n", strError);
@@ -1597,27 +1606,26 @@ static char *convert_str(const std::string &s) {
     return pc;
 }
 
+/**
+ * Run tor as separate process for Windows, macOS and Linux
+ * - Windows with windows specific CreateProcess()
+ * - macOS with boost::process:child
+ * - Linux with fork() and execvp()
+ * All other platforms run Tor embedded.
+ *
+ * @brief run_tor
+ */
 static void run_tor() {
-    boost::optional<std::string> clientTransportPlugin;
-    struct stat sb;
-#ifdef WIN32
-    if (stat("obfs4proxy.exe", &sb) == 0 && sb.st_mode & S_IXUSR) {
-      clientTransportPlugin = "obfs4 exec obfs4proxy.exe";
-    }
-#else
-    if ((stat("obfs4proxy", &sb) == 0 && sb.st_mode & S_IXUSR) || !std::system("which obfs4proxy")) {
-      clientTransportPlugin = "obfs4 exec obfs4proxy";
-    }
-#endif
-
     fs::path tor_dir = GetDataDir() / "tor";
     fs::create_directory(tor_dir);
     fs::path log_file = tor_dir / "tor.log";
 
     std::vector<std::string> argv;
+#ifndef __APPLE__
+    // Windows CreateProcess(), exec() and main() when embedding tor need 'tor' as first argument
+    // Tor separate process via boost::process does not need 'tor' as first argument
     argv.push_back("tor");
-    argv.push_back("--Log");
-    argv.push_back("notice file " + log_file.string());
+#endif
     argv.push_back("--SocksPort");
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
@@ -1640,20 +1648,160 @@ static void run_tor() {
         argv.push_back("37347");
     }
 
-    if (clientTransportPlugin) {
-      LogPrintf("Using external obfs4proxy as ClientTransportPlugin.\nSpecify bridges in %s\n", torrc);
-      argv.push_back("--ClientTransportPlugin");
-      argv.push_back(*clientTransportPlugin);
-      argv.push_back("--UseBridges");
-      argv.push_back("1");
+#if defined(WIN32) || defined(__APPLE__)
+    // Tor separate process
+    fs::path pathApplicationDir = dll::program_location().parent_path();
+    fs::path pathTorDir = pathApplicationDir / "Tor";
+
+    argv.push_back("--defaults-torrc");
+    fs::path torrc_defaults_file = pathTorDir / "torrc-defaults";
+    argv.push_back(torrc_defaults_file.string());
+#endif
+#ifdef WIN32
+    // Tor separate process via CreateProcess
+    argv.push_back("--Log");
+    argv.push_back("\"notice file " + log_file.string() + "\"");
+
+    HANDLE                               hJob;
+    JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+    PROCESS_INFORMATION                  pi = { 0 };
+    STARTUPINFOA                         si = { 0 };
+
+    // Create a job object.
+    hJob = CreateJobObject(NULL, NULL);
+
+    // Causes all processes associated with the job to terminate when the last handle to the job is closed.
+    jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+    SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
+
+    // Hide the console window
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESHOWWINDOW;
+    si.wShowWindow = SW_HIDE;
+
+    // Build concatenated commandline string for CreateProcess
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor as separate process (CreateProcess) with: %s\n", strCommandLine);
+
+    // Create the process suspended
+    fs::path tor_exe_file = pathTorDir / "tor.exe";
+    if (!CreateProcessA(tor_exe_file.string().c_str(), const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
+        CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
+        LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
+        exit(1); // TODO improved termination
     }
+
+    // Add the process to our job object.
+    AssignProcessToJobObject(hJob, pi.hProcess); // Does not work if without CREATE_BREAKAWAY_FROM_JOB
+
+    // Start our suspended process.
+    ResumeThread(pi.hThread);
+
+    /*
+     * At this point, if we are closed, windows will automatically clean up
+     * by closing any handles we have open. When the handle to the job object
+     * is closed, any processes belonging to the job will be terminated.
+     * Note: Grandchild processes automatically become part of the job and
+     * will also be terminated. This behaviour can be avoided by using the
+     * JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK limit flag.
+     */
+
+     // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+    WaitForSingleObject(pi.hProcess, INFINITE);
+#elif __APPLE__
+    // Tor separate process via boost::process
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor as separate process (process::child) with: %s\n", strCommandLine);
+
+    process::child pChildTor(process::start_dir = pathTorDir, "./tor.real", argv, gTor);
+    pChildTor.detach();
+     // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+    gTor.wait();
+#elif __linux__
+    // Tor separate process via fork,execvp
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor as separate process (fork,execvp) with: %s\n", strCommandLine);
+
+    std::string torResult;
+    pid_t ppid_before_fork = getpid();
+    pid_t pid = fork();
+    if (pid == -1) {
+        torResult = "Terminating - Error: fork() for tor failed: ";
+        torResult += strerror(errno);
+        torResult += "\n";
+    }
+    else if (pid) {
+        // continue parent execution...
+        // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+        int status;
+        if (waitpid(pid, &status, 0) > 0) {
+            if (WIFEXITED(status) && !WEXITSTATUS(status)) {
+                torResult = "Tor shutdown successfull\n";
+            }
+            else if (WIFEXITED(status) && WEXITSTATUS(status)) {
+                if (WEXITSTATUS(status) == 127) {
+                    torResult = "Terminating - Error: Could not start tor. Is tor installed and available in PATH?\n";
+                }
+                else {
+                    torResult = "Terminating - Error: Tor did exit with status " + std::to_string(WEXITSTATUS(status)) + "\n";
+                }
+            }
+            else {
+                torResult = "Terminating - Error: Tor was terminated\n";
+            }
+        }
+        else {
+            torResult = "Terminating - Error: waitpid() for tor failed\n";
+        }
+    } else {
+        // continue child execution...
+        // Make sure tor gets terminated when parent process dies
+        int r = prctl(PR_SET_PDEATHSIG, SIGKILL);
+        if (r == -1) {
+            perror("Could not install PDEATHSIG.");
+            _exit(1);
+        }
+        if (getppid() != ppid_before_fork) {
+            printf("Original parent exited just before the prctl() call\n");
+            _exit(1);
+        }
+
+        std::vector<char *> argv_c;
+        std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
+        argv_c.push_back(nullptr);
+
+        execvp("tor", &argv_c[0]);
+        perror("execvp(\"tor\", ...) failed");
+        _exit(127);
+    }
+
+    // If tor could not be started or exits for any reason, shutdown the application
+    LogPrintf(torResult.c_str());
+    printf("%s", torResult.c_str());
+    kill(getpid(), SIGTERM);
+#else
+    // Tor embedded
+    argv.push_back("--Log");
+    argv.push_back("notice file " + log_file.string());
+
+    std::string strCommandLine;
+    for (auto const& s : argv) { strCommandLine += s + " "; }
+    LogPrintf("Start tor embedded (tor_main) with: %s\n", strCommandLine);
 
     std::vector<char *> argv_c;
     std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
-
     tor_main(argv_c.size(), &argv_c[0]);
+#endif
 }
-
 
 void StartTor(void *nothing)
 {
@@ -1668,8 +1816,7 @@ void StartTor(void *nothing)
       PrintException(&e, "StartTor()");
     }
 
-    printf("Onion thread exited.");
-
+    printf("Onion thread exited.\n");
 }
 
 void StartNode(boost::thread_group& threadGroup)
@@ -1717,6 +1864,15 @@ bool StopNode()
         for (int i=0; i<MAX_OUTBOUND_CONNECTIONS; i++)
             semOutbound->post();
     DumpAddresses();
+
+#ifdef __APPLE__
+    // Tor separate process via boost::process
+    if (gTor) {
+        LogPrintf("Terminate tor process group\n");
+        gTor.terminate();
+    }
+#endif
+
     return true;
 }
 

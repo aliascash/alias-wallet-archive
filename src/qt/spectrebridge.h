@@ -145,7 +145,7 @@ public:
     Q_INVOKABLE QVariantList inviteGroupChat(QString address, QVariantList invites, QString from);
 
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
-    Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, int64_t &amount, int64_t &fee, int64_t &afterfee, unsigned int &bytes, QString &priority, QString low, int64_t &change);
+    Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change);
 
     Q_INVOKABLE QVariantMap listAnonOutputs();
 
@@ -158,11 +158,11 @@ public:
     Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
     Q_INVOKABLE QVariantMap verifyMessage(QString address, QString message, QString signature);
 
-    Q_INVOKABLE void importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
+    Q_INVOKABLE void importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44 = false, quint64 nCreateTime = 0);
     Q_INVOKABLE void getNewMnemonic(QString password, QString language);
     Q_INVOKABLE void extKeyAccList();
     Q_INVOKABLE void extKeyList();
-    Q_INVOKABLE void extKeyImport(QString inKey, QString inLabel, bool fBip44 = false, int64_t nCreateTime = 0);
+    Q_INVOKABLE void extKeyImport(QString inKey, QString inLabel, bool fBip44 = false, quint64 nCreateTime = 0);
     Q_INVOKABLE void extKeySetDefault(QString extKeyID);
     Q_INVOKABLE void extKeySetMaster(QString extKeyID);
     Q_INVOKABLE void extKeySetActive(QString extKeySetActive, QString isActive);
@@ -193,7 +193,7 @@ signals:
     void findBlockResult(QVariantMap result);
     void listLatestBlocksResult(QVariantMap result);
     void blockDetailsResult(QVariantMap result);
-    void listTransactionsForBlockResult(QVariantMap result);
+    void listTransactionsForBlockResult(QString blkHash, QVariantMap result);
     void txnDetailsResult(QVariantMap result);
 
     void newAddressResult(QString result);

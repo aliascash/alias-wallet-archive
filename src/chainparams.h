@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -96,6 +97,9 @@ public:
 
     const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
     int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
+
+    const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
+    const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
 
 protected:
     CChainParams() {};

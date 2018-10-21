@@ -522,6 +522,7 @@ static void InterpretNegativeSetting(string name, map<string, string>& mapSettin
 
 void ParseParameters(int argc, const char* const argv[])
 {
+    printf("util.cpp::ParseParameters\n");
     mapArgs.clear();
     mapMultiArgs.clear();
     for (int i = 1; i < argc; i++)
@@ -1039,15 +1040,15 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\SpectreCoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\SpectreCoin
-    // Mac: ~/Library/Application Support/SpectreCoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Spectrecoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Spectrecoin
+    // Mac: ~/Library/Application Support/Spectrecoin
     // Unix: ~/.spectrecoin
     
     
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "SpectreCoin";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Spectrecoin";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -1059,7 +1060,7 @@ boost::filesystem::path GetDefaultDataDir()
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
-        return pathRet / "SpectreCoin";
+        return pathRet / "Spectrecoin";
     #else
         // Unix
         return pathRet / ".spectrecoin";
@@ -1093,12 +1094,14 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
         return path;
 
     if (mapArgs.count("-datadir")) {
+        printf("-datadir=%s\n", mapArgs["-datadir"].c_str());
         path = fs::system_complete(mapArgs["-datadir"]);
         if (!fs::is_directory(path)) {
             path = "";
             return path;
         }
     } else {
+        printf("mapArgs.count(-datadir)=%i\n", mapArgs.count("-datadir"));
         path = GetDefaultDataDir();
     }
     if (fNetSpecific)
@@ -1338,10 +1341,10 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong SpectreCoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Spectrecoin will not work properly.");
                     strMiscWarning = strMessage;
                     LogPrintf("*** %s\n", strMessage.c_str());
-                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("SpectreCoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
+                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
                 }
             }
         }
@@ -1405,11 +1408,16 @@ boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
     namespace fs = boost::filesystem;
 
-    char pszPath[MAX_PATH] = "";
+	wchar_t wPszPath[MAX_PATH];
 
-    if(SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate))
+	// get the path in unicode to support also non standard characters (8bit) like cyrillic
+    if(SHGetSpecialFolderPathW(NULL, wPszPath, nFolder, fCreate))
     {
-        return fs::path(pszPath);
+		// shorten the unicode path to be representable in 8bit chars
+		wchar_t wPszPathShort[MAX_PATH];
+		GetShortPathNameW(wPszPath, wPszPathShort, MAX_PATH);
+
+        return fs::path(wPszPathShort);
     }
 
     LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");

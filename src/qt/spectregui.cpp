@@ -1,4 +1,5 @@
-// Copyright (c) 2014 The ShadowCoin developers
+// Copyright (c) 2014-2016 The ShadowCoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -71,6 +72,7 @@ bool WebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::Nav
     if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
         emit linkClicked(url);
+        qDebug() << "linkClicked " << url;
         return false;
     }
     return true;
@@ -168,7 +170,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webEngineView = new QWebEngineView();
-    webEnginePage = new WebEnginePage(this);
+	webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
+
+    webEnginePage = new WebEnginePage(this);	
     webEngineView->setPage(webEnginePage);
 
     webEnginePage->action(QWebEnginePage::Reload)->setVisible(false);
@@ -180,7 +184,7 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     setCentralWidget(webEngineView);
 
     resize(1280, 720);
-    setWindowTitle(tr("Spectre") + " - " + tr("Client"));
+    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client"));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/spectre"));
     setWindowIcon(QIcon(":icons/spectre"));
@@ -304,14 +308,14 @@ void SpectreGUI::createActions()
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About SpectreCoin"), this);
-    aboutAction->setToolTip(tr("Show information about SpectreCoin"));
+    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Spectrecoin"), this);
+    aboutAction->setToolTip(tr("Show information about Spectrecoin"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setToolTip(tr("Modify configuration options for SpectreCoin"));
+    optionsAction->setToolTip(tr("Modify configuration options for Spectrecoin"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     toggleHideAction = new QAction(QIcon(":/icons/spectre"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
@@ -388,7 +392,7 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
             if (sMode.length() > 0)
                 sMode[0] = sMode[0].toUpper();
 
-            setWindowTitle(tr("Spectre") + " - " + tr("Wallet") + ", " + sMode);
+            setWindowTitle(tr("Spectrecoin") + " - " + tr("Wallet") + ", " + sMode);
         };
 
         // Replace some strings and icons, when using the testnet
@@ -403,7 +407,7 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
 #endif
             if(trayIcon)
             {
-                trayIcon->setToolTip(tr("Spectre client") + QString(" ") + tr("[testnet]"));
+                trayIcon->setToolTip(tr("Spectrecoin client") + QString(" ") + tr("[testnet]"));
                 trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
                 toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
             }
@@ -463,7 +467,7 @@ void SpectreGUI::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip(tr("Spectre client"));
+    trayIcon->setToolTip(tr("Spectrecoin client"));
     trayIcon->setIcon(QIcon(":/icons/spectre"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
@@ -529,7 +533,7 @@ void SpectreGUI::setNumConnections(int count)
     QString source = "qrc:///icons/" + className.replace("-", "_");
     connectionIcon.setAttribute("src", source);
 
-    QString dataTitle = tr("%n active connection(s) to SpectreCoin network", "", count);
+    QString dataTitle = tr("%n active connection(s) to Spectrecoin network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
 }
 
@@ -847,7 +851,7 @@ void SpectreGUI::dropEvent(QDropEvent *event)
         if (nValidUrisFound)
             bridge->triggerElement("#navitems a[href=#send]", "click");
         else
-            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
+            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
     }
 
     event->acceptProposedAction();
@@ -869,7 +873,7 @@ void SpectreGUI::handleURI(QString strURI)
         showNormalIfMinimized();
     }
     else
-        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid SpectreCoin address or malformed URI parameters."));
+        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
 }
 
 void SpectreGUI::setEncryptionStatus(int status)

@@ -1064,6 +1064,12 @@ public:
 
     CDataStream& read(char* pch, size_t nSize)
     {
+        if (nSize == 0) {
+            // nothing to read
+            nReadPos = 0;
+            vch.clear();
+            return (*this);
+        }
         // Read from the beginning of the buffer
         unsigned int nReadPosNext = nReadPos + nSize;
         if (nReadPosNext >= vch.size())

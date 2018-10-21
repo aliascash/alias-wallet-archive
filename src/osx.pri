@@ -1,59 +1,60 @@
-#TOR LIBS, to build tor use autotools/autoconfig in tor subfolder, make sure to pass -with-openssl 1.1 and pass the directory there
-#Note, to compile the tor pojrect use the following command
-#./configure --enable-static-tor --with-openssl-dir=/usr/local/Cellar/openssl@1.1/1.1.0h --with-libevent-dir=/usr/local/var/homebrew/linked/libevent --with-zlib-dir=/usr/local/Cellar/zlib/1.2.11
-#Use homebrew to install openssl1.1 such as
-    #brew install openssl@1.1
+# 1. Before using autotools & make, make sure to set the macOS target platform in the shell:
+# export MACOSX_DEPLOYMENT_TARGET=10.10
 
-#Fix for xCode to stop complaining about not finding the string.h file
+# 2. Install all libraries with homebrew:
+# brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc wget
+
+# (2a optional) Fix for xCode to stop complaining about not finding the string.h file
 # https://stackoverflow.com/questions/48839127/qmake-derived-clang-in-osx-10-13-cannot-find-string-h
-#INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
+# INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
 
 ICON = $$PWD/../spectre.icns
 
-    LIBS += -L$$PWD/../tor/src/or -ltor \
-    -L$$PWD/../tor/src/common -lor \
-    -L$$PWD/../tor/src/common -lor-ctime \
-    -L$$PWD/../tor/src/common -lor-crypto \
-    -L$$PWD/../tor/src/common -lor-event \
-    -L$$PWD/../tor/src/trunnel -lor-trunnel \
-    -L$$PWD/../tor/src/common -lcurve25519_donna \
-    -L$$PWD/../tor/src/ext/ed25519/donna -led25519_donna \
-    -L$$PWD/../tor/src/ext/ed25519/ref10 -led25519_ref10 \
-    -L$$PWD/../tor/src/ext/keccak-tiny -lkeccak-tiny \
+    # to build tor with autotools, call in subfolder tor:
+    # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.0i --disable-asciidoc --disable-lzma
+#    LIBS += -L$$PWD/../tor/src/or -ltor \
+#    -L$$PWD/../tor/src/common -lor \
+#    -L$$PWD/../tor/src/common -lor-ctime \
+#    -L$$PWD/../tor/src/common -lor-crypto \
+#    -L$$PWD/../tor/src/common -lor-event \
+#    -L$$PWD/../tor/src/trunnel -lor-trunnel \
+#    -L$$PWD/../tor/src/common -lcurve25519_donna \
+#    -L$$PWD/../tor/src/ext/ed25519/donna -led25519_donna \
+#    -L$$PWD/../tor/src/ext/ed25519/ref10 -led25519_ref10 \
+#    -L$$PWD/../tor/src/ext/keccak-tiny -lkeccak-tiny \
 
-    INCLUDEPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
-    DEPENDPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
+#    INCLUDEPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
+#    DEPENDPATH += $$PWD/../tor/src/or $$PWD/../tor/src/common $$PWD/../tor/src/trunnel $$PWD/../tor/src/ext/ed25519/donna $$PWD/../tor/src/ext/ed25519/ref10 $$PWD/../tor/src/ext/keccak-tiny
 
-    PRE_TARGETDEPS += $$PWD/../tor/src/or/libtor.a \
-    $$PWD/../tor/src/common/libor.a \
-    $$PWD/../tor/src/common/libor-ctime.a \
-    $$PWD/../tor/src/common/libor-crypto.a \
-    $$PWD/../tor/src/common/libor-event.a \
-    $$PWD/../tor/src/trunnel/libor-trunnel.a \
-    $$PWD/../tor/src/common/libcurve25519_donna.a \
-    $$PWD/../tor/src/ext/ed25519/donna/libed25519_donna.a \
-    $$PWD/../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-    $$PWD/../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
+#    PRE_TARGETDEPS += $$PWD/../tor/src/or/libtor.a \
+#    $$PWD/../tor/src/common/libor.a \
+#    $$PWD/../tor/src/common/libor-ctime.a \
+#    $$PWD/../tor/src/common/libor-crypto.a \
+#    $$PWD/../tor/src/common/libor-event.a \
+#    $$PWD/../tor/src/trunnel/libor-trunnel.a \
+#    $$PWD/../tor/src/common/libcurve25519_donna.a \
+#    $$PWD/../tor/src/ext/ed25519/donna/libed25519_donna.a \
+#    $$PWD/../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
+#    $$PWD/../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
 
-#    #brew install zlib
+    # brew install zlib
     _ZLIB_PATH = /usr/local/opt/zlib
     INCLUDEPATH += "$${_ZLIB_PATH}/include/"
     LIBS += -L$${_ZLIB_PATH}/lib
     #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
     LIBS += -lz
 
-#to build berkly db use ./configure command in the subfolder of berklydb
-    LIBS += -L$$PWD/../db4.8/build_unix -ldb_cxx \
-    -L$$PWD/../db4.8/build_unix -ldb
+    # to build BerkeleyDB with autotools, call in subfolder db4.8:
+    # ./configure --enable-cxx --disable-shared --disable-replication --with-pic && make
+    _BERKELEY_PATH = $$PWD/../db4.8/build_unix
+    LIBS += $${_BERKELEY_PATH}/libdb_cxx.a \ # link static
+    $${_BERKELEY_PATH}/libdb.a
 
-    INCLUDEPATH += $$PWD/../db4.8/build_unix
-    DEPENDPATH += $$PWD/../db4.8/build_unix
+    DEPENDPATH += $${_BERKELEY_PATH}
+    INCLUDEPATH += $${_BERKELEY_PATH}
 
-    PRE_TARGETDEPS += $$PWD/../db4.8/build_unix/libdb_cxx.a \
-    $$PWD/../db4.8/build_unix/libdb.a
-
-
-#to build leveldb use ./configure command in the subfolder of leveldb
+    # to build leveldb call in subfolder leveldb:
+    # ./build_detect_platform build_config.mk ./ && make
     LIBS += -L$$PWD/../leveldb/out-static -lleveldb \
     -L$$PWD/../leveldb/out-static -lmemenv
 
@@ -80,7 +81,7 @@ QMAKE_LFLAGS += -fstack-protector
 QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual -Wformat -Wformat-security -Wno-unused-parameter
 
 DEFINES += MAC_OSX
-# Mac: compile for maximum compatibility (10.0, 32-bit)
+# Mac: compile for maximum compatibility (10.0 Yosemite, 32-bit)
 QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
 
     # https://www.reddit.com/r/cpp/comments/334s4r/how_to_enable_c14_in_qt_creator_on_a_mac/
@@ -102,12 +103,12 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     _BOOST_PATH = /usr/local/Cellar/boost/1.67.0_1
     INCLUDEPATH += "$${_BOOST_PATH}/include/"
     LIBS += -L$${_BOOST_PATH}/lib
-    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
+    LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt -lboost_unit_test_framework-mt -lboost_timer-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
     DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB BOOST_THREAD_POSIX BOOST_HAS_THREADS
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
-    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0h
+    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0i
     INCLUDEPATH += "$${_OPENSSL_PATH}/include/"
     LIBS += -L$${_OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)

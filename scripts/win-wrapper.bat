@@ -1,0 +1,9 @@
+:: Wrapper script to define all requirements
+
+set SPECTRECOIN_VERSION=2.0.8
+
+set QTDIR=C:\Qt\5.9.6\msvc2017_64
+set WIX_DIR=C:\Program Files (x86)\WiX Toolset v3.11\bin
+
+::call scripts\win-build.bat
+call scripts\win-installer2.bat

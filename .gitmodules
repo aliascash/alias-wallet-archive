@@ -1,12 +1,12 @@
 [submodule "tor"]
 	path = tor
-    url=ssh://git@hlxeasy-bitbucket:7999/bloc/tor.git
+url=https://github.com/spectrecoin/tor.git
 	branch = cmake-migration
 [submodule "leveldb"]
 	path = leveldb
-	url = ssh://git@hlxeasy-bitbucket:7999/bloc/leveldb.git
+	url = https://github.com/spectrecoin/leveldb
 	branch = cmake-migration
 [submodule "db4.8"]
 	path = db4.8
-	url = ssh://git@hlxeasy-bitbucket:7999/bloc/db4.8.git
-	branch = cmake-migration
+	url = https://github.com/spectrecoin/db4.8
+    branch = cmake-migration

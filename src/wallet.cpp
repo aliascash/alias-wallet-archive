@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -3351,19 +3351,22 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             {
                 if (fDebugRingSig)
                     LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
-                return UpdateAnonTransaction(ptxdb, tx, blockHash);
+                if (!UpdateAnonTransaction(ptxdb, tx, blockHash))
+                    return false;
+            }
+            else {
+                return error("%s: Found duplicate anon output.", __func__);
+            }
+        }
+        else {
+            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
+            if (!ptxdb->WriteAnonOutput(pkCoin, ao))
+            {
+                LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
+                continue;
             };
-            return error("%s: Found duplicate anon output.", __func__);
-        };
-
-        ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
-        if (!ptxdb->WriteAnonOutput(pkCoin, ao))
-        {
-            LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
-            continue;
-        };
-
-        mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue);
+            mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue);
+        }
 
         memcpy(&vchEphemPK[0], &s[2+EC_COMPRESSED_SIZE+2], EC_COMPRESSED_SIZE);
 
@@ -3994,11 +3997,11 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     return false;
 }
 
-int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError)
+int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode)
 {
     if (fDebugRingSig)
-        LogPrintf("PickAnonInputs(), ChangeOuts %d\n", nExpectChangeOuts);
-    // - choose the smallest coin that can cover the amount + fee
+        LogPrintf("PickAnonInputs(), ChangeOuts %d, FeeMode %d\n", nExpectChangeOuts, feeMode);
+    // - choose the smallest coin that can cover the amount (feeMode==1) or the amount + fee (feeMode!=1)
     //   or least no. of smallest coins
 
 
@@ -4054,20 +4057,47 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
 
-        if (fDebugRingSig)
-            LogPrintf("nValue + nFee: %d, nValue: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue + nFee, nValue, nAmountCheck, nTotalBytes);
+		int64_t nValueTest;		
+		if (feeMode == 1) {
+			nValueTest = nValue;
+		}
+		else {
+			nValueTest = nValue + nFee;
+			
+			int nFeeDiff = nAmountCheck - nValueTest;
+			if (nFeeDiff < 0)
+			{
+				// substract fee
+				nValueTest += nFeeDiff;
+				if (fDebugRingSig)
+					LogPrintf("AmountWithFeeExceedsBalance! simulate exhaustive trx, lower amount by nFeeDiff: %d\n", nFeeDiff);
 
-        if (nValue + nFee > nAmountCheck)
-        {
-            sError = "Not enough mature coins with requested ring size.";
-            return 3;
-        };
+				if (nExpectChangeOuts != 0) {
+					// -- set nExpectChangeOuts to 0 to simulate exhaustive payment (total+fee=totalAvailableCoins)
+					nExpectChangeOuts = 0;
+					// -- get nTotalBytes again for 0 change outputs
+					uint32_t nTotalBytes = (4 + 4 + 4) // Ctx: nVersion, nTime, nLockTime
+						+ GetSizeOfCompactSize(nOutputs)
+						+ nSizeOutputs
+						+ (GetSizeOfCompactSize(MIN_ANON_OUT_SIZE) + MIN_ANON_OUT_SIZE + sizeof(int64_t)) * vecChange.size()
+						+ GetSizeOfCompactSize((i + 1))
+						+ nByteSizePerInCoin * (i + 1);
+
+					if (fDebugRingSig)
+						LogPrintf("New nTotalBytes: %d\n", nTotalBytes);
+				}
+			}
+		}
+		
+		if (fDebugRingSig)
+			LogPrintf("nValue: %d, nFee: %d, nValueTest: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue, nFee, nValueTest, nAmountCheck, nTotalBytes);
 
         vPickedCoins.clear();
         vecChange.clear();
 
         std::vector<int> vecInputIndex;
-        if (checkCombinations(nValue + nFee, i+1, vData, vecInputIndex))
+
+        if (checkCombinations(nValueTest, i+1, vData, vecInputIndex))
         {
             if (fDebugRingSig)
             {
@@ -4087,7 +4117,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                 nTotalIn += vPickedCoins[ic]->nValue;
             };
 
-            int64_t nChange = nTotalIn - (nValue + nFee);
+            int64_t nChange = nTotalIn - (nValueTest + nFee);
 
 
             CStealthAddress sxChange;
@@ -4126,6 +4156,16 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             };
 
             nFee = nTestFee;
+
+			if (feeMode != 1 && nValue + nFee > nAmountCheck)
+			{
+				sError = "Not enough (mature) coins with requested ring size to cover amount with fees.";
+				if (fDebugRingSig)
+					LogPrintf("Not enough (mature) coins %d with requested ring size to cover amount %d together with fees %d.\n", nAmountCheck, nValue, nFee);
+				return 3;
+			};
+
+
             return 1; // found
         };
     };
@@ -4388,7 +4428,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
 
     if (!fFound)
     {
-        sError = "No combination of coins matches amount and ring size.";
+        sError = "No combination of (mature) coins matches amount and ring size.";
         return false;
     };
 
@@ -4625,7 +4665,7 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4739,7 +4779,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4752,7 +4792,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 
@@ -4841,7 +4881,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: SpectreCoin is not connected!");
+        sError = _("Error: Spectrecoin is not connected!");
         return false;
     };
 
@@ -4854,7 +4894,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 
@@ -5172,7 +5212,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
 
     if (nValue + nTransactionFee > GetSpectreBalance())
     {
-        sError = "Insufficient spectre funds";
+        sError = "Insufficient SPECTRE funds";
         return false;
     };
 

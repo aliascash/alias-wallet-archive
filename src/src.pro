@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = spectre
+TARGET = spectrecoin
 CONFIG += c++14
 
 DEFINES += DEBUGGER_CONNECTED

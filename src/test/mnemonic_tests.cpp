@@ -79,10 +79,10 @@ void TestMnemonic(int nLanguage, const Array &va)
         sSeed = va[2].get_str();
     };
     
-    //BOOST_MESSAGE("sEntropy " << sEntropy);
-    //BOOST_MESSAGE("sWords " << sWords);
-    //BOOST_MESSAGE("sSeed " << sSeed);
-    //BOOST_MESSAGE("sPassphrase " << sPassphrase);
+    //BOOST_TEST_MESSAGE("sEntropy " << sEntropy);
+    //BOOST_TEST_MESSAGE("sWords " << sWords);
+    //BOOST_TEST_MESSAGE("sSeed " << sSeed);
+    //BOOST_TEST_MESSAGE("sPassphrase " << sPassphrase);
     
     std::vector<uint8_t> vEntropy = ParseHex(sEntropy);
     std::vector<uint8_t> vEntropyTest;
@@ -100,7 +100,7 @@ void TestMnemonic(int nLanguage, const Array &va)
     
     BOOST_CHECK(0 == MnemonicToSeed(sWords, sPassphrase, vSeedTest));
     BOOST_CHECK(vSeed == vSeedTest);
-    //BOOST_MESSAGE("vSeedTest " << HexStr(vSeedTest));
+    //BOOST_TEST_MESSAGE("vSeedTest " << HexStr(vSeedTest));
     
     if (va.size() > 4)
     {
@@ -113,8 +113,8 @@ void TestMnemonic(int nLanguage, const Array &va)
         eKey58.SetKey(ekTest, CChainParams::EXT_SECRET_KEY_BTC);
         BOOST_CHECK(eKey58.ToString() == sExtKey);
         
-        //BOOST_MESSAGE("sExtKey " << sExtKey);
-        //BOOST_MESSAGE("eKey58  " << eKey58.ToString());
+        //BOOST_TEST_MESSAGE("sExtKey " << sExtKey);
+        //BOOST_TEST_MESSAGE("eKey58  " << eKey58.ToString());
     };
 };
 
@@ -137,7 +137,7 @@ void RunMnemonicTests()
         const Pair &pair = vectors[i];
         const std::string &name = pair.name_;
         
-        BOOST_MESSAGE("Language: " << name);
+        BOOST_TEST_MESSAGE("Language: " << name);
         
         if (name == "english")
             nLanguage = WLL_ENGLISH;
@@ -151,7 +151,7 @@ void RunMnemonicTests()
         
         if (pair.value_.type() != array_type)
         {
-            BOOST_MESSAGE("Error, not array.");
+            BOOST_TEST_MESSAGE("Error, not array.");
             continue;
         };
         
@@ -161,7 +161,7 @@ void RunMnemonicTests()
         {
             if (v.type() != array_type)
             {
-                BOOST_MESSAGE("Error, not array.");
+                BOOST_TEST_MESSAGE("Error, not array.");
                 continue;
             };
             

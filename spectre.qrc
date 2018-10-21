@@ -1,5 +1,4 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
+<RCC>
     <qresource prefix="/">
         <file alias="assets/css/font-awesome-buttons.min.css">src/qt/res/assets/css/font-awesome-buttons.min.css</file>
         <file alias="assets/css/font-awesome.min.css">src/qt/res/assets/css/font-awesome.min.css</file>
@@ -54,8 +53,7 @@
         <file alias="assets/icons/spectrecoin-64.png">src/qt/res/assets/icons/spectrecoin-64.png</file>
         <file alias="assets/icons/spectrecoin-80.png">src/qt/res/assets/icons/spectrecoin-80.png</file>
         <file alias="assets/icons/spectrecoin.ico">src/qt/res/assets/icons/spectrecoin.ico</file>
-        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>
-        <file alias="assets/icons/spectrecoin.png">src/qt/res/assets/icons/spectrecoin.png</file>
+        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>       
         <file alias="assets/icons/spectre.icns">src/qt/res/assets/icons/spectre.icns</file>
         <file alias="assets/icons/staking_off.png">src/qt/res/assets/icons/staking_off.png</file>
         <file alias="assets/icons/staking.png">src/qt/res/assets/icons/staking.png</file>
@@ -71,10 +69,10 @@
         <file alias="assets/icons/tx_input.png">src/qt/res/assets/icons/tx_input.png</file>
         <file alias="assets/icons/tx_staked.png">src/qt/res/assets/icons/tx_staked.png</file>
         <file alias="assets/icons/tx_donated.png">src/qt/res/assets/icons/tx_donated.png</file>
+        <file alias="assets/icons/tx_contributed.png">src/qt/res/assets/icons/tx_contributed.png</file>
         <file alias="assets/icons/tx_output.png">src/qt/res/assets/icons/tx_output.png</file>
         <file alias="assets/img/about.png">src/qt/res/assets/img/about.png</file>
         <file alias="assets/img/avatars/kewde.png">src/qt/res/assets/img/avatars/kewde.png</file>
-        <file alias="assets/img/avatars/litebit.png">src/qt/res/assets/img/avatars/litebit.png</file>
         <file alias="assets/img/linear_gradient.png">src/qt/res/assets/img/linear_gradient.png</file>
         <file alias="assets/img/progress/progress-bar-complete.svg">src/qt/res/assets/img/progress/progress-bar-complete.svg</file>
         <file alias="assets/img/progress/progress-bar-danger.svg">src/qt/res/assets/img/progress/progress-bar-danger.svg</file>
@@ -96,6 +94,7 @@
         <file alias="assets/img/progress/progress-circle-warning.svg">src/qt/res/assets/img/progress/progress-circle-warning.svg</file>
         <file alias="assets/img/spec-vertical.png">src/qt/res/assets/img/spec-vertical.png</file>
         <file alias="assets/img/spectre_logo.png">src/qt/res/assets/img/spectre_logo.png</file>
+		<file alias="assets/img/spectre_logo_collapsed.png">src/qt/res/assets/img/spectre_logo_collapsed.png</file>	
         <file alias="assets/img/shoppingcart.png">src/qt/res/assets/img/shoppingcart.png</file>
         <file alias="assets/img/splash.png">src/qt/res/assets/img/splash.png</file>
         <file alias="assets/js/navigation.min.js">src/qt/res/assets/js/navigation.min.js</file>
@@ -1990,14 +1989,13 @@
         <file alias="src/qt/res/index.html">src/qt/res/index.html</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="spectre">src/qt/res/icons/spectrecoin-80.png</file>
-        <file alias="spectre_testnet">src/qt/res/icons/spectrecoin-80.png</file>
-        <file alias="toolbar">src/qt/res/icons/spectrecoin-16.png</file>
-        <file alias="toolbar_testnet">src/qt/res/icons/spectrecoin-16.png</file>
+        <file alias="spectre">src/qt/res/assets/icons/spectrecoin.ico</file>
+        <file alias="spectre_testnet">src/qt/res/assets/icons/spectrecoin.ico</file>
         <file alias="export">src/qt/res/icons/export.png</file>
         <file alias="remove">src/qt/res/icons/remove.png</file>
         <file alias="tx_staked">src/qt/res/icons/tx_staked.png</file>
         <file alias="tx_donated">src/qt/res/icons/tx_donated.png</file>
+        <file alias="tx_contributed">src/qt/res/icons/tx_contributed.png</file>
         <file alias="tx_input">src/qt/res/icons/tx_input.png</file>
         <file alias="tx_output">src/qt/res/icons/tx_output.png</file>
         <file alias="tx_inout">src/qt/res/icons/tx_inout.png</file>

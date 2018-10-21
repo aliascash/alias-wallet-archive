@@ -335,6 +335,7 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
     case TransactionRecord::GeneratedDonation:
+	case TransactionRecord::GeneratedContribution:
         return lookupAddress(wtx->address, tooltip);
     case TransactionRecord::SendToOther:
     case TransactionRecord::RecvSpectre:

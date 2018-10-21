@@ -32,10 +32,12 @@ QString TransactionRecord::getTypeLabel(const int &type)
         return SpectreGUI::tr("Staked");
     case GeneratedDonation:
         return SpectreGUI::tr("Donated");
+	case GeneratedContribution:
+		return SpectreGUI::tr("Contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("Received spectre");
+        return SpectreGUI::tr("Received SPECTRE");
     case SendSpectre:
-        return SpectreGUI::tr("Sent spectre");
+        return SpectreGUI::tr("Sent SPECTRE");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -51,6 +53,8 @@ QString TransactionRecord::getTypeShort(const int &type)
         return "staked";
     case TransactionRecord::GeneratedDonation:
         return "donated";
+	case TransactionRecord::GeneratedContribution:
+		return "contributed";
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -217,7 +221,12 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     if (strAddress == Params().GetDevContributionAddress()) {
                         TransactionRecord sub(hash, nTime);
                         sub.address = strAddress;
-                        sub.type = TransactionRecord::GeneratedDonation;
+						if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0) {
+							sub.type = TransactionRecord::GeneratedContribution;
+						}
+						else {
+							sub.type = TransactionRecord::GeneratedDonation;
+						}                       
                         sub.credit = txout.nValue;
                         sub.idx = parts.size(); // sequence number
                         parts.append(sub);
@@ -241,7 +250,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
                 {
                     fAllFromMe = false;
-                    break; // display as send/recv spectre
+                    break; // display as send/recv SPECTRE
                 };
                 continue;
             };
@@ -259,7 +268,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 && txout.IsAnonOutput())
             {
                 fAllToMe = false;
-                break; // display as send/recv spectre
+                break; // display as send/recv SPECTRE
             }
             opcodetype firstOpCode;
             CScript::const_iterator pc = txout.scriptPubKey.begin();
@@ -439,7 +448,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.open_for = wtx.nLockTime;
         };
     } else
-    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedDonation)
+    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedContribution)
     {
         // For generated transactions, determine maturity
         if (wtx.GetBlocksToMaturity() > 0)

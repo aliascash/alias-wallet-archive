@@ -1,4 +1,5 @@
-// Copyright (c) 2014-2015 The ShadowCoin developers
+// Copyright (c) 2014-2016 The ShadowCoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -697,7 +698,7 @@ void ThreadSecureMsg()
             } // cs_vNodes
 
             if(fDebugSmsg)
-                LogPrintf("spectre-smsg thread: ignoring - looked peer %d, status on search %u\n", nPeerId, fExists);
+                LogPrintf("spectrecoin-smsg thread: ignoring - looked peer %d, status on search %u\n", nPeerId, fExists);
         };
 
         MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds

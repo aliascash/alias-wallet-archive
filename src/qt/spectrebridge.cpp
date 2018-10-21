@@ -77,7 +77,6 @@ void TransactionModel::init(ClientModel * clientModel, TransactionTableModel * t
 
 QVariantMap TransactionModel::addTransaction(int row)
 {
-    qDebug() << "addTransaction";
     QModelIndex status   = ttm->index    (row, TransactionTableModel::Status);
     QModelIndex date     = status.sibling(row, TransactionTableModel::Date);
     QModelIndex address  = status.sibling(row, TransactionTableModel::ToAddress);
@@ -127,7 +126,6 @@ void TransactionModel::populateRows(int start, int end)
         start++;
     }
     if(!transactions.isEmpty()) {
-        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
     }
 
@@ -149,7 +147,6 @@ void TransactionModel::populatePage()
             transactions.append(addTransaction(row));
 
     if(!transactions.isEmpty()) {
-        qDebug() << "transactions " << transactions;
         emitTransactions(transactions);
     }
 
@@ -633,9 +630,15 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+		case WalletModel::SCR_AmountExceedsBalance:
+			QMessageBox::warning(window, tr("Send Coins"),
+				tr("The amount exceeds your SPECTRE balance."),
+				QMessageBox::Ok, QMessageBox::Ok);
+			emit sendCoinsResult(false);
+			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your spectre balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -687,7 +690,7 @@ void SpectreBridge::updateCoinControlAmount(qint64 amount)
     CoinControlDialog::updateLabels(window->walletModel, 0, this);
 }
 
-void SpectreBridge::updateCoinControlLabels(unsigned int &quantity, int64_t &amount, int64_t &fee, int64_t &afterfee, unsigned int &bytes, QString &priority, QString low, int64_t &change)
+void SpectreBridge::updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change)
 {
     emitCoinControlUpdate(quantity, amount, fee, afterfee, bytes, priority, low, change);
 }
@@ -770,6 +773,7 @@ void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, in
 
 void SpectreBridge::transactionDetails(QString txid)
 {
+    qDebug() << "Emit transaction details " << window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
     emit transactionDetailsResult(window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString());
 }
 
@@ -1453,7 +1457,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (mi == mapBlockIndex.end())
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1463,7 +1467,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
     if (block.IsNull() || block.vtx.size() < 1)
     {
         blkTransactions.insert("error_msg", "Block not found.");
-        emit listTransactionsForBlockResult(blkTransactions);
+        emit listTransactionsForBlockResult(blkHash, blkTransactions);
         return;
     };
 
@@ -1481,7 +1485,7 @@ void SpectreBridge::listTransactionsForBlock(QString blkHash)
         blkTransactions.insert(QString::number(x), blockTxn);
     }
 
-    emit listTransactionsForBlockResult(blkTransactions);
+    emit listTransactionsForBlockResult(blkHash, blkTransactions);
     return;
 }
 
@@ -1552,7 +1556,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
             if (txn.nVersion == ANON_TXN_VERSION
                 && txin.IsAnonInput())
             {
-                sAddr = "Spectre";
+                sAddr = "SPECTRE";
                 std::vector<uint8_t> vchImage;
                 txin.ExtractKeyImage(vchImage);
 
@@ -1608,7 +1612,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 
              if( txn.nVersion == ANON_TXN_VERSION
                  && txout.IsAnonOutput() )
-                 sAddr = "Spectre";
+                 sAddr = "SPECTRE";
              else
              {
                  CTxDestination address;
@@ -1799,7 +1803,7 @@ void SpectreBridge::getNewMnemonic(QString password, QString language)
     return;
 }
 
-void SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44, quint64 nCreateTime)
 {
     std::string sPassword = inPassword.toStdString();
     std::string sMnemonic = inMnemonic.toStdString();
@@ -2136,7 +2140,7 @@ void SpectreBridge::extKeyList() {
     return;
 }
 
-void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, int64_t nCreateTime)
+void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, quint64 nCreateTime)
 {
     QVariantMap result;
     std::string sInKey = inKey.toStdString();
@@ -2177,7 +2181,7 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, in
             return;
         }
         int rv;
-        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, false)))
+        if (0 != (rv = pwalletMain->ExtKeyImportLoose(&wdb, sek, fBip44, fBip44)))
         {
             wdb.TxnAbort();
             result.insert("error_msg", QString("ExtKeyImportLoose failed, %1").arg(ExtKeyGetString(rv)));

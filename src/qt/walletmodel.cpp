@@ -207,9 +207,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     if(total > nBalance)
         return AmountExceedsBalance;
 
-    if((total + nTransactionFee) > nBalance)
-        return SendCoinsReturn(AmountWithFeeExceedsBalance, nTransactionFee);
-
     std::map<int, std::string> mapStealthNarr;
 
     {
@@ -458,7 +455,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString("Block chain must be fully synced first."));
 
     if (vNodes.empty())
-        return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString("SpectreCoin is not connected!"));
+        return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString("Spectrecoin is not connected!"));
 
 
     // -- verify input type and ringsize
@@ -506,13 +503,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
     if (inputTypes == 0)
     {
         nBalance = wallet->GetBalance();
-        if ((nTotalOut + nTransactionFee) > nBalance)
-            return SendCoinsReturn(AmountWithFeeExceedsBalance, nTransactionFee);
+        if (nTotalOut > nBalance)
+            return SendCoinsReturn(AmountExceedsBalance);
     } else
     {
         nBalance = wallet->GetSpectreBalance();
-        if ((nTotalOut + MIN_TX_FEE_ANON) > nBalance)
-            return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, MIN_TX_FEE_ANON);
+        if (nTotalOut > nBalance)
+            return SendCoinsReturn(SCR_AmountExceedsBalance);
     };
 
     {
@@ -577,7 +574,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
         if (inputTypes == 0)
         {
-            // -- in spec
+            // -- in XSPEC
 
             for (uint32_t i = 0; i < vecSend.size(); ++i)
                 wtxNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));
@@ -609,13 +606,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
         } else
         {
-            // -- in spectre
+            // -- in SPECTRE
 
             std::string sError;
             if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
-                    return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
+                    return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired);
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
                 if (!Params().IsProtocolV3(nBestHeight))
