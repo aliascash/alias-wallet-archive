@@ -219,6 +219,8 @@ pipeline {
                                                     targetLocation: "${WORKSPACE}/"),
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/Spectrecoin"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
@@ -442,6 +444,8 @@ pipeline {
                                                     targetLocation: "${WORKSPACE}/"),
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/Spectrecoin"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
