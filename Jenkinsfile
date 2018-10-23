@@ -232,29 +232,51 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    // Unzip Tor and remove debug content
                                     fileOperations([
                                             fileUnZipOperation(
                                                     filePath: "${WORKSPACE}/Tor.zip",
                                                     targetLocation: "${WORKSPACE}/"),
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                    ])
+                                    // If directory 'Spectrecoin' exists from brevious build, remove it
+                                    if (fileExists "${WORKSPACE}/src/Spectrecoin") {
+                                        fileOperations([
+                                                folderDeleteOperation(
+                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                        ])
+                                    }
+                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
+                                    fileOperations([
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-
                                             folderCreateOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin-latest.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                    ])
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    if (fileExists "${WORKSPACE}/Spectrecoin.zip") {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                        ])
+                                    }
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    if (fileExists "${WORKSPACE}/Spectrecoin-latest.zip") {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                        ])
+                                    }
+                                    // Remove directory with artifacts from previous build
+                                    // Create new delivery archive
+                                    // Rename build directory back to initial name
+                                    fileOperations([
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
