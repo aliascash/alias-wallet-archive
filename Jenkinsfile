@@ -224,10 +224,18 @@ pipeline {
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin.zip"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin-latest.zip"),
+
+                                            folderCreateOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin-latest.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
@@ -453,10 +461,18 @@ pipeline {
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin.zip"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin-latest.zip"),
+
+                                            folderCreateOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin-latest.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
@@ -687,10 +703,18 @@ pipeline {
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin.zip"),
-                                            fileDeleteOperation(
-                                                    includes: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+
+                                            folderCreateOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip",
+                                                    destination: "${WORKSPACE}/old/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/old"),
+
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
