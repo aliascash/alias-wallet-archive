@@ -241,7 +241,8 @@ pipeline {
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
                                     ])
                                     // If directory 'Spectrecoin' exists from brevious build, remove it
-                                    if (fileExists("${WORKSPACE}/src/Spectrecoin")) {
+                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+                                    if (exists) {
                                         fileOperations([
                                                 folderDeleteOperation(
                                                         folderPath: "${WORKSPACE}/src/Spectrecoin"),
@@ -256,7 +257,8 @@ pipeline {
                                                     folderPath: "${WORKSPACE}/old"),
                                     ])
                                     // If archive from previous build exists, move it to directory 'old'
-                                    if (fileExists("${WORKSPACE}/Spectrecoin.zip")) {
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+                                    if (exists) {
                                         fileOperations([
                                                 fileRenameOperation(
                                                         source: "${WORKSPACE}/Spectrecoin.zip",
@@ -264,7 +266,8 @@ pipeline {
                                         ])
                                     }
                                     // If archive from previous build exists, move it to directory 'old'
-                                    if (fileExists("${WORKSPACE}/Spectrecoin-latest.zip")) {
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
+                                    if (exists) {
                                         fileOperations([
                                                 fileRenameOperation(
                                                         source: "${WORKSPACE}/Spectrecoin-latest.zip",
