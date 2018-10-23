@@ -156,12 +156,9 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Build Windows wallet') {
+                        stage('Prepare build') {
                             agent {
                                 label "windows"
-                            }
-                            environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
                             }
                             steps {
                                 script {
@@ -212,7 +209,29 @@ pipeline {
                                                         userName: '')
                                         ])
                                     }
+                                }
+                            }
+                        }
+                        stage('Perform build') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
                                     bat 'scripts\\win-build.bat'
+//                                    bat 'scripts\\win-installer.bat'
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            agent {
+                                label "windows"
+                            }
+                            steps {
+                                script {
                                     fileOperations([
                                             fileUnZipOperation(
                                                     filePath: "${WORKSPACE}/Tor.zip",
@@ -244,7 +263,6 @@ pipeline {
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
-//                                    bat 'scripts\\win-installer.bat'
 //                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
                                 }
                             }
