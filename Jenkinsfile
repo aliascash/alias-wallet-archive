@@ -741,6 +741,15 @@ pipeline {
     post {
         success {
             script {
+                if (!hudson.model.Result.SUCCESS.equals(currentBuild.getPreviousBuild()?.getResult())) {
+                    emailext(
+                            subject: "GREEN: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                            body: '${JELLY_SCRIPT,template="html"}',
+                            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                            to: "to@be.defined",
+//                            replyTo: "to@be.defined"
+                    )
+                }
                 discordSend(
                         description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Success\n",
                         footer: 'Jenkins - the builder',
@@ -754,6 +763,13 @@ pipeline {
             }
         }
         unstable {
+            emailext(
+                    subject: "YELLOW: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                    to: "to@be.defined",
+//                    replyTo: "to@be.defined"
+            )
             discordSend(
                     description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Unstable\n",
                     footer: 'Jenkins - the builder',
@@ -766,6 +782,13 @@ pipeline {
             )
         }
         failure {
+            emailext(
+                    subject: "RED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                    to: "to@be.defined",
+//                    replyTo: "to@be.defined"
+            )
             discordSend(
                     description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Failed\n",
                     footer: 'Jenkins - the builder',
