@@ -82,16 +82,6 @@ spectrecoind_SOURCES = $(common_SOURCES) \
 spectrecoind_LDADD = ../leveldb/out-static/libmemenv.a \
 		     ../leveldb/out-static/libleveldb.a \
 		     ../db4.8/build_unix/libdb_cxx.a \
-		     ../tor/src/or/libtor.a \
-		     ../tor/src/common/libor.a \
-		     ../tor/src/common/libor-ctime.a \
-		     ../tor/src/common/libor-crypto.a \
-		     ../tor/src/common/libor-event.a \
-		     ../tor/src/trunnel/libor-trunnel.a \
-		     ../tor/src/common/libcurve25519_donna.a \
-		     ../tor/src/ext/ed25519/donna/libed25519_donna.a \
-		     ../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-		     ../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
 		     $(OPENSSL_LIBS) \
 		     $(LIBEVENT_LIBS) \
 		     $(LIBSECCOMP_LIBS) \

@@ -6,7 +6,7 @@ AM_MAKEFLAGS = TARGET_OS=OS_WINDOWS_CROSSCOMPILE
 endif
 
 export CC CXX AR LD
-SUBDIRS = tor db4.8/build_unix leveldb src
+SUBDIRS = db4.8/build_unix leveldb src
 
 Spectre.app: all-am
 	mkdir -p Spectre.app/Contents/{MacOS,Resources}

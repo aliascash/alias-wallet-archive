@@ -1,7 +1,7 @@
-[submodule "tor"]
-	path = tor
-url=https://github.com/spectrecoin/tor.git
-	branch = spectre
+#[submodule "tor"]
+#	path = tor
+#url=https://github.com/spectrecoin/tor.git
+#	branch = spectre
 [submodule "leveldb"]
 	path = leveldb
 	url = https://github.com/spectrecoin/leveldb
