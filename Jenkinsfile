@@ -436,12 +436,9 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Build Windows wallet') {
+                        stage('Prepare build') {
                             agent {
                                 label "windows"
-                            }
-                            environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
                             }
                             steps {
                                 script {
@@ -492,30 +489,77 @@ pipeline {
                                                         userName: '')
                                         ])
                                     }
+                                }
+                            }
+                        }
+                        stage('Perform build') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
                                     bat 'scripts\\win-build.bat'
+//                                    bat 'scripts\\win-installer.bat'
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            agent {
+                                label "windows"
+                            }
+                            steps {
+                                script {
+                                    // Unzip Tor and remove debug content
                                     fileOperations([
                                             fileUnZipOperation(
                                                     filePath: "${WORKSPACE}/Tor.zip",
                                                     targetLocation: "${WORKSPACE}/"),
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                    ])
+                                    // If directory 'Spectrecoin' exists from brevious build, remove it
+                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+                                    if (exists) {
+                                        fileOperations([
+                                                folderDeleteOperation(
+                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                        ])
+                                    }
+                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
+                                    fileOperations([
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-
                                             folderCreateOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin-latest.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                    ])
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+                                    if (exists) {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                        ])
+                                    }
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
+                                    if (exists) {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+                                        ])
+                                    }
+                                    // Remove directory with artifacts from previous build
+                                    // Create new delivery archive
+                                    // Rename build directory back to initial name
+                                    fileOperations([
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
@@ -524,8 +568,7 @@ pipeline {
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
-//                                    bat 'scripts\\win-installer.bat'
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-latest.zip, src/installer/Spectrecoin.msi'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-latest.zip"
                                 }
                             }
                         }
@@ -678,12 +721,9 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Build Windows wallet') {
+                        stage('Prepare build') {
                             agent {
                                 label "windows"
-                            }
-                            environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
                             }
                             steps {
                                 script {
@@ -734,30 +774,77 @@ pipeline {
                                                         userName: '')
                                         ])
                                     }
+                                }
+                            }
+                        }
+                        stage('Perform build') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                            }
+                            steps {
+                                script {
                                     bat 'scripts\\win-build.bat'
+//                                    bat 'scripts\\win-installer.bat'
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            agent {
+                                label "windows"
+                            }
+                            steps {
+                                script {
+                                    // Unzip Tor and remove debug content
                                     fileOperations([
                                             fileUnZipOperation(
                                                     filePath: "${WORKSPACE}/Tor.zip",
                                                     targetLocation: "${WORKSPACE}/"),
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/src/bin/debug"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                    ])
+                                    // If directory 'Spectrecoin' exists from brevious build, remove it
+                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+                                    if (exists) {
+                                        fileOperations([
+                                                folderDeleteOperation(
+                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+                                        ])
+                                    }
+                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
+                                    fileOperations([
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/bin",
                                                     destination: "${WORKSPACE}/src/Spectrecoin"),
-
                                             folderCreateOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip",
-                                                    destination: "${WORKSPACE}/old/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                    ])
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+                                    if (exists) {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+                                        ])
+                                    }
+                                    // If archive from previous build exists, move it to directory 'old'
+                                    exists = fileExists "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"
+                                    if (exists) {
+                                        fileOperations([
+                                                fileRenameOperation(
+                                                        source: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip",
+                                                        destination: "${WORKSPACE}/old/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                        ])
+                                    }
+                                    // Remove directory with artifacts from previous build
+                                    // Create new delivery archive
+                                    // Rename build directory back to initial name
+                                    fileOperations([
                                             folderDeleteOperation(
                                                     folderPath: "${WORKSPACE}/old"),
-
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
@@ -766,8 +853,7 @@ pipeline {
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
-//                                    bat 'scripts\\win-installer.bat'
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-${SPECTRECOIN_VERSION}.zip, src/installer/Spectrecoin.msi'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}.zip"
                                 }
                             }
                         }
