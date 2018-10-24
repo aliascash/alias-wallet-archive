@@ -132,6 +132,17 @@ pipeline {
                         }
                     }
                 }
+                stage('Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    steps {
+                        script {
+                            sh "pwd"
+                            sh "df -h"
+                        }
+                    }
+                }
                 stage('Windows') {
                     agent {
                         label "housekeeping"
