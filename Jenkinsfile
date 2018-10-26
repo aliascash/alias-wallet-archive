@@ -11,6 +11,7 @@ pipeline {
     environment {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = 'simplify-docker-build'
+        GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         SPECTRECOIN_VERSION='2.1.1'
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
     }
