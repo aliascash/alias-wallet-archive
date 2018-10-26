@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-centos:latest as build
+FROM spectreproject/spectre-builder-centos:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
