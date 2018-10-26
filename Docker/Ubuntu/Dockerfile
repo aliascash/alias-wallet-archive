@@ -30,10 +30,8 @@ ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-Ubuntu.tgz
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-# Unfortunately it is not possible to use parameters on "--from=...",
-# so we need separate Dockerfiles
-COPY --from=build /usr/local/bin/spectrecoin  /filesToUpload/usr/local/bin/
-COPY --from=build /usr/local/bin/spectrecoind /filesToUpload/usr/local/bin/
+COPY --from=build /spectre/src/spectrecoind /filesToUpload/usr/local/bin/
+COPY --from=build /spectre/src/spectre /filesToUpload/usr/local/bin/spectrecoin
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
