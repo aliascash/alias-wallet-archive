@@ -4352,6 +4352,14 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
+    if (nRingSize < (int)MIN_RING_SIZE
+            ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+    {
+        sError = tfm::format("Ringsize %d not in range [%d, %d]: ", nRingSize,  MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
+
+
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
     {
