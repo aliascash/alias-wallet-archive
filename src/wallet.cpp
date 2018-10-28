@@ -3416,7 +3416,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         }
 
         int nRingSize = txin.ExtractRingSize();
-        if (nRingSize <  1
+        if (nRingSize <  (Params().IsForkV3(tx.nTime) ? (int)MIN_RING_SIZE : 1)
           ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
 
