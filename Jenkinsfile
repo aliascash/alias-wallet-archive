@@ -135,15 +135,17 @@ pipeline {
                             }
                         }
                         stage('Trigger Docker image build'){
-                            build(
-                                    job: 'Spectrecoin/docker-spectrecoind/develop',
-                                    parameters: [
-                                            string(
-                                                    name: 'SPECTRECOIN_RELEASE',
-                                                    value: 'latest'
-                                            )
-                                    ]
-                            )
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/docker-spectrecoind/develop',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: 'latest'
+                                                )
+                                        ]
+                                )
+                            }
                         }
                     }
                 }
@@ -470,15 +472,17 @@ pipeline {
                             }
                         }
                         stage('Trigger Docker image build'){
-                            build(
-                                    job: 'Spectrecoin/docker-spectrecoind/develop',
-                                    parameters: [
-                                            string(
-                                                    name: 'SPECTRECOIN_RELEASE',
-                                                    value: 'latest'
-                                            )
-                                    ]
-                            )
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/docker-spectrecoind/develop',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: 'latest'
+                                                )
+                                        ]
+                                )
+                            }
                         }
                     }
                 }
@@ -793,15 +797,17 @@ pipeline {
                             }
                         }
                         stage('Trigger Docker image build'){
-                            build(
-                                    job: 'Spectrecoin/docker-spectrecoind/master',
-                                    parameters: [
-                                            string(
-                                                    name: 'SPECTRECOIN_RELEASE',
-                                                    value: "${SPECTRECOIN_RELEASE}"
-                                            )
-                                    ]
-                            )
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/docker-spectrecoind/master',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${SPECTRECOIN_RELEASE}"
+                                                )
+                                        ]
+                                )
+                            }
                         }
                     }
                 }
