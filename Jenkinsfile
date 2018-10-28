@@ -136,15 +136,16 @@ pipeline {
                         }
                         stage('Trigger Docker image build'){
                             steps {
-                                build(
-                                        job: 'Spectrecoin/docker-spectrecoind/develop',
-                                        parameters: [
-                                                string(
-                                                        name: 'SPECTRECOIN_RELEASE',
-                                                        value: 'latest'
-                                                )
-                                        ]
-                                )
+                                sh "echo 'Image build only triggered on develop or master builds'"
+//                                build(
+//                                        job: 'Spectrecoin/docker-spectrecoind/develop',
+//                                        parameters: [
+//                                                string(
+//                                                        name: 'SPECTRECOIN_RELEASE',
+//                                                        value: 'latest'
+//                                                )
+//                                        ]
+//                                )
                             }
                         }
                     }
