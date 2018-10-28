@@ -3238,7 +3238,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < (Params().IsProtocolV3(nBestHeight) ? 1 : (int)MIN_RING_SIZE)
+        if (nRingSize <  1
           ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
 
@@ -4352,6 +4352,14 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
+    if (nRingSize < (int)MIN_RING_SIZE
+            ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+    {
+        sError = tfm::format("Ringsize %d not in range [%d, %d]: ", nRingSize,  MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
+
+
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
     {
@@ -4897,6 +4905,13 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
         sError = "Insufficient SPECTRE funds";
         return false;
     };
+
+    std::ostringstream ssThrow;
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+    {
+        sError = tfm::format("Ring size must be >= %d and <= %d.", MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
 
     wtxNew.nVersion = ANON_TXN_VERSION;
 
