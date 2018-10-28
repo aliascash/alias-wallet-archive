@@ -96,6 +96,7 @@ public:
     const std::string GetDevContributionAddress() const { return devContributionAddress; }
 
     const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
+    const bool IsForkV3(unsigned int nTime) const { return nTime > nForkV3Time; }
     int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
 
     const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
@@ -127,6 +128,7 @@ protected:
     std::string devContributionAddress;
 
     unsigned int nForkV2Time;
+    unsigned int nForkV3Time;
 };
 
 /**

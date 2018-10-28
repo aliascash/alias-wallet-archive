@@ -164,6 +164,7 @@ public:
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
         nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
+        nForkV3Time = 1600000000; // MAINNET V2 chain fork (09/13/2020 @ 12:26pm (UTC))
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
@@ -224,6 +225,8 @@ public:
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
                       
         nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
+        nForkV3Time = 1540399195; // TESTNET V3 chain fork (10/24/2018 @ 4:39pm (UTC))
+
 
         devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
     }
