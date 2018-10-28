@@ -114,11 +114,11 @@ pipeline {
                 }
                 */
                 stage('Ubuntu') {
+                    agent {
+                        label "docker"
+                    }
                     stages {
                         stage('Build Ubuntu binaries') {
-                            agent {
-                                label "docker"
-                            }
                             steps {
                                 script {
                                     // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
@@ -448,11 +448,11 @@ pipeline {
                     }
                 }
                 stage('Ubuntu') {
+                    agent {
+                        label "docker"
+                    }
                     stages{
                         stage('Build Ubuntu binaries'){
-                            agent {
-                                label "docker"
-                            }
                             steps {
                                 script {
                                     // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
@@ -773,11 +773,11 @@ pipeline {
                     }
                 }
                 stage('Ubuntu') {
+                    agent {
+                        label "docker"
+                    }
                     stages{
                         stage('Build Ubuntu binaires'){
-                            agent {
-                                label "docker"
-                            }
                             steps {
                                 script {
                                     // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
