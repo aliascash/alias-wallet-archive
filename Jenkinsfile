@@ -113,40 +113,19 @@ pipeline {
                     }
                 }
                 */
-                stage('Ubuntu') {
-                    agent {
-                        label "docker"
-                    }
-                    stages {
-                        stage('Build Ubuntu binaries') {
-                            steps {
-                                script {
-                                    // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                                    // So copy required Dockerfile to root dir for each build
-                                    sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
-                                    docker.build("spectreproject/spectre-ubuntu", "--rm .")
-                                    sh "rm Dockerfile"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
+                stage('Build Ubuntu binaries') {
+                    steps {
+                        script {
+                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+                            // So copy required Dockerfile to root dir for each build
+                            sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
+                            docker.build("spectreproject/spectre-ubuntu", "--rm .")
+                            sh "rm Dockerfile"
                         }
-                        stage('Trigger Docker image build'){
-                            steps {
-                                sh "echo 'Image build only triggered on develop or master builds'"
-//                                build(
-//                                        job: 'Spectrecoin/docker-spectrecoind/develop',
-//                                        parameters: [
-//                                                string(
-//                                                        name: 'SPECTRECOIN_RELEASE',
-//                                                        value: 'latest'
-//                                                )
-//                                        ]
-//                                )
-                            }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
                         }
                     }
                 }
@@ -778,7 +757,7 @@ pipeline {
                         label "docker"
                     }
                     stages{
-                        stage('Build Ubuntu binaires'){
+                        stage('Build Ubuntu binaries'){
                             steps {
                                 script {
                                     // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
