@@ -2511,10 +2511,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE)
-        result.push_back(Pair("warning", "Ring size was below the recommended size, your existing will be marked as compromised."));
-
-    if (nRingSize > MAX_RING_SIZE)
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
         ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
 
 
