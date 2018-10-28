@@ -891,7 +891,7 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     switch (mode)
     {
         case GMF_RELAY: nBaseFee = MIN_RELAY_TX_FEE; break;
-        case GMF_ANON:  nBaseFee = MIN_TX_FEE_ANON;  break;
+        case GMF_ANON:  nBaseFee = MIN_TX_FEE_ANON;  if (!Params().IsForkV3(nTime)) break;
         default:        nBaseFee = MIN_TX_FEE;       break;
     };
 
@@ -907,7 +907,7 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     };
 
     // Raise the price as the block approaches full
-    if (mode != GMF_ANON && nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
+    if (nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
     {
         if (nNewBlockSize >= MAX_BLOCK_SIZE_GEN)
             return MAX_MONEY;
