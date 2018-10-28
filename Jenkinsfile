@@ -304,6 +304,34 @@ pipeline {
                                 }
                             }
                         }
+                        stage('Upload delivery') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag latest \\\n" +
+                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
+                                            "    --replace"
+                                    sh "rm -f Spectrecoin-latest.zip"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -584,6 +612,34 @@ pipeline {
                                 }
                             }
                         }
+                        stage('Upload delivery') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag latest \\\n" +
+                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
+                                            "    --replace"
+                                    sh "rm -f Spectrecoin-latest.zip"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -861,6 +917,34 @@ pipeline {
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}.zip"
+                                }
+                            }
+                        }
+                        stage('Upload delivery') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/lastSuccessfulBuild/artifact/Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag ${SPECTRECOIN_RELEASE} \\\n" +
+                                            "    --name \"Spectrecoin-${SPECTRECOIN_RELEASE}-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_RELEASE}.zip \\\n" +
+                                            "    --replace"
+                                    sh "rm -f Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
                                 }
                             }
                         }
