@@ -4906,6 +4906,13 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
         return false;
     };
 
+    std::ostringstream ssThrow;
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+    {
+        sError = tfm::format("Ring size must be >= %d and <= %d.", MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
+
     wtxNew.nVersion = ANON_TXN_VERSION;
 
     std::vector<std::pair<CScript, int64_t> > vecSend;
