@@ -144,7 +144,8 @@ pipeline {
                                     "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
                                     "cd ../../leveldb/\n" +
                                     "./build_detect_platform build_config.mk ./ && make\n" +
-                                    "   "
+                                    "cd ../\n" +
+                                    "./configure --enable-gui"
                         }
                     }
                 }
