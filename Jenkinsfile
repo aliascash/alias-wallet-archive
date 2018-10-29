@@ -37,33 +37,14 @@ pipeline {
                 }
             }
             parallel {
-                stage('Debian') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            sh "cp ./Docker/Debian/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre", "--rm .")
-                            sh "rm Dockerfile"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-//                stage('CentOS') {
+//                stage('Debian') {
 //                    agent {
 //                        label "docker"
 //                    }
 //                    steps {
 //                        script {
-//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-//                            // So copy required Dockerfile to root dir for each build
-//                            sh "cp ./Docker/CentOS/Dockerfile_noUpload Dockerfile"
-//                            docker.build("spectreproject/spectre-centos", "--rm .")
+//                            sh "cp ./Docker/Debian/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre", "--rm .")
 //                            sh "rm Dockerfile"
 //                        }
 //                    }
@@ -73,62 +54,81 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Fedora/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-fedora", "--rm .")
-                            sh "rm Dockerfile"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/RaspberryPi/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-raspi", "--rm .")
-                            sh "rm Dockerfile"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
-                stage('Build Ubuntu binaries') {
-                    steps {
-                        script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-ubuntu", "--rm .")
-                            sh "rm Dockerfile"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
+////                stage('CentOS') {
+////                    agent {
+////                        label "docker"
+////                    }
+////                    steps {
+////                        script {
+////                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+////                            // So copy required Dockerfile to root dir for each build
+////                            sh "cp ./Docker/CentOS/Dockerfile_noUpload Dockerfile"
+////                            docker.build("spectreproject/spectre-centos", "--rm .")
+////                            sh "rm Dockerfile"
+////                        }
+////                    }
+////                    post {
+////                        always {
+////                            sh "docker system prune --all --force"
+////                        }
+////                    }
+////                }
+//                stage('Fedora') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Fedora/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-fedora", "--rm .")
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                /* Raspi build disabled on all branches different than develop and master to increase build speed
+//                stage('Raspberry Pi') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/RaspberryPi/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-raspi", "--rm .")
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                */
+//                stage('Build Ubuntu binaries') {
+//                    steps {
+//                        script {
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-ubuntu", "--rm .")
+//                            sh "rm Dockerfile"
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -140,198 +140,198 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows') {
-                    agent {
-                        label "housekeeping"
-                    }
-                    stages {
-                        stage('Start Windows slave') {
-                            agent {
-                                label "housekeeping"
-                            }
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh "docker run --rm \\\n" +
-                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
-                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
-                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
-                                            "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
-                                }
-                            }
-                        }
-                        stage('Prepare build') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
-                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
-
-                                    if (exists) {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
-                                                        userName: ''),
-                                                fileUnZipOperation(
-                                                        filePath: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: '.'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'leveldb',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'packages64bit',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'src',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'tor',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
-                                                folderDeleteOperation(
-                                                        './Spectre.Prebuild.libraries'
-                                                )
-                                        ])
-                                    }
-                                    exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
-                                                        userName: '')
-                                        ])
-                                    }
-                                }
-                            }
-                        }
-                        stage('Perform build') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
-                            }
-                            steps {
-                                script {
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                }
-                            }
-                        }
-                        stage('Create delivery') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
-                                    // If directory 'Spectrecoin' exists from brevious build, remove it
-                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
-                                    if (exists) {
-                                        fileOperations([
-                                                folderDeleteOperation(
-                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
-                                        ])
-                                    }
-                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-                                    fileOperations([
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/bin",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            folderCreateOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                    ])
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                        ])
-                                    }
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
-                                        ])
-                                    }
-                                    // Remove directory with artifacts from previous build
-                                    // Create new delivery archive
-                                    // Rename build directory back to initial name
-                                    fileOperations([
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin",
-                                                    destination: "${WORKSPACE}/src/bin")
-                                    ])
-// No upload on feature branches, only from develop and master
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
-//                                }
-//                            }
-//                        }
-//                        stage('Upload delivery') {
+//                stage('Windows') {
+//                    agent {
+//                        label "housekeeping"
+//                    }
+//                    stages {
+//                        stage('Start Windows slave') {
 //                            agent {
 //                                label "housekeeping"
 //                            }
 //                            steps {
-//                                script {
-//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
-//                                    sh "docker run \\\n" +
-//                                            "--rm \\\n" +
-//                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-//                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-//                                            "spectreproject/github-uploader:latest \\\n" +
-//                                            "github-release upload \\\n" +
-//                                            "    --user spectrecoin \\\n" +
-//                                            "    --repo spectre \\\n" +
-//                                            "    --tag latest \\\n" +
-//                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
-//                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
-//                                            "    --replace"
-//                                    sh "rm -f Spectrecoin-latest.zip"
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh "docker run --rm \\\n" +
+//                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
+//                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
+//                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
+//                                            "garland/aws-cli-docker \\\n" +
+//                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
 //                                }
 //                            }
-//                            post {
-//                                always {
-//                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
+//                        }
+//                        stage('Prepare build') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            steps {
+//                                script {
+//                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
+//
+//                                    if (exists) {
+//                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
+//                                    } else {
+//                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+//                                        fileOperations([
+//                                                fileDownloadOperation(
+//                                                        password: '',
+//                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+//                                                        targetLocation: "${WORKSPACE}",
+//                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+//                                                        userName: ''),
+//                                                fileUnZipOperation(
+//                                                        filePath: 'Spectre.Prebuild.libraries.zip',
+//                                                        targetLocation: '.'),
+//                                                folderCopyOperation(
+//                                                        destinationFolderPath: 'leveldb',
+//                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+//                                                folderCopyOperation(
+//                                                        destinationFolderPath: 'packages64bit',
+//                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+//                                                folderCopyOperation(
+//                                                        destinationFolderPath: 'src',
+//                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+//                                                folderCopyOperation(
+//                                                        destinationFolderPath: 'tor',
+//                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+//                                                folderDeleteOperation(
+//                                                        './Spectre.Prebuild.libraries'
+//                                                )
+//                                        ])
+//                                    }
+//                                    exists = fileExists 'Tor.zip'
+//                                    if (exists) {
+//                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+//                                    } else {
+//                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+//                                        fileOperations([
+//                                                fileDownloadOperation(
+//                                                        password: '',
+//                                                        targetFileName: 'Tor.zip',
+//                                                        targetLocation: "${WORKSPACE}",
+//                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+//                                                        userName: '')
+//                                        ])
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        stage('Perform build') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            environment {
+//                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+//                            }
+//                            steps {
+//                                script {
+//                                    bat 'scripts\\win-build.bat'
+////                                    bat 'scripts\\win-installer.bat'
+//                                }
+//                            }
+//                        }
+//                        stage('Create delivery') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            steps {
+//                                script {
+//                                    // Unzip Tor and remove debug content
+//                                    fileOperations([
+//                                            fileUnZipOperation(
+//                                                    filePath: "${WORKSPACE}/Tor.zip",
+//                                                    targetLocation: "${WORKSPACE}/"),
+//                                            folderDeleteOperation(
+//                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+//                                    ])
+//                                    // If directory 'Spectrecoin' exists from brevious build, remove it
+//                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+//                                    if (exists) {
+//                                        fileOperations([
+//                                                folderDeleteOperation(
+//                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+//                                        ])
+//                                    }
+//                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
+//                                    fileOperations([
+//                                            folderRenameOperation(
+//                                                    source: "${WORKSPACE}/src/bin",
+//                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
+//                                            folderCreateOperation(
+//                                                    folderPath: "${WORKSPACE}/old"),
+//                                    ])
+//                                    // If archive from previous build exists, move it to directory 'old'
+//                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+//                                    if (exists) {
+//                                        fileOperations([
+//                                                fileRenameOperation(
+//                                                        source: "${WORKSPACE}/Spectrecoin.zip",
+//                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+//                                        ])
+//                                    }
+//                                    // If archive from previous build exists, move it to directory 'old'
+//                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
+//                                    if (exists) {
+//                                        fileOperations([
+//                                                fileRenameOperation(
+//                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
+//                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
+//                                        ])
+//                                    }
+//                                    // Remove directory with artifacts from previous build
+//                                    // Create new delivery archive
+//                                    // Rename build directory back to initial name
+//                                    fileOperations([
+//                                            folderDeleteOperation(
+//                                                    folderPath: "${WORKSPACE}/old"),
+//                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+//                                            fileRenameOperation(
+//                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+//                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
+//                                            folderRenameOperation(
+//                                                    source: "${WORKSPACE}/src/Spectrecoin",
+//                                                    destination: "${WORKSPACE}/src/bin")
+//                                    ])
+//// No upload on feature branches, only from develop and master
+////                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
+////                                }
+////                            }
+////                        }
+////                        stage('Upload delivery') {
+////                            agent {
+////                                label "housekeeping"
+////                            }
+////                            steps {
+////                                script {
+////                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
+////                                    sh "docker run \\\n" +
+////                                            "--rm \\\n" +
+////                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+////                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+////                                            "spectreproject/github-uploader:latest \\\n" +
+////                                            "github-release upload \\\n" +
+////                                            "    --user spectrecoin \\\n" +
+////                                            "    --repo spectre \\\n" +
+////                                            "    --tag latest \\\n" +
+////                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
+////                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
+////                                            "    --replace"
+////                                    sh "rm -f Spectrecoin-latest.zip"
+////                                }
+////                            }
+////                            post {
+////                                always {
+////                                    sh "docker system prune --all --force"
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
         stage('Build and upload (develop)') {
