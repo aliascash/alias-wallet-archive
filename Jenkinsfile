@@ -134,7 +134,9 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        PATH = "/usr/local/bin:${QT_DIR_MAC}/bin:$PATH"
+                        QT_PATH = "${QT_DIR_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     steps {
@@ -147,7 +149,8 @@ pipeline {
                                     "./build_detect_platform build_config.mk ./ && make\n" +
                                     "cd ../\n" +
                                     "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                    "make -j2"
+                                    "make -j2\n" +
+                                    "./macdeployqt.sh"
                         }
                     }
                 }
