@@ -135,6 +135,7 @@ pipeline {
                     }
                     environment {
                         PATH = "/usr/local/bin:${QT_DIR_MAC}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     steps {
                         script {
@@ -145,7 +146,8 @@ pipeline {
                                     "cd ../../leveldb/\n" +
                                     "./build_detect_platform build_config.mk ./ && make\n" +
                                     "cd ../\n" +
-                                    "qmake src/src.pro"
+                                    "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                    "make -j2"
                         }
                     }
                 }
