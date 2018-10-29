@@ -133,6 +133,9 @@ pipeline {
                     agent {
                         label "mac"
                     }
+                    environment {
+                        PATH = "/usr/local/bin:$PATH"
+                    }
                     steps {
                         script {
                             sh "pwd"
