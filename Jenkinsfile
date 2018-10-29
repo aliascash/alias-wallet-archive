@@ -136,7 +136,12 @@ pipeline {
                     steps {
                         script {
                             sh "pwd"
-                            sh "df -h"
+                            sh "./autogen.sh\n" +
+                                    "cd db4.8/build_unix/\n" +
+                                    "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                    "cd ../../leveldb/\n" +
+                                    "./build_detect_platform build_config.mk ./ && make\n" +
+                                    "   "
                         }
                     }
                 }
