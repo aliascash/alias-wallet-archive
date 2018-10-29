@@ -134,7 +134,7 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        PATH = "/usr/local/bin:$PATH"
+                        PATH = "/usr/local/bin:${QT_DIR_MAC}/bin:$PATH"
                     }
                     steps {
                         script {
