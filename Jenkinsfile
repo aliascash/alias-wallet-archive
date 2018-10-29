@@ -145,7 +145,7 @@ pipeline {
                                     "cd ../../leveldb/\n" +
                                     "./build_detect_platform build_config.mk ./ && make\n" +
                                     "cd ../\n" +
-                                    "./configure --enable-gui"
+                                    "qmake src/src.pro"
                         }
                     }
                 }
