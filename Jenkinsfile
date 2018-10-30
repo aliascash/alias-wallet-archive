@@ -188,7 +188,7 @@ pipeline {
                                 script {
                                     sh "./macdeployqt.sh"
 // No upload on feature branches, only from develop and master
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'src/bin/spectrecoin.dmg'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.dmg'
                                 }
                             }
                         }
