@@ -10,6 +10,10 @@ fi
 if [ -z "${OPENSSL_PATH}" ] ; then
     OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.0i
 fi
+if [ -e src/bin/spectrecoin.dmg ] ; then
+    rm -f src/bin/spectrecoin.dmg
+fi
+
 ${QT_PATH}/bin/macdeployqt src/bin/spectrecoin.app
 
 echo -e "\nRemove openssl 1.0.0 libs:"
