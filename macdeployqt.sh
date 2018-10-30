@@ -10,6 +10,9 @@ fi
 if [ -z "${OPENSSL_PATH}" ] ; then
     OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.0i
 fi
+if [ -e Spectrecoin.dmg ] ; then
+    rm -f Spectrecoin.dmg
+fi
 if [ -e src/bin/spectrecoin.dmg ] ; then
     rm -f src/bin/spectrecoin.dmg
 fi
@@ -40,5 +43,4 @@ done
 
 echo -e "\nCreate dmg package..."
 ${QT_PATH}/bin/macdeployqt src/bin/spectrecoin.app -dmg
-
-
+mv src/bin/spectrecoin.dmg Spectrecoin.dmg
