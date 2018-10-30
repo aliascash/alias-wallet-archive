@@ -242,7 +242,7 @@ pipeline {
                                             "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
                                             "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
                                             "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
                                 }
                             }
                         }
@@ -660,7 +660,7 @@ pipeline {
                                             "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
                                             "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
                                             "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
                                 }
                             }
                         }
@@ -1077,7 +1077,7 @@ pipeline {
                                             "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
                                             "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
                                             "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-0216e564fa17a9fbd"
+                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
                                 }
                             }
                         }
