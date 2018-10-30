@@ -29,14 +29,14 @@ pipeline {
                 )
             }
         }
-        stage('Only build') {
+        stage('Feature branch') {
             when {
                 not {
                     anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
                 }
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -53,7 +53,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -72,7 +72,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -92,7 +92,7 @@ pipeline {
                     }
                 }
                 /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -139,7 +139,7 @@ pipeline {
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     stages {
-                        stage('Perform build') {
+                        stage('Perform MacOS build') {
                             steps {
                                 script {
                                     sh "pwd"
@@ -420,7 +420,7 @@ pipeline {
                 anyOf { branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -442,7 +442,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -464,7 +464,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -486,7 +486,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -508,7 +508,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Build Ubuntu binaries') {
                     agent {
                         label "docker"
                     }
@@ -558,7 +558,7 @@ pipeline {
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     stages {
-                        stage('Perform build') {
+                        stage('Perform MacOS build') {
                             steps {
                                 script {
                                     sh "pwd"
@@ -837,7 +837,7 @@ pipeline {
                 branch 'master'
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -859,7 +859,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -881,7 +881,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -903,7 +903,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -925,7 +925,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Build Ubuntu binaries') {
                     agent {
                         label "docker"
                     }
@@ -975,7 +975,7 @@ pipeline {
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     stages {
-                        stage('Perform build') {
+                        stage('Perform MacOS build') {
                             steps {
                                 script {
                                     sh "pwd"
