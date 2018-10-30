@@ -209,7 +209,7 @@ pipeline {
                                             "    --repo spectre \\\n" +
                                             "    --tag latest \\\n" +
                                             "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
-                                            "    --file /filesToUpload/spectrecoin.dmg \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
                                     sh "rm -f spectrecoin.dmg"
                                 }
