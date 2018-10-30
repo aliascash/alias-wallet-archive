@@ -198,7 +198,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/spectrecoin.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/Spectrecoin.dmg"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
