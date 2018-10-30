@@ -188,7 +188,7 @@ pipeline {
                                 script {
                                     sh "./macdeployqt.sh"
 // No upload on feature branches, only from develop and master
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: '**/Spectrecoin.dmg'
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'src/bin/spectrecoin.dmg'
                                 }
                             }
                         }
@@ -198,7 +198,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/Spectrecoin.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/spectrecoin.dmg"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
@@ -209,9 +209,9 @@ pipeline {
                                             "    --repo spectre \\\n" +
                                             "    --tag latest \\\n" +
                                             "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
+                                            "    --file /filesToUpload/spectrecoin.dmg \\\n" +
                                             "    --replace"
-                                    sh "rm -f Spectrecoin.dmg"
+                                    sh "rm -f spectrecoin.dmg"
                                 }
                             }
                             post {
