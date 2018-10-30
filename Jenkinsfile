@@ -5,7 +5,6 @@ pipeline {
     options {
         timestamps()
         timeout(time: 3, unit: 'HOURS')
-//	ansiColor('xterm')
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
     }
     environment {
@@ -30,14 +29,14 @@ pipeline {
                 )
             }
         }
-        stage('Only build') {
+        stage('Feature branch') {
             when {
                 not {
                     anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
                 }
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -54,7 +53,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -73,7 +72,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -93,7 +92,7 @@ pipeline {
                     }
                 }
                 /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -133,10 +132,92 @@ pipeline {
                     agent {
                         label "mac"
                     }
-                    steps {
-                        script {
-                            sh "pwd"
-                            sh "df -h"
+                    environment {
+                        QT_PATH = "${QT_DIR_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                    }
+                    stages {
+                        stage('Perform MacOS build') {
+                            steps {
+                                script {
+                                    sh "pwd"
+                                    sh "./autogen.sh\n" +
+                                        "cd db4.8/build_unix/\n" +
+                                        "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                        "cd ../../leveldb/\n" +
+                                        "./build_detect_platform build_config.mk ./ && make\n" +
+                                        "cd ../\n" +
+                                        "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                        "make -j2"
+                                }
+                            }
+                        }
+                        stage('Prepare delivery') {
+                            steps {
+                                script {
+                                    def exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    // Unzip Tor and remove debug content
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                    ])
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+// No upload on feature branches, only from develop and master
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.dmg'
+//                                }
+//                            }
+//                        }
+//                        stage('Upload delivery') {
+//                            agent {
+//                                label "housekeeping"
+//                            }
+//                            steps {
+//                                script {
+//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
+//                                    sh "docker run \\\n" +
+//                                            "--rm \\\n" +
+//                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+//                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+//                                            "spectreproject/github-uploader:latest \\\n" +
+//                                            "github-release upload \\\n" +
+//                                            "    --user spectrecoin \\\n" +
+//                                            "    --repo spectre \\\n" +
+//                                            "    --tag latest \\\n" +
+//                                            "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
+//                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
+//                                            "    --replace"
+//                                    sh "rm -f spectrecoin.dmg"
+//                                }
+//                            }
+//                            post {
+//                                always {
+//                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
                     }
                 }
@@ -308,7 +389,7 @@ pipeline {
 //                            }
 //                            steps {
 //                                script {
-//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
+//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin-latest.zip"
 //                                    sh "docker run \\\n" +
 //                                            "--rm \\\n" +
 //                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
@@ -339,7 +420,7 @@ pipeline {
                 anyOf { branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -361,7 +442,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -383,7 +464,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -405,7 +486,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -427,7 +508,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Build Ubuntu binaries') {
                     agent {
                         label "docker"
                     }
@@ -462,6 +543,98 @@ pipeline {
                                                 )
                                         ]
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    environment {
+                        QT_PATH = "${QT_DIR_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                    }
+                    stages {
+                        stage('Perform MacOS build') {
+                            steps {
+                                script {
+                                    sh "pwd"
+                                    sh "./autogen.sh\n" +
+                                            "cd db4.8/build_unix/\n" +
+                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                            "cd ../../leveldb/\n" +
+                                            "./build_detect_platform build_config.mk ./ && make\n" +
+                                            "cd ../\n" +
+                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                            "make -j2"
+                                }
+                            }
+                        }
+                        stage('Prepare delivery') {
+                            steps {
+                                script {
+                                    def exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    // Unzip Tor and remove debug content
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                    ])
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.dmg'
+                                }
+                            }
+                        }
+                        stage('Upload delivery') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag latest \\\n" +
+                                            "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
+                                            "    --replace"
+                                    sh "rm -f spectrecoin.dmg"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }
@@ -633,7 +806,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/lastSuccessfulBuild/artifact/Spectrecoin-latest.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest.zip"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
@@ -664,7 +837,7 @@ pipeline {
                 branch 'master'
             }
             parallel {
-                stage('Debian') {
+                stage('Build Debian binaries') {
                     agent {
                         label "docker"
                     }
@@ -686,7 +859,7 @@ pipeline {
                         }
                     }
                 }
-//                stage('CentOS') {
+//                stage('Build CentOS binaries') {
 //                    agent {
 //                        label "docker"
 //                    }
@@ -708,7 +881,7 @@ pipeline {
 //                        }
 //                    }
 //                }
-                stage('Fedora') {
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
@@ -730,7 +903,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Raspberry Pi') {
+                stage('Build Raspberry Pi binaries') {
                     agent {
                         label "docker"
                     }
@@ -752,7 +925,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Build Ubuntu binaries') {
                     agent {
                         label "docker"
                     }
@@ -787,6 +960,98 @@ pipeline {
                                                 )
                                         ]
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    environment {
+                        QT_PATH = "${QT_DIR_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                    }
+                    stages {
+                        stage('Perform MacOS build') {
+                            steps {
+                                script {
+                                    sh "pwd"
+                                    sh "./autogen.sh\n" +
+                                            "cd db4.8/build_unix/\n" +
+                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                            "cd ../../leveldb/\n" +
+                                            "./build_detect_platform build_config.mk ./ && make\n" +
+                                            "cd ../\n" +
+                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                            "make -j2"
+                                }
+                            }
+                        }
+                        stage('Prepare delivery') {
+                            steps {
+                                script {
+                                    def exists = fileExists 'Tor.zip'
+                                    if (exists) {
+                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+                                    } else {
+                                        echo 'Archive \'Tor.zip\' not found, downloading...'
+                                        fileOperations([
+                                                fileDownloadOperation(
+                                                        password: '',
+                                                        targetFileName: 'Tor.zip',
+                                                        targetLocation: "${WORKSPACE}",
+                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
+                                                        userName: '')
+                                        ])
+                                    }
+                                    // Unzip Tor and remove debug content
+                                    fileOperations([
+                                            fileUnZipOperation(
+                                                    filePath: "${WORKSPACE}/Tor.zip",
+                                                    targetLocation: "${WORKSPACE}/"),
+                                            folderDeleteOperation(
+                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
+                                    ])
+                                }
+                            }
+                        }
+                        stage('Create delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.dmg'
+                                }
+                            }
+                        }
+                        stage('Upload delivery') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag ${SPECTRECOIN_RELEASE} \\\n" +
+                                            "    --name \"Spectrecoin-${SPECTRECOIN_RELEASE}-macOS.dmg\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
+                                            "    --replace"
+                                    sh "rm -f spectrecoin.dmg"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }
@@ -958,7 +1223,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/lastSuccessfulBuild/artifact/Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
