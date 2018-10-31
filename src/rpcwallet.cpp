@@ -2430,6 +2430,11 @@ Value sendspectoanon(const Array& params, bool fHelp)
     if (!sxAddr.SetEncoded(sEncoded))
         throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
+    // -- Check that we own the recipient address (XSPEC to SPECTRE only allowed for transformation)
+    if (!pwalletMain->IsMine(sxAddr)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account.");
+    }
+
     CWalletTx wtx;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["comment"] = params[3].get_str();
@@ -2536,6 +2541,11 @@ Value sendanontospec(const Array& params, bool fHelp)
 
     if (!sxAddr.SetEncoded(sEncoded))
         throw std::runtime_error("Invalid Spectrecoin stealth address.");
+
+    // -- Check that we own the recipient address (SPECTRE to XSPEC only allowed for transformation)
+    if (!pwalletMain->IsMine(sxAddr)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account.");
+    }
 
     CWalletTx wtx;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
