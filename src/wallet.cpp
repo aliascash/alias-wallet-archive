@@ -5609,7 +5609,38 @@ bool CWallet::InitBloomFilter()
 };
 
 
+bool CWallet::IsMine(CStealthAddress stealthAddress)
+{
+    // - check legacy stealth addresses in wallet
+    for (std::set<CStealthAddress>::iterator it = stealthAddresses.begin(); it != stealthAddresses.end(); ++it)
+    {
+        if (it->scan_secret.size() != EC_SECRET_SIZE)
+            continue; // stealth address in wallet is not owned
 
+        if (it->scan_pubkey == stealthAddress.scan_pubkey && it->spend_pubkey != stealthAddress.spend_pubkey) {
+            return true; // scan & spend public key match, we own this address
+        }
+    };
+
+    // - check ext account stealth keys in wallet
+    for ( ExtKeyAccountMap::const_iterator mi = mapExtAccounts.begin(); mi != mapExtAccounts.end(); ++mi)
+    {
+        CExtKeyAccount *ea = mi->second;
+
+        for (AccStealthKeyMap::iterator it = ea->mapStealthKeys.begin(); it != ea->mapStealthKeys.end(); ++it)
+        {
+            const CEKAStealthKey &aks = it->second;
+
+            if (!aks.skScan.IsValid())
+                continue; // stealth address in wallet is not valid
+
+            if (aks.pkScan == stealthAddress.scan_pubkey && aks.pkSpend == stealthAddress.spend_pubkey) {
+                return true; // scan & spend public key match, we own this address
+            }
+        };
+    };
+    return false;
+}
 
 
 

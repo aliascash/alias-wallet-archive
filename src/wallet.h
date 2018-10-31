@@ -302,6 +302,8 @@ public:
     std::set<std::set<CTxDestination> > GetAddressGroupings();
     std::map<CTxDestination, int64_t> GetAddressBalances();
 
+    bool IsMine(CStealthAddress stealthAddress);
+
     bool IsMine(const CTxIn& txin) const;
     int64_t GetDebit(const CTxIn& txin) const;
     int64_t GetSpectreDebit(const CTxIn& txin) const;
