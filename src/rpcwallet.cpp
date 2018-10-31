@@ -2498,7 +2498,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
-            "  warning: using a ring_size less than 3 is not recommended"
+            "  warning: using a ring_size less than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
