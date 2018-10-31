@@ -184,6 +184,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         if(!validateAddress(rcp.address))
             return InvalidAddress;
 
+        if(IsStealthAddress(rcp.address.toStdString()))
+            return StealthAddressOnlyAllowedForSPECTRE;
+
         setAddress.insert(rcp.address);
 
         if(rcp.amount <= 0)
@@ -537,6 +540,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 || rcp.txnTypeInd == TXT_ANON_TO_SPEC)
             {
                 // -- out spec
+                if (inputTypes == 1) {
+                    // -- Check that we own the recipient address (SPECTRE to XSPEC only allowed for transformation)
+                    if (!wallet->IsMine(sxAddrTo)) {
+                        return SendCoinsReturn(RecipientAddressNotOwnedSPECTREtoXSPEC);
+                    }
+                }
+
                 std::string sError;
                 if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, mapStealthNarr, sError))
                 {
@@ -547,6 +557,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             } else
             {
                 // -- out spectre
+                if (inputTypes == 0) {
+                    // -- Check that we own the recipient address (XSPEC to SPECTRE only allowed for transformation)
+                    if (!wallet->IsMine(sxAddrTo)) {
+                        return SendCoinsReturn(RecipientAddressNotOwnedXSPECtoSPECTRE);
+                    }
+                }
+
                 CScript scriptNarration; // needed to match output id of narr
                 if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration))
                 {
