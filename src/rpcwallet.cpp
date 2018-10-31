@@ -424,8 +424,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     if (params[0].get_str().length() > 75
         && IsStealthAddress(params[0].get_str()))
-        return sendtostealthaddress(params, false);
-
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Only SPECTRE can be send to a stealth address, use sendanontoanon instead");
 
     std::string sAddrIn = params[0].get_str();
     CBitcoinAddress address(sAddrIn);
@@ -2196,51 +2195,6 @@ Value importstealthaddress(const Array& params, bool fHelp)
         throw std::runtime_error("Could not save to wallet.");
 
     return result;
-}
-
-
-Value sendtostealthaddress(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() < 2 || params.size() > 5)
-        throw std::runtime_error(
-        "sendtostealthaddress <stealth_address> <amount> [comment] [comment-to] [narration]\n"
-        "sendtostealthaddress <stealth_address> <amount> [narration]\n"
-            "<amount> is a real and is rounded to the nearest 0.000001"
-            + HelpRequiringPassphrase());
-
-    if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-
-    std::string sEncoded = params[0].get_str();
-    int64_t nAmount = AmountFromValue(params[1]);
-
-    std::string sNarr;
-    if (params.size() == 3 || params.size() == 5)
-    {
-        int nNarr = params.size() - 1;
-        if(params[nNarr].type() != null_type && !params[nNarr].get_str().empty())
-            sNarr = params[nNarr].get_str();
-    }
-
-    if (sNarr.length() > 24)
-        throw std::runtime_error("Narration must be 24 characters or less.");
-
-    CStealthAddress sxAddr;
-
-    if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid Spectrecoin stealth address.");
-
-    CWalletTx wtx;
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["comment"] = params[3].get_str();
-    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        wtx.mapValue["to"]      = params[4].get_str();
-
-    std::string sError;
-    if (!pwalletMain->SendStealthMoneyToDestination(sxAddr, nAmount, sNarr, wtx, sError))
-        throw JSONRPCError(RPC_WALLET_ERROR, sError);
-
-    return wtx.GetHash().GetHex();
 }
 
 Value clearwallettransactions(const Array& params, bool fHelp)

@@ -160,7 +160,6 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "signrawtransaction", 1},
     { "signrawtransaction", 2},
     { "keypoolrefill", 0 },
-    { "sendtostealthaddress", 1 },
     { "sendspectoanon", 1 },
     { "sendanontoanon", 1 },
     { "sendanontoanon", 2 },
