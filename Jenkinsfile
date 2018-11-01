@@ -17,12 +17,14 @@ pipeline {
     stages {
         stage('Notification') {
             steps {
+                // Using result state 'ABORTED' to mark the message on discord with a white border.
+                // Makes it easier to distinguish job-start from job-finished
                 discordSend(
-                        description: "**Started build of branch $BRANCH_NAME**\n",
-                        footer: 'Jenkins - the builder',
+                        description: "Started build #$env.BUILD_NUMBER",
                         image: '',
                         link: "$env.BUILD_URL",
                         successful: true,
+                        result: "ABORTED",
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
                         webhookURL: "${DISCORD_WEBHOOK}"
@@ -1263,8 +1265,7 @@ pipeline {
                     )
                 }
                 discordSend(
-                        description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Success\n",
-                        footer: 'Jenkins - the builder',
+                        description: "Build #$env.BUILD_NUMBER finished successfully",
                         image: '',
                         link: "$env.BUILD_URL",
                         successful: true,
@@ -1283,11 +1284,11 @@ pipeline {
 //                    replyTo: "to@be.defined"
             )
             discordSend(
-                    description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Unstable\n",
-                    footer: 'Jenkins - the builder',
+                    description: "Build #$env.BUILD_NUMBER finished unstable",
                     image: '',
                     link: "$env.BUILD_URL",
                     successful: true,
+                    result: "UNSTABLE",
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
                     webhookURL: "${DISCORD_WEBHOOK}"
@@ -1302,8 +1303,7 @@ pipeline {
 //                    replyTo: "to@be.defined"
             )
             discordSend(
-                    description: "**Build:**  #$env.BUILD_NUMBER\n**Status:**  Failed\n",
-                    footer: 'Jenkins - the builder',
+                    description: "Build #$env.BUILD_NUMBER failed!",
                     image: '',
                     link: "$env.BUILD_URL",
                     successful: false,
