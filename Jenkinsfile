@@ -6,6 +6,7 @@ pipeline {
         timestamps()
         timeout(time: 3, unit: 'HOURS')
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        disableConcurrentBuilds()
     }
     environment {
         // In case another branch beside master or develop should be deployed, enter it here
