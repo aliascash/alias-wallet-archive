@@ -358,13 +358,29 @@ pipeline {
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest-OBFS4-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
 // No upload on feature branches, only from develop and master
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.zip, src/installer/Spectrecoin.msi'
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip'
 //                                }
 //                            }
 //                        }
@@ -741,12 +757,28 @@ pipeline {
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest.zip"),
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-latest-OBFS4-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-latest.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip"
                                 }
                             }
                         }
@@ -793,7 +825,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_RELEASE}", "${SPECTRECOIN_RELEASE}")
+                            buildMasterBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -808,7 +840,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildMasterBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_RELEASE}", "${SPECTRECOIN_RELEASE}")
+//                            buildMasterBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
 //                        }
 //                    }
 //                    post {
@@ -823,7 +855,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_RELEASE}", "${SPECTRECOIN_RELEASE}")
+                            buildMasterBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -838,7 +870,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_RELEASE}", "${SPECTRECOIN_RELEASE}")
+                            buildMasterBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -855,7 +887,7 @@ pipeline {
                         stage('Build Ubuntu binaries'){
                             steps {
                                 script {
-                                    buildMasterBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_RELEASE}", "${SPECTRECOIN_RELEASE}")
+                                    buildMasterBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                                 }
                             }
                             post {
@@ -871,7 +903,7 @@ pipeline {
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
-                                                        value: "${SPECTRECOIN_RELEASE}"
+                                                        value: "${SPECTRECOIN_VERSION}"
                                                 )
                                         ]
                                 )
@@ -956,8 +988,8 @@ pipeline {
                                             "github-release upload \\\n" +
                                             "    --user spectrecoin \\\n" +
                                             "    --repo spectre \\\n" +
-                                            "    --tag ${SPECTRECOIN_RELEASE} \\\n" +
-                                            "    --name \"Spectrecoin-${SPECTRECOIN_RELEASE}-macOS.dmg\" \\\n" +
+                                            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
+                                            "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-macOS.dmg\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
                                     sh "rm -f spectrecoin.dmg"
@@ -1123,12 +1155,28 @@ pipeline {
                                             fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
                                             fileRenameOperation(
                                                     source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
+                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/Spectrecoin.zip",
+                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
+                                            fileRenameOperation(
+                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
+                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
                                             folderRenameOperation(
                                                     source: "${WORKSPACE}/src/Spectrecoin",
                                                     destination: "${WORKSPACE}/src/bin")
                                     ])
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip, Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
                                 }
                             }
                         }
@@ -1138,7 +1186,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
@@ -1147,11 +1195,25 @@ pipeline {
                                             "github-release upload \\\n" +
                                             "    --user spectrecoin \\\n" +
                                             "    --repo spectre \\\n" +
-                                            "    --tag ${SPECTRECOIN_RELEASE} \\\n" +
-                                            "    --name \"Spectrecoin-${SPECTRECOIN_RELEASE}-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_RELEASE}.zip \\\n" +
+                                            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
+                                            "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip \\\n" +
                                             "    --replace"
-                                    sh "rm -f Spectrecoin-${SPECTRECOIN_RELEASE}.zip"
+                                    sh "rm -f Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
+                                            "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip \\\n" +
+                                            "    --replace"
+                                    sh "rm -f Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
                                 }
                             }
                             post {
