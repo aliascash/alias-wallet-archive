@@ -832,17 +832,16 @@ void SpectreBridge::newAddress(QString addressLabel, int addressType, QString ad
     // NOTE: unlock happens in addRow
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
     addressModel->populateAddressTable();
-    emit newAddressResult(rv);
 }
 
 //replica  of the above method for Javascript to diffrentiate when call backs are needed
-void SpectreBridge::newAddress_2(QString addressLabel, int addressType, QString address, bool send)
+void SpectreBridge::newAddressAsync(QString addressLabel, int addressType, QString address, bool send)
 {
     // Generate a new address to associate with given label
     // NOTE: unlock happens in addRow
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
     addressModel->populateAddressTable();
-    emit newAddress_2Result(rv);
+    emit newAddressResult(rv);
 }
 
 void SpectreBridge::lastAddressError()
@@ -876,13 +875,12 @@ void SpectreBridge::lastAddressError()
 QString SpectreBridge::getAddressLabel(QString address)
 {
     QString result = addressModel->atm->labelForAddress(address);
-    emit getAddressLabelResult(result);
     return result;
 }
 
-void SpectreBridge::getAddressLabel_2(QString address)
+void SpectreBridge::getAddressLabelAsync(QString address)
 {
-    emit getAddressLabel_2Result(addressModel->atm->labelForAddress(address));
+    emit getAddressLabelResult(addressModel->atm->labelForAddress(address));
 }
 
 void SpectreBridge::getAddressLabelToSendBalance(QString address)

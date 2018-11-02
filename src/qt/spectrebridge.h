@@ -111,11 +111,11 @@ public:
 
     /** Get the label belonging to an address */
     Q_INVOKABLE QString getAddressLabel(QString address);
-    Q_INVOKABLE void getAddressLabel_2(QString address);
+    Q_INVOKABLE void getAddressLabelAsync(QString address);
     Q_INVOKABLE void getAddressLabelToSendBalance(QString address);
     /** Create a new address or add an existing address to your Address book */
     Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
-    Q_INVOKABLE void newAddress_2(QString addressLabel, int addressType, QString address = "", bool send = false);
+    Q_INVOKABLE void newAddressAsync(QString addressLabel, int addressType, QString address = "", bool send = false);
     Q_INVOKABLE void lastAddressError();
     /** Get the full transaction details */
     Q_INVOKABLE void transactionDetails(QString txid);
@@ -197,7 +197,6 @@ signals:
     void txnDetailsResult(QVariantMap result);
 
     void newAddressResult(QString result);
-    void newAddress_2Result(QString result);
     void lastAddressErrorResult(QString result);
 
     void importFromMnemonicResult(QVariantMap result);
@@ -210,7 +209,6 @@ signals:
     void extKeySetActiveResult(QVariantMap result);
 
     void getAddressLabelResult(QString result);
-    void getAddressLabel_2Result(QString result);
     void getAddressLabelToSendBalanceResult(QString result);
     void createGroupChatResult(QString result);
 
