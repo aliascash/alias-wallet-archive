@@ -93,10 +93,8 @@ function connectSignals() {
   bridge.networkAlert.connect(networkAlert);
   bridge.getAddressLabelResult.connect(getAddressLabelResult);
   bridge.newAddressResult.connect(newAddressResult);
-  bridge.newAddress_2Result.connect(newAddress_2Result);
   bridge.lastAddressErrorResult.connect(lastAddressErrorResult);
   bridge.createGroupChatResult.connect(createGroupChatResult);
-  bridge.getAddressLabel_2Result.connect(getAddressLabel_2Result);
   bridge.getAddressLabelToSendBalanceResult.connect(getAddressLabelToSendBalanceResult);
 
   blockExplorerPage.connectSignals();
@@ -306,13 +304,16 @@ function clearSendAddress() {
   $("#new-send-address-error").text("");
   $("#new-send-address").removeClass("inputError");
 }
-function addSendAddress() {
-    var udataCur;
-    bridge.getAddressLabel(udataCur);
-}
+
 function getAddressLabelToSendBalanceResult(result) {
     $("#recipient1 .pay_to_label").val(result)
 }
+
+function addSendAddress() {
+    var udataCur = $("#new-send-address").val()
+    bridge.getAddressLabelAsync(udataCur);
+}
+
 function getAddressLabelResult(result) {
     console.log("getAddressLabelResult");
     var udataCur = result;
@@ -323,9 +324,9 @@ function getAddressLabelResult(result) {
       return $("#new-send-address-error").text('Error: address already in addressbook under "' + g + '"'), void $("#new-send-address").addClass("inputError");
     }
     var camelKey = 0;
-    bridge.newAddress_2(name, camelKey, udataCur, true);
+    bridge.newAddressAsync(name, camelKey, udataCur, true);
 }
-function newAddress_2Result(result) {
+function newAddressResult(result) {
     var udataCur = result;
     if (data = result, "" === data) {
       bridge.lastAddressError();
@@ -1192,9 +1193,9 @@ function openInviteModal() {
   if (0 == current_key.length) {
     return false;
   }
-  bridge.getAddressLabel_2(current_key);
+  bridge.getAddressLabelAsync(current_key);
 }
-function getAddressLabel_2Result(result) {
+function getAddressLabelResultGroup(result) {
     var display_id = result.replace("group_", "");
     $("#existing-group-name").val(display_id);
 }
