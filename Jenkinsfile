@@ -45,9 +45,16 @@ pipeline {
                     }
                     steps {
                         script {
-                            sh "cp ./Docker/Debian/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre", "--rm .")
-                            sh "rm Dockerfile"
+//                            sh "cp ./Docker/Debian/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre", "--rm .")
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Debian/Dockerfile_noUpload \\\n" +
+                                        "--rm \\\n" +
+                                        "-t spectreproject/spectre-debian:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -62,11 +69,18 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-//                            // So copy required Dockerfile to root dir for each build
-//                            sh "cp ./Docker/CentOS/Dockerfile_noUpload Dockerfile"
-//                            docker.build("spectreproject/spectre-centos", "--rm .")
-//                            sh "rm Dockerfile"
+////                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+////                            // So copy required Dockerfile to root dir for each build
+////                            sh "cp ./Docker/CentOS/Dockerfile_noUpload Dockerfile"
+////                            docker.build("spectreproject/spectre-centos", "--rm .")
+////                            sh "rm Dockerfile"
+//                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//                                sh "docker build \\\n" +
+//                                        "-f Docker/CentOS/Dockerfile_noUpload \\\n" +
+//                                        "--rm \\\n" +
+//                                        "-t spectreproject/spectre-centos:latest \\\n" +
+//                                        "."
+//                            }
 //                        }
 //                    }
 //                    post {
@@ -81,11 +95,18 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Fedora/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-fedora", "--rm .")
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Fedora/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-fedora", "--rm .")
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Fedora/Dockerfile_noUpload \\\n" +
+                                        "--rm \\\n" +
+                                        "-t spectreproject/spectre-fedora:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -101,11 +122,18 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/RaspberryPi/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-raspi", "--rm .")
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/RaspberryPi/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-raspi", "--rm .")
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/RaspberryPi/Dockerfile_noUpload \\\n" +
+                                        "--rm \\\n" +
+                                        "-t spectreproject/spectre-raspi:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -118,11 +146,18 @@ pipeline {
                 stage('Build Ubuntu binaries') {
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
-                            docker.build("spectreproject/spectre-ubuntu", "--rm .")
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Ubuntu/Dockerfile_noUpload Dockerfile"
+//                            docker.build("spectreproject/spectre-ubuntu", "--rm .")
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Ubuntu/Dockerfile_noUpload \\\n" +
+                                        "--rm \\\n" +
+                                        "-t spectreproject/spectre-ubuntu:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -429,14 +464,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Debian/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-debian",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Debian/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-debian",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Debian/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-debian:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -451,14 +496,24 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-//                            // So copy required Dockerfile to root dir for each build
-//                            sh "cp ./Docker/CentOS/Dockerfile ."
-//                            docker.build(
-//                                    "spectreproject/spectre-centos",
-//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-//                            )
-//                            sh "rm Dockerfile"
+////                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+////                            // So copy required Dockerfile to root dir for each build
+////                            sh "cp ./Docker/CentOS/Dockerfile ."
+////                            docker.build(
+////                                    "spectreproject/spectre-centos",
+////                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+////                            )
+////                            sh "rm Dockerfile"
+//                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//                                sh "docker build \\\n" +
+//                                        "-f Docker/CentOS/Dockerfile \\\n" +
+//                                        "--rm \\\n" +
+//                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+//                                        "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
+//                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+//                                        "-t spectreproject/spectre-centos:latest \\\n" +
+//                                        "."
+//                            }
 //                        }
 //                    }
 //                    post {
@@ -473,14 +528,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Fedora/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-fedora",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Fedora/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-fedora",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Fedora/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-fedora:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -495,14 +560,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/RaspberryPi/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-raspi",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/RaspberryPi/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-raspi",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/RaspberryPi/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-raspi:latest \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -519,14 +594,24 @@ pipeline {
                         stage('Build Ubuntu binaries'){
                             steps {
                                 script {
-                                    // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                                    // So copy required Dockerfile to root dir for each build
-                                    sh "cp ./Docker/Ubuntu/Dockerfile ."
-                                    docker.build(
-                                            "spectreproject/spectre-ubuntu",
-                                            "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                                    )
-                                    sh "rm Dockerfile"
+//                                    // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                                    // So copy required Dockerfile to root dir for each build
+//                                    sh "cp ./Docker/Ubuntu/Dockerfile ."
+//                                    docker.build(
+//                                            "spectreproject/spectre-ubuntu",
+//                                            "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_REPOSITORY=spectre --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                                    )
+//                                    sh "rm Dockerfile"
+                                    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                        sh "docker build \\\n" +
+                                        "-f Docker/Ubuntu/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-ubuntu:latest \\\n" +
+                                        "."
+                                    }
                                 }
                             }
                             post {
@@ -846,14 +931,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Debian/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-debian",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Debian/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-debian",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Debian/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-debian:${SPECTRECOIN_RELEASE} \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -868,14 +963,24 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-//                            // So copy required Dockerfile to root dir for each build
-//                            sh "cp ./Docker/CentOS/Dockerfile ."
-//                            docker.build(
-//                                    "spectreproject/spectre-centos",
-//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-//                            )
-//                            sh "rm Dockerfile"
+////                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+////                            // So copy required Dockerfile to root dir for each build
+////                            sh "cp ./Docker/CentOS/Dockerfile ."
+////                            docker.build(
+////                                    "spectreproject/spectre-centos",
+////                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+////                            )
+////                            sh "rm Dockerfile"
+//                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+//                                sh "docker build \\\n" +
+//                                        "-f Docker/CentOS/Dockerfile \\\n" +
+//                                        "--rm \\\n" +
+//                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+//                                        "--build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} \\\n" +
+//                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+//                                        "-t spectreproject/spectre-centos:${SPECTRECOIN_RELEASE} \\\n" +
+//                                        "."
+//                            }
 //                        }
 //                    }
 //                    post {
@@ -890,14 +995,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/Fedora/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-fedora",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/Fedora/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-fedora",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/Fedora/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-fedora:${SPECTRECOIN_RELEASE} \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -912,14 +1027,24 @@ pipeline {
                     }
                     steps {
                         script {
-                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                            // So copy required Dockerfile to root dir for each build
-                            sh "cp ./Docker/RaspberryPi/Dockerfile ."
-                            docker.build(
-                                    "spectreproject/spectre-raspi",
-                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                            )
-                            sh "rm Dockerfile"
+//                            // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                            // So copy required Dockerfile to root dir for each build
+//                            sh "cp ./Docker/RaspberryPi/Dockerfile ."
+//                            docker.build(
+//                                    "spectreproject/spectre-raspi",
+//                                    "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                            )
+//                            sh "rm Dockerfile"
+                            withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                sh "docker build \\\n" +
+                                        "-f Docker/RaspberryPi/Dockerfile \\\n" +
+                                        "--rm \\\n" +
+                                        "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                        "--build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} \\\n" +
+                                        "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                        "-t spectreproject/spectre-raspi:${SPECTRECOIN_RELEASE} \\\n" +
+                                        "."
+                            }
                         }
                     }
                     post {
@@ -936,14 +1061,24 @@ pipeline {
                         stage('Build Ubuntu binaries'){
                             steps {
                                 script {
-                                    // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
-                                    // So copy required Dockerfile to root dir for each build
-                                    sh "cp ./Docker/Ubuntu/Dockerfile ."
-                                    docker.build(
-                                            "spectreproject/spectre-ubuntu",
-                                            "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
-                                    )
-                                    sh "rm Dockerfile"
+//                                    // Copy step on Dockerfile is not working if Dockerfile is not located on root dir!
+//                                    // So copy required Dockerfile to root dir for each build
+//                                    sh "cp ./Docker/Ubuntu/Dockerfile ."
+//                                    docker.build(
+//                                            "spectreproject/spectre-ubuntu",
+//                                            "--rm --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} --build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} --build-arg REPLACE_EXISTING_ARCHIVE=--replace ."
+//                                    )
+//                                    sh "rm Dockerfile"
+                                    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+                                        sh "docker build \\\n" +
+                                                "-f Docker/Ubuntu/Dockerfile \\\n" +
+                                                "--rm \\\n" +
+                                                "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                                "--build-arg SPECTRECOIN_RELEASE=${SPECTRECOIN_RELEASE} \\\n" +
+                                                "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                                                "-t spectreproject/spectre-ubuntu:${SPECTRECOIN_RELEASE} \\\n" +
+                                                "."
+                                    }
                                 }
                             }
                             post {
