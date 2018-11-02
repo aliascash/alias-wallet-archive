@@ -38,25 +38,19 @@ pipeline {
                     anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
                 }
             }
-            steps {
-                buildFeatureBranch()
-            }
+            buildFeatureBranch()
         }
         stage('Build and upload (develop)') {
             when {
                 anyOf { branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
             }
-            steps {
-                buildDevelopBranch()
-            }
+            buildDevelopBranch()
         }
         stage('Build and upload (release)') {
             when {
                 branch 'master'
             }
-            steps {
-                buildMasterBranch()
-            }
+            buildMasterBranch()
         }
     }
     post {
