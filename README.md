@@ -1,5 +1,6 @@
 # Spectrecoin
 [![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre) [![HitCount](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre.svg)](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre)
+[![Build Status](https://ci.spectreproject.io/buildStatus/icon?job=Spectrecoin/spectre/develop)](https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/)
 
 Spectrecoin is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
@@ -8,8 +9,9 @@ un-traceable and anonymous transactions on its underlaying blockchain and also p
 the users identity by running all the network nodes as Tor hidden services.
 
 # Social
-- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC).
-- Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
+- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC)
+- Please join us on our [Discord](https://discord.gg/ckkrb8m) server
+- Read the latest [Newsletter](https://news.spectreproject.io/)
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
 ## Key Privacy Technology
@@ -93,7 +95,7 @@ To _build_ Spectrecoin (build time dependencies):
  * Fedora - https://github.com/spectrecoin/spectre-builder/blob/develop/Fedora/Dockerfile
  * RasperryPi - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile
  * Ubuntu - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile
-  
+
 To _run_ Spectrecoin (run time dependencies):
  * Debian - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile
  * Fedora - https://github.com/spectrecoin/spectre-base/blob/develop/Fedora/Dockerfile
