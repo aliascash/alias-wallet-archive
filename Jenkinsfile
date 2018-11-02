@@ -237,53 +237,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
-
-                                    if (exists) {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
-                                                        userName: ''),
-                                                fileUnZipOperation(
-                                                        filePath: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: '.'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'leveldb',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'packages64bit',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'src',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'tor',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
-                                                folderDeleteOperation(
-                                                        './Spectre.Prebuild.libraries'
-                                                )
-                                        ])
-                                    }
-                                    exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
-                                                        userName: '')
-                                        ])
-                                    }
+                                    prepareWindowsBuild()
                                 }
                             }
                         }
@@ -307,83 +261,12 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
-                                    // If directory 'Spectrecoin' exists from brevious build, remove it
-                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
-                                    if (exists) {
-                                        fileOperations([
-                                                folderDeleteOperation(
-                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
-                                        ])
-                                    }
-                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-                                    fileOperations([
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/bin",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            folderCreateOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                    ])
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                        ])
-                                    }
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
-                                        ])
-                                    }
-                                    // Remove directory with artifacts from previous build
-                                    // Create new delivery archive
-                                    // Rename build directory back to initial name
-                                    fileOperations([
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest-OBFS4-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin",
-                                                    destination: "${WORKSPACE}/src/bin")
-                                    ])
+                                    createWindowsDelivery('latest')
 // No upload on feature branches, only from develop and master
 //                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip'
-//                                }
-//                            }
-//                        }
+                                }
+                            }
+                        }
 //                        stage('Upload delivery') {
 //                            agent {
 //                                label "housekeeping"
@@ -409,9 +292,9 @@ pipeline {
 //                            post {
 //                                always {
 //                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
+//                                }
+//                            }
+//                        }
                     }
                 }
             }
@@ -636,53 +519,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
-
-                                    if (exists) {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
-                                                        userName: ''),
-                                                fileUnZipOperation(
-                                                        filePath: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: '.'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'leveldb',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'packages64bit',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'src',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'tor',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
-                                                folderDeleteOperation(
-                                                        './Spectre.Prebuild.libraries'
-                                                )
-                                        ])
-                                    }
-                                    exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
-                                                        userName: '')
-                                        ])
-                                    }
+                                    prepareWindowsBuild()
                                 }
                             }
                         }
@@ -706,78 +543,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
-                                    // If directory 'Spectrecoin' exists from brevious build, remove it
-                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
-                                    if (exists) {
-                                        fileOperations([
-                                                folderDeleteOperation(
-                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
-                                        ])
-                                    }
-                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-                                    fileOperations([
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/bin",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            folderCreateOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                    ])
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                        ])
-                                    }
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin-latest.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin-latest.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin-latest.zip"),
-                                        ])
-                                    }
-                                    // Remove directory with artifacts from previous build
-                                    // Create new delivery archive
-                                    // Rename build directory back to initial name
-                                    fileOperations([
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-latest-OBFS4-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin",
-                                                    destination: "${WORKSPACE}/src/bin")
-                                    ])
+                                    createWindowsDelivery('latest')
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip"
                                 }
                             }
@@ -1034,53 +800,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
-
-                                    if (exists) {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
-                                                        userName: ''),
-                                                fileUnZipOperation(
-                                                        filePath: 'Spectre.Prebuild.libraries.zip',
-                                                        targetLocation: '.'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'leveldb',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'packages64bit',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'src',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
-                                                folderCopyOperation(
-                                                        destinationFolderPath: 'tor',
-                                                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
-                                                folderDeleteOperation(
-                                                        './Spectre.Prebuild.libraries'
-                                                )
-                                        ])
-                                    }
-                                    exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
-                                                        userName: '')
-                                        ])
-                                    }
+                                    prepareWindowsBuild()
                                 }
                             }
                         }
@@ -1104,78 +824,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
-                                    // If directory 'Spectrecoin' exists from brevious build, remove it
-                                    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
-                                    if (exists) {
-                                        fileOperations([
-                                                folderDeleteOperation(
-                                                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
-                                        ])
-                                    }
-                                    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-                                    fileOperations([
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/bin",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin"),
-                                            folderCreateOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                    ])
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-                                        ])
-                                    }
-                                    // If archive from previous build exists, move it to directory 'old'
-                                    exists = fileExists "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip"
-                                    if (exists) {
-                                        fileOperations([
-                                                fileRenameOperation(
-                                                        source: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}.zip",
-                                                        destination: "${WORKSPACE}/old/Spectrecoin-${SPECTRECOIN_VERSION}.zip"),
-                                        ])
-                                    }
-                                    // Remove directory with artifacts from previous build
-                                    // Create new delivery archive
-                                    // Rename build directory back to initial name
-                                    fileOperations([
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/old"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/Spectrecoin.zip",
-                                                    destination: "${WORKSPACE}/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
-                                            fileRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
-                                                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-                                            folderRenameOperation(
-                                                    source: "${WORKSPACE}/src/Spectrecoin",
-                                                    destination: "${WORKSPACE}/src/bin")
-                                    ])
+                                    createWindowsDelivery("${SPECTRECOIN_VERSION}")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip, Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
                                 }
                             }
@@ -1324,4 +973,129 @@ def buildMasterBranch(String dockerfile, String tag, String release){
                 "-t ${tag} \\\n" +
                 "."
     }
+}
+
+def prepareWindowsBuild() {
+    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
+
+    if (exists) {
+        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
+    } else {
+        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
+        fileOperations([
+                fileDownloadOperation(
+                        password: '',
+                        targetFileName: 'Spectre.Prebuild.libraries.zip',
+                        targetLocation: "${WORKSPACE}",
+                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
+                        userName: ''),
+                fileUnZipOperation(
+                        filePath: 'Spectre.Prebuild.libraries.zip',
+                        targetLocation: '.'),
+                folderCopyOperation(
+                        destinationFolderPath: 'leveldb',
+                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
+                folderCopyOperation(
+                        destinationFolderPath: 'packages64bit',
+                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
+                folderCopyOperation(
+                        destinationFolderPath: 'src',
+                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
+                folderCopyOperation(
+                        destinationFolderPath: 'tor',
+                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
+                folderDeleteOperation(
+                        './Spectre.Prebuild.libraries'
+                )
+        ])
+    }
+    exists = fileExists 'Tor.zip'
+    if (exists) {
+        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+    } else {
+        echo 'Archive \'Tor.zip\' not found, downloading...'
+        fileOperations([
+                fileDownloadOperation(
+                        password: '',
+                        targetFileName: 'Tor.zip',
+                        targetLocation: "${WORKSPACE}",
+                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
+                        userName: '')
+        ])
+    }
+}
+
+def createWindowsDelivery(String version) {
+    // Unzip Tor and remove debug content
+    fileOperations([
+            fileUnZipOperation(
+                    filePath: "${WORKSPACE}/Tor.zip",
+                    targetLocation: "${WORKSPACE}/"),
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/src/bin/debug"),
+    ])
+    // If directory 'Spectrecoin' exists from brevious build, remove it
+    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+    if (exists) {
+        fileOperations([
+                folderDeleteOperation(
+                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+        ])
+    }
+    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
+    fileOperations([
+            folderRenameOperation(
+                    source: "${WORKSPACE}/src/bin",
+                    destination: "${WORKSPACE}/src/Spectrecoin"),
+            folderCreateOperation(
+                    folderPath: "${WORKSPACE}/old"),
+    ])
+    // If archive from previous build exists, move it to directory 'old'
+    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+        ])
+    }
+    // If archive from previous build exists, move it to directory 'old'
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin-${version}.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}.zip"),
+        ])
+    }
+    // Remove directory with artifacts from previous build
+    // Create new delivery archive
+    // Rename build directory back to initial name
+    fileOperations([
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/old"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/Spectrecoin.zip",
+                    destination: "${WORKSPACE}/Spectrecoin-${version}-WIN64.zip"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
+                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/Spectrecoin.zip",
+                    destination: "${WORKSPACE}/Spectrecoin-${version}-OBFS4-WIN64.zip"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
+                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
+                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+            folderRenameOperation(
+                    source: "${WORKSPACE}/src/Spectrecoin",
+                    destination: "${WORKSPACE}/src/bin")
+    ])
 }
