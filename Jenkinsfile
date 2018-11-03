@@ -513,8 +513,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip")
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip", "latest")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip", "latest")
                                 }
                             }
                             post {
@@ -761,8 +761,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip")
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip", "${SPECTRECOIN_VERSION}")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip", "${SPECTRECOIN_VERSION}")
                                 }
                             }
                             post {
@@ -1045,7 +1045,7 @@ def createWindowsDelivery(String version) {
     ])
 }
 
-def uploadArtifactToGitHub(String url, String artifact) {
+def uploadArtifactToGitHub(String url, String artifact, String version) {
     sh "wget ${url}/${artifact}"
     sh "docker run \\\n" +
             "--rm \\\n" +
@@ -1055,7 +1055,7 @@ def uploadArtifactToGitHub(String url, String artifact) {
             "github-release upload \\\n" +
             "    --user spectrecoin \\\n" +
             "    --repo spectre \\\n" +
-            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
+            "    --tag ${version} \\\n" +
             "    --name \"${artifact}\" \\\n" +
             "    --file /filesToUpload/${artifact} \\\n" +
             "    --replace"
