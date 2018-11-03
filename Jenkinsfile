@@ -1075,7 +1075,9 @@ def createWindowsDelivery(String version) {
     fileOperations([
             folderDeleteOperation(
                     folderPath: "${WORKSPACE}/old"),
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
+    ])
+    fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
                     destination: "${WORKSPACE}/Spectrecoin-${version}-WIN64.zip"),
@@ -1085,7 +1087,9 @@ def createWindowsDelivery(String version) {
             fileRenameOperation(
                     source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
                     destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
+    ])
+    fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
                     destination: "${WORKSPACE}/Spectrecoin-${version}-OBFS4-WIN64.zip"),
