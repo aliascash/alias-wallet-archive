@@ -513,8 +513,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip")
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip")
                                 }
                             }
                             post {
