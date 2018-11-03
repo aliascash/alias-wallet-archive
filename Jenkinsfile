@@ -142,28 +142,7 @@ pipeline {
                         stage('Prepare delivery') {
                             steps {
                                 script {
-                                    def exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
-                                                        userName: '')
-                                        ])
-                                    }
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
+                                    prepareMacDelivery()
                                 }
                             }
                         }
@@ -425,28 +404,7 @@ pipeline {
                         stage('Prepare delivery') {
                             steps {
                                 script {
-                                    def exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
-                                                        userName: '')
-                                        ])
-                                    }
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
+                                    prepareMacDelivery()
                                 }
                             }
                         }
@@ -555,33 +513,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest-WIN64.zip"
-                                    sh "docker run \\\n" +
-                                            "--rm \\\n" +
-                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-                                            "spectreproject/github-uploader:latest \\\n" +
-                                            "github-release upload \\\n" +
-                                            "    --user spectrecoin \\\n" +
-                                            "    --repo spectre \\\n" +
-                                            "    --tag latest \\\n" +
-                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-latest-WIN64.zip \\\n" +
-                                            "    --replace"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest-OBFS4-WIN64.zip"
-                                    sh "docker run \\\n" +
-                                            "--rm \\\n" +
-                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-                                            "spectreproject/github-uploader:latest \\\n" +
-                                            "github-release upload \\\n" +
-                                            "    --user spectrecoin \\\n" +
-                                            "    --repo spectre \\\n" +
-                                            "    --tag latest \\\n" +
-                                            "    --name \"Spectrecoin-latest-OBFS4-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-latest-OBFS4-WIN64.zip \\\n" +
-                                            "    --replace"
-                                    sh "rm -f Spectrecoin*.zip"
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip")
                                 }
                             }
                             post {
@@ -720,28 +653,7 @@ pipeline {
                         stage('Prepare delivery') {
                             steps {
                                 script {
-                                    def exists = fileExists 'Tor.zip'
-                                    if (exists) {
-                                        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-                                    } else {
-                                        echo 'Archive \'Tor.zip\' not found, downloading...'
-                                        fileOperations([
-                                                fileDownloadOperation(
-                                                        password: '',
-                                                        targetFileName: 'Tor.zip',
-                                                        targetLocation: "${WORKSPACE}",
-                                                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
-                                                        userName: '')
-                                        ])
-                                    }
-                                    // Unzip Tor and remove debug content
-                                    fileOperations([
-                                            fileUnZipOperation(
-                                                    filePath: "${WORKSPACE}/Tor.zip",
-                                                    targetLocation: "${WORKSPACE}/"),
-                                            folderDeleteOperation(
-                                                    folderPath: "${WORKSPACE}/src/bin/debug"),
-                                    ])
+                                    prepareMacDelivery()
                                 }
                             }
                         }
@@ -849,33 +761,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"
-                                    sh "docker run \\\n" +
-                                            "--rm \\\n" +
-                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-                                            "spectreproject/github-uploader:latest \\\n" +
-                                            "github-release upload \\\n" +
-                                            "    --user spectrecoin \\\n" +
-                                            "    --repo spectre \\\n" +
-                                            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
-                                            "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip \\\n" +
-                                            "    --replace"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
-                                    sh "docker run \\\n" +
-                                            "--rm \\\n" +
-                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-                                            "spectreproject/github-uploader:latest \\\n" +
-                                            "github-release upload \\\n" +
-                                            "    --user spectrecoin \\\n" +
-                                            "    --repo spectre \\\n" +
-                                            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
-                                            "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip \\\n" +
-                                            "    --replace"
-                                    sh "rm -f Spectrecoin*.zip"
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact", "Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip")
                                 }
                             }
                             post {
@@ -986,6 +873,31 @@ def buildMasterBranch(String dockerfile, String tag, String release) {
                 "-t ${tag} \\\n" +
                 "."
     }
+}
+
+def prepareMacDelivery() {
+    def exists = fileExists 'Tor.zip'
+    if (exists) {
+        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+    } else {
+        echo 'Archive \'Tor.zip\' not found, downloading...'
+        fileOperations([
+                fileDownloadOperation(
+                        password: '',
+                        targetFileName: 'Tor.zip',
+                        targetLocation: "${WORKSPACE}",
+                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
+                        userName: '')
+        ])
+    }
+    // Unzip Tor and remove debug content
+    fileOperations([
+            fileUnZipOperation(
+                    filePath: "${WORKSPACE}/Tor.zip",
+                    targetLocation: "${WORKSPACE}/"),
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/src/bin/debug"),
+    ])
 }
 
 def prepareWindowsBuild() {
@@ -1131,4 +1043,21 @@ def createWindowsDelivery(String version) {
                     source: "${WORKSPACE}/src/Spectrecoin",
                     destination: "${WORKSPACE}/src/bin")
     ])
+}
+
+def uploadArtifactToGitHub(String url, String artifact) {
+    sh "wget ${url}/${artifact}"
+    sh "docker run \\\n" +
+            "--rm \\\n" +
+            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+            "spectreproject/github-uploader:latest \\\n" +
+            "github-release upload \\\n" +
+            "    --user spectrecoin \\\n" +
+            "    --repo spectre \\\n" +
+            "    --tag ${SPECTRECOIN_VERSION} \\\n" +
+            "    --name \"${artifact}\" \\\n" +
+            "    --file /filesToUpload/${artifact} \\\n" +
+            "    --replace"
+    sh "rm -f ${artifact}"
 }
