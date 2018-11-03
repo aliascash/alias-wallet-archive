@@ -12,7 +12,7 @@ pipeline {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = 'xyz'
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
-        SPECTRECOIN_VERSION='2.2.0'
+        SPECTRECOIN_VERSION = '2.2.0'
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
     }
     stages {
@@ -129,13 +129,13 @@ pipeline {
                                 script {
                                     sh "pwd"
                                     sh "./autogen.sh\n" +
-                                        "cd db4.8/build_unix/\n" +
-                                        "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                        "cd ../../leveldb/\n" +
-                                        "./build_detect_platform build_config.mk ./ && make\n" +
-                                        "cd ../\n" +
-                                        "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                        "make -j2"
+                                            "cd db4.8/build_unix/\n" +
+                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                            "cd ../../leveldb/\n" +
+                                            "./build_detect_platform build_config.mk ./ && make\n" +
+                                            "cd ../\n" +
+                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                            "make -j2"
                                 }
                             }
                         }
@@ -368,8 +368,8 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    stages{
-                        stage('Build Ubuntu binaries'){
+                    stages {
+                        stage('Build Ubuntu binaries') {
                             steps {
                                 script {
                                     buildDevelopBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest')
@@ -381,7 +381,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Docker image build'){
+                        stage('Trigger Docker image build') {
                             steps {
                                 build(
                                         job: 'Spectrecoin/docker-spectrecoind/develop',
@@ -650,8 +650,8 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    stages{
-                        stage('Build Ubuntu binaries'){
+                    stages {
+                        stage('Build Ubuntu binaries') {
                             steps {
                                 script {
                                     buildMasterBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
@@ -663,7 +663,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Docker image build'){
+                        stage('Trigger Docker image build') {
                             steps {
                                 build(
                                         job: 'Spectrecoin/docker-spectrecoind/master',
@@ -940,7 +940,7 @@ pipeline {
     }
 }
 
-def buildFeatureBranch(String dockerfile, String tag){
+def buildFeatureBranch(String dockerfile, String tag) {
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
         sh "docker build \\\n" +
                 "-f $dockerfile \\\n" +
@@ -950,7 +950,7 @@ def buildFeatureBranch(String dockerfile, String tag){
     }
 }
 
-def buildDevelopBranch(String dockerfile, String tag){
+def buildDevelopBranch(String dockerfile, String tag) {
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
         sh "docker build \\\n" +
                 "-f $dockerfile \\\n" +
@@ -963,7 +963,7 @@ def buildDevelopBranch(String dockerfile, String tag){
     }
 }
 
-def buildMasterBranch(String dockerfile, String tag, String release){
+def buildMasterBranch(String dockerfile, String tag, String release) {
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
         sh "docker build \\\n" +
                 "-f $dockerfile \\\n" +
