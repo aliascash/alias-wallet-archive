@@ -464,6 +464,7 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    sh "rm -f Spectrecoin.dmg*"
                                     sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
@@ -477,7 +478,7 @@ pipeline {
                                             "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
-                                    sh "rm -f spectrecoin.dmg"
+                                    sh "rm -f Spectrecoin.dmg*"
                                 }
                             }
                             post {
@@ -745,6 +746,7 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    sh "rm -f Spectrecoin.dmg*"
                                     sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
@@ -758,7 +760,6 @@ pipeline {
                                             "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-macOS.dmg\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
-                                    sh "rm -f spectrecoin.dmg"
                                 }
                             }
                             post {
