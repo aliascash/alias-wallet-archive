@@ -1069,6 +1069,22 @@ def createWindowsDelivery(String version) {
                         destination: "${WORKSPACE}/old/Spectrecoin-${version}.zip"),
         ])
     }
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-WIN64.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin-${version}-WIN64.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-WIN64.zip"),
+        ])
+    }
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-OBFS4-WIN64.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin-${version}-OBFS4-WIN64.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-OBFS4-WIN64.zip"),
+        ])
+    }
     // Remove directory with artifacts from previous build
     // Create new delivery archive
     // Rename build directory back to initial name
