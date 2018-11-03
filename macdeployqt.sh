@@ -8,7 +8,7 @@ if [ -z "${QT_PATH}" ] ; then
     QT_PATH=~/Qt/5.9.6/clang_64
 fi
 if [ -z "${OPENSSL_PATH}" ] ; then
-    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.0i
+    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1
 fi
 if [ -e Spectrecoin.dmg ] ; then
     rm -f Spectrecoin.dmg
