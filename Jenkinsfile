@@ -836,6 +836,18 @@ pipeline {
                     webhookURL: "${DISCORD_WEBHOOK}"
             )
         }
+        aborted {
+            discordSend(
+                    description: "Build #$env.BUILD_NUMBER was aborted",
+                    image: '',
+                    link: "$env.BUILD_URL",
+                    successful: true,
+                    result: "ABORTED",
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: "${DISCORD_WEBHOOK}"
+            )
+        }
     }
 }
 
