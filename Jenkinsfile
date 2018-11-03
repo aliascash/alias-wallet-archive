@@ -555,7 +555,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest-WIN64.zip"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
                                             "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
@@ -566,9 +566,22 @@ pipeline {
                                             "    --repo spectre \\\n" +
                                             "    --tag latest \\\n" +
                                             "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
-                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-latest-WIN64.zip \\\n" +
                                             "    --replace"
-                                    sh "rm -f Spectrecoin-latest.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-latest-OBFS4-WIN64.zip"
+                                    sh "docker run \\\n" +
+                                            "--rm \\\n" +
+                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
+                                            "spectreproject/github-uploader:latest \\\n" +
+                                            "github-release upload \\\n" +
+                                            "    --user spectrecoin \\\n" +
+                                            "    --repo spectre \\\n" +
+                                            "    --tag latest \\\n" +
+                                            "    --name \"Spectrecoin-latest-OBFS4-WIN64.zip\" \\\n" +
+                                            "    --file /filesToUpload/Spectrecoin-latest-OBFS4-WIN64.zip \\\n" +
+                                            "    --replace"
+                                    sh "rm -f Spectrecoin*.zip"
                                 }
                             }
                             post {
@@ -849,7 +862,6 @@ pipeline {
                                             "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip \\\n" +
                                             "    --replace"
-                                    sh "rm -f Spectrecoin-${SPECTRECOIN_VERSION}-WIN64.zip"
                                     sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/master/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
                                     sh "docker run \\\n" +
                                             "--rm \\\n" +
@@ -863,7 +875,7 @@ pipeline {
                                             "    --name \"Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip \\\n" +
                                             "    --replace"
-                                    sh "rm -f Spectrecoin-${SPECTRECOIN_VERSION}-OBFS4-WIN64.zip"
+                                    sh "rm -f Spectrecoin*.zip"
                                 }
                             }
                             post {
