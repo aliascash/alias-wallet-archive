@@ -1035,20 +1035,49 @@ def createWindowsDelivery(String version) {
             folderDeleteOperation(
                     folderPath: "${WORKSPACE}/src/bin/debug"),
     ])
-
     // If directory 'Spectrecoin' exists from brevious build, remove it
-    sh "rm -rf ${WORKSPACE}/src/Spectrecoin"
-
-    // If archive from previous build exists, remove them
-    sh "rm -f ${WORKSPACE}/Spectrecoin*.zip"
-
+    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
+    if (exists) {
+        fileOperations([
+                folderDeleteOperation(
+                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
+        ])
+    }
     // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-    sh "mv ${WORKSPACE}/src/bin ${WORKSPACE}/src/Spectrecoin"
-
+    fileOperations([
+            folderRenameOperation(
+                    source: "${WORKSPACE}/src/bin",
+                    destination: "${WORKSPACE}/src/Spectrecoin"),
+            folderCreateOperation(
+                    folderPath: "${WORKSPACE}/old"),
+    ])
+    // If archive from previous build exists, move it to directory 'old'
+    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
+        ])
+    }
+    // If archive from previous build exists, move it to directory 'old'
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}.zip"
+    if (exists) {
+        fileOperations([
+                fileRenameOperation(
+                        source: "${WORKSPACE}/Spectrecoin-${version}.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}.zip"),
+        ])
+    }
+    // Remove directory with artifacts from previous build
     // Create new delivery archive
     // Rename build directory back to initial name
     fileOperations([
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/old"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
+    ])
+    fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
                     destination: "${WORKSPACE}/Spectrecoin-${version}-WIN64.zip"),
@@ -1058,7 +1087,9 @@ def createWindowsDelivery(String version) {
             fileRenameOperation(
                     source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
                     destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin"),
+            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
+    ])
+    fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
                     destination: "${WORKSPACE}/Spectrecoin-${version}-OBFS4-WIN64.zip"),
