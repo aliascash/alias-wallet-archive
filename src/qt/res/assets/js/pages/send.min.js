@@ -75,6 +75,7 @@ $(function() {
       $("#send-balance .amount").val("0").change();
       initialize();
       init();
+      resetGlobalVariables();
     }
     function setup(element) {
       if (parent() <= 1) {
@@ -89,9 +90,7 @@ $(function() {
       }
     }
       function resetGlobalVariables() {
-          validateAddressResultBool = undefined;
-          sendCoinsResultBool = undefined;
-          addRecipientResultBool = undefined;
+          numOfRecipients = 0;
       }
 
       function sendCoinsClicked() {
@@ -99,69 +98,45 @@ $(function() {
           update();
       }
 
-    function update(sendCoinsResult, validateAddressResult, addRecipientResult) {
-      function check() {
-        var context = $(this).find(".pay_to");
-        var jElm = $(this).find(".amount");
-          if (typeof validateAddressResult === 'undefined' && typeof addRecipientResult === 'undefined') {
-              bridge.validateAddress(context.val());
-              return
-          }
+    function update(sendCoinsResult, addRecipientResult) {
+        function addRecipient() {
+            numOfRecipients++;
 
-          if (validateAddressResult !== 'undefined') {
-              if (validateAddressResult === false) {
-                  resetGlobalVariables();
-              }
-          }
+            var context = $(this).find(".pay_to");
+            var jElm = $(this).find(".amount");
 
-          if (validateAddressResult && typeof addRecipientResult === 'undefined') {
-              var narration = $(this).find(".narration").val();
-              // Fix if narration is undefined, addRecipient was never called on QT bridge (QT 5.9.6)
-              if (typeof narration === 'undefined') {
-                  narration = "";
-              }
-              bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), narration, unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val());
-              return
-          }
-
-          if (typeof validateAddressResult === 'undefined' || typeof addRecipientResult === 'undefined') {
-              return
-          }
-
-        if (tag = tag && invalid(context, validateAddressResult), 0 != unit.parse(jElm.val()) || (invalid(jElm) || (tag = false)), !tag || !addRecipientResult) {
-          return false;
+            var narration = $(this).find(".narration").val();
+            // Fix if narration is undefined, addRecipient was never called on QT bridge (QT 5.9.6)
+            if (typeof narration === 'undefined') {
+                narration = "";
+            }
+            bridge.addRecipient(context.val(), $(this).find(".pay_to_label").val(), narration, unit.parse(jElm.val(), $(this).find(".unit").val()), datas, $("#ring_size").val());
         }
-      }
-      var datas = load();
-      var tag = true;
-      if (typeof validateAddressResult === 'undefined') {
-        bridge.userAction(["clearRecipients"]);
-      }
-      if ($("#send-balance").is(":visible")) {
-        $("#send-balance").each(check);
-      } else {
-        $("div.recipient").each(check);
-      }
-      if (tag) {
-          console.log(validateAddressResult, addRecipientResult, sendCoinsResult);
-          if (typeof validateAddressResult === 'undefined' || typeof addRecipientResult === 'undefined') {
-              //wait for the results of these two to come back from C++ then to move forward to send coins
-              return;
-          }
 
-          if (typeof validateAddressResult !== 'undefined' && typeof addRecipientResult !== 'undefined' && typeof sendCoinsResult === 'undefined') {
-              bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())
-              return;
-          }
-
-          if (typeof sendCoinsResult !== 'undefined') {
-              resetGlobalVariables();
-          }
-
-        if (sendCoinsResult) {
-          reset();
+        if (typeof sendCoinsResult !== 'undefined') {
+            if (sendCoinsResult) {
+                reset();
+            }
         }
-      }
+        else if (typeof addRecipientResult !== 'undefined' ) {
+            if (addRecipientResult) {
+                numOfRecipients--;
+            }
+            if (numOfRecipients == 0) {
+                bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())
+            }
+        }
+        else {
+            var datas = load();
+            if (typeof validateAddressResult === 'undefined') {
+                bridge.userAction(["clearRecipients"]);
+            }
+            if ($("#send-balance").is(":visible")) {
+                $("#send-balance").each(addRecipient);
+            } else {
+                $("div.recipient").each(addRecipient);
+            }
+        }
     }
     function toggle(e) {
       var toggle = $("#send-main").is(":visible");
