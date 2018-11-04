@@ -128,9 +128,9 @@ $(function() {
         }
         else {
             var datas = load();
-            if (typeof validateAddressResult === 'undefined') {
-                bridge.userAction(["clearRecipients"]);
-            }
+
+            bridge.userAction(["clearRecipients"]);
+
             if ($("#send-balance").is(":visible")) {
                 $("#send-balance").each(addRecipient);
             } else {
