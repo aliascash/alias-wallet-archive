@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -579,7 +579,6 @@ downloaded 0 blocks of history..."></progress>
                                 <h4 class="translate uppercase" style=font-weight:bolder>Send</h4>
                             </div>
                             <div class="p-t-10 pull-right show-advanced-controls">
-                            <button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),$(this).html(($(this).text() == " Advanced Options") ? $(this).html().replace("Advanced","Basic") : $(this).html().replace("Basic","Advanced")),sendPage.changeTransactionType()'><i class="fa fa-wrench"></i> Advanced Options</button></div>
                             <div class="p-t-10 pull-right show-coin-control"><button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),sendPage.toggleCoinControl()'><i class="fa fa-repeat"></i> Coin Control</button></div>
                             <div class=container-fluid>
                                 <div class=navbar-header></div>
@@ -672,7 +671,7 @@ downloaded 0 blocks of history..."></progress>
                                         <div class=tab-pane id=send-balance>
                                             <div class=row>
                                                 <div class=col-md-12>
-                                                    <div class="form-group advanced_controls"><label class="col-sm-3 p-l-20 control-label translate">Pay to <a href=#><i class="p-b-5 fa fa-question-circle" data-title="The address transfer the balance to" style=color:#626262></i></a></label>
+                                                    <div class="form-group"><label class="col-sm-3 p-l-20 control-label translate">Pay to <a href=#><i class="p-b-5 fa fa-question-circle" data-title="The address transfer the balance to" style=color:#626262></i></a></label>
                                                         <div class=col-sm-9>
                                                             <div class=row>
                                                                 <div class=col-sm-6><input class="form-control pay_to" data-title="The address to transfer the balance to" placeholder="The address to transfer the balance to" maxlength=128 oninput=base58.check(this) onchange='$("#send-balance .pay_to_label").text(bridge.getAddressLabel(this.value))'></div>

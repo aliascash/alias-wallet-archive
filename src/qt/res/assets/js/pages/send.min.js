@@ -184,10 +184,9 @@ $(function() {
       $("#to_balance").toggle(!toggle);
       $(".show-coin-control").toggle(ok < 1);
       sendPage.toggleCoinControl(ok < 0);
-      var active = $(".show-advanced-controls .btn-cons").hasClass("active");
+      var active = false; // no advance mode $(".show-advanced-controls .btn-cons").hasClass("active");
       $(".advanced_controls").toggle(active);
-      $("#tx_ringsize,#suggest_ring_size").toggle((!bridge.info.options || 1 != bridge.info.options.AutoRingSize) && (ok > 1 && active));
-      $("#add_recipient").toggle($("#send-main").is(":visible") && active);
+      $("#add_recipient").toggle($("#send-main").is(":visible"));
 
       if ("private" === OPEN) {
         $("#tx_ringsize").show();
