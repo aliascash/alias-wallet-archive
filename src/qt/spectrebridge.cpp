@@ -569,19 +569,19 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
         case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Only SPECTRE can be send to a stealth address."),
+                tr("Only SPECTRE from your Private balance can be send to a stealth address."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your  account."),
+                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your  account."),
+                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
