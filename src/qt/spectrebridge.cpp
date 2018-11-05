@@ -884,14 +884,9 @@ void SpectreBridge::getAddressLabelAsync(QString address)
     emit getAddressLabelResult(addressModel->atm->labelForAddress(address));
 }
 
-void SpectreBridge::getAddressLabelToSendBalance(QString address)
+void SpectreBridge::getAddressLabelForSelectorAsync(QString address, QString selector, QString fallback)
 {
-    emit getAddressLabelToSendBalanceResult(addressModel->atm->labelForAddress(address));
-}
-
-void SpectreBridge::getAddressLabelForSelectorAsync(QString address, QString selector)
-{
-    emit getAddressLabelForSelectorResult(addressModel->atm->labelForAddress(address), selector);
+    emit getAddressLabelForSelectorResult(addressModel->atm->labelForAddress(address), selector, fallback);
 }
 
 void SpectreBridge::updateAddressLabel(QString address, QString label)

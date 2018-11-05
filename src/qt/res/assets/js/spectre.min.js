@@ -95,7 +95,6 @@ function connectSignals() {
   bridge.newAddressResult.connect(newAddressResult);
   bridge.lastAddressErrorResult.connect(lastAddressErrorResult);
   bridge.createGroupChatResult.connect(createGroupChatResult);
-  bridge.getAddressLabelToSendBalanceResult.connect(getAddressLabelToSendBalanceResult);
   bridge.getAddressLabelForSelectorResult.connect(getAddressLabelForSelectorResult);
 
   blockExplorerPage.connectSignals();
@@ -301,13 +300,9 @@ function clearSendAddress() {
   $("#new-send-address").removeClass("inputError");
 }
 
-function getAddressLabelToSendBalanceResult(result) {
-    $("#recipient1 .pay_to_label").val(result)
-}
-
-function getAddressLabelForSelectorResult(result, selector) {
+function getAddressLabelForSelectorResult(result, selector, fallback) {
     if (!result) {
-      result = "(no label)";
+      result = fallback;
     }
     $(selector).val(result).text(result).change();
 }

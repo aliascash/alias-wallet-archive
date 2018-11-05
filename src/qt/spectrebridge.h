@@ -112,8 +112,7 @@ public:
     /** Get the label belonging to an address */
     Q_INVOKABLE QString getAddressLabel(QString address);
     Q_INVOKABLE void getAddressLabelAsync(QString address);
-    Q_INVOKABLE void getAddressLabelToSendBalance(QString address);
-    Q_INVOKABLE void getAddressLabelForSelectorAsync(QString address, QString selector);
+    Q_INVOKABLE void getAddressLabelForSelectorAsync(QString address, QString selector, QString fallback = "");
 
     /** Create a new address or add an existing address to your Address book */
     Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
@@ -212,7 +211,7 @@ signals:
 
     void getAddressLabelResult(QString result);
     void getAddressLabelToSendBalanceResult(QString result);
-    void getAddressLabelForSelectorResult(QString result, QString selector);
+    void getAddressLabelForSelectorResult(QString result, QString selector, QString fallback);
 
     void createGroupChatResult(QString result);
 
