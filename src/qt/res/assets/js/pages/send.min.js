@@ -139,40 +139,37 @@ $(function() {
         }
     }
     function toggle(e) {
-      var toggle = $("#send-main").is(":visible");
-      var OPEN = $("[name=transaction_type_from]:checked").val();
+      var isSendMain = $("#send-main").is(":visible");
+      var trxTypeFrom = $("[name=transaction_type_from]:checked").val();
         console.log('OPEN');
-        console.log(OPEN)
+        console.log(trxTypeFrom)
       if (e) {
-        if (e.target !== $("input#to_account_public")[0]) {
-          if (e.target !== $("input#to_account_private")[0]) {
-            $("input[name=transaction_type_to][value=" + (toggle ? OPEN : "public" === OPEN ? "private" : "public") + "]").prop("checked", true);
-          }
+        if (e.target !== $("input#to_account_public")[0] && e.target !== $("input#to_account_private")[0]) {
+            $("input[name=transaction_type_to][value=" + (isSendMain ? trxTypeFrom : "public" === trxTypeFrom ? "private" : "public") + "]").prop("checked", true);
+        }
+        else if (!isSendMain) {
+            var trxTypeTo = $("[name=transaction_type_to]:checked").val();
+            trxTypeFrom = "public" === trxTypeTo ? "private" : "public";
+            $("input[name=transaction_type_from][value=" + trxTypeFrom + "]").prop("checked", true);
         }
       }
       var a = $("[name=transaction_type_to  ]:checked").val();
       var ok = load();
-      $("#spend_spec").toggle("public" === OPEN);
-      $("#spend_spectre").toggle("private" === OPEN);
+      $("#spend_spec").toggle("public" === trxTypeFrom);
+      $("#spend_spectre").toggle("private" === trxTypeFrom);
       $("#to_spec").toggle("public" === a);
       $("#to_spectre").toggle("private" === a);
-      $("#to_balance").toggle(!toggle);
+      $("#to_balance").toggle(!isSendMain);
       $(".show-coin-control").toggle(ok < 1);
       sendPage.toggleCoinControl(ok < 0);
-      var active = false; // no advance mode $(".show-advanced-controls .btn-cons").hasClass("active");
-      $(".advanced_controls").toggle(active);
+
+      $(".advanced_controls").toggle(!isSendMain);
       $("#add_recipient").toggle($("#send-main").is(":visible"));
 
-      if ("private" === OPEN) {
-        $("#tx_ringsize").show();
-      } else {
-        $("#tx_ringsize").hide();
-      }
+      $("#tx_ringsize").css('visibility', 'private' === trxTypeFrom ? 'visible': 'hidden');
 
-      if (!active) {
-        if (!toggle) {
-          init();
-        }
+      if (!isSendMain) {
+        init();
       }
     }
     function load() {
