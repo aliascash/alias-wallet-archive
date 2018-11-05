@@ -522,7 +522,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 
     if(retval != QMessageBox::Yes) {
         emit sendCoinsResult(false);
-            return;
+        return;
     }
 
     WalletModel::SendCoinsReturn sendstatus;
@@ -686,6 +686,8 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CoinControlDialog::payAmounts.clear();
             CoinControlDialog::updateLabels(window->walletModel, 0, this);
             recipients.clear();
+            QMessageBox::information(window, tr("Send Coins"),
+                tr("Transaction successfully created."));
             break;
     }
 
