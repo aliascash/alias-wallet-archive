@@ -403,12 +403,7 @@ void SpectreBridge::populateOptions()
 // Transactions
 void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
 {
-    if (!window->walletModel->validateAddress(address)) {
-        emit addRecipientResult(false);
-    }
-
     SendCoinsRecipient rv;
-
 
     rv.address = address;
     rv.label = label;
