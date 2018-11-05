@@ -96,6 +96,7 @@ function connectSignals() {
   bridge.lastAddressErrorResult.connect(lastAddressErrorResult);
   bridge.createGroupChatResult.connect(createGroupChatResult);
   bridge.getAddressLabelToSendBalanceResult.connect(getAddressLabelToSendBalanceResult);
+  bridge.getAddressLabelForSelectorResult.connect(getAddressLabelForSelectorResult);
 
   blockExplorerPage.connectSignals();
   walletManagementPage.connectSignals();
@@ -302,6 +303,13 @@ function clearSendAddress() {
 
 function getAddressLabelToSendBalanceResult(result) {
     $("#recipient1 .pay_to_label").val(result)
+}
+
+function getAddressLabelForSelectorResult(result, selector) {
+    if (!result) {
+      result = "(no label)";
+    }
+    $(selector).val(result).text(result).change();
 }
 
 function addSendAddress() {

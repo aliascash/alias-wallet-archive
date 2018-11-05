@@ -113,6 +113,8 @@ public:
     Q_INVOKABLE QString getAddressLabel(QString address);
     Q_INVOKABLE void getAddressLabelAsync(QString address);
     Q_INVOKABLE void getAddressLabelToSendBalance(QString address);
+    Q_INVOKABLE void getAddressLabelForSelectorAsync(QString address, QString selector);
+
     /** Create a new address or add an existing address to your Address book */
     Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
     Q_INVOKABLE void newAddressAsync(QString addressLabel, int addressType, QString address = "", bool send = false);
@@ -210,6 +212,8 @@ signals:
 
     void getAddressLabelResult(QString result);
     void getAddressLabelToSendBalanceResult(QString result);
+    void getAddressLabelForSelectorResult(QString result, QString selector);
+
     void createGroupChatResult(QString result);
 
     void sendMessageResult(bool result);
