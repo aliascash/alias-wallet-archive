@@ -2359,169 +2359,6 @@ bool CWallet::UpdateStealthAddress(std::string &addr, std::string &label, bool a
     return true;
 };
 
-bool CWallet::CreateStealthTransaction(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, const CCoinControl* coinControl)
-{
-    std::vector<std::pair<CScript, int64_t> > vecSend;
-    vecSend.push_back(make_pair(scriptPubKey, nValue));
-
-    CScript scriptP = CScript() << OP_RETURN << P;
-    if (narr.size() > 0)
-        scriptP = scriptP << OP_RETURN << narr;
-
-    vecSend.push_back(make_pair(scriptP, 0));
-
-    // -- shuffle inputs, change output won't mix enough as it must be not fully random for plantext narrations
-    std::random_shuffle(vecSend.begin(), vecSend.end());
-
-    int nChangePos;
-    bool rv = CreateTransaction(vecSend, wtxNew, nFeeRet, nChangePos, coinControl);
-
-    // -- the change txn is inserted in a random pos, check here to match narr to output
-    if (rv && narr.size() > 0)
-    {
-        for (unsigned int k = 0; k < wtxNew.vout.size(); ++k)
-        {
-            if (wtxNew.vout[k].scriptPubKey != scriptPubKey
-                || wtxNew.vout[k].nValue != nValue)
-                continue;
-
-            char key[64];
-            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
-            {
-                LogPrintf("%s: Error creating narration key.", __func__);
-                break;
-            };
-            wtxNew.mapValue[key] = sNarr;
-            break;
-        };
-    };
-
-    return rv;
-};
-
-string CWallet::SendStealthMoney(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee)
-{
-    int64_t nFeeRequired;
-
-    if (IsLocked())
-    {
-        string strError = _("Error: Wallet locked, unable to create transaction  ");
-        LogPrintf("SendStealthMoney(): %s", strError.c_str());
-        return strError;
-    };
-
-    if (fWalletUnlockStakingOnly)
-    {
-        string strError = _("Error: Wallet unlocked for staking only, unable to create transaction.");
-        LogPrintf("SendStealthMoney(): %s", strError.c_str());
-        return strError;
-    };
-
-    if (!CreateStealthTransaction(scriptPubKey, nValue, P, narr, sNarr, wtxNew, nFeeRequired))
-    {
-        string strError;
-        if (nValue + nFeeRequired > GetBalance())
-            strError = strprintf(_("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  "), FormatMoney(nFeeRequired).c_str());
-        else
-            strError = _("Error: Transaction creation failed  ");
-        LogPrintf("SendStealthMoney(): %s\n", strError.c_str());
-        return strError;
-    };
-
-    if (fAskFee && !uiInterface.ThreadSafeAskFee(nFeeRequired, _("Sending...")))
-        return "ABORTED";
-
-    if (!CommitTransaction(wtxNew))
-        return _("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
-
-    return "";
-};
-
-bool CWallet::SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee)
-{
-    // -- Check amount
-    if (nValue <= 0)
-    {
-        sError = "Invalid amount";
-        return false;
-    };
-    if (nValue + nTransactionFee > GetBalance())
-    {
-        sError = "Insufficient funds";
-        return false;
-    };
-
-    ec_secret ephem_secret;
-    ec_secret secretShared;
-    ec_point pkSendTo;
-    ec_point ephem_pubkey;
-
-    if (GenerateRandomSecret(ephem_secret) != 0)
-    {
-        sError = "GenerateRandomSecret failed.";
-        return false;
-    };
-
-    if (StealthSecret(ephem_secret, sxAddress.scan_pubkey, sxAddress.spend_pubkey, secretShared, pkSendTo) != 0)
-    {
-        sError = "Could not generate receiving public key.";
-        return false;
-    };
-
-    CPubKey cpkTo(pkSendTo);
-    if (!cpkTo.IsValid())
-    {
-        sError = "Invalid public key generated.";
-        return false;
-    };
-
-    CKeyID ckidTo = cpkTo.GetID();
-
-    CBitcoinAddress addrTo(ckidTo);
-
-    if (SecretToPublicKey(ephem_secret, ephem_pubkey) != 0)
-    {
-        sError = "Could not generate ephem public key.";
-        return false;
-    };
-
-    if (fDebug)
-    {
-        LogPrintf("Stealth send to generated pubkey %u: %s\n", pkSendTo.size(), HexStr(pkSendTo).c_str());
-        LogPrintf("hash %s\n", addrTo.ToString().c_str());
-        LogPrintf("ephem_pubkey %u: %s\n", ephem_pubkey.size(), HexStr(ephem_pubkey).c_str());
-    };
-
-    std::vector<unsigned char> vchNarr;
-    if (sNarr.length() > 0)
-    {
-        SecMsgCrypter crypter;
-        crypter.SetKey(&secretShared.e[0], &ephem_pubkey[0]);
-
-        if (!crypter.Encrypt((uint8_t*)&sNarr[0], sNarr.length(), vchNarr))
-        {
-            sError = "Narration encryption failed.";
-            return false;
-        };
-
-        if (vchNarr.size() > MAX_STEALTH_NARRATION_SIZE)
-        {
-            sError = "Encrypted narration is too long.";
-            return false;
-        };
-    };
-
-    // -- Parse Bitcoin address
-    CScript scriptPubKey;
-    scriptPubKey.SetDestination(addrTo.Get());
-
-    if ((sError = SendStealthMoney(scriptPubKey, nValue, ephem_pubkey, vchNarr, sNarr, wtxNew, fAskFee)) != "")
-        return false;
-
-
-    return true;
-}
-
 bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr)
 {
     if (fDebug)
@@ -3238,7 +3075,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < (Params().IsProtocolV3(nBestHeight) ? 1 : (int)MIN_RING_SIZE)
+        if (nRingSize <  1
           ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
             return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
 
@@ -4352,6 +4189,14 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
+    if (nRingSize < (int)MIN_RING_SIZE
+            ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+    {
+        sError = tfm::format("Ringsize %d not in range [%d, %d]: ", nRingSize,  MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
+
+
     std::list<COwnedAnonOutput> lAvailableCoins;
     if (ListUnspentAnonOutputs(lAvailableCoins, true) != 0)
     {
@@ -4897,6 +4742,13 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
         sError = "Insufficient SPECTRE funds";
         return false;
     };
+
+    std::ostringstream ssThrow;
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+    {
+        sError = tfm::format("Ring size must be >= %d and <= %d.", MIN_RING_SIZE, MAX_RING_SIZE);
+        return false;
+    }
 
     wtxNew.nVersion = ANON_TXN_VERSION;
 
@@ -5757,7 +5609,38 @@ bool CWallet::InitBloomFilter()
 };
 
 
+bool CWallet::IsMine(CStealthAddress stealthAddress)
+{
+    // - check legacy stealth addresses in wallet
+    for (std::set<CStealthAddress>::iterator it = stealthAddresses.begin(); it != stealthAddresses.end(); ++it)
+    {
+        if (it->scan_secret.size() != EC_SECRET_SIZE)
+            continue; // stealth address in wallet is not owned
 
+        if (it->scan_pubkey == stealthAddress.scan_pubkey && it->spend_pubkey != stealthAddress.spend_pubkey) {
+            return true; // scan & spend public key match, we own this address
+        }
+    };
+
+    // - check ext account stealth keys in wallet
+    for ( ExtKeyAccountMap::const_iterator mi = mapExtAccounts.begin(); mi != mapExtAccounts.end(); ++mi)
+    {
+        CExtKeyAccount *ea = mi->second;
+
+        for (AccStealthKeyMap::iterator it = ea->mapStealthKeys.begin(); it != ea->mapStealthKeys.end(); ++it)
+        {
+            const CEKAStealthKey &aks = it->second;
+
+            if (!aks.skScan.IsValid())
+                continue; // stealth address in wallet is not valid
+
+            if (aks.pkScan == stealthAddress.scan_pubkey && aks.pkSpend == stealthAddress.spend_pubkey) {
+                return true; // scan & spend public key match, we own this address
+            }
+        };
+    };
+    return false;
+}
 
 
 

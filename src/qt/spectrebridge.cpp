@@ -405,7 +405,6 @@ void SpectreBridge::addRecipient(QString address, QString label, QString narrati
 {
     SendCoinsRecipient rv;
 
-
     rv.address = address;
     rv.label = label;
     rv.narration = narration;
@@ -518,7 +517,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 
     if(retval != QMessageBox::Yes) {
         emit sendCoinsResult(false);
-            return;
+        return;
     }
 
     WalletModel::SendCoinsReturn sendstatus;
@@ -560,6 +559,24 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         case WalletModel::InvalidAddress:
             QMessageBox::warning(window, tr("Send Coins"),
                 tr("The recipient address is not valid, please recheck."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
+        case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
+            QMessageBox::warning(window, tr("Send Coins"),
+                tr("Only SPECTRE from your Private balance can be send to a stealth address."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
+        case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
+            QMessageBox::warning(window, tr("Send Coins"),
+                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
+        case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
+            QMessageBox::warning(window, tr("Send Coins"),
+                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -664,6 +681,8 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CoinControlDialog::payAmounts.clear();
             CoinControlDialog::updateLabels(window->walletModel, 0, this);
             recipients.clear();
+            QMessageBox::information(window, tr("Send Coins"),
+                tr("Transaction successfully created."));
             break;
     }
 
@@ -814,17 +833,16 @@ void SpectreBridge::newAddress(QString addressLabel, int addressType, QString ad
     // NOTE: unlock happens in addRow
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
     addressModel->populateAddressTable();
-    emit newAddressResult(rv);
 }
 
 //replica  of the above method for Javascript to diffrentiate when call backs are needed
-void SpectreBridge::newAddress_2(QString addressLabel, int addressType, QString address, bool send)
+void SpectreBridge::newAddressAsync(QString addressLabel, int addressType, QString address, bool send)
 {
     // Generate a new address to associate with given label
     // NOTE: unlock happens in addRow
     QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
     addressModel->populateAddressTable();
-    emit newAddress_2Result(rv);
+    emit newAddressResult(rv);
 }
 
 void SpectreBridge::lastAddressError()
@@ -858,18 +876,17 @@ void SpectreBridge::lastAddressError()
 QString SpectreBridge::getAddressLabel(QString address)
 {
     QString result = addressModel->atm->labelForAddress(address);
-    emit getAddressLabelResult(result);
     return result;
 }
 
-void SpectreBridge::getAddressLabel_2(QString address)
+void SpectreBridge::getAddressLabelAsync(QString address)
 {
-    emit getAddressLabel_2Result(addressModel->atm->labelForAddress(address));
+    emit getAddressLabelResult(addressModel->atm->labelForAddress(address));
 }
 
-void SpectreBridge::getAddressLabelToSendBalance(QString address)
+void SpectreBridge::getAddressLabelForSelectorAsync(QString address, QString selector, QString fallback)
 {
-    emit getAddressLabelToSendBalanceResult(addressModel->atm->labelForAddress(address));
+    emit getAddressLabelForSelectorResult(addressModel->atm->labelForAddress(address), selector, fallback);
 }
 
 void SpectreBridge::updateAddressLabel(QString address, QString label)

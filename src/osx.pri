@@ -8,10 +8,10 @@
 # https://stackoverflow.com/questions/48839127/qmake-derived-clang-in-osx-10-13-cannot-find-string-h
 # INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
 
-ICON = $$PWD/../spectre.icns
+ICON = $$PWD/qt/res/assets/icons/spectre.icns
 
     # to build tor with autotools, call in subfolder tor:
-    # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.0i --disable-asciidoc --disable-lzma
+    # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.1 --disable-asciidoc --disable-lzma
 #    LIBS += -L$$PWD/../tor/src/or -ltor \
 #    -L$$PWD/../tor/src/common -lor \
 #    -L$$PWD/../tor/src/common -lor-ctime \
@@ -108,7 +108,7 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
-    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0i
+    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.1
     INCLUDEPATH += "$${_OPENSSL_PATH}/include/"
     LIBS += -L$${_OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)

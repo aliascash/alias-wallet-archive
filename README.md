@@ -1,5 +1,6 @@
 # Spectrecoin
 [![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre) [![HitCount](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre.svg)](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre)
+[![Build Status](https://ci.spectreproject.io/buildStatus/icon?job=Spectrecoin/spectre/develop)](https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/)
 
 Spectrecoin is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
@@ -8,8 +9,9 @@ un-traceable and anonymous transactions on its underlaying blockchain and also p
 the users identity by running all the network nodes as Tor hidden services.
 
 # Social
-- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC).
-- Please join us on our [Discord](https://discord.gg/ckkrb8m) server!
+- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC)
+- Please join us on our [Discord](https://discord.gg/ckkrb8m) server
+- Read the latest [Newsletter](https://news.spectreproject.io/)
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
 ## Key Privacy Technology
@@ -119,85 +121,18 @@ wallet and `spectrecoind` for the console wallet.
 Distribution specfic instructions are found in the corresponding dockerfile. See
 https://github.com/spectrecoin/spectre/tree/develop/Docker
 
-## Using Docker
+## Docker
+### Using Docker to _run_ spectrecoind
 
-This repository contains a Dockerfile to create a ready to use image with spectrecoind.
-The image is based on our spectre base image
-[spectreproject/spectre-base](https://github.com/spectrecoin/spectre-base), which is based on
-Debian on his side. A dedicated user _spectre_ with UID _1000_ and GID _1000_ is used
-to run [spectrecoind](https://github.com/spectrecoin/spectre).
+We provide a ready to run Docker image, which is mainly build out of another Git
+repository. For details see [docker-spectrecoind](https://github.com/spectrecoin/docker-spectrecoind)
 
+### Using Docker to _build_ spectrecoind
 
-#### Start new container
-You should prepare a directory on the host machine, which contains all
-spectrecoind data. Per default this is the directory _~/.spectrecoin_ and you
-can use this directory also with the Docker container by mounting it into the
-container.
+As long as cross compiling is not possible (due to [QtWebEngine](https://wiki.qt.io/QtWebEngine))
+we build the binaries for different Linux distributions using different Docker images.
 
-Explanation of start command:
+Actually it is not possible to use this mechanism locally out of the box, as the binaries
+stay inside the created image.
 
-```
-docker run \
-    --name <name> \                 # Name of the container to create
-    --rm \                          # Container will automatically be removed after stop
-    -it \                           # Start in interactive mode with a virtual terminal
-    -v <local-path>:/home/spectre/.spectrecoin/ \ # Mapping of local data folder into the container
-    -d \                            # Run in daemon mode
-    spectreproject/spectre:latest   # Image to use
-```
-
-**IMPORTANT: You must use option _'-v...'_ to mount a host folder into the container,
-if you use option _'--rm'_! Otherwise you might loose your wallet, if the container
-is stopped!**
-
-
-To start the container just use
-
-```
-docker run \
-    --name spectre \
-    --rm \
-    -it \
-    -v ~/.spectrecoin/:/home/spectre/.spectrecoin/ \
-    -d \
-    spectreproject/spectre:latest
-```
-
-#### Stop container
-Use cmd _docker stop_ to shutdown a running container. Because of option _--rm_
-it will be removed automatically afterwards.
-
-```
-docker stop <name>
-```
-
-#### Restart stopped container
-This is only possible, if you do _not_ use option _--rm_ on container start.
-After _docker stop_ the container will stay in place and you can restart it using
-
-```
-docker start spectre
-```
-
-#### Remove stopped container
-This is only possible, if you do _not_ use option _--rm_ on container start.
-After _docker stop_ the container can be removed using
-
-```
-docker rm spectre
-```
-
-#### Build image yourself
-```
-docker build -t spectreproject/spectre:latest .
-```
-
-#### Using more than one core
-If multiple cores available for build, you can pass the amount of cores
-to use to the build command:
-
-```
-docker build -t spectreproject/spectre:latest --build-arg BUILD_THREADS=12 .
-```
-
-Default value is BUILD_THREADS=6
+More documentation regarding how to use will be on our [Wiki](https://github.com/spectrecoin/documentation/wiki).
