@@ -1303,27 +1303,16 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     };
 
     int ret = 0;
-    int64_t nTimeFirstKeyTmp = nTimeFirstKey;
     int nCurBestHeight = nBestHeight;
 
     fReindexing = true;
-    // When scanning from a certain height, people could be interested in rebuilding stealth address and anonymous transaction cache.
-    if(pindexStart->nHeight > 1)
-        nTimeFirstKey = pindexStart->nTime;
-
+    // Note: Every block is scanned to rebuild the anonymous transaction cache
+    // therefore nTimeFirstKey (time of first wallet key) is not considered as filter
     CBlockIndex* pindex = pindexStart;
     {
         LOCK2(cs_main, cs_wallet);
         while (pindex)
         {
-            // no need to read and scan block, if block was created before
-            // our wallet birthday (as adjusted for block time variability)
-            if (nTimeFirstKey && (pindex->nTime < (nTimeFirstKey - 7200)))
-            {
-                pindex = pindex->pnext;
-                continue;
-            };
-
             CBlock block;
             block.ReadFromDisk(pindex, true);
             nBestHeight = pindex->nHeight;
@@ -1337,8 +1326,6 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
         };
     } // cs_main, cs_wallet
 
-    // Reset nTimeFirstKey
-    nTimeFirstKey = nTimeFirstKeyTmp;
     nBestHeight = nCurBestHeight;
     fReindexing = false;
 
@@ -3016,21 +3003,21 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    LogPrintf("found matching spent key image - txn has been processed before\n");
-                return UpdateAnonTransaction(ptxdb, tx, blockHash);
-            };
+                    LogPrintf("found matching spent key image - txn has been processed before, reprocessing.\n");
+            }
+            else {
+                if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
+                {
+                    return error("%s: Error input %d keyimage %s already spent.", __func__, i, HexStr(vchImage).c_str());
+                };
 
-            if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
-            {
-                return error("%s: Error input %d keyimage %s already spent.", __func__, i, HexStr(vchImage).c_str());
-            };
+                if (fDebugRingSig)
+                    LogPrintf("Input %d keyimage %s matches unknown txn %s, continuing.\n", i, HexStr(vchImage).c_str(), spentKeyImage.txnHash.ToString().c_str());
 
-            if (fDebugRingSig)
-                LogPrintf("Input %d keyimage %s matches unknown txn %s, continuing.\n", i, HexStr(vchImage).c_str(), spentKeyImage.txnHash.ToString().c_str());
-
-            // -- keyimage is in db, but invalid as does not point to a known transaction
-            //    could be an old mempool keyimage
-            //    continue
+                // -- keyimage is in db, but invalid as does not point to a known transaction
+                //    could be an old mempool keyimage
+                //    continue
+            }
         };
 
 
