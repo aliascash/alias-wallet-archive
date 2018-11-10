@@ -229,6 +229,7 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
                                 }
@@ -491,6 +492,7 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
                                 }
@@ -739,6 +741,7 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
                                 }
