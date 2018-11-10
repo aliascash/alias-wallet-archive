@@ -2806,11 +2806,6 @@ Value reloadanondata(const Array& params, bool fHelp)
 
 
     CBlockIndex *pindex = pindexGenesisBlock;
-
-    // check from 257000, once anon transactions started
-    while (pindex->nHeight < (fTestNet ? 0 : 257000) && pindex->pnext)
-        pindex = pindex->pnext;
-
     Object result;
     if (pindex)
     {
