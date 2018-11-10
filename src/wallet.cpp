@@ -1011,21 +1011,38 @@ int64_t CWallet::GetSpectreCredit(const CTxOut& txout) const
 
         CPubKey pkCoin = txout.ExtractAnonPk();
 
+        COutPoint outpoint;
         std::vector<uint8_t> vchImage;
-        if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
-            return 0;
+        if (walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
+        {
+            COwnedAnonOutput oao;
+            if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
+                return 0;
 
-        COwnedAnonOutput oao;
-        if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
-            return 0;
+            outpoint = oao.outpoint;
+        }
+        else
+        {
+            if (!IsCrypted())
+                return 0;
 
-        WalletTxMap::const_iterator mi = mapWallet.find(oao.outpoint.hash);
+            // - tokens received with locked wallet won't have oao until wallet unlocked
+            CKeyID ckCoinId = pkCoin.GetID();
+            CLockedAnonOutput lockedAo;
+            if (!walletdb.ReadLockedAnonOutput(ckCoinId, lockedAo))
+                return 0;
+
+            outpoint = lockedAo.outpoint;
+        };
+
+
+        WalletTxMap::const_iterator mi = mapWallet.find(outpoint.hash);
         if (mi != mapWallet.end())
         {
             const CWalletTx& prev = (*mi).second;
-            if (oao.outpoint.n < prev.vout.size())
+            if (outpoint.n < prev.vout.size())
             {
-                return prev.vout[oao.outpoint.n].nValue;
+                return prev.vout[outpoint.n].nValue;
             };
         };
     } // cs_wallet
