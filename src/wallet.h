@@ -896,18 +896,7 @@ public:
             if (!IsSpent(i))
             {
                 const CTxOut &txout = vout[i];
-                
-                if (!txout.IsAnonOutput())
-                    continue;
-                const CScript &s = txout.scriptPubKey;
-                
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
-                
-                if (pwallet->HaveKey(ckidD))
-                {
-                    nCredit += txout.nValue;
-                };
-                
+                nCredit += pwallet->GetSpectreCredit(txout);
                 if (!MoneyRange(nCredit))
                     throw std::runtime_error("CWalletTx::GetAvailableSpectreCredit() : value out of range");
             };
