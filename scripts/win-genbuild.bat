@@ -10,8 +10,12 @@ dir
 echo on
 
 echo "Creating build.h"
-FOR /F %DESC in ('git describe --dirty') do echo "#define BUILD_DESC \"%DESC\"" > build.sh
-FOR /F %TIME in ('git log -n 1 --format="%ci"') do echo "#define BUILD_DATE \"%TIME\"" >> build.sh
+
+FOR /F %i in ('git describe --dirty') do set DESC=%i
+echo "#define BUILD_DESC \"%DESC%\"" > build.sh
+
+FOR /F %i in ('git log -n 1 --format="%ci"') do set TIME=%i
+echo "#define BUILD_DATE \"%TIME%\"" >> build.sh
 
 echo "Everything is OK"
 cd %CALL_DIR%
