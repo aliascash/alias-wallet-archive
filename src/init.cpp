@@ -948,7 +948,11 @@ bool AppInit2(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
-        pwalletMain->ScanForWalletTransactions(pindexRescan, true);
+        int totalBlocks = nBestHeight - pindexRescan->nHeight;
+        pwalletMain->ScanForWalletTransactions(pindexRescan, true, [totalBlocks] (int numOfBlocks) -> bool {
+            uiInterface.InitMessage(strprintf("Rescanning... %d / %d", numOfBlocks, totalBlocks));
+            return true;
+        });
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
     };
 

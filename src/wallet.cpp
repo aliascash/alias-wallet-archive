@@ -1308,7 +1308,7 @@ bool CWalletTx::WriteToDisk()
 // Scan the block chain (starting in pindexStart) for transactions
 // from or to us. If fUpdate is true, found transactions that already
 // exist in the wallet will be updated.
-int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
+int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, std::function<bool (int&)> funcProgress)
 {
     if (fDebug)
         LogPrintf("ScanForWalletTransactions()\n");
@@ -1320,6 +1320,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     };
 
     int ret = 0;
+    int processed = 0;
     int nCurBestHeight = nBestHeight;
 
     fReindexing = true;
@@ -1340,6 +1341,12 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                     ret++;
             };
             pindex = pindex->pnext;
+            processed++;
+            if (funcProgress != NULL && processed % 1000 == 0) {
+                if (!funcProgress(processed)) {
+                    break;
+                };
+            }
         };
     } // cs_main, cs_wallet
 
