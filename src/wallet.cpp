@@ -1308,7 +1308,7 @@ bool CWalletTx::WriteToDisk()
 // Scan the block chain (starting in pindexStart) for transactions
 // from or to us. If fUpdate is true, found transactions that already
 // exist in the wallet will be updated.
-int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, std::function<bool (int&)> funcProgress)
+int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, std::function<bool (const int&, const int&, const int&)> funcProgress, int progressBatchSize)
 {
     if (fDebug)
         LogPrintf("ScanForWalletTransactions()\n");
@@ -1320,7 +1320,6 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
     };
 
     int ret = 0;
-    int processed = 0;
     int nCurBestHeight = nBestHeight;
 
     fReindexing = true;
@@ -1329,6 +1328,10 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
     CBlockIndex* pindex = pindexStart;
     {
         LOCK2(cs_main, cs_wallet);
+
+        // call progress callback on start
+        if (funcProgress) funcProgress(pindex->nHeight, nCurBestHeight, ret);
+
         while (pindex)
         {
             CBlock block;
@@ -1340,14 +1343,16 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
                 if (AddToWalletIfInvolvingMe(tx, hash, &block, fUpdate))
                     ret++;
             };
+            if (funcProgress && pindex->nHeight % progressBatchSize == 0 && !funcProgress(pindex->nHeight, nCurBestHeight, ret)) {
+                // abort scanning indicated
+                break;
+            };
             pindex = pindex->pnext;
-            processed++;
-            if (funcProgress != NULL && processed % 1000 == 0) {
-                if (!funcProgress(processed)) {
-                    break;
-                };
-            }
         };
+
+        // call progress callback on end
+        if (funcProgress) funcProgress(nCurBestHeight, nCurBestHeight, ret);
+
     } // cs_main, cs_wallet
 
     nBestHeight = nCurBestHeight;
