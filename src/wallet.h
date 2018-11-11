@@ -225,7 +225,7 @@ public:
     
     bool EraseFromWallet(uint256 hash);
     void WalletUpdateSpent(const CTransaction& prevout, bool fBlock = false);
-    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, std::function<bool (int&)> funcProgress = NULL);
+    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, std::function<bool (const int&, const int&, const int&)> funcProgress = nullptr, int progressBatchSize=1000);
 
     void ReacceptWalletTransactions();
     void ResendWalletTransactions(bool fForce = false);
