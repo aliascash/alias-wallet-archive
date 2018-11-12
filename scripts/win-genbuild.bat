@@ -16,6 +16,9 @@ FOR /F "delims=" %%i IN ('git describe --dirty') DO set DESC=%%i
 FOR /F "delims=" %%j IN ('git log -n 1 --format^="%%ci"') DO set TIME=%%j
 @echo #define BUILD_DATE "%TIME%" >> build.h
 
+FOR /F "delims=" %%k IN ('git rev-parse --short HEAD') DO set COMMIT=%%k
+@echo #define GIT_HASH "%COMMIT%" >> build.h
+
 @echo Created build.h with the following content:
 type build.h
 cd %CALL_DIR%
