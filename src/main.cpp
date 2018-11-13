@@ -16,7 +16,6 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "kernel.h"
-#include "smessage.h"
 
 
 using namespace std;
@@ -5649,9 +5648,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (block.nDoS)
                     pfrom->Misbehaving(block.nDoS);
-
-                if (fSecMsgEnabled)
-                    SecureMsgScanBlock(block);
             };
         } // cs_main
     } else
@@ -5711,8 +5707,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (ProcessBlock(pfrom, &block, hashBlock))
             mapAlreadyAskedFor.erase(inv);
         if (block.nDoS) pfrom->Misbehaving(block.nDoS);
-        if (fSecMsgEnabled)
-            SecureMsgScanBlock(block);
     } else
     if (strCommand == "merkleblock")
     {
@@ -6060,9 +6054,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     } else
     {
-        if (fSecMsgEnabled)
-            SecureMsgReceiveData(pfrom, strCommand, vRecv);
-
         // Ignore unknown commands for extensibility
     }
 
@@ -6567,10 +6558,6 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
             LogPrintf("Sync timeout, getblocks to %s, from %d\n", pto->addr.ToString().c_str(), pindexBest->nHeight);
         nTimeLastMblkRecv = nTimeNow; // reset timeout
     }
-
-
-    if (fSecMsgEnabled)
-        SecureMsgSendData(pto, fSendTrickle); // should be in cs_main?
 
     return true;
 }

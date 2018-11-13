@@ -271,7 +271,6 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         UnlockStealthAddresses(vMasterKey);
         ExtKeyUnlock(vMasterKey);
         ProcessLockedAnonOutputs();
-        SecureMsgWalletUnlocked();
 
         if (fMakeExtKeyInitials)
         {
@@ -6203,13 +6202,6 @@ bool CWallet::SetAddressBookName(const CTxDestination& address, const string& st
     }
 
     // -- fAddKeyToMerkleFilters is always false when adding keys for anonoutputs
-    if (fOwned
-        && fAddKeyToMerkleFilters)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), strName, nMode);
-    };
-
     if (nMode == CT_NEW
         && pBloomFilter
         && fAddKeyToMerkleFilters)
@@ -6267,12 +6259,6 @@ bool CWallet::DelAddressBookName(const CTxDestination& address)
 
     bool fOwned = IsDestMine(*this, address);
     string sName = "";
-
-    if (fOwned)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), sName, CT_DELETED);
-    };
 
     NotifyAddressBookChanged(this, address, "", fOwned, CT_DELETED, true);
 

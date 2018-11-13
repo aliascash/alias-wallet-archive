@@ -71,23 +71,6 @@ private:
 };
 
 
-class MessageThread : public QThread
-{
-    Q_OBJECT
-
-signals:
-    void emitMessages(const QString & messages, bool reset);
-
-public:
-    MessageModel *mtm;
-
-    QString addMessage(int row);
-
-protected:
-    void run();
-};
-
-
 class SpectreBridge : public QObject
 {
     Q_OBJECT
@@ -102,7 +85,6 @@ public:
     void setWalletModel();
     void setTransactionModel();
     void setAddressModel();
-    void setMessageModel();
 
     Q_INVOKABLE void jsReady();
 
@@ -132,18 +114,10 @@ public:
     Q_INVOKABLE void validateAddress(QString own);
     Q_INVOKABLE bool deleteAddress(QString address);
 
-    Q_INVOKABLE void deleteMessage(QString key);
-    Q_INVOKABLE void markMessageAsRead(QString key);
-
     Q_INVOKABLE void openCoinControl();
 
     Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
     Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
-    Q_INVOKABLE bool setPubKey(QString address, QString pubkey);
-    Q_INVOKABLE void sendMessage(const QString &address, const QString &message, const QString &from);
-    Q_INVOKABLE void joinGroupChat(QString privkey, QString label);
-    Q_INVOKABLE void createGroupChat(QString label);
-    Q_INVOKABLE QVariantList inviteGroupChat(QString address, QVariantList invites, QString from);
 
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
     Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change);
@@ -175,8 +149,6 @@ signals:
     void emitPaste(QString text);
     void emitTransactions(QVariantList transactions);
     void emitAddresses(QVariantList addresses);
-    void emitMessages(QString messages, bool reset);
-    void emitMessage(QString id, QString type, qint64 sent, qint64 received, QString label_v, QString label, QString labelTo, QString to, QString from, bool read, QString message);
     void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
     void emitAddressBookReturn(QString address, QString label);
     void emitReceipient(QString address, QString label, QString narration, qint64 amount);
@@ -189,7 +161,6 @@ signals:
     void sendCoinsResult(bool result);
 
     void transactionDetailsResult(QString result);
-
 
     void findBlockResult(QVariantMap result);
     void listLatestBlocksResult(QVariantMap result);
@@ -213,11 +184,6 @@ signals:
     void getAddressLabelToSendBalanceResult(QString result);
     void getAddressLabelForSelectorResult(QString result, QString selector, QString fallback);
 
-    void createGroupChatResult(QString result);
-
-    void sendMessageResult(bool result);
-
-    void joinGroupChatResult(QString result);
     void getOptionResult(QVariant result);
 
     void listAnonOutputsResult(QVariantMap result);
@@ -226,7 +192,6 @@ private:
     SpectreGUI *window;
     TransactionModel *transactionModel;
     AddressModel *addressModel;
-    MessageThread *thMessage;
     QList<SendCoinsRecipient> recipients;
     QVariantMap *info;
     QThread *async;
@@ -247,12 +212,6 @@ private slots:
     void updateAddresses(QModelIndex topLeft, QModelIndex bottomRight);
     void insertTransactions(const QModelIndex &parent, int start, int end);
     void insertAddresses(const QModelIndex &parent, int start, int end);
-    void insertMessages(const QModelIndex &parent, int start, int end);
-
-    void appendMessages(QString messages, bool reset);
-
-    void populateMessageTable();
-
 };
 
 #endif // SPECTREBRIDGE_H
