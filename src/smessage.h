@@ -6,6 +6,8 @@
 #define SEC_MESSAGE_H
 
 #include "allocators.h"
+#include <vector>
+
 
 // Secure Message Crypter
 class SecMsgCrypter
