@@ -225,20 +225,6 @@ extern json_spirit::Value reloadanondata(const json_spirit::Array& params, bool 
 
 extern json_spirit::Value txnreport(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value smsgenable(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgdisable(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsglocalkeys(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgoptions(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgscanchain(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgscanbuckets(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgaddkey(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsggetpubkey(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgsend(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgsendanon(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsginbox(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgoutbox(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value smsgbuckets(const json_spirit::Array& params, bool fHelp);
-
 extern json_spirit::Value thinscanmerkleblocks(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value thinforcestate(const json_spirit::Array& params, bool fHelp);
 

@@ -16,9 +16,6 @@ function updateValue(button) {
   if (1 === selected.length) {
     selected = selected.data("value") ? selected.data("value") : selected.text();
   }
-  if ("Group" === selected) {
-    name.replace("group_", "");
-  }
   button.html('<input class="newval" type="text" onchange="bridge.updateAddressLabel(\'' + result + '\', this.value);" value="' + name + '" size=60 />');
   $(".newval").focus().on("contextmenu", function(event) {
     event.stopPropagation();
@@ -28,42 +25,6 @@ function updateValue(button) {
     }
   });
   $(document).one("click", complete);
-}
-function updateValueChat(values, index) {
-  var isFunction = values.data("value");
-  var c = contacts[index];
-  return void 0 != c && (values.html('<input class="new_chat_value" type="text" onchange="bridge.updateAddressLabel(\'' + c.address + '\', this.value);" value="' + isFunction + '" size=35 style="display:inline;" />'), $("#chat-header .new_chat_value").focus(), $("#chat-header .new_chat_value").on("contextmenu", function(event) {
-    event.stopPropagation();
-  }), $("#chat-header .new_chat_value").keypress(function(event) {
-    if (13 == event.which) {
-      event.preventDefault();
-      var $radio = $("#chat-header .new_chat_value");
-      if (void 0 == $radio || void 0 === $radio.val()) {
-        return false;
-      }
-      var value = $radio.val().trim();
-      if (void 0 == value) {
-        return false;
-      }
-      if (0 === value.length) {
-        return false;
-      }
-      values.html(value);
-      contacts[current_key].label = value;
-      $("#chat-header").data("value", value);
-      $("#contact-" + current_key + " .contact-info .contact-name").text(value);
-      $("#contact-book-" + current_key + " .contact-info .contact-name").text(value);
-    }
-  }), $("#chat-header .new_chat_value").click(function(event) {
-    event.stopPropagation();
-  }), void $(document).one("click", function() {
-    var $radio = $("#chat-header .new_chat_value");
-    if (void 0 === typeof $radio || void 0 === $radio.val()) {
-      return false;
-    }
-    var value = $radio.val().trim();
-    return void 0 != value && (values.html(value), contacts[current_key].label = value, $("#chat-header").data("value", value), $("#contact-" + current_key + " .contact-info .contact-name").text(value), void $("#contact-book-" + current_key + " .contact-info .contact-name").text(value));
-  }));
 }
 var connectSignalsAttempts = 0;
 function connectSignals() {
@@ -85,8 +46,6 @@ function connectSignals() {
   bridge.emitPaste.connect(pasteValue);
   bridge.emitTransactions.connect(appendTransactions);
   bridge.emitAddresses.connect(appendAddresses);
-  bridge.emitMessages.connect(appendMessages);
-  bridge.emitMessage.connect(appendMessage);
   bridge.emitCoinControlUpdate.connect(updateCoinControlInfo);
   bridge.triggerElement.connect(triggerElement);
   bridge.emitReceipient.connect(addRecipientDetail);
@@ -94,7 +53,6 @@ function connectSignals() {
   bridge.getAddressLabelResult.connect(getAddressLabelResult);
   bridge.newAddressResult.connect(newAddressResult);
   bridge.lastAddressErrorResult.connect(lastAddressErrorResult);
-  bridge.createGroupChatResult.connect(createGroupChatResult);
   bridge.getAddressLabelForSelectorResult.connect(getAddressLabelForSelectorResult);
 
   blockExplorerPage.connectSignals();
@@ -107,9 +65,6 @@ function connectSignals() {
   bridge.addRecipientResult.connect(addRecipientResult);
   bridge.sendCoinsResult.connect(sendCoinsResult);
   bridge.transactionDetailsResult.connect(transactionDetailsResult);
-  bridge.sendMessageResult.connect(sendMessageResult);
-  bridge.joinGroupChatResult.connect(joinGroupChatResult);
-
 
   optionsModel.displayUnitChanged.connect(unit_setType);
   optionsModel.reserveBalanceChanged.connect(updateReserved);
@@ -283,14 +238,8 @@ function clearRecvAddress() {
 function addAddress() {
     console.log('addAddress');
   var throughArgs = $("#new-addresstype").val();
-  var r20 = "4" == throughArgs ? "group_" + $("#new-address-label").val() : $("#new-address-label").val();
-  newAdd = bridge.newAddress(r20, throughArgs, '', false);
-}
-
-function newAddressResult(result) {
-    console.log('newAddressResult');
-    newAdd = result;
-    $("#add-address-modal").modal("hide");
+  var r20 = $("#new-address-label").val();
+  bridge.newAddress(r20, throughArgs, '', false);
 }
 
 function clearSendAddress() {
@@ -329,7 +278,6 @@ function newAddressResult(result) {
     if (data = result, "" === data) {
       bridge.lastAddressError();
     } else {
-      updateContact(name, current_key, udataCur, false);
       $("#add-address-modal").modal("hide");
     }
 }
@@ -404,54 +352,22 @@ function appendAddresses(err) {
     }
     err = JSON.parse(err.replace(/,\]$/, "]"));
   }
-  contact_book_list = $("#contact-book-list ul");
   err.forEach(function(item) {
     var revisionCheckbox = $("#" + item.address);
-    var target = "S" == item.type ? "#addressbook" : 0 !== item.label.lastIndexOf("group_", 0) ? "#receive" : "#addressbook";
-    var $src = $("#invite-modal-" + item.address);
-    var $slide = $("#invite-modal-" + item.address);
+    var target = "S" == item.type ? "#addressbook" : "#receive";
     if ("R" == item.type) {
       if (sendPage.initSendBalance(item)) {
         if (item.address.length < 75) {
-          if (0 !== item.label.lastIndexOf("group_", 0)) {
             if (0 == revisionCheckbox.length) {
               $("#message-from-address").append("<option title='" + item.address + "' value='" + item.address + "'>" + item.label + "</option>");
             } else {
               $("#message-from-address option[value=" + item.address + "]").text(item.label);
             }
-            if (initialAddress) {
-              $("#message-from-address").prepend("<option title='Anonymous' value='anon' selected>Anonymous</option>");
-              $(".user-name").text(Name);
-              $(".user-address").text(item.address);
-              initialAddress = false;
-            }
           }
-        }
       }
     }
-    var recurring = 4 == item.at || 0 === item.label.lastIndexOf("group_", 0);
     var param = "S" == item.type;
-    if (recurring) {
-      item.at = 4;
-      item.label = item.label.replace("group_", "");
-      item.label_value = item.label_value.replace("group_", "");
-      param = true;
-    }
     var common = "n/a" !== item.pubkey;
-    if (param && (common && (createContact(item.label, item.address, recurring, true), appendContact(item.address, false, true))), !recurring && (param && common)) {
-      if (0 == $src.length) {
-        var lineSeparator = "<tr id='invite-modal-" + item.address + "' lbl='" + item.label + "'>                   <td style='padding-left:18px;' class='label2' data-value='" + item.label_value + "'>" + item.label + "</td>                   <td class='address'>" + item.address + "</td>                   <td class='invite footable-visible footable-last-column'><input type='checkbox' class='checkbox'></input></td>                   </tr>";
-        $("#invite-modal-tbody").append(lineSeparator);
-      } else {
-        $("#invite-modal-" + item.address + " .label2").text(item.label);
-      }
-      if (0 == $slide.length) {
-        lineSeparator = "<tr  id='group-modal-" + item.address + "' lbl='" + item.label + "'>                   <td style='padding-left:18px;' class='label2' data-value='" + item.label_value + "'>" + item.label + "</td>                   <td class='address'>" + item.address + "</td>                   <td class='invite footable-visible footable-last-column'><input type='checkbox' class='checkbox'></input></td>                   </tr>";
-        $("#group-modal-tbody").append(lineSeparator);
-      } else {
-        $("#group-modal-" + item.address + " .label2").text(item.label);
-      }
-    }
     if (0 == revisionCheckbox.length) {
       $(target + " .footable tbody").append("<tr id='" + item.address + "' lbl='" + item.label + "'>                 <td style='padding-left:18px;' class='label2 editable' data-value='" + item.label_value + "'>" + item.label + "</td>                 <td class='address'>" + item.address + "</td>                 <td class='pubkey'>" + item.pubkey + "</td>                 <td class='addresstype'>" + (4 == item.at ? "Group" : 3 == item.at ? "BIP32" : 2 == item.at ? "Stealth" : "Normal") + "</td></tr>");
       $("#" + item.address).selection("tr").find(".editable").on("dblclick", function(event) {
@@ -654,625 +570,10 @@ function appendTransactions(f) {
     $("#transactions .footable").trigger("footable_redraw");
   }
 }
-function spectreChatInit() {
-  var r20 = [{
-    name : "Send&nbsp;Spectrecoin",
-    fun : function() {
-      clearRecipients();
-      $("#pay_to0").val($("#contact-list .selected .contact-address").text());
-      $("#navpanel [href=#send]").click();
-    }
-  }, {
-    name : "Copy&nbsp;Address",
-    fun : function() {
-      copy("#contact-list .selected .contact-address");
-    }
-  }, {
-    name : "Private&nbsp;Message",
-    fun : function() {
-      $("#message-text").focus();
-    }
-  }];
-  $("#contact-list").on("contextmenu", function(ev) {
-    $(ev.target).closest("li").click();
-  }).contextMenu(r20, {
-    triggerOn : "contextmenu",
-    sizeStyle : "content"
-  });
-  r20 = [{
-    name : "Copy&nbsp;Selected",
-    fun : function() {
-      var textfield = $("#message-text")[0];
-      if ("undefined" != typeof textfield.selectionStart) {
-        copy(textfield.value.substring(textfield.selectionStart, textfield.selectionEnd), "copy");
-      }
-    }
-  }, {
-    name : "Paste",
-    fun : function() {
-      paste("#pasteTo");
-      var textfield = $("#message-text")[0];
-      if ("undefined" != typeof textfield.selectionStart) {
-        textfield.value = textfield.value.substring(textfield.selectionStart, 0) + $("#pasteTo").val() + textfield.value.substring(textfield.selectionStart);
-      } else {
-        textfield.value += $("#pasteTo").val();
-      }
-    }
-  }];
-  $("#message-text").contextMenu(r20, {
-    triggerOn : "contextmenu",
-    sizeStyle : "content"
-  });
-  $("#message-text").keypress(function(event) {
-    if (13 == event.which && !event.shiftKey) {
-      if (event.preventDefault(), "" == $("#message-text").val()) {
-        return 0;
-      }
-      removeNotificationCount();
-      sendMessage();
-    }
-  });
-  $("#messages").selection().on("click", function(dataAndEvents) {
-    if ("" !== current_key) {
-      removeNotificationCount(current_key);
-    }
-  });
-  $("#contact-list").on("mouseover", function() {
-    contactScroll.refresh();
-  });
-  $("#contact-group-list").on("mouseover", function() {
-    contactGroupScroll.refresh();
-  });
-  $("#contact-book-list").on("mouseover", function() {
-    contactBookScroll.refresh();
-  });
-}
-function appendMessages(qs, deepDataAndEvents) {
-  if (contact_list = $("#contact-list ul"), contact_group_list = $("#contact-group-list ul"), deepDataAndEvents) {
-    var index;
-    for (index in contacts) {
-      if (contacts[index].messages.length > 0) {
-        contacts[index].messages = [];
-      }
-    }
-    $("#chat-menu-link .details").hide();
-    contact_list.html("");
-    contact_group_list.html("");
-    $("#contact-list").removeClass("in-conversation");
-    $("#contact-group-list").removeClass("in-conversation");
-    $(".contact-discussion ul").html("");
-    $(".user-notifications").hide();
-    $("#message-count").text(0);
-    messagesScroller.scrollTo(0, 0);
-    contactScroll.scrollTo(0, 0);
-    contactGroupScroll.scrollTo(0, 0);
-    contactBookScroll.scrollTo(0, 0);
-    $("#invite-group-btn").hide();
-    $("#leave-group-btn").hide();
-  }
-  if ("[]" != qs) {
-    var r20 = /([\u0000-\u001f])|([\u007f-\u009f])|([\u00ad])|([\u0600-\u0604])|([\u070f])|([\u17b4-\u17b5])|([\u200c-\u200f])|([\u2028-\u202f])|([\u2060-\u206f])|([\ufeff])|([\ufff0-\uffff])+/g;
-    qs = JSON.parse(qs.replace(/,\]$/, "]").replace(r20, ""));
-    qs.forEach(function(item) {
-      appendMessage(item.id, item.type, item.sent_date, item.received_date, item.label_value, item.label, item.labelTo, item.to_address, item.from_address, item.read, item.message, deepDataAndEvents);
-    });
-    if (deepDataAndEvents) {
-      openConversation(contacts[current_key].address, false);
-    }
-    $(contacts[current_key].group ? "#contact-group-list" : "#contact-list").addClass("in-conversation");
-  }
-}
-function appendMessage(id, string, sent, jtext, json, y, val, a, item, target, data, deepDataAndEvents) {
-  var requestUrl;
-  var x = "S" == string ? a : item;
-  var selector = "S" == string ? item : a;
-  var udataCur = "S" == string ? "(no label)" == val ? selector : val : "(no label)" == y ? x : y;
-  var key = x;
-  var fn = "S" == string ? selector : x;
-  var recurring = false;
-  if (0 === val.lastIndexOf("group_", 0) ? (requestUrl = val.replace("group_", ""), recurring = true, key = selector) : 0 === json.lastIndexOf("group_", 0) ? (requestUrl = json.replace("group_", ""), recurring = true, key = x, fn = selector) : requestUrl = udataCur, 0 === data.lastIndexOf("/invite", 0) && data.length >= 60) {
-    var row = data.match(/[V79e][1-9A-HJ-NP-Za-km-z]{50,51}/g);
-    var which = data.substring(61, data.length).replace(/[^A-Za-z0-9\s!?]/g, "");
-    if (null != row) {
-      if (string = "R") {
-        return target || addInvite(row, which, id), false;
-      }
-      if (string = "S") {
-        data = "An invite for group " + which + " has been sent.";
-      }
-    } else {
-      if (0 == which.length) {
-        which = x + "_" + String(row).substring(1, 5);
-      } else {
-        if (null == row) {
-          data = "The group invitation was a malconfigured private key.";
-        }
-      }
-    }
-  }
-  createContact(requestUrl, key, recurring);
-  if (recurring) {
-    createContact(udataCur, x, false, false);
-    addContactToGroup(fn, key);
-  }
-  var o = contacts[key];
-  if (0 == $.grep(o.messages, function(filter) {
-    return filter.id == id;
-  }).length) {
-    o.messages.push({
-      id : id,
-      them : x,
-      self : selector,
-      label_msg : udataCur,
-      key_msg : fn,
-      group : recurring,
-      message : data,
-      type : string,
-      sent : sent,
-      received : jtext,
-      read : target
-    });
-    o.messages.sort(function(err, connection) {
-      return err.received - connection.received;
-    });
-    appendContact(key, false);
-    if (!(current_key != key)) {
-      if (!deepDataAndEvents) {
-        openConversation(key, false);
-      }
-    }
-    if ("R" == string) {
-      if (0 == target) {
-        addNotificationCount(key, 1);
-      }
-    }
-  }
-  if ("" == current_key) {
-    current_key = key;
-  }
-}
-function createContact(value, key, recurring, v33) {
-  var data = contacts[key];
-  if (void 0 == contacts[key]) {
-    contacts[key] = {};
-    data = contacts[key];
-    data.key = key;
-    data.label = value;
-    data.address = key;
-    data.group = recurring;
-    data.addressbook = void 0 != v33 && v33;
-    data.title = recurring ? "Untrusted" : data.addressbook ? "Verified" : "Unverified";
-    data.avatar_type = 0;
-    data.avatar = "";
-    data.messages = [];
-    if (recurring) {
-      data.contacts = [];
-    }
-  }
-}
-function addContactToGroup(key, type) {
-  return void 0 != contacts[type] && (void 0 != contacts[key] && (!existsContactInGroup(key, type) && (contacts[type].contacts.push(key), true)));
-}
-function existsContact(index) {
-  return void 0 != contacts[index];
-}
-function existsContactInGroup(dataName, type) {
-  return!contacts[type].contacts.indexOf(dataName) == -1;
-}
-function updateContactTitle(index) {
-  return!!existsContact(index) && (!contacts[index].group && (!!isStaticVerified(index) && (contacts[index].title = verified_list[index].title, true)));
-}
-function updateContact(label, key, value, recurring) {
-  recurring = recurring !== false;
-  var v = contacts[key];
-  if (void 0 !== v) {
-    if (!(void 0 !== value && key != value)) {
-      value = "";
-    }
-    v.messages.forEach(function(input) {
-      if (!("R" !== input.type)) {
-        if (!(input.them !== key && input.them !== value)) {
-          input.label_msg = label;
-        }
-      }
-    });
-    if ("" === value) {
-      contacts[key].label = label;
-      $("#contact-book-" + key + " .contact-info .contact-name").text(label);
-      $("#contact-" + key + " .contact-info .contact-name").text(label);
-    } else {
-      $("#contact-book-" + value + " .contact-info .contact-name").text(label);
-      $("#contact-" + value + " .contact-info .contact-name").text(label);
-    }
-    if (openConversation) {
-      openConversation(key, true);
-    }
-  }
-}
-function appendContact(key, v33, recurring) {
-  var entry = recurring ? "contact-book-" : "contact-";
-  var $option = $("#" + entry + key);
-  var opt = contacts[key];
-  if (0 === $option.length) {
-    var message = "";
-    if (!(void 0 === opt.messages[0])) {
-      if (!recurring) {
-        message = opt.messages[0].message;
-      }
-    }
-    var lineSeparator = "<li id='" + entry + key + "' class='contact' data-title='" + opt.label + "'>                <span class='contact-info'>                    <span class='contact-name'>" + (opt.group && recurring ? "<i class='fa fa-users' style='padding-right: 7px;'></i>" : "") + opt.label + "</span>                    <span class='" + (recurring ? "contact-address" : "contact-message") + "'>" + (recurring ? opt.address : message) + "</span>                </span>                <span class='contact-options'>                        <span class='message-notifications'>0</span> <span class='delete' onclick='deleteMessages(\"" +
-    key + "\")'><i class='fa fa-minus-circle'></i></span>                        </span></li>";
-    if (recurring) {
-      contact_book_list.append(lineSeparator);
-      $("#" + entry + key).find(".delete").hide();
-    } else {
-      if (opt.group) {
-        contact_group_list.append(lineSeparator);
-      } else {
-        contact_list.append(lineSeparator);
-      }
-    }
-    $option = $("#" + entry + key).selection("li").on("dblclick", function(dataAndEvents) {
-      openConversation(key, true);
-      prependContact(key);
-    }).on("click", function(dataAndEvents) {
-      openConversation(key, true);
-    });
-    if (recurring) {
-      $option.on("click", function(dataAndEvents) {
-      });
-    }
-    $option.find(".delete").on("click", function(event) {
-      event.stopPropagation();
-    });
-    $option.find(".message-notifications").hide();
-  } else {
-    if (!(void 0 === opt.messages)) {
-      if (!recurring) {
-        $("#" + entry + key + " .contact-info .contact-message").text(opt.messages[opt.messages.length - 1].message);
-      }
-    }
-  }
-  if (v33) {
-    openConversation(key, false);
-  }
-}
-function getContactUsername(i) {
-  var line;
-//TODO: SIGNAL bridge
-  return "object" == typeof verified_list[i] ? verified_list[i].username : (line = bridge.getAddressLabel(i), "string" == typeof line ? line.replace("group_", "") : i);
-}
-function isStaticVerified(property) {
-  return "object" == typeof verified_list[property];
-}
-function allowCustomAvatar(i) {
-  return "object" == typeof verified_list[i] && ("boolean" == typeof verified_list[i].custom_avatar && verified_list[i].custom_avatar);
-}
 function getIconTitle(value) {
   return "unverified" == value ? "fa fa-cross " : "verified" == value ? "fa fa-check " : "contributor" == value ? "fa fa-cog " : "spectreteam" == value ? "fa fa-code " : "";
 }
-function addNotificationCount(id, i) {
-  if (void 0 == contacts[id]) {
-    return false;
-  }
-  var script = $("#contact-" + id).find(".message-notifications");
-  var cDigit = script.html();
-  script.text(parseInt(cDigit) + parseInt(i)).show();
-  $("#chat-menu-link .details").show();
-  $(".user-notifications").show();
-  $("#message-count").text(parseInt($("#message-count").text()) + 1).show();
-  $("#contact-" + id).prependTo(contacts[id].group ? "#contact-group-list ul" : "#contact-list ul");
-}
-function removeNotificationCount(key) {
-  if (void 0 == key) {
-    if ("" !== current_key) {
-      key = current_key;
-    }
-  }
-  messagesScroller.refresh();
-  var results = contacts[key];
-  if (void 0 == results) {
-    return false;
-  }
-  var status = $("#contact-" + key).find(".message-notifications");
-  var xshift = status.html();
-  if (0 == status.text()) {
-    return false;
-  }
-  status.text(0);
-  status.hide();
-  var $label = $("#message-count");
-  var originalLabel = parseInt($label.text()) - xshift;
-  if ($label.text(originalLabel), 0 == originalLabel ? ($label.hide(), $("#chat-menu-link .details").hide()) : $label.show(), 0 == results.messages.length) {
-    return 0;
-  }
-  var i = results.messages.length;
-  for (;i--;) {
-    if (!results.messages[i].read) {
-      bridge.markMessageAsRead(results.messages[i].id);
-    }
-  }
-}
-function openConversation(key, recurring) {
-  function convert(src) {
-    return micromarkdown.parse(emojione.toImage(src)).replace(/<a class="mmd_spectrecash" href="(.+)">(.+)<\/a>/g, '<a class="mmd_spectrecash" onclick="return confirmConversationOpenLink()" target="_blank" href="$1" data-title="$1">$1</a>');
-  }
-  if (recurring) {
-    $("#chat-menu-link").click();
-  }
-  current_key = key;
-  var tagList = $(".contact-discussion ul");
-  var self = contacts[key];
-  tagList.html("");
-  var len = self.group;
-  if (len) {
-    $("#invite-group-btn").show();
-  } else {
-    $("#invite-group-btn").hide();
-    $("#leave-group-btn").hide();
-  }
-  $("#chat-header").text(self.label).addClass("editable");
-  $("#chat-header").data("value", self.label);
-  $("#chat-header").off();
-  $("#chat-header").on("dblclick", function(event) {
-    event.stopPropagation();
-    updateValueChat($(this), self.key);
-  }).attr("data-title", "Double click to edit").tooltip();
-  var params;
-  var i = false;
-  if (recurring) {
-    removeNotificationCount(self.key);
-  }
-  self.messages.forEach(function(opts, dataAndEvents) {
-    if (dataAndEvents > 0 && combineMessages(params, opts)) {
-      return $("#" + params.id).attr("id", opts.id), $("#" + opts.id + " .message-text").append(convert(opts.message)), void(params = opts);
-    }
-    params = opts;
-    var d = new Date(1E3 * opts.sent);
-    var date = new Date(1E3 * opts.received);
-    addAvatar(opts.them);
-    var failureMessage = opts.label_msg == opts.key_msg ? " data-toggle=\"modal\" data-target=\"#add-address-modal\" onclick=\"clearSendAddress(); $('#add-rcv-address').hide(); $('#add-send-address').show(); $('#new-send-address').val('" + opts.key_msg + "')\" " : "";
-    tagList.append("<li id='" + opts.id + "' class='message-wrapper " + ("S" == opts.type ? "my-message" : "other-message") + "' contact-key='" + self.key + "'>                <span class='message-content'>                    <span class='info'>" + getAvatar("S" == opts.type ? opts.self : opts.them) + "</span>                    <span class='user-name' " + failureMessage + ">" + opts.label_msg + "                    </span>                    <span class='title'>                    </span>                    <span class='timestamp'>" +
-    ((d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes() + ":" + (d.getSeconds() < 10 ? "0" : "") + d.getSeconds()) + "</span>                       <span class='delete' onclick='deleteMessages(\"" + self.key + '", "' + opts.id + "\");'><i class='fa fa-minus-circle'></i></span>                       <span class='message-text'>" + convert(opts.message) + "</span>                </span>             </li>");
-    $("#" + opts.id + " .timestamp").attr("data-title", "Sent: " + d.toLocaleString() + "\n Received: " + date.toLocaleString()).tooltip().find(".message-text").tooltip();
-    insertTitleHTML(opts.id, opts.key_msg);
-    if ("S" == opts.type) {
-      $("#" + opts.id + " .user-name").attr("data-title", "" + opts.self).tooltip();
-      if (opts.group) {
-        if (!i) {
-          $("#message-from-address").val(opts.self);
-          $("#message-to-address").val(opts.them);
-        }
-      }
-    } else {
-      $("#" + opts.id + " .user-name").attr("data-title", "" + opts.them).tooltip();
-    }
-    if (!i && self.messages.length > 0) {
-      if (len) {
-        if ("R" == opts.type) {
-          $("#message-to-address").val(opts.self);
-        }
-      } else {
-        $("#message-from-address").val(opts.self);
-        $("#message-to-address").val(opts.them);
-      }
-    } else {
-      if (0 == self.messages.length) {
-        $(".contact-discussion ul").html("<li id='remove-on-send'>Starting Conversation with " + self.label + " - " + self.address + "</li>");
-        $("#message-to-address").val(self.address);
-      }
-    }
-  });
-  setTimeout(function() {
-    scrollMessages();
-  }, 200);
-}
-function insertTitleHTML(lhs, index) {
-  if (!existsContact(index)) {
-    return false;
-  }
-  var udataCur = (contacts[index], contacts[index].title.toLowerCase());
-  $("#" + lhs + " .title").addClass(getIconTitle(udataCur) + udataCur + "-mark");
-  $("#" + lhs + " .title").hover(function() {
-    $(this).text(" " + udataCur);
-  }, function() {
-    $(this).text("");
-  });
-}
-function confirmConversationOpenLink() {
-  return confirm("Are you sure you want to open this link?\n\nIt will leak your IP address and other browser metadata, the least we can do is advice you to copy the link and open it in a _Tor Browser_ instead.\n\n You can disable this message in options.");
-}
-function combineMessages(info, self) {
-  return info.type == self.type && ("R" == self.type && info.them == self.them || "S" == self.type && info.self == self.self);
-}
-function addRandomAvatar(i) {
-  return!!existsContact(i) && (contacts[i].avatar_type = 1, void(contacts[i].avatar = generateRandomAvatar(i)));
-}
-function generateRandomAvatar(i) {
-  var sha = new jsSHA("SHA-512", "TEXT");
-  sha.update(i);
-  var block = sha.getHash("HEX");
-  var n = (new Identicon(block, 40)).toString();
-  return'<img width=40 height=40 src="data:image/png;base64,' + n + '">';
-}
-function addCustomAvatar(i) {
-  contacts[i].avatar_type = 2;
-  contacts[i].avatar = '<img width=40 height=40 src="qrc:///assets/img/avatars/' + contacts[i].label + '.png">';
-}
-function addAvatar(classNames) {
-  if (allowCustomAvatar(classNames)) {
-    addCustomAvatar(classNames);
-  } else {
-    addRandomAvatar(classNames);
-  }
-}
-function getAvatar(i) {
-  return allowCustomAvatar(i) ? '<img width=40 height=40 src="qrc:///assets/img/avatars/' + verified_list[i].username + '.png">' : existsContact(i) ? contacts[i].avatar : generateRandomAvatar(i);
-}
-function prependContact(key) {
-  var c = contacts[key];
-  if (c.group) {
-    $("#contact-group-list").addClass("in-conversation");
-    $("#contact-" + key).prependTo($("#contact-group-list ul"));
-  } else {
-    $("#contact-list").addClass("in-conversation");
-    $("#contact-" + key).prependTo($("#contact-list ul"));
-  }
-}
-function createGroupChat() {
-  var key = $("#new-group-name").val();
-  if ("" == key) {
-    return false;
-  }
-  $("#filter-new-group").text("");
-  $("#new-group-modal").modal("hide");
-  bridge.createGroupChat(key);
-}
-function createGroupChatResult(result) {
-    var camelKey = result;
-    inviteGroupChat(camelKey);
-    createContact(key, camelKey, true);
-    appendContact(camelKey, true, false);
-}
 
-function addInvite(row, callback, userId) {
-  return 0 == $("#invite-" + row + "-" + userId).length && void $("#group-invite-list").append("<div id='invite-" + row + "-" + userId + '\'><a class=\'group-invite\'><i class="fa fa-envelope"></i><span class="group-invite-label"> ' + callback + ' </span><i class="fa fa-check group-invite-check" onclick="acceptInvite(\'' + row + "','" + callback + "', '" + userId + '\');"></i><i class="fa fa-close group-invite-close" onclick="deleteInvite(\'' + row + "','" + userId + "');\"></i></a></div>");
-}
-function deleteInvite(keepData, message) {
-  bridge.deleteMessage(message);
-  $("#invite-" + keepData + "-" + message).html("");
-}
-function acceptInvite(key, data, endpoint) {
-  endpointAcceptInvite = endpoint;
-  dataAcceptInvite = data;
-  bridge.joinGroupChat(key, data)
-  return "false";
-}
-function resetAcceptInviteVariables() {
-  endpointAcceptInvite = null;
-  dataAcceptInvite = null;
-}
-function joinGroupChatResult(result) {
-  var endpoint = endpointAcceptInvite;
-  var data = dataAcceptInvite;
-  deleteInvite(key, endpoint);
-  var camelKey = result;
-  resetAcceptInviteVariables();
-  return "false" !== camelKey && (updateContact(data, camelKey), createContact(data, camelKey, true), void appendContact(camelKey, true, false));
-}
-function inviteGroupChat(data) {
-  var out = [];
-  var target = "#invite-modal-tbody";
-  if (void 0 != data) {
-    target = "group-modal-tbody";
-  } else {
-    data = current_key;
-  }
-  $(target + " tr").each(function() {
-    var copies = $(this).find(".address").text();
-    var a = $(this).find(".invite .checkbox").is(":checked");
-    if (a) {
-      out.push(copies);
-      $(this).find(".invite .checkbox").attr("checked", false);
-    }
-  });
-  var result = [];
-  if (out.length > 0) {
-    result = bridge.inviteGroupChat(data, out, $("#message-from-address").val());//TODO: SIGNAL bridge
-  }
-  result.length > 0;
-}
-function leaveGroupChat() {
-//TODO: SIGNAL bridge ---- not being called anywhere
-    var leaveGroupChat = bridge.leaveGroupChat(current_key);
-  return leaveGroupChat;
-}
-function openInviteModal() {
-  if (0 == current_key.length) {
-    return false;
-  }
-  bridge.getAddressLabelAsync(current_key);
-}
-function getAddressLabelResultGroup(result) {
-    var display_id = result.replace("group_", "");
-    $("#existing-group-name").val(display_id);
-}
-function submitInviteModal() {
-  inviteGroupChat();
-  $("#invite-to-group-modal").hide();
-}
-function scrollMessages() {
-  messagesScroller.refresh();
-  var loop = function() {
-    var posY = messagesScroller.y;
-    messagesScroller.refresh();
-    if (posY !== messagesScroller.maxScrollY) {
-      messagesScroller.scrollTo(0, messagesScroller.maxScrollY, 100);
-    }
-  };
-  setTimeout(loop, 100);
-}
-function newConversation() {
-  var camelKey = $("#new-contact-address").val();
-  var udataCur = $("#new-contact-name").val();
-    //TODO: SIGNAL bridge x 4
-  return createContact(udataCur, camelKey, false), result = bridge.newAddress($("#new-contact-name").val(), 0, $("#new-contact-address").val(), true), "" === result && "Duplicate Address." !== bridge.lastAddressError() ? void $("#new-contact-address").css("background", "#E51C39").css("color", "white") : ($("#new-contact-address").css("background", "").css("color", ""), bridge.setPubKey($("#new-contact-address").val(), $("#new-contact-pubkey").val()), bridge.updateAddressLabel($("#new-contact-address").val(),
-  $("#new-contact-name").val()), $("#new-contact-modal").modal("hide"), $("#message-to-address").val($("#new-contact-address").val()), $("#message-text").focus(), $("#new-contact-address").val(""), $("#new-contact-name").val(""), $("#new-contact-pubkey").val(""), $("#contact-list ul li").removeClass("selected"), $("#contact-list").addClass("in-conversation"), $("#contact-group-list ul li").removeClass("selected"), $("#contact-group-list").addClass("in-conversation"), void setTimeout(function() {
-    openConversation(camelKey, true);
-    $(".contact-discussion ul").html("<li id='remove-on-send'>Starting Conversation with " + camelKey + " - " + udataCur + "</li>");
-  }, 1E3));
-}
-function sendMessage() {
-  $("#remove-on-send").remove();
-  bridge.sendMessage(current_key, $("#message-text").val(), $("#message-from-address").val());
-}
-function sendMessageResult(result) {
-    if (result) {
-      $("#message-text").val("");
-    }
-}
-
-function deleteMessages(key, id) {
-  var meta = contacts[key];
-  if (!confirm("Are you sure you want to delete " + (void 0 == id ? "these messages?" : "this message?"))) {
-    return false;
-  }
-  var script = $("#message-count");
-  parseInt(script.text());
-  removeNotificationCount(key);
-  if (void 0 == id) {
-    current_key = "";
-  }
-  var i = 0;
-  for (;i < meta.messages.length;i++) {
-    if (void 0 === id) {
-      if (!bridge.deleteMessage(meta.messages[i].id)) {//TODO: SIGNAL bridge
-        return false;
-      }
-      $("#" + meta.messages[i].id).remove();
-      meta.messages.splice(i, 1);
-      i--;
-    } else {
-      if (meta.messages[i].id === id) {
-        if (bridge.deleteMessage(id)) { //TODO: SIGNAL bridge
-          $("#" + id).remove();
-          meta.messages.splice(i, 1);
-          i--;
-          break;
-        }
-        return false;
-      }
-    }
-  }
-  if (0 == meta.messages.length) {
-    $("#contact-" + key).remove();
-    $("#contact-list").removeClass("in-conversation");
-    $("#contact-group-list").removeClass("in-conversation");
-  } else {
-    iscrollReload();
-    openConversation(key, false);
-  }
-}
 function signMessage() {
   $("#sign-signature").val("");
   var message;
@@ -1298,9 +599,6 @@ function verifyMessage() {
   return msg = result.error_msg, "" !== msg ? ($("#verify-result").removeClass("green"), $("#verify-result").addClass("red"), $("#verify-result").html(msg), false) : ($("#verify-result").removeClass("red"), $("#verify-result").addClass("green"), $("#verify-result").html("Message verified successfully"), void 0);
 }
 function iscrollReload(dataAndEvents) {
-  contactScroll.refresh();
-  contactGroupScroll.refresh();
-  contactBookScroll.refresh();
   messagesScroller.refresh();
   if (dataAndEvents === true) {
     messagesScroller.scrollTo(0, messagesScroller.maxScrollY, 0);
@@ -1791,109 +1089,9 @@ var optionsPage = {
     }
   }
 };
-var Name = "You";
-var initialAddress = true;
 var Transactions = [];
 var filteredTransactions = [];
-var contacts = {};
-var contact_list;
-var contact_group_list;
-var contact_book_list;
 var current_key = "";
-var verified_list = {
-  "specdev-slack" : {
-    username : "specdev-slack",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  SR46wGPK5sGwT9qymRNTVtF9ExHHvVuDXQ : {
-    username : "crz",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  SVY9s4CySAXjECDUwvMHNM6boAZeYuxgJE : {
-    username : "kewde",
-    title : "Spectreteam",
-    custom_avatar : true
-  },
-  dasource : {
-    username : "dasource",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  SNLYNVwWQNgPqxND5iWyRfnGbEPnvSGVLw : {
-    username : "ffmad",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  STWYshQBdzk47swrp2S77jHLxjrNAWUNdq : {
-    username : "ludx",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  "edu-online" : {
-    username : "edu-online",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  arcanum : {
-    username : "arcanum",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  SQqVGXi9Hi1CJv7Qy4gjvxyVinemTx8nK7 : {
-    username : "allien",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  sebsebastian : {
-    username : "sebsebastian",
-    title : "Spectreteam",
-    custom_avatar : false
-  },
-  SPXkEj2Daa9un5uzKHFNpseAfirsygCAhq : {
-    username : "litebit",
-    title : "Contributor",
-    custom_avatar : true
-  },
-  SZxH6HNYAh9iNaGLdoHYjSN2qWvfjahrF1 : {
-    username : "6ea86b96",
-    title : "Verified"
-  },
-  ShKkz1b6XD4ASgTP9BAh8C3zi4Z9HsCH5F : {
-    username : "dadon",
-    title : "Verified"
-  },
-  ScrvNCexThmfctYcLZLwzFCcaH6znW69sj : {
-    username : "dzarmush",
-    title : "Verified"
-  },
-  SZ8bMXxkBELD6s5jSsBRLCwvkXibwRWw4q : {
-    username : "GRE3N",
-    title : "Verified"
-  },
-  SPAfq2i8cP1SMcaTT8nMTxa2Fg9LNNJSyk : {
-    username : "NGS",
-    title : "Verified"
-  },
-  SWUBRJUdgck6d8tiM5hf4wEAAp3J8JyuQj : {
-    username : "The-C-Word",
-    title : "Verified"
-  },
-  SgyxAj1j2ebtecYAFu5McPyzZUqDX3UpBP : {
-    username : "tintifax",
-    title : "Verified"
-  },
-  SWG4eCfpsrFwB64owwrLjvDnyYkdCp2oPi : {
-    username : "wwonka36",
-    title : "Verified"
-  }
-};
-
-var contactScroll;
-var contactGroupScroll;
-var contactBookScroll;
-var messagesScroller;
 
 var chainDataPage = {
   anonOutputs : {},
@@ -2193,58 +1391,8 @@ window.onload = function() {
   receivePageInit();
   transactionPageInit();
   addressBookInit();
-  spectreChatInit();
   chainDataPage.init();
   walletManagementPage.init();
-
-  contactScroll = new IScroll("#contact-list", {
-    mouseWheel : true,
-    lockDirection : true,
-    scrollbars : true,
-    interactiveScrollbars : true,
-    scrollbars : "custom",
-    scrollY : true,
-    scrollX : false,
-    preventDefaultException : {
-      tagName : /^(INPUT|TEXTAREA|BUTTON|SELECT|P|SPAN)$/
-    }
-  });
-  contactGroupScroll = new IScroll("#contact-group-list", {
-    mouseWheel : true,
-    lockDirection : true,
-    scrollbars : true,
-    interactiveScrollbars : true,
-    scrollbars : "custom",
-    scrollY : true,
-    scrollX : false,
-    preventDefaultException : {
-      tagName : /^(INPUT|TEXTAREA|BUTTON|SELECT|P|SPAN)$/
-    }
-  });
-  contactBookScroll = new IScroll("#contact-book-list", {
-    mouseWheel : true,
-    lockDirection : true,
-    scrollbars : true,
-    interactiveScrollbars : true,
-    scrollbars : "custom",
-    scrollY : true,
-    scrollX : false,
-    preventDefaultException : {
-      tagName : /^(INPUT|TEXTAREA|BUTTON|SELECT|P|SPAN)$/
-    }
-  });
-  messagesScroller = new IScroll(".contact-discussion", {
-    mouseWheel : true,
-    lockDirection : true,
-    scrollbars : true,
-    interactiveScrollbars : true,
-    scrollbars : "custom",
-    scrollY : true,
-    scrollX : false,
-    preventDefaultException : {
-      tagName : /^(INPUT|TEXTAREA|BUTTON|SELECT|P|SPAN)$/
-    }
-  });
 
   $(".footable,.footable-lookup").footable({
     breakpoints : {

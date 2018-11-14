@@ -14,11 +14,8 @@
 #include "transactiondesc.h"
 #include "addresstablemodel.h"
 
-#include "messagemodel.h"
-
 #include "clientmodel.h"
 #include "walletmodel.h"
-#include "messagemodel.h"
 #include "optionsmodel.h"
 
 #include "bitcoinunits.h"
@@ -30,6 +27,8 @@
 
 #include "txdb.h"
 #include "state.h"
+
+#include "wallet.h"
 
 #include "extkey.h"
 
@@ -233,40 +232,11 @@ bool AddressModel::isRunning() {
     return running;
 }
 
-
-QString MessageThread::addMessage(int row)
-{
-    return QString("{\"id\":\"%10\",\"type\":\"%1\",\"sent_date\":\"%2\",\"received_date\":\"%3\", \"label_value\":\"%4\",\"label\":\"%5\",\"labelTo\":\"%11\",\"to_address\":\"%6\",\"from_address\":\"%7\",\"message\":\"%8\",\"read\":%9},")
-            .arg(mtm->index(row, MessageModel::Type)            .data().toString())
-            .arg(QString::number(mtm->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t()).toHtmlEscaped())
-            .arg(QString::number(mtm->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t()).toHtmlEscaped())
-            .arg(mtm->index(row, MessageModel::Label)           .data(MessageModel::LabelRole).toString())
-            .arg(mtm->index(row, MessageModel::Label)           .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""))
-            .arg(mtm->index(row, MessageModel::ToAddress)       .data().toString())
-            .arg(mtm->index(row, MessageModel::FromAddress)     .data().toString())
-            .arg(mtm->index(row, MessageModel::Message).data().toString().toHtmlEscaped().replace("\\", "\\\\").replace("\"","\\\"").replace("\n", "\\n"))
-            .arg(mtm->index(row, MessageModel::Read)            .data().toBool())
-            .arg(mtm->index(row, MessageModel::Key)             .data().toString())
-            .arg(mtm->index(row, MessageModel::LabelTo)         .data().toString().replace("\\", "\\\\").replace("/", "\\/").replace("\"","\\\""));
-}
-
-void MessageThread::run()
-{
-    int row = -1;
-    QString messages;
-    while (mtm->index(++row, 0, QModelIndex()).isValid())
-        messages.append(addMessage(row));
-
-    emitMessages(messages, true);
-}
-
-
 SpectreBridge::SpectreBridge(SpectreGUI *window, QObject *parent) :
     QObject         (parent),
     window          (window),
     transactionModel(new TransactionModel()),
     addressModel    (new AddressModel()),
-    thMessage       (new MessageThread()),
     info            (new QVariantMap()),
     async           (new QThread())
 {
@@ -279,7 +249,6 @@ SpectreBridge::~SpectreBridge()
 {
     delete transactionModel;
     delete addressModel;
-    delete thMessage;
     delete async;
     delete info;
 }
@@ -311,14 +280,6 @@ void SpectreBridge::jsReady() {
     window->walletModel->emitEncryptionStatusChanged(window->walletModel->getEncryptionStatus());
     populateTransactionTable();
     populateAddressTable();
-}
-
-// This is just a hook, we won't really be setting the model...
-void SpectreBridge::setMessageModel()
-{
-    populateMessageTable();
-    connect(thMessage->mtm, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(insertMessages(QModelIndex,int,int)));
-    connect(thMessage->mtm, SIGNAL(modelReset()),                      SLOT(populateMessageTable()));
 }
 
 void SpectreBridge::copy(QString text)
@@ -912,294 +873,10 @@ bool SpectreBridge::deleteAddress(QString address)
     return addressModel->atm->removeRow(addressModel->atm->lookupAddress(address));
 }
 
-// Messages
-void SpectreBridge::appendMessages(QString messages, bool reset)
-{
-    emitMessages("[" + messages + "]", reset);
-}
-
-void SpectreBridge::appendMessage(int row)
-{
-    emitMessage(window->messageModel->index(row, MessageModel::Key).data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::Type).data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::SentDateTime)    .data().toDateTime().toTime_t(),
-                window->messageModel->index(row, MessageModel::ReceivedDateTime).data().toDateTime().toTime_t(),
-                window->messageModel->index(row, MessageModel::Label).data(MessageModel::LabelRole).toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::Label).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::LabelTo).data().toString().replace("\"","\\\"").replace("\\", "\\\\").replace("/", "\\/").toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::ToAddress).data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::FromAddress).data().toString().toHtmlEscaped(),
-                window->messageModel->index(row, MessageModel::Read)            .data().toBool(),
-                window->messageModel->index(row, MessageModel::Message).data().toString().toHtmlEscaped());
-}
-
-void SpectreBridge::populateMessageTable()
-{
-    thMessage->mtm = window->messageModel;
-
-    connect(thMessage, SIGNAL(emitMessages(QString, bool)), SLOT(appendMessages(QString, bool)));
-    thMessage->start();
-}
-
-void SpectreBridge::insertMessages(const QModelIndex & parent, int start, int end)
-{
-    while(start <= end)
-    {
-        appendMessage(start++);
-        qApp->processEvents();
-    }
-}
-
-void SpectreBridge::deleteMessage(QString key)
-{
-    window->messageModel->removeRow(thMessage->mtm->lookupMessage(key));
-}
-
-void SpectreBridge::markMessageAsRead(QString key)
-{
-    window->messageModel->markMessageAsRead(key);
-}
 
 QString SpectreBridge::getPubKey(QString address)
 {
     return addressModel->atm->pubkeyForAddress(address);;
-}
-
-bool SpectreBridge::setPubKey(QString address, QString pubkey)
-{
-    std::string sendTo = address.toStdString();
-    std::string pbkey  = pubkey.toStdString();
-
-    int res = SecureMsgAddAddress(sendTo, pbkey);
-    return res == 0||res == 4;
-}
-
-void SpectreBridge::sendMessage(const QString &address, const QString &message, const QString &from)
-{
-    WalletModel::UnlockContext ctx(window->walletModel->requestUnlock());
-
-    // Unlock wallet was cancelled
-    if(!ctx.isValid()) {
-        emit sendMessageResult(false);
-        return;
-    }
-
-    MessageModel::StatusCode sendstatus = thMessage->mtm->sendMessage(address, message, from);
-
-    switch(sendstatus)
-    {
-    case MessageModel::InvalidAddress:
-        QMessageBox::warning(window, tr("Send Message"),
-            tr("The recipient address is not valid, please recheck."),
-            QMessageBox::Ok, QMessageBox::Ok);
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::InvalidMessage:
-        QMessageBox::warning(window, tr("Send Message"),
-            tr("The message can't be empty."),
-            QMessageBox::Ok, QMessageBox::Ok);
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::DuplicateAddress:
-        QMessageBox::warning(window, tr("Send Message"),
-            tr("Duplicate address found, can only send to each address once per send operation."),
-            QMessageBox::Ok, QMessageBox::Ok);
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::MessageCreationFailed:
-        QMessageBox::warning(window, tr("Send Message"),
-            tr("Error: Message creation failed."),
-            QMessageBox::Ok, QMessageBox::Ok);
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::MessageCommitFailed:
-        QMessageBox::warning(window, tr("Send Message"),
-            tr("Error: The message was rejected."),
-            QMessageBox::Ok, QMessageBox::Ok);
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::Aborted:             // User aborted, nothing to do
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::FailedErrorShown:    // Send failed, error message was displayed
-        emit sendMessageResult(false);
-        return;
-    case MessageModel::OK:
-        break;
-    }
-
-    emit sendMessageResult(true);
-    return;
-}
-
-void SpectreBridge::createGroupChat(QString label)
-{
-    //return address to invite to people to.
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    std::string strLabel = "group_" + label.toStdString();
-
-    RandAddSeedPerfmon(); // util.cpp
-    CKey secret; // hey.h
-    secret.MakeNewKey(true);
-    CPubKey pubkey = secret.GetPubKey();
-    CKeyID vchAddress = pubkey.GetID();
-
-    pwalletMain->MarkDirty();
-    CBitcoinAddress addr(vchAddress);
-
-    std::string strAddress = addr.ToString();
-
-    pwalletMain->SetAddressBookName(addr.Get(), strLabel, NULL, true, true);
-
-    if (!pwalletMain->AddKeyPubKey(secret, pubkey)) {
-        emit createGroupChatResult("false");
-        return;
-    }
-
-    SecureMsgAddWalletAddresses();
-
-    emit createGroupChatResult(QString::fromStdString(strAddress));
-}
-
-
-void SpectreBridge::joinGroupChat(QString privkey, QString label)
-{
-    /*
-    EXPERIMENTAL CODE, UNTESTED.
-    */
-    std::string strSecret = privkey.toStdString();
-    std::string strLabel = "group_" + label.toStdString();
-
-    int64_t nCreateTime = 1;
-    CBitcoinSecret vchSecret;
-    bool fGood = vchSecret.SetString(strSecret);
-
-    if (!fGood) {
-        emit joinGroupChatResult("false");
-        return;
-    } //throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
-    if (fWalletUnlockStakingOnly) {
-        emit joinGroupChatResult("false");
-        return;
-    } //throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Wallet is unlocked for staking only.");
-
-    CKey key = vchSecret.GetKey();
-    CPubKey pubkey = key.GetPubKey();
-    CKeyID vchAddress = pubkey.GetID();
-    {
-        LOCK2(cs_main, pwalletMain->cs_wallet);
-
-        pwalletMain->MarkDirty();
-        pwalletMain->SetAddressBookName(vchAddress, strLabel);
-
-        // Don't throw error in case a key is already there
-        if (pwalletMain->HaveKey(vchAddress)) {
-            emit joinGroupChatResult("false");
-            return;
-        }
-
-        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = nCreateTime;
-
-        if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
-            emit joinGroupChatResult("false");
-            return;
-        }
-            //throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
-
-        // whenever a key is imported, we need to scan the whole chain
-        pwalletMain->nTimeFirstKey = nCreateTime; // 0 would be considered 'no value'
-
-    }
-
-    SecureMsgAddWalletAddresses();
-    //TODO: return address and appendAddress with javascript
-    CBitcoinAddress addr(vchAddress);
-    emit joinGroupChatResult(QString::fromStdString(addr.ToString()));
-    return;
-}
-
-
-QVariantList SpectreBridge::inviteGroupChat(QString qsaddress, QVariantList invites, QString from)
-{
-    //TODO: check if part of HD wallet, if it is refuse to send invites.
-    QVariantList r; //Return
-
-    QString actualLabel = getAddressLabel(qsaddress);
-
-    if(!actualLabel.startsWith("group_")){
-        LogPrintf("[inviteGroupChat] -- This should never happen, if it does please notify devteam.\n");
-        QMessageBox::warning(window, tr("Sanity Error!"),
-            tr("Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible."),
-            QMessageBox::Ok, QMessageBox::Ok);
-    } else {
-        actualLabel.replace("group_","");
-    }
-
-    QString informText = "Are you sure you want to invite the following addresses to this group?\n";
-
-    for(int i = 0; i < invites.size(); i++)
-    {
-        QString inviteAddress = invites.at(i).toString();
-        QString inviteLabel = getAddressLabel(inviteAddress);
-        informText.append(inviteLabel + " -- " + inviteAddress + "\n");
-    }
-
-    QMessageBox msgBox;
-    msgBox.setStyleSheet("QLabel{min-width: 600px;}");
-    msgBox.setText("Inviting to group " + actualLabel);
-    msgBox.setInformativeText(informText);
-    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-
-    if(msgBox.exec() == QMessageBox::Cancel)
-    {
-        LogPrintf("[inviteGroupChat] -- inviteGroupChat aborted.\n");
-        r.append("error");
-        return r;
-    }
-
-    LogPrintf("[inviteGroupChat] -- start\n");
-    CBitcoinAddress address;
-
-    if (!address.SetString(qsaddress.toStdString()))
-    {
-        LogPrintf("[inviteGroupChat] -- SetString address failed.\n");
-        r.append("error");
-        return r;
-    }
-
-    CKeyID keyID;
-    if (!address.GetKeyID(keyID))
-    {
-        LogPrintf("[inviteGroupChat] -- GetKeyID failed.\n");
-        r.append("error");
-        return r;
-    }
-
-    CKey vchSecret;
-
-    if (!pwalletMain->GetKey(keyID, vchSecret))
-    {
-        LogPrintf("[inviteGroupChat] -- GetKey failed.\n");
-        r.append("error");
-        return r;
-    }
-
-    QString message = "/invite " + QString::fromStdString(CBitcoinSecret(vchSecret).ToString()) + " " + actualLabel;
-
-    //SecureString privkey(); //.reserve then .assign(CBitcoinSecret(vchSecret).ToString()))
-
-    for(int i = 0; i < invites.size(); i++)
-    {
-        QString inviteAddress = invites.at(i).toString();
-        LogPrintf("[inviteGroupChat] sending invite!");
-
-        if(thMessage->mtm->sendMessage(inviteAddress, message, from) == MessageModel::OK)
-            r.append(inviteAddress);
-    }
-
-    return invites;
 }
 
 QString SpectreBridge::translateHtmlString(QString string)
