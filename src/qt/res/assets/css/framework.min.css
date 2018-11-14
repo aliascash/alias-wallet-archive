@@ -1769,9 +1769,6 @@ body.box-layout .header>.container{background-color:#fff;border-bottom:1px solid
 body.box-layout .page-sidebar{left:auto;transform:none!important;-webkit-transform:none!important}
 body.box-layout .page-container .page-content-wrapper .footer{width:auto}
 .header .brand{position:relative}
-.header .user-info-wrapper .user-details .user-name{font-size:16px}
-.header .user-info-wrapper .user-details .user-other{font-size:10px}
-.header .user-info-wrapper .user-pic{position:relative;top:-6px}
 .notification-panel{width:400px}
 }
 @media (min-width:1200px){.row-same-height{overflow:hidden}

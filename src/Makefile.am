@@ -49,7 +49,6 @@ common_SOURCES = anonymize.cpp \
 		 rpcwallet.cpp \
 		 rpcblockchain.cpp \
 		 rpcrawtransaction.cpp \
-		 rpcsmessage.cpp \
 		 rpcextkey.cpp \
 		 rpcmnemonic.cpp \
 		 script.cpp \
@@ -232,7 +231,6 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/moc_clientmodel.cpp \
 		  qt/moc_walletmodel.cpp \
 		  qt/moc_optionsmodel.cpp \
-		  qt/moc_messagemodel.cpp \
 		  qt/moc_guiutil.cpp \
 		  qt/moc_aboutdialog.cpp \
 		  qt/moc_csvmodelwriter.cpp \
@@ -268,7 +266,6 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/peertablemodel.cpp \
 		  qt/scicon.cpp \
 		  qt/trafficgraphwidget.cpp \
-		  qt/messagemodel.cpp \
 		  qt/spectregui.cpp \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp

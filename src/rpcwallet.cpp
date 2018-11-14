@@ -11,7 +11,6 @@
 #include "txdb.h"
 #include "stealth.h"
 #include "ringsig.h"
-#include "smessage.h"
 #include <sstream>
 
 using namespace json_spirit;
