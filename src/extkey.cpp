@@ -336,7 +336,7 @@ std::string CEKAStealthKey::ToStealthAddress() const
     return EncodeBase58(raw);
 };
 
-int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr)
+int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr) const
 {
     sxAddr.scan_pubkey = pkScan;
     sxAddr.spend_pubkey = pkSpend;
