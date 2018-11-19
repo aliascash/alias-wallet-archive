@@ -414,7 +414,7 @@ public:
 
     bool SetAddressBookName(const CTxDestination& address, const std::string& strName, CWalletDB *pwdb = NULL, bool fAddKeyToMerkleFilters = true, bool fManual = false);
 
-    bool DelAddressBookName(const CTxDestination& address);
+    bool DelAddressBookName(const CTxDestination& address, CWalletDB *pwdb = NULL);
 
     void UpdatedTransaction(const uint256 &hashTx);
 
@@ -920,6 +920,8 @@ public:
 
     void GetAmounts(std::list<std::pair<CTxDestination, int64_t> >& listReceived,
                     std::list<std::pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+
+    bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
