@@ -22,6 +22,7 @@
 #include "stealth.h"
 #include "smessage.h"
 
+static const std::string sAnonPrefix = "ao ";
 
 extern bool fWalletUnlockStakingOnly;
 extern bool fConfChange;
