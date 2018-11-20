@@ -45,8 +45,6 @@ void OptionsModel::Init()
         SoftSetArg("-minstakeinterval", settings.value("nMinStakeInterval").toString().toStdString());
     if (settings.contains("nStakingDonation"))
         SoftSetArg("-stakingdonation", settings.value("nStakingDonation").toString().toStdString());
-    if (settings.contains("fSecMsgEnabled"))
-        SoftSetBoolArg("-nosmsg", !settings.value("fSecMsgEnabled").toBool());
     if (settings.contains("fThinMode"))
         SoftSetBoolArg("-thinmode", settings.value("fThinMode").toBool());
     if (settings.contains("fThinFullIndex"))
@@ -104,9 +102,7 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return nStakingDonation;
         case MinStakeInterval:
             return nMinStakeInterval;
-        case SecureMessaging:
-            return fSecMsgEnabled;
-        case ThinMode:
+          case ThinMode:
             return settings.value("fThinMode",      GetBoolArg("-thinmode",      false)).toBool();
         case ThinFullIndex:
             return settings.value("fThinFullIndex", GetBoolArg("-thinfullindex", false)).toBool();
@@ -270,18 +266,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case ThinIndexWindow:
             settings.setValue("fThinIndexWindow", value.toInt());
-            break;
-        case SecureMessaging: {
-            if(value.toBool())
-            {
-                if(!fSecMsgEnabled)
-                    SecureMsgEnable();
-            }
-            else
-                SecureMsgDisable();
-
-            settings.setValue("fSecMsgEnabled", fSecMsgEnabled);
-            }
             break;
         default:
             break;

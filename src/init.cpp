@@ -13,7 +13,6 @@
 #include "sync.h"
 #include "util.h"
 #include "ui_interface.h"
-#include "smessage.h"
 #include "ringsig.h"
 #include "miner.h"
 
@@ -92,7 +91,6 @@ bool Finalise()
     
     StopRPCThreads();
     ShutdownRPCMining();
-    SecureMsgShutdown();
     
     mempool.AddTransactionsUpdated(1);
     if (pwalletMain)
@@ -350,11 +348,6 @@ std::string HelpMessage()
     strUsage += "  -rpcsslprivatekeyfile=<file.pem>         " + _("Server private key (default: server.pem)") + "\n";
     strUsage += "  -rpcsslciphers=<ciphers>                 " + _("Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)") + "\n";
 
-    strUsage += "\n" + _("Secure messaging options:") + "\n";
-    strUsage += "  -nosmsg                                  " + _("Disable secure messaging.") + "\n";
-    strUsage += "  -debugsmsg                               " + _("Log extra debug messages.") + "\n";
-    strUsage += "  -smsgscanchain                           " + _("Scan the block chain for public key addresses on startup.") + "\n";
-    
     return strUsage;
 }
 
@@ -494,18 +487,14 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (fDebug)
     {
         SoftSetBoolArg("-debugnet", true);
-        SoftSetBoolArg("-debugsmsg", true);
         SoftSetBoolArg("-debugchain", true);
         SoftSetBoolArg("-debugringsig", true);
     };
 
     fDebugNet = GetBoolArg("-debugnet");
-    fDebugSmsg = GetBoolArg("-debugsmsg");
     fDebugChain = GetBoolArg("-debugchain");
     fDebugRingSig = GetBoolArg("-debugringsig");
     fDebugPoS = GetBoolArg("-debugpos");
-
-    fNoSmsg = GetBoolArg("-nosmsg");
     
     // Check for -socks - as this is a privacy risk to continue, exit here
     if (mapArgs.count("-socks"))
@@ -657,9 +646,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 
     // -- thin and full
-    if (fNoSmsg)
-        nLocalServices &= ~(SMSG_RELAY);
-
     if (initialiseRingSigs() != 0)
         return InitError("initialiseRingSigs() failed.");
 
@@ -948,7 +934,11 @@ bool AppInit2(boost::thread_group& threadGroup)
         uiInterface.InitMessage(_("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
-        pwalletMain->ScanForWalletTransactions(pindexRescan, true);
+
+        pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
+            uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
+            return true;
+        },1000);
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
     };
 
@@ -998,10 +988,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
         addrman.size(), GetTimeMillis() - nStart);
 
-
-    // ********************************************************* Step 10.1: startup secure messaging
-
-    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain"));
 
     // ********************************************************* Step 11: start node
 

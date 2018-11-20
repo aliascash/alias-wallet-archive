@@ -271,7 +271,6 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         UnlockStealthAddresses(vMasterKey);
         ExtKeyUnlock(vMasterKey);
         ProcessLockedAnonOutputs();
-        SecureMsgWalletUnlocked();
 
         if (fMakeExtKeyInitials)
         {
@@ -1011,21 +1010,38 @@ int64_t CWallet::GetSpectreCredit(const CTxOut& txout) const
 
         CPubKey pkCoin = txout.ExtractAnonPk();
 
+        COutPoint outpoint;
         std::vector<uint8_t> vchImage;
-        if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
-            return 0;
+        if (walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
+        {
+            COwnedAnonOutput oao;
+            if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
+                return 0;
 
-        COwnedAnonOutput oao;
-        if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
-            return 0;
+            outpoint = oao.outpoint;
+        }
+        else
+        {
+            if (!IsCrypted())
+                return 0;
 
-        WalletTxMap::const_iterator mi = mapWallet.find(oao.outpoint.hash);
+            // - tokens received with locked wallet won't have oao until wallet unlocked
+            CKeyID ckCoinId = pkCoin.GetID();
+            CLockedAnonOutput lockedAo;
+            if (!walletdb.ReadLockedAnonOutput(ckCoinId, lockedAo))
+                return 0;
+
+            outpoint = lockedAo.outpoint;
+        };
+
+
+        WalletTxMap::const_iterator mi = mapWallet.find(outpoint.hash);
         if (mi != mapWallet.end())
         {
             const CWalletTx& prev = (*mi).second;
-            if (oao.outpoint.n < prev.vout.size())
+            if (outpoint.n < prev.vout.size())
             {
-                return prev.vout[oao.outpoint.n].nValue;
+                return prev.vout[outpoint.n].nValue;
             };
         };
     } // cs_wallet
@@ -1291,7 +1307,7 @@ bool CWalletTx::WriteToDisk()
 // Scan the block chain (starting in pindexStart) for transactions
 // from or to us. If fUpdate is true, found transactions that already
 // exist in the wallet will be updated.
-int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
+int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, std::function<bool (const int&, const int&, const int&)> funcProgress, int progressBatchSize)
 {
     if (fDebug)
         LogPrintf("ScanForWalletTransactions()\n");
@@ -1311,6 +1327,10 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     CBlockIndex* pindex = pindexStart;
     {
         LOCK2(cs_main, cs_wallet);
+
+        // call progress callback on start
+        if (funcProgress) funcProgress(pindex->nHeight, nCurBestHeight, ret);
+
         while (pindex)
         {
             CBlock block;
@@ -1322,8 +1342,16 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                 if (AddToWalletIfInvolvingMe(tx, hash, &block, fUpdate))
                     ret++;
             };
+            if (funcProgress && pindex->nHeight % progressBatchSize == 0 && !funcProgress(pindex->nHeight, nCurBestHeight, ret)) {
+                // abort scanning indicated
+                break;
+            };
             pindex = pindex->pnext;
         };
+
+        // call progress callback on end
+        if (funcProgress) funcProgress(nCurBestHeight, nCurBestHeight, ret);
+
     } // cs_main, cs_wallet
 
     nBestHeight = nCurBestHeight;
@@ -6174,13 +6202,6 @@ bool CWallet::SetAddressBookName(const CTxDestination& address, const string& st
     }
 
     // -- fAddKeyToMerkleFilters is always false when adding keys for anonoutputs
-    if (fOwned
-        && fAddKeyToMerkleFilters)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), strName, nMode);
-    };
-
     if (nMode == CT_NEW
         && pBloomFilter
         && fAddKeyToMerkleFilters)
@@ -6238,12 +6259,6 @@ bool CWallet::DelAddressBookName(const CTxDestination& address)
 
     bool fOwned = IsDestMine(*this, address);
     string sName = "";
-
-    if (fOwned)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), sName, CT_DELETED);
-    };
 
     NotifyAddressBookChanged(this, address, "", fOwned, CT_DELETED, true);
 

@@ -10,7 +10,6 @@
 #include "aboutdialog.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
-#include "messagemodel.h"
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "bitcoinunits.h"
@@ -450,17 +449,6 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
     }
 }
 
-void SpectreGUI::setMessageModel(MessageModel *messageModel)
-{
-    this->messageModel = messageModel;
-    if(messageModel)
-    {
-        // Balloon pop-up for new message
-        connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(incomingMessage(QModelIndex,int,int)));
-        bridge->setMessageModel();
-    }
-}
-
 void SpectreGUI::createTrayIcon()
 {
     QMenu *trayIconMenu;
@@ -783,39 +771,6 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                           .arg(BitcoinUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
                           .arg(type)
                           .arg(address), icon);
-}
-
-void SpectreGUI::incomingMessage(const QModelIndex & parent, int start, int end)
-{
-    if(!messageModel)
-        return;
-
-    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-    && ! clientModel->getOptionsModel()->getNotifications().contains(tr("Incoming Message")))
-        return;
-
-    MessageModel *mm = messageModel;
-
-    if (mm->index(start, MessageModel::TypeInt, parent).data().toInt() == MessageTableEntry::Received)
-    {
-        QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
-        QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
-        QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
-        QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
-        QTextDocument html;
-        html.setHtml(message);
-        QString messageText(html.toPlainText());
-        notificator->notify(Notificator::Information,
-                            tr("Incoming Message"),
-                            tr("Date: %1\n"
-                               "From Address: %2\n"
-                               "To Address: %3\n"
-                               "Message: %4\n")
-                              .arg(sent_datetime)
-                              .arg(from_address)
-                              .arg(to_address)
-                              .arg(messageText));
-    };
 }
 
 void SpectreGUI::optionsClicked()

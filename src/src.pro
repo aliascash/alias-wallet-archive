@@ -53,7 +53,6 @@ HEADERS += \
     $$PWD/qt/editaddressdialog.h \
     $$PWD/qt/guiconstants.h \
     $$PWD/qt/guiutil.h \
-    $$PWD/qt/messagemodel.h \
     $$PWD/qt/monitoreddatamapper.h \
     $$PWD/qt/notificator.h \
     $$PWD/qt/optionsmodel.h \
@@ -151,7 +150,6 @@ SOURCES += \
     $$PWD/qt/csvmodelwriter.cpp \
     $$PWD/qt/editaddressdialog.cpp \
     $$PWD/qt/guiutil.cpp \
-    $$PWD/qt/messagemodel.cpp \
     $$PWD/qt/monitoreddatamapper.cpp \
     $$PWD/qt/notificator.cpp \
     $$PWD/qt/optionsmodel.cpp \
@@ -195,7 +193,6 @@ SOURCES += \
 #    $$PWD/test/script_P2SH_tests.cpp \
 #    $$PWD/test/script_tests.cpp \
 #    $$PWD/test/sigopcount_tests.cpp \
-#    $$PWD/test/smsg_tests.cpp \
 #    $$PWD/test/stealth_tests.cpp \
 #    $$PWD/test/test_shadow.cpp \
 #    $$PWD/test/uint160_tests.cpp \
@@ -235,7 +232,6 @@ SOURCES += \
     $$PWD/rpcprotocol.cpp \
     $$PWD/rpcrawtransaction.cpp \
     $$PWD/rpcserver.cpp \
-    $$PWD/rpcsmessage.cpp \
     $$PWD/rpcwallet.cpp \
     $$PWD/script.cpp \
     $$PWD/scrypt.cpp \
@@ -258,7 +254,7 @@ SOURCES += \
 #levelDB additional headers
 INCLUDEPATH += $$PWD/../leveldb/helpers
 #find . -type d
-INCLUDEPATH += $$PWD $$PWD/obj $$PWD/test $$PWD/test/other $$PWD/test/data $$PWD/wordlists $$PWD/qt $$PWD/qt/res $$PWD/qt/res/css $$PWD/qt/res/css/fonts $$PWD/qt/res/images $$PWD/qt/res/images/avatars $$PWD/qt/res/icons $$PWD/qt/res/assets $$PWD/qt/res/assets/css $$PWD/qt/res/assets/plugins $$PWD/qt/res/assets/plugins/md5 $$PWD/qt/res/assets/plugins/identicon $$PWD/qt/res/assets/plugins/boostrapv3 $$PWD/qt/res/assets/plugins/boostrapv3/css $$PWD/qt/res/assets/plugins/boostrapv3/js $$PWD/qt/res/assets/plugins/boostrapv3/fonts $$PWD/qt/res/assets/plugins/framework $$PWD/qt/res/assets/plugins/markdown $$PWD/qt/res/assets/plugins/shajs $$PWD/qt/res/assets/plugins/pnglib $$PWD/qt/res/assets/plugins/iscroll $$PWD/qt/res/assets/plugins/jquery $$PWD/qt/res/assets/plugins/classie $$PWD/qt/res/assets/plugins/pace $$PWD/qt/res/assets/plugins/contextMenu $$PWD/qt/res/assets/plugins/jquery-scrollbar $$PWD/qt/res/assets/plugins/jdenticon $$PWD/qt/res/assets/plugins/qrcode $$PWD/qt/res/assets/plugins/emojione $$PWD/qt/res/assets/plugins/emojione/assets $$PWD/qt/res/assets/plugins/emojione/assets/svg $$PWD/qt/res/assets/plugins/emojione/assets/css $$PWD/qt/res/assets/plugins/jquery-transit $$PWD/qt/res/assets/plugins/footable $$PWD/qt/res/assets/plugins/jquery-ui $$PWD/qt/res/assets/plugins/jquery-ui/images $$PWD/qt/res/assets/js $$PWD/qt/res/assets/js/pages $$PWD/qt/res/assets/img $$PWD/qt/res/assets/img/progress $$PWD/qt/res/assets/img/avatars $$PWD/qt/res/assets/icons $$PWD/qt/res/assets/fonts $$PWD/qt/res/assets/fonts/Framework-icon $$PWD/qt/res/assets/fonts/FontAwesome $$PWD/qt/res/assets/fonts/Montserrat $$PWD/qt/res/assets/fonts/Footable $$PWD/qt/res/src $$PWD/qt/locale $$PWD/qt/forms $$PWD/qt/test $$PWD/lz4 $$PWD/json $$PWD/xxhash $$PWD/obj-test
+INCLUDEPATH += $$PWD $$PWD/obj $$PWD/test $$PWD/test/other $$PWD/test/data $$PWD/wordlists $$PWD/qt $$PWD/qt/res $$PWD/qt/res/css $$PWD/qt/res/css/fonts $$PWD/qt/res/images $$PWD/qt/res/icons $$PWD/qt/res/assets $$PWD/qt/res/assets/css $$PWD/qt/res/assets/plugins $$PWD/qt/res/assets/plugins/md5 $$PWD/qt/res/assets/plugins/identicon $$PWD/qt/res/assets/plugins/boostrapv3 $$PWD/qt/res/assets/plugins/boostrapv3/css $$PWD/qt/res/assets/plugins/boostrapv3/js $$PWD/qt/res/assets/plugins/boostrapv3/fonts $$PWD/qt/res/assets/plugins/framework $$PWD/qt/res/assets/plugins/markdown $$PWD/qt/res/assets/plugins/shajs $$PWD/qt/res/assets/plugins/pnglib $$PWD/qt/res/assets/plugins/iscroll $$PWD/qt/res/assets/plugins/jquery $$PWD/qt/res/assets/plugins/classie $$PWD/qt/res/assets/plugins/pace $$PWD/qt/res/assets/plugins/contextMenu $$PWD/qt/res/assets/plugins/jquery-scrollbar $$PWD/qt/res/assets/plugins/jdenticon $$PWD/qt/res/assets/plugins/qrcode $$PWD/qt/res/assets/plugins/emojione $$PWD/qt/res/assets/plugins/emojione/assets $$PWD/qt/res/assets/plugins/emojione/assets/svg $$PWD/qt/res/assets/plugins/emojione/assets/css $$PWD/qt/res/assets/plugins/jquery-transit $$PWD/qt/res/assets/plugins/footable $$PWD/qt/res/assets/plugins/jquery-ui $$PWD/qt/res/assets/plugins/jquery-ui/images $$PWD/qt/res/assets/js $$PWD/qt/res/assets/js/pages $$PWD/qt/res/assets/img $$PWD/qt/res/assets/img/progress $$PWD/qt/res/assets/icons $$PWD/qt/res/assets/fonts $$PWD/qt/res/assets/fonts/Framework-icon $$PWD/qt/res/assets/fonts/FontAwesome $$PWD/qt/res/assets/fonts/Montserrat $$PWD/qt/res/assets/fonts/Footable $$PWD/qt/res/src $$PWD/qt/locale $$PWD/qt/forms $$PWD/qt/test $$PWD/lz4 $$PWD/json $$PWD/xxhash $$PWD/obj-test
 
 
 FORMS += \

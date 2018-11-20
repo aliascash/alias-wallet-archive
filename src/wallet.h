@@ -225,7 +225,8 @@ public:
     
     bool EraseFromWallet(uint256 hash);
     void WalletUpdateSpent(const CTransaction& prevout, bool fBlock = false);
-    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
+    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, std::function<bool (const int&, const int&, const int&)> funcProgress = nullptr, int progressBatchSize=1000);
+
     void ReacceptWalletTransactions();
     void ResendWalletTransactions(bool fForce = false);
     int64_t GetBalance() const;
@@ -896,18 +897,7 @@ public:
             if (!IsSpent(i))
             {
                 const CTxOut &txout = vout[i];
-                
-                if (!txout.IsAnonOutput())
-                    continue;
-                const CScript &s = txout.scriptPubKey;
-                
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
-                
-                if (pwallet->HaveKey(ckidD))
-                {
-                    nCredit += txout.nValue;
-                };
-                
+                nCredit += pwallet->GetSpectreCredit(txout);
                 if (!MoneyRange(nCredit))
                     throw std::runtime_error("CWalletTx::GetAvailableSpectreCredit() : value out of range");
             };

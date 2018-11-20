@@ -13,7 +13,6 @@ enum EAddressType {
     AT_Normal = 1,  /**< Bitcoin address */
     AT_Stealth = 2,  /**< Stealth address */
     AT_BIP32 = 3, /**< BIP32 address */
-    AT_Group = 4, /**< BIP32 address */
 };
 
 /**

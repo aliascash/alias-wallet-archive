@@ -183,12 +183,6 @@ private slots:
     */
     void incomingTransaction(const QModelIndex & parent, int start, int end);
 
-    /** Show incoming message notification for new messages.
-
-        The new items are those between start and end inclusive, under the given parent item.
-    */
-    void incomingMessage(const QModelIndex & parent, int start, int end);
-
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
