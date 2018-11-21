@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [[ $# -gt 0 ]]; then
+if [ $# -gt 0 ] ; then
     FILE="$1"
     shift
-    if [[ -f "$FILE" ]]; then
+    if [ -f "$FILE" ] ; then
         INFO="$(head -n 1 "$FILE")"
     fi
 else
@@ -11,7 +11,7 @@ else
     exit 1
 fi
 
-if [[ -e "$(which git)" ]]; then
+if [ -e "$(which git)" ] ; then
     # clean 'dirty' status of touched files that haven't been modified
     git diff >/dev/null 2>/dev/null
 
@@ -25,14 +25,14 @@ if [[ -e "$(which git)" ]]; then
     COMMIT_ID="$(git rev-parse --short HEAD)"
 fi
 
-if [[ -n "$DESC" ]]; then
+if [ -n "$DESC" ] ; then
     NEWINFO="#define BUILD_DESC \"$DESC\""
 else
     NEWINFO="// No build information available"
 fi
 
 # only update build.h if necessary
-if [[ "$INFO" != "$NEWINFO" ]]; then
+if [ "$INFO" != "$NEWINFO" ] ; then
     echo "$NEWINFO" >"$FILE"
     echo "#define BUILD_DATE \"$TIME\"" >>"$FILE"
     echo "#define GIT_HASH \"$COMMIT_ID\"" >>"$FILE"
