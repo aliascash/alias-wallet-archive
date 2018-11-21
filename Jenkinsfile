@@ -333,7 +333,8 @@ pipeline {
                                     user: 'spectrecoin',
                                     repository: 'spectre',
                                     tag: "${GIT_TAG_TO_CREATE}",
-                                    name: "Continuous build No. ${BUILD_NUMBER}"
+                                    name: "Continuous build No. ${BUILD_NUMBER}",
+                                    preRelease: true
                             )
                         }
                     }
@@ -430,7 +431,7 @@ pipeline {
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
-                                                        value: 'latest'
+                                                        value: "${GIT_TAG_TO_CREATE}"
                                                 )
                                         ]
                                 )
