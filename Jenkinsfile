@@ -430,7 +430,7 @@ pipeline {
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
-                                                        value: 'latest'
+                                                        value: "${GIT_TAG_TO_CREATE}"
                                                 )
                                         ]
                                 )
