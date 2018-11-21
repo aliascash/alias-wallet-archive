@@ -17,7 +17,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 ### Changelog
 ## 2.1.0
 - Tor is now integrated as a separate process. This provides the same level of privacy but enables Spectrecoin to always use the latest version of TOR and to use the TOR plugins / bridges more effectively. **Note:** Linux users must install **tor** and obfs4proxy (if required) separately using their package manager.
-- #7 For MacOS and Windows, a separate OBFS4 release is now available with preconfigured OBFS4 bridges. Note that the only difference between the OBFS4 release and the standard release is the file  **torrc-defaults** in the tor subfolder which configures OBFS4.
+- [#7](https://github.com/spectrecoin/spectre/issues/7) For MacOS and Windows, a separate OBFS4 release is now available with preconfigured OBFS4 bridges. Note that the only difference between the OBFS4 release and the standard release is the file  **torrc-defaults** in the tor subfolder which configures OBFS4.
 
 ## 2.0.7
 - Change BIP44 ID from 35 (shadowcash) to 213 (spectrecoin). See https://github.com/satoshilabs/slips/blob/master/slip-0044.md.
@@ -30,16 +30,16 @@ Attention: Mnemonic seed words used for sub-wallet creation pre 2.0.7 will not w
 - UI sidebar behavior improved. Automatically select appropiate mode depending on viewport.
 - External blockexplorer address URL updated.
 - Prevent open of default context menu with browser actions.
-- #26 Fix status icon tooltips offscreen when scrolled down past header text
-- #31 Fix Connectivity bar not visible on high DPI settings
-- #65 Fix wallet immediately closed after walletpassphrase via console Win 8.1
-- #69 Fix Transaction ID in transaction detail dialog: link behavior error
-- #74 Change 'Spectre' to 'Spectrecoin'; update logo images
-- #75 Fix Wrong fee calculation when transfer from private to public
+- [#26](https://github.com/spectrecoin/spectre/issues/26) Fix status icon tooltips offscreen when scrolled down past header text
+- [#31](https://github.com/spectrecoin/spectre/issues/31) Fix Connectivity bar not visible on high DPI settings
+- [#65](https://github.com/spectrecoin/spectre/issues/65) Fix wallet immediately closed after walletpassphrase via console Win 8.1
+- [#69](https://github.com/spectrecoin/spectre/issues/69) Fix Transaction ID in transaction detail dialog: link behavior error
+- [#74](https://github.com/spectrecoin/spectre/issues/74) Change 'Spectre' to 'Spectrecoin'; update logo images
+- [#75](https://github.com/spectrecoin/spectre/issues/75) Fix Wrong fee calculation when transfer from private to public
 
 ## 2.0.5
-- #40 / #53 support cyrillic usernames by using the unicode function of windows to fetch the pathname (Windows)
-- #42 Remove additional UI id chars from transaction ID when copy/paste
-- #50 Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'
-- #64 DCB staking rewards are labeled 'Contributed'
+- [#40](https://github.com/spectrecoin/spectre/issues/40) / [#53](https://github.com/spectrecoin/spectre/issues/53) support cyrillic usernames by using the unicode function of windows to fetch the pathname (Windows)
+- [#42](https://github.com/spectrecoin/spectre/issues/42) Remove additional UI id chars from transaction ID when copy/paste
+- [#50](https://github.com/spectrecoin/spectre/issues/50) Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'
+- [#64](https://github.com/spectrecoin/spectre/issues/64) DCB staking rewards are labeled 'Contributed'
 - Change text of donation setting
