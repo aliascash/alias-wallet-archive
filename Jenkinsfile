@@ -11,9 +11,10 @@ pipeline {
     environment {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = 'xyz'
-        GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
-        SPECTRECOIN_VERSION = '2.2.0'
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
+        GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
+        GIT_TAG_TO_CREATE = "Build${BUILD_NUMBER}"
+        SPECTRECOIN_VERSION = '2.2.0'
     }
     stages {
         stage('Notification') {
@@ -38,6 +39,7 @@ pipeline {
                     anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
                 }
             }
+            //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Debian binaries') {
                     agent {
@@ -279,10 +281,70 @@ pipeline {
                 }
             }
         }
-        stage('Build and upload (develop)') {
+        stage('Develop: Git tag handling') {
             when {
                 anyOf { branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
             }
+            stages {
+                stage('Create continuous build tag') {
+                    steps {
+                        sshagent(credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
+                            createTag(
+                                    tag: "${GIT_TAG_TO_CREATE}",
+                                    commit: "HEAD",
+                                    comment: "Created tag ${GIT_TAG_TO_CREATE}"
+                            )
+                        }
+                    }
+                }
+                stage('Remove CI build if already existing') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_CREATE}"
+                            ) ==~ true
+                        }
+                    }
+                    steps {
+                        script {
+                            removeRelease(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_CREATE}"
+                            )
+                        }
+                    }
+                }
+                stage('Create CI build release') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_CREATE}"
+                            ) ==~ false
+                        }
+                    }
+                    steps {
+                        script {
+                            createRelease(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_CREATE}",
+                                    name: "Continuous build No. ${BUILD_NUMBER}"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        stage('Develop: Build steps') {
+            when {
+                anyOf { branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
+            }
+            //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Debian binaries') {
                     agent {
@@ -290,7 +352,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildDevelopBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest')
+                            buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
                         }
                     }
                     post {
@@ -305,7 +367,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildDevelopBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest')
+//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}")
 //                        }
 //                    }
 //                    post {
@@ -320,7 +382,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildDevelopBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest')
+                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}")
                         }
                     }
                     post {
@@ -335,7 +397,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildDevelopBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest')
+                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}")
                         }
                     }
                     post {
@@ -352,7 +414,7 @@ pipeline {
                         stage('Build Ubuntu binaries') {
                             steps {
                                 script {
-                                    buildDevelopBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest')
+                                    buildBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest', "${GIT_TAG_TO_CREATE}")
                                 }
                             }
                             post {
@@ -433,8 +495,8 @@ pipeline {
                                             "github-release upload \\\n" +
                                             "    --user spectrecoin \\\n" +
                                             "    --repo spectre \\\n" +
-                                            "    --tag latest \\\n" +
-                                            "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
+                                            "    --tag ${GIT_TAG_TO_CREATE} \\\n" +
+                                            "    --name \"Spectrecoin-${GIT_TAG_TO_CREATE}-macOS.dmg\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
                                     sh "rm -f Spectrecoin.dmg*"
@@ -504,8 +566,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery('latest')
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip"
+                                    createWindowsDelivery("${GIT_TAG_TO_CREATE}")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-WIN64.zip, Spectrecoin-${GIT_TAG_TO_CREATE}-OBFS4-WIN64.zip"
                                 }
                             }
                         }
@@ -515,8 +577,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-WIN64.zip", "latest")
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-latest-OBFS4-WIN64.zip", "latest")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-WIN64.zip", "${GIT_TAG_TO_CREATE}")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-OBFS4-WIN64.zip", "${GIT_TAG_TO_CREATE}")
                                 }
                             }
                             post {
@@ -529,10 +591,71 @@ pipeline {
                 }
             }
         }
-        stage('Build and upload (release)') {
+        stage('Master: Git tag handling') {
             when {
                 branch 'master'
             }
+            stages {
+                stage('Create tag') {
+                    steps {
+                        sshagent (credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
+                            createTag(
+                                    tag: "${SPECTRECOIN_VERSION}",
+                                    commit: "${GIT_COMMIT}",
+                                    comment: "Created tag ${SPECTRECOIN_VERSION}"
+                            )
+                        }
+                    }
+                }
+                stage('Remove Release if already existing') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${SPECTRECOIN_VERSION}"
+                            ) ==~ true
+                        }
+                    }
+                    steps {
+                        script {
+                            removeRelease(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${SPECTRECOIN_VERSION}"
+                            )
+                        }
+                    }
+                }
+                stage('Create Release'){
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${SPECTRECOIN_VERSION}"
+                            ) ==~ false
+                        }
+                    }
+                    steps {
+                        script {
+                            createRelease(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${SPECTRECOIN_VERSION}",
+                                    name: "Release ${SPECTRECOIN_VERSION}",
+                                    description: "${WORKSPACE}/ReleaseNotes.md",
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        stage('Master: Build steps') {
+            when {
+                branch 'master'
+            }
+            //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Debian binaries') {
                     agent {
@@ -540,7 +663,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                            buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -555,7 +678,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildMasterBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+//                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
 //                        }
 //                    }
 //                    post {
@@ -570,7 +693,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -585,7 +708,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildMasterBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                         }
                     }
                     post {
@@ -602,7 +725,7 @@ pipeline {
                         stage('Build Ubuntu binaries') {
                             steps {
                                 script {
-                                    buildMasterBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                                    buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
                                 }
                             }
                             post {
@@ -864,29 +987,24 @@ def buildFeatureBranch(String dockerfile, String tag) {
     }
 }
 
-def buildDevelopBranch(String dockerfile, String tag) {
+def buildBranch(String dockerfile, String dockerTag, String gitTag) {
+    env.DOCKERFILE = dockerfile
+    env.DOCKERTAG = dockerTag
+    env.GITTAG = gitTag
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh "docker build \\\n" +
-                "-f $dockerfile \\\n" +
-                "--rm \\\n" +
-                "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                "--build-arg SPECTRECOIN_REPOSITORY=spectre \\\n" +
-                "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
-                "-t $tag \\\n" +
-                "."
-    }
-}
-
-def buildMasterBranch(String dockerfile, String tag, String release) {
-    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh "docker build \\\n" +
-                "-f $dockerfile \\\n" +
-                "--rm \\\n" +
-                "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                "--build-arg SPECTRECOIN_RELEASE=${release} \\\n" +
-                "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
-                "-t ${tag} \\\n" +
-                "."
+        sh(
+                script: '''
+                    docker build \\
+                        -f ${DOCKERFILE} \\
+                        --rm \\
+                        --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\
+                        --build-arg SPECTRECOIN_REPOSITORY=spectre \\
+                        --build-arg SPECTRECOIN_RELEASE=${GITTAG} \\
+                        --build-arg REPLACE_EXISTING_ARCHIVE=--replace \\
+                        -t ${DOCKERTAG} \\
+                        .
+                '''
+        )
     }
 }
 
