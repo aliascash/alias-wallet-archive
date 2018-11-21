@@ -397,7 +397,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
             return Aborted;
 
-        if (!wallet->CommitTransaction(wtx))
+        std::map<CKeyID, CStealthAddress> mapPubStealth;
+        if (!wallet->CommitTransaction(wtx, &mapPubStealth))
             return TransactionCommitFailed;
 
         hex = QString::fromStdString(wtx.GetHash().GetHex());
@@ -522,6 +523,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         wtxNew.nVersion = ANON_TXN_VERSION;
 
         std::map<int, std::string> mapStealthNarr;
+        std::map<CKeyID, CStealthAddress> mapPubStealth;
         std::vector<std::pair<CScript, int64_t> > vecSend;
         std::vector<std::pair<CScript, int64_t> > vecChange;
 
@@ -548,6 +550,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 }
 
                 std::string sError;
+
                 if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, mapStealthNarr, sError))
                 {
                     LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
@@ -565,7 +568,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 }
 
                 CScript scriptNarration; // needed to match output id of narr
-                if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration))
+                if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
                 {
                     LogPrintf("SendCoinsAnon() CreateAnonOutputs failed.\n");
                     return SCR_Error;
@@ -659,10 +662,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
         //return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(std::string("Testing error")));
 
-        if (!wallet->CommitTransaction(wtxNew))
+        if (!wallet->CommitTransaction(wtxNew, &mapPubStealth))
         {
             LogPrintf("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.\n");
-            wallet->UndoAnonTransaction(wtxNew);
+            wallet->UndoAnonTransaction(wtxNew, &mapPubStealth);
             return TransactionCommitFailed;
 
         };

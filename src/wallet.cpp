@@ -2976,7 +2976,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 };
 
 
-bool CWallet::UndoAnonTransaction(const CTransaction& tx)
+bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     if (fDebugRingSig)
         LogPrintf("UndoAnonTransaction() tx: %s\n", tx.GetHash().GetHex().c_str());
@@ -2988,6 +2988,11 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 
     CWalletDB walletdb(strWalletFile, "cr+");
     CTxDB txdb("cr+");
+
+    // Remove all pub to stealth key mappings
+    for (auto& element : *mapPubStealth) {
+        DelAddressBookName(element.first, &walletdb);
+    }
 
     for (unsigned int i = 0; i < tx.vin.size(); ++i)
     {
@@ -3132,7 +3137,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
     return true;
 };
 
-bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns)
+bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     uint256 txnHash = tx.GetHash();
 
@@ -3480,6 +3485,10 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         if (!fOwnOutput) {
+            if (mapPubStealth && mapPubStealth->count(ckCoinId)) {
+                // if we have stealth address for the non owned pubkey, add the mapping to the addressbook
+                SetAddressBookName(ckCoinId, mapPubStealth->at(ckCoinId).Encoded(), pwdb, false);
+            }
             fNotAllOutputsOwned = true; // remember that at least one output is not owned
             continue;
         }
@@ -3770,7 +3779,7 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
     return true;
 };
 
-bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration)
+bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth)
 {
     if (fDebugRingSig)
         LogPrintf("CreateAnonOutputs()\n");
@@ -3869,6 +3878,9 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     // TODO: will this be optimised away?
     memset(&scShared.e[0], 0, EC_SECRET_SIZE);
+
+    if (mapPubStealth)
+        (*mapPubStealth)[cpkTo.GetID()] = *sxAddress;
 
     return true;
 };
@@ -4721,8 +4733,9 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     CScript scriptNarration; // needed to match output id of narr
     std::vector<std::pair<CScript, int64_t> > vecSend;
+    std::map<CKeyID, CStealthAddress> mapPubStealth;
 
-    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration))
+    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
     {
         sError = "CreateAnonOutputs() failed.";
         return false;
@@ -4770,14 +4783,12 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
         return false;
     };
 
-
-    if (!CommitTransaction(wtxNew))
+    if (!CommitTransaction(wtxNew, &mapPubStealth))
     {
         sError = "Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.";
-        UndoAnonTransaction(wtxNew);
+        UndoAnonTransaction(wtxNew, &mapPubStealth);
         return false;
     };
-
 
     return true;
 };
@@ -4835,9 +4846,9 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
     CScript scriptNarration; // needed to match output id of narr
     std::vector<std::pair<CScript, int64_t> > vecSend;
     std::vector<std::pair<CScript, int64_t> > vecChange;
+    std::map<CKeyID, CStealthAddress> mapPubStealth;
 
-
-    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration))
+    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
     {
         sError = "CreateAnonOutputs() failed.";
         return false;
@@ -4874,10 +4885,10 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
         };
     };
 
-    if (!CommitTransaction(wtxNew))
+    if (!CommitTransaction(wtxNew, &mapPubStealth))
     {
         sError = "Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.";
-        UndoAnonTransaction(wtxNew);
+        UndoAnonTransaction(wtxNew, &mapPubStealth);
         return false;
     };
 
@@ -6143,7 +6154,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
 
 
 // Call after CreateTransaction unless you want to abort
-bool CWallet::CommitTransaction(CWalletTx& wtxNew)
+bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     if (!wtxNew.CheckTransaction())
     {
@@ -6164,7 +6175,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew)
         walletdb.TxnBegin();
         txdb.TxnBegin();
         std::vector<WalletTxMap::iterator> vUpdatedTxns;
-        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns))
+        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns, mapPubStealth))
         {
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
