@@ -350,14 +350,35 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    steps {
-                        script {
-                            buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
+                    stages {
+                        stage('Build Debian binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Blockchain upload') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/spectrecoin-blockchain-bootstrap/master',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${GIT_TAG_TO_CREATE}"
+                                                ),
+                                                string(
+                                                        name: 'SPECTRECOIN_REPOSITORY',
+                                                        value: "spectre"
+                                                )
+                                        ]
+                                )
+                            }
                         }
                     }
                 }
@@ -660,14 +681,35 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    steps {
-                        script {
-                            buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                    stages {
+                        stage('Build Debian binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Blockchain upload') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/spectrecoin-blockchain-bootstrap/master',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${GIT_TAG_TO_CREATE}"
+                                                ),
+                                                string(
+                                                        name: 'SPECTRECOIN_REPOSITORY',
+                                                        value: "spectre"
+                                                )
+                                        ]
+                                )
+                            }
                         }
                     }
                 }
