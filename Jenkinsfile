@@ -366,7 +366,7 @@ pipeline {
                         stage('Trigger Blockchain upload') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin/spectrecoin-blockchain-bootstrap/master',
+                                        job: 'Spectrecoin-Blockchain',
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
@@ -697,11 +697,11 @@ pipeline {
                         stage('Trigger Blockchain upload') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin/spectrecoin-blockchain-bootstrap/master',
+                                        job: 'Spectrecoin-Blockchain',
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
-                                                        value: "${GIT_TAG_TO_CREATE}"
+                                                        value: "${SPECTRECOIN_VERSION}"
                                                 ),
                                                 string(
                                                         name: 'SPECTRECOIN_REPOSITORY',
