@@ -22,6 +22,7 @@
 #include "stealth.h"
 #include "smessage.h"
 
+static const std::string sAnonPrefix = "ao ";
 
 extern bool fWalletUnlockStakingOnly;
 extern bool fConfChange;
@@ -240,7 +241,7 @@ public:
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, int64_t& nFeeRet, int32_t& nChangePos, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, const CCoinControl *coinControl=NULL);
     
-    bool CommitTransaction(CWalletTx& wtxNew);
+    bool CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     
 
     uint64_t GetStakeWeight() const;
@@ -258,12 +259,12 @@ public:
     bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
     
     bool UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash);
-    bool UndoAnonTransaction(const CTransaction& tx);
-    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns);
+    bool UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
+    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     
     bool GetAnonChangeAddress(CStealthAddress& sxAddress);
     bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError);
-    bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration);
+    bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p);
@@ -414,7 +415,7 @@ public:
 
     bool SetAddressBookName(const CTxDestination& address, const std::string& strName, CWalletDB *pwdb = NULL, bool fAddKeyToMerkleFilters = true, bool fManual = false);
 
-    bool DelAddressBookName(const CTxDestination& address);
+    bool DelAddressBookName(const CTxDestination& address, CWalletDB *pwdb = NULL);
 
     void UpdatedTransaction(const uint256 &hashTx);
 
@@ -619,7 +620,7 @@ public:
     
     mutable int64_t nCredSPECCached;
     mutable int64_t nCredSpectreCached;
-    
+
     CWalletTx()
     {
         Init(NULL);
@@ -920,6 +921,8 @@ public:
 
     void GetAmounts(std::list<std::pair<CTxDestination, int64_t> >& listReceived,
                     std::list<std::pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+
+    bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
