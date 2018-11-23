@@ -15,6 +15,16 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
+## 2.2.0
+- Minimum ring size increased to 10 (enforced)
+- Allow SPECTRE <> XSPEC transfers only within account (destination address must be owned)
+- Disallow sending XSPEC to a stealth address
+- RPC method `listransactions`:
+  - Consolidate ATXOs under the stealth address
+  - New field currency with value 'XSPEC' or 'SPECTRE'
+- Addressbook fixes and improvements
+- New 3D application icon for macOS
+
 ## 2.1.0
 - Tor is now integrated as a separate process. This provides the same level of privacy but enables Spectrecoin to always use the latest version of TOR and to use the TOR plugins / bridges more effectively. **Note:** Linux users must install **tor** and obfs4proxy (if required) separately using their package manager.
 - [#7](https://github.com/spectrecoin/spectre/issues/7) For MacOS and Windows, a separate OBFS4 release is now available with preconfigured OBFS4 bridges. Note that the only difference between the OBFS4 release and the standard release is the file  **torrc-defaults** in the tor subfolder which configures OBFS4.
