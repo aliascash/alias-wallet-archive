@@ -31,7 +31,7 @@ esac
 AM_CONDITIONAL([OS_LINUX], [test "$build_linux" = "yes"])
 AM_CONDITIONAL([OS_WINDOWS_CROSSCOMPILE], [test "$build_windows" = "yes"])
 AM_CONDITIONAL([OS_MACOS], [test "$build_mac" = "yes"])
-AX_CXX_COMPILE_STDCXX(14, noext, mandatory)
+AX_CXX_COMPILE_STDCXX(17, noext, mandatory)
 AC_CONFIG_FILES([Makefile src/Makefile])
 PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES(OPENSSL, [openssl >= 1.1], [], [AC_MSG_ERROR([OpenSSL 1.1 not found])])

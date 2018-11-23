@@ -82,10 +82,10 @@ QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 -Wall
 
 DEFINES += MAC_OSX
 # Mac: compile for maximum compatibility (10.0 Yosemite, 32-bit)
-QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
+QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
     # https://www.reddit.com/r/cpp/comments/334s4r/how_to_enable_c14_in_qt_creator_on_a_mac/
-    # Turns out, there's a glitch in the Mac version where the standard library isn't correctly included when using the C++14 config flag. Adding this additional line to the .pro file fixes the problem:
+    # TODO might be obsolete with C++17: Turns out, there's a glitch in the Mac version where the standard library isn't correctly included when using the C++14 config flag. Adding this additional line to the .pro file fixes the problem:
     QMAKE_CXXFLAGS += -stdlib=libc++
 
     #add in core foundation framework
