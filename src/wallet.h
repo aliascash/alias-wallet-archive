@@ -919,8 +919,8 @@ public:
         return nChangeCached;
     }
 
-    void GetAmounts(std::list<std::pair<CTxDestination, int64_t> >& listReceived,
-                    std::list<std::pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetAmounts(std::list<std::tuple<CTxDestination, int64_t, std::string> >& listReceived,
+                    std::list<std::tuple<CTxDestination, int64_t, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
 

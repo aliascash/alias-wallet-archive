@@ -1126,8 +1126,8 @@ int CWalletTx::GetRequestCount() const
     return nRequests;
 }
 
-void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
-                           list<pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, string& strSentAccount) const
+void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& listReceived,
+                           list<tuple<CTxDestination, int64_t, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
 {
     nFee = 0;
     listReceived.clear();
@@ -1146,6 +1146,15 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
         nFee = nDebit - nValueOut;
     };
 
+    std::string sCurrencyDestination = "XSPEC";
+    std::string sCurrencySource = "XSPEC";
+    for(const CTxIn& txin: vin) {
+        if (txin.IsAnonInput() ) {
+            sCurrencySource = "SPECTRE";
+            break;
+        }
+    }
+
     // Sent/received.
     std::map<std::string, int64_t> mapAccountReceived;
     std::map<std::string, int64_t> mapAccountSent;
@@ -1157,6 +1166,8 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
             // Don't report 'change' txouts
             if (pwallet->IsChange(txout))
                 continue;
+
+            sCurrencyDestination = "SPECTRE";
 
             const CScript &s = txout.scriptPubKey;
             CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
@@ -1242,27 +1253,27 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(make_pair(address, txout.nValue));
+            listSent.push_back(make_tuple(address, txout.nValue, sCurrencySource));
 
         // If we are receiving the output, add it as a "received" entry
         if (fIsMine)
-            listReceived.push_back(make_pair(address, txout.nValue));
+            listReceived.push_back(make_tuple(address, txout.nValue, sCurrencyDestination));
     };
 
-    for (const auto& accountSent : mapAccountSent) {
+    for (const auto & [address, amount] : mapAccountSent) {
         CStealthAddress stealthAddress;
-        if (GetStealthAddress(accountSent.first, stealthAddress))
-            listSent.push_back(make_pair(stealthAddress, accountSent.second));
+        if (GetStealthAddress(address, stealthAddress))
+            listSent.push_back(std::make_tuple(stealthAddress, amount, sCurrencySource));
         else
-            listSent.push_back(make_pair(CNoDestination(), accountSent.second));
+            listSent.push_back(std::make_tuple(CNoDestination(), amount,sCurrencySource));
     }
 
-    for (const auto& accountReceived : mapAccountReceived) {
+    for (const auto & [address, amount] : mapAccountReceived) {
         CStealthAddress stealthAddress;
-        if (GetStealthAddress(accountReceived.first, stealthAddress))
-            listReceived.push_back(make_pair(stealthAddress, accountReceived.second));
+        if (GetStealthAddress(address, stealthAddress))
+            listReceived.push_back(std::make_tuple(stealthAddress, amount, sCurrencyDestination));
         else
-            listReceived.push_back(make_pair(CNoDestination(), accountReceived.second));
+            listReceived.push_back(std::make_tuple(CNoDestination(), amount, sCurrencyDestination));
     }
 }
 
@@ -1350,30 +1361,30 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nRecei
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::pair<CTxDestination, int64_t> > listReceived;
-    std::list<std::pair<CTxDestination, int64_t> > listSent;
+    std::list<std::tuple<CTxDestination, int64_t, std::string> > listReceived;
+    std::list<std::tuple<CTxDestination, int64_t, std::string> > listSent;
     GetAmounts(listReceived, listSent, allFee, strSentAccount);
 
     if (strAccount == strSentAccount)
     {
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& s, listSent)
-            nSent += s.second;
+        for(const auto & [address,amount,currency] : listSent)
+            nSent += amount;
         nFee = allFee;
     };
 
     {
         LOCK(pwallet->cs_wallet);
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& r, listReceived)
+        for(const auto & [address,amount,currency] : listReceived)
         {
-            if (pwallet->mapAddressBook.count(r.first))
+            if (pwallet->mapAddressBook.count(address))
             {
-                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(r.first);
+                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(address);
                 if (mi != pwallet->mapAddressBook.end() && (*mi).second == strAccount)
-                    nReceived += r.second;
+                    nReceived += amount;
             } else
             if (strAccount.empty())
             {
-                nReceived += r.second;
+                nReceived += amount;
             };
         };
     } // pwallet->cs_wallet
