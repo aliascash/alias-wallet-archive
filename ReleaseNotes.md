@@ -21,9 +21,10 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - Disallow sending XSPEC to a stealth address
 - RPC method `listransactions`:
   - Consolidate ATXOs under the stealth address
-  - New field currency with value 'XSPEC' or 'SPECTRE'
+  - New field currency with value 'XSPEC' or 'SPECTRE' 
 - Addressbook fixes and improvements
 - New 3D application icon for macOS
+- Rescanning of ATXO fixed (Also fixes #45)
 
 ## 2.1.0
 - Tor is now integrated as a separate process. This provides the same level of privacy but enables Spectrecoin to always use the latest version of TOR and to use the TOR plugins / bridges more effectively. **Note:** Linux users must install **tor** and obfs4proxy (if required) separately using their package manager.
