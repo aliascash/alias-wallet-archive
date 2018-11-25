@@ -376,7 +376,8 @@ pipeline {
                                                         name: 'SPECTRECOIN_REPOSITORY',
                                                         value: "spectre"
                                                 )
-                                        ]
+                                        ],
+                                        wait: false
                                 )
                             }
                         }
@@ -707,7 +708,8 @@ pipeline {
                                                         name: 'SPECTRECOIN_REPOSITORY',
                                                         value: "spectre"
                                                 )
-                                        ]
+                                        ],
+                                        wait: false
                                 )
                             }
                         }
