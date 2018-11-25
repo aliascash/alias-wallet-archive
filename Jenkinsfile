@@ -355,7 +355,7 @@ pipeline {
                         stage('Build Debian binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
+                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -390,7 +390,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}")
+//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
 //                        }
 //                    }
 //                    post {
@@ -405,7 +405,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}")
+                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -420,7 +420,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}")
+                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -437,7 +437,7 @@ pipeline {
                         stage('Build Ubuntu binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest', "${GIT_TAG_TO_CREATE}")
+                                    buildBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -519,7 +519,7 @@ pipeline {
                                             "    --user spectrecoin \\\n" +
                                             "    --repo spectre \\\n" +
                                             "    --tag ${GIT_TAG_TO_CREATE} \\\n" +
-                                            "    --name \"Spectrecoin-${GIT_TAG_TO_CREATE}-macOS.dmg\" \\\n" +
+                                            "    --name \"Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT}-macOS.dmg\" \\\n" +
                                             "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
                                             "    --replace"
                                     sh "rm -f Spectrecoin.dmg*"
@@ -589,8 +589,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_CREATE}")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-WIN64.zip, Spectrecoin-${GIT_TAG_TO_CREATE}-OBFS4-WIN64.zip"
+                                    createWindowsDelivery("${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT}-WIN64.zip, Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT}-OBFS4-WIN64.zip"
                                 }
                             }
                         }
@@ -600,8 +600,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-WIN64.zip", "${GIT_TAG_TO_CREATE}")
-                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-OBFS4-WIN64.zip", "${GIT_TAG_TO_CREATE}")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT}-WIN64.zip", "${GIT_TAG_TO_CREATE}")
+                                    uploadArtifactToGitHub("https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact", "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT}-OBFS4-WIN64.zip", "${GIT_TAG_TO_CREATE}")
                                 }
                             }
                             post {
