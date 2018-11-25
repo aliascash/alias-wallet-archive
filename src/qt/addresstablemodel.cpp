@@ -60,7 +60,7 @@ public:
                 const QString & strName(QString::fromStdString(item.second));
                 bool fMine = IsDestMine(*wallet, address.Get());
 
-                if (strName.startsWith("ao "))
+                if (strName.startsWith("ao ") || strName.length() == 102)
                     continue;
 
                 QString strAddress(QString::fromStdString(address.ToString()));
@@ -123,7 +123,7 @@ public:
 
     void updateEntry(const QString &address, const QString &label, bool isMine, int status)
     {
-        if (label.startsWith("ao "))
+        if (label.startsWith("ao ") || label.length() == 102)
             return;
 
         // Find address / label in model

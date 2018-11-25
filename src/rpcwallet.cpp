@@ -1186,9 +1186,14 @@ Value listreceivedbyaccount(const Array& params, bool fHelp)
 
 static void MaybePushAddress(Object & entry, const CTxDestination &dest)
 {
-    CBitcoinAddress addr;
-    if (addr.Set(dest))
-        entry.push_back(Pair("address", addr.ToString()));
+    if (dest.type() == typeid(CStealthAddress)) {
+        entry.push_back(Pair("address", boost::get<CStealthAddress>(dest).Encoded()));
+    }
+    else {
+        CBitcoinAddress addr;
+        if (addr.Set(dest))
+            entry.push_back(Pair("address", addr.ToString()));
+    }
 }
 
 void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int nMinDepth, bool fLong, Array& ret)
@@ -1227,8 +1232,14 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
         {
 
             std::string account;
-            if (pwalletMain->mapAddressBook.count(r.first))
+            if (r.first.type() == typeid(CStealthAddress))
+            {
+                CStealthAddress stealthAddress = boost::get<CStealthAddress>(r.first);
+                account = stealthAddress.label;
+            }
+            else if (pwalletMain->mapAddressBook.count(r.first))
                 account = pwalletMain->mapAddressBook[r.first];
+
             if (fAllAccounts || (account == strAccount))
             {
                 Object entry;

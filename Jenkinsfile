@@ -351,14 +351,36 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    steps {
-                        script {
-                            buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
+                    stages {
+                        stage('Build Debian binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Blockchain upload') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin-Blockchain',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${GIT_TAG_TO_CREATE}"
+                                                ),
+                                                string(
+                                                        name: 'SPECTRECOIN_REPOSITORY',
+                                                        value: "spectre"
+                                                )
+                                        ],
+                                        wait: false
+                                )
+                            }
                         }
                     }
                 }
@@ -662,14 +684,36 @@ pipeline {
                     agent {
                         label "docker"
                     }
-                    steps {
-                        script {
-                            buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                    stages {
+                        stage('Build Debian binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Blockchain upload') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin-Blockchain',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${SPECTRECOIN_VERSION}"
+                                                ),
+                                                string(
+                                                        name: 'SPECTRECOIN_REPOSITORY',
+                                                        value: "spectre"
+                                                )
+                                        ],
+                                        wait: false
+                                )
+                            }
                         }
                     }
                 }
@@ -989,23 +1033,15 @@ def buildFeatureBranch(String dockerfile, String tag) {
 }
 
 def buildBranch(String dockerfile, String dockerTag, String gitTag) {
-    env.DOCKERFILE = dockerfile
-    env.DOCKERTAG = dockerTag
-    env.GITTAG = gitTag
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh(
-                script: '''
-                    docker build \\
-                        -f ${DOCKERFILE} \\
-                        --rm \\
-                        --build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\
-                        --build-arg SPECTRECOIN_REPOSITORY=spectre \\
-                        --build-arg SPECTRECOIN_RELEASE=${GITTAG} \\
-                        --build-arg REPLACE_EXISTING_ARCHIVE=--replace \\
-                        -t ${DOCKERTAG} \\
-                        .
-                '''
-        )
+        sh "docker build \\\n" +
+                "-f ${dockerfile} \\\n" +
+                "--rm \\\n" +
+                "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                "--build-arg SPECTRECOIN_RELEASE=${gitTag} \\\n" +
+                "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
+                "-t ${dockerTag} \\\n" +
+                "."
     }
 }
 
