@@ -2372,6 +2372,9 @@ Value scanforalltxns(const Array& params, bool fHelp)
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Can't run in thin mode.");
 
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
+
     Object result;
     int32_t nFromHeight = 0;
 
@@ -2817,6 +2820,8 @@ Value reloadanondata(const Array& params, bool fHelp)
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Must be in full mode.");
 
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     CBlockIndex *pindex = pindexGenesisBlock;
     Object result;
