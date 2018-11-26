@@ -74,6 +74,8 @@ public:
         SendToSelf,
         RecvSpectre,
         SendSpectre,
+        ConvertXSPECtoSPECTRE,
+        ConvertSPECTREtoXSPEC
     };
 
     static QString getTypeLabel(const int &type);

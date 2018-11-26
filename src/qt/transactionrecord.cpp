@@ -20,12 +20,12 @@ QString TransactionRecord::getTypeLabel(const int &type)
     switch(type)
     {
     case RecvWithAddress:
-        return SpectreGUI::tr("Received with");
+        return SpectreGUI::tr("XSPEC received with");
     case RecvFromOther:
-        return SpectreGUI::tr("Received from");
+        return SpectreGUI::tr("XSPEC received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("Sent to");
+        return SpectreGUI::tr("XSPEC sent");
     case SendToSelf:
         return SpectreGUI::tr("Payment to yourself");
     case Generated:
@@ -35,9 +35,13 @@ QString TransactionRecord::getTypeLabel(const int &type)
 	case GeneratedContribution:
 		return SpectreGUI::tr("Contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("Received SPECTRE");
+        return SpectreGUI::tr("SPECTRE received with");
     case SendSpectre:
-        return SpectreGUI::tr("Sent SPECTRE");
+        return SpectreGUI::tr("SPECTRE sent to");
+    case ConvertSPECTREtoXSPEC:
+        return SpectreGUI::tr("SPECTRE to XSPEC");
+    case ConvertXSPECtoSPECTRE:
+        return SpectreGUI::tr("XSPEC to SPECTRE");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -86,51 +90,106 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
     char cbuf[256];
 
+    const std::string XSPEC = "XSPEC";
+    const std::string SPECTRE = "SPECTRE";
+
+    std::string sCurrencyDestination = XSPEC;
+    std::string sCurrencySource = XSPEC;
+    for(const CTxIn& txin: wtx.vin) {
+        if (txin.IsAnonInput() ) {
+            sCurrencySource = SPECTRE;
+            break;
+        }
+    }
+
     if (wtx.nVersion == ANON_TXN_VERSION)
     {
-        if (nNet > 0 && nCredSpectre > 0)
+        bool withinAccount = false;
+        std::map<std::string, int64_t> mapAddressAmounts;
+        std::map<std::string, std::string> mapAddressNarration;
+        for (uint32_t index = 0; index < wtx.vout.size(); ++index)
         {
-            // -- credit
-            TransactionRecord sub(hash, nTime, TransactionRecord::RecvSpectre, "", "", nNet, 0);
-
-            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
+            const CTxOut& txout = wtx.vout[index];
+            if (txout.IsAnonOutput())
             {
-                // display 1st transaction
-                snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                if (mi != wtx.mapValue.end() && !mi->second.empty())
-                {
-                    sub.narration = mi->second;
-                    break;
-                };
-            };
+                // Don't report 'change' txouts
+                if (wallet->IsChange(txout))
+                    continue;
 
-            parts.append(sub);
-            return parts;
-        } else
-        if (nNet <= 0)
-        {
-            // -- debit
-            TransactionRecord sub(hash, nTime, TransactionRecord::SendSpectre, "", "", nNet, 0);
+                sCurrencyDestination = SPECTRE;
 
-            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
-            {
-                // display 1st transaction
-                snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                if (mi != wtx.mapValue.end() && !mi->second.empty())
+                const CScript &s = txout.scriptPubKey;
+                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+
+                bool fIsMine = wallet->HaveKey(ckidD);
+
+                std::string account;
                 {
-                    sub.narration = mi->second;
-                    break;
+                    LOCK(wallet->cs_wallet);
+                    if (wallet->mapAddressBook.count(ckidD))
+                    {
+                        account = wallet->mapAddressBook.at(ckidD);
+                    }
+                    else {
+                        account = "UNKNOWN";
+                    }
                 }
-            };
+
+                if (fIsMine)
+                    mapAddressAmounts[account] += txout.nValue;
+                else if (nDebit > 0)
+                    mapAddressAmounts[account] -= txout.nValue;
+
+                if (fIsMine && nDebit > 0)
+                    withinAccount = true;
+
+                // Add narration for account
+                snprintf(cbuf, sizeof(cbuf), "n_%u", mapAddressAmounts.size()-1);
+                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
+                if (mi != wtx.mapValue.end() && !mi->second.empty()){
+                    mapAddressNarration[account] = mi->second;
+                    LogPrintf("mapAccountNarration[%s] = '%s'\n", account, mi->second);
+                }
+            }
+        }
+        bool firstSend = true;
+        for (const auto & [address, amount] : mapAddressAmounts) {
+            int64_t amountAdjusted = amount;
+            TransactionRecord::Type trxType = TransactionRecord::RecvSpectre;
+            if (withinAccount) {
+                if (sCurrencySource == XSPEC && sCurrencyDestination == SPECTRE)
+                    trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
+                else if (sCurrencySource == SPECTRE && sCurrencyDestination == XSPEC)
+                    trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
+                else
+                    trxType = TransactionRecord::SendToSelf;
+            }
+            else if (amount < 0) {
+                trxType = TransactionRecord::SendSpectre;
+                if (firstSend) {
+                    // add trx fees to first trx record
+                    firstSend = false;
+                    int64_t nTxFee = nDebit - wtx.GetValueOut();
+                    amountAdjusted = amountAdjusted - nTxFee;
+                }
+            }
+            TransactionRecord sub(hash, nTime, trxType, "", "", amountAdjusted, 0);
+
+            CStealthAddress stealthAddress;
+            if (wallet->GetStealthAddress(address, stealthAddress))
+                sub.address = stealthAddress.Encoded();
+
+            mapValue_t::const_iterator ni = mapAddressNarration.find(address);
+            if (ni != mapAddressNarration.end() && !ni->second.empty()) {
+                 sub.narration = ni->second;
+                 LogPrintf("sub.narration[%s] = '%s'\n", address, ni->second);
+            }
 
             parts.append(sub);
-            return parts;
-        };
+        }
 
-        // continue on
-    };
+        return parts;
+    }
 
 
     if (nNet > 0 || wtx.IsCoinBase() || wtx.IsCoinStake())

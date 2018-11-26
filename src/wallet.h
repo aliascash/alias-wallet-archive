@@ -89,6 +89,8 @@ public:
     bool SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
     bool SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl=NULL) const;
 
+    bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
+
     CWalletDB *pwalletdbEncryption;
 
     // the current wallet version: clients below this version are not able to load the wallet
@@ -921,8 +923,6 @@ public:
 
     void GetAmounts(std::list<std::tuple<CTxDestination, int64_t, std::string> >& listReceived,
                     std::list<std::tuple<CTxDestination, int64_t, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
-
-    bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;

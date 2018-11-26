@@ -1262,7 +1262,7 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
 
     for (const auto & [address, amount] : mapAccountSent) {
         CStealthAddress stealthAddress;
-        if (GetStealthAddress(address, stealthAddress))
+        if (pwallet->GetStealthAddress(address, stealthAddress))
             listSent.push_back(std::make_tuple(stealthAddress, amount, sCurrencySource));
         else
             listSent.push_back(std::make_tuple(CNoDestination(), amount,sCurrencySource));
@@ -1270,14 +1270,14 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
 
     for (const auto & [address, amount] : mapAccountReceived) {
         CStealthAddress stealthAddress;
-        if (GetStealthAddress(address, stealthAddress))
+        if (pwallet->GetStealthAddress(address, stealthAddress))
             listReceived.push_back(std::make_tuple(stealthAddress, amount, sCurrencyDestination));
         else
             listReceived.push_back(std::make_tuple(CNoDestination(), amount, sCurrencyDestination));
     }
 }
 
-bool CWalletTx::GetStealthAddress(const std::string& address, CStealthAddress& stealthAddressRet) const
+bool CWallet::GetStealthAddress(const std::string& address, CStealthAddress& stealthAddressRet) const
 {
     CStealthAddress sxAddr;
     std::string sAddressToCompare;
@@ -1296,7 +1296,7 @@ bool CWalletTx::GetStealthAddress(const std::string& address, CStealthAddress& s
         }
     }
 
-    for (const CStealthAddress & sa : pwallet->stealthAddresses)
+    for (const CStealthAddress & sa : stealthAddresses)
     {
         if (!sAddressToCompare.empty())
         {
@@ -1315,7 +1315,7 @@ bool CWalletTx::GetStealthAddress(const std::string& address, CStealthAddress& s
     }
 
     ExtKeyAccountMap::const_iterator mi;
-    for (mi = pwallet->mapExtAccounts.begin(); mi != pwallet->mapExtAccounts.end(); ++mi)
+    for (mi = mapExtAccounts.begin(); mi != mapExtAccounts.end(); ++mi)
     {
         CExtKeyAccount *ea = mi->second;
         if (ea->mapStealthKeys.size() < 1)
