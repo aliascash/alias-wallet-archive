@@ -1454,6 +1454,135 @@ bool CWalletTx::WriteToDisk()
     return CWalletDB(pwallet->strWalletFile).WriteTx(GetHash(), *this);
 }
 
+uint32_t CWallet::ClearWalletTransactions(bool onlyUnaccepted)
+{
+    uint32_t nTransactions = 0;
+    char cbuf[256];
+    {
+        LOCK2(cs_main, cs_wallet);
+
+        CWalletDB walletdb(strWalletFile);
+        walletdb.TxnBegin();
+        Dbc* pcursor = walletdb.GetTxnCursor();
+        if (!pcursor)
+            throw std::runtime_error("Cannot get wallet DB cursor");
+
+        Dbt datKey;
+        Dbt datValue;
+
+        datKey.set_flags(DB_DBT_USERMEM);
+        datValue.set_flags(DB_DBT_USERMEM);
+
+        std::vector<unsigned char> vchKey;
+        std::vector<unsigned char> vchType;
+        std::vector<unsigned char> vchKeyData;
+        std::vector<unsigned char> vchValueData;
+
+        vchKeyData.resize(100);
+        vchValueData.resize(100);
+
+        datKey.set_ulen(vchKeyData.size());
+        datKey.set_data(&vchKeyData[0]);
+
+        datValue.set_ulen(vchValueData.size());
+        datValue.set_data(&vchValueData[0]);
+
+        unsigned int fFlags = DB_NEXT; // same as using DB_FIRST for new cursor
+        while (true)
+        {
+            int ret = pcursor->get(&datKey, &datValue, fFlags);
+
+            if (ret == ENOMEM
+                || ret == DB_BUFFER_SMALL)
+            {
+                if (datKey.get_size() > datKey.get_ulen())
+                {
+                    vchKeyData.resize(datKey.get_size());
+                    datKey.set_ulen(vchKeyData.size());
+                    datKey.set_data(&vchKeyData[0]);
+                };
+
+                if (datValue.get_size() > datValue.get_ulen())
+                {
+                    vchValueData.resize(datValue.get_size());
+                    datValue.set_ulen(vchValueData.size());
+                    datValue.set_data(&vchValueData[0]);
+                };
+                // -- try once more, when DB_BUFFER_SMALL cursor is not expected to move
+                ret = pcursor->get(&datKey, &datValue, fFlags);
+            };
+
+            if (ret == DB_NOTFOUND)
+                break;
+            else
+            if (datKey.get_data() == NULL || datValue.get_data() == NULL
+                || ret != 0)
+            {
+                snprintf(cbuf, sizeof(cbuf), "wallet DB error %d, %s", ret, db_strerror(ret));
+                throw std::runtime_error(cbuf);
+            };
+
+            CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+            ssValue.SetType(SER_DISK);
+            ssValue.clear();
+            ssValue.write((char*)datKey.get_data(), datKey.get_size());
+
+            ssValue >> vchType;
+
+
+            std::string strType(vchType.begin(), vchType.end());
+
+            //LogPrintf("strType %s\n", strType.c_str());
+
+            if (strType == "tx")
+            {
+                uint256 hash;
+                ssValue >> hash;
+
+                if (onlyUnaccepted)
+                {
+                    const CWalletTx& wtx = mapWallet[hash];
+                    if (!wtx.IsInMainChain())
+                    {
+                        if ((ret = pcursor->del(0)) != 0)
+                        {
+                            LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
+                            continue;
+                        }
+                        mapWallet.erase(hash);
+                        NotifyTransactionChanged(this, hash, CT_DELETED);
+                        nTransactions++;
+                    }
+                    continue;
+                }
+
+                if ((ret = pcursor->del(0)) != 0)
+                {
+                    LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
+                    continue;
+                }
+
+                mapWallet.erase(hash);
+                NotifyTransactionChanged(this, hash, CT_DELETED);
+
+                nTransactions++;
+            };
+        };
+        pcursor->close();
+        walletdb.TxnCommit();
+
+        //pwalletMain->mapWallet.clear();
+
+        if (nNodeMode == NT_THIN)
+        {
+            // reset LastFilteredHeight
+            walletdb.WriteLastFilteredHeight(0);
+        }
+    }
+
+    return nTransactions;
+}
+
 // Scan the block chain (starting in pindexStart) for transactions
 // from or to us. If fUpdate is true, found transactions that already
 // exist in the wallet will be updated.
