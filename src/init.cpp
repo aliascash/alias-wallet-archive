@@ -878,7 +878,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     nStart = GetTimeMillis();
     
     pwalletMain = new CWallet(strWalletFileName);
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
+    int oltWalletVersion;
+    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion);
 
     if (nLoadWalletRet != DB_LOAD_OK)
     {

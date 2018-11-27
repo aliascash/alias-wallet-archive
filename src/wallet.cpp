@@ -6486,12 +6486,12 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
 
 
 
-DBErrors CWallet::LoadWallet()
+DBErrors CWallet::LoadWallet(int& oltWalletVersion)
 {
     if (!fFileBacked)
         return DB_LOAD_OK;
 
-    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this);
+    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this, oltWalletVersion);
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {
         if (CDB::Rewrite(strWalletFile, "\x04pool"))

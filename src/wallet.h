@@ -414,7 +414,7 @@ public:
     
     void SetBestThinChain(const CBlockThinLocator& loc);
 
-    DBErrors LoadWallet();
+    DBErrors LoadWallet(int& oltWalletVersion);
 
     bool SetAddressBookName(const CTxDestination& address, const std::string& strName, CWalletDB *pwdb = NULL, bool fAddKeyToMerkleFilters = true, bool fManual = false);
 
