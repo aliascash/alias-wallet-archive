@@ -355,7 +355,7 @@ pipeline {
                         stage('Build Debian binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+                                    buildBranch('Docker/Debian/Dockerfile', 'spectreproject/spectre-debian:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -390,7 +390,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT}")
 //                        }
 //                    }
 //                    post {
@@ -405,7 +405,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -420,7 +420,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -437,7 +437,7 @@ pipeline {
                         stage('Build Ubuntu binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest', "${GIT_TAG_TO_CREATE}-${GIT_COMMIT}")
+                                    buildBranch('Docker/Ubuntu/Dockerfile', 'spectreproject/spectre-ubuntu:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -720,7 +720,7 @@ pipeline {
                         stage('Build Debian binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                                    buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -755,7 +755,7 @@ pipeline {
 //                    }
 //                    steps {
 //                        script {
-//                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+//                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT}")
 //                        }
 //                    }
 //                    post {
@@ -770,7 +770,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -785,7 +785,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT}")
                         }
                     }
                     post {
@@ -802,7 +802,7 @@ pipeline {
                         stage('Build Ubuntu binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}")
+                                    buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT}")
                                 }
                             }
                             post {
@@ -1097,12 +1097,13 @@ def buildFeatureBranch(String dockerfile, String tag) {
     }
 }
 
-def buildBranch(String dockerfile, String dockerTag, String gitTag) {
+def buildBranch(String dockerfile, String dockerTag, String gitTag, String gitCommit) {
     withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
         sh "docker build \\\n" +
                 "-f ${dockerfile} \\\n" +
                 "--rm \\\n" +
                 "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
+                "--build-arg GIT_COMMIT=${gitCommit} \\\n" +
                 "--build-arg SPECTRECOIN_RELEASE=${gitTag} \\\n" +
                 "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
                 "-t ${dockerTag} \\\n" +
