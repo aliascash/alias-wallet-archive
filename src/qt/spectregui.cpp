@@ -442,7 +442,7 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
         connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
 
         // Ask for passphrase if needed
-        connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
+        connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
 
         bridge->setWalletModel();
     }
@@ -956,17 +956,23 @@ void SpectreGUI::changePassphrase()
     dlg.exec();
 }
 
-void SpectreGUI::unlockWallet()
+void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
 {
     if(!walletModel)
         return;
 
+    AskPassphraseDialog::Mode mode;
+    if (unlockMode == WalletModel::UnlockMode::rescan) {
+         mode = AskPassphraseDialog::UnlockRescan;
+    }
+    else {
+        mode = sender() == unlockWalletAction ?
+                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
+    }
+
     // Unlock wallet when requested by wallet model
     if(walletModel->getEncryptionStatus() == WalletModel::Locked)
     {
-
-        AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
-              AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
         AskPassphraseDialog dlg(mode, this);
         dlg.setModel(walletModel);
         dlg.exec();

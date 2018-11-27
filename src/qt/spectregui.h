@@ -13,6 +13,8 @@
 #include <QModelIndex>
 
 #include "spectrebridge.h"
+#include "walletmodel.h"
+#include "askpassphrasedialog.h"
 #include "rpcconsole.h"
 
 #include <stdint.h>
@@ -189,7 +191,7 @@ private slots:
     void aboutClicked();
 
     /** Unlock wallet */
-    void unlockWallet();
+    void unlockWallet(WalletModel::UnlockMode unlockMode=WalletModel::UnlockMode::standard);
     /** Lock wallet */
     void lockWallet();
     /** Toggle whether wallet is locked or not */

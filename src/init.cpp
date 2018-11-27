@@ -934,7 +934,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (pindexBest != pindexRescan && pindexBest && pindexRescan && pindexBest->nHeight > pindexRescan->nHeight)
     {
-        uiInterface.InitMessage(_("Rescanning..."));
+        uiInterface.InitMessage(_("Prepare for rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
 

@@ -842,7 +842,7 @@ void WalletModel::unsubscribeFromCoreSignals()
 }
 
 // WalletModel::UnlockContext implementation
-WalletModel::UnlockContext WalletModel::requestUnlock()
+WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mode)
 {
     bool was_locked = getEncryptionStatus() == Locked;
 
@@ -855,7 +855,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock()
     if(was_locked)
     {
         // Request UI to unlock wallet
-        emit requireUnlock();
+        emit requireUnlock(mode);
     }
     // If wallet is still locked, unlock was failed or cancelled, mark context as invalid
     bool valid = getEncryptionStatus() != Locked;
@@ -963,5 +963,5 @@ void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 s
     emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
 void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
-void WalletModel::emitRequireUnlock() { emit requireUnlock(); }
+void WalletModel::emitRequireUnlock(UnlockMode mode) { emit requireUnlock(mode); }
 void WalletModel::emitError(const QString &title, const QString &message, bool modal) { emit error(title, message, modal); }
