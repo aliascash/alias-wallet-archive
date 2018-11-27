@@ -19,6 +19,10 @@ pipeline {
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
                 returnStdout: true
         )
+        CURRENT_DATE = sh(
+                script: "printf \$(date '+%F %T')",
+                returnStdout: true
+        )
     }
     stages {
         stage('Notification') {
@@ -295,6 +299,7 @@ pipeline {
                                     repository: 'spectre',
                                     tag: "${GIT_TAG_TO_CREATE}",
                                     name: "Continuous build No. ${BUILD_NUMBER}",
+                                    description: "Build ${BUILD_NUMBER} from ${CURRENT_DATE}",
                                     preRelease: true
                             )
                         }
@@ -481,7 +486,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload delivery') {
+                        stage('Upload deliveries') {
                             agent {
                                 label "housekeeping"
                             }
@@ -574,7 +579,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload delivery') {
+                        stage('Upload deliveries') {
                             agent {
                                 label "housekeeping"
                             }
@@ -847,7 +852,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload delivery') {
+                        stage('Upload deliveries') {
                             agent {
                                 label "housekeeping"
                             }
@@ -940,7 +945,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload delivery') {
+                        stage('Upload deliveries') {
                             agent {
                                 label "housekeeping"
                             }
