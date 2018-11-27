@@ -81,6 +81,7 @@ QMAKE_LFLAGS += -fstack-protector
 QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual -Wformat -Wformat-security -Wno-unused-parameter
 
 DEFINES += MAC_OSX
+DEFINES += HAVE_BUILD_INFO
 # Mac: compile for maximum compatibility (10.0 Yosemite, 32-bit)
 QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
 

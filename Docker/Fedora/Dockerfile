@@ -11,7 +11,7 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /spectre
 
 RUN cd /spectre \
- && mkdir db4.8 leveldb tor \
+ && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \
  && ./configure \

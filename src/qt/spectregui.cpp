@@ -20,6 +20,7 @@
 #include "wallet.h"
 #include "util.h"
 #include "init.h"
+#include "version.h"
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -171,19 +172,19 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     webEngineView = new QWebEngineView();
 	webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
 
-    webEnginePage = new WebEnginePage(this);	
+    webEnginePage = new WebEnginePage(this);
     webEngineView->setPage(webEnginePage);
 
     webEnginePage->action(QWebEnginePage::Reload)->setVisible(false);
     webEnginePage->action(QWebEnginePage::Back)->setVisible(false);
     webEnginePage->action(QWebEnginePage::Forward)->setVisible(false);
-    
+
     connect(webEnginePage,SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
 
     setCentralWidget(webEngineView);
 
     resize(1280, 720);
-    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client"));
+    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/spectre"));
     setWindowIcon(QIcon(":icons/spectre"));
@@ -274,7 +275,7 @@ void SpectreGUI::pageLoaded(bool ok)
 }
 
 void SpectreGUI::addJavascriptObjects()
-{        
+{
     //Following the example at https://doc.qt.io/qt-5.10/qtwebengine-webenginewidgets-markdowneditor-example.html
     QWebChannel *channel = new QWebChannel(this);
     //register a QObject to be exposed to JavaScript

@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-ubuntu:1.1 as build
+FROM spectreproject/spectre-builder-ubuntu:1.2 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -11,7 +11,7 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /spectre
 
 RUN cd /spectre \
- && mkdir db4.8 leveldb tor \
+ && mkdir db4.8 leveldb \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
