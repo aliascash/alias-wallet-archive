@@ -286,6 +286,7 @@ public:
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly);
     int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly);
+    int CountLockedAnonOutputs();
     
     bool EraseAllAnonData();
     

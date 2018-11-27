@@ -5766,6 +5766,52 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
     return 0;
 };
 
+int CWallet::CountLockedAnonOutputs()
+{
+    if (fDebugRingSig)
+    {
+        LogPrintf("%s\n", __func__);
+     };
+    // -- count owned anon outputs received when wallet was locked.
+    int result = 0;
+
+    CWalletDB walletdb(strWalletFile, "cr+");
+    Dbc *pcursor = walletdb.GetTxnCursor();
+    if (!pcursor)
+        throw runtime_error(strprintf("%s : cannot create DB cursor.", __func__).c_str());
+
+    unsigned int fFlags = DB_SET_RANGE;
+    while (true)
+    {
+        // Read next record
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        if (fFlags == DB_SET_RANGE)
+            ssKey << std::string("lao");
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = walletdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
+        fFlags = DB_NEXT;
+        if (ret == DB_NOTFOUND)
+        {
+            break;
+        }
+        else if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(strprintf("%s : error scanning DB.", __func__).c_str());
+        }
+        // Unserialize
+        string strType;
+        ssKey >> strType;
+        if (strType != "lao")
+            break;
+
+        result++;
+    }
+
+    pcursor->close();
+    return result;
+}
+
 bool CWallet::EraseAllAnonData()
 {
     LogPrintf("EraseAllAnonData()\n");
