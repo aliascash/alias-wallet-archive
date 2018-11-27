@@ -5812,7 +5812,7 @@ int CWallet::CountLockedAnonOutputs()
     return result;
 }
 
-bool CWallet::EraseAllAnonData()
+uint64_t CWallet::EraseAllAnonData()
 {
     LogPrintf("EraseAllAnonData()\n");
     int64_t nStart = GetTimeMillis();
@@ -5844,7 +5844,8 @@ bool CWallet::EraseAllAnonData()
     walletdb.EraseRange(std::string("ool"), nOol);
 
     LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, nOol, GetTimeMillis() - nStart);
-    return true;
+
+    return nLao + nOao + nOal + nOol;
 };
 
 bool CWallet::CacheAnonStats()

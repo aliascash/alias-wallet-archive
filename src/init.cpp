@@ -941,8 +941,10 @@ bool AppInit2(boost::thread_group& threadGroup)
         {
             LOCK2(cs_main, pwalletMain->cs_wallet);
 
-            if (fullscan)
+            if (fullscan) {
+                pwalletMain->EraseAllAnonData();
                 pwalletMain->ClearWalletTransactions(false);
+            }
 
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
                 uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
@@ -950,7 +952,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             },1000);
 
             if (fullscan)
-                pwalletMain->ReacceptWalletTransactions();
+                pwalletMain->CacheAnonStats();
         }
 
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);

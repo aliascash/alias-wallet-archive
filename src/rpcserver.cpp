@@ -198,8 +198,7 @@ string CRPCTable::help(string strCommand) const
                 && strMethod != "sendanontospec"
                 && strMethod != "estimateanonfee"
                 && strMethod != "anonoutputs"
-                && strMethod != "anoninfo"
-                && strMethod != "reloadanondata")
+                && strMethod != "anoninfo")
             continue;
         } else
         if (strCommand != "" && strMethod != strCommand)
@@ -365,7 +364,6 @@ static const CRPCCommand vRPCCommands[] =
     { "estimateanonfee",        &estimateanonfee,        false,     false,     false },
     { "anonoutputs",            &anonoutputs,            false,     false,     false },
     { "anoninfo",               &anoninfo,               false,     false,     false },
-    { "reloadanondata",         &reloadanondata,         false,     false,     false },
 
     { "txnreport",              &txnreport,              false,     false,     false },
 

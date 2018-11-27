@@ -2216,7 +2216,7 @@ Value clearwallettransactions(const Array& params, bool fHelp)
         throw std::runtime_error(
             "clearwallettransactions [unaccepted]\n"
                 "[unaccepted] optional to deleted unaccepted stakes only\n"
-            "delete all transactions from wallet - reload with reloadanondata\n"
+            "delete all transactions from wallet - reload with scanforalltxns\n"
             "Warning: Backup your wallet first!");
 
     bool fUnaccepted = false;
@@ -2230,7 +2230,7 @@ Value clearwallettransactions(const Array& params, bool fHelp)
 
     snprintf(cbuf, sizeof(cbuf), "Removed %u transactions.", nTransactions);
     result.push_back(Pair("complete", std::string(cbuf)));
-    result.push_back(Pair("", "Reload with reloadanondata, reindex or re-download blockchain."));
+    result.push_back(Pair("", "Reload with scanforalltxns, reindex or re-download blockchain."));
 
     return result;
 }
@@ -2273,12 +2273,18 @@ Value scanforalltxns(const Array& params, bool fHelp)
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
-        pwalletMain->MarkDirty();
+        if (nFromHeight == 0)
+            // If we start from genesis, rebuild anon data completely
+            pwalletMain->EraseAllAnonData();
 
+        pwalletMain->MarkDirty();
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();
-    } // cs_main, pwalletMain->cs_wallet
 
+        if (nFromHeight == 0)
+            pwalletMain->CacheAnonStats();
+
+    } // cs_main, pwalletMain->cs_wallet
        
     LogPrintf("Found %u stealth transactions in blockchain.\n", pwalletMain->nStealth);
     LogPrintf("Found %u new owned stealth transactions.\n", pwalletMain->nFoundStealth);
@@ -2680,45 +2686,6 @@ Value anoninfo(const Array& params, bool fHelp)
 
     return result;
 }
-
-Value reloadanondata(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 0)
-        throw std::runtime_error(
-            "reloadanondata \n"
-            "clears all anon txn data from system, and runs scanforalltxns.\n"
-            "WARNING: Intended for development use only."
-            + HelpRequiringPassphrase());
-
-    if (nNodeMode != NT_FULL)
-        throw std::runtime_error("Must be in full mode.");
-
-    if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-
-    CBlockIndex *pindex = pindexGenesisBlock;
-    Object result;
-    if (pindex)
-    {
-        LOCK2(cs_main, pwalletMain->cs_wallet);
-
-        if (!pwalletMain->EraseAllAnonData())
-            throw std::runtime_error("EraseAllAnonData() failed.");
-
-        pwalletMain->MarkDirty();
-        pwalletMain->ScanForWalletTransactions(pindex, true);
-        pwalletMain->ReacceptWalletTransactions();
-
-        pwalletMain->CacheAnonStats();
-        result.push_back(Pair("result", "reloadanondata complete."));
-    } else
-    {
-        result.push_back(Pair("result", "reloadanondata failed - !pindex."));
-    };
-
-    return result;
-}
-
 
 static bool compareTxnTime(const CWalletTx* pa, const CWalletTx* pb)
 {
