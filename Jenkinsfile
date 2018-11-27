@@ -145,17 +145,33 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Prepare delivery') {
+                        stage('Prepare plain delivery') {
                             steps {
                                 script {
                                     prepareMacDelivery()
                                 }
                             }
                         }
-                        stage('Create delivery') {
+                        stage('Create plain delivery') {
                             steps {
                                 script {
                                     sh "./macdeployqt.sh"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
+                                }
+                            }
+                        }
+                        stage('Prepare OBFS4 delivery') {
+                            steps {
+                                script {
+                                    prepareMacOBFS4Delivery()
+                                }
+                            }
+                        }
+                        stage('Create OBFS4 delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                 }
                             }
                         }
@@ -1083,11 +1099,11 @@ def prepareMacDelivery() {
 def prepareMacOBFS4Delivery() {
     fileOperations([
             fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
+                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults",
+                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_plain"),
             fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
+                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_obfs4",
+                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults"),
     ])
 }
 
