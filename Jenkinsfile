@@ -16,7 +16,7 @@ pipeline {
         GIT_TAG_TO_CREATE = "Build${BUILD_NUMBER}"
         SPECTRECOIN_VERSION = '2.2.0'
         GIT_COMMIT_SHORT = sh(
-                script: "git rev-parse --short ${GIT_COMMIT}",
+                script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
                 returnStdout: true
         )
     }
@@ -156,36 +156,6 @@ pipeline {
                             steps {
                                 script {
                                     sh "./macdeployqt.sh"
-// No upload on feature branches, only from develop and master
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin.dmg'
-//                                }
-//                            }
-//                        }
-//                        stage('Upload delivery') {
-//                            agent {
-//                                label "housekeeping"
-//                            }
-//                            steps {
-//                                script {
-//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin.dmg"
-//                                    sh "docker run \\\n" +
-//                                            "--rm \\\n" +
-//                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-//                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-//                                            "spectreproject/github-uploader:latest \\\n" +
-//                                            "github-release upload \\\n" +
-//                                            "    --user spectrecoin \\\n" +
-//                                            "    --repo spectre \\\n" +
-//                                            "    --tag latest \\\n" +
-//                                            "    --name \"Spectrecoin-latest-macOS.dmg\" \\\n" +
-//                                            "    --file /filesToUpload/Spectrecoin.dmg \\\n" +
-//                                            "    --replace"
-//                                    sh "rm -f spectrecoin.dmg"
-//                                }
-//                            }
-//                            post {
-//                                always {
-//                                    sh "docker system prune --all --force"
                                 }
                             }
                         }
@@ -248,39 +218,9 @@ pipeline {
                             steps {
                                 script {
                                     createWindowsDelivery('latest')
-// No upload on feature branches, only from develop and master
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Spectrecoin-latest-WIN64.zip, Spectrecoin-latest-OBFS4-WIN64.zip'
                                 }
                             }
                         }
-//                        stage('Upload delivery') {
-//                            agent {
-//                                label "housekeeping"
-//                            }
-//                            steps {
-//                                script {
-//                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${BRANCH_NAME}/${BUILD_NUMBER}/artifact/Spectrecoin-latest.zip"
-//                                    sh "docker run \\\n" +
-//                                            "--rm \\\n" +
-//                                            "-e GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-//                                            "-v ${WORKSPACE}:/filesToUpload \\\n" +
-//                                            "spectreproject/github-uploader:latest \\\n" +
-//                                            "github-release upload \\\n" +
-//                                            "    --user spectrecoin \\\n" +
-//                                            "    --repo spectre \\\n" +
-//                                            "    --tag latest \\\n" +
-//                                            "    --name \"Spectrecoin-latest-WIN64.zip\" \\\n" +
-//                                            "    --file /filesToUpload/Spectrecoin-latest.zip \\\n" +
-//                                            "    --replace"
-//                                    sh "rm -f Spectrecoin-latest.zip"
-//                                }
-//                            }
-//                            post {
-//                                always {
-//                                    sh "docker system prune --all --force"
-//                                }
-//                            }
-//                        }
                     }
                 }
             }
