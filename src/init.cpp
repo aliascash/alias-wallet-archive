@@ -919,8 +919,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     RegisterWallet(pwalletMain);
 
     CBlockIndex *pindexRescan = pindexBest;
-    if (GetBoolArg("-rescan"))
+    bool fullscan = false;
+    if (GetBoolArg("-rescan") || (oltWalletVersion > 0 && oltWalletVersion < 2020005)) // Wallets prior to V2.2 must be rescanned
     {
+        fullscan = true;
         pindexRescan = pindexGenesisBlock;
     } else
     {
@@ -936,10 +938,21 @@ bool AppInit2(boost::thread_group& threadGroup)
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
 
-        pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
-            uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
-            return true;
-        },1000);
+        {
+            LOCK2(cs_main, pwalletMain->cs_wallet);
+
+            if (fullscan)
+                pwalletMain->ClearWalletTransactions(false);
+
+            pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
+                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
+                return true;
+            },1000);
+
+            if (fullscan)
+                pwalletMain->ReacceptWalletTransactions();
+        }
+
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
     };
 
