@@ -148,6 +148,7 @@ pipeline {
                         stage('Prepare plain delivery') {
                             steps {
                                 script {
+                                    sh 'rm -f Spectrecoin*.dmg'
                                     prepareMacDelivery()
                                 }
                             }
@@ -450,6 +451,7 @@ pipeline {
                         stage('Prepare plain delivery') {
                             steps {
                                 script {
+                                    sh 'rm -f Spectrecoin*.dmg'
                                     prepareMacDelivery()
                                 }
                             }
@@ -815,6 +817,7 @@ pipeline {
                         stage('Prepare plain delivery') {
                             steps {
                                 script {
+                                    sh 'rm -f Spectrecoin*.dmg'
                                     prepareMacDelivery()
                                 }
                             }
