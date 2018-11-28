@@ -67,7 +67,7 @@ pipeline {
                 stage('Create OBFS4 delivery') {
                     steps {
                         script {
-                            sh "./macdeployqt.sh"
+                            sh "./scripts/mac-deployqt.sh"
                             sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                         }
                     }
