@@ -413,6 +413,10 @@ pipeline {
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
                                                         value: "${GIT_TAG_TO_CREATE}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
                                                 )
                                         ],
                                         wait: false
@@ -773,6 +777,10 @@ pipeline {
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
                                                         value: "${SPECTRECOIN_VERSION}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
                                                 )
                                         ],
                                         wait: false
