@@ -24,67 +24,57 @@ pipeline {
         )
     }
     stages {
-        stage('Feature branch') {
-            when {
-                not {
-                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
-                }
+        stage('Mac') {
+            environment {
+                QT_PATH = "${QT_DIR_MAC}"
+                OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                MACOSX_DEPLOYMENT_TARGET = 10.10
             }
-            //noinspection GroovyAssignabilityCheck
-            parallel {
-                stage('Mac') {
-                    environment {
-                        QT_PATH = "${QT_DIR_MAC}"
-                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.10
+            stages {
+                stage('Perform MacOS build') {
+                    steps {
+                        script {
+                            sh "pwd"
+                            sh "./autogen.sh\n" +
+                                    "cd db4.8/build_unix/\n" +
+                                    "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                    "cd ../../leveldb/\n" +
+                                    "./build_detect_platform build_config.mk ./ && make\n" +
+                                    "cd ../\n" +
+                                    "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                    "make -j2"
+                        }
                     }
-                    stages {
-                        stage('Perform MacOS build') {
-                            steps {
-                                script {
-                                    sh "pwd"
-                                    sh "./autogen.sh\n" +
-                                            "cd db4.8/build_unix/\n" +
-                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                            "cd ../../leveldb/\n" +
-                                            "./build_detect_platform build_config.mk ./ && make\n" +
-                                            "cd ../\n" +
-                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                            "make -j2"
-                                }
-                            }
+                }
+                stage('Prepare plain delivery') {
+                    steps {
+                        script {
+                            sh 'rm -f Spectrecoin*.dmg'
+                            prepareMacDelivery()
                         }
-                        stage('Prepare plain delivery') {
-                            steps {
-                                script {
-                                    sh 'rm -f Spectrecoin*.dmg'
-                                    prepareMacDelivery()
-                                }
-                            }
+                    }
+                }
+                stage('Create plain delivery') {
+                    steps {
+                        script {
+                            sh "./macdeployqt.sh"
+                            sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
                         }
-                        stage('Create plain delivery') {
-                            steps {
-                                script {
-                                    sh "./macdeployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
-                                }
-                            }
+                    }
+                }
+                stage('Prepare OBFS4 delivery') {
+                    steps {
+                        script {
+                            prepareMacOBFS4Delivery()
                         }
-                        stage('Prepare OBFS4 delivery') {
-                            steps {
-                                script {
-                                    prepareMacOBFS4Delivery()
-                                }
-                            }
-                        }
-                        stage('Create OBFS4 delivery') {
-                            steps {
-                                script {
-                                    sh "./macdeployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
-                                }
-                            }
+                    }
+                }
+                stage('Create OBFS4 delivery') {
+                    steps {
+                        script {
+                            sh "./macdeployqt.sh"
+                            sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                         }
                     }
                 }
