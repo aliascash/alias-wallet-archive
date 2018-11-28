@@ -934,7 +934,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (pindexBest != pindexRescan && pindexBest && pindexRescan && pindexBest->nHeight > pindexRescan->nHeight)
     {
-        uiInterface.InitMessage(_("Prepare for rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
 
@@ -942,14 +941,16 @@ bool AppInit2(boost::thread_group& threadGroup)
             LOCK2(cs_main, pwalletMain->cs_wallet);
 
             if (fullscan) {
+                uiInterface.InitMessage("Clean ATXO cache...");
                 pwalletMain->EraseAllAnonData();
-                pwalletMain->ClearWalletTransactions(false);
             }
 
+            pwalletMain->MarkDirty();
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
                 uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
                 return true;
             },1000);
+            pwalletMain->ReacceptWalletTransactions();
 
             if (fullscan)
                 pwalletMain->CacheAnonStats();
