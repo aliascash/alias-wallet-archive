@@ -1,0 +1,47 @@
+#!/bin/bash
+# ===========================================================================
+#
+# Created: 2018-11-28 HLXEasy
+#
+# This script can be used to build Spectrecoin on Mac
+#
+# ===========================================================================
+
+# Store path from where script was called, determine own location
+# and source helper content from there
+callDir=$(pwd)
+ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd ${ownLocation}
+. ./include/helpers_console.sh
+
+# Go to Spectrecoin repository root directory
+cd ..
+
+if [ -z "${QT_PATH}" ] ; then
+    QT_PATH=~/Qt/5.9.6/clang_64
+    warning "QT_PATH not set, using '${QT_PATH}'"
+else
+    info "QT_PATH: ${QT_PATH}"
+fi
+if [ -z "${OPENSSL_PATH}" ] ; then
+    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1
+    warning "OPENSSL_PATH not set, using '${OPENSSL_PATH}'"
+else
+    info "OPENSSL_PATH: ${OPENSSL_PATH}"
+fi
+
+info "Calling autogen.sh"
+./autogen.sh
+
+info "Configure and make db4.8:"
+cd db4.8/build_unix/
+./configure --enable-cxx --disable-shared --disable-replication --with-pic && make
+
+info "Configure and make leveldb:"
+cd ../../leveldb/
+./build_detect_platform build_config.mk ./ && make
+cd ../
+
+info "Starting qmake:"
+qmake src/src.pro -spec macx-clang CONFIG+=x86_64
+make -j2
