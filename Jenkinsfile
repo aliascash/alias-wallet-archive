@@ -1,7 +1,9 @@
 #!groovy
 
 pipeline {
-    agent any
+    agent {
+        label "docker"
+    }
     options {
         timestamps()
         timeout(time: 3, unit: 'HOURS')
@@ -50,42 +52,9 @@ pipeline {
             //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Debian binaries') {
-                    agent {
-                        label "docker"
-                    }
                     steps {
                         script {
                             buildFeatureBranch('Docker/Debian/Dockerfile_noUpload', 'spectreproject/spectre-debian:latest')
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-//                stage('Build CentOS binaries') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch('Docker/CentOS/Dockerfile_noUpload', 'spectreproject/spectre-centos:latest')
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-                stage('Build Fedora binaries') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch('Docker/Fedora/Dockerfile_noUpload', 'spectreproject/spectre-fedora:latest')
                         }
                     }
                     post {
@@ -111,7 +80,42 @@ pipeline {
                     }
                 }
                 */
+                /* CentOS build disabled, not working at the moment
+                stage('Build CentOS binaries') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch('Docker/CentOS/Dockerfile_noUpload', 'spectreproject/spectre-centos:latest')
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                */
+                stage('Build Fedora binaries') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch('Docker/Fedora/Dockerfile_noUpload', 'spectreproject/spectre-fedora:latest')
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Build Ubuntu binaries') {
+                    agent {
+                        label "docker"
+                    }
                     steps {
                         script {
                             buildFeatureBranch('Docker/Ubuntu/Dockerfile_noUpload', 'spectreproject/spectre-ubuntu:latest')
@@ -306,6 +310,18 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('Build Raspberry Pi binaries') {
+                    steps {
+                        script {
+                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Build Debian binaries') {
                     agent {
                         label "docker"
@@ -343,28 +359,14 @@ pipeline {
                         }
                     }
                 }
-//                stage('Build CentOS binaries') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-                stage('Build Fedora binaries') {
+                /* CentOS build disabled, not working at the moment
+                stage('Build CentOS binaries') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
+                            buildBranch('Docker/CentOS/Dockerfile', 'spectreproject/spectre-centos:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
                         }
                     }
                     post {
@@ -373,13 +375,14 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Raspberry Pi binaries') {
+                */
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
+                            buildBranch('Docker/Fedora/Dockerfile', 'spectreproject/spectre-fedora:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
                         }
                     }
                     post {
@@ -670,6 +673,18 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('Build Raspberry Pi binaries') {
+                    steps {
+                        script {
+                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Build Debian binaries') {
                     agent {
                         label "docker"
@@ -707,28 +722,14 @@ pipeline {
                         }
                     }
                 }
-//                stage('Build CentOS binaries') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-                stage('Build Fedora binaries') {
+                /* CentOS build disabled, not working at the moment
+                stage('Build CentOS binaries') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
+                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
                         }
                     }
                     post {
@@ -737,13 +738,14 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Raspberry Pi binaries') {
+                */
+                stage('Build Fedora binaries') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
+                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
                         }
                     }
                     post {
