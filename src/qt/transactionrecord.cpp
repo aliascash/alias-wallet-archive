@@ -202,32 +202,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {
             const CTxOut& txout = wtx.vout[nOut];
 
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txout.IsAnonOutput())
-            {
-                const CScript &s = txout.scriptPubKey;
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
-
-                if (wallet->HaveKey(ckidD))
-                {
-                    TransactionRecord sub(hash, nTime);
-                    sub.idx = parts.size(); // sequence number
-
-                    sub.credit = txout.nValue;
-
-                    sub.type = TransactionRecord::RecvSpectre;
-                    sub.address = CBitcoinAddress(ckidD).ToString();
-                    //sub.address = wallet->mapAddressBook[ckidD]
-
-                    snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                    mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                    if (mi != wtx.mapValue.end() && !mi->second.empty())
-                        sub.narration = mi->second;
-
-                    parts.append(sub);
-                };
-            };
-
             if (wallet->IsMine(txout))
             {
                 TransactionRecord sub(hash, nTime);
@@ -298,22 +272,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         bool fAllFromMe = true;
         BOOST_FOREACH(const CTxIn& txin, wtx.vin)
         {
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txin.IsAnonInput())
-            {
-                std::vector<uint8_t> vchImage;
-                txin.ExtractKeyImage(vchImage);
-
-                CWalletDB walletdb(wallet->strWalletFile, "r");
-                COwnedAnonOutput oao;
-                if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
-                {
-                    fAllFromMe = false;
-                    break; // display as send/recv SPECTRE
-                };
-                continue;
-            };
-
             if (wallet->IsMine(txin))
                 continue;
             fAllFromMe = false;
@@ -323,12 +281,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         bool fAllToMe = true;
         BOOST_FOREACH(const CTxOut& txout, wtx.vout)
         {
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txout.IsAnonOutput())
-            {
-                fAllToMe = false;
-                break; // display as send/recv SPECTRE
-            }
             opcodetype firstOpCode;
             CScript::const_iterator pc = txout.scriptPubKey.begin();
             if (txout.scriptPubKey.GetOp(pc, firstOpCode)
@@ -374,47 +326,31 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 TransactionRecord sub(hash, nTime);
                 sub.idx = parts.size();
 
-                if (wtx.nVersion == ANON_TXN_VERSION
-                    && txout.IsAnonOutput())
+                opcodetype firstOpCode;
+                CScript::const_iterator pc = txout.scriptPubKey.begin();
+                if (txout.scriptPubKey.GetOp(pc, firstOpCode)
+                    && firstOpCode == OP_RETURN)
+                    continue;
+
+                if (wallet->IsMine(txout))
                 {
-                    const CScript &s = txout.scriptPubKey;
-                    CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+                    // Ignore parts sent to self, as this is usually the change
+                    // from a transaction sent back to our own address.
+                    continue;
+                }
 
-                    CTxDestination address;
-                    sub.idx = parts.size(); // sequence number
-                    sub.credit = txout.nValue;
-
-                    sub.type = TransactionRecord::SendSpectre;
-                    sub.address = CBitcoinAddress(ckidD).ToString();
-
+                CTxDestination address;
+                if (ExtractDestination(txout.scriptPubKey, address))
+                {
+                    // Sent to Bitcoin Address
+                    sub.type = TransactionRecord::SendToAddress;
+                    sub.address = CBitcoinAddress(address).ToString();
                 } else
                 {
-                    opcodetype firstOpCode;
-                    CScript::const_iterator pc = txout.scriptPubKey.begin();
-                    if (txout.scriptPubKey.GetOp(pc, firstOpCode)
-                        && firstOpCode == OP_RETURN)
-                        continue;
-
-                    if (wallet->IsMine(txout))
-                    {
-                        // Ignore parts sent to self, as this is usually the change
-                        // from a transaction sent back to our own address.
-                        continue;
-                    }
-
-                    CTxDestination address;
-                    if (ExtractDestination(txout.scriptPubKey, address))
-                    {
-                        // Sent to Bitcoin Address
-                        sub.type = TransactionRecord::SendToAddress;
-                        sub.address = CBitcoinAddress(address).ToString();
-                    } else
-                    {
-                        // Sent to IP, or other non-address transaction like OP_EVAL
-                        sub.type = TransactionRecord::SendToOther;
-                        sub.address = mapValue["to"];
-                    }
-                };
+                    // Sent to IP, or other non-address transaction like OP_EVAL
+                    sub.type = TransactionRecord::SendToOther;
+                    sub.address = mapValue["to"];
+                }
 
                 snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
                 mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
