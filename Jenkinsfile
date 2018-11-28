@@ -421,7 +421,8 @@ pipeline {
                                                         name: 'SPECTRECOIN_RELEASE',
                                                         value: "${GIT_TAG_TO_CREATE}"
                                                 )
-                                        ]
+                                        ],
+                                        wait: false
                                 )
                             }
                         }
@@ -787,7 +788,8 @@ pipeline {
                                                         name: 'SPECTRECOIN_RELEASE',
                                                         value: "${SPECTRECOIN_VERSION}"
                                                 )
-                                        ]
+                                        ],
+                                        wait: false
                                 )
                             }
                         }
