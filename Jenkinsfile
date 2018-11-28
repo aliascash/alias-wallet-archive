@@ -138,14 +138,7 @@ pipeline {
                             steps {
                                 script {
                                     sh "pwd"
-                                    sh "./autogen.sh\n" +
-                                            "cd db4.8/build_unix/\n" +
-                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                            "cd ../../leveldb/\n" +
-                                            "./build_detect_platform build_config.mk ./ && make\n" +
-                                            "cd ../\n" +
-                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                            "make -j2"
+                                    sh "./scripts/mac-build.sh"
                                 }
                             }
                         }
@@ -160,7 +153,7 @@ pipeline {
                         stage('Create plain delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
                                 }
                             }
@@ -175,7 +168,7 @@ pipeline {
                         stage('Create OBFS4 delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                 }
                             }
@@ -443,14 +436,7 @@ pipeline {
                             steps {
                                 script {
                                     sh "pwd"
-                                    sh "./autogen.sh\n" +
-                                            "cd db4.8/build_unix/\n" +
-                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                            "cd ../../leveldb/\n" +
-                                            "./build_detect_platform build_config.mk ./ && make\n" +
-                                            "cd ../\n" +
-                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                            "make -j2"
+                                    sh "./scripts/mac-build.sh"
                                 }
                             }
                         }
@@ -465,7 +451,7 @@ pipeline {
                         stage('Create plain delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
                                 }
@@ -481,7 +467,7 @@ pipeline {
                         stage('Create OBFS4 delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                 }
@@ -621,7 +607,7 @@ pipeline {
             stages {
                 stage('Create tag') {
                     steps {
-                        sshagent (credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
+                        sshagent(credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
                             createTag(
                                     tag: "${SPECTRECOIN_VERSION}",
                                     commit: "${GIT_COMMIT_SHORT}",
@@ -650,7 +636,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Create Release'){
+                stage('Create Release') {
                     when {
                         expression {
                             return isReleaseExisting(
@@ -810,14 +796,7 @@ pipeline {
                             steps {
                                 script {
                                     sh "pwd"
-                                    sh "./autogen.sh\n" +
-                                            "cd db4.8/build_unix/\n" +
-                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                            "cd ../../leveldb/\n" +
-                                            "./build_detect_platform build_config.mk ./ && make\n" +
-                                            "cd ../\n" +
-                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                            "make -j2"
+                                    sh "./scripts/mac-build.sh"
                                 }
                             }
                         }
@@ -832,7 +811,7 @@ pipeline {
                         stage('Create plain delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg"
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg"
                                 }
@@ -848,7 +827,7 @@ pipeline {
                         stage('Create OBFS4 delivery') {
                             steps {
                                 script {
-                                    sh "./macdeployqt.sh"
+                                    sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
                                 }
@@ -1098,6 +1077,8 @@ def prepareMacDelivery() {
     }
     // Unzip Tor and remove debug content
     fileOperations([
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor"),
             fileUnZipOperation(
                     filePath: "${WORKSPACE}/Tor.zip",
                     targetLocation: "${WORKSPACE}/"),
