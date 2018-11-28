@@ -101,6 +101,8 @@ def prepareMacDelivery() {
     }
     // Unzip Tor and remove debug content
     fileOperations([
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor"),
             fileUnZipOperation(
                     filePath: "${WORKSPACE}/Tor.zip",
                     targetLocation: "${WORKSPACE}/"),
