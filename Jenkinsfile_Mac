@@ -36,6 +36,7 @@ pipeline {
                     steps {
                         script {
                             sh "pwd"
+                            sh "env | sort"
                             sh "./autogen.sh\n" +
                                     "cd db4.8/build_unix/\n" +
                                     "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +

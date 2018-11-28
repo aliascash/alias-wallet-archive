@@ -111,6 +111,7 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     #brew install openssl@1.1
     # $OPENSSL_PATH is set via environment
 #    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.1
+    OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0h
     INCLUDEPATH += "$${OPENSSL_PATH}/include/"
     LIBS += -L$${OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)
