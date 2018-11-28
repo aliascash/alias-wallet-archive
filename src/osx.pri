@@ -81,6 +81,7 @@ QMAKE_LFLAGS += -fstack-protector
 QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual -Wformat -Wformat-security -Wno-unused-parameter
 
 DEFINES += MAC_OSX
+DEFINES += HAVE_BUILD_INFO
 # Mac: compile for maximum compatibility (10.0 Yosemite, 32-bit)
 QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
@@ -108,9 +109,12 @@ QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
-    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.1
-    INCLUDEPATH += "$${_OPENSSL_PATH}/include/"
-    LIBS += -L$${_OPENSSL_PATH}/lib
+    # $OPENSSL_PATH is set via environment
+#    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.1
+#    OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0h
+    # See http://doc.qt.io/archives/qt-4.8/qmake-advanced-usage.html#variables
+    INCLUDEPATH += "${OPENSSL_PATH}/include/"
+    LIBS += -L${OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)
 
     #libevent-2.1.6.dylib

@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-centos:latest as build
+FROM spectreproject/spectre-builder-centos:1.2 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -11,7 +11,7 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /spectre
 
 RUN cd /spectre \
- && mkdir db4.8 leveldb tor \
+ && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \
  && ./configure \
@@ -26,9 +26,10 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 ARG GITHUB_TOKEN=1234567
 ARG SPECTRECOIN_RELEASE=latest
 ARG SPECTRECOIN_REPOSITORY=spectre
+ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-CentOS.tgz
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-CentOS.tgz
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 

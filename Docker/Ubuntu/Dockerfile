@@ -11,7 +11,7 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /spectre
 
 RUN cd /spectre \
- && mkdir db4.8 leveldb tor \
+ && mkdir db4.8 leveldb \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
@@ -24,9 +24,10 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 ARG GITHUB_TOKEN=1234567
 ARG SPECTRECOIN_RELEASE=latest
 ARG SPECTRECOIN_REPOSITORY=spectre
+ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-Ubuntu.tgz
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Ubuntu.tgz
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
