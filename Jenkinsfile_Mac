@@ -37,14 +37,7 @@ pipeline {
                         script {
                             sh "pwd"
                             sh "env | sort"
-                            sh "./autogen.sh\n" +
-                                    "cd db4.8/build_unix/\n" +
-                                    "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
-                                    "cd ../../leveldb/\n" +
-                                    "./build_detect_platform build_config.mk ./ && make\n" +
-                                    "cd ../\n" +
-                                    "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
-                                    "make -j2"
+                            sh "./scripts/mac-build.sh"
                         }
                     }
                 }
@@ -59,7 +52,7 @@ pipeline {
                 stage('Create plain delivery') {
                     steps {
                         script {
-                            sh "./macdeployqt.sh"
+                            sh "./scripts/mac-deployqt.sh"
                             sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
                         }
                     }
