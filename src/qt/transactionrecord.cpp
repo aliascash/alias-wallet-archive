@@ -175,6 +175,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             }
             TransactionRecord sub(hash, nTime, trxType, "", "", amountAdjusted, 0);
 
+            sub.idx = parts.size();
             CStealthAddress stealthAddress;
             if (wallet->GetStealthAddress(address, stealthAddress))
                 sub.address = stealthAddress.Encoded();
