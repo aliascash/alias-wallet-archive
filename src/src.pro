@@ -3,6 +3,7 @@ TARGET = Spectrecoin
 CONFIG += c++17
 
 DEFINES += DEBUGGER_CONNECTED
+DEFINES += HAVE_BUILD_INFO
 #DEFINES += TEST_TOR
 
 QT += testlib webenginewidgets webchannel

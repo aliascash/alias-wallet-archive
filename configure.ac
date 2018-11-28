@@ -127,6 +127,7 @@ if test "x$enable_gui" = "xyes" ; then
     fi
   fi
 fi
+CPPFLAGS="$CPPFLAGS -DHAVE_BUILD_INFO"
 AC_SUBST([MACOS_RPATH])
 AM_CONDITIONAL([ENABLE_GUI], [test "$enable_gui" = "yes"])
 AC_OUTPUT

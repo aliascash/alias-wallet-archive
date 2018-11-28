@@ -12,3 +12,6 @@ autoreconf --no-recursive --install
 #pushd tor
 #./autogen.sh
 #popd
+
+# Create build.h
+./share/genbuild.sh src/build.h
