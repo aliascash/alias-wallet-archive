@@ -1,0 +1,130 @@
+#!groovy
+
+pipeline {
+    agent {
+        label "mac-02"
+    }
+    options {
+        timestamps()
+        timeout(time: 3, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        disableConcurrentBuilds()
+    }
+    environment {
+        GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
+        GIT_TAG_TO_CREATE = "Build${BUILD_NUMBER}"
+        SPECTRECOIN_VERSION = '2.2.0'
+        GIT_COMMIT_SHORT = sh(
+                script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
+                returnStdout: true
+        )
+        CURRENT_DATE = sh(
+                script: "printf \$(date '+%F %T')",
+                returnStdout: true
+        )
+    }
+    stages {
+        stage('Feature branch') {
+            when {
+                not {
+                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
+                }
+            }
+            //noinspection GroovyAssignabilityCheck
+            parallel {
+                stage('Mac') {
+                    environment {
+                        QT_PATH = "${QT_DIR_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                    }
+                    stages {
+                        stage('Perform MacOS build') {
+                            steps {
+                                script {
+                                    sh "pwd"
+                                    sh "./autogen.sh\n" +
+                                            "cd db4.8/build_unix/\n" +
+                                            "./configure --enable-cxx --disable-shared --disable-replication --with-pic && make\n" +
+                                            "cd ../../leveldb/\n" +
+                                            "./build_detect_platform build_config.mk ./ && make\n" +
+                                            "cd ../\n" +
+                                            "qmake src/src.pro -spec macx-clang CONFIG+=x86_64\n" +
+                                            "make -j2"
+                                }
+                            }
+                        }
+                        stage('Prepare plain delivery') {
+                            steps {
+                                script {
+                                    sh 'rm -f Spectrecoin*.dmg'
+                                    prepareMacDelivery()
+                                }
+                            }
+                        }
+                        stage('Create plain delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
+                                }
+                            }
+                        }
+                        stage('Prepare OBFS4 delivery') {
+                            steps {
+                                script {
+                                    prepareMacOBFS4Delivery()
+                                }
+                            }
+                        }
+                        stage('Create OBFS4 delivery') {
+                            steps {
+                                script {
+                                    sh "./macdeployqt.sh"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+def prepareMacDelivery() {
+    def exists = fileExists 'Tor.zip'
+    if (exists) {
+        echo 'Archive \'Tor.zip\' exists, nothing to download.'
+    } else {
+        echo 'Archive \'Tor.zip\' not found, downloading...'
+        fileOperations([
+                fileDownloadOperation(
+                        password: '',
+                        targetFileName: 'Tor.zip',
+                        targetLocation: "${WORKSPACE}",
+                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
+                        userName: '')
+        ])
+    }
+    // Unzip Tor and remove debug content
+    fileOperations([
+            fileUnZipOperation(
+                    filePath: "${WORKSPACE}/Tor.zip",
+                    targetLocation: "${WORKSPACE}/"),
+            folderDeleteOperation(
+                    folderPath: "${WORKSPACE}/src/bin/debug"),
+    ])
+}
+
+def prepareMacOBFS4Delivery() {
+    fileOperations([
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults",
+                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_plain"),
+            fileRenameOperation(
+                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_obfs4",
+                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults"),
+    ])
+}
