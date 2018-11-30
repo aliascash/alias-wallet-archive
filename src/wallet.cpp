@@ -3929,8 +3929,6 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
     ec_point  pkSendTo;
     ec_point  pkEphem;
 
-    CPubKey   cpkTo;
-
     // -- output scripts OP_RETURN ANON_TOKEN pkTo R enarr
     //    Each outputs split from the amount must go to a unique pk, or the key image would be the same
     //    Only the first output of the group carries the enarr (if present)
@@ -3945,6 +3943,8 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     for (uint32_t i = 0; i < vOutAmounts.size(); ++i)
     {
+        CPubKey   cpkTo;
+
         if (GenerateRandomSecret(scEphem) != 0)
         {
             LogPrintf("GenerateRandomSecret failed.\n");
@@ -3971,6 +3971,10 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
                 LogPrintf("Could not generate ephem public key.\n");
                 return false;
             };
+
+            if (mapPubStealth)
+                // save which stealth address was used for creating this key
+                (*mapPubStealth)[cpkTo.GetID()] = *sxAddress;
         };
 
         CScript scriptSendTo;
@@ -4018,9 +4022,6 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     // TODO: will this be optimised away?
     memset(&scShared.e[0], 0, EC_SECRET_SIZE);
-
-    if (mapPubStealth)
-        (*mapPubStealth)[cpkTo.GetID()] = *sxAddress;
 
     return true;
 };
