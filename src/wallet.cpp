@@ -1062,8 +1062,7 @@ bool CWallet::IsChange(const CTxOut& txout) const
     // which output, if any, was change).
     if (txout.IsAnonOutput()) {
         // TODO ExtractDestination does currently not support anonoutputs
-        const CScript &s = txout.scriptPubKey;
-        CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+        CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
         bool fIsMine = HaveKey(ckidD);
         address = ckidD;
@@ -1169,8 +1168,7 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
 
             sCurrencyDestination = "SPECTRE";
 
-            const CScript &s = txout.scriptPubKey;
-            CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+            CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
             bool fIsMine = pwallet->HaveKey(ckidD);
 
@@ -3819,7 +3817,7 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress &sxAddress)
     return false;
 };
 
-bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError)
+bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError)
 {
     if (fDebugRingSig)
         LogPrintf("CreateStealthOutput()\n");
@@ -3897,24 +3895,12 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
     vecSend.push_back(make_pair(scriptPubKey, nValue));
 
     CScript scriptP = CScript() << OP_RETURN << ephem_pubkey;
-    if (vchENarr.size() > 0)
+    if (vchENarr.size() > 0) {
         scriptP = scriptP << OP_RETURN << vchENarr;
+        scriptNarration = scriptP;
+    }
 
     vecSend.push_back(make_pair(scriptP, 0));
-
-    // TODO: shuffle change later?
-    if (vchENarr.size() > 0)
-    {
-        for (unsigned int k = 0; k < vecSend.size(); ++k)
-        {
-            if (vecSend[k].first != scriptPubKey
-                || vecSend[k].second != nValue)
-                continue;
-
-            mapNarr[k] = sNarr;
-            break;
-        };
-    };
 
     return true;
 };
@@ -4894,22 +4880,8 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
         return false;
     };
 
-    if (scriptNarration.size() > 0)
-    {
-        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
-        {
-            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
-                continue;
-            char key[64];
-            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
-            {
-                sError = "Error creating narration key.";
-                return false;
-            };
-            wtxNew.mapValue[key] = sNarr;
-            break;
-        };
-    };
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError))
+        return false;
 
     if (fAskFee && !uiInterface.ThreadSafeAskFee(nFeeRequired, _("Sending...")))
     {
@@ -4996,7 +4968,6 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
     };
 
 
-
     // -- shuffle outputs (any point?)
     //std::random_shuffle(vecSend.begin(), vecSend.end());
 
@@ -5009,23 +4980,12 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
         return false;
     };
 
-    if (scriptNarration.size() > 0)
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError2))
     {
-        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
-        {
-            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
-                continue;
-            char key[64];
-            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
-            {
-                sError = "Error creating narration key.";
-                return false;
-            };
-            wtxNew.mapValue[key] = sNarr;
-            break;
-        };
-    };
-
+        LogPrintf("SendAnonToAnon() SaveNarrationOutput failed %s.\n", sError.c_str());
+        sError = "SaveNarrationOutput() failed : " + sError2;
+        return false;
+    }
     if (!CommitTransaction(wtxNew, &mapPubStealth))
     {
         sError = "Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.";
@@ -5095,29 +5055,26 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     std::vector<std::pair<CScript, int64_t> > vecSend;
     std::vector<std::pair<CScript, int64_t> > vecChange;
-    std::map<int, std::string> mapStealthNarr;
-    if (!CreateStealthOutput(&sxAddress, nValue, sNarr, vecSend, mapStealthNarr, sError))
+    std::map<CScript, std::string> mapScriptNarr;
+    CScript scriptNarration;
+    std::string sError2;
+    if (!CreateStealthOutput(&sxAddress, nValue, sNarr, vecSend, scriptNarration, sError2))
     {
-        LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
+        LogPrintf("SendAnonToSpec() CreateStealthOutput failed %s.\n", sError2.c_str());
+        sError = "CreateStealthOutput() failed : " + sError2;
         return false;
     };
-    std::map<int, std::string>::iterator itN;
-    for (itN = mapStealthNarr.begin(); itN != mapStealthNarr.end(); ++itN)
+
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError2))
     {
-        int pos = itN->first;
-        char key[64];
-        if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
-        {
-            LogPrintf("SendCoinsAnon(): Error creating narration key.");
-            continue;
-        };
-        wtxNew.mapValue[key] = itN->second;
-    };
+        LogPrintf("SendAnonToSpec() SaveNarrationOutput failed %s.\n", sError2.c_str());
+        sError = "SaveNarrationOutput() failed : " + sError2;
+        return false;
+    }
 
     // -- get anon inputs
 
     int64_t nFeeRequired;
-    std::string sError2;
     if (!AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToSpec() AddAnonInputs failed %s.\n", sError2.c_str());
@@ -5135,6 +5092,26 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
     return true;
 };
 
+bool CWallet::SaveNarrationOutput(CWalletTx& wtxNew, const CScript& scriptNarration, const std::string& sNarr, std::string& sError)
+{
+    if (scriptNarration.size() > 0)
+    {
+        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
+        {
+            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
+                continue;
+            char key[64];
+            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
+            {
+                sError = "Error creating narration key.";
+                return false;
+            };
+            wtxNew.mapValue[key] = sNarr;
+            break;
+        }
+    }
+    return true;
+}
 
 bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAnonOutput &lao, std::set<uint256> &setUpdated)
 {

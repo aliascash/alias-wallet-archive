@@ -90,20 +90,20 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
     char cbuf[256];
 
-    const std::string XSPEC = "XSPEC";
-    const std::string SPECTRE = "SPECTRE";
-
-    std::string sCurrencyDestination = XSPEC;
-    std::string sCurrencySource = XSPEC;
-    for(const CTxIn& txin: wtx.vin) {
-        if (txin.IsAnonInput() ) {
-            sCurrencySource = SPECTRE;
-            break;
-        }
-    }
-
     if (wtx.nVersion == ANON_TXN_VERSION)
     {
+        const std::string XSPEC = "XSPEC";
+        const std::string SPECTRE = "SPECTRE";
+
+        std::string sCurrencyDestination = XSPEC;
+        std::string sCurrencySource = XSPEC;
+        for(const CTxIn& txin: wtx.vin) {
+            if (txin.IsAnonInput() ) {
+                sCurrencySource = SPECTRE;
+                break;
+            }
+        }
+
         bool withinAccount = false;
         std::map<std::string, int64_t> mapAddressAmounts;
         std::map<std::string, std::string> mapAddressNarration;
@@ -118,8 +118,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
                 sCurrencyDestination = SPECTRE;
 
-                const CScript &s = txout.scriptPubKey;
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+                CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
                 bool fIsMine = wallet->HaveKey(ckidD);
 
@@ -144,7 +143,8 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                     withinAccount = true;
 
                 // Add narration for account
-                snprintf(cbuf, sizeof(cbuf), "n_%u", mapAddressAmounts.size()-1);
+                snprintf(cbuf, sizeof(cbuf), "n_%u", index);
+                LogPrintf("Search narration: n_%u\n", index);
                 mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
                 if (mi != wtx.mapValue.end() && !mi->second.empty()){
                     mapAddressNarration[account] = mi->second;
@@ -176,6 +176,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             TransactionRecord sub(hash, nTime, trxType, "", "", amountAdjusted, 0);
 
             sub.idx = parts.size();
+
             CStealthAddress stealthAddress;
             if (wallet->GetStealthAddress(address, stealthAddress))
                 sub.address = stealthAddress.Encoded();
@@ -183,7 +184,21 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             mapValue_t::const_iterator ni = mapAddressNarration.find(address);
             if (ni != mapAddressNarration.end() && !ni->second.empty()) {
                  sub.narration = ni->second;
-                 LogPrintf("sub.narration[%s] = '%s'\n", address, ni->second);
+                 LogPrintf("Narration for address '%s' = '%s'\n", address, ni->second);
+            }
+            else if (mapAddressAmounts.size() == 1)
+            {
+                for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
+                {
+                    // display 1st transaction
+                    snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
+                    mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
+                    if (mi != wtx.mapValue.end() && !mi->second.empty()) {
+                        sub.narration = mi->second;
+                        LogPrintf("Narration first output for: '%s' = '%s'\n", address, ni->second);
+                        break;
+                    }
+                }
             }
 
             parts.append(sub);
