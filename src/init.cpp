@@ -88,16 +88,16 @@ bool ShutdownRequested()
 bool Finalise()
 {
     LogPrintf("Finalise()\n");
-    
+
     StopRPCThreads();
     ShutdownRPCMining();
-    
+
     mempool.AddTransactionsUpdated(1);
     if (pwalletMain)
         bitdb.Flush(false);
-    
+
     StopNode();
-    
+
     if (pwalletMain)
     {
         {
@@ -109,9 +109,9 @@ bool Finalise()
         delete pwalletMain;
         pwalletMain = NULL;
     };
-    
+
     finaliseRingSigs();
-    
+
     if (nNodeMode == NT_FULL)
     {
         std::map<uint256, CBlockIndex*>::iterator it;
@@ -135,9 +135,9 @@ bool Finalise()
         if (fDebug)
             LogPrintf("mapBlockThinIndex cleared.\n");
     };
-    
+
     CTxDB().Close();
-    
+
     fs::remove(GetPidFile());
     return true;
 }
@@ -147,9 +147,9 @@ void Shutdown()
     static CCriticalSection cs_Shutdown;
     TRY_LOCK(cs_Shutdown, lockShutdown);
     if (!lockShutdown) return;
-    
+
     Finalise();
-    
+
     LogPrintf("Shutdown complete.\n\n");
 }
 
@@ -306,13 +306,13 @@ std::string HelpMessage()
     strUsage += "  -rpcpassword=<pw>      " + _("Password for JSON-RPC connections") + "\n";
     strUsage += "  -rpcport=<port>        " + _("Listen for JSON-RPC connections on <port> (default: 36657 or testnet: 36757)") + "\n";
     strUsage += "  -rpcallowip=<ip>       " + _("Allow JSON-RPC connections from specified IP address") + "\n";
-    
+
     if (!fHaveGUI)
     {
         strUsage += "  -rpcconnect=<ip>       " + _("Send commands to node running on <ip> (default: 127.0.0.1)") + "\n";
         strUsage += "  -rpcwait               " + _("Wait for RPC server to start") + "\n";
     };
-    
+
     strUsage += "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n";
     strUsage += "  -walletnotify=<cmd>    " + _("Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)") + "\n";
     strUsage += "  -confchange            " + _("Require a confirmations for change (default: 0)") + "\n";
@@ -325,7 +325,7 @@ std::string HelpMessage()
     strUsage += "  -checkblocks=<n>       " + _("How many blocks to check at startup (default: 2500, 0 = all)") + "\n";
     strUsage += "  -checklevel=<n>        " + _("How thorough the block verification is (0-6, default: 1)") + "\n";
     strUsage += "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n";
-    strUsage += "  -maxorphanblocksmib=<n> " + strprintf(_("Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";    
+    strUsage += "  -maxorphanblocksmib=<n> " + strprintf(_("Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";
     strUsage += "  -reindex               " + _("Rebuild block chain index from current blk000?.dat files on startup") + "\n";
 
     strUsage += "\n" + _("Thin options:") + "\n";
@@ -449,19 +449,19 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!SelectParamsFromCommandLine())
         return InitError("Invalid combination of -testnet and -regtest.");
-    
+
     if (!fHaveGUI && GetBoolArg("-cli", false))
         printf("Network: %s\n", Params().NetworkIDString().c_str());
-    
+
     if (GetBoolArg("-thinmode"))
         nNodeMode = NT_THIN;
-    
+
     if (mapArgs.count("-connect") && mapMultiArgs["-connect"].size() > 0)
     {
         // when only connecting to trusted nodes, do not seed via .onion, or listen by default
         SoftSetBoolArg("-onionseed", false);
     }
-    
+
     if (GetBoolArg("-salvagewallet"))
     {
         // Rewrite just private keys: rescan to find transactions
@@ -476,13 +476,13 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags
-    
+
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
     const std::vector<std::string>& categories = mapMultiArgs["-debug"];
     if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::string("0")) != categories.end())
         fDebug = false;
-    
+
     // -debug implies fDebug*, unless otherwise specified
     if (fDebug)
     {
@@ -495,7 +495,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     fDebugChain = GetBoolArg("-debugchain");
     fDebugRingSig = GetBoolArg("-debugringsig");
     fDebugPoS = GetBoolArg("-debugpos");
-    
+
     // Check for -socks - as this is a privacy risk to continue, exit here
     if (mapArgs.count("-socks"))
         return InitError(_("Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported."));
@@ -560,7 +560,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
     if (!lock.try_lock())
         return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  Spectrecoin is probably already running."), strDataDir.c_str()));
-    
+
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
 
@@ -582,7 +582,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         fprintf(stdout, "Spectrecoin server starting\n");
         fflush(stdout);
     };
-    
+
     int64_t nStart;
 
     /* *********************************************************
@@ -690,9 +690,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     nMaxThinPeers = GetArg("-maxthinpeers", 8);
 
     nBloomFilterElements = GetArg("-bloomfilterelements", 1536);
-    
+
     // Tor implementation
-    
+
     do {
         std::set<enum Network> nets;
         nets.insert(NET_TOR);
@@ -703,7 +703,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 SetLimited(net);
         }
     } while (false);
-    
+
     // Tor implementation
 
     CService addrOnion;
@@ -717,7 +717,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     } else {
         addrOnion = CService("127.0.0.1", onion_port);
 }
-    
+
     SetProxy(NET_TOR, addrOnion);
     SetReachable(NET_TOR);
 
@@ -725,11 +725,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     fNameLookup = GetBoolArg("-dns", true);
 
     bool fBound = false;
-    
+
     // Tor implementation
     std::string strError;
 
-    do 
+    do
     {
         CService addrBind;
         if (!Lookup("127.0.0.1", addrBind, GetListenPort(), false))
@@ -740,7 +740,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!fBound)
         return InitError(_("Failed to listen on any port."));
-    
+
     if (!(mapArgs.count("-tor") && mapArgs["-tor"] != "0")) {
         if (!NewThread(&StartTor, NULL))
             return InitError(_("Error: could not start tor node"));
@@ -755,14 +755,14 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr.c_str()));
             AddLocal(CService(strAddr, GetListenPort(), fNameLookup), LOCAL_MANUAL);
         }
-    } else 
+    } else
     {
         string automatic_onion;
-        filesystem::path hostname_path = GetDataDir() / "tor" / "onion" / "hostname";
+        boost::filesystem::path hostname_path = GetDataDir() / "tor" / "onion" / "hostname";
 
         int attempts = 0;
         while (1) {
-            if (filesystem::exists(hostname_path))
+            if (boost::filesystem::exists(hostname_path))
                 break;
             ++attempts;
             boost::this_thread::sleep(boost::posix_time::seconds(2));
@@ -784,7 +784,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             return false;
         };
     };
-    
+
     BOOST_FOREACH(std::string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 
@@ -809,7 +809,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     uiInterface.InitMessage(_("Loading block index..."));
     LogPrintf("Loading block index...\n");
     nStart = GetTimeMillis();
-    
+
     // -- wipe the txdb if a reindex is queued
     if (mapArgs.count("-reindex"))
     {
@@ -817,7 +817,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         CTxDB txdb("cr+");
         txdb.RecreateDB();
     };
-    
+
     switch (LoadBlockIndex(true, [] (const uint32_t& nBlock) -> void {
                            uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
                        }))
@@ -832,7 +832,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             };
             break;
     };
-    
+
     // as LoadBlockIndex can take several minutes, it's possible the user
     // requested to kill bitcoin-qt during the last operation. If so, exit.
     // As the program has not fully started yet, Shutdown() is possibly overkill.
@@ -878,7 +878,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     uiInterface.InitMessage(_("Loading wallet..."));
     LogPrintf("Loading wallet...\n");
     nStart = GetTimeMillis();
-    
+
     pwalletMain = new CWallet(strWalletFileName);
     int oltWalletVersion;
     DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion);
@@ -909,12 +909,12 @@ bool AppInit2(boost::thread_group& threadGroup)
             strErrors << _("Error loading wallet.dat") << "\n";
         };
     };
-    
+
     // --- Prepare extended keys
     pwalletMain->ExtKeyLoadMaster();
     pwalletMain->ExtKeyLoadAccounts();
     pwalletMain->ExtKeyLoadAccountPacks();
-    
+
     LogPrintf("%s", strErrors.str().c_str());
     LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
@@ -971,14 +971,14 @@ bool AppInit2(boost::thread_group& threadGroup)
             vImportFiles.push_back(strFile);
     };
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
-    
+
     if (mapArgs.count("-reindex"))
     {
         uiInterface.InitMessage(_("Reindexing from blk000?.dat files."));
-        
+
         fReindexing = true;
         int nFile = 1;
-        while (true) 
+        while (true)
         {
             FILE* file = OpenBlockFile(false, nFile, 0, "rb");
             if (!file)
@@ -987,12 +987,12 @@ bool AppInit2(boost::thread_group& threadGroup)
             LoadExternalBlockFile(nFile, file);
             nFile++;
         };
-        
+
         LogPrintf("Terminating: reindex completed.\n");
         Finalise();
         exit(0);
     };
-    
+
     // ********************************************************* Step 10: load peers
 
     uiInterface.InitMessage(_("Loading addresses..."));
@@ -1025,26 +1025,26 @@ bool AppInit2(boost::thread_group& threadGroup)
     LogPrintf("mapAddressBook.size() = %u\n",           pwalletMain->mapAddressBook.size());
 
     StartNode(threadGroup);
-    
+
     if (fServer)
         StartRPCThreads();
 
     // ********************************************************* Step 12: finished
-    
+
     // Add wallet transactions that aren't already in a block to mapTransactions
     pwalletMain->ReacceptWalletTransactions();
-    
+
     // Run a thread to flush wallet periodically
     threadGroup.create_thread(boost::bind(&TraceThread<void (*)(const std::string&), const std::string&>, "wflush", &ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
-    
+
     InitRPCMining();
-    
+
     // Mine proof-of-stake blocks in the background
     if (!GetBoolArg("-staking", true))
         LogPrintf("Staking disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "miner", &ThreadStakeMiner, pwalletMain));
-    
+
     if (nNodeMode != NT_FULL)
         pwalletMain->InitBloomFilter();
 
@@ -1053,8 +1053,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
-    
+
     LogPrintf("Network: %s, port: %d\n", Params().NetworkIDString(), Params().GetDefaultPort());
-    
+
     return !fRequestShutdown;
 }
