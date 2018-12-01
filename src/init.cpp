@@ -818,7 +818,9 @@ bool AppInit2(boost::thread_group& threadGroup)
         txdb.RecreateDB();
     };
     
-    switch (LoadBlockIndex())
+    switch (LoadBlockIndex(true, [] (const uint32_t& nBlock) -> void {
+                           uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
+                       }))
     {
         case 1:
             return InitError(_("Error loading blkindex.dat"));
@@ -941,7 +943,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LOCK2(cs_main, pwalletMain->cs_wallet);
 
             if (fullscan) {
-                pwalletMain->EraseAllAnonData([] (const char *cType, const int& nAffected) -> void {
+                pwalletMain->EraseAllAnonData([] (const char *cType, const uint32_t& nAffected) -> void {
                     uiInterface.InitMessage(strprintf("Clear %s cache... (%d)", cType, nAffected));
                 });
             }

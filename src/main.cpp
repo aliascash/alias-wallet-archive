@@ -4065,7 +4065,7 @@ FILE* AppendBlockFile(bool fHeaderFile, unsigned int& nFileRet, const char* fmod
 }
 
 
-int LoadBlockIndex(bool fAllowNew)
+int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcProgress)
 {
     LOCK(cs_main);
 
@@ -4080,7 +4080,7 @@ int LoadBlockIndex(bool fAllowNew)
 
     if (nNodeMode == NT_FULL)
     {
-        if (!txdb.LoadBlockIndex())
+        if (!txdb.LoadBlockIndex(funcProgress))
             return 1;
 
         if (!pwalletMain->CacheAnonStats())
