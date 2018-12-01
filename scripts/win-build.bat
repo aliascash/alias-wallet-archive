@@ -15,6 +15,7 @@ dir
 
 echo on
 
+del "%OUT_DIR%\Spectrecoin.exe" 2>nul
 rmdir /S /Q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 mkdir "%BUILD_DIR%"
