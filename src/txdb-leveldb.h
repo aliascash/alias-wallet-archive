@@ -247,7 +247,7 @@ public:
     bool ReadAnonOutput(CPubKey& pkCoin, CAnonOutput& ao);
     bool EraseAnonOutput(CPubKey& pkCoin);
 
-    bool EraseRange(const std::string &sPrefix, uint32_t &nAffected);
+    bool EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress = nullptr);
 
     bool ReadTxIndex(uint256 hash, CTxIndex& txindex);
     bool UpdateTxIndex(uint256 hash, const CTxIndex& txindex);

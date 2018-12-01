@@ -295,7 +295,7 @@ public:
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly);
     int CountLockedAnonOutputs();
     
-    uint64_t EraseAllAnonData();
+    uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
     
     bool CacheAnonStats();
     

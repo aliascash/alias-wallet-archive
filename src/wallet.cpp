@@ -5800,7 +5800,7 @@ int CWallet::CountLockedAnonOutputs()
     return result;
 }
 
-uint64_t CWallet::EraseAllAnonData()
+uint64_t CWallet::EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress)
 {
     LogPrintf("EraseAllAnonData()\n");
     int64_t nStart = GetTimeMillis();
@@ -5813,9 +5813,19 @@ uint64_t CWallet::EraseAllAnonData()
     uint32_t nKi = 0;
 
     LogPrintf("Erasing anon outputs.\n");
-    txdb.EraseRange(std::string("ao"), nAo);
+    if (funcProgress)
+         txdb.EraseRange(std::string("ao"), nAo, [funcProgress] (const uint32_t& nErased) -> void {
+             funcProgress("ATXO", nErased);
+         });
+    else
+        txdb.EraseRange(std::string("ao"), nAo);
     LogPrintf("Erasing spent key images.\n");
-    txdb.EraseRange(std::string("ki"), nKi);
+    if (funcProgress)
+         txdb.EraseRange(std::string("ki"), nKi, [funcProgress] (const uint32_t& nErased) -> void {
+             funcProgress("key image", nErased);
+         });
+    else
+        txdb.EraseRange(std::string("ki"), nKi);
 
     uint32_t nLao = 0;
     uint32_t nOao = 0;
@@ -5833,7 +5843,7 @@ uint64_t CWallet::EraseAllAnonData()
 
     LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, nOol, GetTimeMillis() - nStart);
 
-    return nLao + nOao + nOal + nOol;
+    return nAo + nKi + nLao + nOao + nOal + nOol;
 };
 
 bool CWallet::CacheAnonStats()

@@ -941,8 +941,9 @@ bool AppInit2(boost::thread_group& threadGroup)
             LOCK2(cs_main, pwalletMain->cs_wallet);
 
             if (fullscan) {
-                uiInterface.InitMessage("Clean ATXO cache...");
-                pwalletMain->EraseAllAnonData();
+                pwalletMain->EraseAllAnonData([] (const char *cType, const int& nAffected) -> void {
+                    uiInterface.InitMessage(strprintf("Clear %s cache... (%d)", cType, nAffected));
+                });
             }
 
             pwalletMain->MarkDirty();
