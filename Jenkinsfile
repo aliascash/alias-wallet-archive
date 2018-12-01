@@ -158,7 +158,7 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                 }
                             }
                         }
@@ -173,7 +173,7 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
                                 }
                             }
                         }
@@ -459,8 +459,8 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                 }
                             }
                         }
@@ -475,8 +475,8 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
                                 }
                             }
                         }
@@ -487,19 +487,19 @@ pipeline {
                             steps {
                                 script {
                                     sh "rm -f Spectrecoin*.dmg*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${GIT_TAG_TO_CREATE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}.dmg",
+                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${GIT_TAG_TO_CREATE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4.dmg",
+                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_CREATE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg",
                                     )
                                     sh "rm -f Spectrecoin*.dmg*"
                                 }
@@ -822,8 +822,8 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg"
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                 }
                             }
                         }
@@ -838,8 +838,8 @@ pipeline {
                             steps {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                    sh "mv Spectrecoin.dmg Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
                                 }
                             }
                         }
@@ -850,19 +850,19 @@ pipeline {
                             steps {
                                 script {
                                     sh "rm -f Spectrecoin*.dmg*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${SPECTRECOIN_VERSION}",
-                                            artifactNameRemote: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}.dmg",
+                                            artifactNameRemote: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/${BUILD_NUMBER}/artifact/Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${SPECTRECOIN_VERSION}",
-                                            artifactNameRemote: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4.dmg",
+                                            artifactNameRemote: "Spectrecoin-${SPECTRECOIN_VERSION}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg",
                                     )
                                     sh "rm -f Spectrecoin*.dmg*"
                                 }
