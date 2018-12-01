@@ -1125,8 +1125,8 @@ int CWalletTx::GetRequestCount() const
     return nRequests;
 }
 
-void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& listReceived,
-                           list<tuple<CTxDestination, int64_t, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
+void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, int64_t, Currency, std::string> >& listReceived,
+                           list<tuple<CTxDestination, int64_t, Currency, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
 {
     nFee = 0;
     listReceived.clear();
@@ -1145,52 +1145,64 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
         nFee = nDebit - nValueOut;
     };
 
-    std::string sCurrencyDestination = "XSPEC";
-    std::string sCurrencySource = "XSPEC";
+    Currency currencyDestination = XSPEC;
+    Currency currencySource = XSPEC;
     for(const CTxIn& txin: vin) {
         if (txin.IsAnonInput() ) {
-            sCurrencySource = "SPECTRE";
+            currencySource = SPECTRE;
             break;
         }
     }
 
     // Sent/received.
-    std::map<std::string, int64_t> mapAccountReceived;
-    std::map<std::string, int64_t> mapAccountSent;
-    BOOST_FOREACH(const CTxOut& txout, vout)
+    std::map<std::string, int64_t> mapStealthReceived;
+    std::map<std::string, int64_t> mapStealthSent;
+    std::map<std::string, std::string> mapStealthNarration;
+
+    // Only need to handle txouts if AT LEAST one of these is true:
+    //   1) they debit from us (sent)
+    //   2) the output is to us (received)
+    for (uint32_t index = 0; index < vout.size(); ++index)
     {
+        const CTxOut& txout = vout[index];
+
+        // Don't report 'change' txouts
+        if (nDebit > 0 && pwallet->IsChange(txout))
+            continue;
+
         if (nVersion == ANON_TXN_VERSION
             && txout.IsAnonOutput())
         {
-            // Don't report 'change' txouts
-            if (pwallet->IsChange(txout))
-                continue;
-
-            sCurrencyDestination = "SPECTRE";
+            currencyDestination = SPECTRE;
 
             CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
             bool fIsMine = pwallet->HaveKey(ckidD);
+            if (nDebit <= 0 && !fIsMine)
+                continue;
 
-            std::string account;
+            std::string stealthAddress;
             {
                 LOCK(pwallet->cs_wallet);
                 if (pwallet->mapAddressBook.count(ckidD))
-                {
-                    account = pwallet->mapAddressBook.at(ckidD);
-                }
-                else {
-                    account = "UNKNOWN";
-                }
+                    stealthAddress = pwallet->mapAddressBook.at(ckidD);
+                else
+                    stealthAddress = "UNKNOWN";
             }
 
             // If we are debited by the transaction, add the output as a "sent" entry
             if (nDebit > 0)
-                mapAccountSent[account] += txout.nValue;
+                mapStealthSent[stealthAddress] += txout.nValue;
 
             // If we are receiving the output, add it as a "received" entry
             if (fIsMine)
-                mapAccountReceived[account] += txout.nValue;
+                mapStealthReceived[stealthAddress] += txout.nValue;
+
+            // Get narration for stealth address
+            std::string sNarr;
+            if (GetNarration(index, sNarr))
+                // TODO for UNKNOWN we should concat narrations if multiple are available
+                mapStealthNarration[stealthAddress] = sNarr;
 
             continue;
         };
@@ -1205,26 +1217,19 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
             && firstOpCode == OP_RETURN)
             continue;
 
-
-        bool fIsMine;
-        // Only need to handle txouts if AT LEAST one of these is true:
-        //   1) they debit from us (sent)
-        //   2) the output is to us (received)
-        if (nDebit > 0)
-        {
-            // Don't report 'change' txouts
-            if (pwallet->IsChange(txout))
-                continue;
-            fIsMine = pwallet->IsMine(txout);
-        } else
-        if (!(fIsMine = pwallet->IsMine(txout)))
+        bool fIsMine = pwallet->IsMine(txout);
+        if (nDebit <= 0 && !fIsMine)
             continue;
+
+        // Get narration for output
+        std::string sNarr;
+        bool hasNarr = GetNarration(index, sNarr);
 
         // In either case, we need to get the destination address
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address))
         {
-            LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
+            LogPrintf("CWalletTx::GetDestinationDetails: Unknown transaction type found, txid %s\n",
                 this->GetHash().ToString().c_str());
             address = CNoDestination();
         }
@@ -1233,16 +1238,21 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
             LOCK(pwallet->cs_wallet);
             if (pwallet->mapAddressBook.count(address))
             {
-                std::string account = pwallet->mapAddressBook.at(address);
-                if (account.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0
-                        || IsStealthAddress(account)) {
+                std::string stealthAddress = pwallet->mapAddressBook.at(address);
+                if (stealthAddress.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0
+                        || IsStealthAddress(stealthAddress)) {
                     // If we are debited by the transaction, add the output as a "sent" entry
                     if (nDebit > 0)
-                        mapAccountSent[account] += txout.nValue;
+                        mapStealthSent[stealthAddress] += txout.nValue;
 
                     // If we are receiving the output, add it as a "received" entry
                     if (fIsMine)
-                        mapAccountReceived[account] += txout.nValue;
+                        mapStealthReceived[stealthAddress] += txout.nValue;
+
+                    // Add narration to stealth output
+                    if (hasNarr)
+                        // TODO for UNKNOWN we should concat narrations if multiple are available
+                        mapStealthNarration[stealthAddress] = sNarr;
 
                     continue;
                 }
@@ -1251,27 +1261,27 @@ void CWalletTx::GetAmounts(list<tuple<CTxDestination, int64_t, std::string> >& l
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(make_tuple(address, txout.nValue, sCurrencySource));
+            listSent.push_back(make_tuple(address, txout.nValue, currencySource, sNarr));
 
         // If we are receiving the output, add it as a "received" entry
         if (fIsMine)
-            listReceived.push_back(make_tuple(address, txout.nValue, sCurrencyDestination));
+            listReceived.push_back(make_tuple(address, txout.nValue, currencyDestination, sNarr));
     };
 
-    for (const auto & [address, amount] : mapAccountSent) {
+    for (const auto & [address, amount] : mapStealthSent) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listSent.push_back(std::make_tuple(stealthAddress, amount, sCurrencySource));
+            listSent.push_back(std::make_tuple(stealthAddress, amount, currencySource, mapStealthNarration[address]));
         else
-            listSent.push_back(std::make_tuple(CNoDestination(), amount,sCurrencySource));
+            listSent.push_back(std::make_tuple(CNoDestination(), amount,currencySource, mapStealthNarration[address]));
     }
 
-    for (const auto & [address, amount] : mapAccountReceived) {
+    for (const auto & [address, amount] : mapStealthReceived) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listReceived.push_back(std::make_tuple(stealthAddress, amount, sCurrencyDestination));
+            listReceived.push_back(std::make_tuple(stealthAddress, amount, currencyDestination, mapStealthNarration[address]));
         else
-            listReceived.push_back(std::make_tuple(CNoDestination(), amount, sCurrencyDestination));
+            listReceived.push_back(std::make_tuple(CNoDestination(), amount, currencyDestination, mapStealthNarration[address]));
     }
 }
 
@@ -1359,20 +1369,20 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nRecei
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::tuple<CTxDestination, int64_t, std::string> > listReceived;
-    std::list<std::tuple<CTxDestination, int64_t, std::string> > listSent;
-    GetAmounts(listReceived, listSent, allFee, strSentAccount);
+    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
+    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+    GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
     if (strAccount == strSentAccount)
     {
-        for(const auto & [address,amount,currency] : listSent)
+        for(const auto & [address,amount,currency,narration] : listSent)
             nSent += amount;
         nFee = allFee;
     };
 
     {
         LOCK(pwallet->cs_wallet);
-        for(const auto & [address,amount,currency] : listReceived)
+        for(const auto & [address,amount,currency,narration] : listReceived)
         {
             if (pwallet->mapAddressBook.count(address))
             {

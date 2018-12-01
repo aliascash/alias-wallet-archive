@@ -50,6 +50,12 @@ enum WalletFeature
     FEATURE_LATEST = 60000
 };
 
+enum Currency
+{
+    XSPEC,
+    SPECTRE
+};
+
 /** A key pool entry */
 class CKeyPool
 {
@@ -924,8 +930,8 @@ public:
         return nChangeCached;
     }
 
-    void GetAmounts(std::list<std::tuple<CTxDestination, int64_t, std::string> >& listReceived,
-                    std::list<std::tuple<CTxDestination, int64_t, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetDestinationDetails(std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> >& listReceived,
+                    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
@@ -983,6 +989,21 @@ public:
         }
 
         return true;
+    }
+
+    bool GetNarration(const unsigned int& nOut, std::string& sNarr) const
+    {
+        if (nOut >= vout.size())
+            throw std::runtime_error("CWalletTx::GetNarration() : nOut out of range");
+
+        char cbufNarrKey[256];
+        snprintf(cbufNarrKey, sizeof(cbufNarrKey), "n_%u", nOut);
+        mapValue_t::const_iterator mi = mapValue.find(cbufNarrKey);
+        if (mi != mapValue.end() && !mi->second.empty()) {
+            sNarr = mi->second;
+            return true;
+        }
+        return false;
     }
 
     bool WriteToDisk();

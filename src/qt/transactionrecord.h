@@ -103,6 +103,15 @@ public:
     {
     }
 
+
+    TransactionRecord(uint256 hash, int64_t time,
+                    Type type, const std::string &address, const std::string &narration,
+                    int64_t debit, int64_t credit, int idx):
+                hash(hash), time(time), type(type), address(address), narration(narration), debit(debit), credit(credit),
+                idx(idx)
+    {
+    }
+
     /** Decompose CWallet transaction to model transaction records.
      */
     static bool showTransaction(const CWalletTx &wtx);

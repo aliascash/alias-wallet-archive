@@ -92,121 +92,49 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
     if (wtx.nVersion == ANON_TXN_VERSION)
     {
-        const std::string XSPEC = "XSPEC";
-        const std::string SPECTRE = "SPECTRE";
+        int64_t allFee;
+        std::string strSentAccount;
+        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
+        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
 
-        std::string sCurrencyDestination = XSPEC;
-        std::string sCurrencySource = XSPEC;
-        for(const CTxIn& txin: wtx.vin) {
-            if (txin.IsAnonInput() ) {
-                sCurrencySource = SPECTRE;
-                break;
-            }
-        }
+        wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
-        bool withinAccount = false;
-        std::map<std::string, int64_t> mapAddressAmounts;
-        std::map<std::string, std::string> mapAddressNarration;
-        for (uint32_t index = 0; index < wtx.vout.size(); ++index)
+        if (listReceived.size() > 0 && listSent.size() > 0)
         {
-            const CTxOut& txout = wtx.vout[index];
-            if (txout.IsAnonOutput())
-            {
-                // Don't report 'change' txouts
-                if (wallet->IsChange(txout))
-                    continue;
+            // Transfer within account
+            TransactionRecord::Type trxType = TransactionRecord::SendToSelf;
+            const auto & [sDestination, sAmount, sCurrency, sNarration] = listSent.front();
+            const auto & [rDestination, rAmount, rCurrency, rNarration] = listReceived.front();
 
-                sCurrencyDestination = SPECTRE;
+            if (sCurrency == XSPEC && rCurrency == SPECTRE)
+                trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
+            else if (sCurrency == SPECTRE && rCurrency == XSPEC)
+                trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
-                CKeyID ckidD = txout.ExtractAnonPk().GetID();
-
-                bool fIsMine = wallet->HaveKey(ckidD);
-
-                std::string account;
-                {
-                    LOCK(wallet->cs_wallet);
-                    if (wallet->mapAddressBook.count(ckidD))
-                    {
-                        account = wallet->mapAddressBook.at(ckidD);
-                    }
-                    else {
-                        account = "UNKNOWN";
-                    }
-                }
-
-                if (fIsMine)
-                    mapAddressAmounts[account] += txout.nValue;
-                else if (nDebit > 0)
-                    mapAddressAmounts[account] -= txout.nValue;
-
-                if (fIsMine && nDebit > 0)
-                    withinAccount = true;
-
-                // Add narration for account
-                snprintf(cbuf, sizeof(cbuf), "n_%u", index);
-                LogPrintf("Search narration: n_%u\n", index);
-                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                if (mi != wtx.mapValue.end() && !mi->second.empty()){
-                    mapAddressNarration[account] = mi->second;
-                    LogPrintf("mapAccountNarration[%s] = '%s'\n", account, mi->second);
-                }
-            }
+            for (const auto & [destination, amount, currency, narration]: listReceived)
+                parts.append(TransactionRecord(hash, nTime, trxType,
+                        destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                        narration, 0, amount, parts.size())
+                );
         }
-        bool firstSend = true;
-        for (const auto & [address, amount] : mapAddressAmounts) {
-            int64_t amountAdjusted = amount;
-            TransactionRecord::Type trxType = TransactionRecord::RecvSpectre;
-            if (withinAccount) {
-                if (sCurrencySource == XSPEC && sCurrencyDestination == SPECTRE)
-                    trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
-                else if (sCurrencySource == SPECTRE && sCurrencyDestination == XSPEC)
-                    trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
-                else
-                    trxType = TransactionRecord::SendToSelf;
-            }
-            else if (amount < 0) {
-                trxType = TransactionRecord::SendSpectre;
-                if (firstSend) {
-                    // add trx fees to first trx record
-                    firstSend = false;
-                    int64_t nTxFee = nDebit - wtx.GetValueOut();
-                    amountAdjusted = amountAdjusted - nTxFee;
-                }
-            }
-            TransactionRecord sub(hash, nTime, trxType, "", "", amountAdjusted, 0);
+        else
+        {
+            for (const auto & [destination, amount, currency, narration]: listSent)
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendSpectre,
+                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                                               narration, parts.size() == 0 ? -(amount + allFee): -amount, // add trx fees to first trx record
+                                               0, parts.size())
+                );
 
-            sub.idx = parts.size();
-
-            CStealthAddress stealthAddress;
-            if (wallet->GetStealthAddress(address, stealthAddress))
-                sub.address = stealthAddress.Encoded();
-
-            mapValue_t::const_iterator ni = mapAddressNarration.find(address);
-            if (ni != mapAddressNarration.end() && !ni->second.empty()) {
-                 sub.narration = ni->second;
-                 LogPrintf("Narration for address '%s' = '%s'\n", address, ni->second);
-            }
-            else if (mapAddressAmounts.size() == 1)
-            {
-                for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
-                {
-                    // display 1st transaction
-                    snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                    mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                    if (mi != wtx.mapValue.end() && !mi->second.empty()) {
-                        sub.narration = mi->second;
-                        LogPrintf("Narration first output for: '%s' = '%s'\n", address, ni->second);
-                        break;
-                    }
-                }
-            }
-
-            parts.append(sub);
+            for (const auto & [destination, amount, currency, narration]: listReceived)
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::RecvSpectre,
+                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                                               narration, 0, amount, parts.size())
+                );
         }
 
         return parts;
     }
-
 
     if (nNet > 0 || wtx.IsCoinBase() || wtx.IsCoinStake())
     {
