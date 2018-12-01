@@ -567,17 +567,13 @@ QString AddressTableModel::labelForAddress(const QString &address) const
 
         std::string sAddr = address.toStdString();
 
-        if (IsStealthAddress(sAddr))
+        CStealthAddress stealthAddress;
+        if (wallet->GetStealthAddress(sAddr, stealthAddress))
         {
-            CStealthAddress sxAddr;
-            if (!sxAddr.SetEncoded(sAddr))
-                return "";
-
-            std::set<CStealthAddress>::iterator it(wallet->stealthAddresses.find(sxAddr));
-            if (it != wallet->stealthAddresses.end())
-                return QString::fromStdString(it->label);
-
-        } else
+            if (!stealthAddress.label.empty())
+                return QString::fromStdString(stealthAddress.label);
+        }
+        else
         {
             CBitcoinAddress address_parsed(sAddr);
             std::map<CTxDestination, std::string>::iterator mi(wallet->mapAddressBook.find(address_parsed.Get()));

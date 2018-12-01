@@ -878,7 +878,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     nStart = GetTimeMillis();
     
     pwalletMain = new CWallet(strWalletFileName);
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet();
+    int oltWalletVersion;
+    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion);
 
     if (nLoadWalletRet != DB_LOAD_OK)
     {
@@ -918,8 +919,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     RegisterWallet(pwalletMain);
 
     CBlockIndex *pindexRescan = pindexBest;
-    if (GetBoolArg("-rescan"))
+    bool fullscan = false;
+    if (GetBoolArg("-rescan") || (oltWalletVersion > 0 && oltWalletVersion < 2020005)) // Wallets prior to V2.2 must be rescanned
     {
+        fullscan = true;
         pindexRescan = pindexGenesisBlock;
     } else
     {
@@ -931,14 +934,29 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (pindexBest != pindexRescan && pindexBest && pindexRescan && pindexBest->nHeight > pindexRescan->nHeight)
     {
-        uiInterface.InitMessage(_("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", pindexBest->nHeight - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
 
-        pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
-            uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
-            return true;
-        },1000);
+        {
+            LOCK2(cs_main, pwalletMain->cs_wallet);
+
+            if (fullscan) {
+                pwalletMain->EraseAllAnonData([] (const char *cType, const int& nAffected) -> void {
+                    uiInterface.InitMessage(strprintf("Clear %s cache... (%d)", cType, nAffected));
+                });
+            }
+
+            pwalletMain->MarkDirty();
+            pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
+                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
+                return true;
+            },1000);
+            pwalletMain->ReacceptWalletTransactions();
+
+            if (fullscan)
+                pwalletMain->CacheAnonStats();
+        }
+
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
     };
 

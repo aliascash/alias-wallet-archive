@@ -20,12 +20,12 @@ QString TransactionRecord::getTypeLabel(const int &type)
     switch(type)
     {
     case RecvWithAddress:
-        return SpectreGUI::tr("Received with");
+        return SpectreGUI::tr("XSPEC received with");
     case RecvFromOther:
-        return SpectreGUI::tr("Received from");
+        return SpectreGUI::tr("XSPEC received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("Sent to");
+        return SpectreGUI::tr("XSPEC sent");
     case SendToSelf:
         return SpectreGUI::tr("Payment to yourself");
     case Generated:
@@ -35,9 +35,13 @@ QString TransactionRecord::getTypeLabel(const int &type)
 	case GeneratedContribution:
 		return SpectreGUI::tr("Contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("Received SPECTRE");
+        return SpectreGUI::tr("SPECTRE received with");
     case SendSpectre:
-        return SpectreGUI::tr("Sent SPECTRE");
+        return SpectreGUI::tr("SPECTRE sent to");
+    case ConvertSPECTREtoXSPEC:
+        return SpectreGUI::tr("SPECTRE to XSPEC");
+    case ConvertXSPECtoSPECTRE:
+        return SpectreGUI::tr("XSPEC to SPECTRE");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -88,50 +92,49 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
     if (wtx.nVersion == ANON_TXN_VERSION)
     {
-        if (nNet > 0 && nCredSpectre > 0)
+        int64_t allFee;
+        std::string strSentAccount;
+        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
+        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+
+        wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
+
+        if (listReceived.size() > 0 && listSent.size() > 0)
         {
-            // -- credit
-            TransactionRecord sub(hash, nTime, TransactionRecord::RecvSpectre, "", "", nNet, 0);
+            // Transfer within account
+            TransactionRecord::Type trxType = TransactionRecord::SendToSelf;
+            const auto & [sDestination, sAmount, sCurrency, sNarration] = listSent.front();
+            const auto & [rDestination, rAmount, rCurrency, rNarration] = listReceived.front();
 
-            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
-            {
-                // display 1st transaction
-                snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                if (mi != wtx.mapValue.end() && !mi->second.empty())
-                {
-                    sub.narration = mi->second;
-                    break;
-                };
-            };
+            if (sCurrency == XSPEC && rCurrency == SPECTRE)
+                trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
+            else if (sCurrency == SPECTRE && rCurrency == XSPEC)
+                trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
-            parts.append(sub);
-            return parts;
-        } else
-        if (nNet <= 0)
+            for (const auto & [destination, amount, currency, narration]: listReceived)
+                parts.append(TransactionRecord(hash, nTime, trxType,
+                        destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                        narration, 0, amount, parts.size())
+                );
+        }
+        else
         {
-            // -- debit
-            TransactionRecord sub(hash, nTime, TransactionRecord::SendSpectre, "", "", nNet, 0);
+            for (const auto & [destination, amount, currency, narration]: listSent)
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendSpectre,
+                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                                               narration, parts.size() == 0 ? -(amount + allFee): -amount, // add trx fees to first trx record
+                                               0, parts.size())
+                );
 
-            for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
-            {
-                // display 1st transaction
-                snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                if (mi != wtx.mapValue.end() && !mi->second.empty())
-                {
-                    sub.narration = mi->second;
-                    break;
-                }
-            };
+            for (const auto & [destination, amount, currency, narration]: listReceived)
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::RecvSpectre,
+                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
+                                               narration, 0, amount, parts.size())
+                );
+        }
 
-            parts.append(sub);
-            return parts;
-        };
-
-        // continue on
-    };
-
+        return parts;
+    }
 
     if (nNet > 0 || wtx.IsCoinBase() || wtx.IsCoinStake())
     {
@@ -142,32 +145,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
         {
             const CTxOut& txout = wtx.vout[nOut];
-
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txout.IsAnonOutput())
-            {
-                const CScript &s = txout.scriptPubKey;
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
-
-                if (wallet->HaveKey(ckidD))
-                {
-                    TransactionRecord sub(hash, nTime);
-                    sub.idx = parts.size(); // sequence number
-
-                    sub.credit = txout.nValue;
-
-                    sub.type = TransactionRecord::RecvSpectre;
-                    sub.address = CBitcoinAddress(ckidD).ToString();
-                    //sub.address = wallet->mapAddressBook[ckidD]
-
-                    snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
-                    mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);
-                    if (mi != wtx.mapValue.end() && !mi->second.empty())
-                        sub.narration = mi->second;
-
-                    parts.append(sub);
-                };
-            };
 
             if (wallet->IsMine(txout))
             {
@@ -239,22 +216,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         bool fAllFromMe = true;
         BOOST_FOREACH(const CTxIn& txin, wtx.vin)
         {
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txin.IsAnonInput())
-            {
-                std::vector<uint8_t> vchImage;
-                txin.ExtractKeyImage(vchImage);
-
-                CWalletDB walletdb(wallet->strWalletFile, "r");
-                COwnedAnonOutput oao;
-                if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
-                {
-                    fAllFromMe = false;
-                    break; // display as send/recv SPECTRE
-                };
-                continue;
-            };
-
             if (wallet->IsMine(txin))
                 continue;
             fAllFromMe = false;
@@ -264,12 +225,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         bool fAllToMe = true;
         BOOST_FOREACH(const CTxOut& txout, wtx.vout)
         {
-            if (wtx.nVersion == ANON_TXN_VERSION
-                && txout.IsAnonOutput())
-            {
-                fAllToMe = false;
-                break; // display as send/recv SPECTRE
-            }
             opcodetype firstOpCode;
             CScript::const_iterator pc = txout.scriptPubKey.begin();
             if (txout.scriptPubKey.GetOp(pc, firstOpCode)
@@ -315,47 +270,31 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 TransactionRecord sub(hash, nTime);
                 sub.idx = parts.size();
 
-                if (wtx.nVersion == ANON_TXN_VERSION
-                    && txout.IsAnonOutput())
+                opcodetype firstOpCode;
+                CScript::const_iterator pc = txout.scriptPubKey.begin();
+                if (txout.scriptPubKey.GetOp(pc, firstOpCode)
+                    && firstOpCode == OP_RETURN)
+                    continue;
+
+                if (wallet->IsMine(txout))
                 {
-                    const CScript &s = txout.scriptPubKey;
-                    CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+                    // Ignore parts sent to self, as this is usually the change
+                    // from a transaction sent back to our own address.
+                    continue;
+                }
 
-                    CTxDestination address;
-                    sub.idx = parts.size(); // sequence number
-                    sub.credit = txout.nValue;
-
-                    sub.type = TransactionRecord::SendSpectre;
-                    sub.address = CBitcoinAddress(ckidD).ToString();
-
+                CTxDestination address;
+                if (ExtractDestination(txout.scriptPubKey, address))
+                {
+                    // Sent to Bitcoin Address
+                    sub.type = TransactionRecord::SendToAddress;
+                    sub.address = CBitcoinAddress(address).ToString();
                 } else
                 {
-                    opcodetype firstOpCode;
-                    CScript::const_iterator pc = txout.scriptPubKey.begin();
-                    if (txout.scriptPubKey.GetOp(pc, firstOpCode)
-                        && firstOpCode == OP_RETURN)
-                        continue;
-
-                    if (wallet->IsMine(txout))
-                    {
-                        // Ignore parts sent to self, as this is usually the change
-                        // from a transaction sent back to our own address.
-                        continue;
-                    }
-
-                    CTxDestination address;
-                    if (ExtractDestination(txout.scriptPubKey, address))
-                    {
-                        // Sent to Bitcoin Address
-                        sub.type = TransactionRecord::SendToAddress;
-                        sub.address = CBitcoinAddress(address).ToString();
-                    } else
-                    {
-                        // Sent to IP, or other non-address transaction like OP_EVAL
-                        sub.type = TransactionRecord::SendToOther;
-                        sub.address = mapValue["to"];
-                    }
-                };
+                    // Sent to IP, or other non-address transaction like OP_EVAL
+                    sub.type = TransactionRecord::SendToOther;
+                    sub.address = mapValue["to"];
+                }
 
                 snprintf(cbuf, sizeof(cbuf), "n_%u", nOut);
                 mapValue_t::const_iterator mi = wtx.mapValue.find(cbuf);

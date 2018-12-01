@@ -561,7 +561,7 @@ static bool IsKeyType(string strType)
             strType == "mkey" || strType == "ckey");
 }
 
-DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
+DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion)
 {
     pwallet->vchDefaultKey = CPubKey();
     CWalletScanState wss;
@@ -653,8 +653,10 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
     if (wss.fIsEncrypted && (wss.nFileVersion == 40000 || wss.nFileVersion == 50000))
         return DB_NEED_REWRITE;
 
-    if (wss.nFileVersion < CLIENT_VERSION) // Update
+    if (wss.nFileVersion < CLIENT_VERSION) { // Update
+        oldWalletVersion = wss.nFileVersion;
         WriteVersion(CLIENT_VERSION);
+    }
 
     if (wss.fAnyUnordered)
         result = ReorderTransactions(pwallet);

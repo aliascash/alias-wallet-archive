@@ -41,12 +41,16 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->stakingCheckBox->setChecked(true);
             ui->stakingCheckBox->show();
             // fallthru
-        case Unlock: // Ask passphrase
-            ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
+        case UnlockRescan:
+        case Unlock:
             ui->passLabel2->hide();
             ui->passEdit2->hide();
             ui->passLabel3->hide();
             ui->passEdit3->hide();
+            if (mode==UnlockRescan)
+                ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>SPECTRE balance might be shown wrong</b>."));
+            else
+                ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
             setWindowTitle(tr("Unlock wallet"));
             break;
         case Decrypt:   // Ask passphrase
@@ -145,6 +149,7 @@ void AskPassphraseDialog::accept()
             QDialog::reject(); // Cancelled
         }
         } break;
+    case UnlockRescan:
     case UnlockStaking:
     case Unlock:
         if(!model->setWalletLocked(false, oldpass))
@@ -203,6 +208,7 @@ void AskPassphraseDialog::textChanged()
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
         break;
     case UnlockStaking:
+    case UnlockRescan:
     case Unlock: // Old passphrase x1
     case Decrypt:
         acceptable = !ui->passEdit1->text().isEmpty();

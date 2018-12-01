@@ -522,7 +522,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         CWalletTx wtxNew;
         wtxNew.nVersion = ANON_TXN_VERSION;
 
-        std::map<int, std::string> mapStealthNarr;
+        std::map<CScript, std::string> mapScriptNarr;
         std::map<CKeyID, CStealthAddress> mapPubStealth;
         std::vector<std::pair<CScript, int64_t> > vecSend;
         std::vector<std::pair<CScript, int64_t> > vecChange;
@@ -537,6 +537,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
             int64_t nValue = rcp.amount;
             std::string sNarr = rcp.narration.toStdString();
+            CScript scriptNarration; // needed to match output id of narr
 
             if (rcp.txnTypeInd == TXT_SPEC_TO_SPEC
                 || rcp.txnTypeInd == TXT_ANON_TO_SPEC)
@@ -551,7 +552,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
                 std::string sError;
 
-                if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, mapStealthNarr, sError))
+                if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration, sError))
                 {
                     LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
                     return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
@@ -567,24 +568,14 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                     }
                 }
 
-                CScript scriptNarration; // needed to match output id of narr
                 if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
                 {
                     LogPrintf("SendCoinsAnon() CreateAnonOutputs failed.\n");
                     return SCR_Error;
                 };
-
-                if (scriptNarration.size() > 0)
-                {
-                    for (uint32_t k = 0; k < vecSend.size(); ++k)
-                    {
-                        if (vecSend[k].first != scriptNarration)
-                            continue;
-                        mapStealthNarr[k] = sNarr;
-                        break;
-                    };
-                };
             };
+            if (scriptNarration.size() > 0)
+                mapScriptNarr[scriptNarration] = sNarr;
         };
 
 
@@ -607,24 +598,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                     return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
                 return TransactionCreationFailed;
             };
-
-            std::map<int, std::string>::iterator it;
-            for (it = mapStealthNarr.begin(); it != mapStealthNarr.end(); ++it)
-            {
-                int pos = it->first;
-                if (nChangePos > -1 && it->first >= nChangePos)
-                    pos++;
-
-                char key[64];
-                if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
-                {
-                    LogPrintf("SendCoinsAnon(): Error creating narration key.");
-                    continue;
-                };
-                wtxNew.mapValue[key] = it->second;
-            };
-
-        } else
+        }
+        else
         {
             // -- in SPECTRE
 
@@ -640,22 +615,17 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
-
-            std::map<int, std::string>::iterator it;
-            for (it = mapStealthNarr.begin(); it != mapStealthNarr.end(); ++it)
-            {
-                int pos = it->first;
-                char key[64];
-                if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
-                {
-                    LogPrintf("SendCoinsAnon(): Error creating narration key.");
-                    continue;
-                };
-                wtxNew.mapValue[key] = it->second;
-            };
-
         };
 
+        for (const auto & [scriptNarration, sNarr] : mapScriptNarr)
+        {
+            std::string sError;
+            if (!wallet->SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError))
+            {
+                LogPrintf("SendCoinsAnon(): %s\n",  sError.c_str());
+                return SendCoinsReturn(SCR_Error, 0, QString::fromStdString(sError));
+            }
+        }
 
         if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
             return Aborted;
@@ -842,7 +812,7 @@ void WalletModel::unsubscribeFromCoreSignals()
 }
 
 // WalletModel::UnlockContext implementation
-WalletModel::UnlockContext WalletModel::requestUnlock()
+WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mode)
 {
     bool was_locked = getEncryptionStatus() == Locked;
 
@@ -855,7 +825,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock()
     if(was_locked)
     {
         // Request UI to unlock wallet
-        emit requireUnlock();
+        emit requireUnlock(mode);
     }
     // If wallet is still locked, unlock was failed or cancelled, mark context as invalid
     bool valid = getEncryptionStatus() != Locked;
@@ -963,5 +933,5 @@ void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 s
     emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
 void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
-void WalletModel::emitRequireUnlock() { emit requireUnlock(); }
+void WalletModel::emitRequireUnlock(UnlockMode mode) { emit requireUnlock(mode); }
 void WalletModel::emitError(const QString &title, const QString &message, bool modal) { emit error(title, message, modal); }

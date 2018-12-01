@@ -269,6 +269,9 @@ int main(int argc, char *argv[])
                 QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                 QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 
+                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                    emit walletModel.requireUnlock(WalletModel::UnlockMode::rescan);
+
                 app.exec();
 
                 window.hide();

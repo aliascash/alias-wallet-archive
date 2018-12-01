@@ -246,7 +246,7 @@ bool CTxDB::EraseAnonOutput(CPubKey& pkCoin)
     return Erase(make_pair(string("ao"), pkCoin));
 };
 
-bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
+bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress)
 {
 
     TxnBegin();
@@ -281,6 +281,8 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
 
         if (!s.ok())
             LogPrintf("EraseRange(%s) - Delete failed.\n", sPrefix.c_str());
+
+        if (funcProgress && nAffected % 100 == 0) funcProgress(nAffected);
 
         nAffected++;
         iterator->Next();
