@@ -22,7 +22,7 @@ pipeline {
                 returnStdout: true
         )
         CURRENT_DATE = sh(
-                script: "printf \$(date '+%F %T')",
+                script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
     }
