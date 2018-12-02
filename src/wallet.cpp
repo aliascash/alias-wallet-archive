@@ -14,6 +14,7 @@
 #include "kernel.h"
 #include "coincontrol.h"
 #include "pbkdf2.h"
+#include <random>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -271,7 +272,6 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         UnlockStealthAddresses(vMasterKey);
         ExtKeyUnlock(vMasterKey);
         ProcessLockedAnonOutputs();
-        SecureMsgWalletUnlocked();
 
         if (fMakeExtKeyInitials)
         {
@@ -1011,21 +1011,38 @@ int64_t CWallet::GetSpectreCredit(const CTxOut& txout) const
 
         CPubKey pkCoin = txout.ExtractAnonPk();
 
+        COutPoint outpoint;
         std::vector<uint8_t> vchImage;
-        if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
-            return 0;
+        if (walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
+        {
+            COwnedAnonOutput oao;
+            if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
+                return 0;
 
-        COwnedAnonOutput oao;
-        if (!walletdb.ReadOwnedAnonOutput(vchImage, oao))
-            return 0;
+            outpoint = oao.outpoint;
+        }
+        else
+        {
+            if (!IsCrypted())
+                return 0;
 
-        WalletTxMap::const_iterator mi = mapWallet.find(oao.outpoint.hash);
+            // - tokens received with locked wallet won't have oao until wallet unlocked
+            CKeyID ckCoinId = pkCoin.GetID();
+            CLockedAnonOutput lockedAo;
+            if (!walletdb.ReadLockedAnonOutput(ckCoinId, lockedAo))
+                return 0;
+
+            outpoint = lockedAo.outpoint;
+        };
+
+
+        WalletTxMap::const_iterator mi = mapWallet.find(outpoint.hash);
         if (mi != mapWallet.end())
         {
             const CWalletTx& prev = (*mi).second;
-            if (oao.outpoint.n < prev.vout.size())
+            if (outpoint.n < prev.vout.size())
             {
-                return prev.vout[oao.outpoint.n].nValue;
+                return prev.vout[outpoint.n].nValue;
             };
         };
     } // cs_wallet
@@ -1044,7 +1061,17 @@ bool CWallet::IsChange(const CTxOut& txout) const
     // a better way of identifying which outputs are 'the send' and which are
     // 'the change' will need to be implemented (maybe extend CWalletTx to remember
     // which output, if any, was change).
-    if (ExtractDestination(txout.scriptPubKey, address) && IsDestMine(*this, address))
+    if (txout.IsAnonOutput()) {
+        // TODO ExtractDestination does currently not support anonoutputs
+        CKeyID ckidD = txout.ExtractAnonPk().GetID();
+
+        bool fIsMine = HaveKey(ckidD);
+        address = ckidD;
+        LOCK(cs_wallet);
+        if (fIsMine && !mapAddressBook.count(ckidD))
+            return true;
+    }
+    else if (ExtractDestination(txout.scriptPubKey, address) && IsDestMine(*this, address))
     {
         LOCK(cs_wallet);
         if (!mapAddressBook.count(address))
@@ -1099,8 +1126,8 @@ int CWalletTx::GetRequestCount() const
     return nRequests;
 }
 
-void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
-                           list<pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, string& strSentAccount) const
+void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, int64_t, Currency, std::string> >& listReceived,
+                           list<tuple<CTxDestination, int64_t, Currency, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
 {
     nFee = 0;
     listReceived.clear();
@@ -1119,26 +1146,64 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
         nFee = nDebit - nValueOut;
     };
 
+    Currency currencyDestination = XSPEC;
+    Currency currencySource = XSPEC;
+    for(const CTxIn& txin: vin) {
+        if (txin.IsAnonInput() ) {
+            currencySource = SPECTRE;
+            break;
+        }
+    }
+
     // Sent/received.
-    BOOST_FOREACH(const CTxOut& txout, vout)
+    std::map<std::string, int64_t> mapStealthReceived;
+    std::map<std::string, int64_t> mapStealthSent;
+    std::map<std::string, std::string> mapStealthNarration;
+
+    // Only need to handle txouts if AT LEAST one of these is true:
+    //   1) they debit from us (sent)
+    //   2) the output is to us (received)
+    for (uint32_t index = 0; index < vout.size(); ++index)
     {
+        const CTxOut& txout = vout[index];
+
+        // Don't report 'change' txouts
+        if (nDebit > 0 && pwallet->IsChange(txout))
+            continue;
+
         if (nVersion == ANON_TXN_VERSION
             && txout.IsAnonOutput())
         {
-            const CScript &s = txout.scriptPubKey;
-            CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
+            currencyDestination = SPECTRE;
+
+            CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
             bool fIsMine = pwallet->HaveKey(ckidD);
+            if (nDebit <= 0 && !fIsMine)
+                continue;
 
-            CTxDestination address = ckidD;
+            std::string stealthAddress;
+            {
+                LOCK(pwallet->cs_wallet);
+                if (pwallet->mapAddressBook.count(ckidD))
+                    stealthAddress = pwallet->mapAddressBook.at(ckidD);
+                else
+                    stealthAddress = "UNKNOWN";
+            }
 
             // If we are debited by the transaction, add the output as a "sent" entry
             if (nDebit > 0)
-                listSent.push_back(make_pair(address, txout.nValue));
+                mapStealthSent[stealthAddress] += txout.nValue;
 
             // If we are receiving the output, add it as a "received" entry
             if (fIsMine)
-                listReceived.push_back(make_pair(address, txout.nValue));
+                mapStealthReceived[stealthAddress] += txout.nValue;
+
+            // Get narration for stealth address
+            std::string sNarr;
+            if (GetNarration(index, sNarr))
+                // TODO for UNKNOWN we should concat narrations if multiple are available
+                mapStealthNarration[stealthAddress] = sNarr;
 
             continue;
         };
@@ -1153,40 +1218,150 @@ void CWalletTx::GetAmounts(list<pair<CTxDestination, int64_t> >& listReceived,
             && firstOpCode == OP_RETURN)
             continue;
 
-
-        bool fIsMine;
-        // Only need to handle txouts if AT LEAST one of these is true:
-        //   1) they debit from us (sent)
-        //   2) the output is to us (received)
-        if (nDebit > 0)
-        {
-            // Don't report 'change' txouts
-            if (pwallet->IsChange(txout))
-                continue;
-            fIsMine = pwallet->IsMine(txout);
-        } else
-        if (!(fIsMine = pwallet->IsMine(txout)))
+        bool fIsMine = pwallet->IsMine(txout);
+        if (nDebit <= 0 && !fIsMine)
             continue;
+
+        // Get narration for output
+        std::string sNarr;
+        bool hasNarr = GetNarration(index, sNarr);
 
         // In either case, we need to get the destination address
         CTxDestination address;
         if (!ExtractDestination(txout.scriptPubKey, address))
         {
-            LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
+            LogPrintf("CWalletTx::GetDestinationDetails: Unknown transaction type found, txid %s\n",
                 this->GetHash().ToString().c_str());
             address = CNoDestination();
-        };
+        }
+        else
+        {
+            LOCK(pwallet->cs_wallet);
+            if (pwallet->mapAddressBook.count(address))
+            {
+                std::string stealthAddress = pwallet->mapAddressBook.at(address);
+                if (stealthAddress.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0
+                        || IsStealthAddress(stealthAddress)) {
+                    // If we are debited by the transaction, add the output as a "sent" entry
+                    if (nDebit > 0)
+                        mapStealthSent[stealthAddress] += txout.nValue;
+
+                    // If we are receiving the output, add it as a "received" entry
+                    if (fIsMine)
+                        mapStealthReceived[stealthAddress] += txout.nValue;
+
+                    // Add narration to stealth output
+                    if (hasNarr)
+                        // TODO for UNKNOWN we should concat narrations if multiple are available
+                        mapStealthNarration[stealthAddress] = sNarr;
+
+                    continue;
+                }
+            }
+        }
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(make_pair(address, txout.nValue));
+            listSent.push_back(make_tuple(address, txout.nValue, currencySource, sNarr));
 
         // If we are receiving the output, add it as a "received" entry
         if (fIsMine)
-            listReceived.push_back(make_pair(address, txout.nValue));
+            listReceived.push_back(make_tuple(address, txout.nValue, currencyDestination, sNarr));
     };
 
+    for (const auto & [address, amount] : mapStealthSent) {
+        CStealthAddress stealthAddress;
+        if (pwallet->GetStealthAddress(address, stealthAddress))
+            listSent.push_back(std::make_tuple(stealthAddress, amount, currencySource, mapStealthNarration[address]));
+        else
+            listSent.push_back(std::make_tuple(CNoDestination(), amount,currencySource, mapStealthNarration[address]));
+    }
+
+    for (const auto & [address, amount] : mapStealthReceived) {
+        CStealthAddress stealthAddress;
+        if (pwallet->GetStealthAddress(address, stealthAddress))
+            listReceived.push_back(std::make_tuple(stealthAddress, amount, currencyDestination, mapStealthNarration[address]));
+        else
+            listReceived.push_back(std::make_tuple(CNoDestination(), amount, currencyDestination, mapStealthNarration[address]));
+    }
 }
+
+bool CWallet::GetStealthAddress(const std::string& address, CStealthAddress& stealthAddressRet) const
+{
+    CStealthAddress sxAddr;
+    std::string sAddressToCompare;
+
+    if (address.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0)
+    {
+        sAddressToCompare = address.substr(sAnonPrefix.length(), 16);
+    }
+    else {
+        if (sxAddr.SetEncoded(address))
+        {
+            stealthAddressRet = sxAddr;
+        }
+        else {
+            return false;
+        }
+    }
+
+    for (const CStealthAddress & sa : stealthAddresses)
+    {
+        if (!sAddressToCompare.empty())
+        {
+            std::string saEncoded = sa.Encoded();
+            if (saEncoded.compare(0, sAddressToCompare.length(), sAddressToCompare) == 0)
+            {
+                stealthAddressRet = sa;
+                return true;
+            }
+        }
+        else if (sa == sxAddr)
+        {
+            stealthAddressRet = sa;
+            return true;
+        }
+    }
+
+    ExtKeyAccountMap::const_iterator mi;
+    for (mi = mapExtAccounts.begin(); mi != mapExtAccounts.end(); ++mi)
+    {
+        CExtKeyAccount *ea = mi->second;
+        if (ea->mapStealthKeys.size() < 1)
+            continue;
+
+        for (const auto& stealthKeys : ea->mapStealthKeys)
+        {
+            const CEKAStealthKey &aks = stealthKeys.second;
+
+            if (!sAddressToCompare.empty())
+            {
+                 std::string saEncoded = aks.ToStealthAddress();
+                 if (saEncoded.compare(0, sAddressToCompare.length(), sAddressToCompare) == 0)
+                 {
+                     sxAddr.SetEncoded(saEncoded);
+                     sxAddr.label = aks.sLabel;
+                     stealthAddressRet = sxAddr;
+                     return true;
+                 }
+            }
+            else
+            {
+                CStealthAddress cekaSxAddr;
+                aks.SetSxAddr(cekaSxAddr);
+                if (cekaSxAddr == sxAddr)
+                {
+                    sxAddr.label = aks.sLabel;
+                    stealthAddressRet = sxAddr;
+                    return true;
+                }
+            }
+        }
+    }
+
+    return sxAddr.scan_pubkey.size() != 0;
+}
+
 
 void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                                   int64_t& nSent, int64_t& nFee) const
@@ -1195,30 +1370,30 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nRecei
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::pair<CTxDestination, int64_t> > listReceived;
-    std::list<std::pair<CTxDestination, int64_t> > listSent;
-    GetAmounts(listReceived, listSent, allFee, strSentAccount);
+    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
+    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+    GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
     if (strAccount == strSentAccount)
     {
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& s, listSent)
-            nSent += s.second;
+        for(const auto & [address,amount,currency,narration] : listSent)
+            nSent += amount;
         nFee = allFee;
     };
 
     {
         LOCK(pwallet->cs_wallet);
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& r, listReceived)
+        for(const auto & [address,amount,currency,narration] : listReceived)
         {
-            if (pwallet->mapAddressBook.count(r.first))
+            if (pwallet->mapAddressBook.count(address))
             {
-                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(r.first);
+                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(address);
                 if (mi != pwallet->mapAddressBook.end() && (*mi).second == strAccount)
-                    nReceived += r.second;
+                    nReceived += amount;
             } else
             if (strAccount.empty())
             {
-                nReceived += r.second;
+                nReceived += amount;
             };
         };
     } // pwallet->cs_wallet
@@ -1288,10 +1463,139 @@ bool CWalletTx::WriteToDisk()
     return CWalletDB(pwallet->strWalletFile).WriteTx(GetHash(), *this);
 }
 
+uint32_t CWallet::ClearWalletTransactions(bool onlyUnaccepted)
+{
+    uint32_t nTransactions = 0;
+    char cbuf[256];
+    {
+        LOCK2(cs_main, cs_wallet);
+
+        CWalletDB walletdb(strWalletFile);
+        walletdb.TxnBegin();
+        Dbc* pcursor = walletdb.GetTxnCursor();
+        if (!pcursor)
+            throw std::runtime_error("Cannot get wallet DB cursor");
+
+        Dbt datKey;
+        Dbt datValue;
+
+        datKey.set_flags(DB_DBT_USERMEM);
+        datValue.set_flags(DB_DBT_USERMEM);
+
+        std::vector<unsigned char> vchKey;
+        std::vector<unsigned char> vchType;
+        std::vector<unsigned char> vchKeyData;
+        std::vector<unsigned char> vchValueData;
+
+        vchKeyData.resize(100);
+        vchValueData.resize(100);
+
+        datKey.set_ulen(vchKeyData.size());
+        datKey.set_data(&vchKeyData[0]);
+
+        datValue.set_ulen(vchValueData.size());
+        datValue.set_data(&vchValueData[0]);
+
+        unsigned int fFlags = DB_NEXT; // same as using DB_FIRST for new cursor
+        while (true)
+        {
+            int ret = pcursor->get(&datKey, &datValue, fFlags);
+
+            if (ret == ENOMEM
+                || ret == DB_BUFFER_SMALL)
+            {
+                if (datKey.get_size() > datKey.get_ulen())
+                {
+                    vchKeyData.resize(datKey.get_size());
+                    datKey.set_ulen(vchKeyData.size());
+                    datKey.set_data(&vchKeyData[0]);
+                };
+
+                if (datValue.get_size() > datValue.get_ulen())
+                {
+                    vchValueData.resize(datValue.get_size());
+                    datValue.set_ulen(vchValueData.size());
+                    datValue.set_data(&vchValueData[0]);
+                };
+                // -- try once more, when DB_BUFFER_SMALL cursor is not expected to move
+                ret = pcursor->get(&datKey, &datValue, fFlags);
+            };
+
+            if (ret == DB_NOTFOUND)
+                break;
+            else
+            if (datKey.get_data() == NULL || datValue.get_data() == NULL
+                || ret != 0)
+            {
+                snprintf(cbuf, sizeof(cbuf), "wallet DB error %d, %s", ret, db_strerror(ret));
+                throw std::runtime_error(cbuf);
+            };
+
+            CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+            ssValue.SetType(SER_DISK);
+            ssValue.clear();
+            ssValue.write((char*)datKey.get_data(), datKey.get_size());
+
+            ssValue >> vchType;
+
+
+            std::string strType(vchType.begin(), vchType.end());
+
+            //LogPrintf("strType %s\n", strType.c_str());
+
+            if (strType == "tx")
+            {
+                uint256 hash;
+                ssValue >> hash;
+
+                if (onlyUnaccepted)
+                {
+                    const CWalletTx& wtx = mapWallet[hash];
+                    if (!wtx.IsInMainChain())
+                    {
+                        if ((ret = pcursor->del(0)) != 0)
+                        {
+                            LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
+                            continue;
+                        }
+                        mapWallet.erase(hash);
+                        NotifyTransactionChanged(this, hash, CT_DELETED);
+                        nTransactions++;
+                    }
+                    continue;
+                }
+
+                if ((ret = pcursor->del(0)) != 0)
+                {
+                    LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
+                    continue;
+                }
+
+                mapWallet.erase(hash);
+                NotifyTransactionChanged(this, hash, CT_DELETED);
+
+                nTransactions++;
+            };
+        };
+        pcursor->close();
+        walletdb.TxnCommit();
+
+        //pwalletMain->mapWallet.clear();
+
+        if (nNodeMode == NT_THIN)
+        {
+            // reset LastFilteredHeight
+            walletdb.WriteLastFilteredHeight(0);
+        }
+    }
+
+    return nTransactions;
+}
+
 // Scan the block chain (starting in pindexStart) for transactions
 // from or to us. If fUpdate is true, found transactions that already
 // exist in the wallet will be updated.
-int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
+int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, std::function<bool (const int&, const int&, const int&)> funcProgress, int progressBatchSize)
 {
     if (fDebug)
         LogPrintf("ScanForWalletTransactions()\n");
@@ -1311,6 +1615,10 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     CBlockIndex* pindex = pindexStart;
     {
         LOCK2(cs_main, cs_wallet);
+
+        // call progress callback on start
+        if (funcProgress) funcProgress(pindex->nHeight, nCurBestHeight, ret);
+
         while (pindex)
         {
             CBlock block;
@@ -1322,8 +1630,16 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
                 if (AddToWalletIfInvolvingMe(tx, hash, &block, fUpdate))
                     ret++;
             };
+            if (funcProgress && pindex->nHeight % progressBatchSize == 0 && !funcProgress(pindex->nHeight, nCurBestHeight, ret)) {
+                // abort scanning indicated
+                break;
+            };
             pindex = pindex->pnext;
         };
+
+        // call progress callback on end
+        if (funcProgress) funcProgress(nCurBestHeight, nCurBestHeight, ret);
+
     } // cs_main, cs_wallet
 
     nBestHeight = nCurBestHeight;
@@ -1731,7 +2047,11 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
     std::vector<std::pair<int64_t, std::pair<const CWalletTx*,unsigned int> > > vValue;
     int64_t nTotalLower = 0;
 
-    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+// Removed with c++17, see https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+//    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+    std::random_device rng;
+    std::mt19937 urng(rng());
+    std::shuffle(vCoins.begin(), vCoins.end(), urng);
 
     BOOST_FOREACH(COutput output, vCoins)
     {
@@ -2474,7 +2794,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     AddCryptedKey(cpkE, vchEmpty);
                     CKeyID keyId = cpkE.GetID();
                     CBitcoinAddress coinAddress(keyId);
-                    std::string sLabel = it->Encoded();
+                    std::string sLabel = std::string("ao ") + it->Encoded().substr(0, 16) + "...";
                     SetAddressBookName(keyId, sLabel);
 
                     CPubKey cpkEphem(vchEphemPK);
@@ -2535,7 +2855,8 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                         continue;
                     };
 
-                    std::string sLabel = it->Encoded();
+
+                    std::string sLabel = std::string("ao ") + it->Encoded().substr(0, 16) + "...";
                     SetAddressBookName(keyID, sLabel);
                     nFoundStealth++;
                 };
@@ -2615,7 +2936,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     };
 
                     // - for compatability
-                    std::string sLabel = aks.ToStealthAddress();
+                    std::string sLabel = std::string("ao ") + aks.ToStealthAddress().substr(0, 16) + "...";
                     SetAddressBookName(ckidMatch, sLabel);
 
                     txnMatch = true;
@@ -2808,7 +3129,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 };
 
 
-bool CWallet::UndoAnonTransaction(const CTransaction& tx)
+bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     if (fDebugRingSig)
         LogPrintf("UndoAnonTransaction() tx: %s\n", tx.GetHash().GetHex().c_str());
@@ -2820,6 +3141,11 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
 
     CWalletDB walletdb(strWalletFile, "cr+");
     CTxDB txdb("cr+");
+
+    // Remove all pub to stealth key mappings
+    for (auto& element : *mapPubStealth) {
+        DelAddressBookName(element.first, &walletdb);
+    }
 
     for (unsigned int i = 0; i < tx.vin.size(); ++i)
     {
@@ -2964,7 +3290,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx)
     return true;
 };
 
-bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns)
+bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     uint256 txnHash = tx.GetHash();
 
@@ -2982,12 +3308,17 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         return error("%s: Skipped - must run in full mode.\n", __func__);
     };
 
+    bool fHasNonAnonInputs = false;
+    bool fHasNonAnonOutputs = false;
+    bool fDebitAnonFromMe = false;
     for (uint32_t i = 0; i < tx.vin.size(); ++i)
     {
         const CTxIn& txin = tx.vin[i];
 
-        if (!txin.IsAnonInput())
+        if (!txin.IsAnonInput()) {
+             fHasNonAnonInputs = true;
             continue;
+        }
 
         const CScript &s = txin.scriptSig;
 
@@ -3028,6 +3359,9 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
         if (pwdb->ReadOwnedAnonOutput(vchNewImage, oao))
         {
+            // remember that this transaction debits from me
+            fDebitAnonFromMe = true;
+
             if (fDebugRingSig)
                 LogPrintf("%s: input %d keyimage %s found in wallet (owned).\n", __func__, i, HexStr(vchImage).c_str());
 
@@ -3059,7 +3393,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             {
                 return error("%s: Input %d WriteOwnedAnonOutput failed %s.", __func__, i, HexStr(vchImage).c_str());
             };
-        };
+        }
 
         int nRingSize = txin.ExtractRingSize();
         if (nRingSize <  1
@@ -3152,12 +3486,16 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
     int nBlockHeight = GetBlockHeightFromHash(blockHash);
 
+    std::map<CKeyID, std::string> mapOutReceiveAddr;
+    bool fNotAllOutputsOwned = false;
     for (uint32_t i = 0; i < tx.vout.size(); ++i)
     {
         const CTxOut& txout = tx.vout[i];
 
-        if (!txout.IsAnonOutput())
+        if (!txout.IsAnonOutput()) {
+            fHasNonAnonOutputs = true;
             continue;
+        }
 
         const CScript &s = txout.scriptPubKey;
 
@@ -3299,8 +3637,14 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 break;
         };
 
-        if (!fOwnOutput)
+        if (!fOwnOutput) {
+            if (mapPubStealth && mapPubStealth->count(ckCoinId)) {
+                // if we have stealth address for the non owned pubkey, add the mapping to the addressbook
+                SetAddressBookName(ckCoinId, mapPubStealth->at(ckCoinId).Encoded(), pwdb, false);
+            }
+            fNotAllOutputsOwned = true; // remember that at least one output is not owned
             continue;
+        }
 
         if (fDebugRingSig)
             LogPrintf("anon output match tx, no %s, %u\n", txnHash.GetHex().c_str(), i);
@@ -3349,9 +3693,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (fDebugRingSig)
                 LogPrintf("Wallet locked, adding key without secret.\n");
 
-            std::string sLabel = std::string("ao ") + sSxAddr.substr(0, 16) + "...";
-            SetAddressBookName(ckCoinId, sLabel, pwdb, false);
-
             CPubKey cpkEphem(vchEphemPK);
             CPubKey cpkScan(pkScan);
             CLockedAnonOutput lockedAo(cpkEphem, cpkScan, COutPoint(txnHash, i));
@@ -3399,10 +3740,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 continue;
             };
 
-            // TODO: groupings?
-            std::string sLabel = std::string("ao ") + sSxAddr.substr(0, 16) + "...";
-            SetAddressBookName(ckCoinId, sLabel, pwdb, false);
-
             // -- store keyImage
             ec_point pkImage;
             ec_point pkOldImage;
@@ -3433,7 +3770,34 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (fDebugRingSig)
                 LogPrintf("Adding anon output to wallet: %s.\n", HexStr(pkImage).c_str());
         };
+
+        // Remember used stealth address
+        std::string sLabel = std::string("ao ") + sSxAddr.substr(0, 16) + "...";
+        mapOutReceiveAddr[ckCoinId] = sLabel;
     };
+
+    if (!mapOutReceiveAddr.empty())
+    {
+        // detect non change anon outputs an add them to te addressbook
+        for (auto const& out : mapOutReceiveAddr)
+        {
+            // if nonAnonInputs exists, anonOutputs are never change
+            if (fHasNonAnonInputs || (
+                        // if nonAnonOutputs exists, anonOutputs are change when anon is debited from us
+                        !(fDebitAnonFromMe && fHasNonAnonOutputs) &&
+                        // if not all outputs are owned, owned anonOutputs are change when anon is debited from us
+                        !(fDebitAnonFromMe && fNotAllOutputsOwned) ))
+            {
+                SetAddressBookName(out.first, out.second, pwdb, false);
+            }
+            else {
+                // don't add change outputs to the addressbook
+                // legacy: remove change outputs added from previous wallet versions
+                DelAddressBookName(out.first, pwdb);
+            }
+        }
+    }
+
 
     return true;
 };
@@ -3468,7 +3832,7 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress &sxAddress)
     return false;
 };
 
-bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError)
+bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError)
 {
     if (fDebugRingSig)
         LogPrintf("CreateStealthOutput()\n");
@@ -3546,29 +3910,17 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
     vecSend.push_back(make_pair(scriptPubKey, nValue));
 
     CScript scriptP = CScript() << OP_RETURN << ephem_pubkey;
-    if (vchENarr.size() > 0)
+    if (vchENarr.size() > 0) {
         scriptP = scriptP << OP_RETURN << vchENarr;
+        scriptNarration = scriptP;
+    }
 
     vecSend.push_back(make_pair(scriptP, 0));
-
-    // TODO: shuffle change later?
-    if (vchENarr.size() > 0)
-    {
-        for (unsigned int k = 0; k < vecSend.size(); ++k)
-        {
-            if (vecSend[k].first != scriptPubKey
-                || vecSend[k].second != nValue)
-                continue;
-
-            mapNarr[k] = sNarr;
-            break;
-        };
-    };
 
     return true;
 };
 
-bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration)
+bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth)
 {
     if (fDebugRingSig)
         LogPrintf("CreateAnonOutputs()\n");
@@ -3577,8 +3929,6 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
     ec_secret scShared;
     ec_point  pkSendTo;
     ec_point  pkEphem;
-
-    CPubKey   cpkTo;
 
     // -- output scripts OP_RETURN ANON_TOKEN pkTo R enarr
     //    Each outputs split from the amount must go to a unique pk, or the key image would be the same
@@ -3594,6 +3944,8 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     for (uint32_t i = 0; i < vOutAmounts.size(); ++i)
     {
+        CPubKey   cpkTo;
+
         if (GenerateRandomSecret(scEphem) != 0)
         {
             LogPrintf("GenerateRandomSecret failed.\n");
@@ -3620,6 +3972,10 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
                 LogPrintf("Could not generate ephem public key.\n");
                 return false;
             };
+
+            if (mapPubStealth)
+                // save which stealth address was used for creating this key
+                (*mapPubStealth)[cpkTo.GetID()] = *sxAddress;
         };
 
         CScript scriptSendTo;
@@ -3881,13 +4237,13 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
 
-		int64_t nValueTest;		
+		int64_t nValueTest;
 		if (feeMode == 1) {
 			nValueTest = nValue;
 		}
 		else {
 			nValueTest = nValue + nFee;
-			
+
 			int nFeeDiff = nAmountCheck - nValueTest;
 			if (nFeeDiff < 0)
 			{
@@ -3912,7 +4268,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 				}
 			}
 		}
-		
+
 		if (fDebugRingSig)
 			LogPrintf("nValue: %d, nFee: %d, nValueTest: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue, nFee, nValueTest, nAmountCheck, nTotalBytes);
 
@@ -4519,8 +4875,9 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     CScript scriptNarration; // needed to match output id of narr
     std::vector<std::pair<CScript, int64_t> > vecSend;
+    std::map<CKeyID, CStealthAddress> mapPubStealth;
 
-    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration))
+    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
     {
         sError = "CreateAnonOutputs() failed.";
         return false;
@@ -4528,7 +4885,11 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
 
     // -- shuffle outputs
-    std::random_shuffle(vecSend.begin(), vecSend.end());
+// Removed with c++17, see https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+//    std::random_shuffle(vecSend.begin(), vecSend.end());
+    std::random_device rng;
+    std::mt19937 urng(rng());
+    std::shuffle(vecSend.begin(), vecSend.end(), urng);
 
     int64_t nFeeRequired;
     int nChangePos;
@@ -4538,22 +4899,8 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
         return false;
     };
 
-    if (scriptNarration.size() > 0)
-    {
-        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
-        {
-            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
-                continue;
-            char key[64];
-            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
-            {
-                sError = "Error creating narration key.";
-                return false;
-            };
-            wtxNew.mapValue[key] = sNarr;
-            break;
-        };
-    };
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError))
+        return false;
 
     if (fAskFee && !uiInterface.ThreadSafeAskFee(nFeeRequired, _("Sending...")))
     {
@@ -4568,14 +4915,12 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
         return false;
     };
 
-
-    if (!CommitTransaction(wtxNew))
+    if (!CommitTransaction(wtxNew, &mapPubStealth))
     {
         sError = "Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.";
-        UndoAnonTransaction(wtxNew);
+        UndoAnonTransaction(wtxNew, &mapPubStealth);
         return false;
     };
-
 
     return true;
 };
@@ -4633,14 +4978,13 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
     CScript scriptNarration; // needed to match output id of narr
     std::vector<std::pair<CScript, int64_t> > vecSend;
     std::vector<std::pair<CScript, int64_t> > vecChange;
+    std::map<CKeyID, CStealthAddress> mapPubStealth;
 
-
-    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration))
+    if (!CreateAnonOutputs(&sxAddress, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
     {
         sError = "CreateAnonOutputs() failed.";
         return false;
     };
-
 
 
     // -- shuffle outputs (any point?)
@@ -4655,27 +4999,16 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
         return false;
     };
 
-    if (scriptNarration.size() > 0)
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError2))
     {
-        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
-        {
-            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
-                continue;
-            char key[64];
-            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
-            {
-                sError = "Error creating narration key.";
-                return false;
-            };
-            wtxNew.mapValue[key] = sNarr;
-            break;
-        };
-    };
-
-    if (!CommitTransaction(wtxNew))
+        LogPrintf("SendAnonToAnon() SaveNarrationOutput failed %s.\n", sError.c_str());
+        sError = "SaveNarrationOutput() failed : " + sError2;
+        return false;
+    }
+    if (!CommitTransaction(wtxNew, &mapPubStealth))
     {
         sError = "Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.";
-        UndoAnonTransaction(wtxNew);
+        UndoAnonTransaction(wtxNew, &mapPubStealth);
         return false;
     };
 
@@ -4741,29 +5074,26 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     std::vector<std::pair<CScript, int64_t> > vecSend;
     std::vector<std::pair<CScript, int64_t> > vecChange;
-    std::map<int, std::string> mapStealthNarr;
-    if (!CreateStealthOutput(&sxAddress, nValue, sNarr, vecSend, mapStealthNarr, sError))
+    std::map<CScript, std::string> mapScriptNarr;
+    CScript scriptNarration;
+    std::string sError2;
+    if (!CreateStealthOutput(&sxAddress, nValue, sNarr, vecSend, scriptNarration, sError2))
     {
-        LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
+        LogPrintf("SendAnonToSpec() CreateStealthOutput failed %s.\n", sError2.c_str());
+        sError = "CreateStealthOutput() failed : " + sError2;
         return false;
     };
-    std::map<int, std::string>::iterator itN;
-    for (itN = mapStealthNarr.begin(); itN != mapStealthNarr.end(); ++itN)
+
+    if (!SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError2))
     {
-        int pos = itN->first;
-        char key[64];
-        if (snprintf(key, sizeof(key), "n_%u", pos) < 1)
-        {
-            LogPrintf("SendCoinsAnon(): Error creating narration key.");
-            continue;
-        };
-        wtxNew.mapValue[key] = itN->second;
-    };
+        LogPrintf("SendAnonToSpec() SaveNarrationOutput failed %s.\n", sError2.c_str());
+        sError = "SaveNarrationOutput() failed : " + sError2;
+        return false;
+    }
 
     // -- get anon inputs
 
     int64_t nFeeRequired;
-    std::string sError2;
     if (!AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nValue, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError2))
     {
         LogPrintf("SendAnonToSpec() AddAnonInputs failed %s.\n", sError2.c_str());
@@ -4781,6 +5111,26 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
     return true;
 };
 
+bool CWallet::SaveNarrationOutput(CWalletTx& wtxNew, const CScript& scriptNarration, const std::string& sNarr, std::string& sError)
+{
+    if (scriptNarration.size() > 0)
+    {
+        for (uint32_t k = 0; k < wtxNew.vout.size(); ++k)
+        {
+            if (wtxNew.vout[k].scriptPubKey != scriptNarration)
+                continue;
+            char key[64];
+            if (snprintf(key, sizeof(key), "n_%u", k) < 1)
+            {
+                sError = "Error creating narration key.";
+                return false;
+            };
+            wtxNew.mapValue[key] = sNarr;
+            break;
+        }
+    }
+    return true;
+}
 
 bool CWallet::ExpandLockedAnonOutput(CWalletDB *pwdb, CKeyID &ckeyId, CLockedAnonOutput &lao, std::set<uint256> &setUpdated)
 {
@@ -5413,7 +5763,53 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
     return 0;
 };
 
-bool CWallet::EraseAllAnonData()
+int CWallet::CountLockedAnonOutputs()
+{
+    if (fDebugRingSig)
+    {
+        LogPrintf("%s\n", __func__);
+     };
+    // -- count owned anon outputs received when wallet was locked.
+    int result = 0;
+
+    CWalletDB walletdb(strWalletFile, "cr+");
+    Dbc *pcursor = walletdb.GetTxnCursor();
+    if (!pcursor)
+        throw runtime_error(strprintf("%s : cannot create DB cursor.", __func__).c_str());
+
+    unsigned int fFlags = DB_SET_RANGE;
+    while (true)
+    {
+        // Read next record
+        CDataStream ssKey(SER_DISK, CLIENT_VERSION);
+        if (fFlags == DB_SET_RANGE)
+            ssKey << std::string("lao");
+        CDataStream ssValue(SER_DISK, CLIENT_VERSION);
+        int ret = walletdb.ReadAtCursor(pcursor, ssKey, ssValue, fFlags);
+        fFlags = DB_NEXT;
+        if (ret == DB_NOTFOUND)
+        {
+            break;
+        }
+        else if (ret != 0)
+        {
+            pcursor->close();
+            throw runtime_error(strprintf("%s : error scanning DB.", __func__).c_str());
+        }
+        // Unserialize
+        string strType;
+        ssKey >> strType;
+        if (strType != "lao")
+            break;
+
+        result++;
+    }
+
+    pcursor->close();
+    return result;
+}
+
+uint64_t CWallet::EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress)
 {
     LogPrintf("EraseAllAnonData()\n");
     int64_t nStart = GetTimeMillis();
@@ -5426,9 +5822,19 @@ bool CWallet::EraseAllAnonData()
     uint32_t nKi = 0;
 
     LogPrintf("Erasing anon outputs.\n");
-    txdb.EraseRange(std::string("ao"), nAo);
+    if (funcProgress)
+         txdb.EraseRange(std::string("ao"), nAo, [funcProgress] (const uint32_t& nErased) -> void {
+             funcProgress("ATXO", nErased);
+         });
+    else
+        txdb.EraseRange(std::string("ao"), nAo);
     LogPrintf("Erasing spent key images.\n");
-    txdb.EraseRange(std::string("ki"), nKi);
+    if (funcProgress)
+         txdb.EraseRange(std::string("ki"), nKi, [funcProgress] (const uint32_t& nErased) -> void {
+             funcProgress("key image", nErased);
+         });
+    else
+        txdb.EraseRange(std::string("ki"), nKi);
 
     uint32_t nLao = 0;
     uint32_t nOao = 0;
@@ -5445,7 +5851,8 @@ bool CWallet::EraseAllAnonData()
     walletdb.EraseRange(std::string("ool"), nOol);
 
     LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, nOol, GetTimeMillis() - nStart);
-    return true;
+
+    return nAo + nKi + nLao + nOao + nOal + nOol;
 };
 
 bool CWallet::CacheAnonStats()
@@ -5497,8 +5904,6 @@ bool CWallet::InitBloomFilter()
         pBloomFilter = NULL;
         return error("Bloom filter is too large.");
     };
-
-    std::string sAnonPrefix("ao ");
 
     // TODO: don't load addresses created from receiving stealth txns
     // TODO: exclude change addresses of spent outputs
@@ -5943,7 +6348,7 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
 
 
 // Call after CreateTransaction unless you want to abort
-bool CWallet::CommitTransaction(CWalletTx& wtxNew)
+bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     if (!wtxNew.CheckTransaction())
     {
@@ -5964,7 +6369,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew)
         walletdb.TxnBegin();
         txdb.TxnBegin();
         std::vector<WalletTxMap::iterator> vUpdatedTxns;
-        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns))
+        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns, mapPubStealth))
         {
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
@@ -6135,12 +6540,12 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
 
 
 
-DBErrors CWallet::LoadWallet()
+DBErrors CWallet::LoadWallet(int& oltWalletVersion)
 {
     if (!fFileBacked)
         return DB_LOAD_OK;
 
-    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this);
+    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this, oltWalletVersion);
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {
         if (CDB::Rewrite(strWalletFile, "\x04pool"))
@@ -6174,13 +6579,6 @@ bool CWallet::SetAddressBookName(const CTxDestination& address, const string& st
     }
 
     // -- fAddKeyToMerkleFilters is always false when adding keys for anonoutputs
-    if (fOwned
-        && fAddKeyToMerkleFilters)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), strName, nMode);
-    };
-
     if (nMode == CT_NEW
         && pBloomFilter
         && fAddKeyToMerkleFilters)
@@ -6198,7 +6596,7 @@ bool CWallet::SetAddressBookName(const CTxDestination& address, const string& st
     return pwdb->WriteName(CBitcoinAddress(address).ToString(), strName);
 }
 
-bool CWallet::DelAddressBookName(const CTxDestination& address)
+bool CWallet::DelAddressBookName(const CTxDestination& address, CWalletDB *pwdb)
 {
     if (address.type() == typeid(CStealthAddress))
     {
@@ -6239,17 +6637,14 @@ bool CWallet::DelAddressBookName(const CTxDestination& address)
     bool fOwned = IsDestMine(*this, address);
     string sName = "";
 
-    if (fOwned)
-    {
-        const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), sName, CT_DELETED);
-    };
-
     NotifyAddressBookChanged(this, address, "", fOwned, CT_DELETED, true);
 
     if (!fFileBacked)
         return false;
-    return CWalletDB(strWalletFile).EraseName(CBitcoinAddress(address).ToString());
+
+    if (!pwdb)
+        return CWalletDB(strWalletFile).EraseName(CBitcoinAddress(address).ToString());
+    return pwdb->EraseName(CBitcoinAddress(address).ToString());
 }
 
 

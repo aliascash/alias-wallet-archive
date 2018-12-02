@@ -27,7 +27,6 @@
         <file alias="assets/fonts/Montserrat/montserrat-regular-webfont.svg">src/qt/res/assets/fonts/Montserrat/montserrat-regular-webfont.svg</file>
         <file alias="assets/fonts/Montserrat/montserrat-regular-webfont.woff">src/qt/res/assets/fonts/Montserrat/montserrat-regular-webfont.woff</file>
         <file alias="assets/fonts/Montserrat/montserrat-regular-webfont.woff2">src/qt/res/assets/fonts/Montserrat/montserrat-regular-webfont.woff2</file>
-        <file alias="assets/icons/chat_bubble.png">src/qt/res/assets/icons/chat_bubble.png</file>
         <file alias="assets/icons/chevron.png">src/qt/res/assets/icons/chevron.png</file>
         <file alias="assets/icons/connect_0.png">src/qt/res/assets/icons/connect_0.png</file>
         <file alias="assets/icons/connect_1.png">src/qt/res/assets/icons/connect_1.png</file>
@@ -53,7 +52,7 @@
         <file alias="assets/icons/spectrecoin-64.png">src/qt/res/assets/icons/spectrecoin-64.png</file>
         <file alias="assets/icons/spectrecoin-80.png">src/qt/res/assets/icons/spectrecoin-80.png</file>
         <file alias="assets/icons/spectrecoin.ico">src/qt/res/assets/icons/spectrecoin.ico</file>
-        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>       
+        <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>
         <file alias="assets/icons/spectre.icns">src/qt/res/assets/icons/spectre.icns</file>
         <file alias="assets/icons/staking_off.png">src/qt/res/assets/icons/staking_off.png</file>
         <file alias="assets/icons/staking.png">src/qt/res/assets/icons/staking.png</file>
@@ -72,7 +71,6 @@
         <file alias="assets/icons/tx_contributed.png">src/qt/res/assets/icons/tx_contributed.png</file>
         <file alias="assets/icons/tx_output.png">src/qt/res/assets/icons/tx_output.png</file>
         <file alias="assets/img/about.png">src/qt/res/assets/img/about.png</file>
-        <file alias="assets/img/avatars/kewde.png">src/qt/res/assets/img/avatars/kewde.png</file>
         <file alias="assets/img/linear_gradient.png">src/qt/res/assets/img/linear_gradient.png</file>
         <file alias="assets/img/progress/progress-bar-complete.svg">src/qt/res/assets/img/progress/progress-bar-complete.svg</file>
         <file alias="assets/img/progress/progress-bar-danger.svg">src/qt/res/assets/img/progress/progress-bar-danger.svg</file>
@@ -94,7 +92,7 @@
         <file alias="assets/img/progress/progress-circle-warning.svg">src/qt/res/assets/img/progress/progress-circle-warning.svg</file>
         <file alias="assets/img/spec-vertical.png">src/qt/res/assets/img/spec-vertical.png</file>
         <file alias="assets/img/spectre_logo.png">src/qt/res/assets/img/spectre_logo.png</file>
-		<file alias="assets/img/spectre_logo_collapsed.png">src/qt/res/assets/img/spectre_logo_collapsed.png</file>	
+        <file alias="assets/img/spectre_logo_collapsed.png">src/qt/res/assets/img/spectre_logo_collapsed.png</file>
         <file alias="assets/img/shoppingcart.png">src/qt/res/assets/img/shoppingcart.png</file>
         <file alias="assets/img/splash.png">src/qt/res/assets/img/splash.png</file>
         <file alias="assets/js/navigation.min.js">src/qt/res/assets/js/navigation.min.js</file>

@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder:1.1 as build
+FROM spectreproject/spectre-builder-debian:1.3 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -11,7 +11,7 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /spectre
 
 RUN cd /spectre \
- && mkdir db4.8 leveldb tor \
+ && mkdir db4.8 leveldb \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
@@ -24,9 +24,10 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 ARG GITHUB_TOKEN=1234567
 ARG SPECTRECOIN_RELEASE=latest
 ARG SPECTRECOIN_REPOSITORY=spectre
+ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-Debian.tgz
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Debian.tgz
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 

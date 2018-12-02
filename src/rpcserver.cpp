@@ -125,13 +125,13 @@ bool GetStringBool(std::string& value, bool &fOut)
         fOut = true;
         return true;
     };
-    
+
     if (IsStringBoolNegative(value))
     {
         fOut = false;
         return true;
     };
-    
+
     return false;
 };
 
@@ -189,8 +189,8 @@ string CRPCTable::help(string strCommand) const
         // We already filter duplicates, but these deprecated screw up the sort order
         if (strMethod.find("label") != string::npos)
             continue;
-            
-        
+
+
         if (fAllAnon)
         {
             if (strMethod != "sendspectoanon"
@@ -198,16 +198,15 @@ string CRPCTable::help(string strCommand) const
                 && strMethod != "sendanontospec"
                 && strMethod != "estimateanonfee"
                 && strMethod != "anonoutputs"
-                && strMethod != "anoninfo"
-                && strMethod != "reloadanondata")
+                && strMethod != "anoninfo")
             continue;
         } else
         if (strCommand != "" && strMethod != strCommand)
             continue;
-        
+
         if (pcmd->reqWallet && !pwalletMain)
             continue;
-        
+
         try
         {
             Array params;
@@ -348,45 +347,29 @@ static const CRPCCommand vRPCCommands[] =
     { "resendtx",               &resendtx,               false,     true,      false },
     { "makekeypair",            &makekeypair,            false,     true,      false },
     { "checkkernel",            &checkkernel,            true,      false,     true },
-    
+
     { "sendalert",              &sendalert,              false,     false,     false },
     { "getnetworkinfo",         &getnetworkinfo,         false,     false,     false },
-    
-    
+
+
     { "getnewstealthaddress",   &getnewstealthaddress,   false,     false,     false },
     { "liststealthaddresses",   &liststealthaddresses,   false,     false,     false },
     { "importstealthaddress",   &importstealthaddress,   false,     false,     false },
     { "clearwallettransactions",&clearwallettransactions,false,     false,     false },
-    { "scanforalltxns",         &scanforalltxns,         false,     false,     false },    
-    
+    { "scanforalltxns",         &scanforalltxns,         false,     false,     false },
+
     { "sendspectoanon",          &sendspectoanon,          false,     false,     false },
     { "sendanontoanon",         &sendanontoanon,         false,     false,     false },
     { "sendanontospec",          &sendanontospec,          false,     false,     false },
     { "estimateanonfee",        &estimateanonfee,        false,     false,     false },
     { "anonoutputs",            &anonoutputs,            false,     false,     false },
     { "anoninfo",               &anoninfo,               false,     false,     false },
-    { "reloadanondata",         &reloadanondata,         false,     false,     false },
 
     { "txnreport",              &txnreport,              false,     false,     false },
 
-    { "smsgenable",             &smsgenable,             false,     false,     false },
-    { "smsgdisable",            &smsgdisable,            false,     false,     false },
-    { "smsglocalkeys",          &smsglocalkeys,          false,     false,     false },
-    { "smsgoptions",            &smsgoptions,            false,     false,     false },
-    { "smsgscanchain",          &smsgscanchain,          false,     false,     false },
-    { "smsgscanbuckets",        &smsgscanbuckets,        false,     false,     false },
-    { "smsgaddkey",             &smsgaddkey,             false,     false,     false },
-    { "smsggetpubkey",          &smsggetpubkey,          false,     false,     false },
-    { "smsgsend",               &smsgsend,               false,     false,     false },
-    { "smsgsendanon",           &smsgsendanon,           false,     false,     false },
-    { "smsginbox",              &smsginbox,              false,     false,     false },
-    { "smsgoutbox",             &smsgoutbox,             false,     false,     false },
-    { "smsgbuckets",            &smsgbuckets,            false,     false,     false },
-    
-    
     { "thinscanmerkleblocks",   &thinscanmerkleblocks,   false,     false,     false },
     { "thinforcestate",         &thinforcestate,         false,     false,     false },
-    
+
     { "extkey",                 &extkey,                 false,     false,     true  },
     { "bip32",                  &extkey,                 false,     false,     true  },
     { "mnemonic",               &mnemonic,               false,     false,     false },
@@ -649,14 +632,14 @@ void StartRPCThreads()
     {
         rpc_ssl_context->set_options(ssl::context::no_sslv2);
 
-        filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
-        if (!pathCertFile.is_complete()) pathCertFile = filesystem::path(GetDataDir()) / pathCertFile;
-        if (filesystem::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
+        boost::filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
+        if (!pathCertFile.is_complete()) pathCertFile = boost::filesystem::path(GetDataDir()) / pathCertFile;
+        if (boost::filesystem::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
         else LogPrintf("ThreadRPCServer ERROR: missing server certificate file %s\n", pathCertFile.string());
 
-        filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
-        if (!pathPKFile.is_complete()) pathPKFile = filesystem::path(GetDataDir()) / pathPKFile;
-        if (filesystem::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), ssl::context::pem);
+        boost::filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
+        if (!pathPKFile.is_complete()) pathPKFile = boost::filesystem::path(GetDataDir()) / pathPKFile;
+        if (boost::filesystem::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), ssl::context::pem);
         else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
 
         string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
@@ -780,7 +763,7 @@ CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address)
         boost::asio::ip::address_v6::bytes_type bytes = address.to_v6().to_bytes();
         netaddr.SetRaw(NET_IPV6, &bytes[0]);
     };
-    
+
     return netaddr;
 }
 
@@ -936,7 +919,7 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
     const CRPCCommand *pcmd = tableRPC[strMethod];
     if (!pcmd)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found");
-    
+
     if (pcmd->reqWallet && !pwalletMain)
         throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
 

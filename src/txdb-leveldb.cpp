@@ -246,7 +246,7 @@ bool CTxDB::EraseAnonOutput(CPubKey& pkCoin)
     return Erase(make_pair(string("ao"), pkCoin));
 };
 
-bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
+bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress)
 {
 
     TxnBegin();
@@ -281,6 +281,8 @@ bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected)
 
         if (!s.ok())
             LogPrintf("EraseRange(%s) - Delete failed.\n", sPrefix.c_str());
+
+        if (funcProgress && nAffected % 100 == 0) funcProgress(nAffected);
 
         nAffected++;
         iterator->Next();
@@ -421,7 +423,7 @@ static CBlockIndex *InsertBlockIndex(uint256 hash)
     return pindexNew;
 }
 
-bool CTxDB::LoadBlockIndex()
+bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
         return 0;
@@ -443,10 +445,11 @@ bool CTxDB::LoadBlockIndex()
     ssStartKey << make_pair(string("bidx"), uint256(0));
     iterator->Seek(ssStartKey.str());
 
-    int count = 0;
+    uint32_t count = 0;
     // Now read each entry.
     while (iterator->Valid())
     {
+        if (funcProgress && count % 10000 == 0) funcProgress(count);
         count++;
         boost::this_thread::interruption_point();
         // Unpack keys and values.

@@ -247,7 +247,7 @@ public:
     bool ReadAnonOutput(CPubKey& pkCoin, CAnonOutput& ao);
     bool EraseAnonOutput(CPubKey& pkCoin);
 
-    bool EraseRange(const std::string &sPrefix, uint32_t &nAffected);
+    bool EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress = nullptr);
 
     bool ReadTxIndex(uint256 hash, CTxIndex& txindex);
     bool UpdateTxIndex(uint256 hash, const CTxIndex& txindex);
@@ -272,7 +272,7 @@ public:
     bool WriteSyncCheckpoint(uint256 hashCheckpoint);
     bool ReadCheckpointPubKey(std::string& strPubKey);
     bool WriteCheckpointPubKey(const std::string& strPubKey);
-    bool LoadBlockIndex();
+    bool LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress = nullptr);
     bool LoadBlockThinIndex();
 private:
     bool LoadBlockIndexGuts();
