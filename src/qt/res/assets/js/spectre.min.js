@@ -738,26 +738,41 @@ var unit = {
   type : 0,
   name : "XSPEC",
   display : "XSPEC",
+  nameSpectre : "SPECTRE",
+  displaySpectre : "SPECTRE",
   setType : function(v) {
     switch(this.type = void 0 == v ? 0 : v, v) {
       case 1:
         this.name = "mXSPEC";
         this.display = "mXSPEC";
+        this.nameSpectre = "mSPECTRE";
+        this.displaySpectre = "mSPECTRE";
         break;
       case 2:
         this.name = "uXSPEC";
         this.display = "&micro;XSPEC";
+        this.nameSpectre = "uSPECTRE";
+        this.displaySpectre = "&micro;SPECTRE";
         break;
       case 3:
         this.name = "sXSPEC";
-        this.display = "spectoshi";
+        this.display = "xSpectoshi";
+        this.nameSpectre = "sSPECTRE";
+        this.displaySpectre = "Spectoshi";
         break;
       default:
-        this.name = this.display = "XSPEC";
+        this.name = "XSPEC";
+        this.display = "XSPEC";
+        this.nameSpectre = "SPECTRE";
+        this.displaySpectre = "SPECTRE";
     }
     $("td.unit,span.unit,div.unit").html(this.display);
     $("select.unit").val(v).trigger("change");
     $("input.unit").val(this.name);
+
+    $("td.unitSpectre,span.unitSpectre,div.unitSpectre").html(this.displaySpectre);
+    $("select.unitSpectre").val(v).trigger("change");
+    $("input.unitSpectre").val(this.nameSpectre);
     overviewPage.updateBalance();
   },
   format : function(value, arg) {

@@ -61,6 +61,10 @@ $(function() {
       $("#recipient" + num.toString() + " [data-title]").tooltip();
       $("#amount" + num.toString()).on("keydown", unit.keydown).on("paste", unit.paste);
       bridge.userAction(["clearRecipients"]);
+      // show public or private unit depending on transaction_type_to
+      var trxTypeTo = $("[name=transaction_type_to]:checked").val();
+      $(".to_unit_public").css('display', 'public' === trxTypeTo ? 'block': 'none');
+      $(".to_unit_private").css('display', 'private' === trxTypeTo ? 'block': 'none');
     }
     function draw(time, value, v, hour) {
       reset();
@@ -141,14 +145,15 @@ $(function() {
     function toggle(e) {
       var isSendMain = $("#send-main").is(":visible");
       var trxTypeFrom = $("[name=transaction_type_from]:checked").val();
+      var trxTypeTo = $("[name=transaction_type_to]:checked").val();
         console.log('OPEN');
         console.log(trxTypeFrom)
       if (e) {
         if (e.target !== $("input#to_account_public")[0] && e.target !== $("input#to_account_private")[0]) {
-            $("input[name=transaction_type_to][value=" + (isSendMain ? trxTypeFrom : "public" === trxTypeFrom ? "private" : "public") + "]").prop("checked", true);
+            trxTypeTo = isSendMain ? trxTypeFrom : "public" === trxTypeFrom ? "private" : "public";
+            $("input[name=transaction_type_to][value=" + trxTypeTo + "]").prop("checked", true);
         }
         else if (!isSendMain) {
-            var trxTypeTo = $("[name=transaction_type_to]:checked").val();
             trxTypeFrom = "public" === trxTypeTo ? "private" : "public";
             $("input[name=transaction_type_from][value=" + trxTypeFrom + "]").prop("checked", true);
         }
@@ -166,7 +171,8 @@ $(function() {
       $(".advanced_controls").toggle(!isSendMain);
       $("#add_recipient").toggle($("#send-main").is(":visible"));
 
-      $("#tx_ringsize").css('visibility', 'private' === trxTypeFrom ? 'visible': 'hidden');
+      $(".to_unit_public").css('display', 'public' === trxTypeTo ? 'block': 'none');
+      $(".to_unit_private").css('display', 'private' === trxTypeTo ? 'block': 'none');
 
       if (!isSendMain) {
         init();
