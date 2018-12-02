@@ -26,18 +26,23 @@ pushd "%BUILD_DIR%"
 %QTDIR%\bin\qmake.exe ^
   -spec win32-msvc ^
   "CONFIG += release" ^
-  "%SRC_DIR%\src.pro"
+  "%SRC_DIR%\src.pro" || goto :ERROR
 
-nmake
+nmake || goto :ERROR
 
 popd
 
-%QTDIR%\bin\windeployqt "%OUT_DIR%\Spectrecoin.exe"
+%QTDIR%\bin\windeployqt "%OUT_DIR%\Spectrecoin.exe" || goto :ERROR
 
 ::ren "%OUT_DIR%" Spectrecoin
 ::echo "The prepared package is in: %SRC_DIR%\Spectrecoin"
 
 echo "Everything is OK"
+GOTO END
+
+:ERROR
+echo Failed with error #%errorlevel%.
+exit /b %errorlevel%
 GOTO END
 
 :NOQT

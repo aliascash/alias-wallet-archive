@@ -14,6 +14,7 @@
 #include "kernel.h"
 #include "coincontrol.h"
 #include "pbkdf2.h"
+#include <random>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -2046,7 +2047,11 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
     std::vector<std::pair<int64_t, std::pair<const CWalletTx*,unsigned int> > > vValue;
     int64_t nTotalLower = 0;
 
-    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+// Removed with c++17, see https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+//    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+    std::random_device rng;
+    std::mt19937 urng(rng());
+    std::shuffle(vCoins.begin(), vCoins.end(), urng);
 
     BOOST_FOREACH(COutput output, vCoins)
     {
@@ -4232,13 +4237,13 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
         nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
 
-		int64_t nValueTest;		
+		int64_t nValueTest;
 		if (feeMode == 1) {
 			nValueTest = nValue;
 		}
 		else {
 			nValueTest = nValue + nFee;
-			
+
 			int nFeeDiff = nAmountCheck - nValueTest;
 			if (nFeeDiff < 0)
 			{
@@ -4263,7 +4268,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 				}
 			}
 		}
-		
+
 		if (fDebugRingSig)
 			LogPrintf("nValue: %d, nFee: %d, nValueTest: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue, nFee, nValueTest, nAmountCheck, nTotalBytes);
 
@@ -4880,7 +4885,11 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
 
     // -- shuffle outputs
-    std::random_shuffle(vecSend.begin(), vecSend.end());
+// Removed with c++17, see https://en.cppreference.com/w/cpp/algorithm/random_shuffle
+//    std::random_shuffle(vecSend.begin(), vecSend.end());
+    std::random_device rng;
+    std::mt19937 urng(rng());
+    std::shuffle(vecSend.begin(), vecSend.end(), urng);
 
     int64_t nFeeRequired;
     int nChangePos;
