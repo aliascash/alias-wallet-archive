@@ -31,7 +31,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
   - If available show stealth address or addressbook entry for SPECTRE transactions
   - Transaction type now always includes currency (XSPEC or SPECTRE)
   - Transfers between XSPEC and SPECTRE are shown with a distinguished type
-  - Show repective narration of multiple recipients if available
+  - Show corresponding narration of multiple recipients if available
 - Improved Make Payment and Balance Transfer form in UI:
   - Revised 'From/To Account' input fields to reflect new transaction restrictions
   - Show curreny SPECTRE or XSPEC depending on transaction type
