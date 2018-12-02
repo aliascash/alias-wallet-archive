@@ -38,6 +38,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
   - Remove advance mode, integrate 'Add Recipient' in basic mode
 - Addressbook fixes and improvements
 - New 3D application icon for macOS
+- Progress indicator for load block index, clear cache and rescanning. Fixes the "disconnected UI" problem after startup.
 - Rescanning of ATXO fixed (Also fixes [#45](https://github.com/spectrecoin/spectre/issues/45))
 - Automatic Build improvements:
   - All wallets show now their build commit hash in the about dialog and on the main window title. ([#117](https://github.com/spectrecoin/spectre/issues/117))
