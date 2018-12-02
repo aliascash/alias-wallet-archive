@@ -20,15 +20,18 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - Minimum ring size increased to 10 (enforced)
 - Allow SPECTRE <> XSPEC transfers only within account (destination address must be owned)
 - Disallow sending XSPEC to a stealth address
+- Chat functionality removed
 - RPC method `listransactions`:
   - Consolidate ATXOs under the stealth address
   - New field currency with value 'XSPEC' or 'SPECTRE'
+  - New field narration
   - Dont list SPECTRE change
 - RPC method `reloadanondata` removed and logic integrated in `scanforalltxns`
 - Improved transactions list in UI:
   - If available show stealth address or addressbook entry for SPECTRE transactions
   - Transaction type now always includes currency (XSPEC or SPECTRE)
   - Transfers between XSPEC and SPECTRE are shown with a distinguished type
+  - Show repective narration of multiple recipients if available
 - Addressbook fixes and improvements
 - New 3D application icon for macOS
 - Rescanning of ATXO fixed (Also fixes [#45](https://github.com/spectrecoin/spectre/issues/45))
