@@ -18,7 +18,7 @@ pipeline {
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = '2.2.0'
         BLOCKCHAIN_ARCHIVE_VERSION = "2018-11-22"
-        GIT_TAG_TO_USE = DEVELOP_TAG
+        GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
                 returnStdout: true
@@ -256,7 +256,7 @@ pipeline {
                 stage('Setup env vars to use') {
                     steps {
                         script {
-                            GIT_TAG_TO_USE = RELEASE_TAG
+                            GIT_TAG_TO_USE = "${RELEASE_TAG}"
                             RELEASE_NAME = "Release ${GIT_TAG_TO_USE}"
                             RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes.md"
                             PRERELEASE = false
