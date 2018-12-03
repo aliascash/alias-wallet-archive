@@ -29,7 +29,7 @@ pipeline {
         )
         RELEASE_NAME = "Continuous build No. ${BUILD_NUMBER}"
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
-        PRERELEASE = true
+        PRERELEASE = "true"
     }
     stages {
         stage('Notification') {
@@ -259,7 +259,7 @@ pipeline {
                             GIT_TAG_TO_USE = "${RELEASE_TAG}"
                             RELEASE_NAME = "Release ${GIT_TAG_TO_USE}"
                             RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes.md"
-                            PRERELEASE = false
+                            PRERELEASE = "false"
                         }
                     }
                 }
@@ -319,7 +319,7 @@ pipeline {
                                     tag: "${GIT_TAG_TO_USE}",
                                     name: "${RELEASE_NAME}",
                                     description: "${RELEASE_DESCRIPTION}",
-                                    preRelease: ${PRERELEASE}
+                                    preRelease: "${PRERELEASE}"
                             )
                         }
                     }
