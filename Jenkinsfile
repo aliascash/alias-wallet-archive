@@ -311,14 +311,40 @@ pipeline {
             //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Raspberry Pi binaries') {
-                    steps {
-                        script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
+                    stages {
+                        stage('Build Raspberry Pi binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/RaspberryPi/Dockerfile', 'spectreproject/spectre-raspi:latest', "${GIT_TAG_TO_CREATE}", "${GIT_COMMIT_SHORT}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Raspberry Pi image build') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/pi-gen/spectrecoin',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${GIT_TAG_TO_CREATE}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
+                                                ),
+                                                string(
+                                                        name: 'BLOCKCHAIN_ARCHIVE_VERSION',
+                                                        value: "2018-11-22"
+                                                )
+                                        ],
+                                        wait: false
+                                )
+                            }
                         }
                     }
                 }
@@ -674,14 +700,40 @@ pipeline {
             //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Build Raspberry Pi binaries') {
-                    steps {
-                        script {
-                            buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
+                    stages {
+                        stage('Build Raspberry Pi binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${SPECTRECOIN_VERSION}", "${SPECTRECOIN_VERSION}", "${GIT_COMMIT_SHORT}")
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
                         }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                        stage('Trigger Raspberry Pi image build') {
+                            steps {
+                                build(
+                                        job: 'Spectrecoin/pi-gen/spectrecoin',
+                                        parameters: [
+                                                string(
+                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        value: "${SPECTRECOIN_VERSION}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
+                                                ),
+                                                string(
+                                                        name: 'BLOCKCHAIN_ARCHIVE_VERSION',
+                                                        value: "2018-11-22"
+                                                )
+                                        ],
+                                        wait: false
+                                )
+                            }
                         }
                     }
                 }
