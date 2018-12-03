@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
     QSplashScreen splash(QPixmap(":/images/splash"), 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
+        splash.setEnabled(false);
         splash.show();
         splashref = &splash;
     }
@@ -254,6 +255,7 @@ int main(int argc, char *argv[])
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
                 window.loadIndex();
+                window.readyGUI();
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))
