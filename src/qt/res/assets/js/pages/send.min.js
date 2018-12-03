@@ -125,9 +125,9 @@ $(function() {
         else if (typeof addRecipientResult !== 'undefined' ) {
             if (addRecipientResult) {
                 numOfRecipients--;
-            }
-            if (numOfRecipients == 0) {
-                bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())
+                if (numOfRecipients == 0) {
+                    bridge.sendCoins($("#coincontrol").is(":visible"), $("#change_address").val())
+                }
             }
         }
         else {

@@ -202,9 +202,6 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // Create application menu bar
     createMenuBar();
 
-    // Create the tray icon (or setup the dock icon)
-    createTrayIcon();
-
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
@@ -220,6 +217,11 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
+}
+
+void SpectreGUI::readyGUI() {
+    // Create the tray icon (or setup the dock icon)
+    createTrayIcon();
 }
 
 unsigned short const onion_port = 9089;

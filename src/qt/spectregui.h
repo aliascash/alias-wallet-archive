@@ -96,6 +96,9 @@ public:
 
     void loadIndex();
 
+    /** Indicate that SpectreGUI is fully initialized and can be shown */
+    void readyGUI();
+
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *event);
