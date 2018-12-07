@@ -709,15 +709,15 @@ Value getbalance(const Array& params, bool fHelp)
 
             int64_t allFee;
             std::string strSentAccount;
-            std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
-            std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+            std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+            std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
             wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
             if (wtx.GetDepthInMainChain() >= nMinDepth && wtx.GetBlocksToMaturity() == 0)
             {
-                for(const auto & [address,amount,currency,narration] : listReceived)
+                for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
                     nBalance += amount;
             };
-            for(const auto & [address,amount,currency,narration] : listSent)
+            for(const auto & [address,destSubs,amount,currency,narration] : listSent)
                 nBalance -= amount;
             nBalance -= allFee;
         };
@@ -1201,8 +1201,8 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
 {
     int64_t nFee;
     std::string strSentAccount;
-    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
-    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
 
     wtx.GetDestinationDetails(listReceived, listSent, nFee, strSentAccount);
 
@@ -1211,7 +1211,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
     // Sent
     if ((!wtx.IsCoinStake()) && (!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
     {
-        for(const auto & [address,amount,currency,narration] : listSent)
+        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
         {
             Object entry;
             entry.push_back(Pair("account", strSentAccount));
@@ -1232,7 +1232,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
     if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth)
     {
         bool stop = false;
-        for(const auto & [address,amount,currency,narration] : listReceived)
+        for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
         {
 
             std::string account;
@@ -1395,8 +1395,8 @@ Value listaccounts(const Array& params, bool fHelp)
         const CWalletTx& wtx = (*it).second;
         int64_t nFee;
         std::string strSentAccount;
-        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
-        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
         int nDepth = wtx.GetDepthInMainChain();
         if (nDepth < 0)
             continue;
@@ -1404,12 +1404,12 @@ Value listaccounts(const Array& params, bool fHelp)
         wtx.GetDestinationDetails(listReceived, listSent, nFee, strSentAccount);
         mapAccountBalances[strSentAccount] -= nFee;
 
-        for(const auto & [address,amount,currency,narration] : listSent)
+        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
             mapAccountBalances[strSentAccount] -= amount;
 
         if (nDepth >= nMinDepth && wtx.GetBlocksToMaturity() == 0)
         {
-            for(const auto & [address,amount,currency,narration] : listReceived)
+            for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
                 if (pwalletMain->mapAddressBook.count(address))
                     mapAccountBalances[pwalletMain->mapAddressBook[address]] += amount;
                 else
