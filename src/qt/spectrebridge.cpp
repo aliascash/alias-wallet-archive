@@ -364,6 +364,11 @@ void SpectreBridge::populateOptions()
 // Transactions
 void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
 {
+    if (!window->walletModel->validateAddress(address)) {
+        emit addRecipientResult(false);
+        return;
+    }
+
     SendCoinsRecipient rv;
 
     rv.address = address;
@@ -372,6 +377,7 @@ void SpectreBridge::addRecipient(QString address, QString label, QString narrati
     rv.amount = amount;
 
     std::string sAddr = address.toStdString();
+
     if (IsBIP32(sAddr.c_str()))
         rv.typeInd = 3;
     else
@@ -407,17 +413,17 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to SPECTRE %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b> SPECTRE, ring size %2 to XSPEC %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
                 inputType = 1;
                 break;
             default:
@@ -472,9 +478,11 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         };
     };
 
-    QMessageBox::StandardButton retval = QMessageBox::question(window,
-        tr("Confirm send coins"), tr("Are you sure you want to send %1?").arg(formatted.join(tr(" and "))),
-        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
+    bool conversionTx = recipients.size() == 1 && (recipients[0].txnTypeInd == TXT_SPEC_TO_ANON || recipients[0].txnTypeInd == TXT_ANON_TO_SPEC);
+    QMessageBox::StandardButton retval = QMessageBox::question(window, tr("Confirm send coins"),
+       (conversionTx ? tr("Are you sure you want to convert %1?") : tr("Are you sure you want to send %1?"))
+       .arg(formatted.join(tr(" and "))),
+       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
 
     if(retval != QMessageBox::Yes) {
         emit sendCoinsResult(false);

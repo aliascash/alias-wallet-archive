@@ -44,6 +44,18 @@ QString BitcoinUnits::name(int unit)
     }
 }
 
+QString BitcoinUnits::nameSpectre(int unit)
+{
+    switch(unit)
+    {
+    case XSPEC: return QString("SPECTRE");
+    case mXSPEC: return QString("mSPECTRE");
+    case uXSPEC: return QString::fromUtf8("μSPECTRE");
+    case sXSPEC: return QString::fromUtf8("Spectoshi");
+    default: return QString("???");
+    }
+}
+
 QString BitcoinUnits::description(int unit)
 {
     switch(unit)
@@ -51,7 +63,19 @@ QString BitcoinUnits::description(int unit)
     case XSPEC:  return QString("XSPEC");
     case mXSPEC: return QString("Milli-XSPEC (1 / 1,000)");
     case uXSPEC: return QString("Micro-XSPEC (1 / 1,000,000)");
-    case sXSPEC: return QString("spectoshi (1 / 100,000,000)");
+    case sXSPEC: return QString("xSpectoshi (1 / 100,000,000)");
+    default:   return QString("???");
+    }
+}
+
+QString BitcoinUnits::descriptionSpectre(int unit)
+{
+    switch(unit)
+    {
+    case XSPEC:  return QString("SPECTRE");
+    case mXSPEC: return QString("Milli-SPECTRE (1 / 1,000)");
+    case uXSPEC: return QString("Micro-SPECTRE (1 / 1,000,000)");
+    case sXSPEC: return QString("Spectoshi (1 / 100,000,000)");
     default:   return QString("???");
     }
 }
@@ -120,6 +144,11 @@ QString BitcoinUnits::format(int unit, qint64 n, bool fPlus)
 QString BitcoinUnits::formatWithUnit(int unit, qint64 amount, bool plussign)
 {
     return format(unit, amount, plussign) + QString(" ") + name(unit);
+}
+
+QString BitcoinUnits::formatWithUnitSpectre(int unit, qint64 amount, bool plussign)
+{
+    return format(unit, amount, plussign) + QString(" ") + nameSpectre(unit);
 }
 
 bool BitcoinUnits::parse(int unit, const QString &value, qint64 *val_out)

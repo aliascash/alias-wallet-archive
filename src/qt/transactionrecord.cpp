@@ -94,8 +94,8 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     {
         int64_t allFee;
         std::string strSentAccount;
-        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listReceived;
-        std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> > listSent;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
 
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
@@ -103,15 +103,15 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {
             // Transfer within account
             TransactionRecord::Type trxType = TransactionRecord::SendToSelf;
-            const auto & [sDestination, sAmount, sCurrency, sNarration] = listSent.front();
-            const auto & [rDestination, rAmount, rCurrency, rNarration] = listReceived.front();
+            const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
+            const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
 
             if (sCurrency == XSPEC && rCurrency == SPECTRE)
                 trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
             else if (sCurrency == SPECTRE && rCurrency == XSPEC)
                 trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
-            for (const auto & [destination, amount, currency, narration]: listReceived)
+            for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
                 parts.append(TransactionRecord(hash, nTime, trxType,
                         destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
                         narration, 0, amount, parts.size())
@@ -119,14 +119,14 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         }
         else
         {
-            for (const auto & [destination, amount, currency, narration]: listSent)
+            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendSpectre,
                                                destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
                                                narration, parts.size() == 0 ? -(amount + allFee): -amount, // add trx fees to first trx record
                                                0, parts.size())
                 );
 
-            for (const auto & [destination, amount, currency, narration]: listReceived)
+            for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::RecvSpectre,
                                                destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
                                                narration, 0, amount, parts.size())

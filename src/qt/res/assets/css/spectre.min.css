@@ -200,3 +200,22 @@ body.fixed-header {
     }
 }
 
+#transaction-info dl {
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0
+}
+#transaction-info dt {
+  float: left;
+  width: 18%;
+  padding: 0;
+  margin: 0
+}
+#transaction-info dd {
+  float: left;
+  width: 82%;
+  padding: 0;
+  margin: 0
+}
+
