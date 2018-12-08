@@ -257,7 +257,7 @@ public:
     };
     
     std::string ToStealthAddress() const;
-    int SetSxAddr(CStealthAddress &sxAddr);
+    int SetSxAddr(CStealthAddress &sxAddr) const;
     
     CKeyID GetID() const
     {

@@ -25,18 +25,20 @@ Easy (Prebuilt libs)
 
 Since quit many of our users found it hard to compile. Especially on Windows. We are adding an easy way and provided prebuilt package for all the libraries required to compile Spectre wallet. Go ahead and download all the libraries from the following links:
 
-https://github.com/spectrecoin/spectre/releases/download/2.0.8.RC2/Spectre.Prebuild.libraries.zip
-https://github.com/spectrecoin/spectre/releases/download/2.0.8.RC2/Spectre.QT.libraries.zip
+https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip
+https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.QT.libraries.win64.zip
+https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip
 
-Clone Spectre source. You can simply download the “Zip”s from github.
+Clone Spectre repository. You can simply download the “Zip”s from github.
 
-
-Now unzip Prebuild and QT libraries.zip that you just downloaded into the source root folder. Once done properly you should end up with “src”, “packages64bit” and “tor” all into one folder. Here is a screenshot of how it looks like after all the files are living together in the same folder.
-
-![alt text](https://github.com/spectrecoin/spectre/raw/master/doc/Folder%20stucture.png)
+Now unzip Prebuild, QT and Tor libraries.zip that you just downloaded into the source root folder. Once done properly you should end up with “src” and “packages64bit” all into one folder.
 
 Now go ahead and open a the file src/src.pro (It should open up with Qt Creator). Make sure our MSVC 64 bit compiler is selected. Click configure and build and run as usual with Qt.
 
-Note: the libraries contained in Spectre.QT.libraries.zip have been automatically gathered by QT with the windeployqt tool.
-See http://doc.qt.io/qt-5/windows-deployment.html
+
+Library Notes
+------------
+
+- The Tor libraries zip contains simply the official Tor binaries and are only required at runtime.
+- The libraries contained in Spectrecoin.QT.libraries.win64.zip have been automatically gathered by QT with the windeployqt tool. See http://doc.qt.io/qt-5/windows-deployment.html
 

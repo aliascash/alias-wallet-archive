@@ -1,0 +1,9 @@
+target_sources(Spectre
+        PUBLIC
+            "${CMAKE_CURRENT_LIST_DIR}/chinese_simplified.h"
+            "${CMAKE_CURRENT_LIST_DIR}/chinese_traditional.h"
+            "${CMAKE_CURRENT_LIST_DIR}/english.h"
+            "${CMAKE_CURRENT_LIST_DIR}/french.h"
+            "${CMAKE_CURRENT_LIST_DIR}/japanese.h"
+            "${CMAKE_CURRENT_LIST_DIR}/spanish.h"
+)

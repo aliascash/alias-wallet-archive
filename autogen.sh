@@ -1,14 +1,25 @@
 #!/bin/bash -e
 
-[ -d .git ] && [ -d tor ] && [ -d leveldb ] && [ -d db4.8 ] || \
+[ -d .git ] && [ -d leveldb ] && [ -d db4.8 ] || \
   { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
 
 git submodule init
 git submodule sync --recursive
 git submodule update --recursive --force --remote
 
-autoreconf --no-recursive --install
+branchToUse=cmake-migration
+for submodule in db4.8 leveldb tor ; do
+    cd ${submodule}
+    git checkout ${branchToUse}
+    cd -
+done
 
-pushd tor
-./autogen.sh
-popd
+# Disabled as we are using fully configured repos now!
+#autoreconf --no-recursive --install
+#
+#pushd tor
+#./autogen.sh
+#popd
+
+# Create build.h
+./share/genbuild.sh src/build.h

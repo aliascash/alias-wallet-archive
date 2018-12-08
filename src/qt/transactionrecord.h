@@ -74,6 +74,8 @@ public:
         SendToSelf,
         RecvSpectre,
         SendSpectre,
+        ConvertXSPECtoSPECTRE,
+        ConvertSPECTREtoXSPEC
     };
 
     static QString getTypeLabel(const int &type);
@@ -98,6 +100,15 @@ public:
                 int64_t debit, int64_t credit):
             hash(hash), time(time), type(type), address(address), narration(narration), debit(debit), credit(credit),
             idx(0)
+    {
+    }
+
+
+    TransactionRecord(uint256 hash, int64_t time,
+                    Type type, const std::string &address, const std::string &narration,
+                    int64_t debit, int64_t credit, int idx):
+                hash(hash), time(time), type(type), address(address), narration(narration), debit(debit), credit(credit),
+                idx(idx)
     {
     }
 

@@ -1,4 +1,5 @@
-// Copyright (c) 2014-2015 The ShadowCoin developers
+// Copyright (c) 2014-2016 The ShadowCoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -335,7 +336,7 @@ std::string CEKAStealthKey::ToStealthAddress() const
     return EncodeBase58(raw);
 };
 
-int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr)
+int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr) const
 {
     sxAddr.scan_pubkey = pkScan;
     sxAddr.spend_pubkey = pkSpend;

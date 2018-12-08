@@ -1,5 +1,12 @@
 add_executable(Spectrecoin)
 
+# Configure a header file to pass some of the CMake settings
+# to the source code like version and Git hash
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h.in"
+        "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
+)
+
 target_include_directories(Spectrecoin
         PUBLIC
         addrman.h

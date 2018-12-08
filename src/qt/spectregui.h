@@ -13,6 +13,8 @@
 #include <QModelIndex>
 
 #include "spectrebridge.h"
+#include "walletmodel.h"
+#include "askpassphrasedialog.h"
 #include "rpcconsole.h"
 
 #include <stdint.h>
@@ -93,6 +95,9 @@ public:
     void setMessageModel(MessageModel *messageModel);
 
     void loadIndex();
+
+    /** Indicate that SpectreGUI is fully initialized and can be shown */
+    void readyGUI();
 
 protected:
     void changeEvent(QEvent *e);
@@ -183,19 +188,13 @@ private slots:
     */
     void incomingTransaction(const QModelIndex & parent, int start, int end);
 
-    /** Show incoming message notification for new messages.
-
-        The new items are those between start and end inclusive, under the given parent item.
-    */
-    void incomingMessage(const QModelIndex & parent, int start, int end);
-
     /** Show configuration dialog */
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
 
     /** Unlock wallet */
-    void unlockWallet();
+    void unlockWallet(WalletModel::UnlockMode unlockMode=WalletModel::UnlockMode::standard);
     /** Lock wallet */
     void lockWallet();
     /** Toggle whether wallet is locked or not */

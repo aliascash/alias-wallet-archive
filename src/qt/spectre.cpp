@@ -1,4 +1,5 @@
-// Copyright (c) 2014 The ShadowCoin developers
+// Copyright (c) 2014-2016 The ShadowCoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +7,6 @@
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "optionsmodel.h"
-#include "messagemodel.h"
 #include "guiutil.h"
 #include "guiconstants.h"
 #include "paymentserver.h"
@@ -214,6 +214,7 @@ int main(int argc, char *argv[])
     QSplashScreen splash(QPixmap(":/images/splash"), 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
+        splash.setEnabled(false);
         splash.show();
         splashref = &splash;
     }
@@ -250,12 +251,11 @@ int main(int argc, char *argv[])
 
                 ClientModel clientModel(&optionsModel);
                 WalletModel walletModel(pwalletMain, &optionsModel);
-                MessageModel messageModel(pwalletMain, &walletModel);
 
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
-                window.setMessageModel(&messageModel);
                 window.loadIndex();
+                window.readyGUI();
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))
@@ -271,12 +271,14 @@ int main(int argc, char *argv[])
                 QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                 QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 
+                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                    emit walletModel.requireUnlock(WalletModel::UnlockMode::rescan);
+
                 app.exec();
 
                 window.hide();
                 window.setClientModel(0);
                 window.setWalletModel(0);
-                window.setMessageModel(0);
                 guiref = 0;
             }
             // Shutdown the core and its threads, but don't exit Qt here

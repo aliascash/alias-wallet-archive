@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The ShadowCoin developers
+// Copyright (c) 2014-2016 The ShadowCoin developers
 // Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
@@ -22,11 +22,9 @@ uint32_t nLocalRequirements = 0 | NODE_NETWORK;
 bool fTestNet = false;
 bool fDebug = false;
 bool fDebugNet = false;
-bool fDebugSmsg = false;
 bool fDebugChain = false;
 bool fDebugRingSig = false;
 bool fDebugPoS = false;
-bool fNoSmsg = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 //bool fShutdown = false;

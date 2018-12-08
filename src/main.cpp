@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +16,6 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "kernel.h"
-#include "smessage.h"
 
 
 using namespace std;
@@ -4065,7 +4065,7 @@ FILE* AppendBlockFile(bool fHeaderFile, unsigned int& nFileRet, const char* fmod
 }
 
 
-int LoadBlockIndex(bool fAllowNew)
+int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcProgress)
 {
     LOCK(cs_main);
 
@@ -4080,7 +4080,7 @@ int LoadBlockIndex(bool fAllowNew)
 
     if (nNodeMode == NT_FULL)
     {
-        if (!txdb.LoadBlockIndex())
+        if (!txdb.LoadBlockIndex(funcProgress))
             return 1;
 
         if (!pwalletMain->CacheAnonStats())
@@ -5648,9 +5648,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (block.nDoS)
                     pfrom->Misbehaving(block.nDoS);
-
-                if (fSecMsgEnabled)
-                    SecureMsgScanBlock(block);
             };
         } // cs_main
     } else
@@ -5710,8 +5707,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (ProcessBlock(pfrom, &block, hashBlock))
             mapAlreadyAskedFor.erase(inv);
         if (block.nDoS) pfrom->Misbehaving(block.nDoS);
-        if (fSecMsgEnabled)
-            SecureMsgScanBlock(block);
     } else
     if (strCommand == "merkleblock")
     {
@@ -6059,9 +6054,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     } else
     {
-        if (fSecMsgEnabled)
-            SecureMsgReceiveData(pfrom, strCommand, vRecv);
-
         // Ignore unknown commands for extensibility
     }
 
@@ -6566,10 +6558,6 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
             LogPrintf("Sync timeout, getblocks to %s, from %d\n", pto->addr.ToString().c_str(), pindexBest->nHeight);
         nTimeLastMblkRecv = nTimeNow; // reset timeout
     }
-
-
-    if (fSecMsgEnabled)
-        SecureMsgSendData(pto, fSendTrickle); // should be in cs_main?
 
     return true;
 }

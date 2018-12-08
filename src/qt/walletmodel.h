@@ -56,6 +56,9 @@ public:
         OK,
         InvalidAmount,
         InvalidAddress,
+        StealthAddressOnlyAllowedForSPECTRE,
+        RecipientAddressNotOwnedXSPECtoSPECTRE,
+        RecipientAddressNotOwnedSPECTREtoXSPEC,
         AmountExceedsBalance,
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
@@ -142,7 +145,8 @@ public:
         void CopyFrom(const UnlockContext& rhs);
     };
 
-    UnlockContext requestUnlock();
+    enum UnlockMode { standard, rescan };
+    UnlockContext requestUnlock(UnlockMode unlockMode = standard);
 
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
@@ -155,7 +159,7 @@ public:
     void emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
     void emitNumTransactionsChanged(int count);
     void emitEncryptionStatusChanged(int status);
-    void emitRequireUnlock();
+    void emitRequireUnlock(UnlockMode mode);
     void emitError(const QString &title, const QString &message, bool modal);
     void checkBalanceChanged(bool force = false);
 
@@ -208,7 +212,7 @@ signals:
     // Signal emitted when wallet needs to be unlocked
     // It is valid behaviour for listeners to keep the wallet locked after this signal;
     // this means that the unlocking failed or was cancelled.
-    void requireUnlock();
+    void requireUnlock(WalletModel::UnlockMode mode);
 
     // Asynchronous error notification
     void error(const QString &title, const QString &message, bool modal);

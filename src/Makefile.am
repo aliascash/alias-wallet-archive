@@ -18,7 +18,7 @@ AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 \
 	      -Wformat -Wformat-security -Wno-unused-parameter
 
 if OS_MACOS
-AM_CPPFLAGS += -std=c++14 -mmacosx-version-min=10.10
+AM_CPPFLAGS += -std=c++17 -mmacosx-version-min=10.10
 endif
 
 common_SOURCES = anonymize.cpp \
@@ -49,7 +49,6 @@ common_SOURCES = anonymize.cpp \
 		 rpcwallet.cpp \
 		 rpcblockchain.cpp \
 		 rpcrawtransaction.cpp \
-		 rpcsmessage.cpp \
 		 rpcextkey.cpp \
 		 rpcmnemonic.cpp \
 		 script.cpp \
@@ -82,16 +81,6 @@ spectrecoind_SOURCES = $(common_SOURCES) \
 spectrecoind_LDADD = ../leveldb/out-static/libmemenv.a \
 		     ../leveldb/out-static/libleveldb.a \
 		     ../db4.8/build_unix/libdb_cxx.a \
-		     ../tor/src/or/libtor.a \
-		     ../tor/src/common/libor.a \
-		     ../tor/src/common/libor-ctime.a \
-		     ../tor/src/common/libor-crypto.a \
-		     ../tor/src/common/libor-event.a \
-		     ../tor/src/trunnel/libor-trunnel.a \
-		     ../tor/src/common/libcurve25519_donna.a \
-		     ../tor/src/ext/ed25519/donna/libed25519_donna.a \
-		     ../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
-		     ../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
 		     $(OPENSSL_LIBS) \
 		     $(LIBEVENT_LIBS) \
 		     $(LIBSECCOMP_LIBS) \
@@ -242,7 +231,6 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/moc_clientmodel.cpp \
 		  qt/moc_walletmodel.cpp \
 		  qt/moc_optionsmodel.cpp \
-		  qt/moc_messagemodel.cpp \
 		  qt/moc_guiutil.cpp \
 		  qt/moc_aboutdialog.cpp \
 		  qt/moc_csvmodelwriter.cpp \
@@ -278,7 +266,6 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/peertablemodel.cpp \
 		  qt/scicon.cpp \
 		  qt/trafficgraphwidget.cpp \
-		  qt/messagemodel.cpp \
 		  qt/spectregui.cpp \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp
