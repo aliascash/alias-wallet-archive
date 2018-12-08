@@ -943,10 +943,10 @@ var overviewPage = {
   },
   updateTransaction : function(message) {
     var update = function(data) {
-      return "<tr><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><label style='margin-top:6px;' class='label label-important inline fs-12'>" + ("input" == data.t ? "Received" : "output" == data.t ? "Sent" : "inout" == data.t ? "In-Out" : "Stake") + "</label></center></td><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><a id='" + data.id.substring(0, 17) + "' data-title='" + data.tt +
+      return "<tr><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><label style='margin-top:6px;' class='label label-important inline fs-12'>" + ("input" == data.t ? "Received" : "output" == data.t ? "Sent" : "inout" == data.t ? "In-Out" : "Stake") + "</label></center></td><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><a id='" + data.id.substring(data.id.length-20) + "' data-title='" + data.tt +
       "' href='#' onclick='$(\"#navitems [href=#transactions]\").click();$(\"#" + data.id + "\").click();'> " + unit.format(data.am) + " " + unit.display + " </a></center></td><td style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><span class='overview_date' data-value='" + data.d + "'><center>" + data.d_s + "</center></span></td></tr>";
     };
-    var idfirst = message.id.substring(0, 17);
+    var idfirst = message.id.substring(message.id.length-20);
     if (0 == $("#" + idfirst).attr("data-title", message.tt).length) {
       var $items = $("#recenttxns tr");
       var error = update(message);

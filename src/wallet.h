@@ -930,8 +930,8 @@ public:
         return nChangeCached;
     }
 
-    void GetDestinationDetails(std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> >& listReceived,
-                    std::list<std::tuple<CTxDestination, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetDestinationDetails(std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
+                    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
