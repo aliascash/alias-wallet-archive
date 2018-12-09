@@ -1,4 +1,4 @@
-target_sources(Spectre
+target_sources(Spectrecoin
         PUBLIC
             "${CMAKE_CURRENT_LIST_DIR}/chinese_simplified.h"
             "${CMAKE_CURRENT_LIST_DIR}/chinese_traditional.h"

@@ -1,0 +1,3 @@
+#define BUILD_DESC ""
+#define BUILD_DATE "22:10:13.08"
+#define GIT_HASH "@CLIENT_VERSION_GIT_SHA1@"
