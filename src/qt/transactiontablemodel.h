@@ -43,6 +43,8 @@ public:
         LabelRole,
         /** Net amount of transaction */
         AmountRole,
+        /** Currency/Unit of amount received or sended */
+        CurrencyRole,
         /** Unique identifier */
         TxIDRole,
         /** Is transaction confirmed? */

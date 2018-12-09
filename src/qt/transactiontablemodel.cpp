@@ -538,6 +538,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(rec->address));
     case AmountRole:
         return rec->credit + rec->debit;
+    case CurrencyRole:
+        return rec->currency == SPECTRE ? "SPECTRE" : "XSPEC";
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:
