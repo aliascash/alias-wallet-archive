@@ -1,7 +1,7 @@
-target_include_directories(Spectrecoin
+target_sources(Spectrecoin
         PUBLIC
-        lz4.h
+        ${CMAKE_CURRENT_LIST_DIR}/lz4.h
 
         PRIVATE
-        lz4.c
+        ${CMAKE_CURRENT_LIST_DIR}/lz4.c
         )

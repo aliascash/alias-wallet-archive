@@ -1,17 +1,17 @@
-target_include_directories(Spectrecoin
+target_sources(Spectrecoin
         PUBLIC
-        json_spirit_error_position.h
-        json_spirit.h
-        json_spirit_reader.h
-        json_spirit_reader_template.h
-        json_spirit_stream_reader.h
-        json_spirit_utils.h
-        json_spirit_value.h
-        json_spirit_writer.h
-        json_spirit_writer_template.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_error_position.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_reader.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_reader_template.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_stream_reader.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_utils.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_value.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer.h
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer_template.h
 
         PRIVATE
-        json_spirit_reader.cpp
-        json_spirit_value.cpp
-        json_spirit_writer.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_reader.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_value.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/json_spirit_writer.cpp
         )
