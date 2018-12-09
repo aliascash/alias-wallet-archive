@@ -16,6 +16,9 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
+# Include own cmake modules
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 if (POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif ()
