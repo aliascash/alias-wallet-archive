@@ -933,13 +933,21 @@ var overviewPage = {
       $("#staking-big > span:first-child").text(data[0]);
       $("#staking-big .cents").text(data[1]);
     }
-    target = this[target];
+    var targetHTML = this[target];
     if (0 == name) {
-      target.html("");
-      target.parent("tr").hide();
+      targetHTML.html("");
+      targetHTML.parent("tr").hide();
     } else {
-      target.text(unit.format(name));
-      target.parent("tr").show();
+      if ("balance" === target) {
+        targetHTML.text(unit.format(name) + " " + unit.display);
+      }
+      else if ("spectreBal" === target) {
+        targetHTML.text(unit.format(name) + " " + unit.displaySpectre);
+      }
+      else {
+        targetHTML.text(unit.format(name));
+      }
+      targetHTML.parent("tr").show();
     }
   },
   recent : function(codeSegments) {
