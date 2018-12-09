@@ -913,7 +913,15 @@ var overviewPage = {
     if ("total" === target && (void 0 !== name && !isNaN(name))) {
       var data = unit.format(name).split(".");
       $("#total-big > span:first-child").text(data[0]);
-      $("#total-big .cents").text(data[1]);
+      if (unit.type == 3) {
+        $("#total-big .light-red").toggle(false);
+        $("#total-big .cents").toggle(false);
+      }
+      else {
+        $("#total-big .cents").text(data[1]);
+        $("#total-big .light-red").toggle(true);
+        $("#total-big .cents").toggle(true);
+      }
     }
     if ("stake" === target && (void 0 !== name && !isNaN(name))) {
       if (0 == name) {
