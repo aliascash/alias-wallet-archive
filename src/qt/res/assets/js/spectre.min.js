@@ -519,8 +519,14 @@ function transactionPageInit() {
   });
 }
 function formatTransaction(o) {
-  return "<tr id='" + o.id + "' data-title='" + o.tt + "'>                     <td class='trans-status' data-value='" + o.c + "'><center><i class='fa fa-lg " + o.s + "'></center></td>                    <td data-value='" + o.d + "'>" + o.d_s + "</td>                   <td class='trans_type'><img height='15' width='15' src='qrc:///assets/icons/tx_" + o.t + ".png' /> " + o.t_l + "</td>                    <td class='address' style='color:" + o.a_c + ";' data-value='" + o.ad + "' data-label='" + o.ad_l +
-  "'><span class='editable'>" + o.ad_d + "</span></td>                    <td class='trans-nar'>" + o.n + "</td>                    <td class='amount' style='color:" + o.am_c + ";' data-value='" + o.am_d + "'>" + o.am_d + "</td>                 </tr>";
+  return "<tr id='" + o.id + "' data-title='" + o.tt + "'>"+
+            "<td class='trans-status' data-value='" + o.c + "'><center><i class='fa fa-lg " + o.s + "'></center></td>"+
+            "<td data-value='" + o.d + "'>" + o.d_s + "</td>"+
+            "<td class='amount' style='color:" + o.am_c + ";' data-value='" + o.am_d + "'>" + o.am_d + "</td>"+
+            "<td class='trans_type'><img height='15' width='15' src='qrc:///assets/icons/tx_" + o.t + ".png' /> " + o.t_l + "</td>"+
+            "<td class='address' style='color:" + o.a_c + ";' data-value='" + o.ad + "' data-label='" + o.ad_l + "'><span class='editable'>" + o.ad_d + "</span></td>"+
+            "<td class='trans-nar'>" + o.n + "</td>" +
+        "</tr>";
 }
 function visibleTransactions(checkSet) {
   if ("*" !== checkSet[0]) {
