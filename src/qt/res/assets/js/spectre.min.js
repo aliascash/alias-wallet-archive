@@ -938,15 +938,7 @@ var overviewPage = {
       targetHTML.html("");
       targetHTML.parent("tr").hide();
     } else {
-      if ("balance" === target) {
-        targetHTML.text(unit.format(name) + " " + unit.display);
-      }
-      else if ("spectreBal" === target) {
-        targetHTML.text(unit.format(name) + " " + unit.displaySpectre);
-      }
-      else {
-        targetHTML.text(unit.format(name));
-      }
+      targetHTML.text(unit.format(name));
       targetHTML.parent("tr").show();
     }
   },
