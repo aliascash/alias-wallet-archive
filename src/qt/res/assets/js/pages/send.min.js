@@ -162,10 +162,12 @@ $(function() {
       var ok = load();
       $("#spend_spec").toggle("public" === trxTypeFrom);
       $("#spend_spectre").toggle("private" === trxTypeFrom);
+      $("#tx_ringsize").toggle("private" === trxTypeFrom);
       $("#to_spec").toggle("public" === a);
       $("#to_spectre").toggle("private" === a);
       $("#to_balance").toggle(!isSendMain);
       $(".show-coin-control").toggle(ok < 1);
+
       sendPage.toggleCoinControl(ok < 0);
 
       $(".advanced_controls").toggle(!isSendMain);
