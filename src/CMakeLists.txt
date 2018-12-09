@@ -1,3 +1,5 @@
+add_executable(Spectrecoin main.cpp)
+
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
 configure_file(
