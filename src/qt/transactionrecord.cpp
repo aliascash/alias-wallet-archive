@@ -24,7 +24,7 @@ QString TransactionRecord::getTypeLabel(const int &type)
         return SpectreGUI::tr("XSPEC received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("XSPEC sent");
+        return SpectreGUI::tr("XSPEC sent to");
     case SendToSelf:
         return SpectreGUI::tr("XSPEC sent to self");
     case SendToSelfSPECTRE:
