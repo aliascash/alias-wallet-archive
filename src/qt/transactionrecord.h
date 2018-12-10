@@ -73,6 +73,7 @@ public:
         RecvWithAddress,
         RecvFromOther,
         SendToSelf,
+        SendToSelfSPECTRE,
         RecvSpectre,
         SendSpectre,
         ConvertXSPECtoSPECTRE,

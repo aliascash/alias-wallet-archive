@@ -26,7 +26,9 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case SendToOther:
         return SpectreGUI::tr("XSPEC sent");
     case SendToSelf:
-        return SpectreGUI::tr("Payment to yourself");
+        return SpectreGUI::tr("XSPEC sent to self");
+    case SendToSelfSPECTRE:
+        return SpectreGUI::tr("SPECTRE sent to self");
     case Generated:
         return SpectreGUI::tr("Staked");
     case GeneratedDonation:
@@ -101,7 +103,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         if (listReceived.size() > 0 && listSent.size() > 0)
         {
             // Transfer within account
-            TransactionRecord::Type trxType = TransactionRecord::SendToSelf;
+            TransactionRecord::Type trxType = TransactionRecord::SendToSelfSPECTRE;
             const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
 
