@@ -524,7 +524,7 @@ function formatTransaction(o) {
             "<td data-value='" + o.d + "'>" + o.d_s + "</td>"+
             "<td class='amount' style='color:" + o.am_c + ";' data-value='" + o.am_d + "'>" + o.am_d + "</td>"+
             "<td class='trans_type'><img height='15' width='15' src='qrc:///assets/icons/tx_" + o.t + ".png' /> " + o.t_l + "</td>"+
-            "<td class='address' style='color:" + o.a_c + ";' data-value='" + o.ad + "' data-label='" + o.ad_l + "'><span class='editable'>" + o.ad_d + "</span></td>"+
+            "<td class='address' style='color:" + o.a_c + ";' data-value='" + o.ad + "' data-label='" + o.ad_l + "'><span "+ ( o.ad ? "class='editable'" : "") +">" + o.ad_d + "</span></td>"+
             "<td class='trans-nar'>" + o.n + "</td>" +
         "</tr>";
 }
