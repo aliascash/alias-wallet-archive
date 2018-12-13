@@ -15,6 +15,7 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+#set(cxx_have_stdheaders "#define HAVE_CXX_STDHEADERS")
 
 # Include own cmake modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -47,6 +48,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
-include_directories("${PROJECT_BINARY_DIR}" "leveldb/include/" "db4.8/dbinc/")
+# BAD! Do not use include_directories anymore.
+#include_directories("${PROJECT_BINARY_DIR}" "leveldb/include/" "db4.8/dbinc/")# "db4.8/build_windows/")
+
+#configure_file(
+#        "${CMAKE_CURRENT_LIST_DIR}/db4.8/dbinc/db_cxx.in"
+#        "${CMAKE_CURRENT_LIST_DIR}/db4.8/dbinc/db_cxx.h"
+#)
+#configure_file(
+#        "${CMAKE_CURRENT_LIST_DIR}/db4.8/dbinc/db.in"
+#        "${CMAKE_CURRENT_LIST_DIR}/db4.8/dbinc/db.h"
+#)
 
 add_subdirectory(src)
