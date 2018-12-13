@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
         VERSION 2.2.0.8
         LANGUAGES
         CXX
+        C
         )
 
 # The version number.
@@ -43,6 +44,15 @@ find_package(Boost 1.67 REQUIRED COMPONENTS
         )
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+# Use BDB local module
+FIND_PACKAGE(BerkeleyDB)
+
+#IF(DB_INCLUDE_DIR)
+#    INCLUDE_DIRECTORIES(${DB_INCLUDE_DIR})
+#ELSE(DB_INCLUDE_DIR)
+#    MESSAGE(FATAL_ERROR "Could not locate BerkeleyDB")
+#ENDIF(DB_INCLUDE_DIR)
+
 # Determine current Git hash
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
@@ -61,3 +71,4 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 #)
 
 add_subdirectory(src)
+add_subdirectory(leveldb)

@@ -27,7 +27,7 @@ ui_*.h
 *.pro.user
 #mac specific
 .DS_Store
-build
+build*/
 db4.8/build_unix
 .deps
 .dirstamp

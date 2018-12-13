@@ -1,4 +1,5 @@
 add_executable(Spectrecoin main.cpp)
+target_include_directories(Spectrecoin PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>)
 
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
