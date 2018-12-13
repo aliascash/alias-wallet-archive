@@ -492,12 +492,10 @@ void ServiceConnection(AcceptedConnection *conn);
 
 // Forward declaration required for RPCListen
 template <
-  typename Protocol,
-  typename SocketAcceptorService
+  typename Protocol
 >
 static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<
-  Protocol,
-  SocketAcceptorService
+  Protocol
 > > acceptor,
                              ssl::context& context,
                              bool fUseSSL,
@@ -508,12 +506,10 @@ static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<
  * Sets up I/O resources to accept and handle a new connection.
  */
 template <
-  typename Protocol,
-  typename SocketAcceptorService
+  typename Protocol
 >
 static void RPCListen(boost::shared_ptr< basic_socket_acceptor<
-  Protocol,
-  SocketAcceptorService
+  Protocol
 > > acceptor,
                    ssl::context& context,
                    const bool fUseSSL)
@@ -529,8 +525,7 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<
             conn->sslStream.lowest_layer(),
             conn->peer,
             boost::bind(&RPCAcceptHandler<
-              Protocol,
-              SocketAcceptorService
+              Protocol
             >,
                 acceptor,
                 boost::ref(context),
@@ -548,8 +543,7 @@ template <
   typename SocketAcceptorService
 >
 static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<
-  Protocol,
-  SocketAcceptorService
+  Protocol
 > > acceptor,
                              ssl::context& context,
                              const bool fUseSSL,
