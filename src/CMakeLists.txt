@@ -1,5 +1,16 @@
-add_executable(Spectrecoin main.cpp)
-target_include_directories(Spectrecoin PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>)
+add_executable(Spectrecoin ../spectre.qrc main.cpp)
+
+target_include_directories(Spectrecoin
+        PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        )
+
+target_link_libraries(Spectrecoin
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::WebEngine
+        )
 
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
