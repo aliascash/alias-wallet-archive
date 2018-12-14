@@ -224,8 +224,7 @@ pipeline {
                                 label "windows"
                             }
                             environment {
-//                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
-                                QTDIR = "C:\\Qt\\5.11.2\\msvc2017_64"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {
@@ -601,8 +600,7 @@ pipeline {
                                 label "windows"
                             }
                             environment {
-//                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
-                                QTDIR = "C:\\Qt\\5.11.2\\msvc2017_64"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {
