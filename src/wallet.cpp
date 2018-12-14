@@ -1243,8 +1243,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             if (pwallet->mapAddressBook.count(address))
             {
                 std::string stealthAddress = pwallet->mapAddressBook.at(address);
-                if (stealthAddress.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0
-                        || IsStealthAddress(stealthAddress))
+                if (IsStealthAddressMappingLabel(stealthAddress, false))
                 {
                     mapDestinationSubs[stealthAddress].push_back(address);
 
@@ -1297,18 +1296,14 @@ bool CWallet::GetStealthAddress(const std::string& address, CStealthAddress& ste
     CStealthAddress sxAddr;
     std::string sAddressToCompare;
 
-    if (address.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0)
-    {
+    if (IsAnonOrStealthMappingLabel(address))
         sAddressToCompare = address.substr(sAnonPrefix.length(), 16);
-    }
-    else {
+    else
+    {
         if (sxAddr.SetEncoded(address))
-        {
             stealthAddressRet = sxAddr;
-        }
-        else {
+        else
             return false;
-        }
     }
 
     for (const CStealthAddress & sa : stealthAddresses)
@@ -2800,7 +2795,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     AddCryptedKey(cpkE, vchEmpty);
                     CKeyID keyId = cpkE.GetID();
                     CBitcoinAddress coinAddress(keyId);
-                    std::string sLabel = std::string("ao ") + it->Encoded().substr(0, 16) + "...";
+                    std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
                     SetAddressBookName(keyId, sLabel);
 
                     CPubKey cpkEphem(vchEphemPK);
@@ -2862,7 +2857,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     };
 
 
-                    std::string sLabel = std::string("ao ") + it->Encoded().substr(0, 16) + "...";
+                    std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
                     SetAddressBookName(keyID, sLabel);
                     nFoundStealth++;
                 };
@@ -2942,7 +2937,7 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     };
 
                     // - for compatability
-                    std::string sLabel = std::string("ao ") + aks.ToStealthAddress().substr(0, 16) + "...";
+                    std::string sLabel = sStealthPrefix + aks.ToStealthAddress().substr(0, 16) + "...";
                     SetAddressBookName(ckidMatch, sLabel);
 
                     txnMatch = true;
@@ -3778,7 +3773,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         };
 
         // Remember used stealth address
-        std::string sLabel = std::string("ao ") + sSxAddr.substr(0, 16) + "...";
+        std::string sLabel = sAnonPrefix + sSxAddr.substr(0, 16) + "...";
         mapOutReceiveAddr[ckCoinId] = sLabel;
     };
 
@@ -5923,7 +5918,7 @@ bool CWallet::InitBloomFilter()
     {
         // -- don't add keys generated for aonon outputs (marked with label prefix "ao ")
         std::map<CTxDestination, std::string>::iterator mi(mapAddressBook.find(keyId));
-        if (mi != mapAddressBook.end() && mi->second.compare(0, sAnonPrefix.length(), sAnonPrefix) == 0)
+        if (mi != mapAddressBook.end() && IsAnonMappingLabel(mi->second))
         {
             if (fDebugRingSig)
             {
