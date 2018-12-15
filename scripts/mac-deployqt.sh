@@ -64,5 +64,5 @@ done
 
 
 info "Create dmg package:"
-${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg
+${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg -always-overwrite
 mv src/bin/Spectrecoin.dmg Spectrecoin.dmg
