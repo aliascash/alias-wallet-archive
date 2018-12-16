@@ -30,11 +30,11 @@ endif ()
 include(GNUInstallDirs)
 
 # === Boost ==================================================================
+#set(BOOST_ROOT C:/boost_1_69_0/)
+#set(Boost_DEBUG on)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-#set(BOOST_ROOT C:/boost_1_68_0/)
-#set(BOOST_LIBRARYDIR C:/boost_1_68_0/)
 find_package(Boost 1.67 REQUIRED COMPONENTS
         chrono
         filesystem
