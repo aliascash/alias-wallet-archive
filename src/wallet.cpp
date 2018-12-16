@@ -2755,8 +2755,9 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
 
             CKeyID ckidMatch = boost::get<CKeyID>(address);
 
-            if (HaveKey(ckidMatch)) // no point checking if already have key
-                continue;
+            bool haveKey = HaveKey(ckidMatch); // if we allready have the key we still reprocess to store address mapping
+            if (haveKey && fDebug)
+                LogPrintf("Found existing stealth output key - txn has been processed before, reprocessing to store mapping.\n");
 
             std::set<CStealthAddress>::iterator it;
             for (it = stealthAddresses.begin(); it != stealthAddresses.end(); ++it)
@@ -2785,82 +2786,89 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                 if (fDebug)
                     LogPrintf("Found stealth txn to address %s\n", it->Encoded().c_str());
 
-                if (IsLocked())
-                {
-                    if (fDebug)
-                        LogPrintf("Wallet locked, adding key without secret.\n");
-
-                    // -- add key without secret
-                    std::vector<uint8_t> vchEmpty;
-                    AddCryptedKey(cpkE, vchEmpty);
-                    CKeyID keyId = cpkE.GetID();
-                    CBitcoinAddress coinAddress(keyId);
+                if (haveKey) {
                     std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
-                    SetAddressBookName(keyId, sLabel);
-
-                    CPubKey cpkEphem(vchEphemPK);
-                    CPubKey cpkScan(it->scan_pubkey);
-                    CStealthKeyMetadata lockedSkMeta(cpkEphem, cpkScan);
-
-                    if (!CWalletDB(strWalletFile).WriteStealthKeyMeta(keyId, lockedSkMeta))
-                        LogPrintf("WriteStealthKeyMeta failed for %s.\n", coinAddress.ToString().c_str());
-
-                    mapStealthKeyMeta[keyId] = lockedSkMeta;
-                    nFoundStealth++;
-                } else
+                    SetAddressBookName(ckidE, sLabel);
+                }
+                else
                 {
-                    if (it->spend_secret.size() != EC_SECRET_SIZE)
-                        continue;
-
-                    memcpy(&sSpend.e[0], &it->spend_secret[0], EC_SECRET_SIZE);
-
-                    if (StealthSharedToSecretSpend(sShared, sSpend, sSpendR) != 0)
+                    if (IsLocked())
                     {
-                        LogPrintf("StealthSharedToSecretSpend() failed.\n");
-                        continue;
-                    };
+                        if (fDebug)
+                            LogPrintf("Wallet locked, adding key without secret.\n");
 
-                    CKey ckey;
-                    ckey.Set(&sSpendR.e[0], true);
+                        // -- add key without secret
+                        std::vector<uint8_t> vchEmpty;
+                        AddCryptedKey(cpkE, vchEmpty);
+                        CKeyID keyId = cpkE.GetID();
+                        CBitcoinAddress coinAddress(keyId);
+                        std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
+                        SetAddressBookName(keyId, sLabel);
 
-                    if (!ckey.IsValid())
+                        CPubKey cpkEphem(vchEphemPK);
+                        CPubKey cpkScan(it->scan_pubkey);
+                        CStealthKeyMetadata lockedSkMeta(cpkEphem, cpkScan);
+
+                        if (!CWalletDB(strWalletFile).WriteStealthKeyMeta(keyId, lockedSkMeta))
+                            LogPrintf("WriteStealthKeyMeta failed for %s.\n", coinAddress.ToString().c_str());
+
+                        mapStealthKeyMeta[keyId] = lockedSkMeta;
+                        nFoundStealth++;
+                    } else
                     {
-                        LogPrintf("%s: Reconstructed key is invalid.\n", __func__);
-                        continue;
+                        if (it->spend_secret.size() != EC_SECRET_SIZE)
+                            continue;
+
+                        memcpy(&sSpend.e[0], &it->spend_secret[0], EC_SECRET_SIZE);
+
+                        if (StealthSharedToSecretSpend(sShared, sSpend, sSpendR) != 0)
+                        {
+                            LogPrintf("StealthSharedToSecretSpend() failed.\n");
+                            continue;
+                        };
+
+                        CKey ckey;
+                        ckey.Set(&sSpendR.e[0], true);
+
+                        if (!ckey.IsValid())
+                        {
+                            LogPrintf("%s: Reconstructed key is invalid.\n", __func__);
+                            continue;
+                        };
+
+                        CPubKey cpkT = ckey.GetPubKey();
+                        if (!cpkT.IsValid())
+                        {
+                            LogPrintf("%s: cpkT is invalid.\n", __func__);
+                            continue;
+                        };
+
+                        CKeyID keyID = cpkT.GetID();
+
+                        if (keyID != ckidMatch)
+                        {
+                            LogPrintf("%s: Spend key mismatch!\n", __func__);
+                            continue;
+                        };
+
+                        if (fDebug)
+                        {
+                            CBitcoinAddress coinAddress(keyID);
+                            LogPrintf("Adding key %s.\n", coinAddress.ToString().c_str());
+                        };
+
+                        if (!AddKeyPubKey(ckey, cpkT))
+                        {
+                            LogPrintf("%s: AddKeyPubKey failed.\n", __func__);
+                            continue;
+                        };
+
+
+                        std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
+                        SetAddressBookName(keyID, sLabel);
+                        nFoundStealth++;
                     };
-
-                    CPubKey cpkT = ckey.GetPubKey();
-                    if (!cpkT.IsValid())
-                    {
-                        LogPrintf("%s: cpkT is invalid.\n", __func__);
-                        continue;
-                    };
-
-                    CKeyID keyID = cpkT.GetID();
-
-                    if (keyID != ckidMatch)
-                    {
-                        LogPrintf("%s: Spend key mismatch!\n", __func__);
-                        continue;
-                    };
-
-                    if (fDebug)
-                    {
-                        CBitcoinAddress coinAddress(keyID);
-                        LogPrintf("Adding key %s.\n", coinAddress.ToString().c_str());
-                    };
-
-                    if (!AddKeyPubKey(ckey, cpkT))
-                    {
-                        LogPrintf("%s: AddKeyPubKey failed.\n", __func__);
-                        continue;
-                    };
-
-
-                    std::string sLabel = sStealthPrefix + it->Encoded().substr(0, 16) + "...";
-                    SetAddressBookName(keyID, sLabel);
-                    nFoundStealth++;
-                };
+                }
 
                 txnMatch = true;
                 break;
@@ -2899,46 +2907,54 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
                     if (ckidMatch != ckidE)
                         continue;
 
-                    if (fDebug)
+                    if (haveKey) {
+                        // - for compatability
+                        std::string sLabel = sStealthPrefix + aks.ToStealthAddress().substr(0, 16) + "...";
+                        SetAddressBookName(ckidMatch, sLabel);
+                    }
+                    else
                     {
-                        LogPrintf("Found stealth txn to address %s\n", aks.ToStealthAddress().c_str());
-
-                        // - check key if not locked
-                        if (!IsLocked())
+                        if (fDebug)
                         {
-                            CKey kTest;
+                            LogPrintf("Found stealth txn to address %s\n", aks.ToStealthAddress().c_str());
 
-                            if (0 != ea->ExpandStealthChildKey(&aks, sShared, kTest))
+                            // - check key if not locked
+                            if (!IsLocked())
                             {
-                                LogPrintf("%s: Error: ExpandStealthChildKey failed! %s.\n", __func__, aks.ToStealthAddress().c_str());
-                                continue;
+                                CKey kTest;
+
+                                if (0 != ea->ExpandStealthChildKey(&aks, sShared, kTest))
+                                {
+                                    LogPrintf("%s: Error: ExpandStealthChildKey failed! %s.\n", __func__, aks.ToStealthAddress().c_str());
+                                    continue;
+                                };
+
+                                CKeyID kTestId = kTest.GetPubKey().GetID();
+                                if (kTestId != ckidMatch)
+                                {
+                                    LogPrintf("Error: Spend key mismatch!\n");
+                                    continue;
+                                };
+                                CBitcoinAddress coinAddress(kTestId);
+                                LogPrintf("Debug: ExpandStealthChildKey matches! %s, %s.\n", aks.ToStealthAddress().c_str(), coinAddress.ToString().c_str());
                             };
 
-                            CKeyID kTestId = kTest.GetPubKey().GetID();
-                            if (kTestId != ckidMatch)
-                            {
-                                LogPrintf("Error: Spend key mismatch!\n");
-                                continue;
-                            };
-                            CBitcoinAddress coinAddress(kTestId);
-                            LogPrintf("Debug: ExpandStealthChildKey matches! %s, %s.\n", aks.ToStealthAddress().c_str(), coinAddress.ToString().c_str());
                         };
 
-                    };
+                        // - don't need to extract key now, wallet may be locked
 
-                    // - don't need to extract key now, wallet may be locked
+                        CKeyID idStealthKey = aks.GetID();
+                        CEKASCKey kNew(idStealthKey, sShared);
+                        if (0 != ExtKeySaveKey(ea, ckidMatch, kNew))
+                        {
+                            LogPrintf("%s: Error: ExtKeySaveKey failed!\n", __func__);
+                            continue;
+                        };
 
-                    CKeyID idStealthKey = aks.GetID();
-                    CEKASCKey kNew(idStealthKey, sShared);
-                    if (0 != ExtKeySaveKey(ea, ckidMatch, kNew))
-                    {
-                        LogPrintf("%s: Error: ExtKeySaveKey failed!\n", __func__);
-                        continue;
-                    };
-
-                    // - for compatability
-                    std::string sLabel = sStealthPrefix + aks.ToStealthAddress().substr(0, 16) + "...";
-                    SetAddressBookName(ckidMatch, sLabel);
+                        // - for compatability
+                        std::string sLabel = sStealthPrefix + aks.ToStealthAddress().substr(0, 16) + "...";
+                        SetAddressBookName(ckidMatch, sLabel);
+                    }
 
                     txnMatch = true;
                     break;
