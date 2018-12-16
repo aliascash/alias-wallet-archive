@@ -15,7 +15,7 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 #set(cxx_have_stdheaders "#define HAVE_CXX_STDHEADERS")
 
 # Include own cmake modules
