@@ -3,6 +3,7 @@ src/spectrecoin
 src/spectrecoind
 src/test_spectre
 src/build.h
+src/clientversion.h
 src/.libs
 .*.swp
 *.*~*
