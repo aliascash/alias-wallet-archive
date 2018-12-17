@@ -11,6 +11,8 @@ target_link_libraries(Spectrecoin
         Qt5::Widgets
         Qt5::WebEngine
         Boost::boost
+        OpenSSL::SSL
+        OpenSSL::Crypto
         )
 
 # Configure a header file to pass some of the CMake settings

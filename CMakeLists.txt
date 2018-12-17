@@ -27,8 +27,8 @@ endif ()
 # locations on all platforms.
 include(GNUInstallDirs)
 
-# ============================================================================
-# === Boost ==================================================================
+# ============================================================================================
+message(STATUS "=== Boost ==================================================================")
 # Env var BOOST_ROOT should point to local Boost installation
 #
 #set(BOOST_ROOT C:/boost_1_69_0/)
@@ -46,8 +46,8 @@ find_package(Boost 1.67 REQUIRED COMPONENTS
         )
 message(STATUS "Boost version: ${Boost_VERSION}")
 
-# ============================================================================
-# === Berkeley DB ============================================================
+# ============================================================================================
+message(STATUS "=== Berkeley DB ============================================================")
 #
 # Use BDB local module
 #FIND_PACKAGE(BerkeleyDB)
@@ -57,8 +57,8 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 #    MESSAGE(FATAL_ERROR "Could not locate BerkeleyDB")
 #ENDIF(DB_INCLUDE_DIR)
 
-# ============================================================================
-# === Qt =====================================================================
+# ============================================================================================
+message(STATUS "=== Qt =====================================================================")
 # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
 # directory <qt-dir>/msvc2017_64
 #
@@ -73,27 +73,40 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS qt/forms)
 set(CMAKE_AUTORCC ON)
 
 find_package(Qt5Core)
+message(STATUS "Qt5Core version: ${Qt5Core_VERSION}")
 get_target_property(QtCore_location Qt5::Core LOCATION)
 
 find_package(Qt5Widgets)
+message(STATUS "Qt5Widgets version: ${Qt5Widgets_VERSION}")
 get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
 
 find_package(Qt5WebEngine)
+message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
 get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
 
-# ============================================================================
-# === OpenSSL ================================================================
-# Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation
+# ============================================================================================
+message(STATUS "=== OpenSSL ================================================================")
+# Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
+# https://slproweb.com/products/Win32OpenSSL.html
 find_package(OpenSSL)
+message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
+get_target_property(OpenSSL_location OpenSSL::SSL LOCATION)
+get_target_property(OpenSSL_location OpenSSL::Crypto LOCATION)
 
-# ============================================================================
-# === Include Git helper =====================================================
+message(STATUS "OPENSSL_FOUND: ${OPENSSL_FOUND}")
+message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
+message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
+message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
+message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
+
+# ============================================================================================
+message(STATUS "=== Git helper =============================================================")
 # Determine current Git hash
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
-# ============================================================================
-# Include subdirectories
+# ============================================================================================
+message(STATUS "=== Dive into subdirs... ===================================================")
 add_subdirectory(src)
-#add_subdirectory(leveldb)
+add_subdirectory(leveldb)
