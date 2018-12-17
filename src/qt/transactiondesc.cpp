@@ -9,8 +9,8 @@
 #include "interface.h"
 #include "base58.h"
 
-void toHTML(CWallet *wallet, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled);
-void toHTML(CWallet *wallet, QString& strHTML, const Currency& sCurrency, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled);
+void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled);
+void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& sCurrency, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled);
 void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const std::string& narration, bool& narrationHandled);
 void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>& destSubs);
 
@@ -124,17 +124,17 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
         for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
         {
-             ::toHTML(wallet, strHTML, sCurrency, destination, destSubs, amount, currency, narration, narrationHandled);
+             ::toHTML(wallet, wtx, strHTML, sCurrency, destination, destSubs, amount, currency, narration, narrationHandled);
         }
     }
     else {
         for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
         {
-            ::toHTML(wallet, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
+            ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
         }
         for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
         {
-             ::toHTML(wallet, strHTML, false, destination, destSubs, amount, currency, narration, narrationHandled);
+             ::toHTML(wallet, wtx, strHTML, false, destination, destSubs, amount, currency, narration, narrationHandled);
         }
     }
 
@@ -236,7 +236,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     return strHTML;
 }
 
-void toHTML(CWallet *wallet, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled)
+void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled)
 {
     strHTML += "<hr/><dl>";
     strHTML += "<dt><b>" + TransactionDesc::tr(debit ? "Debit" : " Credit") + ":</b></dt><dd>";
@@ -251,11 +251,11 @@ void toHTML(CWallet *wallet, QString& strHTML, const bool& debit, const CTxDesti
     strHTML += "</dl>";
 }
 
-void toHTML(CWallet *wallet, QString& strHTML, const Currency& sCurrency, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled)
+void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& sCurrency, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled)
 {
     strHTML += "<hr/><dl>";
     if (sCurrency == currency) {
-        strHTML += "<dt><b>" + TransactionDesc::tr("Sent to self") + ":</b></dt><dd>";
+        strHTML += "<dt><b>" + TransactionDesc::tr((wtx.IsCoinBase() || wtx.IsCoinStake()) ? "Staked" : "Sent to self") + ":</b></dt><dd>";
         if (currency == SPECTRE)
             strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, amount) + "</dd>";
         else

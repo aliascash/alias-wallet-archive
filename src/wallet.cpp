@@ -8627,11 +8627,15 @@ int CWallet::ExtKeyUpdateStealthAddress(CWalletDB *pwdb, CExtKeyAccount *sea, CK
         {
             if (itp->id == sxId)
             {
-                itp->aks.sLabel = sLabel;
+                itp->aks.sLabel = string(sLabel);
                 if (!pwdb->WriteExtStealthKeyPack(accId, i, aksPak))
                     return errorN(1, "%s: WriteExtStealthKeyPack %d failed.", __func__, i);
 
-                it->second.sLabel = sLabel;
+                it->second.sLabel = string(sLabel);
+
+                CStealthAddress cekaSxAddr;
+                if (0 == itp->aks.SetSxAddr(cekaSxAddr))
+                    NotifyAddressBookChanged(this, cekaSxAddr, cekaSxAddr.label, true, CT_UPDATED, true);
 
                 return 0;
             };

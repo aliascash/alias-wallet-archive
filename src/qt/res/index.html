@@ -489,7 +489,7 @@ downloaded 0 blocks of history..."></progress>
                                                     <hr class=no-margin>
                                                     <div class=panel-body>
                                                         <div class=total-balance style=text-align:center>
-                                                            <h3 class=semi-bold><span id=total-big><span>0</span> <span class=light-red>.</span> <span class=cents>00</span> <span class="units unit">XSPEC</span></span>
+                                                            <h3 class=semi-bold><span id=total-big><span>0</span> <span class=light-red>.</span> <span class=cents>00</span></span>
                                                             </h3>
                                                             <div class=clearfix></div>
                                                         </div>
@@ -510,22 +510,24 @@ downloaded 0 blocks of history..."></progress>
                                                             <table class="table table-condensed table-hover" id=balances>
                                                                 <tr>
                                                                     <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Public
-                                                                        <td class="p-l-20 balance text-left">0.00
-                                                                            <tr>
-                                                                                <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Private
-                                                                                    <td class="p-l-20 spectre_balance text-left">0.00
-                                                                                        <tr>
-                                                                                            <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
-                                                                                                <td class="p-l-20 text-left" id=reserved>0.00
-                                                                                                    <tr>
-                                                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
-                                                                                                            <td class="p-l-20 text-left" id=stake>0.00
-                                                                                                                <tr>
-                                                                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
-                                                                                                                        <td class="p-l-20 text-left" id=unconfirmed>0.00
-                                                                                                                            <tr>
-                                                                                                                                <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
-                                                                                                                                    <td class="p-l-20 text-left" id=immature>0.00</table>
+                                                                    <td class="p-l-20 text-right"><span class=balance>0.00</span>
+                                                                    <td><span class=unit>XSPEC</span>
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Private
+                                                                    <td class="p-l-20 text-right"><span class=spectre_balance>0.00</span>
+                                                                    <td><span class=unitSpectre>SPECTRE</span>
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
+                                                                    <td class="p-l-20 text-right" id=reserved>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
+                                                                    <td class="p-l-20 text-right" id=stake>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
+                                                                    <td class="p-l-20 text-right" id=unconfirmed>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
+                                                                    <td class="p-l-20 text-right" id=immature>0.00</table>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -545,11 +547,11 @@ downloaded 0 blocks of history..."></progress>
                                                         <table class="table table-condensed table-hover" id=recenttxns>
                                                             <thead>
                                                                 <tr>
-                                                                    <th class=sorting data-sort-initial=ascending data-toggle=true>
+                                                                    <th class=sorting width='30%' data-sort-initial=ascending data-toggle=true>
                                                                         <center>Type</center>
                                                                         <th class=sorting data-hide=phone,tablet>
                                                                             <center>Amount</center>
-                                                                            <th class=sorting data-hide=phone>
+                                                                            <th class=sorting width='30%' data-hide=phone>
                                                                                 <center>Date</center>
                                                             </thead>
                                                         </table>
@@ -751,12 +753,12 @@ downloaded 0 blocks of history..."></progress>
                                     <thead>
                                         <tr>
                                             <th data-hide=phone style=text-align:center;padding-left:12px;width:1em data-toggle=true data-type=numeric data-title="Transaction status. Hover over this field to show number of confirmations.">
-                                                <th data-type=numeric data-sort-initial=descending data-title="Date and time that the transaction was received.">Date
-                                                    <th data-hide=phone data-title="Type of transaction.">Type
-                                                        <th data-title="Destination address of transaction.">Address
-                                                            <th data-hide=phone data-title="Short payment note.">Narration
-                                                                <th data-type=numeric data-title="Amount removed from or added to balance.">Amount
-                                                                    <tbody>
+                                                <th data-type=numeric data-sort-initial=descending data-title="Date and time that the transaction was received.">Date</th>
+                                                    <th data-type=numeric data-title="Amount removed from or added to balance.">Amount</th>
+                                                        <th data-hide=phone data-title="Type of transaction.">Type</th>
+                                                            <th data-title="Destination address of transaction.">Address</th>
+                                                                <th data-hide=phone data-title="Short payment note.">Narration</th>
+                                                                      <tbody>
                                                                         <tfoot>
                                                                             <tr>
                                                                                 <td colspan=6>

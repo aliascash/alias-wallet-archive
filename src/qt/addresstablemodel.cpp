@@ -600,10 +600,15 @@ QString AddressTableModel::pubkeyForAddress(const QString &address, const bool l
         if (addressParsed.IsValid())
         {
             CKeyID  destinationAddress;
-            CPubKey destinationKey;
-
-            addressParsed.GetKeyID(destinationAddress);
-        }
+            if (addressParsed.GetKeyID(destinationAddress))
+            {
+                LOCK(wallet->cs_wallet);
+                CPubKey destinationKey;
+                if (wallet->GetPubKey(destinationAddress, destinationKey))
+                    if (destinationKey.IsValid() && destinationKey.IsCompressed())
+                        return QString::fromStdString(EncodeBase58(destinationKey.begin(), destinationKey.end()).c_str());
+            }
+         }
 
         return "";
     }

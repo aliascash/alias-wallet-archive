@@ -356,6 +356,7 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:
     case TransactionRecord::ConvertXSPECtoSPECTRE:
+    case TransactionRecord::SendToSelfSPECTRE:
         return lookupAddress(wtx->address, tooltip);
     case TransactionRecord::SendToOther:
         return QString::fromStdString(wtx->address);
@@ -390,6 +391,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
             return COLOR_BAREADDRESS;
         } break;
     case TransactionRecord::SendToSelf:
+    case TransactionRecord::SendToSelfSPECTRE:
         return COLOR_BAREADDRESS;
     default:
         break;
@@ -452,6 +454,7 @@ QString TransactionTableModel::formatTooltip(const TransactionRecord *rec) const
     if(rec->type==TransactionRecord::RecvFromOther || rec->type==TransactionRecord::SendToOther ||
        rec->type==TransactionRecord::SendToAddress || rec->type==TransactionRecord::RecvWithAddress ||
        rec->type==TransactionRecord::SendSpectre || rec->type==TransactionRecord::RecvSpectre ||
+       rec->type==TransactionRecord::SendToSelf || rec->type==TransactionRecord::SendToSelfSPECTRE ||
        rec->type==TransactionRecord::ConvertSPECTREtoXSPEC || rec->type==TransactionRecord::ConvertXSPECtoSPECTRE)
     {
         tooltip += QString(" ") + formatTxToAddress(rec, true);
@@ -538,6 +541,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(rec->address));
     case AmountRole:
         return rec->credit + rec->debit;
+    case CurrencyRole:
+        return rec->currency == SPECTRE ? "SPECTRE" : "XSPEC";
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:

@@ -1,6 +1,5 @@
 #include "transactionrecord.h"
 
-#include "wallet.h"
 #include "base58.h"
 
 #include "spectregui.h"
@@ -25,9 +24,11 @@ QString TransactionRecord::getTypeLabel(const int &type)
         return SpectreGUI::tr("XSPEC received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("XSPEC sent");
+        return SpectreGUI::tr("XSPEC sent to");
     case SendToSelf:
-        return SpectreGUI::tr("Payment to yourself");
+        return SpectreGUI::tr("XSPEC sent to self");
+    case SendToSelfSPECTRE:
+        return SpectreGUI::tr("SPECTRE sent to self");
     case Generated:
         return SpectreGUI::tr("Staked");
     case GeneratedDonation:
@@ -102,7 +103,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         if (listReceived.size() > 0 && listSent.size() > 0)
         {
             // Transfer within account
-            TransactionRecord::Type trxType = TransactionRecord::SendToSelf;
+            TransactionRecord::Type trxType = TransactionRecord::SendToSelfSPECTRE;
             const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
 
@@ -114,7 +115,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
                 parts.append(TransactionRecord(hash, nTime, trxType,
                         destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
-                        narration, 0, amount, parts.size())
+                        narration, 0, amount, currency, parts.size())
                 );
         }
         else
@@ -123,13 +124,13 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendSpectre,
                                                destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
                                                narration, parts.size() == 0 ? -(amount + allFee): -amount, // add trx fees to first trx record
-                                               0, parts.size())
+                                               0, currency, parts.size())
                 );
 
             for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::RecvSpectre,
                                                destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
-                                               narration, 0, amount, parts.size())
+                                               narration, 0, amount, currency, parts.size())
                 );
         }
 
@@ -253,7 +254,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             };
 
             parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "", narration,
-                            -(nDebit - nChange), nCredit - nChange));
+                            -(nDebit - nChange), nCredit - nChange, XSPEC));
         } else
         if (fAllFromMe)
         {
@@ -317,7 +318,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Mixed debit transaction, can't break down payees
             //
-            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0);
+            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0, XSPEC);
             /*
             for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
             {

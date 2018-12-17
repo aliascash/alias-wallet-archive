@@ -99,6 +99,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("am_c", amount.data(Qt::ForegroundRole).value<QColor>().name());
     transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toString());
     transaction.insert("am_d", amount.data().toString());
+    transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
 
     return transaction;
 }
@@ -861,11 +862,6 @@ void SpectreBridge::getAddressLabelForSelectorAsync(QString address, QString sel
 void SpectreBridge::updateAddressLabel(QString address, QString label)
 {
     QString actualLabel = getAddressLabel(address);
-
-    if(actualLabel.startsWith("group_"))
-        label = "group_" + label;
-    else if(label.startsWith("group_"))
-        return;
 
     addressModel->atm->setData(addressModel->atm->index(addressModel->atm->lookupAddress(address), addressModel->atm->Label), QVariant(label), Qt::EditRole);
 }
