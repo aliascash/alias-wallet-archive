@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
-        VERSION 2.2.0.8
+        VERSION 2.2.0.9
         LANGUAGES
         CXX
         C
@@ -10,13 +10,11 @@ project(Spectrecoin
 set(CLIENT_VERSION_MAJOR 2)
 set(CLIENT_VERSION_MINOR 2)
 set(CLIENT_VERSION_REVISION 0)
-set(CLIENT_VERSION_BUILD 8)
+set(CLIENT_VERSION_BUILD 9)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-#set(cxx_have_stdheaders "#define HAVE_CXX_STDHEADERS")
 
 # Include own cmake modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -29,7 +27,10 @@ endif ()
 # locations on all platforms.
 include(GNUInstallDirs)
 
+# ============================================================================
 # === Boost ==================================================================
+# Env var BOOST_ROOT should point to local Boost installation
+#
 #set(BOOST_ROOT C:/boost_1_69_0/)
 #set(Boost_DEBUG on)
 set(Boost_USE_STATIC_LIBS OFF)
@@ -45,16 +46,22 @@ find_package(Boost 1.67 REQUIRED COMPONENTS
         )
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+# ============================================================================
 # === Berkeley DB ============================================================
+#
 # Use BDB local module
-FIND_PACKAGE(BerkeleyDB)
+#FIND_PACKAGE(BerkeleyDB)
 #IF(DB_INCLUDE_DIR)
 #    INCLUDE_DIRECTORIES(${DB_INCLUDE_DIR})
 #ELSE(DB_INCLUDE_DIR)
 #    MESSAGE(FATAL_ERROR "Could not locate BerkeleyDB")
 #ENDIF(DB_INCLUDE_DIR)
 
+# ============================================================================
 # === Qt =====================================================================
+# Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
+# directory <qt-dir>/msvc2017_64
+#
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed
@@ -74,11 +81,19 @@ get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
 find_package(Qt5WebEngine)
 get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
 
+# ============================================================================
+# === OpenSSL ================================================================
+# Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation
+find_package(OpenSSL)
+
+# ============================================================================
 # === Include Git helper =====================================================
 # Determine current Git hash
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
+# ============================================================================
+# Include subdirectories
 add_subdirectory(src)
-add_subdirectory(leveldb)
+#add_subdirectory(leveldb)
