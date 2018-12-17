@@ -12,7 +12,7 @@
 #include "state.h"
 #include "sync.h"
 #include "util.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "ringsig.h"
 #include "miner.h"
 

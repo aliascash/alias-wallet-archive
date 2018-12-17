@@ -12,7 +12,7 @@
 #include "paymentserver.h"
 
 #include "init.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <QApplication>
 #include <QMessageBox>

@@ -10,7 +10,7 @@
 #include "sync.h"
 #include "strlcpy.h"
 #include "version.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>

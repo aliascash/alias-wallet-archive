@@ -11,7 +11,7 @@
 #include "sync.h"
 #include "base58.h"
 #include "db.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "wallet.h"
 
 #include <boost/algorithm/string.hpp>

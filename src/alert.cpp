@@ -13,7 +13,7 @@
 #include "key.h"
 #include "net.h"
 #include "sync.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 
 std::map<uint256, CAlert> mapAlerts;

@@ -77,7 +77,7 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/txdb-leveldb.h
         ${CMAKE_CURRENT_LIST_DIR}/txmempool.h
         ${CMAKE_CURRENT_LIST_DIR}/types.h
-        ${CMAKE_CURRENT_LIST_DIR}/ui_interface.h
+        ${CMAKE_CURRENT_LIST_DIR}/interface.h
         ${CMAKE_CURRENT_LIST_DIR}/uint256.h
         ${CMAKE_CURRENT_LIST_DIR}/util.h
         ${CMAKE_CURRENT_LIST_DIR}/version.h
