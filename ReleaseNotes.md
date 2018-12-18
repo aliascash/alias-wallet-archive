@@ -37,6 +37,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
   - Show curreny SPECTRE or XSPEC depending on transaction type
   - Remove advance mode, integrate 'Add Recipient' in basic mode
 - Addressbook fixes and improvements
+- CoinControl dialog now groups stealth derived addresses under the stealth address
 - New 3D application icon for macOS
 - Progress indicator for load block index, clear cache and rescanning. Fixes the "disconnected UI" problem after startup.
 - Rescanning of ATXO fixed (Also fixes [#45](https://github.com/spectrecoin/spectre/issues/45))
