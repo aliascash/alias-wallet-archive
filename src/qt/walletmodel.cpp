@@ -874,8 +874,8 @@ void WalletModel::getOutputs(const std::vector<COutPoint>& vOutpoints, std::vect
     }
 }
 
-// AvailableCoins + LockedCoins grouped by wallet address (put change in one group with wallet address)
-void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) const
+// AvailableCoins + LockedCoins grouped by wallet address or stealth address (put change in one group with wallet address)
+void WalletModel::listCoins(std::map<QString, std::vector<std::pair<COutput,bool>> >& mapCoins) const
 {
     std::vector<COutput> vCoins;
     wallet->AvailableCoins(vCoins);
@@ -896,17 +896,41 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
     BOOST_FOREACH(const COutput& out, vCoins)
     {
         COutput cout = out;
-
+        bool isChangeOutput = false;
         while (wallet->IsChange(cout.tx->vout[cout.i]) && cout.tx->vin.size() > 0 && wallet->IsMine(cout.tx->vin[0]))
         {
             if (!wallet->mapWallet.count(cout.tx->vin[0].prevout.hash)) break;
             cout = COutput(&wallet->mapWallet[cout.tx->vin[0].prevout.hash], cout.tx->vin[0].prevout.n, 0);
+            isChangeOutput = true;
         }
 
         CTxDestination address;
         if(!ExtractDestination(cout.tx->vout[cout.i].scriptPubKey, address)) continue;
-        mapCoins[CBitcoinAddress(address).ToString().c_str()].push_back(out);
+
+        // Check if a stealth mapping address exist for output address
+        if (wallet->mapAddressBook.count(address))
+        {
+            std::string stealthAddress = wallet->mapAddressBook.at(address);
+            if (IsStealthAddressMappingLabel(stealthAddress))
+            {
+                mapCoins[stealthAddress.c_str()].push_back({out, isChangeOutput});
+                continue;
+            }
+        }
+
+        mapCoins[CBitcoinAddress(address).ToString().c_str()].push_back({out, isChangeOutput});
     }
+}
+
+/* Look up stealth address for address in wallet
+ */
+bool WalletModel::getStealthAddress(const QString &address, CStealthAddress& stealthAddressOut) const
+{
+    LOCK(wallet->cs_wallet);
+    std::string sAddr = address.toStdString();
+    if (wallet->GetStealthAddress(sAddr, stealthAddressOut))
+        return true;
+    return false;
 }
 
 bool WalletModel::isLockedCoin(uint256 hash, unsigned int n) const

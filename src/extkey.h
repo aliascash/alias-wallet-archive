@@ -233,6 +233,11 @@ public:
     
     //uint32_t nChecksum; // TODO: is it worth storing 4 bytes of the id (160 hash here)
     std::string sLabel; // TODO: use later
+
+    // overloaded == operator
+    bool operator==(const CEKASCKey& o) const {
+        return idStealthKey == o.idStealthKey && (memcmp(&sShared.e[0], &o.sShared.e[0], EC_COMPRESSED_SIZE) == 0);
+    }
 };
 
 class CEKAStealthKey
