@@ -570,6 +570,7 @@ QString AddressTableModel::labelForAddress(const QString &address) const
         CStealthAddress stealthAddress;
         if (wallet->GetStealthAddress(sAddr, stealthAddress))
         {
+            // given address is a stealth address, return the label if available
             if (!stealthAddress.label.empty())
                 return QString::fromStdString(stealthAddress.label);
         }
@@ -578,7 +579,19 @@ QString AddressTableModel::labelForAddress(const QString &address) const
             CBitcoinAddress address_parsed(sAddr);
             std::map<CTxDestination, std::string>::iterator mi(wallet->mapAddressBook.find(address_parsed.Get()));
             if (mi != wallet->mapAddressBook.end())
-                return QString::fromStdString(mi->second);
+            {
+                // there is a address mapping for the address, check if the mapping itself is a stealth address
+                if (wallet->GetStealthAddress(mi->second, stealthAddress))
+                {
+                    // return the label if available or the encoded stealth address
+                    if (!stealthAddress.label.empty())
+                        return QString::fromStdString(stealthAddress.label);
+                    else
+                        return QString::fromStdString(stealthAddress.Encoded());
+                }
+                else
+                    return QString::fromStdString(mi->second);
+            }
         }
     } else
         return index(row, Label).data().toString();
