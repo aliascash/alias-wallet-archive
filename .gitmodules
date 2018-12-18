@@ -1,7 +1,7 @@
 [submodule "leveldb"]
 	path = leveldb
-	url = https://github.com/google/leveldb.git
-	branch = master
+	url = https://github.com/spectrecoin/leveldb.git
+	branch = spectre
 [submodule "db4.8"]
 	path = db4.8
 	url = https://github.com/spectrecoin/db4.8
