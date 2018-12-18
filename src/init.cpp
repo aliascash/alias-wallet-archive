@@ -922,7 +922,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     CBlockIndex *pindexRescan = pindexBest;
     bool fullscan = false;
-    if (GetBoolArg("-rescan") || (oltWalletVersion > 0 && oltWalletVersion < 2020005)) // Wallets prior to V2.2 must be rescanned
+    if (GetBoolArg("-rescan") || (oltWalletVersion > 0 && oltWalletVersion < 2020009)) // Wallets prior to V2.2 must be rescanned
     {
         fullscan = true;
         pindexRescan = pindexGenesisBlock;

@@ -454,7 +454,7 @@ QString TransactionTableModel::formatTooltip(const TransactionRecord *rec) const
     if(rec->type==TransactionRecord::RecvFromOther || rec->type==TransactionRecord::SendToOther ||
        rec->type==TransactionRecord::SendToAddress || rec->type==TransactionRecord::RecvWithAddress ||
        rec->type==TransactionRecord::SendSpectre || rec->type==TransactionRecord::RecvSpectre ||
-       rec->type==TransactionRecord::SendToSelf || rec->type==TransactionRecord::SendToSelfSPECTRE ||
+       rec->type==TransactionRecord::SendToSelfSPECTRE ||
        rec->type==TransactionRecord::ConvertSPECTREtoXSPEC || rec->type==TransactionRecord::ConvertXSPECtoSPECTRE)
     {
         tooltip += QString(" ") + formatTxToAddress(rec, true);
