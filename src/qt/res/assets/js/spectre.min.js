@@ -30,7 +30,7 @@ var connectSignalsAttempts = 0;
 function connectSignals() {
   if (typeof(bridge) == "undefined" || typeof(optionsModel) == "undefined" || typeof(walletModel) == "undefined") {
     connectSignalsAttempts += 1;
-    if (connectSignalsAttempts < 10) {
+    if (connectSignalsAttempts < 50) {
       console.log("retrying connecting signals in 200ms");
       setTimeout(connectSignals, 200);
     }
