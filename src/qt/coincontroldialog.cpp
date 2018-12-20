@@ -597,16 +597,25 @@ void CoinControlDialog::updateView()
     if (model && model->getOptionsModel())
         nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
-    map<QString, vector<COutput> > mapCoins;
+    map<QString, vector<std::pair<COutput,bool>> > mapCoins;
     model->listCoins(mapCoins);
 
-    BOOST_FOREACH(PAIRTYPE(QString, vector<COutput>) coins, mapCoins)
+    for(const auto & [coinGroupAddress,coins] : mapCoins)
     {
         QTreeWidgetItem *itemWalletAddress = new QTreeWidgetItem();
-        QString sWalletAddress = coins.first;
+        QString sWalletAddress = coinGroupAddress;
         QString sWalletLabel = "";
-        if (model->getAddressTableModel())
+        bool isStealthAddress = false;
+
+        CStealthAddress stealthAddress;
+        if (model->getStealthAddress(sWalletAddress, stealthAddress)) {
+            isStealthAddress = true;
+            sWalletAddress = QString::fromStdString(stealthAddress.Encoded());
+            sWalletLabel = QString::fromStdString(stealthAddress.label);
+        }
+        else if (model->getAddressTableModel())
             sWalletLabel = model->getAddressTableModel()->labelForAddress(sWalletAddress);
+
         if (sWalletLabel.length() == 0)
             sWalletLabel = tr("(no label)");
 
@@ -632,7 +641,7 @@ void CoinControlDialog::updateView()
         double dPrioritySum = 0;
         int nChildren = 0;
         int nInputSum = 0;
-        BOOST_FOREACH(const COutput& out, coins.second)
+        for(auto const & [out,isChange] : coins)
         {
             int nInputSize = 148; // 180 if uncompressed public key
             nSum += out.tx->vout[out.i].nValue;
@@ -662,7 +671,7 @@ void CoinControlDialog::updateView()
             }
 
             // label
-            if (!(sAddress == sWalletAddress)) // change
+            if (isChange) // change
             {
                 // tooltip from where the change comes from
                 itemOutput->setToolTip(COLUMN_LABEL, tr("change from %1 (%2)").arg(sWalletLabel).arg(sWalletAddress));
@@ -671,7 +680,9 @@ void CoinControlDialog::updateView()
             if (!treeMode)
             {
                 QString sLabel = "";
-                if (model->getAddressTableModel())
+                if (isStealthAddress)
+                    sLabel = sWalletLabel;
+                else if (model->getAddressTableModel())
                     sLabel = model->getAddressTableModel()->labelForAddress(sAddress);
                 if (sLabel.length() == 0)
                     sLabel = tr("(no label)");
