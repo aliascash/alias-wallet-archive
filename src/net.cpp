@@ -1682,11 +1682,11 @@ static void run_tor() {
     // Build concatenated commandline string for CreateProcess
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
-    LogPrintf("Start tor as separate process (CreateProcess) with: %s\n", strCommandLine);
-
+   
     // Create the process suspended
-    fs::path tor_exe_file = pathTorDir / "tor.exe";
-    if (!CreateProcessA(tor_exe_file.string().c_str(), const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
+    LogPrintf("Start tor 'Tor/tor.exe' as separate process (CreateProcess) with: %s\n", strCommandLine);
+
+    if (!CreateProcessA("Tor/tor.exe", const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
         CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
         LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
         exit(1); // TODO improved termination
