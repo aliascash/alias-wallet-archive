@@ -40,7 +40,9 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - CoinControl dialog now groups stealth derived addresses under the stealth address
 - New 3D application icon for macOS
 - Progress indicator for load block index, clear cache and rescanning. Fixes the "disconnected UI" problem after startup.
-- Rescanning of ATXO fixed (Also fixes [#45](https://github.com/spectrecoin/spectre/issues/45))
+- Fix: Rescanning of ATXO (Also fixes [#45](https://github.com/spectrecoin/spectre/issues/45))
+- Fix: Tor was not started for windows if wallet path contained a space
+- Update to QT 5.12 for Windows and MacOS (Fixes Mojave dark theme issues)
 - Automatic Build improvements:
   - All wallets show now their build commit hash in the about dialog and on the main window title. ([#117](https://github.com/spectrecoin/spectre/issues/117))
   - Build from develop branch also have the build number and the commit hash in their archive name.
