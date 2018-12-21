@@ -267,7 +267,7 @@ pipeline {
                         }
                         stage('Prepare build') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             steps {
                                 script {
@@ -277,7 +277,7 @@ pipeline {
                         }
                         stage('Perform build') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             environment {
                                 QTDIR = "${QT512_DIR_WIN}"
@@ -292,7 +292,7 @@ pipeline {
                         }
                         stage('Create delivery') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             steps {
                                 script {
@@ -730,7 +730,7 @@ pipeline {
                         }
                         stage('Prepare build') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             steps {
                                 script {
@@ -740,7 +740,7 @@ pipeline {
                         }
                         stage('Perform build') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             environment {
                                 QTDIR = "${QT512_DIR_WIN}"
@@ -755,7 +755,7 @@ pipeline {
                         }
                         stage('Create delivery') {
                             agent {
-                                label "windows"
+                                label "windows2"
                             }
                             steps {
                                 script {
