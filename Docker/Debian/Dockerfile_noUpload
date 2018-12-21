@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian:qt5.11
+FROM spectreproject/spectre-builder-debian:1.5
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
