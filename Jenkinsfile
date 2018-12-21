@@ -17,7 +17,7 @@ pipeline {
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = '2.2.0'
-        BLOCKCHAIN_ARCHIVE_VERSION = "2018-11-22"
+        BLOCKCHAIN_ARCHIVE_VERSION = "2018-12-21"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
@@ -224,7 +224,7 @@ pipeline {
                                 label "windows"
                             }
                             environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {
@@ -600,7 +600,7 @@ pipeline {
                                 label "windows"
                             }
                             environment {
-                                QTDIR = "C:\\Qt\\5.9.6\\msvc2017_64"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {

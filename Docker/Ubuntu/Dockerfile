@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-ubuntu:1.2 as build
+FROM spectreproject/spectre-builder-ubuntu:1.5 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters

@@ -39,7 +39,7 @@ if [ -e src/bin/spectrecoin.dmg ] ; then
 fi
 
 info "Call macdeployqt:"
-${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app
+${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -always-overwrite
 
 info "Remove openssl 1.0.0 libs:"
 rm -v src/bin/spectrecoin.app/Contents/Frameworks/libssl.1.0.0.dylib
@@ -64,5 +64,5 @@ done
 
 
 info "Create dmg package:"
-${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg
+${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg -always-overwrite
 mv src/bin/Spectrecoin.dmg Spectrecoin.dmg
