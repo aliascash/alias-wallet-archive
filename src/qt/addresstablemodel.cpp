@@ -60,7 +60,7 @@ public:
                 const QString & strName(QString::fromStdString(item.second));
                 bool fMine = IsDestMine(*wallet, address.Get());
 
-                if (strName.startsWith("ao "))
+                if (IsStealthAddressMappingLabel(item.second))
                     continue;
 
                 QString strAddress(QString::fromStdString(address.ToString()));
@@ -70,10 +70,6 @@ public:
                 if (address.IsBIP32())
                 {
                     addrType = AT_BIP32;
-                } else if (strName.startsWith("group_")){
-                     //find way to detect group address here, probably need to add extra parameter to address log
-                    addrType = AT_Group;
-                    strPubkey = parent->pubkeyForAddress(strAddress, false);
                 } else  {
                     addrType = AT_Normal;
                     strPubkey = parent->pubkeyForAddress(strAddress, false);
@@ -127,7 +123,7 @@ public:
 
     void updateEntry(const QString &address, const QString &label, bool isMine, int status)
     {
-        if (label.startsWith("ao "))
+        if (IsStealthAddressMappingLabel(label.toStdString()))
             return;
 
         // Find address / label in model
@@ -409,10 +405,7 @@ void AddressTableModel::updateEntry(const QString &address, const QString &label
     priv->updateEntry(address, label, isMine, status);
 }
 
-/*
-TODO:
-(+) Handle groupchat more properly, maybe based on &type? instead of addressType?
-*/
+
 QString AddressTableModel::addRow(const QString &type, const QString &label, const QString &address, int addressType)
 {
     std::string strLabel = label.toStdString();
@@ -505,7 +498,7 @@ QString AddressTableModel::addRow(const QString &type, const QString &label, con
             // - CBitcoinAddress displays public key only
             strAddress = CBitcoinAddress(sek->kp).ToString();
         } else
-        { //NORMAL OR GROUP
+        { //NORMAL
             //TODO: decouple keygeneration from HD wallet
             CPubKey newKey;
             if (0 != wallet->NewKeyFromAccount(newKey))
@@ -574,22 +567,31 @@ QString AddressTableModel::labelForAddress(const QString &address) const
 
         std::string sAddr = address.toStdString();
 
-        if (IsStealthAddress(sAddr))
+        CStealthAddress stealthAddress;
+        if (wallet->GetStealthAddress(sAddr, stealthAddress))
         {
-            CStealthAddress sxAddr;
-            if (!sxAddr.SetEncoded(sAddr))
-                return "";
-
-            std::set<CStealthAddress>::iterator it(wallet->stealthAddresses.find(sxAddr));
-            if (it != wallet->stealthAddresses.end())
-                return QString::fromStdString(it->label);
-
-        } else
+            // given address is a stealth address, return the label if available
+            if (!stealthAddress.label.empty())
+                return QString::fromStdString(stealthAddress.label);
+        }
+        else
         {
             CBitcoinAddress address_parsed(sAddr);
             std::map<CTxDestination, std::string>::iterator mi(wallet->mapAddressBook.find(address_parsed.Get()));
             if (mi != wallet->mapAddressBook.end())
-                return QString::fromStdString(mi->second);
+            {
+                // there is a address mapping for the address, check if the mapping itself is a stealth address
+                if (wallet->GetStealthAddress(mi->second, stealthAddress))
+                {
+                    // return the label if available or the encoded stealth address
+                    if (!stealthAddress.label.empty())
+                        return QString::fromStdString(stealthAddress.label);
+                    else
+                        return QString::fromStdString(stealthAddress.Encoded());
+                }
+                else
+                    return QString::fromStdString(mi->second);
+            }
         }
     } else
         return index(row, Label).data().toString();
@@ -611,14 +613,15 @@ QString AddressTableModel::pubkeyForAddress(const QString &address, const bool l
         if (addressParsed.IsValid())
         {
             CKeyID  destinationAddress;
-            CPubKey destinationKey;
-
-            addressParsed.GetKeyID(destinationAddress);
-
-            if (SecureMsgGetLocalKey (destinationAddress, destinationKey) == 0 // test if it's a local key
-             || SecureMsgGetStoredKey(destinationAddress, destinationKey) == 0)
-                return QString::fromStdString(EncodeBase58(destinationKey.begin(), destinationKey.end()).c_str());
-        }
+            if (addressParsed.GetKeyID(destinationAddress))
+            {
+                LOCK(wallet->cs_wallet);
+                CPubKey destinationKey;
+                if (wallet->GetPubKey(destinationAddress, destinationKey))
+                    if (destinationKey.IsValid() && destinationKey.IsCompressed())
+                        return QString::fromStdString(EncodeBase58(destinationKey.begin(), destinationKey.end()).c_str());
+            }
+         }
 
         return "";
     }

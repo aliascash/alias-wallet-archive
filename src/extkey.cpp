@@ -336,12 +336,13 @@ std::string CEKAStealthKey::ToStealthAddress() const
     return EncodeBase58(raw);
 };
 
-int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr)
+int CEKAStealthKey::SetSxAddr(CStealthAddress &sxAddr) const
 {
     sxAddr.scan_pubkey = pkScan;
     sxAddr.spend_pubkey = pkSpend;
     sxAddr.scan_secret.resize(EC_SECRET_SIZE);
     memcpy(&sxAddr.scan_secret[0], skScan.begin(), EC_SECRET_SIZE);
+    sxAddr.label = sLabel;
     
     return 0;
 };

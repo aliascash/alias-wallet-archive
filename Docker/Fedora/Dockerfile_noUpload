@@ -1,0 +1,20 @@
+### At first perform source build ###
+FROM spectreproject/spectre-builder-fedora:1.5
+MAINTAINER HLXEasy <hlxeasy@gmail.com>
+
+# Build parameters
+ARG BUILD_THREADS="6"
+
+# Runtime parameters
+ENV BUILD_THREADS=$BUILD_THREADS
+
+COPY . /spectre
+
+RUN cd /spectre \
+ && mkdir db4.8 leveldb \
+ && patch < Docker/Fedora/QT5BinaryPath.patch \
+ && ./autogen.sh \
+ && ./configure \
+        --enable-gui \
+        --with-qt5=/usr/include/qt5 \
+ && make -j${BUILD_THREADS}

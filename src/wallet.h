@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <regex>
 
 
 #include "main.h"
@@ -21,6 +22,26 @@
 #include "walletdb.h"
 #include "stealth.h"
 #include "smessage.h"
+
+static const std::string sAnonPrefix = "ao ";
+static const std::string sStealthPrefix = "sa ";
+static const std::regex reAnonMapping("ao\\s(\\w{16})\\.{3}");
+static const std::regex reAnonOrStealthMapping("(ao|sa)\\s(\\w{16})\\.{3}");
+
+static bool IsAnonMappingLabel(const std::string& address)
+{
+    return regex_match(address, reAnonMapping);
+}
+
+static bool IsAnonOrStealthMappingLabel(const std::string& address)
+{
+    return regex_match(address, reAnonOrStealthMapping);
+}
+
+static bool IsStealthAddressMappingLabel(const std::string& address, const bool& quickStealthTest = true)
+{
+    return IsAnonOrStealthMappingLabel(address) || (quickStealthTest ? address.length() == 102 : IsStealthAddress(address));
+}
 
 
 extern bool fWalletUnlockStakingOnly;
@@ -47,6 +68,12 @@ enum WalletFeature
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
     FEATURE_LATEST = 60000
+};
+
+enum Currency
+{
+    XSPEC,
+    SPECTRE
 };
 
 /** A key pool entry */
@@ -87,6 +114,9 @@ class CWallet : public CCryptoKeyStore
 public:
     bool SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
     bool SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl=NULL) const;
+
+    bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;
+    bool SaveNarrationOutput(CWalletTx& wtxNew, const CScript& scriptNarration, const std::string& sNarr, std::string& sError);
 
     CWalletDB *pwalletdbEncryption;
 
@@ -225,7 +255,9 @@ public:
     
     bool EraseFromWallet(uint256 hash);
     void WalletUpdateSpent(const CTransaction& prevout, bool fBlock = false);
-    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
+    uint32_t ClearWalletTransactions(bool onlyUnaccepted);
+    int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false, std::function<bool (const int&, const int&, const int&)> funcProgress = nullptr, int progressBatchSize=1000);
+
     void ReacceptWalletTransactions();
     void ResendWalletTransactions(bool fForce = false);
     int64_t GetBalance() const;
@@ -239,7 +271,7 @@ public:
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, int64_t& nFeeRet, int32_t& nChangePos, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, const CCoinControl *coinControl=NULL);
     
-    bool CommitTransaction(CWalletTx& wtxNew);
+    bool CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     
 
     uint64_t GetStakeWeight() const;
@@ -254,18 +286,15 @@ public:
     bool UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn);
     bool UpdateStealthAddress(std::string &addr, std::string &label, bool addIfNotExist);
     
-    bool CreateStealthTransaction(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, const CCoinControl* coinControl=NULL);
-    std::string SendStealthMoney(CScript scriptPubKey, int64_t nValue, std::vector<uint8_t>& P, std::vector<uint8_t>& narr, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
-    bool SendStealthMoneyToDestination(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
     bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
     
     bool UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash);
-    bool UndoAnonTransaction(const CTransaction& tx);
-    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns);
+    bool UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
+    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     
     bool GetAnonChangeAddress(CStealthAddress& sxAddress);
-    bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, std::map<int, std::string>& mapNarr, std::string& sError);
-    bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration);
+    bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError);
+    bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p);
@@ -284,8 +313,9 @@ public:
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly);
     int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly);
+    int CountLockedAnonOutputs();
     
-    bool EraseAllAnonData();
+    uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
     
     bool CacheAnonStats();
     
@@ -304,6 +334,8 @@ public:
 
     std::set<std::set<CTxDestination> > GetAddressGroupings();
     std::map<CTxDestination, int64_t> GetAddressBalances();
+
+    bool IsMine(CStealthAddress stealthAddress);
 
     bool IsMine(const CTxIn& txin) const;
     int64_t GetDebit(const CTxIn& txin) const;
@@ -410,11 +442,11 @@ public:
     
     void SetBestThinChain(const CBlockThinLocator& loc);
 
-    DBErrors LoadWallet();
+    DBErrors LoadWallet(int& oltWalletVersion);
 
     bool SetAddressBookName(const CTxDestination& address, const std::string& strName, CWalletDB *pwdb = NULL, bool fAddKeyToMerkleFilters = true, bool fManual = false);
 
-    bool DelAddressBookName(const CTxDestination& address);
+    bool DelAddressBookName(const CTxDestination& address, CWalletDB *pwdb = NULL);
 
     void UpdatedTransaction(const uint256 &hashTx);
 
@@ -619,7 +651,7 @@ public:
     
     mutable int64_t nCredSPECCached;
     mutable int64_t nCredSpectreCached;
-    
+
     CWalletTx()
     {
         Init(NULL);
@@ -897,18 +929,7 @@ public:
             if (!IsSpent(i))
             {
                 const CTxOut &txout = vout[i];
-                
-                if (!txout.IsAnonOutput())
-                    continue;
-                const CScript &s = txout.scriptPubKey;
-                
-                CKeyID ckidD = CPubKey(&s[2+1], 33).GetID();
-                
-                if (pwallet->HaveKey(ckidD))
-                {
-                    nCredit += txout.nValue;
-                };
-                
+                nCredit += pwallet->GetSpectreCredit(txout);
                 if (!MoneyRange(nCredit))
                     throw std::runtime_error("CWalletTx::GetAvailableSpectreCredit() : value out of range");
             };
@@ -929,8 +950,8 @@ public:
         return nChangeCached;
     }
 
-    void GetAmounts(std::list<std::pair<CTxDestination, int64_t> >& listReceived,
-                    std::list<std::pair<CTxDestination, int64_t> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetDestinationDetails(std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
+                    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
@@ -988,6 +1009,21 @@ public:
         }
 
         return true;
+    }
+
+    bool GetNarration(const unsigned int& nOut, std::string& sNarr) const
+    {
+        if (nOut >= vout.size())
+            throw std::runtime_error("CWalletTx::GetNarration() : nOut out of range");
+
+        char cbufNarrKey[256];
+        snprintf(cbufNarrKey, sizeof(cbufNarrKey), "n_%u", nOut);
+        mapValue_t::const_iterator mi = mapValue.find(cbufNarrKey);
+        if (mi != mapValue.end() && !mi->second.empty()) {
+            sNarr = mi->second;
+            return true;
+        }
+        return false;
     }
 
     bool WriteToDisk();

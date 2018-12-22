@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -51,10 +51,7 @@
       window.addEventListener("drop", preventDefault, !1);
       $(function() {
         $(window).resize(function() {
-          $(".contact-discussion").height($(window).height() - 276);
-          $("#contact-list").height($(window).height() - 80);
-          $("#contact-group-list").height($(window).height() - 80);
-          $("#contact-book-list").height($(window).height() - 60);
+
         });
         $(window).trigger("resize");
       });
@@ -77,7 +74,6 @@
                 <li><a href=#addressbook class=translate>Address Book <span class=icon-thumbnail><i class="fa fa-bars"></i></span></a></li>
               </ul>
             </li>
-            <li><a href=#messages id=chat-menu-link onclick=scrollMessages()><span class="title translate">Chat</span> <span class=icon-thumbnail><i class="fa fa-comment"></i> </span><span class=details><span class=user-notifications><span id=message-count>0</span> </span><span class=translate>Notifications</span></span></a></li>
             <li><a href=#options><span class="title translate">Options</span> <span class=icon-thumbnail><i class="fa fa-wrench"></i></span></a></li>
             <li>
               <a href=#><span class="title translate">Wallet Encryption</span> <span class=arrow></span> <span class=icon-thumbnail><i class="fa fa-floppy-o"></i></span></a>
@@ -132,11 +128,6 @@ downloaded 0 blocks of history..."></progress>
                                                     <li class="inline p-l-10">
                                                         <div id=syncingIcon class=syncing-spinner data-title="Wallet is syncing"></div>
                                                         <div id=blocksIcon class="no-syncing none" data-title="Wallet is syncing"></div>
-                                                        <li class="inline p-l-10">
-                                                            <a href=# data-toggle=quickview data-toggle-element=#quickview>
-                                                                <div id=chatIcon class=chat-icon data-title="Open chat list"></div>
-                                                            </a>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -498,7 +489,7 @@ downloaded 0 blocks of history..."></progress>
                                                     <hr class=no-margin>
                                                     <div class=panel-body>
                                                         <div class=total-balance style=text-align:center>
-                                                            <h3 class=semi-bold><span id=total-big><span>0</span> <span class=light-red>.</span> <span class=cents>00</span> <span class="units unit">XSPEC</span></span>
+                                                            <h3 class=semi-bold><span id=total-big><span>0</span> <span class=light-red>.</span> <span class=cents>00</span></span>
                                                             </h3>
                                                             <div class=clearfix></div>
                                                         </div>
@@ -519,22 +510,24 @@ downloaded 0 blocks of history..."></progress>
                                                             <table class="table table-condensed table-hover" id=balances>
                                                                 <tr>
                                                                     <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Public
-                                                                        <td class="p-l-20 balance text-left">0.00
-                                                                            <tr>
-                                                                                <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Private
-                                                                                    <td class="p-l-20 spectre_balance text-left">0.00
-                                                                                        <tr>
-                                                                                            <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
-                                                                                                <td class="p-l-20 text-left" id=reserved>0.00
-                                                                                                    <tr>
-                                                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
-                                                                                                            <td class="p-l-20 text-left" id=stake>0.00
-                                                                                                                <tr>
-                                                                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
-                                                                                                                        <td class="p-l-20 text-left" id=unconfirmed>0.00
-                                                                                                                            <tr>
-                                                                                                                                <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
-                                                                                                                                    <td class="p-l-20 text-left" id=immature>0.00</table>
+                                                                    <td class="p-l-20 text-right"><span class=balance>0.00</span>
+                                                                    <td><span class=unit>XSPEC</span>
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Private
+                                                                    <td class="p-l-20 text-right"><span class=spectre_balance>0.00</span>
+                                                                    <td><span class=unitSpectre>SPECTRE</span>
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
+                                                                    <td class="p-l-20 text-right" id=reserved>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
+                                                                    <td class="p-l-20 text-right" id=stake>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
+                                                                    <td class="p-l-20 text-right" id=unconfirmed>0.00
+                                                                <tr>
+                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
+                                                                    <td class="p-l-20 text-right" id=immature>0.00</table>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -554,11 +547,11 @@ downloaded 0 blocks of history..."></progress>
                                                         <table class="table table-condensed table-hover" id=recenttxns>
                                                             <thead>
                                                                 <tr>
-                                                                    <th class=sorting data-sort-initial=ascending data-toggle=true>
+                                                                    <th class=sorting width='30%' data-sort-initial=ascending data-toggle=true>
                                                                         <center>Type</center>
                                                                         <th class=sorting data-hide=phone,tablet>
                                                                             <center>Amount</center>
-                                                                            <th class=sorting data-hide=phone>
+                                                                            <th class=sorting width='30%' data-hide=phone>
                                                                                 <center>Date</center>
                                                             </thead>
                                                         </table>
@@ -579,7 +572,6 @@ downloaded 0 blocks of history..."></progress>
                                 <h4 class="translate uppercase" style=font-weight:bolder>Send</h4>
                             </div>
                             <div class="p-t-10 pull-right show-advanced-controls">
-                            <button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),$(this).html(($(this).text() == " Advanced Options") ? $(this).html().replace("Advanced","Basic") : $(this).html().replace("Basic","Advanced")),sendPage.changeTransactionType()'><i class="fa fa-wrench"></i> Advanced Options</button></div>
                             <div class="p-t-10 pull-right show-coin-control"><button class="btn btn-default btn-cons translate" onclick='$(this).toggleClass("active"),sendPage.toggleCoinControl()'><i class="fa fa-repeat"></i> Coin Control</button></div>
                             <div class=container-fluid>
                                 <div class=navbar-header></div>
@@ -616,15 +608,15 @@ downloaded 0 blocks of history..."></progress>
                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20 recipient translate" for=from_account_public>From account <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Send from public or private" style=color:#626262></i></a></label>
                                                 <div class=col-sm-9>
                                                     <div class=option>
-                                                        <div id=from_account_group class="radio radio-success"><input id=from_account_public name=transaction_type_from type=radio value=public checked><label for=from_account_public class=translate>PUBLIC</label><input id=from_account_private name=transaction_type_from type=radio value=private><label for=from_account_private class=translate>PRIVATE</label><span data-title="Current spendable send payment balance"><b class=translate>Balance:</b> <span id=spend_spec><span class=balance>0.00</span> <span class=unit>XSPEC</span> </span><span id=spend_spectre><span class=spectre_balance>0.00</span> <span class=unit>XSPEC</span> </span>
-                                                            </span><span id=tx_ringsize><label class="form-controlring_size m-r-10 translate" for=ring_size>Ring Size:</label><input class="form-control-options-page ring_size input_box" id=ring_size max=32 min=1 step=1 type=number value=16></span></div>
+                                                        <div id=from_account_group class="radio radio-success"><input id=from_account_public name=transaction_type_from type=radio value=public checked><label for=from_account_public class=translate>PUBLIC</label><input id=from_account_private name=transaction_type_from type=radio value=private><label for=from_account_private class=translate>PRIVATE</label><span data-title="Current spendable send payment balance"><b class=translate>Balance:</b> <span id=spend_spec><span class=balance>0.00</span> <span class=unit>XSPEC</span> </span><span id=spend_spectre><span class=spectre_balance>0.00</span> <span class=unitSpectre>SPECTRE</span> </span>
+                                                            </span><span id=tx_ringsize><label class="form-controlring_size m-r-10 translate" for=ring_size>Ring Size:</label><input class="form-control-options-page ring_size input_box" id=ring_size max=32 min=10 step=1 type=number value=10></span></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group advanced_controls"><label class="col-sm-3 control-label option p-l-20 recipient translate" for=to_account_public>To account <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Send to public or private" style=color:#626262></i></a></label>
                                                 <div class=col-sm-9>
                                                     <div class=option>
-                                                        <div id=to_account_group class="radio radio-success"><input id=to_account_public name=transaction_type_to type=radio value=public checked><label for=to_account_public class=translate>PUBLIC</label><input id=to_account_private name=transaction_type_to type=radio value=private><label for=to_account_private class=translate>PRIVATE</label><span id=to_balance data-title="Current spendable balance to account"><b class=translate>Balance:</b> <span id=to_spectre><span class=spectre_balance>0.00</span> <span class=unit>XSPEC</span> </span><span id=to_spec><span class=balance>0.00</span> <span class=unit>XSPEC</span></span>
+                                                        <div id=to_account_group class="radio radio-success"><input id=to_account_public name=transaction_type_to type=radio value=public checked><label for=to_account_public class=translate>PUBLIC</label><input id=to_account_private name=transaction_type_to type=radio value=private><label for=to_account_private class=translate>PRIVATE</label><span id=to_balance data-title="Current spendable balance to account"><b class=translate>Balance:</b> <span id=to_spectre><span class=spectre_balance>0.00</span> <span class=unitSpectre>SPECTRE</span> </span><span id=to_spec><span class=balance>0.00</span> <span class=unit>XSPEC</span></span>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -639,7 +631,7 @@ downloaded 0 blocks of history..."></progress>
                                                         <div class=form-group><label class="col-sm-3 p-l-20 control-label translate">Pay to <a href=#><i class="p-b-5 fa fa-question-circle" data-title="The address to send the payment to" style=color:#626262></i></a></label>
                                                             <div class=col-sm-9>
                                                                 <div class=row>
-                                                                    <div class=col-sm-6><input class="form-control pay_to" data-title="The address to send the payment to" placeholder="The address to send the payment to" maxlength=128 oninput=base58.check(this) onchange='$("#recipient-template .pay_to_label").val(bridge.getAddressLabelToSendBalance(this.value))'></div>
+                                                                    <div class=col-sm-6><input class="form-control pay_to" data-title="The address to send the payment to" placeholder="The address to send the payment to" maxlength=128 oninput=base58.check(this) onchange='bridge.getAddressLabelForSelectorAsync(this.value, "#recipient-template .pay_to_label", "")'></div>
                                                                     <div class=col-sm-3><input class="form-control pay_to_label" data-title="Enter a label for this address" placeholder="Enter a label" maxlength=128></div>
                                                                     <div class="btn-group col-sm-3 sm-m-t-10"><a data-title="Choose from address book" data-toggle=modal data-target=#address-lookup-modal href=# onclick='addressLookup("recipient-template .pay_to,recipient-template .pay_to_label",!1)' class="btn btn-default"><i class="fa fa-book"></i> </a><a data-title="Paste address from clipboard" class="btn btn-default" onclick='paste("#recipient-template .pay_to")'><i class="fa fa-files-o"></i> </a><a data-title="Remove this recipient" class="btn btn-default" onclick='sendPage.removeRecipient("#recipient-template.recipient")'><i class="fa fa-close"></i></a></div>
                                                                 </div>
@@ -659,8 +651,11 @@ downloaded 0 blocks of history..."></progress>
                                                                     <div class=col-sm-9>
                                                                         <input class="form-control amount" id=recipient-template-amount placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#recipient-template .unit").val()),sendPage.updateCoinControl()'>
                                                                     </div>
-                                                                    <div class=col-sm-3>
-                                                                        <select class="unit select-drop-down" onchange='unit.format("#recipient-template .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select>
+                                                                    <div class="col-sm-3 to_unit_public">
+                                                                        <select class="unit select-drop-down" onchange='unit.format("#recipient-template .amount",$(this).val());$("#recipient-template .select-drop-down.unitSpectre").val($(this).val());'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="xSpectoshi (1 / 100000000)">xSpectoshi</select>
+                                                                    </div>
+                                                                    <div class="col-sm-3 to_unit_private">
+                                                                        <select class="unitSpectre select-drop-down" onchange='unit.format("#recipient-template .amount",$(this).val());$("#recipient-template .select-drop-down.unit").val($(this).val());'><option value=0 title=SPECTRE>SPECTRE<option value=1 title="Milli-SPECTRE (1 / 1000)">mSPECTRE<option value=2 title="Micro-SPECRE (1 / 1000000)">&micro;SPECTRE<option value=3 title="Spectoshi (1 / 100000000)">Spectoshi</select>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -672,10 +667,10 @@ downloaded 0 blocks of history..."></progress>
                                         <div class=tab-pane id=send-balance>
                                             <div class=row>
                                                 <div class=col-md-12>
-                                                    <div class="form-group advanced_controls"><label class="col-sm-3 p-l-20 control-label translate">Pay to <a href=#><i class="p-b-5 fa fa-question-circle" data-title="The address transfer the balance to" style=color:#626262></i></a></label>
+                                                    <div class="form-group"><label class="col-sm-3 p-l-20 control-label translate">Pay to <a href=#><i class="p-b-5 fa fa-question-circle" data-title="The address transfer the balance to" style=color:#626262></i></a></label>
                                                         <div class=col-sm-9>
                                                             <div class=row>
-                                                                <div class=col-sm-6><input class="form-control pay_to" data-title="The address to transfer the balance to" placeholder="The address to transfer the balance to" maxlength=128 oninput=base58.check(this) onchange='$("#send-balance .pay_to_label").text(bridge.getAddressLabel(this.value))'></div>
+                                                                <div class=col-sm-6><input class="form-control pay_to" data-title="The address to transfer the balance to" placeholder="The address to transfer the balance to" maxlength=128 oninput=base58.check(this) onchange='bridge.getAddressLabelForSelectorAsync(this.value, "#send-balance .pay_to_label", "(no label)")'></div>
                                                                 <div class=col-sm-3><span class="form-control pay_to_label translate" data-title="The label for this address" style=overflow:hidden;white-space:nowrap>(no label)</span></div>
                                                                 <div class="btn-group col-sm-3 sm-m-t-10"><a data-title="Choose from address book" data-toggle=modal data-target=#address-lookup-modal href=# onclick='addressLookup("send-balance .pay_to,send-balance .pay_to_label",!0,"Stealth")' class="btn btn-default"><i class="fa fa-book"></i> </a><a data-title="Paste address from clipboard" class="btn btn-default" onclick='paste("#send-balance .pay_to")'><i class="fa fa-files-o"></i></a></div>
                                                             </div>
@@ -684,7 +679,10 @@ downloaded 0 blocks of history..."></progress>
                                                     <div class=form-group style="border-bottom:1px solid #F0F1F3"><label class="col-sm-3 control-label option p-l-20" for=send-balance-amount class=recipient>Amount <a href=#><i class="p-b-5 fa fa-question-circle" data-title="Amount to transfer" style=color:#626262></i></a></label>
                                                         <div class=col-sm-9>
                                                             <div class=row>
-                                                                <div class=col-sm-9><input id=send-balance-amount class="form-control amount" placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#send-balance .unit").val()),sendPage.updateCoinControl()'></div><select class="unit select-drop-down" style=margin-left:7px onchange='unit.format("#send-balance .amount",$(this).val())'><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="spectoshi (1 / 100000000)">spectoshi</select></div>
+                                                                <div class=col-sm-9><input id=send-balance-amount class="form-control amount" placeholder=0.00000000 step=0.01 type=number value=0.00000000 onfocus=invalid($(this),!0) onchange='unit.parse(this,$("#send-balance .unit").val()),sendPage.updateCoinControl()'></div>
+                                                                <div class="col-sm-3 to_unit_private"><select class="unit select-drop-down" style=margin-left:7px onchange="unit.format('#send-balance .amount',$(this).val());$('#send-balance .select-drop-down.unitSpectre').val($(this).val());"><option value=0 title=XSPEC>XSPEC<option value=1 title="Milli-XSPEC (1 / 1000)">mXSPEC<option value=2 title="Micro-XSPEC (1 / 1000000)">&micro;XSPEC<option value=3 title="xSpectoshi (1 / 100000000)">xSpectoshi</select></div>
+                                                                <div class="col-sm-3 to_unit_public"><select class="unitSpectre select-drop-down" style=margin-left:7px onchange="unit.format('#send-balance .amount',$(this).val());$('#send-balance .select-drop-down.unit').val($(this).val());"><option value=0 title=SPECTRE>SPECTRE<option value=1 title="Milli-SPECTRE (1 / 1000)">mSPECTRE<option value=2 title="Micro-SPECTRE (1 / 1000000)">&micro;SPECTRE<option value=3 title="Spectoshi (1 / 100000000)">Spectoshi</select></div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -754,13 +752,13 @@ downloaded 0 blocks of history..."></progress>
                                 <table class="footable spectre table table-hover" data-page-size=20 data-limit-navigation=5 id=transactions data-filter=#filter-transaction data-manual=true width=100% style="border-bottom:1px solid rgba(230,230,230,.7)">
                                     <thead>
                                         <tr>
-                                            <th data-type=numeric data-sort-initial=descending data-title="Date and time that the transaction was received.">Date
-                                                <th data-hide=phone style=text-align:center;padding-left:12px data-toggle=true data-type=numeric data-title="Transaction status. Hover over this field to show number of confirmations.">
-                                                    <th data-hide=phone data-title="Type of transaction.">Type
-                                                        <th data-title="Destination address of transaction.">Address
-                                                            <th data-hide=phone data-title="Short payment note.">Narration
-                                                                <th data-type=numeric data-title="Amount removed from or added to balance.">Amount
-                                                                    <tbody>
+                                            <th data-hide=phone style=text-align:center;padding-left:12px;width:1em data-toggle=true data-type=numeric data-title="Transaction status. Hover over this field to show number of confirmations.">
+                                                <th data-type=numeric data-sort-initial=descending data-title="Date and time that the transaction was received.">Date</th>
+                                                    <th data-type=numeric data-title="Amount removed from or added to balance.">Amount</th>
+                                                        <th data-hide=phone data-title="Type of transaction.">Type</th>
+                                                            <th data-title="Destination address of transaction.">Address</th>
+                                                                <th data-hide=phone data-title="Short payment note.">Narration</th>
+                                                                      <tbody>
                                                                         <tfoot>
                                                                             <tr>
                                                                                 <td colspan=6>
@@ -799,189 +797,10 @@ downloaded 0 blocks of history..."></progress>
                                                                             <td colspan=3>
                                                                                 <div class="pagination pager hide-if-no-paging"></div>
                                     </table>
-                                    <div class="center-div m-t-25 m-b-25"><a class="btn btn-default btn-cons" data-target=#add-address-modal data-toggle=modal onclick='$("#add-rcv-address").hide(),clearSendAddress(),$("#add-send-address").show()'><i class="fa fa-plus"></i> New Address</a> <a class="btn btn-default btn-cons" href="javascript:copy('#addressbook .footable .selected .address');"><i class="fa fa-copy"></i> Copy Address</a> <a class="btn btn-default btn-cons" data-target=#qrcode-modal data-toggle=modal onclick='showQRCode($("#addressbook .footable .selected .address").text(),$("#addressbook .footable .selected .label").attr("data-value"))'><i class="fa fa-qrcode"></i> Show QR Code</a> <a class="btn btn-default btn-cons" data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#verify-href").click(),$("#verify-address").val($("#addressbook .footable .selected .address").text())'><i class="fa fa-check"></i> Verify Message</a> <a class="btn btn-default btn-cons" href=#filter-addressbook onclick='var e=$("#addressbook .footable .selected .address");bridge.deleteAddress(e.text())&&e.closest("tr").remove()'><i class="fa fa-close"></i> Delete</a></div>
+                                    <div class="center-div m-t-25 m-b-25"><a class="btn btn-default btn-cons" data-target=#add-address-modal data-toggle=modal onclick='$("#add-rcv-address").hide(),clearSendAddress(),$("#add-send-address").show()'><i class="fa fa-plus"></i> New Address</a> <a class="btn btn-default btn-cons" href="javascript:copy('#addressbook .footable .selected .address');"><i class="fa fa-copy"></i> Copy Address</a> <a class="btn btn-default btn-cons" data-target=#qrcode-modal data-toggle=modal onclick='showQRCode($("#addressbook .footable .selected .address").text(),$("#addressbook .footable .selected .label").attr("data-value"))'><i class="fa fa-qrcode"></i> Show QR Code</a> <a class="btn btn-default btn-cons" data-target=#verify-sign-message-modal data-toggle=modal onclick='$("#verify-href").click(),$("#verify-address").val($("#addressbook .footable .selected .address").text())'><i class="fa fa-check"></i> Verify Message</a> <a class="btn btn-default btn-cons" href=#filter-addressbook onclick='var e=$("#addressbook .footable .selected .address");bridge.deleteAddress(e.text());e.closest("tr").remove()'><i class="fa fa-close"></i> Delete</a></div>
                                     <div class=clearfix></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </article>
-                <div class="modal fade stick-up" id=new-contact-modal tabindex=-1 role=dialog aria-hidden=true>
-                    <div class=modal-dialog>
-                        <div class="modal-content p-b-25" style=background:#fff>
-                            <div class="modal-header clearfix text-left"><button type=button class=close data-dismiss=modal aria-hidden=true><i class="pg-close fs-20"></i></button>
-                                <h5 class=p-l-10 style="border-bottom:1px solid #F0F1F3">Start Private Conversation</h5>
-                                <div class=form-group>
-                                    <div class=col-sm-12><label for=new-contact-address>Address:</label>
-                                        <div class=row>
-                                            <div class=col-sm-8><input id=new-contact-address class="recipient form-control input_box" data-title="The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" placeholder="Enter a Spectrecoin address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)" onchange='base58.check(this)&&($("#new-contact-name").val(bridge.getAddressLabel(this.value)),$("#new-contact-pubkey").val(bridge.getPubKey(this.value)).change())' maxlength=128 oninput=base58.check(this),this.value.trim()></div>
-                                            <div class=col-sm-4>
-                                                <div class=btn-group><a class="btn btn-default" data-title="Choose address from address book" data-toggle=modal data-target=#address-lookup-modal href=# onclick='addressLookup("new-contact-address,new-contact-name",!1,"Normal")'><i class="fa fa-book"></i> </a><a class="btn btn-default" data-title="Paste address from clipboard" onclick='paste("#new-contact-address")'><i class="fa fa-files-o"></i> </a><a class="btn btn-default" data-title="Remove this recipient" onclick='$("#new-contact-address").val("").css("background","").css("color","")'><i class="fa fa-times"></i></a></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15"><label for=new-contact-name>Name:</label>
-                                        <div class=row>
-                                            <div class=col-sm-12><input id=new-contact-name class="recipient form-control input_box" data-title="Enter a label for this address to add it to your address book" placeholder="Enter a label for this address to add it to your address book" maxlength=128></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15"><label for=new-contact-pubkey>Public Key:</label>
-                                        <div class=row>
-                                            <div class=col-sm-12><input id=new-contact-pubkey class="recipient form-control input_box" data-title="Enter a public key for the address above" placeholder="Enter a public key for the address above" oninput=base58.check(this) onchange='invalid($(this),bridge.setPubKey($("#new-contact-address").val(),this.value))'></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pull-right m-r-10 m-t-25"><a class="btn btn-danger btn-cons" href=# onclick=newConversation()>Start Conversation <i class="fa fa-check"></i></a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade stick-up" id=new-group-modal tabindex=-1 role=dialog aria-hidden=true>
-                    <div class=modal-dialog>
-                        <div class="modal-content p-b-25" style=background:#fff>
-                            <div class="modal-header clearfix text-left"><button type=button class=close data-dismiss=modal aria-hidden=true><i class="pg-close fs-20"></i></button>
-                                <h5 class=p-l-10 style="border-bottom:1px solid #F0F1F3">Start Group Conversation</h5>
-                                <div class=form-group>
-                                    <div class="col-sm-8 p-t-15"><label for=new-group-name>Group name:</label><input id=new-group-name class="recipient form-control input_box" data-title="Enter a label for this group" placeholder="Enter a label for this group" maxlength=128></div>
-                                    <div class="col-sm-4 p-t-15">
-                                        <div class="pull-right m-t-25"><a class="btn btn-danger" onclick=createGroupChat()>Create Group <i class="fa fa-check"></i></a></div>
-                                    </div>
-                                </div><br><br>
-                                <h5 class=p-l-10 style="border-bottom:1px solid #F0F1F3">Invite others</h5>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15"><label for=filter-new-group>Search</label><input class="form-control input_box" id=filter-new-group placeholder="Search by label or address..."></div>
-                                </div>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15">
-                                        <div class=row>
-                                            <div class=col-sm-12>
-                                                <div class="panel full-width bg-transparent">
-                                                    <div class="panel full-width">
-                                                        <table cellspacing=0 class="footable spectre table table-hover" data-filter=#filter-new-group data-page-size=20 width=100% style="border-bottom:1px solid rgba(230,230,230,.7)">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style=padding-left:18px data-sort-initial=true data-toggle=true>Label
-                                                                        <th data-hide=phone>Address
-                                                                            <th data-hide=phone>Invite
-                                                                                <tbody id=group-modal-tbody>
-                                                                                    <tfoot>
-                                                                                        <tr>
-                                                                                            <td colspan=3>
-                                                                                                <div class="pagination pager hide-if-no-paging"></div>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade stick-up" id=invite-to-group-modal tabindex=-1 role=dialog aria-hidden=true>
-                    <div class=modal-dialog>
-                        <div class="modal-content p-b-25" style=background:#fff>
-                            <div class="modal-header clearfix text-left"><button type=button class=close data-dismiss=modal aria-hidden=true><i class="pg-close fs-20"></i></button>
-                                <h5 class=p-l-10 style="border-bottom:1px solid #F0F1F3">Invite others to group</h5>
-                                <div class=form-group>
-                                    <div class="col-sm-8 p-t-15"><label for=existing-group-name>Group name:</label><input id=existing-group-name class="recipient form-control input_box" data-title="Enter a label for this group" placeholder="Enter a label for this group" maxlength=128 disabled></div>
-                                    <div class="col-sm-4 p-t-15">
-                                        <div class="pull-right m-t-25"><a class="btn btn-danger" onclick=submitInviteModal()>Invite to Group <i class="fa fa-check"></i></a></div>
-                                    </div>
-                                </div>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15"><label for=filter-new-group>Search</label><input class="form-control input_box" id=filter-existing-group placeholder="Search by label or address..."></div>
-                                </div>
-                                <div class=form-group>
-                                    <div class="col-sm-12 p-t-15">
-                                        <div class=row>
-                                            <div class=col-sm-12>
-                                                <div class="panel full-width bg-transparent">
-                                                    <div class="panel full-width">
-                                                        <table cellspacing=0 class="footable spectre table table-hover" data-filter=#filter-existing-group data-page-size=20 width=100% style="border-bottom:1px solid rgba(230,230,230,.7)">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style=padding-left:18px data-sort-initial=true data-toggle=true>Label
-                                                                        <th data-hide=phone>Address
-                                                                            <th data-hide=phone>Invite
-                                                                                <tbody id=invite-modal-tbody>
-                                                                                    <tfoot>
-                                                                                        <tr>
-                                                                                            <td colspan=3>
-                                                                                                <div class="pagination pager hide-if-no-paging"></div>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id=quickview class=quickview-wrapper data-framework=quickview style=z-index:99999>
-                    <ul class="nav nav-tabs">
-                        <li id=quickview-private-tab onclick=contactScroll.refresh()><a href=#quickview-private data-toggle=tab><i class="fa fa-user"></i> PRIVATE</a>
-                            <li id=quickview-group-tab onclick=contactGroupScroll.refresh()><a href=#quickview-group data-toggle=tab><i class="fa fa-users"></i> GROUP</a>
-                                <li id=quickview-book-tab><a href=#quickview-book data-toggle=tab><i class="fa fa-bars"></i> BOOK</a></ul><a class="btn-link quickview-toggle" data-toggle-element=#quickview data-toggle=quickview><i class=pg-close></i></a>
-                    <div class=tab-content>
-                        <div class="tab-pane fade in active no-padding" id=quickview-private>
-                            <div class="view-port clearfix quickview-private" id=note-views><a href=# data-target=#new-contact-modal data-toggle=modal id=start-conversation><i class="fa fa-plus margin-right-10"></i> Start private conversation</a>
-                                <div class="view bg-white" style=height:auto>
-                                    <div id=contact-list class=contact-list>
-                                        <ul></ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade no-padding" id=quickview-group>
-                            <div class="view-port clearfix" id=alerts><a href=# data-target=#new-group-modal data-toggle=modal id=start-conversation><i class="fa fa-plus margin-right-10"></i> Start group conversation</a>
-                                <div id=group-invite-list></div>
-                                <div class="view bg-white">
-                                    <div id=contact-group-list class=contact-list>
-                                        <ul></ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade no-padding" id=quickview-book>
-                            <div class="view-port clearfix" id=alerts>
-                                <div class="view bg-white">
-                                    <div id=contact-book-list class=contact-list>
-                                        <ul></ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <article id=messages>
-                    <nav class="navbar navbar-default nav-sub-menu p-t-10 p-b-10 p-r-35 p-l-35" style=min-height:75px;margin-bottom:0 role=navigation>
-                        <div class="pull-left chat-header">
-                            <h4 style=font-weight:bolder id=chat-header data-value="">CHAT</h4>
-                        </div>
-                        <div id=leave-group-btn class="p-t-10 p-r-10 pull-right" style=display:none><a href=# class="btn btn-default btn-cons" data-toggle=quickview data-toggle-element=#quickview><i class="fa fa-sign-out"></i> Leave Group</a></div>
-                        <div id=invite-group-btn class="p-t-10 p-r-10 pull-right" style=display:none><a href=# class="btn btn-default btn-cons" data-toggle=modal data-target=#invite-to-group-modal onclick=openInviteModal()><i class="fa fa-user-plus"></i> Invite</a></div>
-                        <div class=container-fluid>
-                            <div class=navbar-header></div>
-                        </div>
-                    </nav>
-                    <div class="row chat-body" style=margin-left:0;margin-right:0>
-                        <div class="panel full-width bg-transparent" style=margin-bottom:0;padding:0>
-                            <div class="panel full-width bg-transparent" style=margin-bottom:0;padding:0>
-                                <div class=contact-discussion>
-                                    <ul></ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class=answer>
-                            <form action="" class=text-box method="="><a class="bold button button-icon" href=# onclick='editorCommand("**","**")'><i class="fa fa-bold"></i> </a><a class="italic button button-icon" href=# onclick='editorCommand("*","*")'><i class="fa fa-italic"></i> </a><a class="underline button button-icon" href=# onclick='editorCommand("__","__")'><i class="fa fa-underline"></i> </a><a href=# class="strikethrough button button-icon" onclick='editorCommand("~~","~~")'><i class="fa fa-strikethrough"></i> </a><a href=# class="link button button-icon" onclick='editorCommand("[","](http://spectre.cash)")'><i class="fa fa-link"></i> </a><a href=# class="image button button-icon" onclick='editorCommand("![imageinfo](",")")'><i class="fa fa-image"></i></a><label for=message-from-address></label><select class=select-drop-down-chat id=message-from-address placeholder="From address:"></select><input id=message-to-address type=hidden> <input id=pasteTo type=hidden><textarea id=message-text rows=4 maxlength=4000 placeholder="Type your message here ..."></textarea></form>
                         </div>
                     </div>
                 </article>
@@ -1125,17 +944,12 @@ downloaded 0 blocks of history..."></progress>
 
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMinRingSize>Minimum Ring size:</label>
                                                                 <div class=col-sm-9>
-                                                                    <div class=option><input id=optMinRingSize class=form-control-options-page min=1 placeholder=1 type=number></div>
+                                                                    <div class=option><input readonly id=optMinRingSize class=form-control-options-page min=1 placeholder=1 type=number></div>
                                                                 </div>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label option p-l-20" for=optMaxRingSize>Maximum Ring size:</label>
                                                                 <div class=col-sm-9>
-                                                                    <div class=option><input id=optMaxRingSize class=form-control-options-page max=200 placeholder=100 step=1 type=number></div>
-                                                                </div>
-                                                            </div>
-                                                            <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optAutoRingSize>Automatically select ring size</label>
-                                                                <div class=col-sm-9>
-                                                                    <div class="checkbox option check-danger"><input id=optAutoRingSize title="Automatically select ring size based on best available output counts" type=checkbox><label class=option for=optAutoRingSize title="Automatically select ring size based on best available output counts"></label></div>
+                                                                    <div class=option><input readonly id=optMaxRingSize class=form-control-options-page max=200 placeholder=100 step=1 type=number></div>
                                                                 </div>
                                                             </div>
                                                             <div class=form-group><label class="col-sm-3 control-label p-l-20" for=optSecureMessaging>Enable Secure messaging</label>

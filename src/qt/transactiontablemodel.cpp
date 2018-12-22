@@ -309,14 +309,30 @@ QString TransactionTableModel::formatTxDate(const TransactionRecord *wtx) const
  */
 QString TransactionTableModel::lookupAddress(const std::string &address, bool tooltip) const
 {
+    if (address.empty())
+        return "unknown";
+
     QString label = walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(address));
+
+    bool hasLabel = !label.isEmpty();
     QString description;
-    if(!label.isEmpty())
+
+    if(hasLabel)
         description += label + QString(" ");
 
-    if(label.isEmpty() || walletModel->getOptionsModel()->getDisplayAddresses() || tooltip)
-        description += QString("(") + QString::fromStdString(address) + QString(")");
+    if(!hasLabel || walletModel->getOptionsModel()->getDisplayAddresses() || tooltip)
+    {
+        if (hasLabel)
+            description += QString("(");
 
+        if (address.length() == 102)
+            description += QString::fromStdString(address.substr(0, 34)) + "...";
+        else
+            description += QString::fromStdString(address);
+
+        if (hasLabel)
+            description += QString(")");
+    }
     return description;
 }
 
@@ -336,10 +352,13 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::Generated:
     case TransactionRecord::GeneratedDonation:
 	case TransactionRecord::GeneratedContribution:
-        return lookupAddress(wtx->address, tooltip);
-    case TransactionRecord::SendToOther:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
+    case TransactionRecord::ConvertSPECTREtoXSPEC:
+    case TransactionRecord::ConvertXSPECtoSPECTRE:
+    case TransactionRecord::SendToSelfSPECTRE:
+        return lookupAddress(wtx->address, tooltip);
+    case TransactionRecord::SendToOther:
         return QString::fromStdString(wtx->address);
     case TransactionRecord::SendToSelf:
     default:
@@ -364,12 +383,15 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::GeneratedDonation:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
+    case TransactionRecord::ConvertSPECTREtoXSPEC:
+    case TransactionRecord::ConvertXSPECtoSPECTRE:
         {
         QString label = walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(wtx->address));
         if(label.isEmpty())
             return COLOR_BAREADDRESS;
         } break;
     case TransactionRecord::SendToSelf:
+    case TransactionRecord::SendToSelfSPECTRE:
         return COLOR_BAREADDRESS;
     default:
         break;
@@ -430,7 +452,10 @@ QString TransactionTableModel::formatTooltip(const TransactionRecord *rec) const
     QString tooltip = formatTxStatus(rec) + QString("\n") + rec->getTypeLabel(rec->type);
 
     if(rec->type==TransactionRecord::RecvFromOther || rec->type==TransactionRecord::SendToOther ||
-       rec->type==TransactionRecord::SendToAddress || rec->type==TransactionRecord::RecvWithAddress)
+       rec->type==TransactionRecord::SendToAddress || rec->type==TransactionRecord::RecvWithAddress ||
+       rec->type==TransactionRecord::SendSpectre || rec->type==TransactionRecord::RecvSpectre ||
+       rec->type==TransactionRecord::SendToSelfSPECTRE ||
+       rec->type==TransactionRecord::ConvertSPECTREtoXSPEC || rec->type==TransactionRecord::ConvertXSPECtoSPECTRE)
     {
         tooltip += QString(" ") + formatTxToAddress(rec, true);
     }
@@ -516,6 +541,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(rec->address));
     case AmountRole:
         return rec->credit + rec->debit;
+    case CurrencyRole:
+        return rec->currency == SPECTRE ? "SPECTRE" : "XSPEC";
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:

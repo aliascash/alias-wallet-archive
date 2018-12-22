@@ -166,8 +166,6 @@ Value importprivkey(const Array& params, bool fHelp)
         }
     }
 
-    SecureMsgAddWalletAddresses();
-
     return Value::null;
 }
 

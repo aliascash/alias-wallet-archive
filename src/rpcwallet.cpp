@@ -11,7 +11,6 @@
 #include "txdb.h"
 #include "stealth.h"
 #include "ringsig.h"
-#include "smessage.h"
 #include <sstream>
 
 using namespace json_spirit;
@@ -48,7 +47,7 @@ void EnsureWalletIsUnlocked()
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Wallet is unlocked for staking only.");
 }
 
-void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
+void WalletTxToJSON(const CWalletTx& wtx, Object& entry, bool listNarrations=true)
 {
     entry.push_back(Pair("version", wtx.nVersion));
     int confirms = wtx.GetDepthInMainChain();
@@ -80,7 +79,8 @@ void WalletTxToJSON(const CWalletTx& wtx, Object& entry)
     entry.push_back(Pair("timereceived", (int64_t)wtx.nTimeReceived));
 
     BOOST_FOREACH(const PAIRTYPE(std::string,std::string)& item, wtx.mapValue)
-        entry.push_back(Pair(item.first, item.second));
+        if (listNarrations || item.first.substr(0,2) != "n_")
+            entry.push_back(Pair(item.first, item.second));
 }
 
 std::string AccountFromValue(const Value& value)
@@ -424,8 +424,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     if (params[0].get_str().length() > 75
         && IsStealthAddress(params[0].get_str()))
-        return sendtostealthaddress(params, false);
-
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Only SPECTRE can be send to a stealth address, use sendanontoanon instead");
 
     std::string sAddrIn = params[0].get_str();
     CBitcoinAddress address(sAddrIn);
@@ -710,16 +709,16 @@ Value getbalance(const Array& params, bool fHelp)
 
             int64_t allFee;
             std::string strSentAccount;
-            std::list<std::pair<CTxDestination, int64_t> > listReceived;
-            std::list<std::pair<CTxDestination, int64_t> > listSent;
-            wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount);
+            std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+            std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
+            wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
             if (wtx.GetDepthInMainChain() >= nMinDepth && wtx.GetBlocksToMaturity() == 0)
             {
-                BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& r, listReceived)
-                    nBalance += r.second;
+                for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
+                    nBalance += amount;
             };
-            BOOST_FOREACH(const PAIRTYPE(CTxDestination,int64_t)& r, listSent)
-                nBalance -= r.second;
+            for(const auto & [address,destSubs,amount,currency,narration] : listSent)
+                nBalance -= amount;
             nBalance -= allFee;
         };
         return  ValueFromAmount(nBalance);
@@ -1188,35 +1187,43 @@ Value listreceivedbyaccount(const Array& params, bool fHelp)
 
 static void MaybePushAddress(Object & entry, const CTxDestination &dest)
 {
-    CBitcoinAddress addr;
-    if (addr.Set(dest))
-        entry.push_back(Pair("address", addr.ToString()));
+    if (dest.type() == typeid(CStealthAddress)) {
+        entry.push_back(Pair("address", boost::get<CStealthAddress>(dest).Encoded()));
+    }
+    else {
+        CBitcoinAddress addr;
+        if (addr.Set(dest))
+            entry.push_back(Pair("address", addr.ToString()));
+    }
 }
 
 void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int nMinDepth, bool fLong, Array& ret)
 {
     int64_t nFee;
     std::string strSentAccount;
-    std::list<std::pair<CTxDestination, int64_t> > listReceived;
-    std::list<std::pair<CTxDestination, int64_t> > listSent;
+    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
 
-    wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount);
+    wtx.GetDestinationDetails(listReceived, listSent, nFee, strSentAccount);
 
     bool fAllAccounts = (strAccount == std::string("*"));
 
     // Sent
     if ((!wtx.IsCoinStake()) && (!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
     {
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& s, listSent)
+        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
         {
             Object entry;
             entry.push_back(Pair("account", strSentAccount));
-            MaybePushAddress(entry, s.first);
+            MaybePushAddress(entry, address);
             entry.push_back(Pair("category", "send"));
-            entry.push_back(Pair("amount", ValueFromAmount(-s.second)));
+            entry.push_back(Pair("amount", ValueFromAmount(-amount)));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+            entry.push_back(Pair("currency", currency == SPECTRE ? "SPECTRE" : "XSPEC"));
+            if (!narration.empty())
+                entry.push_back(Pair("narration", narration));
             if (fLong)
-                WalletTxToJSON(wtx, entry);
+                WalletTxToJSON(wtx, entry, false);
             ret.push_back(entry);
         };
     };
@@ -1225,17 +1232,23 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
     if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth)
     {
         bool stop = false;
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& r, listReceived)
+        for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
         {
 
             std::string account;
-            if (pwalletMain->mapAddressBook.count(r.first))
-                account = pwalletMain->mapAddressBook[r.first];
+            if (address.type() == typeid(CStealthAddress))
+            {
+                CStealthAddress stealthAddress = boost::get<CStealthAddress>(address);
+                account = stealthAddress.label;
+            }
+            else if (pwalletMain->mapAddressBook.count(address))
+                account = pwalletMain->mapAddressBook[address];
+
             if (fAllAccounts || (account == strAccount))
             {
                 Object entry;
                 entry.push_back(Pair("account", account));
-                MaybePushAddress(entry, r.first);
+                MaybePushAddress(entry, address);
                 if (wtx.IsCoinBase() || wtx.IsCoinStake())
                 {
                     if (wtx.GetDepthInMainChain() < 1)
@@ -1252,15 +1265,17 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
 
                 if (!wtx.IsCoinStake())
                 {
-                    entry.push_back(Pair("amount", ValueFromAmount(r.second)));
+                    entry.push_back(Pair("amount", ValueFromAmount(amount)));
                 } else
                 {
                     entry.push_back(Pair("amount", ValueFromAmount(-nFee)));
                     stop = true; // only one coinstake output
                 };
-
+                entry.push_back(Pair("currency", (currency == SPECTRE ? "SPECTRE" : "XSPEC")));
+                if (!narration.empty())
+                    entry.push_back(Pair("narration", narration));
                 if (fLong)
-                    WalletTxToJSON(wtx, entry);
+                    WalletTxToJSON(wtx, entry, false);
                 ret.push_back(entry);
             };
             if (stop)
@@ -1380,25 +1395,25 @@ Value listaccounts(const Array& params, bool fHelp)
         const CWalletTx& wtx = (*it).second;
         int64_t nFee;
         std::string strSentAccount;
-        std::list<std::pair<CTxDestination, int64_t> > listReceived;
-        std::list<std::pair<CTxDestination, int64_t> > listSent;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
+        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
         int nDepth = wtx.GetDepthInMainChain();
         if (nDepth < 0)
             continue;
 
-        wtx.GetAmounts(listReceived, listSent, nFee, strSentAccount);
+        wtx.GetDestinationDetails(listReceived, listSent, nFee, strSentAccount);
         mapAccountBalances[strSentAccount] -= nFee;
 
-        BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& s, listSent)
-            mapAccountBalances[strSentAccount] -= s.second;
+        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
+            mapAccountBalances[strSentAccount] -= amount;
 
         if (nDepth >= nMinDepth && wtx.GetBlocksToMaturity() == 0)
         {
-            BOOST_FOREACH(const PAIRTYPE(CTxDestination, int64_t)& r, listReceived)
-                if (pwalletMain->mapAddressBook.count(r.first))
-                    mapAccountBalances[pwalletMain->mapAddressBook[r.first]] += r.second;
+            for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
+                if (pwalletMain->mapAddressBook.count(address))
+                    mapAccountBalances[pwalletMain->mapAddressBook[address]] += amount;
                 else
-                    mapAccountBalances[""] += r.second;
+                    mapAccountBalances[""] += amount;
         };
     };
 
@@ -2198,198 +2213,27 @@ Value importstealthaddress(const Array& params, bool fHelp)
     return result;
 }
 
-
-Value sendtostealthaddress(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() < 2 || params.size() > 5)
-        throw std::runtime_error(
-        "sendtostealthaddress <stealth_address> <amount> [comment] [comment-to] [narration]\n"
-        "sendtostealthaddress <stealth_address> <amount> [narration]\n"
-            "<amount> is a real and is rounded to the nearest 0.000001"
-            + HelpRequiringPassphrase());
-
-    if (pwalletMain->IsLocked())
-        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
-
-    std::string sEncoded = params[0].get_str();
-    int64_t nAmount = AmountFromValue(params[1]);
-
-    std::string sNarr;
-    if (params.size() == 3 || params.size() == 5)
-    {
-        int nNarr = params.size() - 1;
-        if(params[nNarr].type() != null_type && !params[nNarr].get_str().empty())
-            sNarr = params[nNarr].get_str();
-    }
-
-    if (sNarr.length() > 24)
-        throw std::runtime_error("Narration must be 24 characters or less.");
-
-    CStealthAddress sxAddr;
-
-    if (!sxAddr.SetEncoded(sEncoded))
-        throw std::runtime_error("Invalid Spectrecoin stealth address.");
-
-    CWalletTx wtx;
-    if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
-        wtx.mapValue["comment"] = params[3].get_str();
-    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
-        wtx.mapValue["to"]      = params[4].get_str();
-
-    std::string sError;
-    if (!pwalletMain->SendStealthMoneyToDestination(sxAddr, nAmount, sNarr, wtx, sError))
-        throw JSONRPCError(RPC_WALLET_ERROR, sError);
-
-    return wtx.GetHash().GetHex();
-}
-
 Value clearwallettransactions(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
             "clearwallettransactions [unaccepted]\n"
                 "[unaccepted] optional to deleted unaccepted stakes only\n"
-            "delete all transactions from wallet - reload with reloadanondata\n"
+            "delete all transactions from wallet - reload with scanforalltxns\n"
             "Warning: Backup your wallet first!");
-
-    Object result;
-
-    uint32_t nTransactions = 0;
 
     bool fUnaccepted = false;
     if (params.size() > 0)
         fUnaccepted = params[0].get_bool();
 
+    uint32_t nTransactions = pwalletMain->ClearWalletTransactions(fUnaccepted);
+
+    Object result;
     char cbuf[256];
-
-    {
-        LOCK2(cs_main, pwalletMain->cs_wallet);
-
-        CWalletDB walletdb(pwalletMain->strWalletFile);
-        walletdb.TxnBegin();
-        Dbc* pcursor = walletdb.GetTxnCursor();
-        if (!pcursor)
-            throw std::runtime_error("Cannot get wallet DB cursor");
-
-        Dbt datKey;
-        Dbt datValue;
-
-        datKey.set_flags(DB_DBT_USERMEM);
-        datValue.set_flags(DB_DBT_USERMEM);
-
-        std::vector<unsigned char> vchKey;
-        std::vector<unsigned char> vchType;
-        std::vector<unsigned char> vchKeyData;
-        std::vector<unsigned char> vchValueData;
-
-        vchKeyData.resize(100);
-        vchValueData.resize(100);
-
-        datKey.set_ulen(vchKeyData.size());
-        datKey.set_data(&vchKeyData[0]);
-
-        datValue.set_ulen(vchValueData.size());
-        datValue.set_data(&vchValueData[0]);
-
-        unsigned int fFlags = DB_NEXT; // same as using DB_FIRST for new cursor
-        while (true)
-        {
-            int ret = pcursor->get(&datKey, &datValue, fFlags);
-
-            if (ret == ENOMEM
-                || ret == DB_BUFFER_SMALL)
-            {
-                if (datKey.get_size() > datKey.get_ulen())
-                {
-                    vchKeyData.resize(datKey.get_size());
-                    datKey.set_ulen(vchKeyData.size());
-                    datKey.set_data(&vchKeyData[0]);
-                };
-
-                if (datValue.get_size() > datValue.get_ulen())
-                {
-                    vchValueData.resize(datValue.get_size());
-                    datValue.set_ulen(vchValueData.size());
-                    datValue.set_data(&vchValueData[0]);
-                };
-                // -- try once more, when DB_BUFFER_SMALL cursor is not expected to move
-                ret = pcursor->get(&datKey, &datValue, fFlags);
-            };
-
-            if (ret == DB_NOTFOUND)
-                break;
-            else
-            if (datKey.get_data() == NULL || datValue.get_data() == NULL
-                || ret != 0)
-            {
-                snprintf(cbuf, sizeof(cbuf), "wallet DB error %d, %s", ret, db_strerror(ret));
-                throw std::runtime_error(cbuf);
-            };
-
-            CDataStream ssValue(SER_DISK, CLIENT_VERSION);
-            ssValue.SetType(SER_DISK);
-            ssValue.clear();
-            ssValue.write((char*)datKey.get_data(), datKey.get_size());
-
-            ssValue >> vchType;
-
-
-            std::string strType(vchType.begin(), vchType.end());
-
-            //LogPrintf("strType %s\n", strType.c_str());
-
-            if (strType == "tx")
-            {
-                uint256 hash;
-                ssValue >> hash;
-
-                if (fUnaccepted)
-                {
-                    const CWalletTx& wtx = pwalletMain->mapWallet[hash];
-                    if (!wtx.IsInMainChain())
-                    {
-                        if ((ret = pcursor->del(0)) != 0)
-                        {
-                            LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
-                            continue;
-                        }
-                        pwalletMain->mapWallet.erase(hash);
-                        pwalletMain->NotifyTransactionChanged(pwalletMain, hash, CT_DELETED);
-                        nTransactions++;
-                    }
-                    continue;
-                }
-
-                if ((ret = pcursor->del(0)) != 0)
-                {
-                    LogPrintf("Delete transaction failed %d, %s\n", ret, db_strerror(ret));
-                    continue;
-                }
-
-                pwalletMain->mapWallet.erase(hash);
-                pwalletMain->NotifyTransactionChanged(pwalletMain, hash, CT_DELETED);
-
-                nTransactions++;
-            };
-        };
-        pcursor->close();
-        walletdb.TxnCommit();
-
-        //pwalletMain->mapWallet.clear();
-
-        if (nNodeMode == NT_THIN)
-        {
-            // reset LastFilteredHeight
-            walletdb.WriteLastFilteredHeight(0);
-        }
-    }
-
-
 
     snprintf(cbuf, sizeof(cbuf), "Removed %u transactions.", nTransactions);
     result.push_back(Pair("complete", std::string(cbuf)));
-    result.push_back(Pair("", "Reload with reloadanondata, reindex or re-download blockchain."));
-
+    result.push_back(Pair("", "Reload with scanforalltxns, reindex or re-download blockchain."));
 
     return result;
 }
@@ -2401,9 +2245,11 @@ Value scanforalltxns(const Array& params, bool fHelp)
             "scanforalltxns [fromHeight]\n"
             "Scan blockchain for owned transactions.");
 
-
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Can't run in thin mode.");
+
+    if (pwalletMain->IsLocked())
+        throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     Object result;
     int32_t nFromHeight = 0;
@@ -2430,12 +2276,18 @@ Value scanforalltxns(const Array& params, bool fHelp)
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
-        pwalletMain->MarkDirty();
+        if (nFromHeight == 0)
+            // If we start from genesis, rebuild anon data completely
+            pwalletMain->EraseAllAnonData();
 
+        pwalletMain->MarkDirty();
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();
-    } // cs_main, pwalletMain->cs_wallet
 
+        if (nFromHeight == 0)
+            pwalletMain->CacheAnonStats();
+
+    } // cs_main, pwalletMain->cs_wallet
        
     LogPrintf("Found %u stealth transactions in blockchain.\n", pwalletMain->nStealth);
     LogPrintf("Found %u new owned stealth transactions.\n", pwalletMain->nFoundStealth);
@@ -2476,6 +2328,11 @@ Value sendspectoanon(const Array& params, bool fHelp)
     if (!sxAddr.SetEncoded(sEncoded))
         throw std::runtime_error("Invalid Spectrecoin stealth address.");
 
+    // -- Check that we own the recipient address (XSPEC to SPECTRE only allowed for transformation)
+    if (!pwalletMain->IsMine(sxAddr)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account.");
+    }
+
     CWalletTx wtx;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["comment"] = params[3].get_str();
@@ -2498,7 +2355,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
-            "  warning: using a ring_size less than 3 is not recommended"
+            "  warning: using a ring_size less than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2511,10 +2368,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE)
-        result.push_back(Pair("warning", "Ring size was below the recommended size, your existing will be marked as compromised."));
-
-    if (nRingSize > MAX_RING_SIZE)
+    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
         ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
 
 
@@ -2585,6 +2439,11 @@ Value sendanontospec(const Array& params, bool fHelp)
 
     if (!sxAddr.SetEncoded(sEncoded))
         throw std::runtime_error("Invalid Spectrecoin stealth address.");
+
+    // -- Check that we own the recipient address (SPECTRE to XSPEC only allowed for transformation)
+    if (!pwalletMain->IsMine(sxAddr)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account.");
+    }
 
     CWalletTx wtx;
     if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
@@ -2830,48 +2689,6 @@ Value anoninfo(const Array& params, bool fHelp)
 
     return result;
 }
-
-Value reloadanondata(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() > 0)
-        throw std::runtime_error(
-            "reloadanondata \n"
-            "clears all anon txn data from system, and runs scanforalltxns.\n"
-            "WARNING: Intended for development use only."
-            + HelpRequiringPassphrase());
-
-    if (nNodeMode != NT_FULL)
-        throw std::runtime_error("Must be in full mode.");
-
-
-    CBlockIndex *pindex = pindexGenesisBlock;
-
-    // check from 257000, once anon transactions started
-    while (pindex->nHeight < (fTestNet ? 0 : 257000) && pindex->pnext)
-        pindex = pindex->pnext;
-
-    Object result;
-    if (pindex)
-    {
-        LOCK2(cs_main, pwalletMain->cs_wallet);
-
-        if (!pwalletMain->EraseAllAnonData())
-            throw std::runtime_error("EraseAllAnonData() failed.");
-
-        pwalletMain->MarkDirty();
-        pwalletMain->ScanForWalletTransactions(pindex, true);
-        pwalletMain->ReacceptWalletTransactions();
-
-        pwalletMain->CacheAnonStats();
-        result.push_back(Pair("result", "reloadanondata complete."));
-    } else
-    {
-        result.push_back(Pair("result", "reloadanondata failed - !pindex."));
-    };
-
-    return result;
-}
-
 
 static bool compareTxnTime(const CWalletTx* pa, const CWalletTx* pb)
 {

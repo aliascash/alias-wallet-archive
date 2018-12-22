@@ -10,7 +10,6 @@
 #include "aboutdialog.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
-#include "messagemodel.h"
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "bitcoinunits.h"
@@ -21,6 +20,7 @@
 #include "wallet.h"
 #include "util.h"
 #include "init.h"
+#include "version.h"
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -172,19 +172,19 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     webEngineView = new QWebEngineView();
 	webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
 
-    webEnginePage = new WebEnginePage(this);	
+    webEnginePage = new WebEnginePage(this);
     webEngineView->setPage(webEnginePage);
 
     webEnginePage->action(QWebEnginePage::Reload)->setVisible(false);
     webEnginePage->action(QWebEnginePage::Back)->setVisible(false);
     webEnginePage->action(QWebEnginePage::Forward)->setVisible(false);
-    
+
     connect(webEnginePage,SIGNAL(linkClicked(QUrl)), this, SLOT(urlClicked(const QUrl&)));
 
     setCentralWidget(webEngineView);
 
     resize(1280, 720);
-    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client"));
+    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/spectre"));
     setWindowIcon(QIcon(":icons/spectre"));
@@ -202,9 +202,6 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // Create application menu bar
     createMenuBar();
 
-    // Create the tray icon (or setup the dock icon)
-    createTrayIcon();
-
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
@@ -220,6 +217,11 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
+}
+
+void SpectreGUI::readyGUI() {
+    // Create the tray icon (or setup the dock icon)
+    createTrayIcon();
 }
 
 unsigned short const onion_port = 9089;
@@ -275,7 +277,7 @@ void SpectreGUI::pageLoaded(bool ok)
 }
 
 void SpectreGUI::addJavascriptObjects()
-{        
+{
     //Following the example at https://doc.qt.io/qt-5.10/qtwebengine-webenginewidgets-markdowneditor-example.html
     QWebChannel *channel = new QWebChannel(this);
     //register a QObject to be exposed to JavaScript
@@ -443,20 +445,9 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
         connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
 
         // Ask for passphrase if needed
-        connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
+        connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
 
         bridge->setWalletModel();
-    }
-}
-
-void SpectreGUI::setMessageModel(MessageModel *messageModel)
-{
-    this->messageModel = messageModel;
-    if(messageModel)
-    {
-        // Balloon pop-up for new message
-        connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(incomingMessage(QModelIndex,int,int)));
-        bridge->setMessageModel();
     }
 }
 
@@ -784,39 +775,6 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                           .arg(address), icon);
 }
 
-void SpectreGUI::incomingMessage(const QModelIndex & parent, int start, int end)
-{
-    if(!messageModel)
-        return;
-
-    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-    && ! clientModel->getOptionsModel()->getNotifications().contains(tr("Incoming Message")))
-        return;
-
-    MessageModel *mm = messageModel;
-
-    if (mm->index(start, MessageModel::TypeInt, parent).data().toInt() == MessageTableEntry::Received)
-    {
-        QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
-        QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
-        QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
-        QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
-        QTextDocument html;
-        html.setHtml(message);
-        QString messageText(html.toPlainText());
-        notificator->notify(Notificator::Information,
-                            tr("Incoming Message"),
-                            tr("Date: %1\n"
-                               "From Address: %2\n"
-                               "To Address: %3\n"
-                               "Message: %4\n")
-                              .arg(sent_datetime)
-                              .arg(from_address)
-                              .arg(to_address)
-                              .arg(messageText));
-    };
-}
-
 void SpectreGUI::optionsClicked()
 {
     bridge->triggerElement("#navitems a[href=#options]", "click");
@@ -1001,17 +959,23 @@ void SpectreGUI::changePassphrase()
     dlg.exec();
 }
 
-void SpectreGUI::unlockWallet()
+void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
 {
     if(!walletModel)
         return;
 
+    AskPassphraseDialog::Mode mode;
+    if (unlockMode == WalletModel::UnlockMode::rescan) {
+         mode = AskPassphraseDialog::UnlockRescan;
+    }
+    else {
+        mode = sender() == unlockWalletAction ?
+                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
+    }
+
     // Unlock wallet when requested by wallet model
     if(walletModel->getEncryptionStatus() == WalletModel::Locked)
     {
-
-        AskPassphraseDialog::Mode mode = sender() == unlockWalletAction ?
-              AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
         AskPassphraseDialog dlg(mode, this);
         dlg.setModel(walletModel);
         dlg.exec();

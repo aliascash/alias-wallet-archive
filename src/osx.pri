@@ -8,10 +8,10 @@
 # https://stackoverflow.com/questions/48839127/qmake-derived-clang-in-osx-10-13-cannot-find-string-h
 # INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
 
-ICON = $$PWD/../spectre.icns
+ICON = $$PWD/qt/res/assets/icons/spectre.icns
 
     # to build tor with autotools, call in subfolder tor:
-    # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.0i --disable-asciidoc --disable-lzma
+    # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.1 --disable-asciidoc --disable-lzma
 #    LIBS += -L$$PWD/../tor/src/or -ltor \
 #    -L$$PWD/../tor/src/common -lor \
 #    -L$$PWD/../tor/src/common -lor-ctime \
@@ -81,11 +81,12 @@ QMAKE_LFLAGS += -fstack-protector
 QMAKE_CXXFLAGS += -pthread -fPIC -fstack-protector -O2 -D_FORTIFY_SOURCE=1 -Wall -Wextra -Wno-ignored-qualifiers -Woverloaded-virtual -Wformat -Wformat-security -Wno-unused-parameter
 
 DEFINES += MAC_OSX
+DEFINES += HAVE_BUILD_INFO
 # Mac: compile for maximum compatibility (10.0 Yosemite, 32-bit)
-QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
+QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
     # https://www.reddit.com/r/cpp/comments/334s4r/how_to_enable_c14_in_qt_creator_on_a_mac/
-    # Turns out, there's a glitch in the Mac version where the standard library isn't correctly included when using the C++14 config flag. Adding this additional line to the .pro file fixes the problem:
+    # TODO might be obsolete with C++17: Turns out, there's a glitch in the Mac version where the standard library isn't correctly included when using the C++14 config flag. Adding this additional line to the .pro file fixes the problem:
     QMAKE_CXXFLAGS += -stdlib=libc++
 
     #add in core foundation framework
@@ -108,9 +109,12 @@ QMAKE_CXXFLAGS += -std=c++14 -mmacosx-version-min=10.10 -isysroot
     #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
-    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0i
-    INCLUDEPATH += "$${_OPENSSL_PATH}/include/"
-    LIBS += -L$${_OPENSSL_PATH}/lib
+    # $OPENSSL_PATH is set via environment
+#    _OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.1
+#    OPENSSL_PATH = /usr/local/Cellar/openssl@1.1/1.1.0h
+    # See http://doc.qt.io/archives/qt-4.8/qmake-advanced-usage.html#variables
+    INCLUDEPATH += "${OPENSSL_PATH}/include/"
+    LIBS += -L${OPENSSL_PATH}/lib
     LIBS += -lssl -lcrypto # using dynamic lib (not sure if you need that "-mt" at the end or not)
 
     #libevent-2.1.6.dylib

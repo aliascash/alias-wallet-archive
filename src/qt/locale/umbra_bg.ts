@@ -1285,11 +1285,6 @@ Ring size of one is not anonymous, and harms the network.</source>
     </message>
     <message>
         <location line="+1"/>
-        <source>Chat</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
         <source>Notifications</source>
         <translation type="unfinished"/>
     </message>
@@ -1626,11 +1621,6 @@ Ring size of one is not anonymous, and harms the network.</source>
     <message>
         <location line="+1"/>
         <source>Wallet is syncing</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Open chat list</source>
         <translation type="unfinished"/>
     </message>
     <message>

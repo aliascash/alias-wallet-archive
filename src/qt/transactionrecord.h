@@ -1,6 +1,7 @@
 #ifndef TRANSACTIONRECORD_H
 #define TRANSACTIONRECORD_H
 
+#include "wallet.h"
 #include "uint256.h"
 
 #include <QList>
@@ -72,8 +73,11 @@ public:
         RecvWithAddress,
         RecvFromOther,
         SendToSelf,
+        SendToSelfSPECTRE,
         RecvSpectre,
         SendSpectre,
+        ConvertXSPECtoSPECTRE,
+        ConvertSPECTREtoXSPEC
     };
 
     static QString getTypeLabel(const int &type);
@@ -83,21 +87,30 @@ public:
     static const int RecommendedNumConfirmations = 6;
 
     TransactionRecord():
-            hash(), time(0), type(Other), address(""), narration(""), debit(0), credit(0), idx(0)
+            hash(), time(0), type(Other), address(""), narration(""), debit(0), credit(0), currency(XSPEC), idx(0)
     {
     }
 
     TransactionRecord(uint256 hash, int64_t time):
             hash(hash), time(time), type(Other), address(""), narration(""), debit(0),
-            credit(0), idx(0)
+            credit(0), currency(XSPEC), idx(0)
     {
     }
 
     TransactionRecord(uint256 hash, int64_t time,
                 Type type, const std::string &address, const std::string &narration,
-                int64_t debit, int64_t credit):
+                int64_t debit, int64_t credit, const Currency &currency):
             hash(hash), time(time), type(type), address(address), narration(narration), debit(debit), credit(credit),
-            idx(0)
+            currency(currency), idx(0)
+    {
+    }
+
+
+    TransactionRecord(uint256 hash, int64_t time,
+                    Type type, const std::string &address, const std::string &narration,
+                    int64_t debit, int64_t credit, const Currency &currency, int idx):
+                hash(hash), time(time), type(type), address(address), narration(narration), debit(debit), credit(credit),
+                currency(currency), idx(idx)
     {
     }
 
@@ -115,6 +128,7 @@ public:
     std::string narration;
     qint64 debit;
     qint64 credit;
+    Currency currency;
     /**@}*/
 
     /** Subtransaction index, for sort key */
