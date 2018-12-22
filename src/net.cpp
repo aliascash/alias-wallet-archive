@@ -1631,15 +1631,15 @@ static void run_tor() {
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
     std::string torrc = (tor_dir / "torrc").string();
-    argv.push_back(torrc);
+    argv.push_back("\"" + torrc + "\"");
     argv.push_back("--DataDirectory");
-    argv.push_back(tor_dir.string());
+    argv.push_back("\"" + tor_dir.string() + "\"");
     argv.push_back("--GeoIPFile");
-    argv.push_back((tor_dir / "geoip").string());
+    argv.push_back("\"" + (tor_dir / "geoip").string() + "\"");
     argv.push_back("--GeoIPv6File");
-    argv.push_back((tor_dir / "geoipv6").string());
+    argv.push_back("\"" + (tor_dir / "geoipv6").string() + "\"");
     argv.push_back("--HiddenServiceDir");
-    argv.push_back((tor_dir / "onion").string());
+    argv.push_back("\"" + (tor_dir / "onion").string() + "\"");
     argv.push_back("--HiddenServicePort");
     if (TestNet()) {
         argv.push_back("37111");
@@ -1655,7 +1655,7 @@ static void run_tor() {
 
     argv.push_back("--defaults-torrc");
     fs::path torrc_defaults_file = pathTorDir / "torrc-defaults";
-    argv.push_back(torrc_defaults_file.string());
+    argv.push_back("\""+torrc_defaults_file.string()+"\"");
 #endif
 #ifdef WIN32
     // Tor separate process via CreateProcess
