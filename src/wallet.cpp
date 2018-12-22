@@ -3160,8 +3160,11 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID,
     CTxDB txdb("cr+");
 
     // Remove all pub to stealth key mappings
-    for (auto& element : *mapPubStealth) {
-        DelAddressBookName(element.first, &walletdb);
+    if (mapPubStealth != nullptr)
+    {
+        for (auto& element : *mapPubStealth) {
+            DelAddressBookName(element.first, &walletdb);
+        }
     }
 
     for (unsigned int i = 0; i < tx.vin.size(); ++i)
