@@ -1386,6 +1386,11 @@ string FormatVersion(int nVersion)
         return strprintf("%d.%d.%d.%d", nVersion/1000000, (nVersion/10000)%100, (nVersion/100)%100, nVersion%100);
 }
 
+string FormatClientVersion()
+{
+    return FormatVersion(CLIENT_VERSION);
+}
+
 string FormatFullVersion()
 {
     return CLIENT_BUILD;
