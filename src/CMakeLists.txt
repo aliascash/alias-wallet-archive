@@ -11,6 +11,7 @@ target_link_libraries(Spectrecoin
         Qt5::Core
         Qt5::Widgets
         Qt5::WebEngine
+        Qt5::WebEngineWidgets
         Boost::boost
         OpenSSL::SSL
         OpenSSL::Crypto

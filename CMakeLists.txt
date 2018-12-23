@@ -84,6 +84,10 @@ find_package(Qt5WebEngine)
 message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
 get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
 
+find_package(Qt5WebEngineWidgets)
+message(STATUS "Qt5WebEngineWidgets version: ${Qt5WebEngineWidgets_VERSION}")
+get_target_property(QtWebEngineWidgets_location Qt5::WebEngineWidgets LOCATION)
+
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
 # Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
