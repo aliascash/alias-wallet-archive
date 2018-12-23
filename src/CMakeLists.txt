@@ -144,4 +144,8 @@ add_subdirectory(wordlists)
 add_subdirectory(xxhash)
 if (WIN32)
     add_subdirectory(win)
-endif()
+    target_include_directories(Spectrecoin
+            PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_windows>
+            )
+endif ()

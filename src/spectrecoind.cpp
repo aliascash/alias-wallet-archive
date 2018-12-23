@@ -11,6 +11,9 @@
 #include <signal.h>
 
 #include "protocol.h"
+#ifdef _MSC_BUILD
+#include "win/unistd.h"
+#endif
 
 
 void ThreadCli()
