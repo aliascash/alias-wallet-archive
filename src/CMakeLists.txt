@@ -125,7 +125,7 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/script.cpp
         ${CMAKE_CURRENT_LIST_DIR}/scrypt.cpp
         ${CMAKE_CURRENT_LIST_DIR}/smessage.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp
+#        ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp
         ${CMAKE_CURRENT_LIST_DIR}/state.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stealth.cpp
         ${CMAKE_CURRENT_LIST_DIR}/sync.cpp
