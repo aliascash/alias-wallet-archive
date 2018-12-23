@@ -1631,7 +1631,7 @@ static void run_tor() {
     std::vector<std::string> argv;
     bool bQuoteArg = false;
 #if defined(WIN32)
-    quoteArg = true;
+    bQuoteArg = true;
 #endif
 #ifndef __APPLE__
     // Windows CreateProcess(), exec() and main() when embedding tor need 'tor' as first argument
