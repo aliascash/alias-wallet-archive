@@ -1606,6 +1606,14 @@ static char *convert_str(const std::string &s) {
     return pc;
 }
 
+static std::string quoteArg(const bool& quote, const std::string& arg)
+{
+    if (quote)
+        return "\"" + arg + "\"";
+    else
+        return arg;
+}
+
 /**
  * Run tor as separate process for Windows, macOS and Linux
  * - Windows with windows specific CreateProcess()
@@ -1621,6 +1629,10 @@ static void run_tor() {
     fs::path log_file = tor_dir / "tor.log";
 
     std::vector<std::string> argv;
+    bool bQuoteArg = false;
+#if defined(WIN32)
+    bQuoteArg = true;
+#endif
 #ifndef __APPLE__
     // Windows CreateProcess(), exec() and main() when embedding tor need 'tor' as first argument
     // Tor separate process via boost::process does not need 'tor' as first argument
@@ -1630,16 +1642,15 @@ static void run_tor() {
     argv.push_back("9089");
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
-    std::string torrc = (tor_dir / "torrc").string();
-    argv.push_back(torrc);
+    argv.push_back(quoteArg(bQuoteArg, (tor_dir / "torrc").string()));
     argv.push_back("--DataDirectory");
-    argv.push_back(tor_dir.string());
+    argv.push_back(quoteArg(bQuoteArg, tor_dir.string()));
     argv.push_back("--GeoIPFile");
-    argv.push_back((tor_dir / "geoip").string());
+    argv.push_back(quoteArg(bQuoteArg, (tor_dir / "geoip").string()));
     argv.push_back("--GeoIPv6File");
-    argv.push_back((tor_dir / "geoipv6").string());
+    argv.push_back(quoteArg(bQuoteArg, (tor_dir / "geoipv6").string()));
     argv.push_back("--HiddenServiceDir");
-    argv.push_back((tor_dir / "onion").string());
+    argv.push_back(quoteArg(bQuoteArg, (tor_dir / "onion").string()));
     argv.push_back("--HiddenServicePort");
     if (TestNet()) {
         argv.push_back("37111");
@@ -1655,7 +1666,7 @@ static void run_tor() {
 
     argv.push_back("--defaults-torrc");
     fs::path torrc_defaults_file = pathTorDir / "torrc-defaults";
-    argv.push_back(torrc_defaults_file.string());
+    argv.push_back(quoteArg(bQuoteArg, torrc_defaults_file.string()));
 #endif
 #ifdef WIN32
     // Tor separate process via CreateProcess
@@ -1682,11 +1693,11 @@ static void run_tor() {
     // Build concatenated commandline string for CreateProcess
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
-    LogPrintf("Start tor as separate process (CreateProcess) with: %s\n", strCommandLine);
-
+   
     // Create the process suspended
-    fs::path tor_exe_file = pathTorDir / "tor.exe";
-    if (!CreateProcessA(tor_exe_file.string().c_str(), const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
+    LogPrintf("Start tor 'Tor/tor.exe' as separate process (CreateProcess) with: %s\n", strCommandLine);
+
+    if (!CreateProcessA("Tor/tor.exe", const_cast<char *>(strCommandLine.c_str()), NULL, NULL, FALSE,
         CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB /*Important*/, NULL, NULL, &si, &pi)) {
         LogPrintf("Terminating - Error: CreateProcess for tor failed with error %d\n", GetLastError());
         exit(1); // TODO improved termination
