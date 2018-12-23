@@ -5448,7 +5448,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     return true;
 };
 
-int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly)
+int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, unsigned int nSpendTime)
 {
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5493,6 +5493,11 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
             || mi->second.nVersion != ANON_TXN_VERSION
             || mi->second.vout.size() <= oao.outpoint.n
             || mi->second.IsSpent(oao.outpoint.n))
+            continue;
+
+        // Filtering by tx timestamp instead of block timestamp may give false positives but never false negatives
+        if (nSpendTime > 0
+            && mi->second.nTime > nSpendTime)
             continue;
 
         // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent
