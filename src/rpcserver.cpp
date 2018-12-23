@@ -539,8 +539,7 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<
  * Accept and handle incoming connection.
  */
 template <
-  typename Protocol,
-  typename SocketAcceptorService
+  typename Protocol
 >
 static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<
   Protocol
