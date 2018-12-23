@@ -328,7 +328,7 @@ pipeline {
             stages {
                 stage('Create Git tag') {
                     steps {
-                        sshagent(credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
+                        sshagent(credentials: ['f06ad0d1-a5e8-41f1-a48e-e877303770b9']) {
                             createTag(
                                     tag: "${GIT_TAG_TO_USE}",
                                     commit: "${GIT_COMMIT_SHORT}",
