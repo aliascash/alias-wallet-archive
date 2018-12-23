@@ -129,7 +129,6 @@ QString OptionsModel::optionIDName(int row)
     case Staking: return "Staking";
     case StakingDonation: return "StakingDonation";
     case MinStakeInterval: return "MinStakeInterval";
-    case SecureMessaging: return "SecureMessaging";
     case ThinMode: return "ThinMode";
     case ThinFullIndex: return "ThinFullIndex";
     case ThinIndexWindow: return "ThinIndexWindow";
