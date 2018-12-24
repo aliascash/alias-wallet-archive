@@ -27,7 +27,6 @@ public:
         Staking,             /**< Default Transaction Fee. bool */
         StakingDonation,
         MinStakeInterval,
-        SecureMessaging,     /**< Default Transaction Fee. bool */
         ThinMode,            /**< Default Transaction Fee. bool */
         ThinFullIndex,
         ThinIndexWindow,
