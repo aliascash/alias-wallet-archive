@@ -54,6 +54,18 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     return nSubsidy + nFees;
 }
 
+int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const
+{
+   int64_t nSubsidy = GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
+
+    // To avoid ATXOs lower than base fee, roundup reward 1 digit above base fee (2.12345678 becomes 2.124)
+    // Note: anon staking rewards are only possible from V3 on and then MIN_TX_ANON is effective
+    nSubsidy -= nSubsidy % (MIN_TX_FEE * 10);
+    nSubsidy += MIN_TX_FEE * 10;
+
+    return nSubsidy;
+}
+
 //
 // Main network
 //
