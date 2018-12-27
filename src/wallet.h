@@ -299,7 +299,7 @@ public:
     int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fForStaking, uint8_t* p);
-    bool AreOutputsUnique(CWalletTx& wtxNew);
+    bool AreOutputsUnique(CTransaction& txNew);
     bool GenerateRingSignature(CTxIn& txin, const int& rsType, const int& nRingSize, const int& nSecretOffset, uint256& preimage, std::string& sError);
     bool AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& rsType, const int& nRingSize, int& oaoRingIndex, const bool& fForStaking, const bool& fTestOnly, std::string& sError);
     bool AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError);

@@ -4494,14 +4494,14 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
     return 0;
 };
 
-bool CWallet::AreOutputsUnique(CWalletTx& wtxNew)
+bool CWallet::AreOutputsUnique(CTransaction& txNew)
 {
     LOCK(cs_main);
     CTxDB txdb;
 
-    for (uint32_t i = 0; i < wtxNew.vout.size(); ++i)
+    for (uint32_t i = 0; i < txNew.vout.size(); ++i)
     {
-        const CTxOut& txout = wtxNew.vout[i];
+        const CTxOut& txout = txNew.vout[i];
 
         if (txout.IsAnonOutput())
             continue;
