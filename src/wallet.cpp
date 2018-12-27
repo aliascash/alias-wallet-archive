@@ -4662,7 +4662,7 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& 
     return true;
 }
 
-bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& nRingSize, const int& nSecretOffset, uint256& preimage, std::string& sError)
+bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& nRingSize, const int& nSecretOffset, const uint256& preimage, CKey& key, std::string& sError)
 {
     // Test
     std::vector<uint8_t> vchImageTest;
@@ -4685,13 +4685,12 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     // -- get secret
-        CPubKey pkCoin = CPubKey(pPubkeyStart + EC_COMPRESSED_SIZE * nSecretOffset, EC_COMPRESSED_SIZE);
-        CKeyID pkId = pkCoin.GetID();
+    CPubKey pkCoin = CPubKey(pPubkeyStart + EC_COMPRESSED_SIZE * nSecretOffset, EC_COMPRESSED_SIZE);
+    CKeyID pkId = pkCoin.GetID();
 
-        CKey key;
-        if (!GetKey(pkId, key))
-        {
-            sError = "Error: don't have key for output.";
+    if (!GetKey(pkId, key))
+    {
+        sError = "Error: don't have key for output.";
             return false;
         };
 
@@ -4853,7 +4852,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
 
     for (uint32_t i = 0; i < wtxNew.vin.size(); ++i)
     {
-        if (!GenerateRingSignature(wtxNew.vin[i], rsType, nRingSize, vCoinOffsets[i], preimage, sError))
+        CKey key;
+        if (!GenerateRingSignature(wtxNew.vin[i], rsType, nRingSize, vCoinOffsets[i], preimage, key, sError))
             return false;
     };
 
