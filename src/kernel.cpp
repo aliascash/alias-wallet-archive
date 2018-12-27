@@ -811,3 +811,84 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
     return CheckStakeKernelHash(pindexPrev->nHeight, &stakeMod, nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, txPrev, prevout, nTime, hashProofOfStake, targetProofOfStake, fDebugPoS);
 }
+
+
+// -----------------------------------------------------------
+// Stealth Staking
+// -----------------------------------------------------------
+
+// Spectrecoin anon kernel protocol
+// coinstake must meet hash target according to the protocol:
+// kernel (input 0) must meet the formula
+//     hash(nStakeModifier + keyImage + nTime) < bnTarget * nWeight
+// this ensures that the chance of getting a coinstake is proportional to the
+// amount of coins one owns.
+// The reason this hash is chosen is the following:
+//   nStakeModifier: scrambles computation to make it very difficult to precompute
+//                   future proof-of-stake.
+//                   nStakeModifier is either the UTXO or keyImage hash used for the last staking transaction
+//   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
+//             makes sure an ATXO can only be used once for generating a kernel hash
+//   nTime: current timestamp
+//   block/tx hash should not be used here as they can be generated in vast
+//   quantities so as to generate blocks faster, degrading the system back into
+//   a proof-of-work situation.
+//
+// Note: this method does not validate that the keyImage is valid & unspent.
+//       For that anon staking transaction is valid, all ring signature outputs must meet minAge and minDepth requirement
+bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBits, const int64_t& anonValue, const ec_point &anonKeyImage, const unsigned int& nTimeTx, uint256& hashProofOfStake, uint256& targetProofOfStake, const bool fPrintProofOfStake)
+{
+    // Base target
+    CBigNum bnTarget;
+    bnTarget.SetCompact(nBits);
+
+    // Weighted target
+    CBigNum bnWeight = CBigNum(anonValue);
+    bnTarget *= bnWeight;
+
+    targetProofOfStake = bnTarget.getuint256();
+
+    CDataStream ss(SER_GETHASH, 0);
+    ss << pStakeMod->bnModifierV2;
+    ss << anonKeyImage << nTimeTx;
+
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+
+    if (fPrintProofOfStake)
+    {
+        LogPrintf("CheckAnonStakeKernelHash() : using modifier %s at height=%d timestamp=%s\n",
+            pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
+            DateTimeStrFormat(pStakeMod->nTime));
+        LogPrintf("CheckAnonStakeKernelHash() : check modifier=0x%016x anonKeyImage=%s nTimeTx=%u hashProof=%s target=%s\n",
+            pStakeMod->bnModifierV2.ToString(),
+            HexStr(anonKeyImage), nTimeTx,
+            hashProofOfStake.ToString(),
+            bnTarget.ToString());
+    }
+
+    // Now check if proof-of-stake hash meets target protocol
+    if (CBigNum(hashProofOfStake) > bnTarget)
+        return false;
+
+    if (fDebug && !fPrintProofOfStake)
+    {
+        LogPrintf("CheckAnonStakeKernelHash() : using modifier &s at height=%d timestamp=%s\n",
+            pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
+            DateTimeStrFormat(pStakeMod->nTime));
+        LogPrintf("CheckAnonStakeKernelHash() : pass modifier=0x%016x anonKeyImage=%s nTimeTx=%u hashProof=%s\n",
+            pStakeMod->bnModifierV2.ToString(),
+            HexStr(anonKeyImage), nTimeTx,
+            hashProofOfStake.ToString());
+    }
+
+    return true;
+}
+
+
+bool CheckAnonKernel(const CBlockIndex* pindexPrev, const unsigned int& nBits, const int64_t& anonValue, const ec_point& anonKeyImage, const unsigned int& nTime)
+{
+    uint256 hashProofOfStake, targetProofOfStake;
+
+    CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
+    return CheckAnonStakeKernelHash(&stakeMod, nBits, anonValue, anonKeyImage, nTime, hashProofOfStake, targetProofOfStake, fDebugPoS);
+}
