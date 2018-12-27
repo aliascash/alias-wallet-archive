@@ -16,6 +16,12 @@
 
 bool CStealthAddress::SetEncoded(const std::string& encodedAddress)
 {
+    if (encodedAddress.length() < 76)
+    {
+        //LogPrintf("SetEncoded address to short, quick fail.\n");
+        return false;
+    };
+
     data_chunk raw;
     
     if (!DecodeBase58(encodedAddress, raw))
@@ -709,6 +715,12 @@ int StealthSharedToPublicKey(const ec_point& pkSpend, const ec_secret &sharedS, 
 
 bool IsStealthAddress(const std::string& encodedAddress)
 {
+    if (encodedAddress.length() < 76)
+    {
+        //LogPrintf("IsStealthAddress address to short, quick fail.\n");
+        return false;
+    };
+
     data_chunk raw;
     
     if (!DecodeBase58(encodedAddress, raw))
