@@ -3892,37 +3892,48 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // startup timestamp
 
-    CKey key;
-    CTransaction txCoinStake;
+    int64_t nSearchTime = GetAdjustedTime(); // search to current time
     if (Params().IsProtocolV2(nBestHeight+1))
-        txCoinStake.nTime &= ~STAKE_TIMESTAMP_MASK;
-
-    int64_t nSearchTime = txCoinStake.nTime; // search to current time
+        nSearchTime &= ~STAKE_TIMESTAMP_MASK;
 
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
         int64_t nSearchInterval = Params().IsProtocolV2(nBestHeight+1) ? 1 : nSearchTime - nLastCoinStakeSearchTime;
+
+        CTransaction txCoinStake;
+        CKey key;
+        txCoinStake.nTime = nSearchTime;
+
+        bool foundStake = false;
         if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+            foundStake = true;
+        else if (Params().IsForkV3(nSearchTime))
         {
-            if (txCoinStake.nTime >= pindexBest->GetPastTimeLimit()+1)
-            {
-
-                // make sure coinstake would meet timestamp protocol
-                //    as it would be the same as the block timestamp
-                vtx[0].nTime = nTime = txCoinStake.nTime;
-
-                // we have to make sure that we have no future timestamps in
-                //    our transactions set
-                for (vector<CTransaction>::iterator it = vtx.begin(); it != vtx.end();)
-                    if (it->nTime > nTime) { it = vtx.erase(it); } else { ++it; }
-
-                vtx.insert(vtx.begin() + 1, txCoinStake);
-                hashMerkleRoot = BuildMerkleTree();
-
-                // append a signature to our block
-                return key.Sign(GetHash(), vchBlockSig);
-            }
+            txCoinStake.SetNull();
+            txCoinStake.nTime = nSearchTime;
+            key.Clear();
+            if (wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+                foundStake = true;
         }
+
+        if (foundStake && txCoinStake.nTime >= pindexBest->GetPastTimeLimit()+1)
+        {
+            // make sure coinstake would meet timestamp protocol
+            //    as it would be the same as the block timestamp
+            vtx[0].nTime = nTime = txCoinStake.nTime;
+
+            // we have to make sure that we have no future timestamps in
+            //    our transactions set
+            for (vector<CTransaction>::iterator it = vtx.begin(); it != vtx.end();)
+                if (it->nTime > nTime) { it = vtx.erase(it); } else { ++it; }
+
+            vtx.insert(vtx.begin() + 1, txCoinStake);
+            hashMerkleRoot = BuildMerkleTree();
+
+            // append a signature to our block
+            return key.Sign(GetHash(), vchBlockSig);
+        }
+
         nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
         nLastCoinStakeSearchTime = nSearchTime;
     }
