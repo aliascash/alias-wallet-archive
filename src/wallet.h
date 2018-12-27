@@ -300,7 +300,10 @@ public:
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p);
     bool AreOutputsUnique(CWalletTx& wtxNew);
+    bool GenerateRingSignature(CTxIn& txin, const int& rsType, const int& nRingSize, const int& nSecretOffset, uint256& preimage, std::string& sError);
+    bool AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& rsType, const int& nRingSize, int& oaoRingIndex, const bool& fTestOnly, std::string& sError);
     bool AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError);
+
     bool SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
     bool SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
     bool SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
@@ -310,7 +313,8 @@ public:
     
     bool EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, std::string& sError);
     
-    int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, unsigned int nSpendTime = 0);
+    int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, unsigned int nStakingTime = 0);
+    bool ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const unsigned int& nStakingTime, std::string& sError);
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly);
     int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly);
