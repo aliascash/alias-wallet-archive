@@ -2534,7 +2534,7 @@ Value anonoutputs(const Array& params, bool fHelp)
     };
 
     std::list<COwnedAnonOutput> lAvailableCoins;
-    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, fMatureOnly) != 0)
+    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, fMatureOnly, false) != 0)
         throw std::runtime_error("ListUnspentAnonOutputs() failed.");
 
 

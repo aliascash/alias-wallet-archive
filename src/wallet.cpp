@@ -4403,7 +4403,7 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
     return 0;
 };
 
-int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, uint8_t* p)
+int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fForStaking, uint8_t* p)
 {
     if (fDebug)
         LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
@@ -4455,7 +4455,9 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
         {
             ssValue >> anonOutput;
 
-            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH)
+            // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
+            int minDepth = fForStaking ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
+            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= minDepth)
                 && anonOutput.nValue == nValue
                 && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
@@ -4593,7 +4595,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
 }
 
 
-bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& rsType, const int& nRingSize, int& oaoRingIndex, const bool& fTestOnly, std::string& sError)
+bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& rsType, const int& nRingSize, int& oaoRingIndex, const bool& fForStaking, const bool& fTestOnly, std::string& sError)
 {
     int nSigSize = GetRingSigSize(rsType, nRingSize);
 
@@ -4651,7 +4653,7 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& 
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     memcpy(pPubkeyStart + oaoRingIndex * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
-    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, pPubkeyStart) != 0)
+    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, fForStaking, pPubkeyStart) != 0)
     {
         sError = "PickHidingOutputs() failed.\n";
         return false;
@@ -4769,7 +4771,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
 
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, 0, sError))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, false, sError))
         return false;
 
     if (fDebugRingSig)
@@ -4823,7 +4825,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, std::v
         if (fDebugRingSig)
             LogPrintf("pickedCoin %s %d\n", HexStr((*it)->vchImage).c_str(), (*it)->nValue);
 
-        if (!AddAnonInput(wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], fTestOnly, sError))
+        if (!AddAnonInput(wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], false, fTestOnly, sError))
             return false;
 
         ii++;
@@ -5471,7 +5473,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     return true;
 };
 
-int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, unsigned int nStakingTime)
+int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, bool fForStaking)
 {
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5519,12 +5521,8 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
             continue;
 
         // If nStakingTime is set, list only outputs suitable for staking
-        if (nStakingTime > 0)
+        if (fForStaking)
         {
-            // Filtering by tx timestamp instead of block timestamp may give false positives but never false negatives
-            if (mi->second.nTime + nStakeMinAge > nStakingTime)
-                continue;
-
             if (mi->second.GetDepthInMainChain() < nStakeMinConfirmations)
                 continue;
         }
