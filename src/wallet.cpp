@@ -4612,7 +4612,7 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& 
         return false;
     };
 
-        txin.scriptSig[0] = OP_RETURN;
+    txin.scriptSig[0] = OP_RETURN;
     txin.scriptSig[1] = OP_ANON_MARKER;
 
     if (fTestOnly)
@@ -4629,22 +4629,22 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& 
         return false;
     };
 
-        CWalletTx& wtxAnonCoin = mi->second;
+    CWalletTx& wtxAnonCoin = mi->second;
 
-        const CTxOut& txout = wtxAnonCoin.vout[nCoinOutId];
-        const CScript &s = txout.scriptPubKey;
+    const CTxOut& txout = wtxAnonCoin.vout[nCoinOutId];
+    const CScript &s = txout.scriptPubKey;
 
-        if (!txout.IsAnonOutput())
-        {
-            sError = "picked coin not an anon output.\n";
-            return false;
-        };
+    if (!txout.IsAnonOutput())
+    {
+        sError = "picked coin not an anon output.\n";
+        return false;
+    };
 
-        CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
+    CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
 
-        if (!pkCoin.IsValid())
-        {
-            sError = "pkCoin is invalid.\n";
+    if (!pkCoin.IsValid())
+    {
+        sError = "pkCoin is invalid.\n";
         return false;
     };
 
@@ -4668,10 +4668,10 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
     std::vector<uint8_t> vchImageTest;
     txin.ExtractKeyImage(vchImageTest);
 
-        int nTestRingSize = txin.ExtractRingSize();
-        if (nTestRingSize != nRingSize)
-        {
-            sError = "nRingSize embed error.";
+    int nTestRingSize = txin.ExtractRingSize();
+    if (nTestRingSize != nRingSize)
+    {
+        sError = "nRingSize embed error.";
         return false;
     };
 
@@ -4691,64 +4691,64 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
     if (!GetKey(pkId, key))
     {
         sError = "Error: don't have key for output.";
-            return false;
-        };
+        return false;
+    };
 
-        ec_secret ecSecret;
-        if (key.size() != EC_SECRET_SIZE)
-        {
-            sError = "Error: key.size() != EC_SECRET_SIZE.";
-            return false;
-        };
+    ec_secret ecSecret;
+    if (key.size() != EC_SECRET_SIZE)
+    {
+        sError = "Error: key.size() != EC_SECRET_SIZE.";
+        return false;
+    };
 
-        memcpy(&ecSecret.e[0], key.begin(), key.size());
+    memcpy(&ecSecret.e[0], key.begin(), key.size());
 
-        switch(rsType)
-        {
-            case RING_SIG_1:
-                {
-                uint8_t *pPubkeys = &txin.scriptSig[2];
-                uint8_t *pSigc    = &txin.scriptSig[2 + EC_COMPRESSED_SIZE * nRingSize];
-                uint8_t *pSigr    = &txin.scriptSig[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
-                if (generateRingSignature(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigc, pSigr) != 0)
-                {
-                    sError = "Error: generateRingSignature() failed.";
-                    return false;
-                };
-                // -- test verify
-                if (verifyRingSignature(vchImageTest, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
-                {
-                    sError = "Error: verifyRingSignature() failed.";
-                    return false;
-                };
-                }
-                break;
-            case RING_SIG_2:
-                {
-                ec_point pSigC;
-                uint8_t *pSigS    = &txin.scriptSig[2 + EC_SECRET_SIZE];
-                uint8_t *pPubkeys = &txin.scriptSig[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
-                if (generateRingSignatureAB(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigC, pSigS) != 0)
-                {
-                    sError = "Error: generateRingSignatureAB() failed.";
-                    return false;
-                };
-                if (pSigC.size() == EC_SECRET_SIZE)
-                    memcpy(&txin.scriptSig[2], &pSigC[0], EC_SECRET_SIZE);
-                else
-                    LogPrintf("pSigC.size() : %d Invalid!!\n", pSigC.size());
-
-                // -- test verify
-                if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
-                {
-                    sError = "Error: verifyRingSignatureAB() failed.";
-                    return false;
-                };
-                }
-                break;
-            default:
-                sError = "Unknown ring signature type.";
+    switch(rsType)
+    {
+        case RING_SIG_1:
+            {
+            uint8_t *pPubkeys = &txin.scriptSig[2];
+            uint8_t *pSigc    = &txin.scriptSig[2 + EC_COMPRESSED_SIZE * nRingSize];
+            uint8_t *pSigr    = &txin.scriptSig[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+            if (generateRingSignature(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigc, pSigr) != 0)
+            {
+                sError = "Error: generateRingSignature() failed.";
                 return false;
+            };
+            // -- test verify
+            if (verifyRingSignature(vchImageTest, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
+            {
+                sError = "Error: verifyRingSignature() failed.";
+                return false;
+            };
+            }
+            break;
+        case RING_SIG_2:
+            {
+            ec_point pSigC;
+            uint8_t *pSigS    = &txin.scriptSig[2 + EC_SECRET_SIZE];
+            uint8_t *pPubkeys = &txin.scriptSig[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
+            if (generateRingSignatureAB(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigC, pSigS) != 0)
+            {
+                sError = "Error: generateRingSignatureAB() failed.";
+                return false;
+            };
+            if (pSigC.size() == EC_SECRET_SIZE)
+                memcpy(&txin.scriptSig[2], &pSigC[0], EC_SECRET_SIZE);
+            else
+                LogPrintf("pSigC.size() : %d Invalid!!\n", pSigC.size());
+
+            // -- test verify
+            if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+            {
+                sError = "Error: verifyRingSignatureAB() failed.";
+                return false;
+            };
+            }
+            break;
+        default:
+            sError = "Unknown ring signature type.";
+            return false;
     };
 
     memset(&ecSecret.e[0], 0, EC_SECRET_SIZE); // optimised away?
@@ -6413,27 +6413,26 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 
     // Choose coins to use
-    int64_t nBalance = GetBalance();
+    int64_t nBalance = GetSpectreBalance();
 
     if (nBalance <= nReserveBalance)
         return false;
 
-    std::vector<const CWalletTx*> vwtxPrev;
+    int nRingSize = MIN_RING_SIZE;
 
-    set<pair<const CWalletTx*,unsigned int> > setCoins;
-    int64_t nValueIn = 0;
-
+    // -------------------------------------------
     // Select coins with suitable depth
-    if (!SelectCoinsForStaking(nBalance - nReserveBalance, txNew.nTime, setCoins, nValueIn))
+    std::list<COwnedAnonOutput> lAvailableCoins;
+    int64_t nAmountCheck;
+    std::string sError;
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError))
+        return error(("CreateAnonCoinStake : " + sError).c_str());
+    if (lAvailableCoins.empty())
         return false;
 
-    if (setCoins.empty())
-        return false;
-
-    int64_t nCredit = 0;
-    CScript scriptPubKeyKernel;
+    int64_t nCredit = 0; 
     CTxDB txdb("r");
-    BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
+    for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
         static int nMaxStakeSearchInterval = 60;
@@ -6444,81 +6443,96 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
             boost::this_thread::interruption_point();
             // Search backward in time from the given txNew timestamp
             // Search nSearchInterval seconds back up to nMaxStakeSearchInterval
-            COutPoint prevoutStake = COutPoint(pcoin.first->GetHash(), pcoin.second);
-
-            int64_t nBlockTime;
-            if (CheckKernel(pindexPrev, nBits, txNew.nTime - n, prevoutStake, &nBlockTime))
+            if (CheckAnonKernel(pindexPrev, nBits, oao.nValue, oao.vchImage, txNew.nTime - n))
             {
                 // Found a kernel
                 if (fDebugPoS)
-                    LogPrintf("CreateCoinStake : kernel found\n");
+                    LogPrintf("CreateAnonCoinStake : kernel found for keyImage %s\n", HexStr(oao.vchImage));
 
-                std::vector<valtype> vSolutions;
-                txnouttype whichType;
-                CScript scriptPubKeyOut;
-                scriptPubKeyKernel = pcoin.first->vout[pcoin.second].scriptPubKey;
-
-                if (!Solver(scriptPubKeyKernel, whichType, vSolutions))
-                {
-                    if (fDebugPoS)
-                        LogPrintf("CreateCoinStake : failed to parse kernel\n");
-                    break;
-                };
-
-                if (fDebugPoS)
-                    LogPrintf("CreateCoinStake : parsed kernel type=%d\n", whichType);
-
-                if (whichType != TX_PUBKEY && whichType != TX_PUBKEYHASH)
-                {
-                    if (fDebugPoS)
-                        LogPrintf("CreateCoinStake : no support for kernel type=%d\n", whichType);
-                    break;  // only support pay to public key and pay to address
-                };
-
-                if (whichType == TX_PUBKEYHASH) // pay to address type
-                {
-                    // convert to pay to public key type
-                    if (!GetKey(uint160(vSolutions[0]), key))
-                    {
-                        if (fDebugPoS)
-                            LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
-                        break;  // unable to find corresponding public key
-                    };
-                    scriptPubKeyOut << key.GetPubKey() << OP_CHECKSIG;
-                };
-
-                if (whichType == TX_PUBKEY)
-                {
-                    valtype& vchPubKey = vSolutions[0];
-                    if (!GetKey(Hash160(vchPubKey), key))
-                    {
-                        if (fDebugPoS)
-                            LogPrintf("CreateCoinStake : failed to get key for kernel type=%d\n", whichType);
-                        break;  // unable to find corresponding public key
-                    };
-
-                    if (key.GetPubKey() != vchPubKey)
-                    {
-                        if (fDebugPoS)
-                            LogPrintf("CreateCoinStake : invalid key for kernel type=%d\n", whichType);
-                        break; // keys mismatch
-                    };
-
-                    scriptPubKeyOut = scriptPubKeyKernel;
-                };
-
+                txNew.nVersion = ANON_TXN_VERSION;
                 txNew.nTime -= n;
-                txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-                nCredit += pcoin.first->vout[pcoin.second].nValue;
-                vwtxPrev.push_back(pcoin.first);
-                txNew.vout.push_back(CTxOut(0, scriptPubKeyOut));
+                nCredit += oao.nValue;
+
+                // Calculate coin age reward
+                int64_t nReward;
+                {
+                    uint64_t nCoinAge;
+                    CTxDB txdb("r");
+                    if (!txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
+                        return error("CreateAnonCoinStake : failed to calculate coin age");
+
+                    nReward = Params().GetProofOfAnonStakeReward(pindexPrev, nCoinAge, nFees);
+                    if (nReward <= 0)
+                        return error("CreateAnonCoinStake : GetProofOfStakeReward() reward <= 0");
+                }
+
+
+                // Check if staking reward gets donated to developers, according to the configured probability and DCB rules
+                int sample = stakingDonationDistribution(stakingDonationRng);
+                LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
+                int firstAnonInput = 1;
+                if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
+                    LogPrintf("Donating this (potential) stake to the developers\n");
+                    CBitcoinAddress address(Params().GetDevContributionAddress());
+                    // push a new output donating to the developers
+                    CScript script;
+                    script.SetDestination(address.Get());
+                    txNew.vout.push_back(CTxOut(nReward, script));
+                    LogPrintf("donation complete\n");
+                    firstAnonInput = 2;
+                }
+                else {
+                    LogPrintf("Not donating this (potential) stake to the developers\n");
+                    nCredit += nReward;
+                }
+
+
+                // Stealth address for creating new anon outputs. TODO take corresponding stealth address of anon output
+                CStealthAddress sxAddress;
+                if (!GetAnonChangeAddress(sxAddress))
+                    return error("CreateAnonCoinStake : GetAnonChangeAddress() change failed");
+
+
+                CScript scriptNarration; // needed to match output id of narr
+                std::vector<std::pair<CScript, int64_t> > vecSend;
+                std::vector<std::pair<CScript, int64_t> > vecChange;
+
+                std::string sNarr;
+                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration))
+                    return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
+
+                for (uint32_t i = 0; i < vecSend.size(); ++i)
+                    txNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));
+
+                std::sort(txNew.vout.begin() + firstAnonInput, txNew.vout.end());
+
+                CTxIn vin;
+                int oaoRingIndex;
+                if (!AddAnonInput(vin, oao, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
+                    return false;
+
+                uint256 preimage;
+                if (GetTxnPreImage(txNew, preimage) != 0)
+                    return error("CreateAnonCoinStake : GetPreImage() failed.");
+
+                // TODO: Does it lower security to use the same preimage for each input?
+                //  cryptonote seems to do so too
+                if (!GenerateRingSignature(vin, RING_SIG_2, nRingSize, oaoRingIndex, preimage, key, sError))
+                    return false;
+
+                txNew.vin.push_back(vin);
+
+                // -- check if new coins already exist (in case random is broken ?)
+                if (!AreOutputsUnique(txNew))
+                    return error("CreateAnonCoinStake : Anon outputs are not unique - is random working?!");
 
                 if (fDebugPoS)
-                    LogPrintf("CreateCoinStake : added kernel type=%d\n", whichType);
+                    LogPrintf("CreateAnonCoinStake : added kernel for keyImage %s\n", HexStr(oao.vchImage));
+
                 fKernelFound = true;
                 break;
-            };
-        };
+            }
+        }
 
         if (fKernelFound)
             break; // if kernel is found stop searching
@@ -6527,122 +6541,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     if (nCredit == 0 || nCredit > nBalance - nReserveBalance)
         return false;
 
-    BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
-    {
-        // Attempt to add more inputs
-        // Only add coins of the same key/address as kernel
-        if (txNew.vout.size() == 2 && ((pcoin.first->vout[pcoin.second].scriptPubKey == scriptPubKeyKernel || pcoin.first->vout[pcoin.second].scriptPubKey == txNew.vout[1].scriptPubKey))
-            && pcoin.first->GetHash() != txNew.vin[0].prevout.hash)
-        {
-            int64_t nTimeWeight = GetWeight((int64_t)pcoin.first->nTime, (int64_t)txNew.nTime);
-
-            // Stop adding more inputs if already too many inputs
-            if (txNew.vin.size() >= 100)
-                break;
-            // Stop adding more inputs if value is already pretty significant
-            if (nCredit >= nStakeCombineThreshold)
-                break;
-            // Stop adding inputs if reached reserve limit
-            if (nCredit + pcoin.first->vout[pcoin.second].nValue > nBalance - nReserveBalance)
-                break;
-            // Do not add additional significant input
-            if (pcoin.first->vout[pcoin.second].nValue >= nStakeCombineThreshold)
-                continue;
-            // Do not add input that is still too young
-            if (Params().IsProtocolV3(pindexPrev->nHeight))
-            {
-                // properly handled by selection function
-            }
-            else
-            {
-                if (nTimeWeight < nStakeMinAge)
-                    continue;
-            }
-
-            txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
-            nCredit += pcoin.first->vout[pcoin.second].nValue;
-            vwtxPrev.push_back(pcoin.first);
-        };
-    };
-
-    // Calculate coin age reward
-    int64_t nReward;
-    {
-        uint64_t nCoinAge;
-        CTxDB txdb("r");
-        if (!txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
-            return error("CreateCoinStake : failed to calculate coin age");
-
-        nReward = Params().GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
-        if (nReward <= 0)
-            return false;
-
-        nCredit += nReward;
-    }
-
-    if (nCredit >= nStakeSplitThreshold)
-        txNew.vout.push_back(CTxOut(0, txNew.vout[1].scriptPubKey)); //split stake
-
-    // Set output amount
-    if (txNew.vout.size() == 3)
-    {
-        txNew.vout[1].nValue = (nCredit / 2 / CENT) * CENT;
-        txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
-    } else
-        txNew.vout[1].nValue = nCredit;
-
-    // (Possibly) donate the stake to developers, according to the configured probability
-    int sample = stakingDonationDistribution(stakingDonationRng);
-    LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
-    if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
-        LogPrintf("Donating this (potential) stake to the developers\n");
-        CBitcoinAddress address(Params().GetDevContributionAddress());
-        int64_t reduction = nReward;
-        // reduce outputs popping as necessary until we've reduced by nReward
-        if (txNew.vout.size() == 3) {
-            LogPrintf("donating a split stake\n");
-            if (txNew.vout[2].nValue <= reduction) {
-                // The second part of the split stake was less than or equal to the
-                // amount we need to reduce by, so we need to un-split the stake.
-                reduction -= txNew.vout[2].nValue;
-                txNew.vout.pop_back();
-                LogPrintf("undid splitting of stake due to donation exceeding second output size\n");
-            }
-            else {
-                txNew.vout[2].nValue -= reduction;
-                reduction = 0;
-                LogPrintf("successfully took donation from second output of split stake\n");
-            }
-        }
-        if (reduction > 0) {
-            if (txNew.vout[1].nValue <= reduction) {
-                LogPrintf("Total of stake outputs was less than expected credit. Bailing out\n");
-                return false;
-            }
-            txNew.vout[1].nValue -= reduction;
-        }
-        // push a new output donating to the developers
-        CScript script;
-        script.SetDestination(address.Get());
-        txNew.vout.push_back(CTxOut(nReward, script));
-        LogPrintf("donation complete\n");
-    }
-    else {
-        LogPrintf("Not donating this (potential) stake to the developers\n");
-    }
-
-    // Sign
-    int nIn = 0;
-    BOOST_FOREACH(const CWalletTx* pcoin, vwtxPrev)
-    {
-        if (!SignSignature(*this, *pcoin, txNew, nIn++))
-            return error("CreateCoinStake : failed to sign coinstake");
-    };
-
     // Limit size
     unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
     if (nBytes >= MAX_BLOCK_SIZE_GEN/5)
-        return error("CreateCoinStake : exceeded coinstake size limit");
+        return error("CreateAnonCoinStake : exceeded coinstake size limit");
 
     // Successfully generated coinstake
     return true;
