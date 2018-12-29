@@ -4590,9 +4590,9 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 }
 
 
-bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const unsigned int& nStakingTime, std::string& sError)
+bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const bool& fForStaking, std::string& sError)
 {
-    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, true) != 0)
+    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, fForStaking) != 0)
     {
         sError = "ListUnspentAnonOutputs() failed";
         return false;
@@ -6465,7 +6465,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
     std::string sError;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, true, sError))
         return error(("CreateAnonCoinStake : " + sError).c_str());
     if (lAvailableCoins.empty())
         return false;
