@@ -4543,7 +4543,7 @@ bool CWallet::AreOutputsUnique(CTransaction& txNew)
     {
         const CTxOut& txout = txNew.vout[i];
 
-        if (txout.IsAnonOutput())
+        if (!txout.IsAnonOutput())
             continue;
 
         const CScript &s = txout.scriptPubKey;
