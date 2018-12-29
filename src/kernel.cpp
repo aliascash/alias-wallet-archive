@@ -859,7 +859,7 @@ bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBi
         LogPrintf("CheckAnonStakeKernelHash() : using modifier %s at height=%d timestamp=%s\n",
             pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
             DateTimeStrFormat(pStakeMod->nTime));
-        LogPrintf("CheckAnonStakeKernelHash() : check modifier=0x%016x anonKeyImage=%s nTimeTx=%u hashProof=%s target=%s\n",
+        LogPrintf("CheckAnonStakeKernelHash() : check modifier=%s anonKeyImage=%s nTimeTx=%u hashProof=%s target=%s\n",
             pStakeMod->bnModifierV2.ToString(),
             HexStr(anonKeyImage), nTimeTx,
             hashProofOfStake.ToString(),
@@ -872,10 +872,10 @@ bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBi
 
     if (fDebug && !fPrintProofOfStake)
     {
-        LogPrintf("CheckAnonStakeKernelHash() : using modifier &s at height=%d timestamp=%s\n",
+        LogPrintf("CheckAnonStakeKernelHash() : using modifier %s at height=%d timestamp=%s\n",
             pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
             DateTimeStrFormat(pStakeMod->nTime));
-        LogPrintf("CheckAnonStakeKernelHash() : pass modifier=0x%016x anonKeyImage=%s nTimeTx=%u hashProof=%s\n",
+        LogPrintf("CheckAnonStakeKernelHash() : pass modifier=%s anonKeyImage=%s nTimeTx=%u hashProof=%s\n",
             pStakeMod->bnModifierV2.ToString(),
             HexStr(anonKeyImage), nTimeTx,
             hashProofOfStake.ToString());
