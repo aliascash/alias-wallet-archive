@@ -338,6 +338,12 @@ public:
         return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
     }
 
+    bool IsAnonCoinStake() const
+    {
+        // ppcoin: the coin stake transaction is marked with the first output empty
+        return nVersion == ANON_TXN_VERSION && IsCoinStake() && vout[1].IsAnonOutput();
+    }
+
     /** Check for standard transaction types
         @return True if all outputs (scriptPubKeys) use only standard transaction forms
     */
