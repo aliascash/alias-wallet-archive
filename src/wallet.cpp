@@ -3852,6 +3852,46 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress &sxAddress)
     return false;
 };
 
+bool CWallet::GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAddress& sxAddress)
+{
+    // TODO Get corresponding stealth address for stakedOao
+
+    ExtKeyAccountMap::iterator mi = mapExtAccounts.find(idDefaultAccount);
+    if (mi != mapExtAccounts.end())
+    {
+        CExtKeyAccount *ea = mi->second;
+
+        AccStealthKeyMap::iterator it = ea->mapStealthKeys.begin();
+
+        if (it != ea->mapStealthKeys.end())
+        {
+            if (0 == it->second.SetSxAddr(sxAddress))
+            {
+                CKey skSpend;
+                if (ea->GetKey(it->second.akSpend, skSpend))
+                {
+                    sxAddress.spend_secret.resize(EC_SECRET_SIZE);
+                    memcpy(&sxAddress.spend_secret[0], skSpend.begin(), EC_SECRET_SIZE);
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+
+    std::set<CStealthAddress>::iterator it;
+    for (it = stealthAddresses.begin(); it != stealthAddresses.end(); ++it)
+    {
+        if (it->scan_secret.size() < 1)
+            continue; // stealth address is not owned
+
+        sxAddress = *it;
+        return true;
+    };
+
+}
+
+
 bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError)
 {
     if (fDebugRingSig)
