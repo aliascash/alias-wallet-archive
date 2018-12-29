@@ -3943,6 +3943,9 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
 bool CBlock::CheckBlockSignature() const
 {
+    if (vtx[1].IsAnonCoinStake())
+        return CheckAnonBlockSignature();
+
     if (IsProofOfWork())
         return vchBlockSig.empty();
 
@@ -3982,6 +3985,18 @@ bool CBlock::CheckBlockSignature() const
     }
 
     return false;
+}
+
+bool CBlock::CheckAnonBlockSignature() const
+{
+    if (!vtx[1].IsAnonCoinStake())
+        return false;
+
+    const CTxOut& txout = vtx[1].vout[1];
+    const CScript &s = txout.scriptPubKey;
+    const CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
+
+    return pkCoin.Verify(GetHash(), vchBlockSig);
 }
 
 bool CBlock::GetHashProof(uint256& hashProof)

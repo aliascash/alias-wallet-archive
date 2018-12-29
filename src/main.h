@@ -970,6 +970,7 @@ public:
     bool AcceptBlock();
     bool SignBlock(CWallet& keystore, int64_t nFees);
     bool CheckBlockSignature() const;
+    bool CheckAnonBlockSignature() const;
 
     bool GetHashProof(uint256& hashProof);
 
