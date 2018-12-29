@@ -4264,7 +4264,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 		else {
 			nValueTest = nValue + nFee;
 
-			int nFeeDiff = nAmountCheck - nValueTest;
+            int64_t nFeeDiff = nAmountCheck - nValueTest;
 			if (nFeeDiff < 0)
 			{
 				// substract fee
