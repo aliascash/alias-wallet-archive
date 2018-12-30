@@ -3455,9 +3455,10 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (nCoinValue != ao.nValue)
                 return error("%s: Input %u ring amount mismatch %d, %d.", __func__, i, nCoinValue, ao.nValue);
 
+            int minBlockHeight = tx.IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
-                return error("%s: Input %u ring coin %u depth < MIN_ANON_SPEND_DEPTH.", __func__, i, ri);
+                || nBestHeight - ao.nBlockHeight < minBlockHeight)
+                return error("%s: Input %u ring coin %u depth < %d.", __func__, i, ri, minBlockHeight);
 
             if (nRingSize == 1)
             {

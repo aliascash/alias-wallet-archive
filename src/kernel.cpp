@@ -839,51 +839,34 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
 //
 // For that anon staking transaction is valid, all ring signature anon outputs must meet minDepth requirement
 
-// Check anon kernel hash target, ATXO maturity and coinstake signature
+// Check anon kernel hash target and ringsignature
+// Full validation of ringsignature including keyImage double spent check and output majurity is checked in CheckAnonInputs
 bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
 {
-    if (!tx.IsCoinStake())
-        return error("CheckAnonProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString());
+    if (!tx.IsAnonCoinStake())
+        return error("CheckAnonProofOfStake() : called on non-anon-coinstake %s", tx.GetHash().ToString());
+
+    CTxDB txdb("r");
 
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
     const CTxIn& txin = tx.vin[0];
+    ec_point vchImage;
+    txin.ExtractKeyImage(vchImage);
 
-    // First try finding the previous transaction in database
-    CTxDB txdb("r");
-    CTransaction txPrev;
-    CTxIndex txindex;
-    if (!txPrev.ReadFromDisk(txdb, txin.prevout, txindex))
-        return tx.DoS(1, error("CheckProofOfStake() : INFO: read txPrev failed"));  // previous transaction not in main chain, may occur during initial download
+    // ringsig AB
+    int64_t nCoinValue = -1;
+    int nRingSize = txin.ExtractRingSize();
+    if (nRingSize != MIN_RING_SIZE)
+        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Ringsize not %d for coinstake %s", MIN_RING_SIZE, tx.GetHash().ToString().c_str()));
 
-    // Verify signature
-    if (!VerifySignature(txPrev, tx, 0, SCRIPT_VERIFY_NONE, 0))
-        return tx.DoS(100, error("CheckProofOfStake() : VerifySignature failed on coinstake %s", tx.GetHash().ToString()));
-
-    // Read block header
-    CBlock block;
-    if (!block.ReadFromDisk(txindex.pos.nFile, txindex.pos.nBlockPos, false))
-        return fDebug? error("CheckProofOfStake() : read block failed") : false; // unable to read block of previous transaction
-
-    if (Params().IsProtocolV3(pindexPrev->nHeight))
-    {
-        int nDepth;
-        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
-            return tx.DoS(100, error("CheckProofOfStake() : tried to stake at depth %d", nDepth + 1));
-    }
-    else
-    {
-        unsigned int nTimeBlockFrom = block.GetBlockTime();
-        if (nTimeBlockFrom + nStakeMinAge > tx.nTime)
-            return error("CheckProofOfStake() : min age violation");
-    }
+    if (!tx.CheckAnonInputAB(txdb, txin, 0, MIN_RING_SIZE, vchImage, nCoinValue))
+        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake %s", tx.GetHash().ToString().c_str()));
 
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
-//    if (!CheckAnonStakeKernelHash(&stakeMod, nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, txPrev, txin.prevout, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
-//        return tx.DoS(1, error("CheckProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str())); // may occur during initial download or if behind on block chain sync
+    if (!CheckAnonStakeKernelHash(&stakeMod, nBits, nCoinValue, vchImage, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
+        return tx.DoS(1, error("CheckAnonProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str())); // may occur during initial download or if behind on block chain sync
 
-
-//    return true;
-    return false;
+    return true;
 }
 // Note: this method does not validate that the keyImage is valid & unspent and that anon output is mature
 bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBits, const int64_t& anonValue, const ec_point &anonKeyImage, const unsigned int& nTimeTx, uint256& hashProofOfStake, uint256& targetProofOfStake, const bool fPrintProofOfStake)

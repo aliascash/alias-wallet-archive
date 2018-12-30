@@ -2190,9 +2190,15 @@ bool CTransaction::FetchInputs(CTxDB& txdb, const map<uint256, CTxIndex>& mapTes
     return true;
 }
 
-static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSize, std::vector<uint8_t> &vchImage, uint256 &preimage, int64_t &nCoinValue)
+bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSize, const std::vector<uint8_t> &vchImage, int64_t &nCoinValue) const
 {
     const CScript &s = txin.scriptSig;
+
+    if (s.size() != 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
+    {
+        LogPrintf("CheckAnonInputAB(): Error input %d scriptSig size does not match for ringsize %d.\n", i, nRingSize);
+        return false;
+    }
 
     CPubKey pkRingCoin;
     CAnonOutput ao;
@@ -2222,10 +2228,11 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
             return false;
         };
 
+        int minBlockHeight = IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
-            || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
+            || nBestHeight - ao.nBlockHeight < minBlockHeight)
         {
-            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
             return false;
         };
     };
@@ -2350,10 +2357,11 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 fInvalid = true; return false;
             };
 
+            int minBlockHeight = IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
+                || nBestHeight - ao.nBlockHeight < minBlockHeight)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
                 fInvalid = true; return false;
             };
         };
@@ -2724,7 +2732,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString());
 
-        int64_t nCalculatedStakeReward = Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = IsProofOfStealth() ? Params().GetProofOfAnonStakeReward(pindex->pprev, nCoinAge, nFees) : Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
@@ -3943,14 +3951,14 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
 bool CBlock::CheckBlockSignature() const
 {
-    if (vtx[1].IsAnonCoinStake())
-        return CheckAnonBlockSignature();
-
     if (IsProofOfWork())
         return vchBlockSig.empty();
 
     if (vchBlockSig.empty())
         return false;
+
+    if (IsProofOfStealth())
+        return CheckAnonBlockSignature();
 
     vector<valtype> vSolutions;
     txnouttype whichType;
@@ -3989,7 +3997,7 @@ bool CBlock::CheckBlockSignature() const
 
 bool CBlock::CheckAnonBlockSignature() const
 {
-    if (!vtx[1].IsAnonCoinStake())
+    if (vtx.size() < 2 || !vtx[1].IsAnonCoinStake())
         return false;
 
     const CTxOut& txout = vtx[1].vout[1];
