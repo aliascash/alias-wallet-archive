@@ -4769,7 +4769,7 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
             ec_point pSigC;
             uint8_t *pSigS    = &txin.scriptSig[2 + EC_SECRET_SIZE];
             uint8_t *pPubkeys = &txin.scriptSig[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
-            if (generateRingSignatureAB(vchImageTest, preimage, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigC, pSigS) != 0)
+            if (generateRingSignatureAB(vchImageTest, nRingSize, nSecretOffset, ecSecret, pPubkeys, pSigC, pSigS) != 0)
             {
                 sError = "Error: generateRingSignatureAB() failed.";
                 return false;
@@ -4780,7 +4780,7 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
                 LogPrintf("pSigC.size() : %d Invalid!!\n", pSigC.size());
 
             // -- test verify
-            if (verifyRingSignatureAB(vchImageTest, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+            if (verifyRingSignatureAB(vchImageTest, nRingSize, pPubkeys, pSigC, pSigS) != 0)
             {
                 sError = "Error: verifyRingSignatureAB() failed.";
                 return false;

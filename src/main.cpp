@@ -2230,7 +2230,7 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
         };
     };
 
-    if (verifyRingSignatureAB(vchImage, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+    if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
     {
         LogPrintf("CheckAnonInputsAB(): Error input %d verifyRingSignatureAB() failed.\n", i);
         return false;
@@ -2309,7 +2309,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         if (nRingSize > 1 && s.size() == 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
         {
             // ringsig AB
-            if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, preimage, nCoinValue))
+            if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, nCoinValue))
             {
                 fInvalid = true; return false;
             };

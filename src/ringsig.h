@@ -41,8 +41,8 @@ int generateKeyImage(const ec_point &publicKey, ec_secret secret, ec_point &keyI
 int generateRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, uint8_t *pSigc, uint8_t *pSigr);
 int verifyRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const uint8_t *pSigc, const uint8_t *pSigr);
 
-int generateRingSignatureAB(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS);
-int verifyRingSignatureAB(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS);
+int generateRingSignatureAB(const data_chunk &keyImage, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS);
+int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS);
 
 
 #endif  // SPEC_RINGSIG_H

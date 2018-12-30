@@ -693,7 +693,7 @@ int verifyRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int 
 }
 
 
-int generateRingSignatureAB(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS)
+int generateRingSignatureAB(const data_chunk &keyImage, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS)
 {
     // https://bitcointalk.org/index.php?topic=972541.msg10619684
 
@@ -968,7 +968,7 @@ int generateRingSignatureAB(const data_chunk &keyImage, const uint256 &txnHash, 
 }
 
 
-int verifyRingSignatureAB(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS)
+int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS)
 {
     // https://bitcointalk.org/index.php?topic=972541.msg10619684
 
