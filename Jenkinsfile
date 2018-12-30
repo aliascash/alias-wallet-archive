@@ -164,6 +164,9 @@ pipeline {
                                 script {
                                     sh "./scripts/mac-deployqt.sh"
                                     sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    // The following archive step is only for development purposes.
+                                    // Remove it before merge to develop!
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                 }
                             }
                         }
@@ -238,6 +241,9 @@ pipeline {
                             steps {
                                 script {
                                     createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}")
+                                    // The following archive step is only for development purposes.
+                                    // Remove it before merge to develop!
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip"
                                 }
                             }
                         }
@@ -297,6 +303,9 @@ pipeline {
                             steps {
                                 script {
                                     createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12")
+                                    // The following archive step is only for development purposes.
+                                    // Remove it before merge to develop!
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip"
                                 }
                             }
                         }
