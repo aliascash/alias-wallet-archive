@@ -3803,7 +3803,9 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         for (auto const& out : mapOutReceiveAddr)
         {
             // if nonAnonInputs exists, anonOutputs are never change
-            if (fHasNonAnonInputs || (
+            if (fHasNonAnonInputs ||
+                    // AnonCoinStake outputs are never change
+                    tx.IsAnonCoinStake() || (
                         // if nonAnonOutputs exists, anonOutputs are change when anon is debited from us
                         !(fDebitAnonFromMe && fHasNonAnonOutputs) &&
                         // if not all outputs are owned, owned anonOutputs are change when anon is debited from us
