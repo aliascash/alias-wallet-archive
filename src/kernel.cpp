@@ -816,31 +816,38 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
 }
 
 
-// -----------------------------------------------------------
-// Stealth Staking
-// -----------------------------------------------------------
-
-// Spectrecoin anon kernel protocol
-// coinstake must meet hash target according to the protocol:
-// kernel (input 0) must meet the formula
-//     hash(nStakeModifier + keyImage + nTime) < bnTarget * nWeight
-// this ensures that the chance of getting a coinstake is proportional to the
-// amount of coins one owns.
-// The reason this hash is chosen is the following:
-//   nStakeModifier: scrambles computation to make it very difficult to precompute
-//                   future proof-of-stake.
-//                   nStakeModifier is either the UTXO or keyImage hash used for the last staking transaction
-//   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
-//             makes sure an ATXO can only be used once for generating a kernel hash
-//   nTime: current timestamp
-//   block/tx hash should not be used here as they can be generated in vast
-//   quantities so as to generate blocks faster, degrading the system back into
-//   a proof-of-work situation.
-//
-// For that anon staking transaction is valid, all ring signature anon outputs must meet minDepth requirement
-
-// Check anon kernel hash target and ringsignature
-// Full validation of ringsignature including keyImage double spent check and output majurity is checked in CheckAnonInputs
+/**
+ * -----------------------------------------------------------
+ * Stealth Staking
+ * -----------------------------------------------------------
+ *
+ * An anon staking transaction is valid, if
+ *   - transaction is PoSv3 conform
+ *   - a valid rigsignature of MIN_RING_SIZE exists in vin[0]
+ *   - keyImage is unspent (checked in CheckAnonInputs())
+ *   - all ring signature anon outputs meet minDepth maturity requirement (checked in CheckAnonInputs())
+ *   - the kernel hash calculated is below target
+ *
+ * Spectrecoin anon kernel protocol
+ * --------------------------------
+ * coinstake kernel (input 0) must meet hash target according to the formula:
+ *
+ *     hash(nStakeModifier + keyImage + nTime) < bnTarget * nWeight
+ *
+ * this ensures that the chance of getting a coinstake is proportional to the amount of coins one owns.
+ *
+ * The reason this hash is chosen is the following:
+ *   nStakeModifier: scrambles computation to make it very difficult to precompute future proof-of-stake.
+ *                   nStakeModifier is either the UTXO hash or keyImage used for the last staking transaction
+ *   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
+ *             makes sure an ATXO can only be used once for generating a kernel hash
+ *   nTime: current timestamp
+ *
+ * Note:
+ *   block/tx hash should not be used here as they can be generated in vast
+ *   quantities so as to generate blocks faster, degrading the system back into
+ *   a proof-of-work situation.
+ */
 bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
 {
     if (!tx.IsAnonCoinStake())
