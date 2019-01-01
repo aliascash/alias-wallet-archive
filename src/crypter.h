@@ -1,4 +1,5 @@
-// Copyright (c) 2009-2012 The Bitcoin Developers
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef __CRYPTER_H__
@@ -171,7 +172,7 @@ public:
     bool LockKeyStore();
 
     virtual bool AddCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
-    
+
     bool AddKey(const CKey& key);
     bool AddKeyPubKey(const CKey& key, const CPubKey &pubkey);
     bool HaveKey(const CKeyID &address) const

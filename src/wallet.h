@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_WALLET_H
@@ -138,24 +139,24 @@ public:
 
     std::set<int64_t> setKeyPool;
     std::map<CKeyID, CKeyMetadata> mapKeyMetadata;
-    
+
     std::set<CStealthAddress> stealthAddresses;
     StealthKeyMetaMap mapStealthKeyMeta;
-    
+
     CStoredExtKey *pEkMaster;
     CKeyID idDefaultAccount;
     ExtKeyAccountMap mapExtAccounts;
     ExtKeyMap mapExtKeys;
-    
+
     CBloomFilter* pBloomFilter;
-    
+
     int nLastFilteredHeight;
-    
+
     uint32_t nStealth, nFoundStealth; // for reporting, zero before use
 
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
-    
+
     WalletTxMap mapWallet;
     int64_t nOrderPosNext;
     std::map<uint256, int> mapRequestCount;
@@ -169,7 +170,7 @@ public:
     {
         SetNull();
     }
-    
+
     CWallet(std::string strWalletFileIn)
     {
         SetNull();
@@ -177,7 +178,7 @@ public:
         strWalletFile = strWalletFileIn;
         fFileBacked = true;
     }
-    
+
     void SetNull()
     {
         nWalletVersion = FEATURE_BASE;
@@ -190,11 +191,11 @@ public:
         nOrderPosNext = 0;
         nTimeFirstKey = 0;
         nLastFilteredHeight = 0;
-        
+
     }
-    
+
     int Finalise();
-    
+
     // check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { AssertLockHeld(cs_wallet); return nWalletMaxVersion >= wf; }
 
@@ -205,14 +206,14 @@ public:
     // keystore implementation
     // Generate a new key
     CPubKey GenerateNewKey();
-    
+
     // Adds a key to the store, and saves it to disk.
     bool AddKey(const CKey &key);
     bool AddKeyPubKey(const CKey &key, const CPubKey &pubkey);
-    
+
     bool AddKeyInDBTxn(CWalletDB *pdb, const CKey &key);
-    
-    
+
+
     // Adds a key to the store, without saving it to disk (used by LoadWallet)
     bool LoadKey(const CKey& key, const CPubKey &pubkey) { return CCryptoKeyStore::AddKeyPubKey(key, pubkey); }
     // Load metadata (used by LoadWallet)
@@ -226,7 +227,7 @@ public:
     bool LoadCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigned char> &vchCryptedSecret);
     bool AddCScript(const CScript& redeemScript);
     bool LoadCScript(const CScript& redeemScript);
-    
+
     bool Lock();
     bool Unlock(const SecureString& strWalletPassphrase);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
@@ -252,7 +253,7 @@ public:
     void MarkDirty();
     bool AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn);
     bool AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& hash, const void* pblock, bool fUpdate = false, bool fFindBlock = false);
-    
+
     bool EraseFromWallet(uint256 hash);
     void WalletUpdateSpent(const CTransaction& prevout, bool fBlock = false);
     uint32_t ClearWalletTransactions(bool onlyUnaccepted);
@@ -262,17 +263,17 @@ public:
     void ResendWalletTransactions(bool fForce = false);
     int64_t GetBalance() const;
     int64_t GetSpectreBalance() const;
-    
+
     int64_t GetUnconfirmedBalance() const;
     int64_t GetImmatureBalance() const;
     int64_t GetStake() const;
     int64_t GetNewMint() const;
-    
+
     bool CreateTransaction(const std::vector<std::pair<CScript, int64_t> >& vecSend, CWalletTx& wtxNew, int64_t& nFeeRet, int32_t& nChangePos, const CCoinControl *coinControl=NULL);
     bool CreateTransaction(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, const CCoinControl *coinControl=NULL);
-    
+
     bool CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
-    
+
 
     uint64_t GetStakeWeight() const;
     bool CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key);
@@ -280,18 +281,18 @@ public:
     std::string SendMoney(CScript scriptPubKey, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
     std::string SendMoneyToDestination(const CTxDestination& address, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, bool fAskFee=false);
 
-    
+
     bool NewStealthAddress(std::string& sError, std::string& sLabel, CStealthAddress& sxAddr);
     bool AddStealthAddress(CStealthAddress& sxAddr);
     bool UnlockStealthAddresses(const CKeyingMaterial& vMasterKeyIn);
     bool UpdateStealthAddress(std::string &addr, std::string &label, bool addIfNotExist);
-    
+
     bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
-    
+
     bool UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash);
     bool UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
     bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
-    
+
     bool GetAnonChangeAddress(CStealthAddress& sxAddress);
     bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError);
     bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
@@ -303,25 +304,25 @@ public:
     bool SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
     bool SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
     bool SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);
-    
+
     bool ExpandLockedAnonOutput(CWalletDB *pdb, CKeyID &ckeyId, CLockedAnonOutput &lao, std::set<uint256> &setUpdated);
     bool ProcessLockedAnonOutputs();
-    
+
     bool EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, std::string& sError);
-    
+
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly);
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly);
     int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly);
     int CountLockedAnonOutputs();
-    
+
     uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
-    
+
     bool CacheAnonStats();
-    
-    
+
+
     bool InitBloomFilter();
-    
+
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int nSize = 0);
     int64_t AddReserveKey(const CKeyPool& keypool);
@@ -341,7 +342,7 @@ public:
     int64_t GetDebit(const CTxIn& txin) const;
     int64_t GetSpectreDebit(const CTxIn& txin) const;
     int64_t GetSpectreCredit(const CTxOut& txout) const;
-    
+
     bool IsMine(const CTxOut& txout) const
     {
         return ::IsMine(*this, txout.scriptPubKey);
@@ -370,7 +371,7 @@ public:
     {
         return (GetDebit(tx) > 0);
     }
-    
+
     int64_t GetDebit(const CTransaction& tx) const
     {
         int64_t nDebit = 0;
@@ -384,13 +385,13 @@ public:
             {
                 nDebit += GetDebit(txin);
             };
-            
+
             if (!MoneyRange(nDebit))
                 throw std::runtime_error("CWallet::GetDebit() : value out of range");
         }
         return nDebit;
     }
-    
+
     int64_t GetCredit(const CTransaction& tx) const
     {
         int64_t nCredit = 0;
@@ -407,7 +408,7 @@ public:
         }
         return nCredit;
     }
-    
+
     bool GetCredit(const CTransaction& tx, int64_t& nSPEC, int64_t& nSpectre) const
     {
         nSPEC = 0;
@@ -426,7 +427,7 @@ public:
         }
         return true;
     };
-    
+
     int64_t GetChange(const CTransaction& tx) const
     {
         int64_t nChange = 0;
@@ -439,7 +440,7 @@ public:
         return nChange;
     }
     void SetBestChain(const CBlockLocator& loc);
-    
+
     void SetBestThinChain(const CBlockThinLocator& loc);
 
     DBErrors LoadWallet(int& oltWalletVersion);
@@ -483,88 +484,88 @@ public:
 
     void FixSpentCoins(int& nMismatchSpent, int64_t& nBalanceInQuestion, bool fCheckOnly = false);
     void DisableTransaction(const CTransaction &tx);
-    
-    
+
+
     int GetChangeAddress(CPubKey &pk);
-    
+
     int ExtKeyNew32(CExtKey &out);
     int ExtKeyNew32(CExtKey &out, const char *sPassPhrase, int32_t nHash, const char *sSeed);
     int ExtKeyNew32(CExtKey &out, uint8_t *data, uint32_t lenData);
-    
+
     int ExtKeyImportLoose(CWalletDB *pwdb, CStoredExtKey &sekIn, bool fBip44, bool fSaveBip44);
     int ExtKeyImportAccount(CWalletDB *pwdb, CStoredExtKey &sekIn, int64_t nTimeStartScan, const std::string &sLabel);
-    
+
     int ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idMaster); // set master to existing key, remove master key tag from old key if exists
     int ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenerated = false); // make and save new root key to wallet
-    
+
     int ExtKeyCreateAccount(CStoredExtKey *ekAccount, CKeyID &idMaster, CExtKeyAccount &ekaOut, const std::string &sLabel);
     int ExtKeyDeriveNewAccount(CWalletDB *pwdb, CExtKeyAccount *sea, const std::string &sLabel, const std::string &sPath=""); // derive a new account from the master key and save to wallet
-    
-    
+
+
     int ExtKeyEncrypt(CStoredExtKey *sek, const CKeyingMaterial &vMKey, bool fLockKey);
     int ExtKeyEncrypt(CExtKeyAccount *sea, const CKeyingMaterial &vMKey, bool fLockKey);
     int ExtKeyEncryptAll(CWalletDB *pwdb, const CKeyingMaterial &vMKey);
     int ExtKeyLock();
-    
+
     int ExtKeyUnlock(CExtKeyAccount *sea);
     int ExtKeyUnlock(CExtKeyAccount *sea, const CKeyingMaterial &vMKey);
     int ExtKeyUnlock(CStoredExtKey *sek);
     int ExtKeyUnlock(CStoredExtKey *sek, const CKeyingMaterial &vMKey);
     int ExtKeyUnlock(const CKeyingMaterial &vMKey);
-    
+
     int ExtKeyCreateInitial(CWalletDB *pwdb);
     int ExtKeyLoadMaster();
     int ExtKeyLoadAccounts();
-    
+
     int ExtKeySaveAccountToDB(CWalletDB *pwdb, CKeyID &idAccount, CExtKeyAccount *sea);
     int ExtKeyAddAccountToMaps(CKeyID &idAccount, CExtKeyAccount *sea);
     int ExtKeyLoadAccountPacks();
-    
-    
+
+
     int ExtKeyAppendToPack(CWalletDB *pwdb, CExtKeyAccount *sea, const CKeyID &idKey, CEKAKey &ak, bool &fUpdateAcc) const;
     int ExtKeyAppendToPack(CWalletDB *pwdb, CExtKeyAccount *sea, const CKeyID &idKey, CEKASCKey &asck, bool &fUpdateAcc) const;
-    
-    
-    
+
+
+
     int ExtKeySaveKey(CWalletDB *pwdb, CExtKeyAccount *sea, const CKeyID &keyId, CEKAKey &ak) const;
     int ExtKeySaveKey(CExtKeyAccount *sea, const CKeyID &keyId, CEKAKey &ak) const;
-    
+
     int ExtKeySaveKey(CWalletDB *pwdb, CExtKeyAccount *sea, const CKeyID &keyId, CEKASCKey &asck) const;
     int ExtKeySaveKey(CExtKeyAccount *sea, const CKeyID &keyId, CEKASCKey &asck) const;
-    
+
     int ExtKeyUpdateStealthAddress(CWalletDB *pwdb, CExtKeyAccount *sea, CKeyID &sxId, std::string &sLabel);
-    
+
     int NewKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, CPubKey &pkOut, bool fInternal, bool fHardened);
     int NewKeyFromAccount(CPubKey &pkOut, bool fInternal=false, bool fHardened=false); // wrapper - use default account
-    
+
     int NewStealthKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, std::string &sLabel, CEKAStealthKey &akStealthOut);
     int NewStealthKeyFromAccount(std::string &sLabel, CEKAStealthKey &akStealthOut); // wrapper - use default account
-    
+
     int NewExtKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, std::string &sLabel, CStoredExtKey *sekOut);
     int NewExtKeyFromAccount(std::string &sLabel, CStoredExtKey *sekOut); // wrapper - use default account
-    
-    
+
+
     int ExtKeyGetDestination(const CExtKeyPair &ek, CScript &scriptPubKeyOut, uint32_t &nKey);
     int ExtKeyUpdateLooseKey(const CExtKeyPair &ek, uint32_t nKey, bool fAddToAddressBook);
-    
-    
+
+
     bool HaveKey(const CKeyID &address) const;
-    
+
     bool HaveExtKey(const CKeyID &address) const;
-    
+
     bool GetKey(const CKeyID &address, CKey &keyOut) const;
-    
+
     bool GetPubKey(const CKeyID &address, CPubKey &pkOut) const;
-    
+
     bool HaveStealthAddress(const CStealthAddress &sxAddr) const;
-    
+
     int ScanChainFromTime(int64_t nTimeStartScan);
-    
+
     /** Address book entry changed.
      * @note called with lock cs_wallet held.
      */
     boost::signals2::signal<void (CWallet *wallet, const CTxDestination &address, const std::string &label, bool isMine, ChangeType status, bool fManual)> NotifyAddressBookChanged;
-    
+
 
     /** Wallet transaction added, removed or updated.
      * @note called with lock cs_wallet held.
@@ -635,7 +636,7 @@ public:
     std::string strFromAccount;
     std::vector<char> vfSpent; // which outputs are already spent
     int64_t nOrderPos;  // position in ordered transaction list
-    
+
     // memory only
     mutable int8_t fDebitCached; // overload for force update message
     mutable bool fCreditCached;
@@ -648,7 +649,7 @@ public:
     mutable int64_t nAvailableCreditCached;
     mutable int64_t nChangeCached;
     mutable int64_t nAvailableSpectreCreditCached;
-    
+
     mutable int64_t nCredSPECCached;
     mutable int64_t nCredSpectreCached;
 
@@ -656,22 +657,22 @@ public:
     {
         Init(NULL);
     }
-    
+
     CWalletTx(const CWallet* pwalletIn)
     {
         Init(pwalletIn);
     }
-    
+
     CWalletTx(const CWallet* pwalletIn, const CMerkleTx& txIn) : CMerkleTx(txIn)
     {
         Init(pwalletIn);
     }
-    
+
     CWalletTx(const CWallet* pwalletIn, const CTransaction& txIn) : CMerkleTx(txIn)
     {
         Init(pwalletIn);
     }
-    
+
     void Init(const CWallet* pwalletIn)
     {
         pwallet = pwalletIn;
@@ -688,11 +689,11 @@ public:
         fCreditCached = false;
         fAvailableCreditCached = false;
         fAvailableSpectreCreditCached = false;
-        
+
         nCredSPECCached = 0;
         nCredSpectreCached = 0;
         fCreditSplitCached = false;
-        
+
         fChangeCached = false;
         nDebitCached = 0;
         nCreditCached = 0;
@@ -749,7 +750,7 @@ public:
             {
                 pthis->vfSpent.assign(vout.size(), fSpent);
             };
-            
+
             ReadOrderPos(pthis->nOrderPos, pthis->mapValue);
 
             pthis->nTimeSmart = mapValue.count("timesmart") ? (unsigned int)atoi64(pthis->mapValue["timesmart"]) : 0;
@@ -792,7 +793,7 @@ public:
         fChangeCached = false;
         fCreditSplitCached = false;
     }
-    
+
     bool ForceUpdate()
     {
         return fDebitCached == 2;
@@ -808,7 +809,7 @@ public:
     {
         if (nOut >= vout.size())
             throw std::runtime_error("CWalletTx::MarkSpent() : nOut out of range");
-        
+
         vfSpent.resize(vout.size());
         if (!vfSpent[nOut])
         {
@@ -821,7 +822,7 @@ public:
     {
         if (nOut >= vout.size())
             throw std::runtime_error("CWalletTx::MarkUnspent() : nOut out of range");
-        
+
         vfSpent.resize(vout.size());
         if (vfSpent[nOut])
         {
@@ -863,7 +864,7 @@ public:
         fCreditCached = true;
         return nCreditCached;
     }
-    
+
     bool GetCredit(int64_t& nCredSPEC, int64_t& nCredSpectre, bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
@@ -872,7 +873,7 @@ public:
             nCredSPEC = nCredSpectre = 0;
             return true;
         }
-        
+
         // GetBalance can assume transactions in mapWallet won't change
         if (!fUseCache || !fCreditSplitCached)
         {
@@ -881,7 +882,7 @@ public:
             pwallet->GetCredit(*this, nCredSPECCached, nCredSpectreCached);
             fCreditSplitCached = true;
         };
-        
+
         nCredSPEC = nCredSPECCached;
         nCredSpectre = nCredSpectreCached;
         return true;
@@ -912,18 +913,18 @@ public:
         fAvailableCreditCached = true;
         return nCredit;
     };
-    
+
     int64_t GetAvailableSpectreCredit(bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
         if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
             return 0;
-        
+
         if (fUseCache && fAvailableSpectreCreditCached)
             return nAvailableSpectreCreditCached;
-        
+
         int64_t nCredit = 0;
-        
+
         for (unsigned int i = 0; i < vout.size(); i++)
         {
             if (!IsSpent(i))
@@ -934,7 +935,7 @@ public:
                     throw std::runtime_error("CWalletTx::GetAvailableSpectreCredit() : value out of range");
             };
         };
-        
+
         nAvailableSpectreCreditCached = nCredit;
         fAvailableSpectreCreditCached = true;
         return nCredit;

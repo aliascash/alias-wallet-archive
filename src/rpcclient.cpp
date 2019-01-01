@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -137,7 +138,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "getblocktemplate", 0 },
     { "listsinceblock", 1 },
     { "clearwallettransactions", 0},
-    { "scanforalltxns", 0 },    
+    { "scanforalltxns", 0 },
     { "sendalert", 2 },
     { "sendalert", 3 },
     { "sendalert", 4 },

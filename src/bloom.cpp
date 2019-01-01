@@ -1,4 +1,5 @@
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -42,7 +43,7 @@ void CBloomFilter::insert(const vector<unsigned char>& vKey)
 {
     if (isFull)
         return;
-    
+
     for (unsigned int i = 0; i < nHashFuncs; i++)
     {
         unsigned int nIndex = Hash(i, vKey);
@@ -117,24 +118,24 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx)
         return true;
     if (isEmpty)
         return false;
-    
+
     const uint256& hash = tx.GetHash();
-    
-    
+
+
     if (((nFlags & BLOOM_ACCEPT_STEALTH) && tx.HasStealthOutput())
         || contains(hash))
     {
         fFound = true;
         // -- don't return here!
     };
-    
+
 
     for (unsigned int i = 0; i < tx.vout.size(); i++)
     {
         const CTxOut& txout = tx.vout[i];
         // Match if the filter contains any arbitrary script data element in any scriptPubKey in tx
         // If this matches, also add the specific output that was matched.
-        // This means clients don't have to update the filter themselves when a new relevant tx 
+        // This means clients don't have to update the filter themselves when a new relevant tx
         // is discovered in order to find spending transactions, which avoids round-tripping and race conditions.
         CScript::const_iterator pc = txout.scriptPubKey.begin();
         vector<unsigned char> data;
@@ -143,20 +144,20 @@ bool CBloomFilter::IsRelevantAndUpdate(const CTransaction& tx)
             opcodetype opcode;
             if (!txout.scriptPubKey.GetOp(pc, opcode, data))
                 break;
-            
+
             if (data.size() == 33) // coinstake
             {
                 uint160 pkHash = Hash160(data);
                 vector<unsigned char> dataHash160(pkHash.begin(), pkHash.end());
-                
+
                 if (dataHash160.size() != 0 && contains(dataHash160))
                     fFound = true;
             };
-            
+
             if (!fFound
                 && data.size() != 0 && contains(data))
                 fFound = true;
-            
+
             if (fFound)
             {
                 if ((nFlags & BLOOM_UPDATE_MASK) == BLOOM_UPDATE_ALL)
@@ -210,7 +211,7 @@ void CBloomFilter::UpdateEmptyFull()
         full &= vData[i] == 0xff;
         empty &= vData[i] == 0;
     };
-    
+
     isFull = full;
     isEmpty = empty;
 }

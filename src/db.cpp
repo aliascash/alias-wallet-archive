@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -61,9 +62,9 @@ bool CDBEnv::Open(boost::filesystem::path pathEnv_)
 {
     if (fDbEnvInit)
         return true;
-    
+
     boost::this_thread::interruption_point();
-    
+
     pathEnv = pathEnv_;
     boost::filesystem::path pathDataDir = pathEnv;
     strPath = pathDataDir.string();

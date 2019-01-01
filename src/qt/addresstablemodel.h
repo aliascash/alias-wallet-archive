@@ -1,3 +1,8 @@
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #ifndef ADDRESSTABLEMODEL_H
 #define ADDRESSTABLEMODEL_H
 
@@ -24,7 +29,7 @@ class AddressTableModel : public QAbstractTableModel
 public:
     explicit AddressTableModel(CWallet *wallet, WalletModel *parent = 0);
     ~AddressTableModel();
-    
+
     enum ColumnIndex {
         Label = 0,   /**< User specified label */
         Address = 1,  /**< Bitcoin address */

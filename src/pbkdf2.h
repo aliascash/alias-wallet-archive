@@ -1,4 +1,5 @@
 // Copyright (c) 2013 NovaCoin Developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 
 #ifndef PBKDF2_H
 #define PBKDF2_H
