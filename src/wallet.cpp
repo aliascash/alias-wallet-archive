@@ -4591,7 +4591,7 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 }
 
 
-bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const bool& fForStaking, std::string& sError)
+bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const bool& fForStaking, std::string& sError) const
 {
     if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, fForStaking) != 0)
     {
@@ -5514,7 +5514,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     return true;
 };
 
-int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, bool fForStaking)
+int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, bool fForStaking) const
 {
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5554,7 +5554,7 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
         if (oao.fSpent)
             continue;
 
-        WalletTxMap::iterator mi = mapWallet.find(oao.outpoint.hash);
+        WalletTxMap::const_iterator mi = mapWallet.find(oao.outpoint.hash);
         if (mi == mapWallet.end()
             || mi->second.nVersion != ANON_TXN_VERSION
             || mi->second.vout.size() <= oao.outpoint.n
@@ -5597,7 +5597,7 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
     return 0;
 }
 
-int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly)
+int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly) const
 {
     LOCK(cs_main);
     CTxDB txdb("r");
