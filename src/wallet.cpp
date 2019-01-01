@@ -6137,20 +6137,19 @@ uint64_t CWallet::GetStakeWeight() const
     if (nBalance <= nReserveBalance)
         return false;
 
+    uint64_t nWeight = 0;
+
     std::vector<const CWalletTx*> vwtxPrev;
 
     set<pair<const CWalletTx*,unsigned int> > setCoins;
     int64_t nValueIn = 0;
 
+    if (SelectCoinsForStaking(nBalance - nReserveBalance, GetTime(), setCoins, nValueIn)
+      && !setCoins.empty())
+    {
+       int64_t nCurrentTime = GetTime();
 
-    if (!SelectCoinsForStaking(nBalance - nReserveBalance, GetTime(), setCoins, nValueIn)
-      || setCoins.empty())
-        return false;
-
-    uint64_t nWeight = 0;
-    int64_t nCurrentTime = GetTime();
-
-    CTxDB txdb("r");
+        CTxDB txdb("r");
     BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
     {
         {
@@ -6178,9 +6177,20 @@ uint64_t CWallet::GetStakeWeight() const
             }
         }
 
-        if (nCurrentTime - pcoin.first->nTime > nStakeMinAge)
-            nWeight += pcoin.first->vout[pcoin.second].nValue;
-    };
+            if (nCurrentTime - pcoin.first->nTime > nStakeMinAge)
+                nWeight += pcoin.first->vout[pcoin.second].nValue;
+        }
+    }
+
+    // Get SPECTRE weight for staking
+    if (Params().IsForkV3(nBestHeight))
+    {
+        std::list<COwnedAnonOutput> lAvailableCoins;
+        int64_t nAmountCheck;
+        std::string sError;
+        if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, true, sError))
+            nWeight += nAmountCheck;
+    }
 
     return nWeight;
 }
