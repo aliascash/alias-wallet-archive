@@ -146,20 +146,19 @@ void SyncWithWallets(const CTransaction& tx, const CBlock* pblock, bool fUpdate,
     if (!fConnect)
     {
         // ppcoin: wallets need to refund inputs when disconnecting coinstake
-        if (tx.IsCoinStake())
+        if (tx.nVersion == ANON_TXN_VERSION)
+        {
+            BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
+                pwallet->UndoAnonTransaction(tx, nullptr, !pwallet->IsFromMe(tx)); // don't erase owned tx
+        }
+        else if (tx.IsCoinStake())
         {
             BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
             {
                 if (pwallet->IsFromMe(tx))
                     pwallet->DisableTransaction(tx);
             };
-        };
-
-        if (tx.nVersion == ANON_TXN_VERSION)
-        {
-            BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
-                pwallet->UndoAnonTransaction(tx);
-        };
+        }
         return;
     };
 

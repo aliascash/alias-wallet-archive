@@ -3144,7 +3144,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 };
 
 
-bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
+bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth, bool fEraseTx)
 {
     if (fDebugRingSig)
         LogPrintf("UndoAnonTransaction() tx: %s\n", tx.GetHash().GetHex().c_str());
@@ -3297,13 +3297,15 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID,
     };
 
 
-    if (!walletdb.EraseTx(txnHash))
+    if (fEraseTx) // owned coinstake transaction are kept in the wallet
     {
-        LogPrintf("UndoAnonTransaction() EraseTx %s failed.\n", txnHash.ToString().c_str());
-        return false;
-    };
-
-    mapWallet.erase(txnHash);
+        if (!walletdb.EraseTx(txnHash))
+        {
+            LogPrintf("UndoAnonTransaction() EraseTx %s failed.\n", txnHash.ToString().c_str());
+            return false;
+        }
+        mapWallet.erase(txnHash);
+    }
 
     return true;
 };
