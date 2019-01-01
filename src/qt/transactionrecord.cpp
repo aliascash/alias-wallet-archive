@@ -30,7 +30,9 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case SendToSelfSPECTRE:
         return SpectreGUI::tr("SPECTRE sent to self");
     case Generated:
-        return SpectreGUI::tr("Staked");
+        return SpectreGUI::tr("XSPEC Staked");
+    case GeneratedSPECTRE:
+        return SpectreGUI::tr("SPECTRE Staked");
     case GeneratedDonation:
         return SpectreGUI::tr("Donated");
 	case GeneratedContribution:
@@ -55,6 +57,7 @@ QString TransactionRecord::getTypeShort(const int &type)
     switch(type)
     {
     case TransactionRecord::Generated:
+    case TransactionRecord::GeneratedSPECTRE:
         return "staked";
     case TransactionRecord::GeneratedDonation:
         return "donated";
@@ -100,7 +103,35 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
-        if (listReceived.size() > 0 && listSent.size() > 0)
+        if (wtx.IsAnonCoinStake())
+        {
+            if (!listReceived.empty()) // should never be empty
+            {
+                const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
+                parts.append(TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
+                        rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
+                        rNarration, 0, -allFee, rCurrency, parts.size()));
+            }
+
+            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+            {
+                std::string strAddress = CBitcoinAddress(destination).ToString();
+                if (strAddress == Params().GetDevContributionAddress())
+                {
+                    TransactionRecord sub(hash, nTime);
+                    sub.address = strAddress;
+                    if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
+                        sub.type = TransactionRecord::GeneratedContribution;
+                    else
+                        sub.type = TransactionRecord::GeneratedDonation;
+
+                    sub.credit = amount;
+                    sub.idx = parts.size(); // sequence number
+                    parts.append(sub);
+                }
+            }
+        }
+        else if (listReceived.size() > 0 && listSent.size() > 0)
         {
             // Transfer within account
             TransactionRecord::Type trxType = TransactionRecord::SendToSelfSPECTRE;
@@ -388,7 +419,8 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.open_for = wtx.nLockTime;
         };
     } else
-    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedContribution)
+    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedSPECTRE ||
+            type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedContribution)
     {
         // For generated transactions, determine maturity
         if (wtx.GetBlocksToMaturity() > 0)

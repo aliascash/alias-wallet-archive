@@ -1136,10 +1136,6 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
     // Compute fee:
     int64_t nDebit = GetDebit();
-
-    //if (nVersion == ANON_TXN_VERSION)
-    //    nDebit += GetSpectreDebit();
-
     if (nDebit > 0) // debit>0 means we signed/sent this transaction
     {
         int64_t nValueOut = GetValueOut();
@@ -1148,8 +1144,10 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
     Currency currencyDestination = XSPEC;
     Currency currencySource = XSPEC;
-    for(const CTxIn& txin: vin) {
-        if (txin.IsAnonInput() ) {
+    for(const CTxIn& txin: vin)
+    {
+        if (txin.IsAnonInput())
+        {
             currencySource = SPECTRE;
             break;
         }
@@ -1167,6 +1165,10 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
     for (uint32_t index = 0; index < vout.size(); ++index)
     {
         const CTxOut& txout = vout[index];
+
+        // Skip special stake out
+        if (txout.scriptPubKey.empty())
+            continue;
 
         // Don't report 'change' txouts
         if (nDebit > 0 && pwallet->IsChange(txout))
@@ -1195,7 +1197,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             mapDestinationSubs[stealthAddress].push_back(ckidD);
 
             // If we are debited by the transaction, add the output as a "sent" entry
-            if (nDebit > 0)
+            if (nDebit > 0 && !IsAnonCoinStake())
                 mapStealthSent[stealthAddress] += txout.nValue;
 
             // If we are receiving the output, add it as a "received" entry
@@ -1210,10 +1212,6 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
             continue;
         };
-
-        // Skip special stake out
-        if (txout.scriptPubKey.empty())
-            continue;
 
         opcodetype firstOpCode;
         CScript::const_iterator pc = txout.scriptPubKey.begin();

@@ -66,6 +66,7 @@ public:
     {
         Other,
         Generated,
+        GeneratedSPECTRE,
         GeneratedDonation,
 		GeneratedContribution,
         SendToAddress,
