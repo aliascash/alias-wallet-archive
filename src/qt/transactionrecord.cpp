@@ -1,3 +1,8 @@
+// Copyright (c) 2011-2013 The Bitcoin Core developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "transactionrecord.h"
 
 #include "base58.h"
@@ -204,7 +209,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 						}
 						else {
 							sub.type = TransactionRecord::GeneratedDonation;
-						}                       
+						}
                         sub.credit = txout.nValue;
                         sub.idx = parts.size(); // sequence number
                         parts.append(sub);

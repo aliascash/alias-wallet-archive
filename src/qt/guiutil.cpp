@@ -1,3 +1,8 @@
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "guiutil.h"
 #include "bitcoinaddressvalidator.h"
 #include "walletmodel.h"
@@ -80,7 +85,7 @@ QString formatDurationStr(int secs)
 QString formatServicesStr(quint64 mask)
 {
     QStringList strList;
-    
+
     // TODO: add spec
     // Just scan the last 8 bits for now.
     for (int i = 0; i < 8; i++)
@@ -96,7 +101,7 @@ QString formatServicesStr(quint64 mask)
             //case NODE_GETUTXO:
             //    strList.append("GETUTXO");
             //    break;
-            
+
             case THIN_SUPPORT:
                 strList.append("THIN_SUPPORT");
                 break;

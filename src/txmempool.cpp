@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,7 +45,7 @@ bool CTxMemPool::remove(const CTransaction &tx, bool fRecursive)
             BOOST_FOREACH(const CTxIn& txin, tx.vin)
                 mapNextTx.erase(txin.prevout);
             mapTx.erase(hash);
-            
+
             if (tx.nVersion == ANON_TXN_VERSION)
             {
                 // -- remove key images
@@ -54,14 +55,14 @@ bool CTxMemPool::remove(const CTransaction &tx, bool fRecursive)
 
                     if (!txin.IsAnonInput())
                         continue;
-                    
+
                     ec_point vchImage;
                     txin.ExtractKeyImage(vchImage);
-                    
+
                     mapKeyImage.erase(vchImage);
                 };
             };
-            
+
             nTransactionsUpdated++;
         };
     }

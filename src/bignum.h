@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -401,7 +402,7 @@ public:
             unsigned int c = rem.getulong();
             str += "0123456789abcdef"[c];
         }
-        
+
         if (BN_is_negative(this->pbn))
             str += "-";
         reverse(str.begin(), str.end());
@@ -464,7 +465,7 @@ public:
         CBigNum ret;
         if (!BN_mod_mul(ret.pbn, this->pbn, b.pbn, m.pbn, pctx))
             throw bignum_error("CBigNum::mul_mod : BN_mod_mul failed");
-        
+
         return ret;
     }
 

@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_NET_H
@@ -28,7 +29,7 @@
 
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0x0 // not necessary on systems where it is not defined
-#endif 
+#endif
 
 class CRequestTracker;
 class CNode;
@@ -278,7 +279,7 @@ public:
 
     int64_t nLastSend;
     int64_t nLastRecv;
-    
+
     int64_t nLastSendEmpty;
     int64_t nTimeConnected;
     int64_t nTimeOffset;
@@ -340,8 +341,8 @@ public:
     int64_t nPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
-    
-    
+
+
     CCriticalSection cs_filter;
     CBloomFilter* pfilter;
 
@@ -386,7 +387,7 @@ public:
         nPingUsecStart = 0;
         nPingUsecTime = 0;
         fPingQueued = false;
-        
+
         {
             LOCK(cs_nLastNodeId);
             id = nLastNodeId++;
@@ -429,7 +430,7 @@ public:
     unsigned int GetTotalRecvSize()
     {
         unsigned int total = 0;
-        BOOST_FOREACH(const CNetMessage &msg, vRecvMsg) 
+        BOOST_FOREACH(const CNetMessage &msg, vRecvMsg)
             total += msg.vRecv.size() + 24;
         return total;
     }
@@ -494,7 +495,7 @@ public:
     {
         // We're using mapAskFor as a priority queue,
         // the key is the earliest time the request can be sent
-        
+
         int64_t& nRequestTime = mapAlreadyAskedFor[inv];
         LogPrint("net", "askfor %s   %d (%s)\n", inv.ToString(), nRequestTime, DateTimeStrFormat("%H:%M:%S", nRequestTime/1000000));
 
@@ -778,7 +779,7 @@ public:
 
 
     void PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd);
-    
+
     void PushGetBlocks(uint256& hashBegin, uint256 hashEnd);
     void PushGetBlocks(CBlockThinIndex* pindexBegin, uint256 hashEnd);
     void PushGetHeaders(CBlockThinIndex* pindexBegin, uint256 hashEnd);

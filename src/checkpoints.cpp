@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,7 +31,7 @@ namespace Checkpoints
 	( 10000,    uint256("0x89fa592395c4fff97e04ade632dfc33bee19fc46d489abf51331ee68a20ad19d") )
 	( 15000,    uint256("0xb54f2cc3bc31a0f7110ef5f95a1c00744793f5419b1d43044fe393a777edca39") )
 	( 20000,    uint256("0x87294db40d1af9101876293140cb2d82aef893881fbdb2a48ef0b0e062b6966a") )
-	( 25000,    uint256("0x70aaaf2d6dd706fa4689a5e6e17994342e661ea37f72333e63534cf0cc3d7dc1") )		
+	( 25000,    uint256("0x70aaaf2d6dd706fa4689a5e6e17994342e661ea37f72333e63534cf0cc3d7dc1") )
     ;
 
     // TestNet has no checkpoints
@@ -84,7 +85,7 @@ namespace Checkpoints
     }
 
 
-    // Automatically select a suitable sync-checkpoint 
+    // Automatically select a suitable sync-checkpoint
     const CBlockIndex* AutoSelectSyncCheckpoint()
     {
         const CBlockIndex *pindex = pindexBest;
