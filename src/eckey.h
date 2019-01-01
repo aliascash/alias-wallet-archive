@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
 // Copyright (c) 2014-2015 The ShadowCoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -14,7 +15,7 @@
 
 #include "key.h"
 #include "util.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 
 // RAII Wrapper around OpenSSL's EC_KEY
 class CECKey {
@@ -31,7 +32,7 @@ public:
     ~CECKey() {
         EC_KEY_free(pkey);
     }
-    
+
     EC_KEY* GetECKey() {return pkey;};
 
     void GetSecretBytes(unsigned char vch[32]) const;
@@ -57,7 +58,7 @@ public:
     // If this function succeeds, the recovered public key is guaranteed to be valid
     // (the signature is a valid signature of the given data for that key)
     bool Recover(const uint256 &hash, const unsigned char *p64, int rec);
-    
+
     bool TweakPublic(const unsigned char vchTweak[32]);
 };
 

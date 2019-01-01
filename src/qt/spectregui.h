@@ -1,4 +1,5 @@
 // Copyright (c) 2014 The ShadowCoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -213,7 +214,7 @@ private slots:
 
     void updateWeight();
     void updateStakingIcon();
-    
+
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();
 };

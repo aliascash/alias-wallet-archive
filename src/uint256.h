@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -350,7 +351,7 @@ public:
     {
         return (unsigned char*)&pn[WIDTH];
     }
-    
+
     const unsigned char* begin() const
     {
         return (unsigned char*)&pn[0];
@@ -463,7 +464,7 @@ public:
         else
             *this = 0;
     }
-    
+
     explicit uint160(const unsigned char* p, int len)
     {
         if (len == sizeof(pn))
@@ -471,7 +472,7 @@ public:
         else
             *this = 0;
     }
-    
+
 };
 
 inline bool operator==(const uint160& a, uint64_t b)                         { return (base_uint160)a == b; }
@@ -587,7 +588,7 @@ public:
         else
             *this = 0;
     }
-    
+
     explicit uint256(const unsigned char* p, int len)
     {
         if (len == sizeof(pn))

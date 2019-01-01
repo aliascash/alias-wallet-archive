@@ -1,4 +1,5 @@
 // Copyright (c) 2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,20 +29,20 @@ enum bloomflags
     // Only adds outpoints to the filter if the output is a pay-to-pubkey/pay-to-multisig script
     BLOOM_UPDATE_P2PUBKEY_ONLY = 2,
     BLOOM_UPDATE_MASK = 3,
-    
+
     BLOOM_ACCEPT_STEALTH = (1 << 2),
-    
-    
+
+
 };
 
 /**
  * BloomFilter is a probabilistic filter which SPV clients provide
  * so that we can filter the transactions we sends them.
- * 
+ *
  * This allows for significantly more efficient transaction and block downloads.
- * 
+ *
  * Because bloom filters are probabilistic, an SPV node can increase the false-
- * positive rate, making us send them transactions which aren't actually theirs, 
+ * positive rate, making us send them transactions which aren't actually theirs,
  * allowing clients to trade more bandwidth for more privacy by obfuscating which
  * keys are owned by them.
  */
@@ -56,7 +57,7 @@ public:
     unsigned char nFlags;
 
     unsigned int Hash(unsigned int nHashNum, const std::vector<unsigned char>& vDataToHash) const;
-    
+
     // Creates a new bloom filter which will provide the given fp rate when filled with the given number of elements
     // Note that if the given parameters will result in a filter outside the bounds of the protocol limits,
     // the filter created will be as close to the given parameters as possible within the protocol limits.
@@ -74,7 +75,7 @@ public:
         READWRITE(nTweak);
         READWRITE(nFlags);
     )
-    
+
     bool IsFull() {return isFull;};
     unsigned int GetSize() {return vData.size();};
 

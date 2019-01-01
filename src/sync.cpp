@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2012 The Bitcoin Core developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -85,7 +86,7 @@ static void push_lock(void* c, const CLockLocation& locklocation, bool fTry)
 {
     if (lockstack.get() == NULL)
         lockstack.reset(new LockStack);
-    
+
     if (IsLogOpen())
         LogPrint("lock", "Locking: %s\n", locklocation.ToString());
     dd_mutex.lock();

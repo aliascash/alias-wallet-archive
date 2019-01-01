@@ -1,5 +1,5 @@
 // Copyright (c) 2014 The ShadowCoin developers
-// Copyright (c) 2016 The Spectrecoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -23,7 +23,7 @@ enum eNodeState
     NS_GET_HEADERS,
     NS_GET_FILTERED_BLOCKS,
     NS_READY,
-    
+
     NS_UNKNOWN // end marker
 };
 
@@ -36,7 +36,7 @@ enum eBlockFlags
 
 
 /*  nServices flags
-    top 32 bits of CNode::nServices are used to mark services required 
+    top 32 bits of CNode::nServices are used to mark services required
 */
 
 enum

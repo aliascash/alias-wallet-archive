@@ -1,3 +1,8 @@
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #ifndef CLIENTMODEL_H
 #define CLIENTMODEL_H
 
@@ -52,10 +57,10 @@ public:
 
     //! Return true if client connected to testnet
     bool isTestNet() const;
-    
+
     //! mode (thin/full) client is running in
     int getClientMode() const;
-    
+
     //! Return true if core is doing initial block download
     bool inInitialBlockDownload() const;
     //! Return conservative estimate of total number of blocks, or 0 if unknown
