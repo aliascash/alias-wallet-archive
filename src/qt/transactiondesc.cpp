@@ -80,16 +80,21 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         if (nCredit == 0)
         {
             int64_t nUnmatured = 0;
-            BOOST_FOREACH(const CTxOut& txout, wtx.vout)
-                nUnmatured += wallet->GetCredit(txout);
+            BOOST_FOREACH(const CTxOut& txout, wtx.vout)              
+                nUnmatured += txout.IsAnonOutput() ? wallet->GetSpectreCredit(txout) : wallet->GetCredit(txout);
             strHTML += "<b>" + tr("Credit") + ":</b> ";
             if (wtx.IsInMainChain())
-                strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nUnmatured)+ " (" + tr("matures in %n more block(s)", "", wtx.GetBlocksToMaturity()) + ")";
+            {
+                if (wtx.IsAnonCoinStake())
+                    strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nUnmatured);
+                else
+                    strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nUnmatured);
+                strHTML += " (" + tr("matures in %n more block(s)", "", wtx.GetBlocksToMaturity()) + ")";
+            }
             else
                 strHTML += "(" + tr("not accepted") + ")";
             strHTML += "<br>";
         }
-
     }
 
     int64_t allFee;
@@ -113,11 +118,13 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     else if (listReceived.size() > 0)
         netCurrency = std::get<3>(listSent.front());
 
-    if (netCurrency == SPECTRE)
-        strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nNet, true) + "<br>";
-    else
-        strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nNet, true) + "<br>";
-
+    if (!((wtx.IsCoinBase() || wtx.IsCoinStake()) && nCredit == 0))
+    {
+        if (netCurrency == SPECTRE)
+            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nNet, true) + "<br>";
+        else
+            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nNet, true) + "<br>";
+    }
     if (listReceived.size() > 0 && listSent.size() > 0)
     {
         // Transfer within account
