@@ -853,6 +853,9 @@ bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsi
     if (!tx.IsAnonCoinStake())
         return error("CheckAnonProofOfStake() : called on non-anon-coinstake %s", tx.GetHash().ToString());
 
+    if (!Params().IsForkV3(tx.nTime))
+        return error("CheckAnonProofOfStake() : called before V3 fork time with anon-coinstake %s", tx.GetHash().ToString());
+
     CTxDB txdb("r");
 
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
