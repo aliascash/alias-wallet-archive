@@ -237,7 +237,7 @@ public:
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
                       
         nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
-        nForkV3Time = 1546560000; // TESTNET V3 chain fork (01/04/2019 @ 12:00am (UTC))
+        nForkV3Time = 1546470000; // TESTNET V3 chain fork (01/02/2019 @ 11:00pm (UTC))
 
 
         devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
