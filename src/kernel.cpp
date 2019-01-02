@@ -841,7 +841,7 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
  *                   nStakeModifier is either the UTXO hash or keyImage used for the last staking transaction
  *   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
  *             makes sure an ATXO can only be used once for generating a kernel hash
- *   nTime: current timestamp
+ *   nTime: current timestamp (granularity set to 15 seconds)
  *
  * Note:
  *   block/tx hash should not be used here as they can be generated in vast
