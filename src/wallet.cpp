@@ -1157,6 +1157,8 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             }
         }
 
+    bool generated = IsCoinBase() || IsCoinStake();
+
     // Sent/received.
     std::map<std::string, int64_t> mapStealthReceived;
     std::map<std::string, int64_t> mapStealthSent;
@@ -1175,7 +1177,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             continue;
 
         // Don't report 'change' txouts
-        if (nDebit > 0 && pwallet->IsChange(txout))
+        if (nDebit > 0 && !generated && pwallet->IsChange(txout))
             continue;
 
         if (nVersion == ANON_TXN_VERSION
@@ -1201,7 +1203,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             mapDestinationSubs[stealthAddress].push_back(ckidD);
 
             // If we are debited by the transaction, add the output as a "sent" entry
-            if (nDebit > 0 && (!IsAnonCoinStake() || !fIsMine))
+            if (nDebit > 0)
                 mapStealthSent[stealthAddress] += txout.nValue;
 
             // If we are receiving the output, add it as a "received" entry
@@ -1268,7 +1270,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         }
 
         // If we are debited by the transaction, add the output as a "sent" entry
-        if (nDebit > 0 && (!IsAnonCoinStake() || !fIsMine))
+        if (nDebit > 0)
             listSent.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencySource, sNarr));
 
         // If we are receiving the output, add it as a "received" entry
