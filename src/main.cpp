@@ -3901,7 +3901,7 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
     int64_t nSearchTime = GetAdjustedTime(); // search to current time
     if (Params().IsProtocolV2(nBestHeight+1))
-        nSearchTime &= ~STAKE_TIMESTAMP_MASK; // decrease granularity to 15 seconds
+        nSearchTime &= ~STAKE_TIMESTAMP_MASK; // decrease granularity to 16 seconds
 
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
