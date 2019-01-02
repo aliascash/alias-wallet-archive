@@ -3989,7 +3989,7 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
     return true;
 };
 
-bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared)
+bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared, int64_t maxAnonOutput)
 {
     if (fDebugRingSig)
         LogPrintf("CreateAnonOutputs()\n");
@@ -4004,7 +4004,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
 
     std::vector<int64_t> vOutAmounts;
-    if (splitAmount(nValue, vOutAmounts) != 0)
+    if (splitAmount(nValue, vOutAmounts, maxAnonOutput) != 0)
     {
         LogPrintf("splitAmount() failed.\n");
         return false;
@@ -6551,7 +6551,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::vector<ec_secret> vecSecShared;
 
                 std::string sNarr;
-                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared))
+                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, MAX_ANON_STAKE_OUTPUT))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
 
                 // Set private key for signing the block

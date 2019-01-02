@@ -33,7 +33,7 @@ const int ANON_TXN_VERSION = 1000;
 int initialiseRingSigs();
 int finaliseRingSigs();
 
-int splitAmount(int64_t nValue, std::vector<int64_t> &vOut);
+int splitAmount(int64_t nValue, std::vector<int64_t> &vOut, int64_t maxAnonOutput = MAX_ANON_OUTPUT);
 
 int getOldKeyImage(const CPubKey &pubkey, ec_point &keyImage);
 

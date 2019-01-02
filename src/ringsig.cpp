@@ -64,10 +64,9 @@ int finaliseRingSigs()
 }
 
 
-int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
+int splitAmount(int64_t nValue, std::vector<int64_t>& vOut, int64_t maxAnonOutput)
 {
 	// First make sure no output bigger than maxAnonOutput is created
-	int64_t maxAnonOutput = 10000 * COIN;
 	for (int numOfMaxAnonOutputs = nValue / maxAnonOutput; numOfMaxAnonOutputs > 0; numOfMaxAnonOutputs--) {
 		vOut.push_back(1 * maxAnonOutput);
 	}
