@@ -1144,14 +1144,18 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
     Currency currencyDestination = XSPEC;
     Currency currencySource = XSPEC;
-    for(const CTxIn& txin: vin)
-    {
-        if (txin.IsAnonInput())
+
+    if (IsAnonCoinStake())
+        currencySource = SPECTRE;
+    else
+        for(const CTxIn& txin: vin)
         {
-            currencySource = SPECTRE;
-            break;
+            if (txin.IsAnonInput())
+            {
+                currencySource = SPECTRE;
+                break;
+            }
         }
-    }
 
     // Sent/received.
     std::map<std::string, int64_t> mapStealthReceived;
@@ -1197,7 +1201,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
             mapDestinationSubs[stealthAddress].push_back(ckidD);
 
             // If we are debited by the transaction, add the output as a "sent" entry
-            if (nDebit > 0 && !IsAnonCoinStake())
+            if (nDebit > 0 && (!IsAnonCoinStake() || !fIsMine))
                 mapStealthSent[stealthAddress] += txout.nValue;
 
             // If we are receiving the output, add it as a "received" entry
@@ -1264,7 +1268,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         }
 
         // If we are debited by the transaction, add the output as a "sent" entry
-        if (nDebit > 0)
+        if (nDebit > 0 && (!IsAnonCoinStake() || !fIsMine))
             listSent.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencySource, sNarr));
 
         // If we are receiving the output, add it as a "received" entry
@@ -6152,32 +6156,32 @@ uint64_t CWallet::GetStakeWeight() const
        int64_t nCurrentTime = GetTime();
 
         CTxDB txdb("r");
-    BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
-    {
+        BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
         {
-            LOCK2(cs_main, cs_wallet);
-            if (nNodeMode == NT_THIN)
             {
-                // -- check txn is in chain
-                std::map<uint256, CBlockThinIndex*>::iterator mi (mapBlockThinIndex.find(pcoin.first->hashBlock));
-                if (mi == mapBlockThinIndex.end())
+                LOCK2(cs_main, cs_wallet);
+                if (nNodeMode == NT_THIN)
                 {
-                    if (fThinFullIndex
-                        || !pindexRear)
-                        continue;
+                    // -- check txn is in chain
+                    std::map<uint256, CBlockThinIndex*>::iterator mi (mapBlockThinIndex.find(pcoin.first->hashBlock));
+                    if (mi == mapBlockThinIndex.end())
+                    {
+                        if (fThinFullIndex
+                            || !pindexRear)
+                            continue;
 
-                    CDiskBlockThinIndex diskindex;
-                    if (!txdb.ReadBlockThinIndex(pcoin.first->hashBlock, diskindex)
-                        || diskindex.hashNext == 0)
+                        CDiskBlockThinIndex diskindex;
+                        if (!txdb.ReadBlockThinIndex(pcoin.first->hashBlock, diskindex)
+                            || diskindex.hashNext == 0)
+                            continue;
+                    };
+                } else
+                {
+                    CTxIndex txindex;
+                    if (!txdb.ReadTxIndex(pcoin.first->GetHash(), txindex))
                         continue;
-                };
-            } else
-            {
-                CTxIndex txindex;
-                if (!txdb.ReadTxIndex(pcoin.first->GetHash(), txindex))
-                    continue;
+                }
             }
-        }
 
             if (nCurrentTime - pcoin.first->nTime > nStakeMinAge)
                 nWeight += pcoin.first->vout[pcoin.second].nValue;

@@ -133,6 +133,13 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         {
              ::toHTML(wallet, wtx, strHTML, sCurrency, destination, destSubs, amount, currency, narration, narrationHandled);
         }
+        if (wtx.IsCoinStake())
+        {
+            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+            {
+                ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
+            }
+        }
     }
     else {
         for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
