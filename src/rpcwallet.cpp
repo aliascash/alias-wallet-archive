@@ -1210,16 +1210,29 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
     bool fAllAccounts = (strAccount == std::string("*"));
 
     // Sent
-    if ((!wtx.IsCoinStake()) && (!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
-    {
+    if (!listSent.empty() && wtx.GetBlocksToMaturity() == 0 && (fAllAccounts || strAccount == strSentAccount))
+    { 
         for(const auto & [address,destSubs,amount,currency,narration] : listSent)
-        {
+        {         
+            std::string category = "send";
+            if (wtx.IsCoinStake())
+            {
+                // only add contributions/donations
+                std::string strAddress = CBitcoinAddress(address).ToString();
+                if (strAddress != Params().GetDevContributionAddress())
+                    continue;
+                if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
+                    category = "contributed";
+                else
+                    category = "donated";
+            }
             Object entry;
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, address);
-            entry.push_back(Pair("category", "send"));
+            entry.push_back(Pair("category", category));
             entry.push_back(Pair("amount", ValueFromAmount(-amount)));
-            entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+            if (!(wtx.IsCoinBase() || wtx.IsCoinStake()))
+                entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
             entry.push_back(Pair("currency", currency == SPECTRE ? "SPECTRE" : "XSPEC"));
             if (!narration.empty())
                 entry.push_back(Pair("narration", narration));
