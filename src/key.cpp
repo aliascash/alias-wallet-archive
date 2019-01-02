@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -277,7 +278,7 @@ bool CKey::Derive(CKey& keyChild, unsigned char ccChild[32], unsigned int nChild
         assert(begin() + 32 == end());
         BIP32Hash(cc, nChild, 0, begin(), out);
     };
-    
+
     memcpy(ccChild, out+32, 32);
     bool ret = TweakSecret((unsigned char*)keyChild.begin(), begin(), out);
     UnlockObject(out);
@@ -408,7 +409,7 @@ bool CExtPubKey::Derive(CExtPubKey &out, unsigned int nChild) const
 {
     out.nDepth = nDepth + 1;
     CKeyID id = pubkey.GetID();
-    
+
     memcpy(&out.vchFingerprint[0], &id, 4);
     out.nChild = nChild;
     return pubkey.Derive(out.pubkey, out.vchChainCode, nChild, vchChainCode);
@@ -483,7 +484,7 @@ bool CExtKeyPair::Derive(CExtPubKey &out, unsigned int nChild) const
     };
     if (!key.IsValid())
         return false;
-    
+
     out.nDepth = nDepth + 1;
     CKeyID id = pubkey.GetID();
     memcpy(&out.vchFingerprint[0], &id, 4);
@@ -491,7 +492,7 @@ bool CExtKeyPair::Derive(CExtPubKey &out, unsigned int nChild) const
     CKey tkey;
     if (!key.Derive(tkey, out.vchChainCode, nChild, vchChainCode))
         return false;
-    
+
     out.pubkey = tkey.GetPubKey(true);
     return true;
 };
@@ -500,7 +501,7 @@ bool CExtKeyPair::Derive(CKey &out, unsigned int nChild) const
 {
     if (!key.IsValid())
         return false;
-    
+
     unsigned char temp[32];
     return key.Derive(out, temp, nChild, vchChainCode);
 };
@@ -514,7 +515,7 @@ bool CExtKeyPair::Derive(CPubKey &out, unsigned int nChild) const
     };
     if (!key.IsValid())
         return false;
-    
+
     CKey tkey;
     if (!key.Derive(tkey, temp, nChild, vchChainCode))
         return false;

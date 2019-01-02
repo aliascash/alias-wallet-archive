@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1618,7 +1619,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked, use walletlock first if need to change unlock settings.");
 
 	if (!IsRPCServerRunning()) {
-		throw JSONRPCError(RPC_SERVER_NOT_STARTED, "Error: To use the walletpassphrase you need to start the wallet with argument -server. Start the wallet with -server argument and try again.\n");	
+		throw JSONRPCError(RPC_SERVER_NOT_STARTED, "Error: To use the walletpassphrase you need to start the wallet with argument -server. Start the wallet with -server argument and try again.\n");
 	}
 
     // Note that the walletpassphrase is stored in params[0] which is not mlock()ed
@@ -2288,7 +2289,7 @@ Value scanforalltxns(const Array& params, bool fHelp)
             pwalletMain->CacheAnonStats();
 
     } // cs_main, pwalletMain->cs_wallet
-       
+
     LogPrintf("Found %u stealth transactions in blockchain.\n", pwalletMain->nStealth);
     LogPrintf("Found %u new owned stealth transactions.\n", pwalletMain->nFoundStealth);
 

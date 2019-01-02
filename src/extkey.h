@@ -1,4 +1,5 @@
 // Copyright (c) 2014-2015 The ShadowCoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -61,7 +62,7 @@ enum WordListLanguages
     WLL_SPANISH         = 4,
     WLL_CHINESE_S       = 5,
     WLL_CHINESE_T       = 6,
-    
+
     WLL_MAX
 };
 
@@ -78,32 +79,32 @@ public:
         nGenerated = 0;
         nHGenerated = 0;
     }
-    
+
     std::string GetIDString58() const;
-    
+
     CKeyID GetID() const
     {
         return kp.GetID();
     };
-    
+
     bool operator <(const CStoredExtKey& y) const
     {
         return kp < y.kp;
     };
-    
+
     bool operator ==(const CStoredExtKey& y) const
     {
         // - Compare pubkeys instead of CExtKeyPair for speed
         return kp.pubkey == y.kp.pubkey;
     };
-    
-    
+
+
     template<typename T>
     int DeriveKey(T &keyOut, uint32_t nChildIn, uint32_t &nChildOut, bool fHardened = false)
     {
         if (fHardened && !kp.IsValidV())
             return errorN(1, "Ext key does not contain a secret.");
-        
+
         for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i)
         {
             if ((nChildIn >> 31) == 1)
@@ -113,36 +114,36 @@ public:
                     return errorN(1, "No more hardened keys can be derived from master.");
                 return errorN(1, "No more keys can be derived from master.");
             };
-            
+
             uint32_t nNum = fHardened ? nChildIn | 1 << 31 : nChildIn;
-            
+
             if (kp.Derive(keyOut, nNum))
             {
                 nChildOut = nNum; // nChildOut has bit 31 set for harnened keys
                 return 0;
             };
-            
+
             nChildIn++;
         };
         return 1;
     };
-    
+
     template<typename T>
     int DeriveNextKey(T &keyOut, uint32_t &nChildOut, bool fHardened = false, bool fUpdate = true)
     {
         uint32_t nChild = fHardened ? nHGenerated : nGenerated;
-        
+
         int rv;
         if ((rv = DeriveKey(keyOut, nChild, nChildOut, fHardened)) != 0)
             return rv;
-        
+
         nChild = nChildOut & ~(1 << 31); // clear the hardened bit
         if (fUpdate)
             SetCounter(nChild+1, fHardened);
-        
+
         return 0;
     };
-    
+
     int SetCounter(uint32_t nC, bool fHardened)
     {
         if (fHardened)
@@ -151,12 +152,12 @@ public:
             nGenerated = nC;
         return 0;
     };
-    
+
     uint32_t GetCounter(bool fHardened)
     {
         return fHardened ? nHGenerated : nGenerated;
     };
-    
+
     IMPLEMENT_SERIALIZE
     (
         // - Never save secret data when key is encrypted
@@ -168,7 +169,7 @@ public:
         {
             READWRITE(kp);
         };
-        
+
         READWRITE(vchCryptedSecret);
         READWRITE(sLabel);
         READWRITE(nFlags);
@@ -176,18 +177,18 @@ public:
         READWRITE(nHGenerated);
         READWRITE(mapValue);
     );
-    
+
     // - when encrypted, pk can't be derived from vk
     CExtKeyPair kp;
     std::vector<uint8_t> vchCryptedSecret;
-    
+
     std::string sLabel;
-    
+
     uint8_t fLocked; // not part of nFlags so not saved
     uint32_t nFlags;
     uint32_t nGenerated;
     uint32_t nHGenerated;
-    
+
     mapEKValue_t mapValue;
 };
 
@@ -198,18 +199,18 @@ class CEKAKey
 public:
     CEKAKey() {};
     CEKAKey(uint32_t nParent_, uint32_t nKey_) : nParent(nParent_), nKey(nKey_) {};
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(nParent);
         READWRITE(nKey);
         READWRITE(sLabel);
     );
-    
+
     uint32_t nParent; // vExtKeys
     uint32_t nKey;
     //uint32_t nChecksum; // TODO: is it worth storing 4 bytes of the id (160 hash here)
-     
+
     std::string sLabel; // TODO: use later
 };
 
@@ -219,18 +220,18 @@ class CEKASCKey
 public:
     CEKASCKey() {};
     CEKASCKey(CKeyID &idStealthKey_, ec_secret &sShared_) : idStealthKey(idStealthKey_), sShared(sShared_) {};
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(idStealthKey);
         READWRITE(sShared);
         READWRITE(sLabel);
     );
-    
+
     // TODO: store an offset instead of the full id of the stealth address
     CKeyID idStealthKey; // id of parent stealth key (received on)
     ec_secret sShared;
-    
+
     //uint32_t nChecksum; // TODO: is it worth storing 4 bytes of the id (160 hash here)
     std::string sLabel; // TODO: use later
 
@@ -254,23 +255,23 @@ public:
         CPubKey pk = skScan.GetPubKey();
         pkScan.resize(pk.size());
         memcpy(&pkScan[0], pk.begin(), pk.size());
-        
+
         akSpend = CEKAKey(nSpendParent_, nSpendKey_);
         pk = spendSecret_.GetPubKey();
         pkSpend.resize(pk.size());
         memcpy(&pkSpend[0], pk.begin(), pk.size());
     };
-    
+
     std::string ToStealthAddress() const;
     int SetSxAddr(CStealthAddress &sxAddr) const;
-    
+
     CKeyID GetID() const
     {
         // - not likely to be called very often
         return skScan.GetPubKey().GetID();
     };
-    
-    
+
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(nFlags);
@@ -282,15 +283,15 @@ public:
         READWRITE(pkScan);
         READWRITE(pkSpend);
     );
-    
-    
+
+
     uint8_t nFlags; // options of CStealthAddress
     std::string sLabel;
     uint32_t nScanParent; // vExtKeys
     uint32_t nScanKey;
     CKey skScan;
     CEKAKey akSpend;
-    
+
     ec_point pkScan;
     ec_point pkSpend;
 };
@@ -300,13 +301,13 @@ class CEKAKeyPack
 public:
     CEKAKeyPack() {};
     CEKAKeyPack(CKeyID id_, CEKAKey &ak_) : id(id_), ak(ak_) {};
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(id);
         READWRITE(ak);
     );
-    
+
     CKeyID id;
     CEKAKey ak;
 };
@@ -316,13 +317,13 @@ class CEKASCKeyPack
 public:
     CEKASCKeyPack() {};
     CEKASCKeyPack(CKeyID id_, CEKASCKey &asck_) : id(id_), asck(asck_) {};
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(id);
         READWRITE(asck);
     );
-    
+
     CKeyID id;
     CEKASCKey asck;
 };
@@ -332,13 +333,13 @@ class CEKAStealthKeyPack
 public:
     CEKAStealthKeyPack() {};
     CEKAStealthKeyPack(CKeyID id_, CEKAStealthKey &aks_) : id(id_), aks(aks_) {};
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(id);
         READWRITE(aks);
     );
-    
+
     CKeyID id;
     CEKAStealthKey aks;
 };
@@ -361,7 +362,7 @@ public:
         nPack = 0;
         nPackStealth = 0;
     };
-    
+
     int FreeChains()
     {
         // - Keys are normally freed by the wallet
@@ -373,85 +374,85 @@ public:
         };
         return 0;
     };
-    
+
     std::string GetIDString58() const;
-    
+
     CKeyID GetID() const
     {
         if (vExtKeyIDs.size() < 1)
             return CKeyID(0);
         return vExtKeyIDs[0];
     };
-    
+
     int HaveKey(const CKeyID &id, bool fUpdate, CEKAKey &ak);
     bool GetKey(const CKeyID &id, CKey &keyOut) const;
     bool GetKey(const CEKAKey &ak, CKey &keyOut) const;
     bool GetKey(const CEKASCKey &asck, CKey &keyOut) const;
-    
+
     bool GetPubKey(const CKeyID &id, CPubKey &pkOut) const;
     bool GetPubKey(const CEKAKey &ak, CPubKey &pkOut) const;
     bool GetPubKey(const CEKASCKey &asck, CPubKey &pkOut) const;
-    
+
     bool SaveKey(const CKeyID &id, CEKAKey &keyIn);
     bool SaveKey(const CKeyID &id, CEKASCKey &keyIn);
-    
+
     bool IsLocked(const CEKAStealthKey &aks);
-    
+
     CStoredExtKey *GetChain(uint32_t nChain) const
     {
         if (nChain >= vExtKeys.size())
             return NULL;
         return vExtKeys[nChain];
     };
-    
+
     CStoredExtKey *ChainExternal()
     {
         return GetChain(nActiveExternal);
     };
-    
+
     CStoredExtKey *ChainInternal()
     {
         return GetChain(nActiveInternal);
     };
-    
+
     CStoredExtKey *ChainStealth()
     {
         return GetChain(nActiveStealth);
     };
-    
+
     CStoredExtKey *ChainAccount()
     {
         if (vExtKeys.size() < 1)
             return NULL;
         return vExtKeys[0];
     };
-    
+
     int AddLookAhead(uint32_t nChain, uint32_t nKeys);
-    
+
     int AddLookAheadInternal(uint32_t nKeys)
     {
         return AddLookAhead(nActiveExternal, nKeys);
     };
-    
+
     int AddLookAheadExternal(uint32_t nKeys)
     {
         return AddLookAhead(nActiveInternal, nKeys);
     };
-    
+
     int ExpandStealthChildKey(const CEKAStealthKey *aks, const ec_secret &sShared, CKey &kOut) const;
     int ExpandStealthChildPubKey(const CEKAStealthKey *aks, const ec_secret &sShared, CPubKey &pkOut) const;
-    
+
     int WipeEncryption();
-    
+
     IMPLEMENT_SERIALIZE
     (
         READWRITE(sLabel);
         READWRITE(idMaster);
-        
+
         READWRITE(nActiveExternal);
         READWRITE(nActiveInternal);
         READWRITE(nActiveStealth);
-        
+
         READWRITE(vExtKeyIDs);
         READWRITE(nHeightCheckedUncrypted);
         READWRITE(nFlags);
@@ -460,38 +461,38 @@ public:
         READWRITE(nPackStealthKeys);
         READWRITE(mapValue);
     );
-    
-    
+
+
     // TODO: Could store used keys in archived packs, which don't get loaded into memory
     AccKeyMap mapKeys;
     AccKeyMap mapLookAhead;
-    
+
     AccKeySCMap mapStealthChildKeys; // keys derived from stealth addresses
-    
+
     AccStealthKeyMap mapStealthKeys;
     AccStealthKeyMap mapLookAheadStealth;
-    
-    
+
+
     std::string sLabel; // account name
     CKeyID idMaster;
-    
+
     uint32_t nActiveExternal;
     uint32_t nActiveInternal;
     uint32_t nActiveStealth;
-    
-    
+
+
     // Note: Stealth addresses consist of 2 secret keys, one of which (scan secret) must remain unencrypted while wallet locked
     // store a separate child key used only to derive secret keys
     // Stealth addresses must only ever be generated as hardened keys
-    
+
     mutable CCriticalSection cs_account;
-    
+
     // - 0th key is always the account key
     std::vector<CStoredExtKey*> vExtKeys;
     std::vector<CKeyID> vExtKeyIDs;
-    
+
     int nHeightCheckedUncrypted; // last block checked while uncrypted
-    
+
     uint32_t nFlags;
     uint32_t nPack;
     uint32_t nPackStealth;

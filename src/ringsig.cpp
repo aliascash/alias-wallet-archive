@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016 The Spectrecoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -70,7 +70,7 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
 	int64_t maxAnonOutput = 10000 * COIN;
 	for (int numOfMaxAnonOutputs = nValue / maxAnonOutput; numOfMaxAnonOutputs > 0; numOfMaxAnonOutputs--) {
 		vOut.push_back(1 * maxAnonOutput);
-	}	
+	}
 	nValue = nValue % maxAnonOutput;
 
 	// - split amounts into 1, 3, 4, 5

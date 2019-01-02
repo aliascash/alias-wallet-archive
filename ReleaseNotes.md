@@ -15,6 +15,10 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
+## 2.2.1
+- Fix: Lookup for possible stealth addresses in addressbook bloated logfile and decreased performance
+- Fix: Bug in fee calculation could prevent spending of SPECTRE
+
 ## 2.2.0
 **Please note that to make the various changes and fixes regarding SPECTRE effective, a complete rescan of the Blockchain is required. The wallet will automatically initiate a rescan on startup.**
 - Minimum ring size increased to 10 (enforced)

@@ -1,3 +1,8 @@
+// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #include "hash.h"
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash)
@@ -22,7 +27,7 @@ unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char
         k1 *= c2;
 
         h1 ^= k1;
-        h1 = ROTL32(h1,13); 
+        h1 = ROTL32(h1,13);
         h1 = h1*5+0xe6546b64;
     }
 
@@ -106,26 +111,26 @@ uint32_t BitcoinChecksum(uint8_t* p, uint32_t nBytes)
 {
     if (!p || nBytes == 0)
         return 0;
-    
+
     uint8_t hash1[32];
     SHA256(p, nBytes, (uint8_t*)hash1);
     uint8_t hash2[32];
     SHA256((uint8_t*)hash1, sizeof(hash1), (uint8_t*)hash2);
-    
+
     // -- checksum is the 1st 4 bytes of the hash
     uint32_t checksum;
     memcpy(&checksum, &hash2[0], 4);
-    
+
     return checksum;
 };
 
 void AppendChecksum(std::vector<uint8_t>& data)
 {
     uint32_t checksum = BitcoinChecksum(&data[0], data.size());
-    
+
     std::vector<uint8_t> tmp(4);
     memcpy(&tmp[0], &checksum, 4);
-    
+
     data.insert(data.end(), tmp.begin(), tmp.end());
 };
 
@@ -133,9 +138,9 @@ bool VerifyChecksum(const std::vector<uint8_t>& data)
 {
     if (data.size() < 4)
         return false;
-    
+
     uint32_t checksum;
     memcpy(&checksum, &(*(data.end() - 4)), 4);
-    
+
     return BitcoinChecksum((uint8_t*)&data[0], data.size()-4) == checksum;
 };

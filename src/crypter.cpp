@@ -1,4 +1,5 @@
-// Copyright (c) 2009-2012 The Bitcoin Developers
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -166,50 +167,50 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
 {
     if (fDebug)
         LogPrintf("CCryptoKeyStore::Unlock()\n");
-    
+
     {
         LOCK(cs_KeyStore);
         if (!SetCrypted())
             return false;
-        
+
         int nUnlocked = 0;
-        
+
         CryptedKeyMap::const_iterator mi = mapCryptedKeys.begin();
         for (; mi != mapCryptedKeys.end(); ++mi)
         {
             const CPubKey &vchPubKey = (*mi).second.first;
             const std::vector<unsigned char> &vchCryptedSecret = (*mi).second.second;
             CSecret vchSecret;
-            
+
             if (vchCryptedSecret.size() < 1) // key was recieved from stealth/anon txn with wallet locked, will be expanded after this
             {
                 if (fDebug)
                     LogPrintf("Skipping unexpanded key %s.\n", vchPubKey.GetHash().ToString().c_str());
                 continue;
             };
-            
+
             if (!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret))
             {
                 LogPrintf("DecryptSecret() failed.\n");
                 return false;
             };
-            
+
             if (vchSecret.size() != 32)
                 return false;
-            
+
             CKey key;
             key.Set(vchSecret.begin(), vchSecret.end(), vchPubKey.IsCompressed());
-            
+
             if (key.GetPubKey() != vchPubKey)
             {
                 LogPrintf("Unlock failed: PubKey mismatch %s.\n", vchPubKey.GetHash().ToString().c_str());
                 return false;
             };
-            
+
             nUnlocked++;
             break;
         };
-        
+
         if (nUnlocked < 1) // at least 1 key must pass the test
         {
             if (mapCryptedKeys.size() > 0)
@@ -218,12 +219,12 @@ bool CCryptoKeyStore::Unlock(const CKeyingMaterial& vMasterKeyIn)
                 return false;
             };
         };
-        
+
         vMasterKey = vMasterKeyIn;
     }
-    
+
     NotifyStatusChanged(this);
-    
+
     return true;
 }
 
@@ -244,7 +245,7 @@ bool CCryptoKeyStore::AddKeyPubKey(const CKey& key, const CPubKey &pubkey)
         CKeyingMaterial vchSecret(key.begin(), key.end());
         if (!EncryptSecret(vMasterKey, vchSecret, pubkey.GetHash(), vchCryptedSecret))
             return false;
-        
+
         // -- NOTE: this is CWallet::AddCryptedKey
         if (!AddCryptedKey(pubkey, vchCryptedSecret))
             return false;
