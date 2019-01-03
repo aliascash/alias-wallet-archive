@@ -109,31 +109,29 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
         if (wtx.IsAnonCoinStake())
-        {
+        {      
             if (!listReceived.empty()) // should never be empty
             {
                 const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
-                parts.append(TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
-                        rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
-                        rNarration, 0, -allFee, rCurrency, parts.size()));
-            }
+                TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
+                                                rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
+                                                rNarration, 0, -allFee, rCurrency, parts.size());
 
-            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
-            {
-                std::string strAddress = CBitcoinAddress(destination).ToString();
-                if (strAddress == Params().GetDevContributionAddress())
+                for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
                 {
-                    TransactionRecord sub(hash, nTime);
-                    sub.address = strAddress;
-                    if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
-                        sub.type = TransactionRecord::GeneratedContribution;
-                    else
-                        sub.type = TransactionRecord::GeneratedDonation;
-
-                    sub.credit = amount;
-                    sub.idx = parts.size(); // sequence number
-                    parts.append(sub);
+                    std::string strAddress = CBitcoinAddress(destination).ToString();
+                    if (strAddress == Params().GetDevContributionAddress())
+                    {
+                        sub.address = strAddress;
+                        int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
+                        if (blockHeight < 0 || blockHeight % 6 == 0)
+                            sub.type = TransactionRecord::GeneratedContribution;
+                        else
+                            sub.type = TransactionRecord::GeneratedDonation;
+                       break;
+                    }
                 }
+                parts.append(sub);
             }
         }
         else if (listReceived.size() > 0 && listSent.size() > 0)
@@ -186,7 +184,8 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             if (wallet->IsMine(txout))
             {
                 TransactionRecord sub(hash, nTime);
-                sub.idx = parts.size(); // sequence number
+                sub.idx = parts.size(); // sequence number         
+                parts.append(sub);
 
                 CTxDestination address;
 
@@ -217,34 +216,29 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 if (wtx.IsCoinStake())
                 {
                     // Generated (proof-of-stake)
-
-                    if (hashPrev == hash)
-                        continue; // last coinstake output
-
                     sub.credit = nNet > 0 ? nNet : fabs(wtx.GetValueOut() - nDebit);
                     sub.type = TransactionRecord::Generated;
-                    hashPrev = hash;
-                };
 
-                parts.append(sub);
-            }
-            else if (wtx.IsCoinStake()) {
-                CTxDestination address;
-                if (ExtractDestination(txout.scriptPubKey, address)) {
-                    std::string strAddress = CBitcoinAddress(address).ToString();
-                    if (strAddress == Params().GetDevContributionAddress()) {
-                        TransactionRecord sub(hash, nTime);
-                        sub.address = strAddress;
-						if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0) {
-							sub.type = TransactionRecord::GeneratedContribution;
-						}
-						else {
-							sub.type = TransactionRecord::GeneratedDonation;
-						}
-                        sub.credit = txout.nValue;
-                        sub.idx = parts.size(); // sequence number
-                        parts.append(sub);
+                    // check if stake was contributed
+                    for (const auto & txout : wtx.vout)
+                    {
+                        CTxDestination address;
+                        if (ExtractDestination(txout.scriptPubKey, address))
+                        {
+                            std::string strAddress = CBitcoinAddress(address).ToString();
+                            if (strAddress == Params().GetDevContributionAddress())
+                            {
+                                sub.address = strAddress;
+                                int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
+                                if (blockHeight < 0 || blockHeight % 6 == 0)
+                                    sub.type = TransactionRecord::GeneratedContribution;
+                                else
+                                    sub.type = TransactionRecord::GeneratedDonation;
+                                break;
+                            }
+                        }
                     }
+                    break;
                 }
             }
         }
