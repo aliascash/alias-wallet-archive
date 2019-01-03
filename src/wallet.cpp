@@ -6557,19 +6557,23 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, MAX_ANON_STAKE_OUTPUT))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
 
-                // Set private key for signing the block
+                std::map<CTxOut, ec_secret> mapOutSecShared;
+                for (uint32_t i = 0; i < vecSend.size(); ++i)
+                {
+                    CTxOut txOut(vecSend[i].second, vecSend[i].first);
+                    txNew.vout.push_back(txOut);
+                    // save mapping from TxOut to SecShared
+                    mapOutSecShared[txOut] = vecSecShared.at(i);
+                }
+                std::sort(txNew.vout.begin() + 1, txNew.vout.end());
+
+                // Set one-time private key of vout[1] for signing the block
                 ec_secret sSpend;
                 ec_secret sSpendR;
                 memcpy(&sSpend.e[0], &sxAddress.spend_secret[0], EC_SECRET_SIZE);
-                if (StealthSharedToSecretSpend(vecSecShared.at(0), sSpend, sSpendR) != 0)
+                if (StealthSharedToSecretSpend(mapOutSecShared.find(txNew.vout.at(1))->second, sSpend, sSpendR) != 0)
                     return error("CreateAnonCoinStake : failed to get private key of anon output");
                 key.Set(&sSpendR.e[0], true);
-
-
-                for (uint32_t i = 0; i < vecSend.size(); ++i)
-                    txNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));
-
-                std::sort(txNew.vout.begin() + 1, txNew.vout.end());
 
                 if (donateReward)
                 {
