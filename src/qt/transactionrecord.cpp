@@ -76,8 +76,13 @@ QString TransactionRecord::getTypeShort(const int &type)
     case TransactionRecord::SendToOther:
     case TransactionRecord::SendSpectre:
         return "output";
+    case TransactionRecord::SendToSelf:
+    case TransactionRecord::SendToSelfSPECTRE:
+    case TransactionRecord::ConvertXSPECtoSPECTRE:
+    case TransactionRecord::ConvertSPECTREtoXSPEC:
+         return "inout";
     default:
-        return "inout";
+        return "other";
     }
 }
 
