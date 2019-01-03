@@ -94,7 +94,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     int64_t nCredit = nCredSPEC + nCredSpectre;
     int64_t nDebit = wtx.GetDebit();
     int64_t nNet = nCredit - nDebit;
-    uint256 hash = wtx.GetHash(), hashPrev = 0;
+    uint256 hash = wtx.GetHash();
     std::map<std::string, std::string> mapValue = wtx.mapValue;
 
     char cbuf[256];
@@ -185,7 +185,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             {
                 TransactionRecord sub(hash, nTime);
                 sub.idx = parts.size(); // sequence number         
-                parts.append(sub);
 
                 CTxDestination address;
 
@@ -238,8 +237,10 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                             }
                         }
                     }
+                    parts.append(sub);
                     break;
                 }
+                parts.append(sub);
             }
         }
     } else

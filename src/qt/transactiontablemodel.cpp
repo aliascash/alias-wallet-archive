@@ -388,6 +388,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::Generated:
     case TransactionRecord::GeneratedSPECTRE:
     case TransactionRecord::GeneratedDonation:
+    case TransactionRecord::GeneratedContribution:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:
