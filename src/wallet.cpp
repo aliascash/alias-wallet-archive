@@ -6140,7 +6140,10 @@ bool CWallet::IsMine(CStealthAddress stealthAddress)
 uint64_t CWallet::GetStakeWeight() const
 {
     // Choose coins to use
+    bool isAnonStaking = Params().IsForkV3(GetAdjustedTime());
     int64_t nBalance = GetBalance();
+    if (isAnonStaking)
+        nBalance += GetSpectreBalance();
 
     if (nBalance <= nReserveBalance)
         return false;
@@ -6191,10 +6194,10 @@ uint64_t CWallet::GetStakeWeight() const
     }
 
     // Get SPECTRE weight for staking
-    if (Params().IsForkV3(nBestHeight))
+    if (isAnonStaking)
     {
         std::list<COwnedAnonOutput> lAvailableCoins;
-        int64_t nAmountCheck;
+        int64_t nAmountCheck = 0;
         std::string sError;
         if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, true, sError))
             nWeight += nAmountCheck;
