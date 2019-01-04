@@ -475,7 +475,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         nStakeMinConfirmations = 10; // test maturity is 10 blocks
         nStakeCombineThreshold = 10 * COIN;
         nStakeSplitThreshold = 2 * nStakeCombineThreshold;
-        nMaxAnonStakeOutput = 10;
+        nMaxAnonStakeOutput = 10 * COIN;
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags
