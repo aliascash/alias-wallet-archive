@@ -54,7 +54,6 @@ static const int64_t COIN = 100000000;
 static const int64_t CENT = 1000000;
 
 static const int64_t MAX_ANON_OUTPUT = COIN * 10000;
-static const int64_t MAX_ANON_STAKE_OUTPUT = COIN * 1000;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
 static const int64_t MIN_TX_FEE = 10000;
@@ -122,6 +121,7 @@ extern unsigned int nStakeSplitAge;
 extern int nStakeMinConfirmations;
 extern int64_t nStakeSplitThreshold;
 extern int64_t nStakeCombineThreshold;
+extern int64_t nMaxAnonStakeOutput;
 
 extern uint32_t nExtKeyLookAhead;
 extern int64_t nTimeLastMblkRecv;

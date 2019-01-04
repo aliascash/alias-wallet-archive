@@ -6554,7 +6554,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::vector<ec_secret> vecSecShared;
 
                 std::string sNarr;
-                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, MAX_ANON_STAKE_OUTPUT))
+                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
 
                 std::map<CTxOut, ec_secret> mapOutSecShared;

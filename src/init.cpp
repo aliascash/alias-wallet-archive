@@ -473,6 +473,9 @@ bool AppInit2(boost::thread_group& threadGroup)
         nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
         nStakeMinConfirmations = 10; // test maturity is 10 blocks
+        nStakeCombineThreshold = 10 * COIN;
+        nStakeSplitThreshold = 2 * nStakeCombineThreshold;
+        nMaxAnonStakeOutput = 10;
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags
