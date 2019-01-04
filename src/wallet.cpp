@@ -1959,7 +1959,7 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins, unsigned in
                 continue;
 
             int nDepth = pcoin->GetDepthInMainChain();
-            if (nDepth < 1)
+            if (nDepth < 1 || (Params().IsProtocolV3(nBestHeight) && nDepth < nStakeMinConfirmations))
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++)
