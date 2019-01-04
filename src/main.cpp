@@ -3914,7 +3914,7 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
         bool foundStake = false;
         if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
             foundStake = true;
-        else if (Params().IsForkV3(nSearchTime))
+        else if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1))
         {
             txCoinStake.SetNull();
             txCoinStake.nTime = nSearchTime;

@@ -850,6 +850,9 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
  */
 bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
 {
+    if (!Params().IsProtocolV3(pindexPrev->nHeight+1))
+        return error("CheckAnonProofOfStake() : Not allowed for PoSv2");
+
     if (!tx.IsAnonCoinStake())
         return error("CheckAnonProofOfStake() : called on non-anon-coinstake %s", tx.GetHash().ToString());
 
