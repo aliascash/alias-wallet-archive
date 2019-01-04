@@ -355,9 +355,11 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
-    case TransactionRecord::GeneratedSPECTRE:
     case TransactionRecord::GeneratedDonation:
 	case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTRE:
+    case TransactionRecord::GeneratedSPECTREDonation:
+    case TransactionRecord::GeneratedSPECTREContribution:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:
@@ -386,9 +388,11 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
-    case TransactionRecord::GeneratedSPECTRE:
     case TransactionRecord::GeneratedDonation:
     case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTRE:
+    case TransactionRecord::GeneratedSPECTREDonation:
+    case TransactionRecord::GeneratedSPECTREContribution:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:

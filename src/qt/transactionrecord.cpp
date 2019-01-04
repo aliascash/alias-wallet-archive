@@ -36,12 +36,16 @@ QString TransactionRecord::getTypeLabel(const int &type)
         return SpectreGUI::tr("SPECTRE sent to self");
     case Generated:
         return SpectreGUI::tr("XSPEC Staked");
+    case GeneratedDonation:
+        return SpectreGUI::tr("XSPEC Donated");
+	case GeneratedContribution:
+        return SpectreGUI::tr("XSPEC Contributed");
     case GeneratedSPECTRE:
         return SpectreGUI::tr("SPECTRE Staked");
-    case GeneratedDonation:
-        return SpectreGUI::tr("Donated");
-	case GeneratedContribution:
-		return SpectreGUI::tr("Contributed");
+    case GeneratedSPECTREDonation:
+        return SpectreGUI::tr("SPECTRE Donated");
+    case GeneratedSPECTREContribution:
+        return SpectreGUI::tr("SPECTRE Contributed");
     case RecvSpectre:
         return SpectreGUI::tr("SPECTRE received with");
     case SendSpectre:
@@ -65,9 +69,11 @@ QString TransactionRecord::getTypeShort(const int &type)
     case TransactionRecord::GeneratedSPECTRE:
         return "staked";
     case TransactionRecord::GeneratedDonation:
+    case TransactionRecord::GeneratedSPECTREDonation:
         return "donated";
-	case TransactionRecord::GeneratedContribution:
-		return "contributed";
+    case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTREContribution:
+		return "contributed";      
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -130,9 +136,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                         sub.address = strAddress;
                         int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
                         if (blockHeight < 0 || blockHeight % 6 == 0)
-                            sub.type = TransactionRecord::GeneratedContribution;
+                            sub.type = TransactionRecord::GeneratedSPECTREContribution;
                         else
-                            sub.type = TransactionRecord::GeneratedDonation;
+                            sub.type = TransactionRecord::GeneratedSPECTREDonation;
                        break;
                     }
                 }
