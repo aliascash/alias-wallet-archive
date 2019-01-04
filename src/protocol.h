@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -124,7 +125,7 @@ class CInv
         const char* GetCommand() const;
         std::string ToString() const;
         void print() const;
-        
+
         int type;
         uint256 hash;
 };
@@ -134,7 +135,7 @@ class CPendingFilteredChunk
     public:
         CPendingFilteredChunk(uint256 _startHash, uint256 _endHash, int64_t _nTime)
              : startHash(_startHash), endHash(_endHash), nTime(_nTime) {};
-        
+
         uint256 startHash;
         uint256 endHash;
         int64_t nTime;

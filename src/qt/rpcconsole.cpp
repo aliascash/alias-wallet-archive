@@ -1,5 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcconsole.h"
@@ -142,10 +143,10 @@ void RPCExecutor::request(const QString &command)
         emit reply(RPCConsole::CMD_ERROR, QString("Parse error: unbalanced ' or \""));
         return;
     }
-    
+
     if(args.empty())
         return; // Nothing to do
-    
+
     try
     {
         std::string strPrint;
@@ -196,7 +197,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     ui->showCLOptionsButton->setIcon(QIcon(":/icons/options"));
 #endif
     ui->clearButton->setIcon(QIcon(":/icons/remove"));
-    
+
     // Install event filter for up and down arrow
     ui->lineEdit->installEventFilter(this);
     ui->messagesWidget->installEventFilter(this);
@@ -319,10 +320,10 @@ void RPCConsole::clear()
     historyPtr = 0;
     ui->lineEdit->clear();
     ui->lineEdit->setFocus();
-    
-    
+
+
     QColor colour(226, 29, 57);
-    
+
     // Add smoothly scaled icon images.
     // (when using width/height on an img, Qt uses nearest instead of linear interpolation)
     for(int i=0; ICON_MAPPING[i].url; ++i)

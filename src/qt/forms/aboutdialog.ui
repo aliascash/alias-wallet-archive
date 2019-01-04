@@ -95,7 +95,7 @@
 Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
 Copyright © 2014-2016 The ShadowCash developers
-Copyright © 2016-2018 The Spectrecoin (XSPEC) developers         </string>
+Copyright © 2016-2019 The Spectrecoin (XSPEC) developers         </string>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
