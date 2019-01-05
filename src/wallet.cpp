@@ -1869,7 +1869,7 @@ int64_t CWallet::GetSpectreBalance() const
         for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
-            if (pcoin->IsTrusted() && pcoin->nVersion == ANON_TXN_VERSION)
+            if (pcoin->nVersion == ANON_TXN_VERSION && pcoin->IsTrusted())
                 nTotal += pcoin->GetAvailableSpectreCredit();
         };
     }
