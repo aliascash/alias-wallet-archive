@@ -1901,7 +1901,7 @@ int64_t CWallet::GetUnconfirmedSpectreBalance() const
         for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
-            if (pcoin->nVersion != ANON_TXN_VERSION)
+            if (pcoin->nVersion != ANON_TXN_VERSION || pcoin->IsCoinBase() || pcoin->IsCoinStake())
                 continue;
             if (!pcoin->IsFinal() || (pcoin->GetDepthInMainChain() >= 0 && pcoin->GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH))
             {
