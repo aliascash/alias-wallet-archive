@@ -919,11 +919,10 @@ var overviewPage = {
     this.formatValue("stake", "spectreStake", stakeVal, spectreStakeVal);
     this.formatValue("unconfirmed", "spectreUnconfirmed", unconfirmedVal, spectreUnconfirmedVal);
     this.formatValue("immature", "spectreImmature", immatureVal, spectreImmatureVal);
-    this.formatValue("reserved", "reservedSpectre", 0, 0); // TODO
     this.formatTotalValue(balanceVal + spectreBalVal + stakeVal + spectreStakeVal + unconfirmedVal + spectreUnconfirmedVal + immatureVal + spectreImmatureVal);
   },
-  updateReserved : function(name) {
-    this.formatValue("reserved", name);
+  updateReserved : function(value) {
+    this.formatValue("reserved", "reservedSpectre", value, value);
   },
   formatTotalValue : function(value) {
       var data = ["0","0"];
