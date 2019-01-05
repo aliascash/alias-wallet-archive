@@ -431,7 +431,8 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
         };
     } else
     if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedSPECTRE ||
-            type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedContribution)
+            type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedSPECTREDonation ||
+            type == TransactionRecord::GeneratedContribution || type == TransactionRecord::GeneratedSPECTREContribution)
     {
         // For generated transactions, determine maturity
         if (wtx.GetBlocksToMaturity() > 0)
