@@ -784,6 +784,7 @@ public:
                 vfSpent[i] = true;
                 fReturn = true;
                 fAvailableCreditCached = false;
+                fAvailableSpectreCreditCached = false;
             };
         };
         return fReturn;
@@ -921,9 +922,13 @@ public:
     };
 
     int64_t GetAvailableSpectreCredit(bool fUseCache=true) const
-    {
+    {   
         // Must wait until coinbase is safely deep enough in the chain before valuing it
         if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
+            return 0;
+
+        // SPECTRE must be MIN_ANON_SPEND_DEPTH deep in the chain before spending is possible
+        if (GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
             return 0;
 
         if (fUseCache && fAvailableSpectreCreditCached)
