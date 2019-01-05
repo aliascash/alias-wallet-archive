@@ -3914,6 +3914,7 @@ bool CWallet::GetAnonChangeAddress(CStealthAddress &sxAddress)
 bool CWallet::GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAddress& sxAddress)
 {
     // TODO Get corresponding stealth address for stakedOao
+    LOCK(cs_wallet);
 
     ExtKeyAccountMap::iterator mi = mapExtAccounts.find(idDefaultAccount);
     if (mi != mapExtAccounts.end())
