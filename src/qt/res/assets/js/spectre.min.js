@@ -125,8 +125,8 @@ function updateReserved(name) {
     overviewPage.updateReserved(name);
 }
 
-function updateBalance(ns, key, id, name, type) {
-    overviewPage.updateBalance(ns, key, id, name, type);
+function updateBalance(balance, spectreBal, stake, unconfirmed, immature) {
+    overviewPage.updateBalance(balance, spectreBal, stake, unconfirmed, immature);
 }
 
 function triggerElement($window, completeEvent) {
@@ -891,26 +891,26 @@ var overviewPage = {
     this.immature = $("#immature");
     this.total = $("#total");
   },
-  updateBalance : function(ns, key, id, name, type) {
-    if (void 0 == ns) {
-      ns = this.balance.data("orig");
-      key = this.spectreBal.data("orig");
-      id = this.stake.data("orig");
-      name = this.unconfirmed.data("orig");
-      type = this.immature.data("orig");
+  updateBalance : function(balanceVal, spectreBalVal, stakeVal, unconfirmedVal, immatureVal) {
+    if (void 0 == balanceVal) {
+      balanceVal = this.balance.data("orig");
+      spectreBalVal = this.spectreBal.data("orig");
+      stakeVal = this.stake.data("orig");
+      unconfirmedVal = this.unconfirmed.data("orig");
+      immatureVal = this.immature.data("orig");
     } else {
-      this.balance.data("orig", ns);
-      this.spectreBal.data("orig", key);
-      this.stake.data("orig", id);
-      this.unconfirmed.data("orig", name);
-      this.immature.data("orig", type);
+      this.balance.data("orig", balanceVal);
+      this.spectreBal.data("orig", spectreBalVal);
+      this.stake.data("orig", stakeVal);
+      this.unconfirmed.data("orig", unconfirmedVal);
+      this.immature.data("orig", immatureVal);
     }
-    this.formatValue("balance", ns);
-    this.formatValue("spectreBal", key);
-    this.formatValue("stake", id);
-    this.formatValue("unconfirmed", name);
-    this.formatValue("immature", type);
-    this.formatValue("total", ns + id + name + type + key);
+    this.formatValue("balance", balanceVal);
+    this.formatValue("spectreBal", spectreBalVal);
+    this.formatValue("stake", stakeVal);
+    this.formatValue("unconfirmed", unconfirmedVal);
+    this.formatValue("immature", immatureVal);
+    this.formatValue("total", balanceVal + stakeVal + unconfirmedVal + immatureVal + spectreBalVal);
   },
   updateReserved : function(name) {
     this.formatValue("reserved", name);
