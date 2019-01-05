@@ -1893,6 +1893,28 @@ int64_t CWallet::GetUnconfirmedBalance() const
     return nTotal;
 }
 
+int64_t CWallet::GetUnconfirmedSpectreBalance() const
+{
+    int64_t nTotal = 0;
+    {
+        LOCK2(cs_main, cs_wallet);
+        for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+        {
+            const CWalletTx* pcoin = &(*it).second;
+            if (pcoin->nVersion != ANON_TXN_VERSION)
+                continue;
+            if (!pcoin->IsFinal() || (pcoin->GetDepthInMainChain() >= 0 && pcoin->GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH))
+            {
+                int64_t nSPEC = 0, nSpectre = 0;
+                if (CWallet::GetCredit(*pcoin, nSPEC, nSpectre))
+                    nTotal += nSpectre;
+            }
+        };
+    }
+    return nTotal;
+}
+
+
 int64_t CWallet::GetImmatureBalance() const
 {
     int64_t nTotal = 0;
@@ -1902,10 +1924,15 @@ int64_t CWallet::GetImmatureBalance() const
         {
             const CWalletTx& pcoin = (*it).second;
             if (pcoin.IsCoinBase() && pcoin.GetBlocksToMaturity() > 0 && pcoin.IsInMainChain())
-                nTotal += GetCredit(pcoin);
+                nTotal += pcoin.GetCredit();
         }
     }
     return nTotal;
+}
+
+int64_t CWallet::GetImmatureSpectreBalance() const
+{
+    return 0; // not used
 }
 
 // populate vCoins with vector of spendable COutputs
@@ -2022,7 +2049,30 @@ int64_t CWallet::GetStake() const
     {
         const CWalletTx* pcoin = &(*it).second;
         if (pcoin->IsCoinStake() && pcoin->GetBlocksToMaturity() > 0 && pcoin->GetDepthInMainChain() > 0)
-            nTotal += CWallet::GetCredit(*pcoin);
+        {
+            int64_t nSPEC = 0, nSpectre = 0;
+            if (CWallet::GetCredit(*pcoin, nSPEC, nSpectre))
+                nTotal += nSPEC;
+        }
+    };
+    return nTotal;
+}
+
+int64_t CWallet::GetSpectreStake() const
+{
+    int64_t nTotal = 0;
+    LOCK2(cs_main, cs_wallet);
+    for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
+    {
+        const CWalletTx* pcoin = &(*it).second;
+        if (pcoin->nVersion != ANON_TXN_VERSION)
+            continue;
+        if (pcoin->IsCoinStake() && pcoin->GetBlocksToMaturity() > 0 && pcoin->GetDepthInMainChain() > 0)
+        {
+            int64_t nSPEC = 0, nSpectre = 0;
+            if (CWallet::GetCredit(*pcoin, nSPEC, nSpectre))
+                nTotal += nSpectre;
+        }
     };
     return nTotal;
 }
