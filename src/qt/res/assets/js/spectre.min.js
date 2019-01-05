@@ -125,8 +125,8 @@ function updateReserved(name) {
     overviewPage.updateReserved(name);
 }
 
-function updateBalance(balance, spectreBal, stake, unconfirmed, immature) {
-    overviewPage.updateBalance(balance, spectreBal, stake, unconfirmed, immature);
+function updateBalance(balance, spectreBal, stake, spectreStake, unconfirmed, spectreUnconfirmed, immature, spectreImmature) {
+    overviewPage.updateBalance(balance, spectreBal, stake, spectreStake, unconfirmed, spectreUnconfirmed, immature, spectreImmature);
 }
 
 function triggerElement($window, completeEvent) {
@@ -886,67 +886,80 @@ var overviewPage = {
     this.balance = $(".balance");
     this.spectreBal = $(".spectre_balance");
     this.reserved = $("#reserved");
+    this.reservedSpectre = $("#reserved_spectre");
     this.stake = $("#stake");
+    this.spectreStake = $("#spectre_stake");
     this.unconfirmed = $("#unconfirmed");
+    this.spectreUnconfirmed = $("#spectre_unconfirmed");
     this.immature = $("#immature");
+    this.spectreImmature = $("#spectre_immature");
     this.total = $("#total");
   },
-  updateBalance : function(balanceVal, spectreBalVal, stakeVal, unconfirmedVal, immatureVal) {
+  updateBalance : function(balanceVal, spectreBalVal, stakeVal, spectreStakeVal, unconfirmedVal, spectreUnconfirmedVal, immatureVal, spectreImmatureVal) {
     if (void 0 == balanceVal) {
       balanceVal = this.balance.data("orig");
       spectreBalVal = this.spectreBal.data("orig");
       stakeVal = this.stake.data("orig");
+      spectreStakeVal = this.spectreStake.data("orig");
       unconfirmedVal = this.unconfirmed.data("orig");
+      spectreUnconfirmedVal = this.spectreUnconfirmed.data("orig");
       immatureVal = this.immature.data("orig");
+      spectreImmatureVal = this.spectreImmature.data("orig");
     } else {
       this.balance.data("orig", balanceVal);
       this.spectreBal.data("orig", spectreBalVal);
       this.stake.data("orig", stakeVal);
+      this.spectreStake.data("orig", spectreStakeVal);
       this.unconfirmed.data("orig", unconfirmedVal);
+      this.spectreUnconfirmed.data("orig", unconfirmedVal);
       this.immature.data("orig", immatureVal);
+      this.spectreImmature.data("orig", spectreImmatureVal);
     }
-    this.formatValue("balance", balanceVal);
-    this.formatValue("spectreBal", spectreBalVal);
-    this.formatValue("stake", stakeVal);
-    this.formatValue("unconfirmed", unconfirmedVal);
-    this.formatValue("immature", immatureVal);
-    this.formatValue("total", balanceVal + stakeVal + unconfirmedVal + immatureVal + spectreBalVal);
+    this.formatValue("balance", "spectreBal", balanceVal, spectreBalVal, true);
+    this.formatValue("stake", "spectreStake", stakeVal, spectreStakeVal);
+    this.formatValue("unconfirmed", "spectreUnconfirmed", unconfirmedVal, spectreUnconfirmedVal);
+    this.formatValue("immature", "spectreImmature", immatureVal, spectreImmatureVal);
+    this.formatValue("reserved", "reservedSpectre", 0, 0); // TODO
+    this.formatTotalValue(balanceVal + spectreBalVal + stakeVal + spectreStakeVal + unconfirmedVal + spectreUnconfirmedVal + immatureVal + spectreImmatureVal);
   },
   updateReserved : function(name) {
     this.formatValue("reserved", name);
   },
-  formatValue : function(target, name) {
-    if ("total" === target && (void 0 !== name && !isNaN(name))) {
-      var data = unit.format(name).split(".");
+  formatTotalValue : function(value) {
+      var data = ["0","0"];
+      if (void 0 !== value && !isNaN(value)) {
+          data = unit.format(value).split(".");
+      }
       $("#total-big > span:first-child").text(data[0]);
       if (unit.type == 3) {
-        $("#total-big .light-red").toggle(false);
-        $("#total-big .cents").toggle(false);
+          $("#total-big .light-red").toggle(false);
+          $("#total-big .cents").toggle(false);
       }
       else {
-        $("#total-big .cents").text(data[1]);
-        $("#total-big .light-red").toggle(true);
-        $("#total-big .cents").toggle(true);
+          $("#total-big .cents").text(data[1]);
+          $("#total-big .light-red").toggle(true);
+          $("#total-big .cents").toggle(true);
       }
-    }
-    if ("stake" === target && (void 0 !== name && !isNaN(name))) {
-      if (0 == name) {
-        $("#staking-big").addClass("not-staking");
+  },
+  formatValue : function(target1, target2, value1, value2, showZero) {
+      var target1HTML = this[target1];
+      var target2HTML = this[target2];
+
+      if (0 !== value1 || showZero) {
+        target1HTML.text(unit.format(value1));
       } else {
-        $("#staking-big").removeClass("not-staking");
+        target1HTML.html("");
       }
-      data = unit.format(name).split(".");
-      $("#staking-big > span:first-child").text(data[0]);
-      $("#staking-big .cents").text(data[1]);
-    }
-    var targetHTML = this[target];
-    if (0 == name) {
-      targetHTML.html("");
-      targetHTML.parent("tr").hide();
-    } else {
-      targetHTML.text(unit.format(name));
-      targetHTML.parent("tr").show();
-    }
+      if (0 !== value2 || showZero) {
+        target2HTML.text(unit.format(value2));
+      } else {
+        target2HTML.html("");
+      }
+      if (!showZero && 0 === value1 && 0 === value2) {
+        target1HTML.parent("tr").hide();
+      } else {
+        target1HTML.parent("tr").show();
+      }
   },
   recent : function(codeSegments) {
     var i = 0;
