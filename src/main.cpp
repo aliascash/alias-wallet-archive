@@ -812,6 +812,8 @@ bool CTransaction::CheckTransaction() const
             return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue negative"));
         if (txout.nValue > MAX_MONEY)
             return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue too high"));
+        if (txout.IsAnonOutput() && txout.nValue > nMaxAnonOutput)
+            return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue of anon output higher than nMaxAnonOutput"));
         nValueOut += txout.nValue;
         if (!MoneyRange(nValueOut))
             return DoS(100, error("CTransaction::CheckTransaction() : txout total out of range"));
