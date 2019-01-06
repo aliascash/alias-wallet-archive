@@ -854,7 +854,7 @@ bool CTransaction::CheckTransaction() const
             if (!txout.IsAnonOutput())
                 continue;
 
-            if (txout.nValue > nMaxAnonOutput)
+            if (Params().IsForkV3(nTime) && txout.nValue > nMaxAnonOutput)
                 return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue of anon output higher than nMaxAnonOutput"));
 
             const CScript &s = txout.scriptPubKey;
