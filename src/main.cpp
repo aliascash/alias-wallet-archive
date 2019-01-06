@@ -845,7 +845,7 @@ bool CTransaction::CheckTransaction() const
 
     if (nVersion == ANON_TXN_VERSION)
     {
-        // -- Check for duplicate anon outputs
+        // -- Check for duplicate anon outputs and max anon output size
         // NOTE: is this necessary, duplicate coins would not be spendable anyway?
         set<CPubKey> vAnonOutPubkeys;
         CPubKey pkTest;
@@ -853,6 +853,9 @@ bool CTransaction::CheckTransaction() const
         {
             if (!txout.IsAnonOutput())
                 continue;
+
+            if (txout.nValue > nMaxAnonOutput)
+                return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue of anon output higher than nMaxAnonOutput"));
 
             const CScript &s = txout.scriptPubKey;
             pkTest = CPubKey(&s[2+1], 33);
