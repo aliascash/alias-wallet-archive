@@ -342,7 +342,7 @@ public:
     bool IsAnonCoinStake() const
     {
         // ppcoin: the coin stake transaction is marked with the first output empty
-        return nVersion == ANON_TXN_VERSION && IsCoinStake() && vout[1].IsAnonOutput();
+        return nVersion == ANON_TXN_VERSION && IsCoinStake();
     }
 
     /** Check for standard transaction types

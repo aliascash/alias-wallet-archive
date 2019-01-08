@@ -850,14 +850,20 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
  */
 bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
 {
-    if (!Params().IsProtocolV3(pindexPrev->nHeight+1))
-        return error("CheckAnonProofOfStake() : Not allowed for PoSv2");
-
     if (!tx.IsAnonCoinStake())
         return error("CheckAnonProofOfStake() : called on non-anon-coinstake %s", tx.GetHash().ToString());
 
+    if (!Params().IsProtocolV3(pindexPrev->nHeight+1))
+        return error("CheckAnonProofOfStake() : not allowed for PoSv2 for coinstake %s", tx.GetHash().ToString());
+
     if (!Params().IsForkV3(tx.nTime))
-        return error("CheckAnonProofOfStake() : called before V3 fork time with anon-coinstake %s", tx.GetHash().ToString());
+        return error("CheckAnonProofOfStake() : called before V3 fork time for coinstake %s", tx.GetHash().ToString());
+
+    if (!tx.vin[0].IsAnonInput())
+        return error("CheckAnonProofOfStake() : vin[0] is no anon input for coinstake %s", tx.GetHash().ToString());
+
+    if (!tx.vout[1].IsAnonOutput())
+        return error("CheckAnonProofOfStake() : vout[1] is no anon output for coinstake %s", tx.GetHash().ToString());
 
     CTxDB txdb("r");
 
