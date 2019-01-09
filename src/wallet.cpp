@@ -4196,8 +4196,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     for (l = startL; l <= nOwnedAnonOutputs; ++l)
     {
         for (i = 0; i < m; ++i)
-            vecInputIndex[i] = (m - i)-1;
-        vecInputIndex[0] = l-1;
+            vecInputIndex[i] = (l - i)-1;
 
         // -- m must be > 2 to use coarse seeking
         bool fSeekFine = m <= 2;
