@@ -4355,6 +4355,13 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             + nByteSizePerInCoin * (i+1);
 
         nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
+        if (nFee == MAX_MONEY)
+        {
+            sError = "The transaction is over the maximum size limit. Create multiple transactions with smaller amounts.";
+            if (fDebugRingSig)
+                LogPrintf("Transaction with nTotalBytes %d results in MAX_MONEY fee.\n", nTotalBytes);
+            return 3;
+        }
 
 		int64_t nValueTest;
 		if (feeMode == 1) {
@@ -4368,6 +4375,14 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 			{
 				// substract fee
 				nValueTest += nFeeDiff;
+                if (nValueTest <= 0)
+                {
+                    sError = "Not enough (mature) coins with requested ring size to cover amount with fees.";
+                    if (fDebugRingSig)
+                        LogPrintf("Not enough (mature) coins %d with requested ring size to cover amount %d together with fees %d.\n", nAmountCheck, nValue, nFee);
+                    return 3;
+                }
+
 				if (fDebugRingSig)
 					LogPrintf("AmountWithFeeExceedsBalance! simulate exhaustive trx, lower amount by nFeeDiff: %d\n", nFeeDiff);
 

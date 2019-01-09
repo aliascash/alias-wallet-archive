@@ -635,13 +635,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             std::string sError;
             if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
-                if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
+                if (nFeeRequired != MAX_MONEY && (nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired);
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
-                if (!Params().IsProtocolV3(nBestHeight))
-                    sError += "\nTry again after block 783000.";
-
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
         };
