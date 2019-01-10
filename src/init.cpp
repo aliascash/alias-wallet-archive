@@ -419,7 +419,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Largest block you're willing to create.
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-    nBlockMaxSize = GetArg("-blockmaxsize", MAX_BLOCK_SIZE_GEN/2);
+    nBlockMaxSize = GetArg("-blockmaxsize", MAX_BLOCK_SIZE-1000);
     nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SIZE-1000), nBlockMaxSize));
 
     // How much of the block should be dedicated to high-priority transactions,
