@@ -75,9 +75,9 @@ Value getstakesubsidy(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
     }
 
-    uint64_t nCoinAge;
+    uint64_t nCoinAge = 0;
     CTxDB txdb("r");
-    if (!tx.GetCoinAge(txdb, pindexBest, nCoinAge))
+    if (!Params().IsProtocolV3(pindexBest->nHeight) && !tx.GetCoinAge(txdb, pindexBest, nCoinAge))
         throw JSONRPCError(RPC_MISC_ERROR, "GetCoinAge failed");
 
     return (uint64_t)Params().GetProofOfStakeReward(pindexBest, nCoinAge, 0);

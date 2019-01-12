@@ -6444,9 +6444,9 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     // Calculate coin age reward
     int64_t nReward;
     {
-        uint64_t nCoinAge;
+        uint64_t nCoinAge = 0;
         CTxDB txdb("r");
-        if (!txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
+        if (!Params().IsProtocolV3(pindexPrev->nHeight) && !txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
             return error("CreateCoinStake : failed to calculate coin age");
 
         nReward = Params().GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
@@ -6583,12 +6583,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 // Calculate coin age reward
                 int64_t nReward;
                 {
-                    uint64_t nCoinAge;
-                    CTxDB txdb("r");
-                    if (!txNew.GetCoinAge(txdb, pindexPrev, nCoinAge))
-                        return error("CreateAnonCoinStake : failed to calculate coin age");
-
-                    nReward = Params().GetProofOfAnonStakeReward(pindexPrev, nCoinAge, nFees);
+                    nReward = Params().GetProofOfAnonStakeReward(pindexPrev, nFees);
                     if (nReward <= 0)
                         return error("CreateAnonCoinStake : GetProofOfStakeReward() reward <= 0");
                 }
