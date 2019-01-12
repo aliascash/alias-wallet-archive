@@ -684,36 +684,27 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
 
     hashProofOfStake = Hash(ss.begin(), ss.end());
 
-    if (fPrintProofOfStake)
-    {
-        LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from timestamp=%s\n",
-            pStakeMod->nModifier, pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime),
-            DateTimeStrFormat(nTimeBlockFrom));
-        LogPrintf("CheckStakeKernelHash() : check modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s target=%s\n",
-            pStakeMod->nModifier,
-            nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
-            hashProofOfStake.ToString(),
-            bnTarget.ToString());
-    }
 
     // Now check if proof-of-stake hash meets target protocol
-    if (CBigNum(hashProofOfStake) > bnTarget)
-        return false;
+    bool foundHash = CBigNum(hashProofOfStake) < bnTarget;
 
-    if (fDebug && !fPrintProofOfStake)
+    if (fPrintProofOfStake || (foundHash && fDebug))
     {
-        LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from timestamp=%s\n",
-            pStakeMod->nModifier, pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime),
-            DateTimeStrFormat(nTimeBlockFrom));
-        LogPrintf("CheckStakeKernelHash() : pass modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-            pStakeMod->nModifier,
-            nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
-            hashProofOfStake.ToString());
+        if (Params().IsProtocolV3(pStakeMod->nHeight))
+            LogPrintf("CheckStakeKernelHash() : PoSv3 check=%b with modifierV2=%s at height=%d timestamp=%s, nTimeTxPrev=%u nPrevout=%u nTimeTx=%u, hashProof=%s target=%s\n",
+                      foundHash,
+                      pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight, DateTimeStrFormat(pStakeMod->nTime),
+                      txPrev.nTime, prevout.n, nTimeTx,
+                      hashProofOfStake.ToString(), bnTarget.ToString());
+        else
+            LogPrintf("CheckStakeKernelHash() : PoSv2 check=%b with modifier=0x%016x at height=%d timestamp=%s, nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u, hashProof=%s target=%s\n",
+                      foundHash,
+                      pStakeMod->nModifier, pStakeMod->nHeight, DateTimeStrFormat(pStakeMod->nTime),
+                      nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
+                      hashProofOfStake.ToString(), bnTarget.ToString());
     }
 
-    return true;
+    return foundHash;
 }
 
 
@@ -906,34 +897,21 @@ bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBi
 
     hashProofOfStake = Hash(ss.begin(), ss.end());
 
-    if (fPrintProofOfStake)
-    {
-        LogPrintf("CheckAnonStakeKernelHash() : using modifier %s at height=%d timestamp=%s\n",
-            pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime));
-        LogPrintf("CheckAnonStakeKernelHash() : check modifier=%s anonKeyImage=%s nTimeTx=%u hashProof=%s target=%s\n",
-            pStakeMod->bnModifierV2.ToString(),
-            HexStr(anonKeyImage), nTimeTx,
-            hashProofOfStake.ToString(),
-            bnTarget.ToString());
-    }
-
     // Now check if proof-of-stake hash meets target protocol
-    if (CBigNum(hashProofOfStake) > bnTarget)
-        return false;
+    bool foundHash = CBigNum(hashProofOfStake) < bnTarget;
 
-    if (fDebug && !fPrintProofOfStake)
+    if (fPrintProofOfStake || (foundHash && fDebug))
     {
-        LogPrintf("CheckAnonStakeKernelHash() : using modifier %s at height=%d timestamp=%s\n",
-            pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime));
-        LogPrintf("CheckAnonStakeKernelHash() : pass modifier=%s anonKeyImage=%s nTimeTx=%u hashProof=%s\n",
-            pStakeMod->bnModifierV2.ToString(),
-            HexStr(anonKeyImage), nTimeTx,
-            hashProofOfStake.ToString());
+        LogPrintf("CheckAnonStakeKernelHash() : PoSv3 check=%b with modifier=%s at height=%d timestamp=%s, anonKeyImage=%s nTimeTx=%u, hashProof=%s target=%s\n",
+                  foundHash,
+                  pStakeMod->bnModifierV2.ToString(),
+                  pStakeMod->nHeight,
+                  DateTimeStrFormat(pStakeMod->nTime),
+                  HexStr(anonKeyImage), nTimeTx,
+                  hashProofOfStake.ToString(),
+                  bnTarget.ToString());
     }
-
-    return true;
+    return foundHash;
 }
 
 
