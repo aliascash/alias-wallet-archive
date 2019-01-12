@@ -151,6 +151,7 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("spectrebalance", ValueFromAmount(pwalletMain->GetSpectreBalance())));
     obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
+    obj.push_back(Pair("spectrestake",  ValueFromAmount(pwalletMain->GetSpectreStake())));
     obj.push_back(Pair("reserve",       ValueFromAmount(nReserveBalance)));
 
     obj.push_back(Pair("blocks",        (int)nBestHeight));
