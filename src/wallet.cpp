@@ -6576,6 +6576,8 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 if (fDebugPoS)
                     LogPrintf("CreateAnonCoinStake : kernel found for keyImage %s\n", HexStr(oao.vchImage));
 
+                LOCK(cs_main);
+
                 txNew.nVersion = ANON_TXN_VERSION;
                 txNew.nTime -= n;
                 nCredit += oao.nValue;

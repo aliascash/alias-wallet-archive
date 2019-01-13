@@ -869,8 +869,11 @@ bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsi
     if (nRingSize != MIN_RING_SIZE)
         return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Ringsize not %d for coinstake %s", MIN_RING_SIZE, tx.GetHash().ToString().c_str()));
 
-    if (!tx.CheckAnonInputAB(txdb, txin, 0, MIN_RING_SIZE, vchImage, nCoinValue))
-        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake %s", tx.GetHash().ToString().c_str()));
+    {
+        LOCK(cs_main);
+        if (!tx.CheckAnonInputAB(txdb, txin, 0, MIN_RING_SIZE, vchImage, nCoinValue))
+            return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake %s", tx.GetHash().ToString().c_str()));
+    }
 
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
     if (!CheckAnonStakeKernelHash(&stakeMod, nBits, nCoinValue, vchImage, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
