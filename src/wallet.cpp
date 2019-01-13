@@ -6558,7 +6558,6 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
         return false;
 
     int64_t nCredit = 0; 
-    CTxDB txdb("r");
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
@@ -6582,16 +6581,43 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 txNew.nTime -= n;
                 nCredit += oao.nValue;
 
-                // Calculate coin age reward
-                int64_t nReward;
+                std::vector<const COwnedAnonOutput*> vPickedCoins;
+                vPickedCoins.push_back(&oao);
+
+                // -- Add more anon inputs for consolidation
+                int64_t nMaxCombineOutput = nMaxAnonStakeOutput / 10;
+                int64_t lastCombineValue = -1;
+                std::vector<const COwnedAnonOutput*> vConsolidateCoins;
+                for (const auto & oaoc : lAvailableCoins)
                 {
-                    nReward = Params().GetProofOfAnonStakeReward(pindexPrev, nFees);
-                    if (nReward <= 0)
-                        return error("CreateAnonCoinStake : GetProofOfStakeReward() reward <= 0");
+                    if (oaoc.nValue > nMaxCombineOutput || nCredit + (oaoc.nValue * 10) > nBalance - nReserveBalance)
+                        break;
+                    // skip the input used for staking (TODO could be optimized by considering in combining inputs)
+                    if (&oaoc == &oao)
+                        continue;
+                    if (lastCombineValue != oaoc.nValue)
+                    {
+                        vConsolidateCoins.clear();
+                        lastCombineValue = oaoc.nValue;
+                    }
+                    vConsolidateCoins.push_back(&oaoc);
+                    if (vConsolidateCoins.size() == 10)
+                    {
+                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end());
+                        vConsolidateCoins.clear();
+                        nCredit += oaoc.nValue * 10;
+                    }
+                    // Consolidate maximal 50 inputs
+                    if (vPickedCoins.size() == 51)
+                        break;
                 }
 
+                // -- Calculate staking reward
+                int64_t nReward = Params().GetProofOfAnonStakeReward(pindexPrev, nFees);
+                if (nReward <= 0)
+                    return error("CreateAnonCoinStake : GetProofOfStakeReward() reward <= 0");
 
-                // Check if staking reward gets donated to developers, according to the configured probability and DCB rules
+                // -- Check if staking reward gets donated to developers, according to the configured probability and DCB rules
                 int sample = stakingDonationDistribution(stakingDonationRng);
                 LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
                 bool donateReward = false;
@@ -6604,17 +6630,16 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                     nCredit += nReward;
                 }
 
-
-                // Stealth address for creating new anon outputs.
+                // -- Get stealth address for creating new anon outputs.
                 CStealthAddress sxAddress;
                 if (!GetAnonStakeAddress(oao, sxAddress))
                     return error("CreateAnonCoinStake : GetAnonStakeAddress() change failed");
 
+                // -- create anon output
                 CScript scriptNarration; // needed to match output id of narr
                 std::vector<std::pair<CScript, int64_t> > vecSend;
                 std::vector<std::pair<CScript, int64_t> > vecChange;
                 std::vector<ec_secret> vecSecShared;
-
                 std::string sNarr;
                 if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
@@ -6629,7 +6654,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 }
                 std::sort(txNew.vout.begin() + 1, txNew.vout.end());
 
-                // Set one-time private key of vout[1] for signing the block
+                // -- Set one-time private key of vout[1] for signing the block
                 ec_secret sSpend;
                 ec_secret sSpendR;
                 memcpy(&sSpend.e[0], &sxAddress.spend_secret[0], EC_SECRET_SIZE);
@@ -6637,6 +6662,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                     return error("CreateAnonCoinStake : failed to get private key of anon output");
                 key.Set(&sSpendR.e[0], true);
 
+                // -- create donation output
                 if (donateReward)
                 {
                     CBitcoinAddress address(Params().GetDevContributionAddress());
@@ -6647,21 +6673,21 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                     LogPrintf("donation complete\n");
                 }
 
-                CTxIn vin;
-                int oaoRingIndex;
-                if (!AddAnonInput(vin, oao, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
-                    return false;
+                // -- create anon inputs
+                txNew.vin.resize(vPickedCoins.size());
+                uint256 preimage = 0; // not needed for RING_SIG_2
+                uint32_t iVin = 0;
+                for (const auto * pickedCoin : vPickedCoins)
+                {
+                    int oaoRingIndex;
+                    if (!AddAnonInput(txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
+                        return false;
 
-                uint256 preimage;
-                if (GetTxnPreImage(txNew, preimage) != 0)
-                    return error("CreateAnonCoinStake : GetPreImage() failed.");
+                    if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
+                        return false;
 
-                // TODO: Does it lower security to use the same preimage for each input?
-                //  cryptonote seems to do so too
-                if (!GenerateRingSignature(vin, RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
-                    return false;
-
-                txNew.vin.push_back(vin);
+                    iVin++;
+                }
 
                 // -- check if new coins already exist (in case random is broken ?)
                 if (!AreOutputsUnique(txNew))
