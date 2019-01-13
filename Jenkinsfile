@@ -916,7 +916,7 @@ def prepareMacDelivery() {
     // Unzip Tor and remove debug content
     fileOperations([
             folderDeleteOperation(
-                    folderPath: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor"),
+                    folderPath: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor"),
             fileUnZipOperation(
                     filePath: "${WORKSPACE}/Tor.zip",
                     targetLocation: "${WORKSPACE}/"),
@@ -928,11 +928,11 @@ def prepareMacDelivery() {
 def prepareMacOBFS4Delivery() {
     fileOperations([
             fileRenameOperation(
-                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults",
-                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_plain"),
+                    source: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults",
+                    destination: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_plain"),
             fileRenameOperation(
-                    source: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_obfs4",
-                    destination: "${WORKSPACE}/src/bin/spectrecoin.app/Contents/MacOS/Tor/torrc-defaults"),
+                    source: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_obfs4",
+                    destination: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults"),
     ])
 }
 
