@@ -113,7 +113,7 @@ bool IsMine(const CWallet& wallet, const CScript& scriptPubKey);
 class CWallet : public CCryptoKeyStore
 {
 public:
-    bool SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
+    bool SelectCoinsForStaking(int64_t nMaxAmount, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
     bool SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl=NULL) const;
 
     bool GetStealthAddress(const std::string& address, CStealthAddress& addressRet) const;

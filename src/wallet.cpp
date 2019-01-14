@@ -2225,7 +2225,7 @@ bool CWallet::SelectCoins(int64_t nTargetValue, unsigned int nSpendTime, set<pai
 }
 
 // Select some coins without random shuffle or best subset approximation
-bool CWallet::SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTime, set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const
+bool CWallet::SelectCoinsForStaking(int64_t nMaxAmount, unsigned int nSpendTime, set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const
 {
     std::vector<COutput> vCoins;
     AvailableCoinsForStaking(vCoins, nSpendTime);
@@ -2237,28 +2237,15 @@ bool CWallet::SelectCoinsForStaking(int64_t nTargetValue, unsigned int nSpendTim
     {
         const CWalletTx *pcoin = output.tx;
         int i = output.i;
-
-        // Stop if we've chosen enough inputs
-        if (nValueRet >= nTargetValue)
-            break;
-
         int64_t n = pcoin->vout[i].nValue;
 
-        pair<int64_t, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
+        // Skip if the selection of the coin would overflow the target
+        if (nValueRet + n > nMaxAmount)
+            continue;
 
-        if (n >= nTargetValue)
-        {
-            // If input value is greater or equal to target then simply insert
-            //    it into the current subset and exit
-            setCoinsRet.insert(coin.second);
-            nValueRet += coin.first;
-            break;
-        } else
-        if (n < nTargetValue + CENT)
-        {
-            setCoinsRet.insert(coin.second);
-            nValueRet += coin.first;
-        };
+        pair<int64_t, pair<const CWalletTx*, unsigned int> > coin = make_pair(n, make_pair(pcoin, i));
+        setCoinsRet.insert(coin.second);
+        nValueRet += coin.first;
     }
 
     return true;
