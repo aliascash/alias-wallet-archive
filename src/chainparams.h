@@ -65,8 +65,8 @@ public:
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
-    const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
-    const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
+    bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
+    bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum& ProofOfStakeLimit(int nHeight) const { return IsProtocolV2(nHeight) ? bnProofOfStakeLimitV2 : bnProofOfStakeLimit; }
@@ -96,9 +96,9 @@ public:
 
     const std::string GetDevContributionAddress() const { return devContributionAddress; }
 
-    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
-    const bool IsForkV3(unsigned int nTime) const { return nTime > nForkV3Time; }
-    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
+    bool IsForkV2(int64_t nTime) const { return nTime > nForkV2Time; }
+    bool IsForkV3(int64_t nTime) const { return nTime > nForkV3Time; }
+    int GetForkId(int64_t nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
 
     const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
@@ -128,8 +128,8 @@ protected:
 
     std::string devContributionAddress;
 
-    unsigned int nForkV2Time;
-    unsigned int nForkV3Time;
+    int64_t nForkV2Time;
+    int64_t nForkV3Time;
 };
 
 /**
