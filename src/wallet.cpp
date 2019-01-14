@@ -6424,16 +6424,6 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
             // Do not add additional significant input
             if (pcoin.first->vout[pcoin.second].nValue >= nStakeCombineThreshold)
                 continue;
-            // Do not add input that is still too young
-            if (Params().IsProtocolV3(pindexPrev->nHeight))
-            {
-                // properly handled by selection function
-            }
-            else
-            {
-                if (nTimeWeight < nStakeMinAge)
-                    continue;
-            }
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
             nCredit += pcoin.first->vout[pcoin.second].nValue;
