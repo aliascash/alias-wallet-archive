@@ -19,7 +19,7 @@ void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& s
 void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const std::string& narration, bool& narrationHandled);
 void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>& destSubs);
 
-QString explorer(fTestNet ? "http://testnet.spectrechain.info/" : "https://chainz.cryptoid.info/xspec/");
+static QString explorer;
 
 QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 {
@@ -46,6 +46,9 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 
 QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 {
+    if (explorer.isEmpty())
+        explorer = fTestNet ? "https://chainz.cryptoid.info/xspec-test/" : "https://chainz.cryptoid.info/xspec/";
+
     QString strHTML;
 
     LOCK2(cs_main, wallet->cs_wallet);
