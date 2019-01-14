@@ -2204,7 +2204,6 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
 
     CPubKey pkRingCoin;
     CAnonOutput ao;
-    CTxIndex txindex;
 
     ec_point pSigC;
     pSigC.resize(EC_SECRET_SIZE);
@@ -2336,7 +2335,6 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
         CPubKey pkRingCoin;
         CAnonOutput ao;
-        CTxIndex txindex;
         const unsigned char* pPubkeys = &s[2];
         const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
         const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
