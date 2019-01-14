@@ -6527,6 +6527,9 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
 
 bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key)
 {
+    // Ring size for staking is MIN_RING_SIZE
+    int nRingSize = MIN_RING_SIZE;
+
     CBlockIndex* pindexPrev = pindexBest;
     CBigNum bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
@@ -6539,30 +6542,28 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     scriptEmpty.clear();
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 
-    // Choose coins to use
-    int64_t nBalance = GetSpectreBalance();
-
-    if (nBalance <= nReserveBalance)
-        return false;
-
-    int nRingSize = MIN_RING_SIZE;
-
     // -------------------------------------------
     // Select coins with suitable depth
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
     std::string sError;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, true, sError))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError))
         return error(("CreateAnonCoinStake : " + sError).c_str());
     if (lAvailableCoins.empty())
+        return false;
+    int64_t nMaxStakingBalance = nAmountCheck - nReserveBalance;
+    if (nMaxStakingBalance <= 0)
         return false;
 
     int64_t nCredit = 0; 
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
-        static int nMaxStakeSearchInterval = 60;
 
+        if (oao.nValue > nMaxStakingBalance)
+            return false;
+
+        static int nMaxStakeSearchInterval = 60;
         bool fKernelFound = false;
         for (unsigned int n=0; n<min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound && pindexPrev == pindexBest; n++)
         {
@@ -6590,7 +6591,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
                 for (const auto & oaoc : lAvailableCoins)
                 {
-                    if (oaoc.nValue > nMaxCombineOutput || nCredit + (oaoc.nValue * 10) > nBalance - nReserveBalance)
+                    if (oaoc.nValue > nMaxCombineOutput || nCredit + (oaoc.nValue * 10) > nMaxStakingBalance)
                         break;
                     // skip the input used for staking (TODO could be optimized by considering in combining inputs)
                     if (&oaoc == &oao)
@@ -6705,7 +6706,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
             break; // if kernel is found stop searching
     }
 
-    if (nCredit == 0 || nCredit > nBalance - nReserveBalance)
+    if (nCredit == 0)
         return false;
 
     // Limit size
