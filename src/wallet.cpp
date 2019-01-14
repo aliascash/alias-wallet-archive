@@ -6201,71 +6201,30 @@ bool CWallet::IsMine(CStealthAddress stealthAddress)
 
 
 
-// NovaCoin: get current stake weight posv2
+// NovaCoin: get current stake weight PoSv2 or PoSv3
 uint64_t CWallet::GetStakeWeight() const
 {
-    // Choose coins to use
-    bool isAnonStaking = Params().IsForkV3(GetAdjustedTime());
-    int64_t nBalance = GetBalance();
-    if (isAnonStaking)
-        nBalance += GetSpectreBalance();
-
-    if (nBalance <= nReserveBalance)
-        return false;
-
+    int64_t nCurrentTime = GetAdjustedTime();
     uint64_t nWeight = 0;
 
-    std::vector<const CWalletTx*> vwtxPrev;
-
-    set<pair<const CWalletTx*,unsigned int> > setCoins;
-    int64_t nValueIn = 0;
-
-    if (SelectCoinsForStaking(nBalance - nReserveBalance, GetTime(), setCoins, nValueIn)
-      && !setCoins.empty())
+    // -- Get XSPEC weight for staking
+    int64_t nBalance = GetBalance();
+    if (nBalance > nReserveBalance)
     {
-       int64_t nCurrentTime = GetTime();
-
-        CTxDB txdb("r");
-        BOOST_FOREACH(PAIRTYPE(const CWalletTx*, unsigned int) pcoin, setCoins)
-        {
-            {
-                LOCK2(cs_main, cs_wallet);
-                if (nNodeMode == NT_THIN)
-                {
-                    // -- check txn is in chain
-                    std::map<uint256, CBlockThinIndex*>::iterator mi (mapBlockThinIndex.find(pcoin.first->hashBlock));
-                    if (mi == mapBlockThinIndex.end())
-                    {
-                        if (fThinFullIndex
-                            || !pindexRear)
-                            continue;
-
-                        CDiskBlockThinIndex diskindex;
-                        if (!txdb.ReadBlockThinIndex(pcoin.first->hashBlock, diskindex)
-                            || diskindex.hashNext == 0)
-                            continue;
-                    };
-                } else
-                {
-                    CTxIndex txindex;
-                    if (!txdb.ReadTxIndex(pcoin.first->GetHash(), txindex))
-                        continue;
-                }
-            }
-
-            if (nCurrentTime - pcoin.first->nTime > nStakeMinAge)
-                nWeight += pcoin.first->vout[pcoin.second].nValue;
-        }
+        set<pair<const CWalletTx*,unsigned int> > setCoins;
+        int64_t nValueIn = 0;
+        if (SelectCoinsForStaking(nBalance - nReserveBalance, nCurrentTime, setCoins, nValueIn))
+            nWeight += nValueIn;
     }
 
-    // Get SPECTRE weight for staking
-    if (isAnonStaking)
+    // -- Get SPECTRE weight for staking
+    if (Params().IsForkV3(nCurrentTime))
     {
         std::list<COwnedAnonOutput> lAvailableCoins;
         int64_t nAmountCheck = 0;
         std::string sError;
-        if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, true, sError))
-            nWeight += nAmountCheck;
+        if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, nCurrentTime, sError))
+            nWeight += nAmountCheck > nReserveBalance ? nAmountCheck - nReserveBalance : 0;
     }
 
     return nWeight;
