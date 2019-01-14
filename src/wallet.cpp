@@ -4651,9 +4651,11 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 }
 
 
-bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, const int& nRingSize, const bool& fForStaking, std::string& sError) const
+bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, int64_t nStakingTime, std::string& sError, int64_t nMaxAmount) const
 {
-    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, fForStaking) != 0)
+    nAmountCheck = 0;
+
+    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, nStakingTime) != 0)
     {
         sError = "ListUnspentAnonOutputs() failed";
         return false;
@@ -4676,27 +4678,21 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
     };
 
     // -- remove coins that don't have enough same value anonoutputs in the system for the ring size
-    std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin();
-    while (it != lAvailableAnonOutputs.end())
+    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
     {
         std::map<int64_t, int>::iterator mi = mOutputCounts.find(it->nValue);
-        if (mi == mOutputCounts.end()
-            || mi->second < nRingSize)
-        {
-            // -- not enough coins of same value, drop coin
-            lAvailableAnonOutputs.erase(it++);
-            continue;
-        };
-
-        nAmountCheck += it->nValue;
-        ++it;
+        if (mi == mOutputCounts.end() || mi->second < nRingSize || nAmountCheck + it->nValue > nMaxAmount)
+            // -- not enough coins of same value or over max amount, drop coin
+            lAvailableAnonOutputs.erase(it);
+        else
+            nAmountCheck += it->nValue;
     }
 
     return true;
 }
 
 
-bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, const int& rsType, const int& nRingSize, int& oaoRingIndex, const bool& fForStaking, const bool& fTestOnly, std::string& sError)
+bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, int64_t nStakingTime, bool fTestOnly, std::string& sError)
 {
     int nSigSize = GetRingSigSize(rsType, nRingSize);
 
@@ -6207,11 +6203,15 @@ uint64_t CWallet::GetStakeWeight() const
     // -- Get SPECTRE weight for staking
     if (Params().IsForkV3(nCurrentTime))
     {
-        std::list<COwnedAnonOutput> lAvailableCoins;
-        int64_t nAmountCheck = 0;
-        std::string sError;
-        if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, nCurrentTime, sError))
-            nWeight += nAmountCheck > nReserveBalance ? nAmountCheck - nReserveBalance : 0;
+        int64_t nSpectreBalance = GetSpectreBalance();
+        if (nSpectreBalance > nReserveBalance)
+        {
+            std::list<COwnedAnonOutput> lAvailableCoins;
+            int64_t nAmountCheck = 0;
+            std::string sError;
+            if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, nCurrentTime, sError, nSpectreBalance - nReserveBalance))
+                nWeight += nAmountCheck;
+        }
     }
 
     return nWeight;
@@ -6478,26 +6478,25 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     scriptEmpty.clear();
     txNew.vout.push_back(CTxOut(0, scriptEmpty));
 
+    // Choose coins to use
+    int64_t nBalance = GetSpectreBalance();
+    if (nBalance <= nReserveBalance)
+        return false;
+
     // -------------------------------------------
     // Select coins with suitable depth
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
     std::string sError;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError, nBalance - nReserveBalance))
         return error(("CreateAnonCoinStake : " + sError).c_str());
     if (lAvailableCoins.empty())
-        return false;
-    int64_t nMaxStakingBalance = nAmountCheck - nReserveBalance;
-    if (nMaxStakingBalance <= 0)
         return false;
 
     int64_t nCredit = 0; 
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
-
-        if (oao.nValue > nMaxStakingBalance)
-            return false;
 
         static int nMaxStakeSearchInterval = 60;
         bool fKernelFound = false;
@@ -6527,7 +6526,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
                 for (const auto & oaoc : lAvailableCoins)
                 {
-                    if (oaoc.nValue > nMaxCombineOutput || nCredit + (oaoc.nValue * 10) > nMaxStakingBalance)
+                    if (oaoc.nValue > nMaxCombineOutput)
                         break;
                     // skip the input used for staking (TODO could be optimized by considering in combining inputs)
                     if (&oaoc == &oao)
