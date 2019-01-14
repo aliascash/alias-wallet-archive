@@ -857,7 +857,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
         if(!tx.IsCoinBase() && !tx.IsCoinStake())
         {
             // Skip transactions that we know wouldn't be stealth...
-            FindStealthTransactions(tx, mapNarr);        
+            FindStealthTransactions(tx, mapNarr);
         }
 
         if (tx.nVersion == ANON_TXN_VERSION)
@@ -6203,6 +6203,14 @@ uint64_t CWallet::GetStakeWeight() const
             nWeight += nValueIn;
     }
 
+    return nWeight;
+}
+
+uint64_t CWallet::GetSpectreStakeWeight() const
+{
+    int64_t nCurrentTime = GetAdjustedTime();
+    uint64_t nWeight = 0;
+
     // -- Get SPECTRE weight for staking
     if (Params().IsForkV3(nCurrentTime))
     {
@@ -6496,7 +6504,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     if (lAvailableCoins.empty())
         return false;
 
-    int64_t nCredit = 0; 
+    int64_t nCredit = 0;
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
