@@ -662,9 +662,6 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
     if (nTimeTx < txPrev.nTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation");
-
     // Base target
     CBigNum bnTarget;
     bnTarget.SetCompact(nBits);
