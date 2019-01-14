@@ -40,8 +40,7 @@ std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hour
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
-int nCoinbaseMaturity = 283;		// 288 blocks depth for newly generated coins
-int nStakeMinConfirmations = 288;	// 288 blocks depth for minted coins
+int nCoinbaseMaturity = 100;		// 100 blocks depth for newly generated PoW coins
 CBlockIndex* pindexGenesisBlock = NULL;
 
 CBlockThinIndex* pindexGenesisBlockThin = NULL;
@@ -2229,7 +2228,7 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
             return false;
         };
 
-        int minBlockHeight = IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
+        int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
             || nBestHeight - ao.nBlockHeight < minBlockHeight)
         {
@@ -2357,7 +2356,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 fInvalid = true; return false;
             };
 
-            int minBlockHeight = IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
+            int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight < minBlockHeight)
             {
@@ -2462,7 +2461,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                 if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
                 {
                     int nSpendDepth;
-                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, nCoinbaseMaturity, nSpendDepth))
+                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime), nSpendDepth))
                         return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
                 }
 
@@ -3144,7 +3143,8 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
         return 0;
 
-    return max(0, (nCoinbaseMaturity + 5) - pDepthAndHeight.first);
+    int nMaturity = IsCoinBase() ? nCoinbaseMaturity : Params().GetStakeMinConfirmations(nTime);
+    return max(0, nMaturity - pDepthAndHeight.first);
 }
 
 
@@ -3348,7 +3348,7 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64
         if (Params().IsProtocolV3(pindexPrev->nHeight))
         {
             int nSpendDepth;
-            if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+            if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, Params().GetStakeMinConfirmations(nTime) - 1, nSpendDepth))
             {
                 LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
                 continue; // only count coins meeting min confirmations requirement

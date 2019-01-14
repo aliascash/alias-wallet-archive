@@ -438,8 +438,8 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
         return "grey";
     case TransactionStatus::Immature:
     case TransactionStatus::Confirming:
-        status_switch = wtx->status.status == TransactionStatus::Confirming ? confirmations : (confirmations * 5 / nCoinbaseMaturity + 1);
-
+        status_switch = wtx->status.status == TransactionStatus::Confirming ?
+                    confirmations : (confirmations * 5 /  Params().GetStakeMinConfirmations(wtx->time) + 1);
         switch(status_switch)
         {
             case 1: return "fa-clock-o red";

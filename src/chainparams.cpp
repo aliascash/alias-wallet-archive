@@ -160,6 +160,9 @@ public:
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 48);
 
+        nStakeMinConfirmationsLegacy = 288;
+        nStakeMinConfirmations = 450; // block time 64 seconds * 450 = 8 hours
+
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 715015;
 
@@ -221,6 +224,9 @@ public:
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
+
+        nStakeMinConfirmationsLegacy = 10;
+        nStakeMinConfirmations = 10;
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce = 1001;

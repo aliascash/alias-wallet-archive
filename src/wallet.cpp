@@ -1974,19 +1974,22 @@ void CWallet::AvailableCoinsForStaking(std::vector<COutput>& vCoins, unsigned in
 
     {
         LOCK2(cs_main, cs_wallet);
+
+        bool fPoSv3 = Params().IsProtocolV3(nBestHeight);
+
         for (WalletTxMap::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
 
             // Filtering by tx timestamp instead of block timestamp may give false positives but never false negatives
-            if (pcoin->nTime + nStakeMinAge > nSpendTime)
+            if ((!fPoSv3 || !Params().IsForkV3(nSpendTime)) && pcoin->nTime + nStakeMinAge > nSpendTime)
                 continue;
 
             if (pcoin->GetBlocksToMaturity() > 0)
                 continue;
 
             int nDepth = pcoin->GetDepthInMainChain();
-            if (nDepth < 1 || (Params().IsProtocolV3(nBestHeight) && nDepth < nStakeMinConfirmations))
+            if (nDepth < 1 || (fPoSv3 && nDepth < Params().GetStakeMinConfirmations(nSpendTime)))
                 continue;
 
             for (unsigned int i = 0; i < pcoin->vout.size(); i++)
@@ -3498,7 +3501,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (nCoinValue != ao.nValue)
                 return error("%s: Input %u ring amount mismatch %d, %d.", __func__, i, nCoinValue, ao.nValue);
 
-            int minBlockHeight = tx.IsAnonCoinStake() ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
+            int minBlockHeight = tx.IsAnonCoinStake() ? Params().GetStakeMinConfirmations(tx.nTime) : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight < minBlockHeight)
                 return error("%s: Input %u ring coin %u depth < %d.", __func__, i, ri, minBlockHeight);
@@ -4504,7 +4507,7 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
     return 0;
 };
 
-int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fForStaking, uint8_t* p)
+int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, int64_t nStakingTime, uint8_t* p)
 {
     if (fDebug)
         LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
@@ -4557,7 +4560,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
             ssValue >> anonOutput;
 
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
-            int minDepth = fForStaking ? nStakeMinConfirmations : MIN_ANON_SPEND_DEPTH;
+            int minDepth = nStakingTime ?  Params().GetStakeMinConfirmations(nStakingTime) : MIN_ANON_SPEND_DEPTH;
             if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= minDepth)
                 && anonOutput.nValue == nValue
                 && anonOutput.nCompromised == 0)
@@ -4750,7 +4753,7 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType,
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     memcpy(pPubkeyStart + oaoRingIndex * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
-    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, fForStaking, pPubkeyStart) != 0)
+    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, nStakingTime, pPubkeyStart) != 0)
     {
         sError = "PickHidingOutputs() failed.\n";
         return false;
@@ -5570,7 +5573,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     return true;
 };
 
-int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, bool fForStaking) const
+int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, int64_t nStakingTime) const
 {
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5618,9 +5621,9 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
             continue;
 
         // If nStakingTime is set, list only outputs suitable for staking
-        if (fForStaking)
+        if (nStakingTime)
         {
-            if (mi->second.GetDepthInMainChain() < nStakeMinConfirmations)
+            if (mi->second.GetDepthInMainChain() < Params().GetStakeMinConfirmations(nStakingTime))
                 continue;
         }
         // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent

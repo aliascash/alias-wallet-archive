@@ -103,6 +103,8 @@ public:
     const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
 
+    int GetStakeMinConfirmations(int64_t nTime) const { return IsForkV3(nTime) ? nStakeMinConfirmations : nStakeMinConfirmationsLegacy; }
+
 protected:
     CChainParams() {};
 
@@ -120,6 +122,9 @@ protected:
     CBigNum bnProofOfWorkLimit;
     CBigNum bnProofOfStakeLimit;
     CBigNum bnProofOfStakeLimitV2;
+
+    int nStakeMinConfirmationsLegacy;
+    int nStakeMinConfirmations;
 
     std::string strDataDir;
     std::vector<CDNSSeedData> vSeeds;
