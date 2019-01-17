@@ -955,7 +955,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
                 uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
                 return true;
-            },1000);
+            },100);
             pwalletMain->ReacceptWalletTransactions();
 
             if (fullscan)
