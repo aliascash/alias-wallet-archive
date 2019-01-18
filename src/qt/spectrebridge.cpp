@@ -109,17 +109,17 @@ QVariantMap TransactionModel::addTransaction(int row)
     return transaction;
 }
 
-void TransactionModel::populateRows(int start, int end)
+void TransactionModel::populateRows(int start, int end, int max)
 {
-    qDebug() << "populateRows";
-    if(start > ROWS_TO_REFRESH)
+    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
+    if(max && start > max)
         return;
 
     if(!prepare())
         return;
 
-    if (end > ROWS_TO_REFRESH)
-        end = ROWS_TO_REFRESH;
+    if (max && end > max)
+        end = max;
 
     QVariantList transactions;
 
@@ -755,7 +755,7 @@ void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRi
     // Updated transactions...
     qDebug() << "updateTransactions";
     if(topLeft.column() == TransactionTableModel::Status)
-        transactionModel->populateRows(topLeft.row(), bottomRight.row());
+        transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
