@@ -152,6 +152,10 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
     obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
     obj.push_back(Pair("spectrestake",  ValueFromAmount(pwalletMain->GetSpectreStake())));
+    obj.push_back(Pair("unconfirmedbalance",        ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("unconfirmedspectrebalance", ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
+    obj.push_back(Pair("stakeweight",               ValueFromAmount(pwalletMain->GetStakeWeight())));
+    obj.push_back(Pair("spectrestakeweight",        ValueFromAmount(pwalletMain->GetSpectreStakeWeight())));
     obj.push_back(Pair("reserve",       ValueFromAmount(nReserveBalance)));
 
     obj.push_back(Pair("blocks",        (int)nBestHeight));
@@ -1212,9 +1216,9 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
 
     // Sent
     if (!listSent.empty() && wtx.GetBlocksToMaturity() == 0 && (fAllAccounts || strAccount == strSentAccount))
-    { 
+    {
         for(const auto & [address,destSubs,amount,currency,narration] : listSent)
-        {         
+        {
             std::string category = "send";
             if (wtx.IsCoinStake())
             {

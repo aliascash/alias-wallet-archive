@@ -279,6 +279,7 @@ public:
 
 
     uint64_t GetStakeWeight() const;
+    uint64_t GetSpectreStakeWeight() const;
     bool CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key);
     bool CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, int64_t nFees, CTransaction& txNew, CKey& key);
 
@@ -317,7 +318,7 @@ public:
     bool ProcessLockedAnonOutputs();
 
     bool EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr, CWalletTx& wtxNew, int64_t& nFeeRet, std::string& sError);
-    
+
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, int64_t nStakingTime) const;
     bool ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, int64_t nStakingTime, std::string& sError, int64_t nMaxAmount = MAX_MONEY) const;
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly) const;
@@ -925,7 +926,7 @@ public:
     };
 
     int64_t GetAvailableSpectreCredit(bool fUseCache=true) const
-    {   
+    {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
         if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
             return 0;
