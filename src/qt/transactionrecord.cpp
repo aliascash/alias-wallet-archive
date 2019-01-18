@@ -409,7 +409,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
 
     // Sort order nTime has priority (also for unrecorded transactions with nHeight=max)
     // only the first 200 transactions are updated in updateTransactions(),
-    // sorted by nTime makes sure the newst trx are considered for update
+    // sorted by nTime makes sure the newest trx are considered for update
     status.sortKey = strprintf("%010d-%01d-%010u-%03d",
                                wtx.nTime,
                                nHeight,
