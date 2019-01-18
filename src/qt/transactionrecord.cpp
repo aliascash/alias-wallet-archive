@@ -407,12 +407,14 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
         };
     };
 
-    // Sort order, unrecorded transactions sort to the top
+    // Sort order nTime has priority (also for unrecorded transactions with nHeight=max)
+    // only the first 200 transactions are updated in updateTransactions(),
+    // sorted by nTime makes sure the newst trx are considered for update
     status.sortKey = strprintf("%010d-%01d-%010u-%03d",
-        nHeight,
-        (wtx.IsCoinBase() ? 1 : 0),
-        wtx.nTimeReceived,
-        idx);
+                               wtx.nTime,
+                               nHeight,
+                               (wtx.IsCoinBase() ? 1 : 0),
+                               idx);
 
     status.countsForBalance = wtx.IsTrusted() && !(wtx.GetBlocksToMaturity() > 0);
     status.depth = wtx.GetDepthInMainChain();
