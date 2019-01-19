@@ -86,7 +86,7 @@ CScript COINBASE_FLAGS;
 const string strMessageMagic = "Spectrecoin Signed Message:\n";
 
 // Settings
-int64_t nTransactionFee = MIN_TX_FEE;
+int64_t nTransactionFee = nMinTxFee;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
@@ -891,9 +891,9 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     int64_t nBaseFee;
     switch (mode)
     {
-        case GMF_RELAY: nBaseFee = MIN_RELAY_TX_FEE; break;
-        case GMF_ANON:  nBaseFee = MIN_TX_FEE_ANON;  if (!Params().IsForkV3(nTime)) break;
-        default:        nBaseFee = MIN_TX_FEE;       break;
+        case GMF_RELAY: nBaseFee = nMinRelayTxFee; break;
+        case GMF_ANON:  nBaseFee = nMinTxFeeAnonLegacy;  if (!Params().IsForkV3(nTime)) break;
+        default:        nBaseFee = nMinTxFee;       break;
     };
 
     unsigned int nNewBlockSize = nBlockSize + nBytes;
@@ -1028,7 +1028,7 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
             // Continuously rate-limit free transactions
             // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
             // be annoying or make others' transactions take longer to confirm.
-            if (nFees < MIN_RELAY_TX_FEE)
+            if (nFees < nMinRelayTxFee)
             {
                 static CCriticalSection csFreeLimiter;
                 static double dFreeCount;

@@ -65,8 +65,8 @@ int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, i
 
     // To avoid ATXOs lower than base fee, roundup reward 1 digit above base fee (2.12345678 becomes 2.124)
     // Note: anon staking rewards are only possible from V3 on and then MIN_TX_ANON is effective
-    nSubsidy -= nSubsidy % (MIN_TX_FEE * 10);
-    nSubsidy += MIN_TX_FEE * 10;
+    nSubsidy -= nSubsidy % (nMinTxFee * 10);
+    nSubsidy += nMinTxFee * 10;
 
     return nSubsidy;
 }
