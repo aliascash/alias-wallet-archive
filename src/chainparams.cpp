@@ -222,8 +222,8 @@ public:
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
-        bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
-        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
+        bnProofOfStakeLimit = CBigNum(~uint256(0) >> 32);
+        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 32);
 
         nStakeMinConfirmationsLegacy = 28;
         nStakeMinConfirmations = 45;
