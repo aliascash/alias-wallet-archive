@@ -476,8 +476,8 @@ bool AppInit2(boost::thread_group& threadGroup)
         nMinRelayTxFee /= nTestnetScaleMod;
         nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
-        nStakeCombineThreshold = 10 * COIN;
-        nStakeSplitThreshold = 2 * nStakeCombineThreshold;
+        nStakeCombineThreshold /= nTestnetScaleMod;
+        nStakeSplitThreshold /= nTestnetScaleMod;
         nMaxAnonOutput /= nTestnetScaleMod;
         nMaxAnonStakeOutput /= nTestnetScaleMod;
     };

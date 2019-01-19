@@ -225,8 +225,8 @@ public:
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
 
-        nStakeMinConfirmationsLegacy = 10;
-        nStakeMinConfirmations = 10;
+        nStakeMinConfirmationsLegacy = 28;
+        nStakeMinConfirmations = 45;
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce = 1001;
