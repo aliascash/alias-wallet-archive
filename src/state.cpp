@@ -59,8 +59,8 @@ int64_t nMinRelayTxFee = nMinTxFee;
 unsigned int nStakeSplitAge = 1 * 24 * 60 * 60;
 int64_t nStakeCombineThreshold = 1000 * COIN;
 int64_t nStakeSplitThreshold = 2 * nStakeCombineThreshold;
-int64_t nMaxAnonOutput = 10000 * COIN;
-int64_t nMaxAnonStakeOutput = nMaxAnonOutput / 10;
+int64_t nMaxAnonOutput = 1000 * COIN;
+int64_t nMaxAnonStakeOutput = nMaxAnonOutput;
 
 uint32_t nExtKeyLookAhead = 10;
 
