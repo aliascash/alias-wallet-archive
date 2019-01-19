@@ -26,7 +26,7 @@ int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
     int64_t nSubsidy = 0;
 
 	if(nHeight == 1)
-		nSubsidy = (NetworkID() == CChainParams::TESTNET ? 100000 : 20000000) * COIN;  // 20Mill Pre-mine on MainNet
+        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 2000000 : 20000000) * COIN;  // 20Mill Pre-mine on MainNet, 2Mill pre-mine on TestNet
 
     else if(nHeight <= nLastPOWBlock)
         nSubsidy = 0;
