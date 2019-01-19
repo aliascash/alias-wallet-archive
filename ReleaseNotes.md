@@ -16,7 +16,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 
 ### Changelog
 ## 3.0.0
-** V3 blockchain fork consensus changes / Fork time is XXX**
+**V3 blockchain fork consensus changes / Fork time is GMT: Thursday, 28. March 2019 22:00:00 (1553810400 unix epoch time)**
 - Minimum ring size increased from 1 to 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
