@@ -229,10 +229,10 @@ public:
         nStakeMinConfirmations = 45;
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce = 1001;
+        genesis.nNonce = 20;
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x0eaef840827189830c177c345f53a26ad87e0770b200a83d7ff6a928d725d882"));
+        assert(hashGenesisBlock == uint256("0x0a3e03a153b1713ebc1f03fefa5d013bba4d2677ae189fcb727396b98043d95c"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(127).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(196).convert_to_container<std::vector<unsigned char> >();
