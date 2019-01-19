@@ -817,7 +817,7 @@ public:
         return (vtx.size() > 1 && vtx[1].IsCoinStake());
     }
 
-    bool IsProofOfStealth() const
+    bool IsProofOfAnonStake() const
     {
         return (vtx.size() > 1 && vtx[1].IsAnonCoinStake());
     }

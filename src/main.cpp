@@ -2731,7 +2731,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!Params().IsProtocolV3(pindex->pprev->nHeight) && !vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString());
 
-        int64_t nCalculatedStakeReward = IsProofOfStealth() ? Params().GetProofOfAnonStakeReward(pindex->pprev, nFees) : Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = IsProofOfAnonStake() ? Params().GetProofOfAnonStakeReward(pindex->pprev, nFees) : Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
@@ -3957,7 +3957,7 @@ bool CBlock::CheckBlockSignature() const
     if (vchBlockSig.empty())
         return false;
 
-    if (IsProofOfStealth())
+    if (IsProofOfAnonStake())
         return CheckAnonBlockSignature();
 
     vector<valtype> vSolutions;
