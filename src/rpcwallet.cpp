@@ -122,9 +122,7 @@ Value getinfo(const Array& params, bool fHelp)
             obj.push_back(Pair("debugpos",          fDebugPoS));
             obj.push_back(Pair("debugringsig",      fDebugRingSig));
 
-
             obj.push_back(Pair("datadir",           GetDataDir().string()));
-
 
             obj.push_back(Pair("walletfile",        pwalletMain->strWalletFile));
             obj.push_back(Pair("walletversion",     pwalletMain->GetVersion()));
@@ -145,18 +143,18 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("mode",          std::string(GetNodeModeName(nNodeMode))));
     obj.push_back(Pair("state",         nNodeMode == NT_THIN ? std::string(GetNodeStateName(nNodeState)) : "Full Node"));
 
-    obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-    obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
-    obj.push_back(Pair("spectrebalance", ValueFromAmount(pwalletMain->GetSpectreBalance())));
-    obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
-    obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
-    obj.push_back(Pair("spectrestake",  ValueFromAmount(pwalletMain->GetSpectreStake())));
-    obj.push_back(Pair("unconfirmedbalance",        ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
-    obj.push_back(Pair("unconfirmedspectrebalance", ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
-    obj.push_back(Pair("stakeweight",               ValueFromAmount(pwalletMain->GetStakeWeight())));
-    obj.push_back(Pair("spectrestakeweight",        ValueFromAmount(pwalletMain->GetSpectreStakeWeight())));
-    obj.push_back(Pair("reserve",       ValueFromAmount(nReserveBalance)));
+    obj.push_back(Pair("protocolversion",          (int)PROTOCOL_VERSION));
+    obj.push_back(Pair("walletversion",            pwalletMain->GetVersion()));
+    obj.push_back(Pair("balance",                  ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(Pair("anonbalance",              ValueFromAmount(pwalletMain->GetSpectreBalance())));
+    obj.push_back(Pair("newmint",                  ValueFromAmount(pwalletMain->GetNewMint())));
+    obj.push_back(Pair("stake",                    ValueFromAmount(pwalletMain->GetStake())));
+    obj.push_back(Pair("spectrestake",             ValueFromAmount(pwalletMain->GetSpectreStake())));
+    obj.push_back(Pair("unconfirmedbalance",       ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("unconfirmedanonbalance",   ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
+    obj.push_back(Pair("stakeweight",              ValueFromAmount(pwalletMain->GetStakeWeight())));
+    obj.push_back(Pair("spectrestakeweight",       ValueFromAmount(pwalletMain->GetSpectreStakeWeight())));
+    obj.push_back(Pair("reserve",                  ValueFromAmount(nReserveBalance)));
 
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     if (nNodeMode == NT_THIN)
@@ -167,7 +165,7 @@ Value getinfo(const Array& params, bool fHelp)
     if (nNodeMode == NT_FULL)
     {
         obj.push_back(Pair("moneysupply",  ValueFromAmount(pindexBest->nMoneySupply)));
-        obj.push_back(Pair("spectresupply", ValueFromAmount(pindexBest->nAnonSupply)));
+        obj.push_back(Pair("anonsupply",   ValueFromAmount(pindexBest->nAnonSupply)));
     }
 
     obj.push_back(Pair("connections",   (int)vNodes.size()));
