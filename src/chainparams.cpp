@@ -218,7 +218,7 @@ public:
         nBIP44ID = 0x80000001;
 
         nLastPOWBlock = 20;
-        nFirstPosv2Block = 21;
+        nFirstPosv2Block = 20;
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
