@@ -251,7 +251,7 @@ public:
         nForkV3Time = 1546470000; // TESTNET V3 chain fork (01/02/2019 @ 11:00pm (UTC))
 
 
-        devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
+        devContributionAddress = "tSJoPZoXumJyDmGKYo9Y7SZkJvymESFYkD";
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
