@@ -3157,6 +3157,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 
     }
 
+    uint32_t nUpdatedDepth = 0;
     for (uint32_t i = 0; i < tx.vout.size(); ++i)
     {
         const CTxOut& txout = tx.vout[i];
@@ -3182,9 +3183,12 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
             return false;
         };
 
-        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, value: %d\n", nNewHeight, ao.nValue);
         mapAnonOutputStats[ao.nValue].updateDepth(nNewHeight, ao.nValue);
+        nUpdatedDepth++;
     };
+
+    if (nUpdatedDepth)
+        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, num of anon outputs: %d\n", nNewHeight, nUpdatedDepth);
 
     return true;
 };
