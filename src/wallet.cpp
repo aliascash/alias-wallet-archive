@@ -3404,7 +3404,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    LogPrintf("found matching spent key image - txn has been processed before, reprocessing.\n");
+                    LogPrintf("found matching spent key image - txn has been processed before\n");
+                return UpdateAnonTransaction(ptxdb, tx, blockHash);
             }
             else {
                 if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
@@ -3584,8 +3585,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             {
                 if (fDebugRingSig)
                     LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
-                if (!UpdateAnonTransaction(ptxdb, tx, blockHash))
-                    return false;
+                return UpdateAnonTransaction(ptxdb, tx, blockHash);
             }
             else {
                 return error("%s: Found duplicate anon output.", __func__);
