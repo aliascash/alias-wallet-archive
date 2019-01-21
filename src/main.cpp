@@ -3908,19 +3908,20 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
     {
         int64_t nSearchInterval = Params().IsProtocolV2(nBestHeight+1) ? 1 : nSearchTime - nLastCoinStakeSearchTime;
 
-        CTransaction txCoinStake;
         CKey key;
+        CTransaction txCoinStake;
         txCoinStake.nTime = nSearchTime;
 
         bool foundStake = false;
-        if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+        if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1) &&
+                wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
             foundStake = true;
-        else if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1))
+        else
         {
+            key.Clear();
             txCoinStake.SetNull();
             txCoinStake.nTime = nSearchTime;
-            key.Clear();
-            if (wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+            if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
                 foundStake = true;
         }
 
