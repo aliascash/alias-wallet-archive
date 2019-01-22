@@ -327,6 +327,7 @@ std::string HelpMessage()
     strUsage += "  -loadblock=<file>      " + _("Imports blocks from external blk000?.dat file") + "\n";
     strUsage += "  -maxorphanblocksmib=<n> " + strprintf(_("Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"), DEFAULT_MAX_ORPHAN_BLOCKS) + "\n";
     strUsage += "  -reindex               " + _("Rebuild block chain index from current blk000?.dat files on startup") + "\n";
+    strUsage += "  -version               " + _("Show version and exit") + "\n";
 
     strUsage += "\n" + _("Thin options:") + "\n";
     strUsage += "  -thinmode              " + _("Operate in less secure, less resource hungry 'thin' mode") + "\n";
@@ -403,6 +404,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     // Start a thread to wait for SIGINT, SIGTERM and SIGHUP and handle them appropriately
     NewThread(&ThreadSignalHandler, NULL);
 #endif
+
+    if (GetBoolArg("-version")) {
+        fprintf(stdout, "%s", FormatFullVersion().c_str());
+        return false;
+    }
 
     if (!CheckDiskSpace())
         return false;
