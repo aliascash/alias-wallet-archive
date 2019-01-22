@@ -605,7 +605,9 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg",
                                     )
-                                    sh "rm -f Spectrecoin*.dmg*"
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg", "Checksum-Spectrecoin-Mac.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg", "Checksum-Spectrecoin-OBFS4-Mac.txt")
+                                    sh "rm -f Spectrecoin*.dmg* Checksum-Spectrecoin*"
                                 }
                             }
                             post {
@@ -695,7 +697,9 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip",
                                     )
-                                    sh "rm -f Spectrecoin*-WIN64.zip*"
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.dmg", "Checksum-Spectrecoin-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.dmg", "Checksum-Spectrecoin-OBFS4-WIN64.txt")
+                                    sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
                             post {
@@ -785,7 +789,9 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip",
                                     )
-                                    sh "rm -f Spectrecoin*-WIN64.zip*"
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.dmg", "Checksum-Spectrecoin-Qt5.12-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.dmg", "Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt")
+                                    sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
                             post {
@@ -1079,4 +1085,14 @@ def createWindowsDelivery(String version) {
                     source: "${WORKSPACE}/src/Spectrecoin",
                     destination: "${WORKSPACE}/src/bin")
     ])
+}
+
+def createAndUploadChecksumFile(String filename, String checksumfile) {
+    sh "./scripts/createChecksums.sh $filename $checksumfile"
+    uploadArtifactToGitHub(
+            user: 'spectrecoin',
+            repository: 'spectre',
+            tag: "${GIT_TAG_TO_USE}",
+            artifactNameRemote: "$checksumfile",
+    )
 }
