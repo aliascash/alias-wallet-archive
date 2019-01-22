@@ -697,8 +697,8 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip",
                                     )
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.dmg", "Checksum-Spectrecoin-WIN64.txt")
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.dmg", "Checksum-Spectrecoin-OBFS4-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.zip", "Checksum-Spectrecoin-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip", "Checksum-Spectrecoin-OBFS4-WIN64.txt")
                                     sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
@@ -789,8 +789,8 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip",
                                     )
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.dmg", "Checksum-Spectrecoin-Qt5.12-WIN64.txt")
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.dmg", "Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-WIN64.txt")
+                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt")
                                     sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
