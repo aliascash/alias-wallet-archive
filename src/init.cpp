@@ -180,7 +180,7 @@ void ThreadSignalHandler(void *nothing)
 {
     RenameThread("signals");
 
-    fprintf(stderr, "Waiting for signals\n");
+//    fprintf(stderr, "Waiting for signals\n");
     while (1) {
         int sig, rc;
         rc = sigwait(&blockedSignals, &sig);
