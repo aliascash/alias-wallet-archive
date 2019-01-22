@@ -2230,7 +2230,7 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
 
         int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
-            || nBestHeight - ao.nBlockHeight < minBlockHeight)
+            || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
         {
             LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
             return false;
@@ -2358,7 +2358,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
             int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < minBlockHeight)
+                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
             {
                 LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
                 fInvalid = true; return false;

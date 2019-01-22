@@ -3508,7 +3508,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
 
             int minBlockHeight = tx.IsAnonCoinStake() ? Params().GetStakeMinConfirmations(tx.nTime) : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < minBlockHeight)
+                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
                 return error("%s: Input %u ring coin %u depth < %d.", __func__, i, ri, minBlockHeight);
 
             if (nRingSize == 1)
@@ -4565,7 +4565,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
             int minDepth = nStakingTime ?  Params().GetStakeMinConfirmations(nStakingTime) : MIN_ANON_SPEND_DEPTH;
-            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= minDepth)
+            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
                 && anonOutput.nValue == nValue
                 && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
@@ -5700,7 +5700,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
 
 
         if ((!fMatureOnly
-           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
+           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= MIN_ANON_SPEND_DEPTH)) // ao confirmed in last block has depth of 1
           && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
@@ -5762,7 +5762,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         if (strType != "ao")
             break;
 
-        int nHeight = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight : 0;
+        int nHeight = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight + 1: 0; // ao confirmed in last block has depth of 1
 
 
         if (fMatureOnly
