@@ -51,7 +51,7 @@ RUN cd /filesToUpload \
 
 RUN cd /filesToUpload \
  && chmod +x /tmp/createChecksums.sh \
- && /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
+ && sh /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
  && github-release upload \
         --user spectrecoin \
         --security-token "${GITHUB_TOKEN}" \
