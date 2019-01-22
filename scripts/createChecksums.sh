@@ -1,4 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
+# ===========================================================================
+#
+# Created: 2019-01-22 HLXEasy
+#
+# Helper script to create checksums for given file (1st parameter)
+# and write them into given another file (2nd parameter)
+#
+# ===========================================================================
+
 givenFileWithPath=$1
 checksumfile=/tmp/checksumfile
 if [[ -z "${givenFileWithPath}" ]] ; then
