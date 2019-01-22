@@ -28,11 +28,13 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Ubuntu.tgz
+ENV CHKSUM_FILE=Checksum-Spectrecoin-Ubuntu.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
 COPY --from=build /spectre/src/spectrecoind /filesToUpload/usr/local/bin/
 COPY --from=build /spectre/src/spectre /filesToUpload/usr/local/bin/spectrecoin
+COPY --from=build /spectre/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
@@ -43,6 +45,18 @@ RUN cd /filesToUpload \
         --tag "${SPECTRECOIN_RELEASE}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
+        ${REPLACE_EXISTING_ARCHIVE}
+
+RUN cd /filesToUpload \
+ && chmod +x /tmp/createChecksums.sh \
+ && sh /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
+ && github-release upload \
+        --user spectrecoin \
+        --security-token "${GITHUB_TOKEN}" \
+        --repo "${SPECTRECOIN_REPOSITORY}" \
+        --tag "${SPECTRECOIN_RELEASE}" \
+        --name "${CHKSUM_FILE}" \
+        --file "/filesToUpload/${CHKSUM_FILE}" \
         ${REPLACE_EXISTING_ARCHIVE} \
  && rm -rf /filesToUpload/* \
  && export GITHUB_TOKEN=---
