@@ -104,6 +104,7 @@ public:
     const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
 
     int GetStakeMinConfirmations(int64_t nTime) const { return IsForkV3(nTime) ? nStakeMinConfirmations : nStakeMinConfirmationsLegacy; }
+    int GetAnonStakeMinConfirmations() const { return nStakeMinConfirmations; }
 
 protected:
     CChainParams() {};

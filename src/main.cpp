@@ -2228,11 +2228,12 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
             return false;
         };
 
-        int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
+        int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
             || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
         {
-            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                      i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
             return false;
         };
     };
@@ -2356,11 +2357,12 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 fInvalid = true; return false;
             };
 
-            int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
+            int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
                 || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
+                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                          i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
                 fInvalid = true; return false;
             };
         };
@@ -3143,7 +3145,9 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
         return 0;
 
-    int nMaturity = IsCoinBase() ? nCoinbaseMaturity : Params().GetStakeMinConfirmations(nTime);
+    int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
+                                   IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
+                                                       Params().GetStakeMinConfirmations(nTime);
     return max(0, nMaturity - pDepthAndHeight.first);
 }
 
