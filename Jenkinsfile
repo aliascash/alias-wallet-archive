@@ -437,7 +437,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian.txt")
+                                    getChecksumfileFromImage("spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian.txt")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian.txt"
                                 }
                             }
@@ -475,7 +475,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                            getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-CentOS.txt")
+                            getChecksumfileFromImage("spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-CentOS.txt")
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-CentOS.txt"
                         }
                     }
@@ -493,7 +493,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                            getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Fedora.txt")
+                            getChecksumfileFromImage("spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Fedora.txt")
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Fedora.txt"
                         }
                     }
@@ -512,7 +512,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Ubuntu.txt")
+                                    getChecksumfileFromImage("spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Ubuntu.txt")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu.txt"
                                 }
                             }
