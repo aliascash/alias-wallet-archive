@@ -816,16 +816,7 @@ pipeline {
                 }
             }
         }
-        stage('Create Github release') {
-            when {
-                expression {
-                    return isReleaseExisting(
-                            user: 'spectrecoin',
-                            repository: 'spectre',
-                            tag: "${GIT_TAG_TO_USE}"
-                    ) ==~ false
-                }
-            }
+        stage('Update Github releasenotes') {
             steps {
                 script {
                     sh(
@@ -843,7 +834,7 @@ pipeline {
                                 done
                             """
                     )
-                    createRelease(
+                    editRelease(
                             user: 'spectrecoin',
                             repository: 'spectre',
                             tag: "${GIT_TAG_TO_USE}",
