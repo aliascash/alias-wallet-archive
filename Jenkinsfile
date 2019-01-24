@@ -1100,12 +1100,7 @@ def createWindowsDelivery(String version) {
     ])
 }
 
-def createAndUploadChecksumFile(String filename, String checksumfile) {
+def createAndArchiveChecksumFile(String filename, String checksumfile) {
     sh "./scripts/createChecksums.sh $filename $checksumfile"
-    uploadArtifactToGitHub(
-            user: 'spectrecoin',
-            repository: 'spectre',
-            tag: "${GIT_TAG_TO_USE}",
-            artifactNameRemote: "$checksumfile",
-    )
+    archiveArtifacts allowEmptyArchive: true, artifacts: "$checksumfile"
 }
