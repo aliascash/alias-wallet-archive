@@ -365,6 +365,7 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                /*
                 stage('Build Raspberry Pi binaries') {
                     stages {
                         stage('Build Raspberry Pi binaries') {
@@ -405,6 +406,7 @@ pipeline {
                         }
                     }
                 }
+                */
                 stage('Build Debian binaries') {
                     agent {
                         label "docker"
