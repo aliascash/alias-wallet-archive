@@ -919,7 +919,7 @@ def getChecksumfileFromImage(String dockerTag, String checksumfile) {
         sh (
                 script: """
                     docker run --name tmpContainer -dit ${dockerTag} /bin/sh 
-                    docker cp ${dockerTag}:/filesToUpload/${checksumfile} ${checksumfile}
+                    docker cp tmpContainer:/filesToUpload/${checksumfile} ${checksumfile}
                     docker stop tmpContainer
                     docker rm tmpContainer
                 """
