@@ -357,16 +357,27 @@ pipeline {
                         }
                     }
                 }
-                steps {
-                    script {
-                        createRelease(
-                                user: 'spectrecoin',
-                                repository: 'spectre',
-                                tag: "${GIT_TAG_TO_USE}",
-                                name: "${RELEASE_NAME}",
-                                description: "${RELEASE_DESCRIPTION}",
-                                preRelease: "${PRERELEASE}"
-                        )
+                stage('Create Github release') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_USE}"
+                            ) ==~ false
+                        }
+                    }
+                    steps {
+                        script {
+                            createRelease(
+                                    user: 'spectrecoin',
+                                    repository: 'spectre',
+                                    tag: "${GIT_TAG_TO_USE}",
+                                    name: "${RELEASE_NAME}",
+                                    description: "${RELEASE_DESCRIPTION}",
+                                    preRelease: "${PRERELEASE}"
+                            )
+                        }
                     }
                 }
             }
