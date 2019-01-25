@@ -822,17 +822,10 @@ pipeline {
             script {
                 sh(
                         script:"""
-                                if test -e "${RELEASE_DESCRIPTION}" ; then
-                                    cp "${RELEASE_DESCRIPTION}" ${WORKSPACE}/releaseNotesToDeploy.txt
-                                else
-                                    echo "${RELEASE_DESCRIPTION}" > ${WORKSPACE}/releaseNotesToDeploy.txt
-                                fi
-                                for currentChecksumfile in Checksum-Spectrecoin-CentOS.txt Checksum-Spectrecoin-Debian.txt Checksum-Spectrecoin-Fedora.txt Checksum-Spectrecoin-Mac.txt Checksum-Spectrecoin-OBFS4-Mac.txt Checksum-Spectrecoin-OBFS4-WIN64.txt Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt Checksum-Spectrecoin-Qt5.12-WIN64.txt Checksum-Spectrecoin-RaspberryPi.txt Checksum-Spectrecoin-Ubuntu.txt Checksum-Spectrecoin-WIN64.txt ; do
-                                    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
-                                    if test -e "${currentChecksumfile}" ; then
-                                        cat "${currentChecksumfile}" >> ${WORKSPACE}/releaseNotesToDeploy.txt
-                                    fi
-                                done
+                                ${WORKSPACE}/script/createChecksumSummary.sh \
+                                    "${RELEASE_DESCRIPTION}" \
+                                    "${WORKSPACE}" \
+                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                 )
                 editRelease(
