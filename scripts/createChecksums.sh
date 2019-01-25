@@ -18,4 +18,4 @@ if [[ -n "${2}" ]] ; then
     checksumfile=$2
 fi
 filename=${givenFileWithPath##*/}
-echo "${filename}: $(sha256sum "${givenFileWithPath}" | awk '{ print $1 }')" > ${checksumfile}
+echo "${filename} $(sha256sum "${givenFileWithPath}" | awk '{ print $1 }')" > ${checksumfile}
