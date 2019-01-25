@@ -824,7 +824,7 @@ pipeline {
             script {
                 sh(
                         script:"""
-                                ${WORKSPACE}/script/createChecksumSummary.sh \
+                                ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
                                     "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
