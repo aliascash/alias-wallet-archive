@@ -2542,16 +2542,16 @@ Value anonoutputs(const Array& params, bool fHelp)
             fSystemTotals = true;
     };
 
-    bool fMatureOnly = true;
+    CWallet::MaturityFilter nFilter = CWallet::MaturityFilter::FOR_SPENDING;
     if (params.size() > 1)
     {
         std::string value   = params[1].get_str();
         if (IsStringBoolPositive(value))
-            fMatureOnly = false;
+            nFilter = CWallet::MaturityFilter::NONE;
     };
 
     std::list<COwnedAnonOutput> lAvailableCoins;
-    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, fMatureOnly, false) != 0)
+    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, nFilter) != 0)
         throw std::runtime_error("ListUnspentAnonOutputs() failed.");
 
 
@@ -2591,7 +2591,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         for (std::list<COwnedAnonOutput>::iterator it = lAvailableCoins.begin(); it != lAvailableCoins.end(); ++it)
             mOutputCounts[it->nValue] = 0;
 
-        if (pwalletMain->CountAnonOutputs(mOutputCounts, fMatureOnly) != 0)
+        if (pwalletMain->CountAnonOutputs(mOutputCounts, nFilter) != 0)
             throw std::runtime_error("CountAnonOutputs() failed.");
 
         result.push_back(Pair("No. of coins owned, No. of system coins available", "amount"));
@@ -2637,7 +2637,7 @@ Value anoninfo(const Array& params, bool fHelp)
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Must be in full mode.");
 
-    bool fMatureOnly = false; // TODO: add parameter
+    CWallet::MaturityFilter nFilter = CWallet::MaturityFilter::NONE; // TODO: add parameter
 
     bool fRecalculate = false;
 
@@ -2654,7 +2654,7 @@ Value anoninfo(const Array& params, bool fHelp)
 
     if (fRecalculate)
     {
-        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, fMatureOnly) != 0)
+        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nFilter) != 0)
             throw std::runtime_error("CountAllAnonOutputs() failed.");
     } else
     {
@@ -2678,31 +2678,45 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Spends, No. Compromised, Least Depth", "value"));
+    result.push_back(Pair("No. Exists, No. Mature, No. Spends, No. Stakes, No. Compromised, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
     char cbuf[256];
-    int64_t nTotalIn = 0;
-    int64_t nTotalOut = 0;
-    int64_t nTotalCompromised = 0;
     int64_t nTotalCoins = 0;
+    int64_t nTotalIn = 0, nOutputsIn = 0;
+    int64_t nTotalOut = 0, nOutputsOut = 0;
+    int64_t nTotalCompromised = 0, nOutputsCompromised = 0;
+    int64_t nTotalMature = 0, nOutputsMature = 0;
+    int64_t nTotalStakes = 0, nOutputsStakes = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %7d, %3d", it->nExists, it->nSpends, it->nCompromised, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nSpends, it->nStakes, it->nCompromised, it->nLeastDepth);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
-
-        nTotalIn += it->nValue * it->nExists;
-        nTotalOut += it->nValue * it->nSpends;
-        nTotalCompromised += it->nValue * it->nCompromised;
         nTotalCoins += it->nExists;
+        nTotalIn += it->nValue * it->nExists;
+        nOutputsIn += it->nExists;
+        nTotalOut += it->nValue * it->nSpends;
+        nOutputsOut += it->nSpends;
+        nTotalCompromised += it->nValue * it->nCompromised;
+        nOutputsCompromised += it->nCompromised;
+        nTotalMature += it->nValue * it->nMature;
+        nOutputsMature += it->nMature;
+        nTotalStakes += it->nValue * it->nStakes;
+        nOutputsStakes += it->nStakes;
     };
 
-    result.push_back(Pair("total anon value in", ValueFromAmount(nTotalIn)));
-    result.push_back(Pair("total anon value out", ValueFromAmount(nTotalOut)));
-    result.push_back(Pair("total anon value compromised", ValueFromAmount(nTotalCompromised)));
-    result.push_back(Pair("total anon outputs", nTotalCoins));
+    result.push_back(Pair("total outputs", nTotalCoins));
+    result.push_back(Pair("total value", ValueFromAmount(nTotalIn)));
+    result.push_back(Pair("total mature outputs", nOutputsMature));
+    result.push_back(Pair("total mature value", ValueFromAmount(nTotalMature)));
+    result.push_back(Pair("total spend outputs", nOutputsOut));
+    result.push_back(Pair("total spend value", ValueFromAmount(nTotalOut)));
+    result.push_back(Pair("total stake outputs", nOutputsStakes));
+    result.push_back(Pair("total stake value", ValueFromAmount(nTotalStakes)));
+    result.push_back(Pair("total compromised outputs", nOutputsCompromised));
+    result.push_back(Pair("total compromised value", ValueFromAmount(nTotalCompromised)));
 
     return result;
 }
