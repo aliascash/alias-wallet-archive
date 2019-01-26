@@ -622,6 +622,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+        case WalletModel::SCR_StealthAddressFailAnonToSpec:
+            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
+                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
 		case WalletModel::SCR_AmountExceedsBalance:
 			QMessageBox::warning(window, tr("Send Coins"),
 				tr("The amount exceeds your SPECTRE balance."),
