@@ -18,8 +18,4 @@ if [[ -n "${2}" ]] ; then
     checksumfile=$2
 fi
 filename=${givenFileWithPath##*/}
-echo "${filename}" > ${checksumfile}
-echo "md5:       $(md5sum "${givenFileWithPath}" | awk '{ print $1 }')" >> ${checksumfile}
-echo "sha1sum:   $(sha1sum "${givenFileWithPath}" | awk '{ print $1 }')" >> ${checksumfile}
-echo "sha256sum: $(sha256sum "${givenFileWithPath}" | awk '{ print $1 }')" >> ${checksumfile}
-echo "sha512sum: $(sha512sum "${givenFileWithPath}" | awk '{ print $1 }')" >> ${checksumfile}
+echo "${filename} $(sha256sum "${givenFileWithPath}" | awk '{ print $1 }')" > ${checksumfile}

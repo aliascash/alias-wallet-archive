@@ -45,18 +45,7 @@ RUN cd /filesToUpload \
         --tag "${SPECTRECOIN_RELEASE}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
-        ${REPLACE_EXISTING_ARCHIVE}
-
-RUN cd /filesToUpload \
+        ${REPLACE_EXISTING_ARCHIVE} \
  && chmod +x /tmp/createChecksums.sh \
  && sh /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
- && github-release upload \
-        --user spectrecoin \
-        --security-token "${GITHUB_TOKEN}" \
-        --repo "${SPECTRECOIN_REPOSITORY}" \
-        --tag "${SPECTRECOIN_RELEASE}" \
-        --name "${CHKSUM_FILE}" \
-        --file "/filesToUpload/${CHKSUM_FILE}" \
-        ${REPLACE_EXISTING_ARCHIVE} \
- && rm -rf /filesToUpload/* \
  && export GITHUB_TOKEN=---
