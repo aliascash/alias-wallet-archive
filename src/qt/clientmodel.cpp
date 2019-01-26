@@ -1,3 +1,8 @@
+// Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "optionsmodel.h"
@@ -19,7 +24,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
-    
+
     numBlocksAtStartup = -1;
 
     pollTimer = new QTimer(this);
@@ -102,7 +107,7 @@ void ClientModel::updateTimer()
         return;
     // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
     // Periodically check and update with a timer.
-    
+
     int newNumBlocks = getNumBlocks();
     int newNumBlocksOfPeers = getNumBlocksOfPeers();
 
@@ -115,7 +120,7 @@ void ClientModel::updateTimer()
 
         emit numBlocksChanged(newNumBlocks, newNumBlocksOfPeers);
     }
-    
+
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
 }
 

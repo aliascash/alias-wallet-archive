@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016 The Spectrecoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -4264,7 +4264,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 		else {
 			nValueTest = nValue + nFee;
 
-			int nFeeDiff = nAmountCheck - nValueTest;
+            int64_t nFeeDiff = nAmountCheck - nValueTest;
 			if (nFeeDiff < 0)
 			{
 				// substract fee

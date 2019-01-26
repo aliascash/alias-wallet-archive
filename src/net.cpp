@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016 The Spectrecoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1110,7 +1110,7 @@ static const char *strTestNetOnionSeed[][1] = {
     {"iw5cbprcpm2md7l2.onion"},
     {"rojwxoxeins7caov.onion"},
     {"almrpkxuhk2r35sw.onion"},
-    {"vwxv3bstufb7kfsr.onion"},    
+    {"vwxv3bstufb7kfsr.onion"},
     {NULL}
 };
 
@@ -1693,7 +1693,7 @@ static void run_tor() {
     // Build concatenated commandline string for CreateProcess
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
-   
+
     // Create the process suspended
     LogPrintf("Start tor 'Tor/tor.exe' as separate process (CreateProcess) with: %s\n", strCommandLine);
 
@@ -1844,7 +1844,7 @@ void StartNode(boost::thread_group& threadGroup)
     //
     // Start threads
     //
-	
+
     // start the onion seeder
     if (!GetBoolArg("-onionseed", true))
         printf(".onion seeding disabled\n");

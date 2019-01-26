@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -284,7 +285,7 @@ int LogPrintStr(const std::string &str)
 
         ret = fwrite(str.data(), 1, str.size(), fileout);
     }
-    
+
     return ret;
 }
 
@@ -566,14 +567,14 @@ void *memrchr(const void *s, int c, size_t n)
 {
     if (n < 1)
         return NULL;
-    
+
     unsigned char* cp = (unsigned char*) s + n;
-    
+
     do {
         if (*(--cp) == (unsigned char) c)
             return (void*) cp;
     } while (--n != 0);
-    
+
     return NULL;
 };
 
@@ -583,11 +584,11 @@ int memcmp_nta(const void *cs, const void *ct, size_t count)
 {
     const unsigned char *su1, *su2;
     int res = 0;
-    
+
     for (su1 = (unsigned char*)cs, su2 = (unsigned char*)ct;
         0 < count; ++su1, ++su2, count--)
         res |= (*su1 ^ *su2);
-    
+
     return res;
 };
 }
@@ -1044,8 +1045,8 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Spectrecoin
     // Mac: ~/Library/Application Support/Spectrecoin
     // Unix: ~/.spectrecoin
-    
-    
+
+
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Spectrecoin";
@@ -1198,7 +1199,7 @@ const char *GetNodeModeName(int modeInd)
         case NT_FULL:   return "full";
         case NT_THIN:   return "thin";
     };
-    
+
     return "unknown";
 };
 
@@ -1211,7 +1212,7 @@ const char *GetNodeStateName(int stateInd)
         case NS_GET_FILTERED_BLOCKS:    return "Get Filtered Blocks";
         case NS_READY:                  return "Ready";
     };
-    
+
     return "unknown";
 };
 
@@ -1245,7 +1246,7 @@ std::string bytesReadable(uint64_t nBytes)
         return strprintf("%.2f MB", nBytes/1024.0/1024.0);
     if (nBytes >= 1024)
         return strprintf("%.2f KB", nBytes/1024.0);
-    
+
     return strprintf("%d B", nBytes);
 };
 
@@ -1384,6 +1385,11 @@ string FormatVersion(int nVersion)
         return strprintf("%d.%d.%d", nVersion/1000000, (nVersion/10000)%100, (nVersion/100)%100);
     else
         return strprintf("%d.%d.%d.%d", nVersion/1000000, (nVersion/10000)%100, (nVersion/100)%100, nVersion%100);
+}
+
+string FormatClientVersion()
+{
+    return FormatVersion(CLIENT_VERSION);
 }
 
 string FormatFullVersion()

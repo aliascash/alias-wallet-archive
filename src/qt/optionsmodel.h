@@ -1,3 +1,8 @@
+// Copyright (c) 2011-2013 The Bitcoin Core developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #ifndef OPTIONSMODEL_H
 #define OPTIONSMODEL_H
 
@@ -27,7 +32,6 @@ public:
         Staking,             /**< Default Transaction Fee. bool */
         StakingDonation,
         MinStakeInterval,
-        SecureMessaging,     /**< Default Transaction Fee. bool */
         ThinMode,            /**< Default Transaction Fee. bool */
         ThinFullIndex,
         ThinIndexWindow,

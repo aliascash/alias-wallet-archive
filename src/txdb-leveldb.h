@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2012 The Bitcoin Developers.
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Authored by Google, Inc.
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -227,7 +228,7 @@ public:
     {
         leveldb::ReadOptions readOptions;
         return readOptions;
-    }   
+    }
 
     static leveldb::WriteOptions GetWriteOptions()
     {

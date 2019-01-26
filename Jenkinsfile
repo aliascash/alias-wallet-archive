@@ -16,7 +16,7 @@ pipeline {
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
-        RELEASE_TAG = '2.2.0-RC1'
+        RELEASE_TAG = '2.2.1'
         BLOCKCHAIN_ARCHIVE_VERSION = "2018-12-21"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
@@ -328,7 +328,7 @@ pipeline {
             stages {
                 stage('Create Git tag') {
                     steps {
-                        sshagent(credentials: ['df729e83-4f5f-4f8a-b006-031fd8b61c79']) {
+                        sshagent(credentials: ['f06ad0d1-a5e8-41f1-a48e-e877303770b9']) {
                             createTag(
                                     tag: "${GIT_TAG_TO_USE}",
                                     commit: "${GIT_COMMIT_SHORT}",

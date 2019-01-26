@@ -1,3 +1,8 @@
+// Copyright (c) 2011-2013 The Bitcoin Core developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "optionsmodel.h"
 #include "bitcoinunits.h"
 #include <QSettings>
@@ -129,7 +134,6 @@ QString OptionsModel::optionIDName(int row)
     case Staking: return "Staking";
     case StakingDonation: return "StakingDonation";
     case MinStakeInterval: return "MinStakeInterval";
-    case SecureMessaging: return "SecureMessaging";
     case ThinMode: return "ThinMode";
     case ThinFullIndex: return "ThinFullIndex";
     case ThinIndexWindow: return "ThinIndexWindow";

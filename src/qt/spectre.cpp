@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016 The Spectrecoin developers
+// Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
@@ -79,7 +79,7 @@ static void InitMessage(const std::string &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
     }
 }
@@ -228,12 +228,12 @@ int main(int argc, char *argv[])
         // Regenerate startup link, to fix links to old versions
         if (GUIUtil::GetStartOnSystemStartup())
             GUIUtil::SetStartOnSystemStartup(true);
-        
+
         boost::thread_group threadGroup;
-        
+
         SpectreGUI window;
         guiref = &window;
-        
+
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
@@ -243,9 +243,9 @@ int main(int argc, char *argv[])
             {
                 // Put this in a block, so that the Model objects are cleaned up before
                 // calling Shutdown().
-                
+
                 paymentServer->setOptionsModel(&optionsModel);
-                
+
                 if (splashref)
                     splash.finish(&window);
 
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
                 {
                     window.show();
                 }
-                
+
                 // Now that initialization/startup is done, process any command-line
                 // spectre: URIs
                 QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
