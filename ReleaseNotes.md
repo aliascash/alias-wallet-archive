@@ -80,3 +80,18 @@ Attention: Mnemonic seed words used for sub-wallet creation pre 2.0.7 will not w
 - [#50](https://github.com/spectrecoin/spectre/issues/50) Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'
 - [#64](https://github.com/spectrecoin/spectre/issues/64) DCB staking rewards are labeled 'Contributed'
 - Change text of donation setting
+
+# Checksums
+## Verify MacOS
+```
+openssl sha -sha256 <archive-name>
+```
+## Verify Windows
+```
+certUtil -hashfile "<archive-name>" SHA256
+```
+## Verify Linux
+```
+sha256sum <archive-name>
+```
+## List of sha256 checksums
