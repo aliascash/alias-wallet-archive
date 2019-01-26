@@ -476,12 +476,16 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (fTestNet)
     {
+        int nTestnetScaleMod = 10;
+        nMinTxFee /= nTestnetScaleMod;
+        nMinTxFeeAnonLegacy /= nTestnetScaleMod;
+        nMinRelayTxFee /= nTestnetScaleMod;
         nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
-        nStakeCombineThreshold = 10 * COIN;
-        nStakeSplitThreshold = 2 * nStakeCombineThreshold;
-        nMaxAnonOutput = 1000 * COIN;
-        nMaxAnonStakeOutput = 10 * COIN;
+        nStakeCombineThreshold /= nTestnetScaleMod;
+        nStakeSplitThreshold /= nTestnetScaleMod;
+        nMaxAnonOutput /= nTestnetScaleMod;
+        nMaxAnonStakeOutput /= nTestnetScaleMod;
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags

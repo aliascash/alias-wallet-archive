@@ -309,24 +309,37 @@ public:
 
     CAnonOutput() {};
 
-    CAnonOutput(COutPoint& outpoint_, int64_t nValue_, int nBlockHeight_, uint8_t nCompromised_)
+    CAnonOutput(COutPoint& outpoint_, int64_t nValue_, int nBlockHeight_, uint8_t nCompromised_, char fCoinStake_)
     {
         outpoint = outpoint_;
         nValue = nValue_;
         nBlockHeight = nBlockHeight_;
         nCompromised = nCompromised_;
-    };
+        fCoinStake = fCoinStake_;
+    }
 
     COutPoint outpoint;
     int64_t nValue;         // rather store 2 bytes, digit + power 10 ?
     int nBlockHeight;
     uint8_t nCompromised;   // TODO: mark if output can be identified (spent with ringsig 1)
+    char fCoinStake;
     IMPLEMENT_SERIALIZE
     (
         READWRITE(outpoint);
         READWRITE(nValue);
         READWRITE(nBlockHeight);
         READWRITE(nCompromised);
+        if (fRead)
+            try {
+                READWRITE(fCoinStake);
+            }
+            catch (std::ios_base::failure&) {
+                /* flag as non coin stake if we can't read the coinstake attribute
+                   (this will be the case for any wallet before V3 and stealth staking) */
+                const_cast<CAnonOutput*>(this)->fCoinStake = false;
+            }
+        else
+            READWRITE(fCoinStake);
     )
 };
 
@@ -342,9 +355,11 @@ public:
         nOwned = 0;
         nLeastDepth = 0;
         nCompromised = 0;
+        nStakes = 0;
+        nMature = 0;
     }
 
-    CAnonOutputCount(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_)
+    CAnonOutputCount(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_)
     {
         nValue = nValue_;
         nExists = nExists_;
@@ -352,9 +367,11 @@ public:
         nOwned = nOwned_;
         nLeastDepth = nLeastDepth_;
         nCompromised = nCompromised_;
+        nMature = nMature_;
+        nStakes = nStakes_;
     }
 
-    void set(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_)
+    void set(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_)
     {
         nValue = nValue_;
         nExists = nExists_;
@@ -362,12 +379,15 @@ public:
         nOwned = nOwned_;
         nLeastDepth = nLeastDepth_;
         nCompromised = nCompromised_;
+        nMature = nMature_;
+        nStakes = nStakes_;
     }
 
-    void addCoin(int nCoinDepth, int64_t nCoinValue)
+    void addCoin(int nCoinDepth, int64_t nCoinValue, bool fStake)
     {
         nExists++;
         nValue = nCoinValue;
+        nStakes += fStake;
         if (nCoinDepth < nLeastDepth)
             nLeastDepth = nCoinDepth;
     }
@@ -411,7 +431,8 @@ public:
     int nOwned; // todo
     int nLeastDepth;
     int nCompromised;
-
+    int nMature;
+    int nStakes;
 };
 
 

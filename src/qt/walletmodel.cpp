@@ -562,7 +562,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             CStealthAddress sxAddrTo;
             std::string sAddr = rcp.address.toStdString();
             if (!sxAddrTo.SetEncoded(sAddr))
-                return SCR_StealthAddressFail;
+                return rcp.txnTypeInd == TXT_ANON_TO_SPEC ? SCR_StealthAddressFailAnonToSpec :
+                    SCR_StealthAddressFail;
 
             int64_t nValue = rcp.amount;
             std::string sNarr = rcp.narration.toStdString();

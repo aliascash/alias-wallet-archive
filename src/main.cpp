@@ -86,7 +86,7 @@ CScript COINBASE_FLAGS;
 const string strMessageMagic = "Spectrecoin Signed Message:\n";
 
 // Settings
-int64_t nTransactionFee = MIN_TX_FEE;
+int64_t nTransactionFee = nMinTxFee;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
@@ -891,9 +891,9 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     int64_t nBaseFee;
     switch (mode)
     {
-        case GMF_RELAY: nBaseFee = MIN_RELAY_TX_FEE; break;
-        case GMF_ANON:  nBaseFee = MIN_TX_FEE_ANON;  if (!Params().IsForkV3(nTime)) break;
-        default:        nBaseFee = MIN_TX_FEE;       break;
+        case GMF_RELAY: nBaseFee = nMinRelayTxFee; break;
+        case GMF_ANON:  nBaseFee = nMinTxFeeAnonLegacy;  if (!Params().IsForkV3(nTime)) break;
+        default:        nBaseFee = nMinTxFee;       break;
     };
 
     unsigned int nNewBlockSize = nBlockSize + nBytes;
@@ -1028,7 +1028,7 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
             // Continuously rate-limit free transactions
             // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
             // be annoying or make others' transactions take longer to confirm.
-            if (nFees < MIN_RELAY_TX_FEE)
+            if (nFees < nMinRelayTxFee)
             {
                 static CCriticalSection csFreeLimiter;
                 static double dFreeCount;
@@ -2228,11 +2228,12 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
             return false;
         };
 
-        int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
+        int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
-            || nBestHeight - ao.nBlockHeight < minBlockHeight)
+            || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
         {
-            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                      i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
             return false;
         };
     };
@@ -2356,11 +2357,12 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 fInvalid = true; return false;
             };
 
-            int minBlockHeight = IsAnonCoinStake() ? Params().GetStakeMinConfirmations(nTime) : MIN_ANON_SPEND_DEPTH;
+            int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < minBlockHeight)
+                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d.\n", i, ri, minBlockHeight);
+                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                          i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
                 fInvalid = true; return false;
             };
         };
@@ -2461,8 +2463,8 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                 if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
                 {
                     int nSpendDepth;
-                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime), nSpendDepth))
-                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
+                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime) -1 , nSpendDepth))
+                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth + 1);
                 }
 
                 if (txPrev.vout[prevout.n].IsEmpty())
@@ -3143,7 +3145,9 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
         return 0;
 
-    int nMaturity = IsCoinBase() ? nCoinbaseMaturity : Params().GetStakeMinConfirmations(nTime);
+    int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
+                                   IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
+                                                       Params().GetStakeMinConfirmations(nTime);
     return max(0, nMaturity - pDepthAndHeight.first);
 }
 
@@ -3908,19 +3912,20 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
     {
         int64_t nSearchInterval = Params().IsProtocolV2(nBestHeight+1) ? 1 : nSearchTime - nLastCoinStakeSearchTime;
 
-        CTransaction txCoinStake;
         CKey key;
+        CTransaction txCoinStake;
         txCoinStake.nTime = nSearchTime;
 
         bool foundStake = false;
-        if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+        if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1) &&
+                wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
             foundStake = true;
-        else if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1))
+        else
         {
+            key.Clear();
             txCoinStake.SetNull();
             txCoinStake.nTime = nSearchTime;
-            key.Clear();
-            if (wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+            if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
                 foundStake = true;
         }
 

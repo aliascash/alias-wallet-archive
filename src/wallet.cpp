@@ -2306,9 +2306,9 @@ bool CWallet::CreateTransaction(const std::vector<std::pair<CScript, int64_t> >&
                 // if sub-cent change is required, the fee must be raised to at least MIN_TX_FEE
                 // or until nChange becomes zero
                 // NOTE: this depends on the exact behaviour of GetMinFee
-                if (nFeeRet < MIN_TX_FEE && nChange > 0 && nChange < CENT)
+                if (nFeeRet < nMinTxFee && nChange > 0 && nChange < CENT)
                 {
-                    int64_t nMoveToFee = min(nChange, MIN_TX_FEE - nFeeRet);
+                    int64_t nMoveToFee = min(nChange, nMinTxFee - nFeeRet);
                     nChange -= nMoveToFee;
                     nFeeRet += nMoveToFee;
                 };
@@ -3157,6 +3157,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
 
     }
 
+    uint32_t nUpdatedDepth = 0;
     for (uint32_t i = 0; i < tx.vout.size(); ++i)
     {
         const CTxOut& txout = tx.vout[i];
@@ -3175,6 +3176,7 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
         };
 
         ao.nBlockHeight = nNewHeight;
+        ao.fCoinStake = tx.IsCoinStake();
 
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
@@ -3182,9 +3184,12 @@ bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const 
             return false;
         };
 
-        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, value: %d\n", nNewHeight, ao.nValue);
         mapAnonOutputStats[ao.nValue].updateDepth(nNewHeight, ao.nValue);
+        nUpdatedDepth++;
     };
+
+    if (nUpdatedDepth)
+        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, num of anon outputs: %d\n", nNewHeight, nUpdatedDepth);
 
     return true;
 };
@@ -3400,7 +3405,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    LogPrintf("found matching spent key image - txn has been processed before, reprocessing.\n");
+                    LogPrintf("found matching spent key image - txn has been processed before\n");
+                return UpdateAnonTransaction(ptxdb, tx, blockHash);
             }
             else {
                 if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
@@ -3486,6 +3492,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         CAnonOutput ao;
         CTxIndex txindex;
 
+        int minBlockHeight = tx.IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
         for (uint32_t ri = 0; ri < (uint32_t)nRingSize; ++ri)
         {
             pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
@@ -3501,9 +3508,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (nCoinValue != ao.nValue)
                 return error("%s: Input %u ring amount mismatch %d, %d.", __func__, i, nCoinValue, ao.nValue);
 
-            int minBlockHeight = tx.IsAnonCoinStake() ? Params().GetStakeMinConfirmations(tx.nTime) : MIN_ANON_SPEND_DEPTH;
             if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < minBlockHeight)
+                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
                 return error("%s: Input %u ring coin %u depth < %d.", __func__, i, ri, minBlockHeight);
 
             if (nRingSize == 1)
@@ -3580,21 +3586,20 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             {
                 if (fDebugRingSig)
                     LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
-                if (!UpdateAnonTransaction(ptxdb, tx, blockHash))
-                    return false;
+                return UpdateAnonTransaction(ptxdb, tx, blockHash);
             }
             else {
                 return error("%s: Found duplicate anon output.", __func__);
             }
         }
         else {
-            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0);
+            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0, tx.IsCoinStake());
             if (!ptxdb->WriteAnonOutput(pkCoin, ao))
             {
                 LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
                 continue;
             };
-            mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue);
+            mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue, tx.IsCoinStake());
         }
 
         memcpy(&vchEphemPK[0], &s[2+EC_COMPRESSED_SIZE+2], EC_COMPRESSED_SIZE);
@@ -4507,7 +4512,7 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
     return 0;
 };
 
-int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, int64_t nStakingTime, uint8_t* p)
+int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p)
 {
     if (fDebug)
         LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
@@ -4560,8 +4565,8 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
             ssValue >> anonOutput;
 
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
-            int minDepth = nStakingTime ?  Params().GetStakeMinConfirmations(nStakingTime) : MIN_ANON_SPEND_DEPTH;
-            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= minDepth)
+            int minDepth = fStaking || anonOutput.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
+            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
                 && anonOutput.nValue == nValue
                 && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
@@ -4654,11 +4659,11 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 }
 
 
-bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, int64_t nStakingTime, std::string& sError, int64_t nMaxAmount) const
+bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount) const
 {
     nAmountCheck = 0;
 
-    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, true, nStakingTime) != 0)
+    if (ListUnspentAnonOutputs(lAvailableAnonOutputs, nFilter) != 0)
     {
         sError = "ListUnspentAnonOutputs() failed";
         return false;
@@ -4668,7 +4673,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
     for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
         mOutputCounts[it->nValue] = 0;
 
-    if (CountAnonOutputs(mOutputCounts, true) != 0)
+    if (CountAnonOutputs(mOutputCounts, nFilter) != 0)
     {
         sError = "CountAnonOutputs() failed";
         return false;
@@ -4695,7 +4700,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
 }
 
 
-bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, int64_t nStakingTime, bool fTestOnly, std::string& sError)
+bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError)
 {
     int nSigSize = GetRingSigSize(rsType, nRingSize);
 
@@ -4753,7 +4758,7 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType,
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     memcpy(pPubkeyStart + oaoRingIndex * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
-    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, nStakingTime, pPubkeyStart) != 0)
+    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, fStaking, pPubkeyStart) != 0)
     {
         sError = "PickHidingOutputs() failed.\n";
         return false;
@@ -4871,7 +4876,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
 
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, false, sError))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, MaturityFilter::FOR_SPENDING, sError))
         return false;
 
     if (fDebugRingSig)
@@ -5573,7 +5578,7 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
     return true;
 };
 
-int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, bool fMatureOnly, int64_t nStakingTime) const
+int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const
 {
     CWalletDB walletdb(strWalletFile, "r");
 
@@ -5620,18 +5625,17 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
             || mi->second.IsSpent(oao.outpoint.n))
             continue;
 
-        // If nStakingTime is set, list only outputs suitable for staking
-        if (nStakingTime)
+
+        // -- Check maturity
+        if (nFilter != NONE)
         {
-            if (mi->second.GetDepthInMainChain() < Params().GetStakeMinConfirmations(nStakingTime))
+            // maturity (minDepth) depends on if the output was created in a staking transaction or is used for staking
+            int minBlockHeight = mi->second.IsCoinStake() || nFilter == MaturityFilter::FOR_STAKING ?
+                        Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
+
+            if (mi->second.GetDepthInMainChain() < minBlockHeight)
                 continue;
         }
-        // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent
-        else if (fMatureOnly
-            && mi->second.GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
-        {
-            continue;
-        };
 
         // TODO: check ReadAnonOutput?
 
@@ -5656,7 +5660,7 @@ int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, 
     return 0;
 }
 
-int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatureOnly) const
+int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFilter nFilter) const
 {
     LOCK(cs_main);
     CTxDB txdb("r");
@@ -5694,9 +5698,12 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
         CAnonOutput anonOutput;
         ssValue >> anonOutput;
 
+        // maturity (minDepth) depends on if the output was created in a staking transaction or is used for staking
+        int minBlockHeight = anonOutput.fCoinStake || nFilter == MaturityFilter::FOR_STAKING ?
+                    Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
 
-        if ((!fMatureOnly
-           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight >= MIN_ANON_SPEND_DEPTH))
+        if ((nFilter == MaturityFilter::NONE
+           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minBlockHeight)) // ao confirmed in last block has depth of 1
           && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
@@ -5712,7 +5719,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, bool fMatur
     return 0;
 };
 
-int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, bool fMatureOnly)
+int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, MaturityFilter nFilter)
 {
     if (fDebugRingSig)
         LogPrintf("CountAllAnonOutputs()\n");
@@ -5758,11 +5765,14 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
         if (strType != "ao")
             break;
 
-        int nHeight = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight : 0;
+        int nDepth = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight + 1: 0; // ao confirmed in last block has depth of 1
 
+        // maturity (minDepth) depends on if the output was created in a staking transaction or is used for staking
+        int minBlockHeight = ao.fCoinStake || nFilter == MaturityFilter::FOR_STAKING ?
+                    Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
 
-        if (fMatureOnly
-            && nHeight < MIN_ANON_SPEND_DEPTH)
+        int nMature = nDepth >= minBlockHeight;
+        if (nFilter != MaturityFilter::NONE && !nMature)
         {
             // -- skip
         } else
@@ -5775,19 +5785,21 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
                 {
                     it->nExists++;
                     it->nCompromised += ao.nCompromised;
-                    if (it->nLeastDepth > nHeight)
-                        it->nLeastDepth = nHeight;
+                    it->nMature += nMature;
+                    it->nStakes += ao.fCoinStake;
+                    if (it->nLeastDepth > nDepth)
+                        it->nLeastDepth = nDepth;
                     fProcessed = true;
                     break;
                 };
                 if (ao.nValue > it->nValue)
                     continue;
-                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight, ao.nCompromised));
+                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
                 fProcessed = true;
                 break;
             };
             if (!fProcessed)
-                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nHeight, ao.nCompromised));
+                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
         };
 
         iterator->Next();
@@ -5840,7 +5852,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, boo
     return 0;
 };
 
-int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, bool fMatureOnly)
+int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, MaturityFilter nFilter)
 {
     if (fDebugRingSig)
         LogPrintf("CountOwnedAnonOutputs()\n");
@@ -5892,17 +5904,18 @@ int CWallet::CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, b
 
         //LogPrintf("[rem] mi->second.GetDepthInMainChain() %d \n", mi->second.GetDepthInMainChain());
         //LogPrintf("[rem] mi->second.hashBlock %s \n", mi->second.hashBlock.ToString().c_str());
-        // -- txn must be in MIN_ANON_SPEND_DEPTH deep in the blockchain to be spent
-
+        // -- check maturity
+        if (nFilter != MaturityFilter::NONE)
         {
-            LOCK(cs_main);
-            if (fMatureOnly
-                && mi->second.GetDepthInMainChain() < MIN_ANON_SPEND_DEPTH)
-            {
-                continue;
-            };
+            // maturity (minDepth) depends on if the output was created in a staking transaction or is used for staking
+            int minBlockHeight = mi->second.IsCoinStake() || nFilter == MaturityFilter::FOR_STAKING ?
+                        Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
 
+            LOCK(cs_main);
+            if (mi->second.GetDepthInMainChain() < minBlockHeight)
+                continue;
         }
+
         // TODO: check ReadAnonOutput?
 
         oao.nValue = mi->second.vout[oao.outpoint.n].nValue;
@@ -6014,7 +6027,7 @@ bool CWallet::CacheAnonStats()
     mapAnonOutputStats.clear();
 
     std::list<CAnonOutputCount> lOutputCounts;
-    if (CountAllAnonOutputs(lOutputCounts, false) != 0)
+    if (CountAllAnonOutputs(lOutputCounts, MaturityFilter::NONE) != 0)
     {
         LogPrintf("Error: CountAllAnonOutputs() failed.\n");
         return false;
@@ -6024,7 +6037,7 @@ bool CWallet::CacheAnonStats()
     {
         mapAnonOutputStats[it->nValue].set(
             it->nValue, it->nExists, it->nSpends, it->nOwned,
-            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised); // mapAnonOutputStats stores height in chain instead of depth
+            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised, it->nMature, it->nStakes); // mapAnonOutputStats stores height in chain instead of depth
     };
 
     return true;
@@ -6220,7 +6233,7 @@ uint64_t CWallet::GetSpectreStakeWeight() const
             std::list<COwnedAnonOutput> lAvailableCoins;
             int64_t nAmountCheck = 0;
             std::string sError;
-            if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, nCurrentTime, sError, nSpectreBalance - nReserveBalance))
+            if (ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, MIN_RING_SIZE, MaturityFilter::FOR_STAKING, sError, nSpectreBalance - nReserveBalance))
                 nWeight += nAmountCheck;
         }
     }
@@ -6499,7 +6512,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     std::list<COwnedAnonOutput> lAvailableCoins;
     int64_t nAmountCheck;
     std::string sError;
-    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, txNew.nTime, sError, nBalance - nReserveBalance))
+    if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, MaturityFilter::FOR_STAKING, sError, nBalance - nReserveBalance))
         return error(("CreateAnonCoinStake : " + sError).c_str());
     if (lAvailableCoins.empty())
         return false;

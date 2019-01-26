@@ -622,6 +622,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+        case WalletModel::SCR_StealthAddressFailAnonToSpec:
+            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
+                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
 		case WalletModel::SCR_AmountExceedsBalance:
 			QMessageBox::warning(window, tr("Send Coins"),
 				tr("The amount exceeds your SPECTRE balance."),
@@ -698,8 +704,8 @@ QVariantMap SpectreBridge::listAnonOutputs()
     outputCount mMatureOutputCounts;
     outputCount mSystemOutputCounts;
 
-    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  false) != 0
-     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, true)  != 0)
+    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
+     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
         LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
         emit listAnonOutputsResult(anonOutputs);
@@ -709,7 +715,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
     for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
         mSystemOutputCounts[mi->first] = 0;
 
-    if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, true) != 0)
+    if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, CWallet::MaturityFilter::FOR_SPENDING) != 0)
     {
         LogPrintf("Error: CountAnonOutputs failed.\n");
         emit listAnonOutputsResult(anonOutputs);

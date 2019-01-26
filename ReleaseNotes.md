@@ -16,17 +16,18 @@ We have implemented a check for DCBs and we have implemented a replay protection
 
 ### Changelog
 ## 3.0.0
-** V3 blockchain fork consensus changes / Fork time is XXX**
+**V3 blockchain fork consensus changes / Fork time is GMT: Thursday, 28. March 2019 22:00:00 (1553810400 unix epoch time)**
 - Minimum ring size increased from 1 to 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking)
   - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
-  - Maximal ATXO stake output value of 1000
+  - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
 
 Immediate changes:
+- Change max anon output from 10'000 to 1'000
 - Increase default block size created from 250K to 999K
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
