@@ -16,8 +16,8 @@ pipeline {
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
-        RELEASE_TAG = '2.2.1'
-        BLOCKCHAIN_ARCHIVE_VERSION = "2018-12-21"
+        RELEASE_TAG = '3.0.0'
+        BLOCKCHAIN_ARCHIVE_VERSION = "2019-01-20"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
@@ -132,6 +132,7 @@ pipeline {
                         }
                     }
                 }
+                /*
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -187,6 +188,7 @@ pipeline {
                         }
                     }
                 }
+                */
                 stage('Windows-Qt5.9.6') {
                     agent {
                         label "housekeeping"
@@ -403,6 +405,8 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi.txt"
                                 }
                             }
                             post {
@@ -444,6 +448,8 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian.txt"
                                 }
                             }
                             post {
@@ -480,6 +486,8 @@ pipeline {
                     steps {
                         script {
                             buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                            getChecksumfileFromImage("spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-CentOS.txt")
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-CentOS.txt"
                         }
                     }
                     post {
@@ -496,6 +504,8 @@ pipeline {
                     steps {
                         script {
                             buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                            getChecksumfileFromImage("spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Fedora.txt")
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Fedora.txt"
                         }
                     }
                     post {
@@ -513,6 +523,8 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Ubuntu.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu.txt"
                                 }
                             }
                             post {
@@ -541,6 +553,7 @@ pipeline {
                         }
                     }
                 }
+                /*
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -614,8 +627,8 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg",
                                     )
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg", "Checksum-Spectrecoin-Mac.txt")
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg", "Checksum-Spectrecoin-OBFS4-Mac.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg", "Checksum-Spectrecoin-Mac.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-Mac.dmg", "Checksum-Spectrecoin-OBFS4-Mac.txt")
                                     sh "rm -f Spectrecoin*.dmg* Checksum-Spectrecoin*"
                                 }
                             }
@@ -627,6 +640,7 @@ pipeline {
                         }
                     }
                 }
+                */
                 stage('Windows-Qt5.9.6') {
                     agent {
                         label "housekeeping"
@@ -706,8 +720,8 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6-OBFS4-WIN64.zip",
                                     )
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.zip", "Checksum-Spectrecoin-WIN64.txt")
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip", "Checksum-Spectrecoin-OBFS4-WIN64.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-WIN64.zip", "Checksum-Spectrecoin-WIN64.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip", "Checksum-Spectrecoin-OBFS4-WIN64.txt")
                                     sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
@@ -798,8 +812,8 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-OBFS4-WIN64.zip",
                                     )
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-WIN64.txt")
-                                    createAndUploadChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-WIN64.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-OBFS4-WIN64.zip", "Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt")
                                     sh "rm -f Spectrecoin*-WIN64.zip* Checksum-Spectrecoin*"
                                 }
                             }
@@ -809,6 +823,28 @@ pipeline {
                                 }
                             }
                         }
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        sh(
+                                script:"""
+                                ${WORKSPACE}/scripts/createChecksumSummary.sh \
+                                    "${RELEASE_DESCRIPTION}" \
+                                    "${WORKSPACE}" \
+                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                            """
+                        )
+                        editRelease(
+                                user: 'spectrecoin',
+                                repository: 'spectre',
+                                tag: "${GIT_TAG_TO_USE}",
+                                name: "${RELEASE_NAME}",
+                                description: "${WORKSPACE}/releaseNotesToDeploy.txt",
+                                preRelease: "${PRERELEASE}"
+                        )
                     }
                 }
             }
@@ -910,6 +946,19 @@ def buildBranch(String dockerfile, String dockerTag, String gitTag, String gitCo
                 "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
                 "-t ${dockerTag} \\\n" +
                 "."
+    }
+}
+
+def getChecksumfileFromImage(String dockerTag, String checksumfile) {
+    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
+        sh (
+                script: """
+                    docker run --name tmpContainer -dit ${dockerTag} /bin/sh 
+                    docker cp tmpContainer:/filesToUpload/${checksumfile} ${checksumfile}
+                    docker stop tmpContainer
+                    docker rm tmpContainer
+                """
+        )
     }
 }
 
@@ -1096,12 +1145,7 @@ def createWindowsDelivery(String version) {
     ])
 }
 
-def createAndUploadChecksumFile(String filename, String checksumfile) {
+def createAndArchiveChecksumFile(String filename, String checksumfile) {
     sh "./scripts/createChecksums.sh $filename $checksumfile"
-    uploadArtifactToGitHub(
-            user: 'spectrecoin',
-            repository: 'spectre',
-            tag: "${GIT_TAG_TO_USE}",
-            artifactNameRemote: "$checksumfile",
-    )
+    archiveArtifacts allowEmptyArchive: true, artifacts: "$checksumfile"
 }

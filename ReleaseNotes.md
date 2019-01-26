@@ -23,16 +23,20 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking)
   - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
-  - Maximal ATXO stake output value of 1000 
+  - Maximal ATXO stake output value of 1000
   - Consolidation of up to 50 ATXOs in staking transaction
 
 Immediate changes:
 - Increase default block size created from 250K to 999K
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
-- UI: Show different balance types for SPECTRE and XSPEC separately 
+- UI: Show different balance types for SPECTRE and XSPEC separately
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
 - RPC: ...
+
+## 2.2.2
+- New: Added cmdline option `-version` to show wallet version as usual
+- Fix: Removed obsolete debug output on stdout
 
 ## 2.2.1
 - Fix: Lookup for possible stealth addresses in addressbook bloated logfile and decreased performance
@@ -99,3 +103,18 @@ Attention: Mnemonic seed words used for sub-wallet creation pre 2.0.7 will not w
 - [#50](https://github.com/spectrecoin/spectre/issues/50) Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'
 - [#64](https://github.com/spectrecoin/spectre/issues/64) DCB staking rewards are labeled 'Contributed'
 - Change text of donation setting
+
+# Checksums
+## Verify MacOS
+```
+openssl sha -sha256 <archive-name>
+```
+## Verify Windows
+```
+certUtil -hashfile "<archive-name>" SHA256
+```
+## Verify Linux
+```
+sha256sum <archive-name>
+```
+## List of sha256 checksums
