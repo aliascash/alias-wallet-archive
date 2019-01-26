@@ -2463,8 +2463,8 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                 if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
                 {
                     int nSpendDepth;
-                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime), nSpendDepth))
-                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
+                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime) -1 , nSpendDepth))
+                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth + 1);
                 }
 
                 if (txPrev.vout[prevout.n].IsEmpty())
