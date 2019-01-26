@@ -817,29 +817,31 @@ pipeline {
                     }
                 }
             }
-        }
-    }
-    post {
-        always {
-            script {
-                sh(
-                        script:"""
+            post {
+                always {
+                    script {
+                        sh(
+                                script:"""
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
                                     "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
-                )
-                editRelease(
-                        user: 'spectrecoin',
-                        repository: 'spectre',
-                        tag: "${GIT_TAG_TO_USE}",
-                        name: "${RELEASE_NAME}",
-                        description: "${WORKSPACE}/releaseNotesToDeploy.txt",
-                        preRelease: "${PRERELEASE}"
-                )
+                        )
+                        editRelease(
+                                user: 'spectrecoin',
+                                repository: 'spectre',
+                                tag: "${GIT_TAG_TO_USE}",
+                                name: "${RELEASE_NAME}",
+                                description: "${WORKSPACE}/releaseNotesToDeploy.txt",
+                                preRelease: "${PRERELEASE}"
+                        )
+                    }
+                }
             }
         }
+    }
+    post {
         success {
             script {
                 if (!hudson.model.Result.SUCCESS.equals(currentBuild.getPreviousBuild()?.getResult())) {
