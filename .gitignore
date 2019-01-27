@@ -106,3 +106,7 @@ cmake-build-debug/
 
 moc_predefs.h
 /build-tests-Desktop_Qt*
+
+# Temp build files
+releaseNotesToDeploy.txt
+Checksum-Spectrecoin-*

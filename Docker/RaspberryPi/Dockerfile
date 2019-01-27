@@ -28,11 +28,13 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-RaspberryPi.tgz
+ENV CHKSUM_FILE=Checksum-Spectrecoin-RaspberryPi.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
 COPY --from=build /spectre/src/spectrecoind /filesToUpload/usr/local/bin/
 COPY --from=build /spectre/src/spectre /filesToUpload/usr/local/bin/spectrecoin
+COPY --from=build /spectre/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
@@ -44,5 +46,6 @@ RUN cd /filesToUpload \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
         ${REPLACE_EXISTING_ARCHIVE} \
- && rm -rf /filesToUpload/* \
+ && chmod +x /tmp/createChecksums.sh \
+ && sh /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
  && export GITHUB_TOKEN=---
