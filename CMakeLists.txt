@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
-        VERSION 2.2.0.9
+        VERSION 2.2.2
         LANGUAGES
         CXX
         C
@@ -9,8 +9,8 @@ project(Spectrecoin
 # The version number.
 set(CLIENT_VERSION_MAJOR 2)
 set(CLIENT_VERSION_MINOR 2)
-set(CLIENT_VERSION_REVISION 0)
-set(CLIENT_VERSION_BUILD 9)
+set(CLIENT_VERSION_REVISION 2)
+set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
 # Compiler flags
@@ -39,7 +39,7 @@ message(STATUS "=== Boost ======================================================
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.67 REQUIRED COMPONENTS
+find_package(Boost 1.65.1 REQUIRED COMPONENTS
         chrono
         filesystem
         iostreams
