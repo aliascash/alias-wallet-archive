@@ -15,6 +15,7 @@ target_link_libraries(Spectrecoin
         Boost::boost
         OpenSSL::SSL
         OpenSSL::Crypto
+        ${CMAKE_THREAD_LIBS_INIT}
         )
 
 # Configure a header file to pass some of the CMake settings

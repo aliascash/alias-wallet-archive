@@ -114,6 +114,10 @@ include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
 # ============================================================================================
+message(STATUS "=== Threads ================================================================")
+find_package(Threads)
+
+# ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
 add_subdirectory(src)
 #add_subdirectory(leveldb)
