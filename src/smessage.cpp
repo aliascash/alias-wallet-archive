@@ -23,7 +23,6 @@
 #include "eckey.h"
 
 #include "xxhash/xxhash.h"
-#include "xxhash/xxhash.c"
 
 bool SecMsgCrypter::SetKey(const std::vector<uint8_t>& vchNewKey, uint8_t* chNewIV)
 {
