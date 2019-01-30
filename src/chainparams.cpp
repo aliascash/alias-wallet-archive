@@ -223,7 +223,7 @@ public:
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
-        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 42);
+        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 46);
 
         nStakeMinConfirmationsLegacy = 28;
         nStakeMinConfirmations = 45;
