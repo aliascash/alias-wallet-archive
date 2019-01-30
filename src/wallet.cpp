@@ -4698,7 +4698,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
             if (it->nValue <= nMaxAnonOutput)
             {
                 CAnonOutputCount anonOutputCount = mapAnonOutputStats[it->nValue];
-                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MINIMUM_UNSPENT_ANONS;
+                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_SELECT;
             }
             else
                 nMaxSpendable = -1;
