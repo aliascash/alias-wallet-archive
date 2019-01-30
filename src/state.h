@@ -57,6 +57,8 @@ static const int64_t COIN_YEAR_REWARD = 5 * CENT; // 5% per year
 
 static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
 
+static const int MINIMUM_UNSPENT_ANONS = 20;
+
 extern int nNodeMode;
 extern int nNodeState;
 

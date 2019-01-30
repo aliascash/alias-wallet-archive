@@ -4686,14 +4686,35 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
     };
 
     // -- remove coins that don't have enough same value anonoutputs in the system for the ring size
+    int nCoinsPerValue = 0;
+    int64_t nLastCoinValue = -1;
+    int nMaxSpendable = -1;
     for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
     {
+        if (nLastCoinValue != it->nValue)
+        {
+            nCoinsPerValue = 0;
+            nLastCoinValue = it->nValue;
+            if (it->nValue <= nMaxAnonOutput)
+            {
+                CAnonOutputCount anonOutputCount = mapAnonOutputStats[it->nValue];
+                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MINIMUM_UNSPENT_ANONS;
+            }
+            else
+                nMaxSpendable = -1;
+        }
+
         std::map<int64_t, int>::iterator mi = mOutputCounts.find(it->nValue);
-        if (mi == mOutputCounts.end() || mi->second < nRingSize || nAmountCheck + it->nValue > nMaxAmount)
-            // -- not enough coins of same value or over max amount, drop coin
+        if (mi == mOutputCounts.end() || mi->second < nRingSize ||
+                (nMaxSpendable != -1 && nCoinsPerValue >= nMaxSpendable) ||
+                nAmountCheck + it->nValue > nMaxAmount)
+            // -- not enough coins of same value, unspends or over max amount, drop coin
             lAvailableAnonOutputs.erase(it);
         else
+        {
             nAmountCheck += it->nValue;
+            nCoinsPerValue++;
+        }
     }
 
     return true;
