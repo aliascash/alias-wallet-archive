@@ -107,6 +107,12 @@ message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 # ============================================================================================
+message(STATUS "=== LevelDB ================================================================")
+# LevelDB https://github.com/google/leveldb must be built and installed.
+# If non default path, leveldb_DIR must point to .../usr/local/lib/cmake/leveldb
+find_package(leveldb CONFIG REQUIRED)
+
+# ============================================================================================
 message(STATUS "=== Git helper =============================================================")
 # Determine current Git hash
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -114,10 +120,5 @@ include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
 # ============================================================================================
-#message(STATUS "=== Threads ================================================================")
-#find_package(Threads)
-
-# ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
 add_subdirectory(src)
-#add_subdirectory(leveldb)
