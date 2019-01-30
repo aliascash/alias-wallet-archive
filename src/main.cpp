@@ -2265,6 +2265,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
     uint256 txnHash = GetHash();
 
+    std::map<int64_t, int> mapNumOfAnonOutputs;
     for (uint32_t i = 0; i < vin.size(); i++)
     {
         const CTxIn &txin = vin[i];
@@ -2372,6 +2373,18 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
             LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
             fInvalid = true; return false;
         };
+
+        if (ao.nValue <= nMaxAnonOutput && Params().IsForkV3(nTime))
+        {
+            mapNumOfAnonOutputs[ao.nValue]++;
+            CAnonOutputCount anonOutputCount = mapAnonOutputStats[ao.nValue];
+            int nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_BLOCK;
+            if (mapNumOfAnonOutputs[ao.nValue] > nMaxSpendable) {
+                LogPrintf("CheckAnonInputs(): Error tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspend %d\n",
+                          GetHash().ToString().substr(0,10).c_str(), i, mapNumOfAnonOutputs[ao.nValue], ao.nValue, nMaxSpendable);
+                return false;
+            }
+        }
 
         nSumValue += nCoinValue;
     };
