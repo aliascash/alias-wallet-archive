@@ -2678,7 +2678,7 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Mature, No. Spends, No. Stakes, No. Compromised, Least Depth", "value"));
+    result.push_back(Pair("No. Exists, No. Mature, No. Unspends, No. Stakes, No. Compromised, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
@@ -2691,14 +2691,14 @@ Value anoninfo(const Array& params, bool fHelp)
     int64_t nTotalStakes = 0, nOutputsStakes = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nSpends, it->nStakes, it->nCompromised, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nExists - it->nSpends, it->nStakes, it->nCompromised, it->nLeastDepth);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
         nTotalCoins += it->nExists;
         nTotalIn += it->nValue * it->nExists;
         nOutputsIn += it->nExists;
-        nTotalOut += it->nValue * it->nSpends;
-        nOutputsOut += it->nSpends;
+        nTotalOut += it->nValue * it->nExists - it->nValue * it->nSpends;
+        nOutputsOut += it->nExists - it->nSpends;
         nTotalCompromised += it->nValue * it->nCompromised;
         nOutputsCompromised += it->nCompromised;
         nTotalMature += it->nValue * it->nMature;
@@ -2711,8 +2711,8 @@ Value anoninfo(const Array& params, bool fHelp)
     result.push_back(Pair("total value", ValueFromAmount(nTotalIn)));
     result.push_back(Pair("total mature outputs", nOutputsMature));
     result.push_back(Pair("total mature value", ValueFromAmount(nTotalMature)));
-    result.push_back(Pair("total spend outputs", nOutputsOut));
-    result.push_back(Pair("total spend value", ValueFromAmount(nTotalOut)));
+    result.push_back(Pair("total unspend outputs", nOutputsOut));
+    result.push_back(Pair("total unspend value", ValueFromAmount(nTotalOut)));
     result.push_back(Pair("total stake outputs", nOutputsStakes));
     result.push_back(Pair("total stake value", ValueFromAmount(nTotalStakes)));
     result.push_back(Pair("total compromised outputs", nOutputsCompromised));
