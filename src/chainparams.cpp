@@ -25,7 +25,7 @@ int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
     // miner's coin base reward
     int64_t nSubsidy = 0;
 
-	if(nHeight == 1)
+    if(nHeight == 1)
         nSubsidy = (NetworkID() == CChainParams::TESTNET ? 2000000 : 20000000) * COIN;  // 20Mill Pre-mine on MainNet, 2Mill pre-mine on TestNet
 
     else if(nHeight <= nLastPOWBlock)
@@ -63,10 +63,10 @@ int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, i
 {
    int64_t nSubsidy = GetProofOfStakeReward(pindexPrev, 0, nFees);
 
-    // To avoid ATXOs lower than base fee, roundup reward 1 digit above base fee (2.12345678 becomes 2.124)
+    // To avoid ATXOs lower than base fee, roundup reward at base fee (2.12345678 becomes 2.1234)
     // Note: anon staking rewards are only possible from V3 on and then MIN_TX_ANON is effective
-    nSubsidy -= nSubsidy % (nMinTxFee * 10);
-    nSubsidy += nMinTxFee * 10;
+    nSubsidy -= nSubsidy % nMinTxFee;
+    nSubsidy += nMinTxFee;
 
     return nSubsidy;
 }
@@ -121,7 +121,7 @@ public:
         vSeeds.push_back(CDNSSeedData("node1.spectreproject.io", "node1.spectreproject.io"));
         vSeeds.push_back(CDNSSeedData("node2.spectreproject.io", "node2.spectreproject.io"));
         vSeeds.push_back(CDNSSeedData("node3.spectreproject.io", "node3.spectreproject.io"));
-		vSeeds.push_back(CDNSSeedData("node4.spectreproject.io", "node4.spectreproject.io"));
+        vSeeds.push_back(CDNSSeedData("node4.spectreproject.io", "node4.spectreproject.io"));
       }
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual const std::vector<CAddress>& FixedSeeds() const {
@@ -151,9 +151,9 @@ public:
         nRPCPort = 36657;
         nBIP44ID = 0x800000d5;
 
-		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
-		nLastPOWBlock = 17000;
-		nFirstPosv2Block = 17001;
+        //nLastPOWBlock = 2016; // Running for 1 Week after ICO
+        nLastPOWBlock = 17000;
+        nFirstPosv2Block = 17001;
         nFirstPosv3Block = 17010;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
@@ -167,7 +167,7 @@ public:
         genesis.nNonce   = 715015;
 
         hashGenesisBlock = genesis.GetHash();
-		assert(hashGenesisBlock == uint256("0x000001fd6111f0d71d90b7d8c827c6028dbc867f6c527d90794a0d22f68fecd4"));
+        assert(hashGenesisBlock == uint256("0x000001fd6111f0d71d90b7d8c827c6028dbc867f6c527d90794a0d22f68fecd4"));
         assert(genesis.hashMerkleRoot == uint256("0x48d79d88cdf7d5c84dbb2ffb4fcaab253cebe040a4e7b46cdd507fbb93623e3f"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(63).convert_to_container<std::vector<unsigned char> >();
