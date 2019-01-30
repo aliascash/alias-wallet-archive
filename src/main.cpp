@@ -2541,8 +2541,9 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             bool fInvalid;
             if (!CheckAnonInputs(txdb, nSumAnon, fInvalid, true))
             {
-                //if (fInvalid)
-                DoS(100, error("ConnectInputs() : CheckAnonInputs found invalid tx %s", GetHash().ToString().substr(0,10).c_str()));
+                if (fInvalid)
+                    return DoS(100, error("ConnectInputs() : CheckAnonInputs found invalid tx %s", GetHash().ToString().substr(0,10).c_str()));
+                return false;
             };
 
             nValueIn += nSumAnon;
