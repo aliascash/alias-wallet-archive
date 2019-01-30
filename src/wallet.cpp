@@ -6566,31 +6566,42 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 vPickedCoins.push_back(&oao);
 
                 // -- Add more anon inputs for consolidation
-                int64_t nMaxCombineOutput = nMaxAnonStakeOutput / 10;
-                int64_t lastCombineValue = -1;
+                int64_t nConsolidationAmount = 0;
+                static int64_t nMaxCombineOutput = fTestNet ? 30 * COIN : 300 * COIN;
+                int64_t nLastCombineValue = -1, nSkipValue = 0, nDenomination = 0;
+                unsigned int nConsolidations = 0, nCombineTarget = 0;
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
                 for (const auto & oaoc : lAvailableCoins)
                 {
-                    if (oaoc.nValue > nMaxCombineOutput)
+                    if (oaoc.nValue > nMaxCombineOutput || nConsolidations == 3)
                         break;
                     // skip the input used for staking (TODO could be optimized by considering in combining inputs)
-                    if (&oaoc == &oao)
+                    if (&oaoc == &oao || oaoc.nValue < nSkipValue)
                         continue;
-                    if (lastCombineValue != oaoc.nValue)
+                    if (nLastCombineValue != oaoc.nValue)
                     {
                         vConsolidateCoins.clear();
-                        lastCombineValue = oaoc.nValue;
+                        nLastCombineValue = oaoc.nValue;
+                        nDenomination = oaoc.nValue;
+                        while (nDenomination > 9)
+                            nDenomination = nDenomination / 10;
+                        switch(nDenomination)
+                        {
+                            case 1: nCombineTarget = 17; break;
+                            case 5: nCombineTarget = 14; break;
+                            default: nCombineTarget = 15; break;
+                        }
                     }
                     vConsolidateCoins.push_back(&oaoc);
-                    if (vConsolidateCoins.size() == 10)
+                    if (vConsolidateCoins.size() == nCombineTarget + 9)
                     {
-                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end());
+                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end() - 9);
                         vConsolidateCoins.clear();
-                        nCredit += oaoc.nValue * 10;
+                        nConsolidations++;
+                        nConsolidationAmount += oaoc.nValue * nCombineTarget;
+                        // skip all anon outputs of same and next decimal power
+                        nSkipValue = (oaoc.nValue / nDenomination) * 100;
                     }
-                    // Consolidate maximal 50 inputs
-                    if (vPickedCoins.size() == 51)
-                        break;
                 }
 
                 // -- Calculate staking reward
@@ -6624,6 +6635,8 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::string sNarr;
                 if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
+                if (nConsolidationAmount && !CreateAnonOutputs(&sxAddress, nConsolidationAmount, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
+                    return error("CreateAnonCoinStake : CreateAnonOutputs() for consolidation outputs failed");
 
                 std::map<CTxOut, ec_secret> mapOutSecShared;
                 for (uint32_t i = 0; i < vecSend.size(); ++i)
