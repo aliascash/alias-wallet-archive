@@ -1,9 +1,7 @@
 add_executable(Spectrecoin ../spectre.qrc main.cpp)
 
-target_include_directories(Spectrecoin
-        PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+target_include_directories(Spectrecoin SYSTEM BEFORE
+        INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix>
         )
 
@@ -13,8 +11,15 @@ target_link_libraries(Spectrecoin
         Qt5::WebEngine
         Qt5::WebEngineWidgets
         Boost::boost
+        Boost::chrono
+        Boost::filesystem
+        Boost::iostreams
+        Boost::program_options
+        Boost::system
+        Boost::thread
         OpenSSL::SSL
         OpenSSL::Crypto
+        leveldb::leveldb
         )
 
 # Configure a header file to pass some of the CMake settings
@@ -147,5 +152,10 @@ if (WIN32)
     target_include_directories(Spectrecoin
             PRIVATE
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_windows>
+            )
+else()
+    target_include_directories(Spectrecoin
+            PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_vxworks>
             )
 endif ()

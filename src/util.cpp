@@ -523,7 +523,6 @@ static void InterpretNegativeSetting(string name, map<string, string>& mapSettin
 
 void ParseParameters(int argc, const char* const argv[])
 {
-    printf("util.cpp::ParseParameters\n");
     mapArgs.clear();
     mapMultiArgs.clear();
     for (int i = 1; i < argc; i++)
@@ -1095,14 +1094,12 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
         return path;
 
     if (mapArgs.count("-datadir")) {
-        printf("-datadir=%s\n", mapArgs["-datadir"].c_str());
         path = fs::system_complete(mapArgs["-datadir"]);
         if (!fs::is_directory(path)) {
             path = "";
             return path;
         }
     } else {
-        printf("mapArgs.count(-datadir)=%i\n", mapArgs.count("-datadir"));
         path = GetDefaultDataDir();
     }
     if (fNetSpecific)
