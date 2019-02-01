@@ -3531,7 +3531,8 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
 
         // Check proof-of-stake block signature
         if (fCheckSig && !CheckBlockSignature())
-            return DoS(100, error("CheckBlock() : bad proof-of-stake block signature"));
+            return IsProofOfAnonStake() ? DoS(100, error("CheckBlock() : bad proof-of-anon-stake block signature")) :
+                                          DoS(100, error("CheckBlock() : bad proof-of-stake block signature"));
     }
 
     // Check transactions
