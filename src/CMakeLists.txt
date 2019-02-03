@@ -1,9 +1,47 @@
 add_executable(Spectrecoin ../spectre.qrc main.cpp)
 
+# ===== Handle memenv as library =============================================
+#add_library(memenv "")
+#
+#target_link_libraries(memenv
+#        leveldb)
+#
+#target_include_directories(memenv SYSTEM BEFORE
+#        PUBLIC
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/port
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/port>
+#        )
+#
+#target_sources(memenv
+#        PUBLIC
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers/memenv/memenv.h
+#        PRIVATE
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers/memenv/memenv.cc
+#        )
+
 target_include_directories(Spectrecoin SYSTEM BEFORE
-        INTERFACE
+        PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers>
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_subdirectory(win)
+    target_include_directories(Spectrecoin
+            PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_windows>
+            )
+else()
+    target_include_directories(Spectrecoin
+            PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_vxworks>
+            )
+endif ()
 
 target_link_libraries(Spectrecoin
         Qt5::Core
@@ -19,7 +57,7 @@ target_link_libraries(Spectrecoin
         Boost::thread
         OpenSSL::SSL
         OpenSSL::Crypto
-        leveldb::leveldb
+        leveldb
         )
 
 # Configure a header file to pass some of the CMake settings
@@ -90,6 +128,7 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.h
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.h
         ${CMAKE_CURRENT_LIST_DIR}/wallet.h
+        ${CMAKE_CURRENT_LIST_DIR}/../leveldb_upstream/helpers/memenv/memenv.h
 
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/addrman.cpp
@@ -140,6 +179,7 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.cpp
         ${CMAKE_CURRENT_LIST_DIR}/wallet.cpp
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../leveldb_upstream/helpers/memenv/memenv.cc
         )
 
 add_subdirectory(json)
@@ -147,15 +187,3 @@ add_subdirectory(lz4)
 add_subdirectory(qt)
 add_subdirectory(wordlists)
 add_subdirectory(xxhash)
-if (WIN32)
-    add_subdirectory(win)
-    target_include_directories(Spectrecoin
-            PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_windows>
-            )
-else()
-    target_include_directories(Spectrecoin
-            PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_vxworks>
-            )
-endif ()

@@ -13,6 +13,18 @@ set(CLIENT_VERSION_REVISION 2)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(STATUS "Configuring on/for Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "Configuring on/for macOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "Configuring on/for Windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+    message(STATUS "Configuring on/for IBM AIX")
+else()
+    message(STATUS "Configuring on/for ${CMAKE_SYSTEM_NAME}")
+endif()
+
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
 if (WIN32)
@@ -110,7 +122,7 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 message(STATUS "=== LevelDB ================================================================")
 # LevelDB https://github.com/google/leveldb must be built and installed.
 # If non default path, leveldb_DIR must point to .../usr/local/lib/cmake/leveldb
-find_package(leveldb CONFIG REQUIRED)
+add_subdirectory(leveldb_upstream)
 
 # ============================================================================================
 message(STATUS "=== Git helper =============================================================")
