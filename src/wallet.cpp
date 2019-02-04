@@ -6638,21 +6638,23 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 if (nConsolidationAmount && !CreateAnonOutputs(&sxAddress, nConsolidationAmount, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() for consolidation outputs failed");
 
-                std::map<CTxOut, ec_secret> mapOutSecShared;
+                // Sort anon ouputs together with corresponding ec_secret ascending by anon value
+                std::vector<std::pair<CTxOut, ec_secret>> vTxOutSecret;
+                vTxOutSecret.reserve(vecSend.size());
                 for (uint32_t i = 0; i < vecSend.size(); ++i)
-                {
-                    CTxOut txOut(vecSend[i].second, vecSend[i].first);
+                    vTxOutSecret.push_back(std::make_pair(CTxOut(vecSend.at(i).second, vecSend.at(i).first), vecSecShared.at(i)));
+                std::sort(vTxOutSecret.begin(), vTxOutSecret.end(), [] (const auto &a, const auto &b) {
+                    return (a.first < b.first);
+                });
+                // Add sorted anon outputs to transaction
+                for (auto [txOut, secret] : vTxOutSecret)
                     txNew.vout.push_back(txOut);
-                    // save mapping from TxOut to SecShared
-                    mapOutSecShared[txOut] = vecSecShared.at(i);
-                }
-                std::sort(txNew.vout.begin() + 1, txNew.vout.end());
 
                 // -- Set one-time private key of vout[1] for signing the block
                 ec_secret sSpend;
                 ec_secret sSpendR;
                 memcpy(&sSpend.e[0], &sxAddress.spend_secret[0], EC_SECRET_SIZE);
-                if (StealthSharedToSecretSpend(mapOutSecShared.find(txNew.vout.at(1))->second, sSpend, sSpendR) != 0)
+                if (StealthSharedToSecretSpend(vTxOutSecret.at(0).second, sSpend, sSpendR) != 0)
                     return error("CreateAnonCoinStake : failed to get private key of anon output");
                 key.Set(&sSpendR.e[0], true);
 
