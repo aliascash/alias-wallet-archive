@@ -357,9 +357,10 @@ public:
         nCompromised = 0;
         nStakes = 0;
         nMature = 0;
+        nCompromisedHeight = 0;
     }
 
-    CAnonOutputCount(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_)
+    CAnonOutputCount(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_, int nCompromisedHeight_)
     {
         nValue = nValue_;
         nExists = nExists_;
@@ -369,9 +370,10 @@ public:
         nCompromised = nCompromised_;
         nMature = nMature_;
         nStakes = nStakes_;
+        nCompromisedHeight = nCompromisedHeight_;
     }
 
-    void set(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_)
+    void set(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_, int nMature_, int nStakes_, int nCompromisedHeight_)
     {
         nValue = nValue_;
         nExists = nExists_;
@@ -381,6 +383,7 @@ public:
         nCompromised = nCompromised_;
         nMature = nMature_;
         nStakes = nStakes_;
+        nCompromisedHeight = nCompromisedHeight_;
     }
 
     void addCoin(int nCoinDepth, int64_t nCoinValue, bool fStake)
@@ -431,6 +434,7 @@ public:
     int nOwned; // todo
     int nLeastDepth;
     int nCompromised;
+    int nCompromisedHeight;
     int nMature;
     int nStakes;
 };

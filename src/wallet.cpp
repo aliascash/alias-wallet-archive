@@ -3380,6 +3380,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         return error("%s: Skipped - must run in full mode.\n", __func__);
     };
 
+    int nBlockHeight = GetBlockHeightFromHash(blockHash);
+
     bool fHasNonAnonInputs = false;
     bool fHasNonAnonOutputs = false;
     bool fDebitAnonFromMe = false;
@@ -3536,7 +3538,25 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             // -- add keyImage to mempool, will be added to txdb in UpdateAnonTransaction
             mempool.insertKeyImage(vchImage, spentKeyImage);
 
-        mapAnonOutputStats[spentKeyImage.nValue].incSpends(spentKeyImage.nValue);
+        CAnonOutputCount& anonOutputCount = mapAnonOutputStats[nCoinValue];
+        anonOutputCount.incSpends(spentKeyImage.nValue);
+
+        // Persist compromised anon block height in case all anons of one denomination has been spent
+        if (nBlockHeight && anonOutputCount.nExists - anonOutputCount.nSpends <= 0)
+        {
+            LogPrintf("%s: Detect ALL SPENT of anon denomination %d in block height %d tx %s.\n", __func__, nCoinValue, nBlockHeight, txnHash.GetHex().c_str());
+            std::vector<int> vCompromisedHeights;
+            ptxdb->ReadCompromisedAnonHeights(nCoinValue, vCompromisedHeights);
+            if (std::find(vCompromisedHeights.begin(), vCompromisedHeights.end(), nBlockHeight) == vCompromisedHeights.end())
+            {
+                // find proper position in descending order
+                std::vector<int>::iterator it = std::lower_bound(vCompromisedHeights.begin(), vCompromisedHeights.end(), nBlockHeight, std::greater<int>());
+                vCompromisedHeights.insert(it, nBlockHeight); // insert before iterator it
+                if (!ptxdb->WriteCompromisedAnonHeights(nCoinValue, vCompromisedHeights))
+                    return error("%s: WriteCompromisedAnonHeights failed for anon value %s block height %d.", __func__, nCoinValue, nBlockHeight);
+                anonOutputCount.nCompromisedHeight = nBlockHeight;
+            }
+        }
     }
 
     ec_secret sSpendR;
@@ -3557,8 +3577,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
     {
         return error("%s: vchEphemPK.resize threw: %s.", __func__, e.what());
     };
-
-    int nBlockHeight = GetBlockHeightFromHash(blockHash);
 
     std::map<CKeyID, std::string> mapOutReceiveAddr;
     bool fNotAllOutputsOwned = false;
@@ -5816,12 +5834,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
                 };
                 if (ao.nValue > it->nValue)
                     continue;
-                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
+                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake, 0));
                 fProcessed = true;
                 break;
             };
             if (!fProcessed)
-                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
+                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake, 0));
         };
 
         iterator->Next();
@@ -5870,6 +5888,19 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
     };
 
     delete iterator;
+
+    // set compromised anon block heights
+    for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+    {
+        std::vector<int> vCompromisedHeights;
+        if (txdb.ReadCompromisedAnonHeights(it->nValue, vCompromisedHeights) && vCompromisedHeights.size() > 0)
+        {
+            it->nCompromisedHeight = vCompromisedHeights.front();
+            if (fDebug)
+                for (auto i = vCompromisedHeights.size(); i-- > 0; )
+                    LogPrintf("CountAllAnonOutputs() : Compromised anon height (all spent) value %d: index %d height %d\n",it->nValue, i, vCompromisedHeights.at(i));
+        }
+    }
 
     return 0;
 };
@@ -6022,6 +6053,9 @@ uint64_t CWallet::EraseAllAnonData(std::function<void (const char *, const uint3
     else
         txdb.EraseRange(std::string("ki"), nKi);
 
+    LogPrintf("Erasing compromised anon heights.\n");
+    txdb.EraseCompromisedAnonHeights();
+
     uint32_t nLao = 0;
     uint32_t nOao = 0;
     uint32_t nOal = 0;
@@ -6059,7 +6093,7 @@ bool CWallet::CacheAnonStats()
     {
         mapAnonOutputStats[it->nValue].set(
             it->nValue, it->nExists, it->nSpends, it->nOwned,
-            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised, it->nMature, it->nStakes); // mapAnonOutputStats stores height in chain instead of depth
+            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised, it->nMature, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
     };
 
     return true;

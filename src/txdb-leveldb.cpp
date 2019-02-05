@@ -247,6 +247,22 @@ bool CTxDB::EraseAnonOutput(CPubKey& pkCoin)
     return Erase(make_pair(string("ao"), pkCoin));
 };
 
+bool CTxDB::WriteCompromisedAnonHeights(int64_t anonValue, std::vector<int>& vCompromisedHeights)
+{
+    return Write(make_pair(string("compromisedanonheights"), anonValue), vCompromisedHeights);
+};
+
+bool CTxDB::ReadCompromisedAnonHeights(int64_t anonValue, std::vector<int>& vCompromisedHeights)
+{
+    return Read(make_pair(string("compromisedanonheights"), anonValue), vCompromisedHeights);
+};
+
+bool CTxDB::EraseCompromisedAnonHeights()
+{
+    uint32_t nCompromisedAnons = 0;
+    return EraseRange(string("compromisedanonheights"), nCompromisedAnons, nullptr);
+};
+
 bool CTxDB::EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress)
 {
 

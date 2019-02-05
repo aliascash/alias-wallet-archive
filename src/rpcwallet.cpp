@@ -2678,7 +2678,7 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Mature, No. Unspends, No. Stakes, No. Compromised, Least Depth", "value"));
+    result.push_back(Pair("No. Exists, No. Mature, No. Unspends, No. Stakes, No. Compromised, Compromised Height, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
@@ -2691,7 +2691,7 @@ Value anoninfo(const Array& params, bool fHelp)
     int64_t nTotalStakes = 0, nOutputsStakes = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nExists - it->nSpends, it->nStakes, it->nCompromised, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nExists - it->nSpends, it->nStakes, it->nCompromised, it->nCompromisedHeight, it->nLeastDepth);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
         nTotalCoins += it->nExists;
