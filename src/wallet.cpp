@@ -6631,7 +6631,6 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 // -- create anon output
                 CScript scriptNarration; // needed to match output id of narr
                 std::vector<std::pair<CScript, int64_t> > vecSend;
-                std::vector<std::pair<CScript, int64_t> > vecChange;
                 std::vector<ec_secret> vecSecShared;
                 std::string sNarr;
                 if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
