@@ -4592,10 +4592,10 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
                     && anonOutput.nValue == nValue
                     && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
-                {
-                    LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
-                    return 1;
-                }
+            {
+                LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
+                return 1;
+            }
         }
 
         iterator->Next();
@@ -4720,10 +4720,13 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
             if (it->nValue <= nMaxAnonOutput)
             {
                 CAnonOutputCount anonOutputCount = mapAnonOutputStats[it->nValue];
-                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_SELECT;
+                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends -
+                        (nFilter == MaturityFilter::FOR_STAKING ? 1 : MIN_UNSPENT_ANONS_SELECT);
             }
             else
                 nMaxSpendable = -1;
+            if (fDebugRingSig)
+                LogPrintf("ListAvailableAnonOutputs anonValue %d, nMaxSpendable %d\n", nLastCoinValue, nMaxSpendable);
         }
 
         std::map<int64_t, int>::iterator mi = mOutputCounts.find(it->nValue);

@@ -2256,7 +2256,8 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
     return true;
 };
 
-bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists)
+bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists,
+                                   const std::map<int64_t, int>*const mapAnonUnspents, std::map<int64_t, int>*const mapAnonSpends)
 {
     AssertLockHeld(cs_main);
     // - fCheckExists should only run for anonInputs entering this node
@@ -2274,7 +2275,6 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
     uint256 txnHash = GetHash();
 
-    std::map<int64_t, int> mapNumOfAnonOutputs;
     for (uint32_t i = 0; i < vin.size(); i++)
     {
         const CTxIn &txin = vin[i];
@@ -2331,66 +2331,84 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
             {
                 fInvalid = true; return false;
             };
-
-            nSumValue += nCoinValue;
-            continue;
-        };
-
-        if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        }
+        else
         {
-            LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
-            fInvalid = true; return false;
-        };
-
-
-        CPubKey pkRingCoin;
-        CAnonOutput ao;
-        const unsigned char* pPubkeys = &s[2];
-        const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
-        const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
-        for (int ri = 0; ri < nRingSize; ++ri)
-        {
-            pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
-            if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+            if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
                 fInvalid = true; return false;
             };
 
-            if (nCoinValue == -1)
+
+            CPubKey pkRingCoin;
+            CAnonOutput ao;
+            const unsigned char* pPubkeys = &s[2];
+            const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
+            const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+            for (int ri = 0; ri < nRingSize; ++ri)
             {
-                nCoinValue = ao.nValue;
-            } else
-            if (nCoinValue != ao.nValue)
-            {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
-                fInvalid = true; return false;
+                pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
+                if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                    fInvalid = true; return false;
+                };
+
+                if (nCoinValue == -1)
+                {
+                    nCoinValue = ao.nValue;
+                } else
+                if (nCoinValue != ao.nValue)
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
+                    fInvalid = true; return false;
+                };
+
+                int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
+                if (ao.nBlockHeight == 0
+                    || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                              i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
+                    fInvalid = true; return false;
+                };
             };
 
-            int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
-            if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
+            if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
-                          i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
+                LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
                 fInvalid = true; return false;
             };
-        };
+        }
 
-        if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
+        if (mapAnonSpends &&  mapAnonUnspents && nCoinValue <= nMaxAnonOutput)
         {
-            LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
-            fInvalid = true; return false;
-        };
-
-        if (ao.nValue <= nMaxAnonOutput && Params().IsForkV3(nTime))
-        {
-            mapNumOfAnonOutputs[ao.nValue]++;
-            CAnonOutputCount anonOutputCount = mapAnonOutputStats[ao.nValue];
-            int nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_BLOCK;
-            if (mapNumOfAnonOutputs[ao.nValue] > nMaxSpendable) {
-                LogPrintf("CheckAnonInputs(): Error tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspend %d\n",
-                          GetHash().ToString().substr(0,10).c_str(), i, mapNumOfAnonOutputs[ao.nValue], ao.nValue, nMaxSpendable);
+            int& anonSpends = (*mapAnonSpends)[nCoinValue];
+            anonSpends++;
+            auto it = mapAnonUnspents->find(nCoinValue);
+            if (it != mapAnonUnspents->end())
+            {
+                if (Params().IsForkV3(nTime))
+                {
+                    // A staking transaction must be allowed to spent all but one anon of a denomination.
+                    // This ensures that staking of an anon is possible, even if the block does spend all
+                    // of the same denomination according to the MIN_UNSPENT_ANONS_BLOCK rule.
+                    int minUnspentAnons = IsCoinStake() ? 1 : MIN_UNSPENT_ANONS_BLOCK;
+                    if (anonSpends > it->second - minUnspentAnons)
+                    {
+                        LogPrintf("CheckAnonInputs(): Error tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspent %d.\n",
+                                  GetHash().ToString().substr(0,10).c_str(), i, anonSpends, nCoinValue, it->second);
+                        return false;
+                    }
+                }
+                else if (anonSpends >= it->second)
+                    LogPrintf("CheckAnonInputs(): Warn tx %s input %d, does spend last anon output of value %d.\n",
+                              GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
+            }
+            else {
+                LogPrintf("CheckAnonInputs(): Error tx %s input %d, no unspent information for anon output %d.\n",
+                          GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
                 return false;
             }
         }
@@ -2646,6 +2664,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     else
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
 
+    // Prepare anon unspent map
+    std::map<int64_t, int> mapAnonUnspents;
+    for(auto const& [value, stat] : mapAnonOutputStats)
+       mapAnonUnspents[value] = stat.nExists - stat.nSpends;
+
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
     int64_t nAnonIn = 0;
@@ -2713,12 +2736,16 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                     if (txout.IsAnonOutput())
                         nAnonOut += txout.nValue;
 
-                if (!tx.CheckAnonInputs(txdb, nTxAnonIn, fInvalid, true))
+                std::map<int64_t, int> mapAnonSpends;
+                if (!tx.CheckAnonInputs(txdb, nTxAnonIn, fInvalid, true, &mapAnonUnspents, &mapAnonSpends))
                 {
                     if (fInvalid)
                         return error("ConnectBlock() : CheckAnonInputs found invalid tx %s", tx.GetHash().ToString().substr(0,10).c_str());
                     return false;
-                };
+                }
+                // adjust the unspent map with the anon spends of the tx
+                for(auto const& [value, spends] : mapAnonSpends)
+                    mapAnonUnspents[value] -= mapAnonSpends[value];
 
                 nAnonIn += nTxAnonIn;
                 nTxValueIn += nTxAnonIn;
