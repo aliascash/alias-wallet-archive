@@ -2236,6 +2236,15 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
                       i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
             return false;
         };
+
+        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
+        if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput &&
+                (ao.nCompromised > 0 || (nCompromisedHeight != 0 && ao.nBlockHeight < nCompromisedHeight)))
+        {
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised (ao.nCompromised:%s, ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
+                      i, ri, ao.nCompromised, ao.nBlockHeight, nCompromisedHeight);
+            return false;
+        }
     };
 
     if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)

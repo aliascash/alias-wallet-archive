@@ -4533,9 +4533,6 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
 
 int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p)
 {
-    if (fDebug)
-        LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
-
     // TODO: process multiple inputs in 1 db loop?
 
     // -- offset skip is pre filled with the real coin
@@ -4546,6 +4543,11 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
         throw runtime_error("CWallet::PickHidingOutputs() : cannot get leveldb instance");
+
+    int nCompromisedHeight = mapAnonOutputStats[nValue].nCompromisedHeight;
+
+    if (fDebug)
+        LogPrintf("PickHidingOutputs() nValue %d, nRingSize %d, nCompromisedHeight %d\n", nValue, nRingSize, nCompromisedHeight);
 
     leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
 
@@ -4586,8 +4588,9 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
             int minDepth = fStaking || anonOutput.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
             if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
-                && anonOutput.nValue == nValue
-                && anonOutput.nCompromised == 0)
+                    && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight)
+                    && anonOutput.nValue == nValue
+                    && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
                 {
                     LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
