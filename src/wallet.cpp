@@ -6711,10 +6711,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 {
                     int oaoRingIndex;
                     if (!AddAnonInput(txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
-                        return false;
+                        return error(("CreateAnonCoinStake : " + sError).c_str());
 
                     if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
-                        return false;
+                        return error(("CreateAnonCoinStake : " + sError).c_str());
 
                     iVin++;
                 }
