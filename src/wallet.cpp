@@ -876,6 +876,7 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
                 LogPrintf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
                 walletdb.TxnAbort();
                 txdb.TxnAbort();
+                CacheAnonStats(); // Make sure anon stats reflect DB after TX abort
                 return false;
             } else
             {
@@ -6741,6 +6742,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CSteal
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
             txdb.TxnAbort();
+            CacheAnonStats(); // Make sure anon stats reflect DB after TX abort
             return false;
         } else
         {
