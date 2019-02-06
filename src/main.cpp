@@ -2382,14 +2382,14 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
             };
         }
 
-        if (mapAnonSpends &&  mapAnonUnspents && nCoinValue <= nMaxAnonOutput)
+        if (mapAnonSpends && mapAnonUnspents)
         {
             int& anonSpends = (*mapAnonSpends)[nCoinValue];
             anonSpends++;
             auto it = mapAnonUnspents->find(nCoinValue);
             if (it != mapAnonUnspents->end())
             {
-                if (Params().IsForkV3(nTime))
+                if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput)
                 {
                     // A staking transaction must be allowed to spent all but one anon of a denomination.
                     // This ensures that staking of an anon is possible, even if the block does spend all
@@ -2397,13 +2397,13 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                     int minUnspentAnons = IsCoinStake() ? 1 : MIN_UNSPENT_ANONS_BLOCK;
                     if (anonSpends > it->second - minUnspentAnons)
                     {
-                        LogPrintf("CheckAnonInputs(): Error tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspent %d.\n",
+                        LogPrintf("CheckAnonInputs(): Error ALL SPENT: tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspent %d.\n",
                                   GetHash().ToString().substr(0,10).c_str(), i, anonSpends, nCoinValue, it->second);
                         return false;
                     }
                 }
                 else if (anonSpends >= it->second)
-                    LogPrintf("CheckAnonInputs(): Warn tx %s input %d, does spend last anon output of value %d.\n",
+                    LogPrintf("CheckAnonInputs(): Ignored ALL SPENT: tx %s input %d, does spend last anon output of value %d.\n",
                               GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
             }
             else {

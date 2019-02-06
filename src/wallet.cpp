@@ -3544,7 +3544,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         // Persist compromised anon block height in case all anons of one denomination has been spent
         if (nBlockHeight && anonOutputCount.nExists - anonOutputCount.nSpends <= 0)
         {
-            LogPrintf("%s: Detect ALL SPENT of anon denomination %d in block height %d tx %s.\n", __func__, nCoinValue, nBlockHeight, txnHash.GetHex().c_str());
+            LogPrintf("%s: ALL SPENT of anon denomination %d in block height %d tx %s. -> persist compromised height.\n",
+                      __func__, nCoinValue, nBlockHeight, txnHash.GetHex().substr(0,10).c_str());
             std::vector<int> vCompromisedHeights;
             ptxdb->ReadCompromisedAnonHeights(nCoinValue, vCompromisedHeights);
             if (std::find(vCompromisedHeights.begin(), vCompromisedHeights.end(), nBlockHeight) == vCompromisedHeights.end())
