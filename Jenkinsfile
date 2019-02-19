@@ -132,7 +132,6 @@ pipeline {
                         }
                     }
                 }
-                /*
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -188,7 +187,6 @@ pipeline {
                         }
                     }
                 }
-                */
                 stage('Windows-Qt5.9.6') {
                     agent {
                         label "housekeeping"
