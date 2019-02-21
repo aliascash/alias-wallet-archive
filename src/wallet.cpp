@@ -14,6 +14,7 @@
 #include "kernel.h"
 #include "coincontrol.h"
 #include "pbkdf2.h"
+#include <chrono>
 #include <random>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/random/mersenne_twister.hpp>
