@@ -727,14 +727,12 @@ QVariantMap SpectreBridge::listAnonOutputs()
         CAnonOutputCount* aoc = &mi->second;
         QVariantMap anonOutput;
 
-        int nDepth = aoc->nLeastDepth == 0 ? 0 : nBestHeight - aoc->nLeastDepth;
-
         anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
         anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
         anonOutput.insert("system_mature",  mSystemOutputCounts[aoc->nValue]);
         anonOutput.insert("system_outputs", aoc->nExists);
         anonOutput.insert("system_spends",  aoc->nSpends);
-        anonOutput.insert("least_depth",    nDepth);
+        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight);
         anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
         anonOutputs.insert(QString::number(aoc->nValue), anonOutput);

@@ -2301,9 +2301,6 @@ Value scanforalltxns(const Array& params, bool fHelp)
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();
 
-        if (nFromHeight == 0)
-            pwalletMain->CacheAnonStats();
-
     } // cs_main, pwalletMain->cs_wallet
 
     LogPrintf("Found %u stealth transactions in blockchain.\n", pwalletMain->nStealth);
@@ -2637,8 +2634,6 @@ Value anoninfo(const Array& params, bool fHelp)
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Must be in full mode.");
 
-    CWallet::MaturityFilter nFilter = CWallet::MaturityFilter::NONE; // TODO: add parameter
-
     bool fRecalculate = false;
 
     if (params.size() > 0)
@@ -2654,7 +2649,7 @@ Value anoninfo(const Array& params, bool fHelp)
 
     if (fRecalculate)
     {
-        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nFilter) != 0)
+        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBestHeight) != 0)
             throw std::runtime_error("CountAllAnonOutputs() failed.");
     } else
     {
@@ -2663,8 +2658,6 @@ Value anoninfo(const Array& params, bool fHelp)
         {
             bool fProcessed = false;
             CAnonOutputCount aoc = mi->second;
-            if (aoc.nLeastDepth > 0)
-                aoc.nLeastDepth = nBestHeight - aoc.nLeastDepth;
             for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
             {
                 if (aoc.nValue > it->nValue)
@@ -2678,7 +2671,7 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Mature, No. Unspends, No. Stakes, No. Compromised, Compromised Height, Least Depth", "value"));
+    result.push_back(Pair("No.Exists, No.Mature, No.Spends, No.Mixins, No.MixinsStaking, No.Stakes, No.Compromised, Compromised Height, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
@@ -2691,14 +2684,16 @@ Value anoninfo(const Array& params, bool fHelp)
     int64_t nTotalStakes = 0, nOutputsStakes = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %3d", it->nExists, it->nMature, it->nExists - it->nSpends, it->nStakes, it->nCompromised, it->nCompromisedHeight, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %3d",
+                 it->nExists, it->nMature, it->nSpends, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromised, it->nCompromisedHeight,
+                 it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
         nTotalCoins += it->nExists;
         nTotalIn += it->nValue * it->nExists;
         nOutputsIn += it->nExists;
-        nTotalOut += it->nValue * it->nExists - it->nValue * it->nSpends;
-        nOutputsOut += it->nExists - it->nSpends;
+        nTotalOut += it->nValue * it->nSpends;
+        nOutputsOut += it->nSpends;
         nTotalCompromised += it->nValue * it->nCompromised;
         nOutputsCompromised += it->nCompromised;
         nTotalMature += it->nValue * it->nMature;
@@ -2711,8 +2706,8 @@ Value anoninfo(const Array& params, bool fHelp)
     result.push_back(Pair("total value", ValueFromAmount(nTotalIn)));
     result.push_back(Pair("total mature outputs", nOutputsMature));
     result.push_back(Pair("total mature value", ValueFromAmount(nTotalMature)));
-    result.push_back(Pair("total unspend outputs", nOutputsOut));
-    result.push_back(Pair("total unspend value", ValueFromAmount(nTotalOut)));
+    result.push_back(Pair("total spend outputs", nOutputsOut));
+    result.push_back(Pair("total spend value", ValueFromAmount(nTotalOut)));
     result.push_back(Pair("total stake outputs", nOutputsStakes));
     result.push_back(Pair("total stake value", ValueFromAmount(nTotalStakes)));
     result.push_back(Pair("total compromised outputs", nOutputsCompromised));

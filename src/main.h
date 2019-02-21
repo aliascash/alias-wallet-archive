@@ -102,7 +102,15 @@ struct COrphanBlock {
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
+extern bool fStaleAnonCache;
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;
+
+struct CAnonBlockStat {
+    uint16_t nSpends, nOutputs, nStakingOutputs, nCompromisedOutputs;
+};
+extern int nMaxAnonBlockCache;
+extern std::map<int, std::map<int64_t, CAnonBlockStat>> mapAnonBlockStats;
+
 
 extern CTxMemPool mempool;
 

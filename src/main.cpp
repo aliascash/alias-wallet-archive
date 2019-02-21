@@ -63,7 +63,10 @@ CMedianFilter<int> cPeerBlockCounts(5, 0); // Amount of blocks that other nodes 
 
 std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
+bool fStaleAnonCache = true;
+int nMaxAnonBlockCache = 1000;
 std::map<int64_t, CAnonOutputCount> mapAnonOutputStats; // display only, not 100% accurate, height could become inaccurate due to undos
+std::map<int, std::map<int64_t, CAnonBlockStat>> mapAnonBlockStats;
 
 std::multimap<uint256, CBlockThin*> mapOrphanBlockThinsByPrev;
 
@@ -2025,7 +2028,7 @@ bool IsInitialBlockDownload()
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
-{
+{ 
     if (pindexNew->nChainTrust > nBestInvalidTrust)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
@@ -2045,6 +2048,8 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
       CBigNum(pindexBest->nChainTrust).ToString().c_str(),
       nBestBlockTrust.Get64(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
+
+    pwalletMain->CacheAnonStats();
 }
 
 
@@ -2080,6 +2085,9 @@ bool CTransaction::DisconnectInputs(CTxDB& txdb)
     {
         BOOST_FOREACH(const CTxIn& txin, vin)
         {
+            if (txin.IsAnonInput())
+                continue;
+
             COutPoint prevout = txin.prevout;
 
             // Get prev txindex from disk
@@ -2397,13 +2405,13 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                     int minUnspentAnons = IsCoinStake() ? 1 : MIN_UNSPENT_ANONS_BLOCK;
                     if (anonSpends > it->second - minUnspentAnons)
                     {
-                        LogPrintf("CheckAnonInputs(): Error ALL SPENT: tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspent %d.\n",
+                        LogPrintf("CheckAnonInputs(): Error ALL SPENT: tx %s input %d, not enough unspend mature anon outputs (%d) of value %d. NumOfUnspent %d.\n",
                                   GetHash().ToString().substr(0,10).c_str(), i, anonSpends, nCoinValue, it->second);
                         return false;
                     }
                 }
                 else if (anonSpends >= it->second)
-                    LogPrintf("CheckAnonInputs(): Ignored ALL SPENT: tx %s input %d, does spend last anon output of value %d.\n",
+                    LogPrintf("CheckAnonInputs(): Ignored ALL SPENT: tx %s input %d, does spend last mature anon output of value %d.\n",
                               GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
             }
             else {
@@ -2615,7 +2623,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 }
 
 bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
-{
+{    
     // Disconnect in reverse order
     for (int i = vtx.size()-1; i >= 0; i--)
         if (!vtx[i].DisconnectInputs(txdb))
@@ -2634,6 +2642,9 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     // ppcoin: clean up wallet after disconnecting coinstake
     BOOST_FOREACH(CTransaction& tx, vtx)
         SyncWithWallets(tx, this, false, false);
+
+    if (!pwalletMain->RemoveAnonStats(txdb, pindex->nHeight))
+        return error("DiconnectBlock() : RemoveAnonStats failed.");
 
     return true;
 }
@@ -2664,10 +2675,43 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     else
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
 
+    if (fStaleAnonCache)
+    {
+        LogPrintf("ConnectBlock() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats())
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
+
+    // -- validate cache against persisted data
+    std::list<CAnonOutputCount> lOutputCounts;
+    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBestHeight) != 0)
+    {
+        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", nBestHeight);
+        return false;
+    };
+    for (const auto & anonOutputStat : lOutputCounts)
+    {
+        if (mapAnonOutputStats[anonOutputStat.nValue].nExists != anonOutputStat.nExists)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nExists cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nExists, anonOutputStat.nExists);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nSpends != anonOutputStat.nSpends)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nSpends cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nSpends, anonOutputStat.nSpends);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMature != anonOutputStat.nMature)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMature cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMature, anonOutputStat.nMature);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixins != anonOutputStat.nMixins)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixins cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixins, anonOutputStat.nMixins);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking != anonOutputStat.nMixinsStaking)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixinsStaking cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking, anonOutputStat.nMixinsStaking);
+    }
+
     // Prepare anon unspent map
     std::map<int64_t, int> mapAnonUnspents;
     for(auto const& [value, stat] : mapAnonOutputStats)
-       mapAnonUnspents[value] = stat.nExists - stat.nSpends;
+        mapAnonUnspents[value] = stat.nMature - stat.nSpends;
 
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
@@ -2843,6 +2887,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     // Watch for transactions paying to me
     BOOST_FOREACH(CTransaction& tx, vtx)
         SyncWithWallets(tx, this, true);
+
+    if (!pwalletMain->UpdateAnonStats(txdb, pindex->nHeight))
+        return error("ConnectBlock() : UpdateAnonStats failed.");
 
     return true;
 }
@@ -3054,6 +3101,13 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+
+    if (fStaleAnonCache)
+    {
+        LogPrintf("SetBestChain() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats())
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
 
     uint256 nBestBlockTrust = pindexBest->nHeight != 0 ? (pindexBest->nChainTrust - pindexBest->pprev->nChainTrust) : pindexBest->nChainTrust;
 
@@ -4370,6 +4424,8 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
 
                         if (nLoaded % 20000 == 0)
                             LogPrintf("Loaded %d blocks and counting.\n", nLoaded);
+                        if (nLoaded % 10 == 0)
+                         uiInterface.InitMessage(strprintf("Reindexing blocks... (%d)", nLoaded));
                     };
                 };
             };

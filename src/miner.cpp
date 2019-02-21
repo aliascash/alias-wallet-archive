@@ -168,7 +168,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         // Prepare anon unspent map
         std::map<int64_t, int> mapAnonUnspents;
         for(auto const& [value, stat] : mapAnonOutputStats )
-           mapAnonUnspents[value] = stat.nExists - stat.nSpends;
+           mapAnonUnspents[value] = stat.nMature - stat.nSpends;
 
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move

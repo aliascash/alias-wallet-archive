@@ -967,9 +967,6 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return true;
             },100);
             pwalletMain->ReacceptWalletTransactions();
-
-            if (fullscan)
-                pwalletMain->CacheAnonStats();
         }
 
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
