@@ -2049,7 +2049,7 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
       nBestBlockTrust.Get64(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
 
-    pwalletMain->CacheAnonStats();
+    pwalletMain->CacheAnonStats(nBestHeight);
 }
 
 
@@ -2678,15 +2678,15 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     if (fStaleAnonCache)
     {
         LogPrintf("ConnectBlock() : Stale anon cache => rebuild.\n");
-        if (!pwalletMain->CacheAnonStats())
+        if (!pwalletMain->CacheAnonStats(pindex->pprev->nHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     }
 
     // -- validate cache against persisted data
     std::list<CAnonOutputCount> lOutputCounts;
-    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBestHeight) != 0)
+    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, pindex->pprev->nHeight) != 0)
     {
-        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", nBestHeight);
+        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", pindex->pprev->nHeight);
         return false;
     };
     for (const auto & anonOutputStat : lOutputCounts)
@@ -3105,7 +3105,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     if (fStaleAnonCache)
     {
         LogPrintf("SetBestChain() : Stale anon cache => rebuild.\n");
-        if (!pwalletMain->CacheAnonStats())
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     }
 
@@ -4228,7 +4228,7 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
         if (!txdb.LoadBlockIndex(funcProgress))
             return 1;
 
-        if (!pwalletMain->CacheAnonStats())
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     } else
     {

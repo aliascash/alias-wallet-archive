@@ -329,7 +329,7 @@ public:
 
     uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
 
-    bool CacheAnonStats();
+    bool CacheAnonStats(int nBlockHeight);
     bool UpdateAnonStats(CTxDB& txdb, int nBlockHeight);
     bool RemoveAnonStats(CTxDB& txdb, int nBlockHeight);
     void AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, int nBlockHeight);

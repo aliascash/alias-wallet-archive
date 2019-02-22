@@ -1718,7 +1718,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
     fReindexing = false;
 
     // Make sure anon cache reflects restored nBestHeight
-    if (!CacheAnonStats())
+    if (!CacheAnonStats(nBestHeight))
         LogPrintf("ScanForWalletTransactions() : CacheAnonStats() failed.\n");
 
     return ret;
@@ -6365,15 +6365,15 @@ bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
     return true;
 }
 
-bool CWallet::CacheAnonStats()
+bool CWallet::CacheAnonStats(int nBlockHeight)
 {
     if (fDebugRingSig)
-        LogPrintf("CacheAnonStats()\n");
+        LogPrintf("CacheAnonStats(%d)\n", nBlockHeight);
 
     AssertLockHeld(cs_main);
 
     std::list<CAnonOutputCount> lOutputCounts;
-    if (CountAllAnonOutputs(lOutputCounts, nBestHeight) != 0)
+    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
     {
         LogPrintf("Error: CountAllAnonOutputs() failed.\n");
         return false;
