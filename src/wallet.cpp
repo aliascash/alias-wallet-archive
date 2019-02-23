@@ -960,12 +960,13 @@ void CWallet::AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAn
     if(!nBlockHeight)
         return;
 
-    for (const auto & [nValue, anonBlockStat] : mapAnonBlockStat)
+    for (const auto & [nValue, newAnonBlockStat] : mapAnonBlockStat)
     {
-        mapAnonBlockStats[nBlockHeight][nValue].nSpends += anonBlockStat.nSpends;
-        mapAnonBlockStats[nBlockHeight][nValue].nOutputs += anonBlockStat.nOutputs;
-        mapAnonBlockStats[nBlockHeight][nValue].nStakingOutputs += anonBlockStat.nStakingOutputs;
-        mapAnonBlockStats[nBlockHeight][nValue].nCompromisedOutputs += anonBlockStat.nCompromisedOutputs;
+        CAnonBlockStat& anonBlockStat = mapAnonBlockStats[nBlockHeight][nValue];
+        anonBlockStat.nSpends += newAnonBlockStat.nSpends;
+        anonBlockStat.nOutputs += newAnonBlockStat.nOutputs;
+        anonBlockStat.nStakingOutputs += newAnonBlockStat.nStakingOutputs;
+        anonBlockStat.nCompromisedOutputs += newAnonBlockStat.nCompromisedOutputs;
     }
 }
 
