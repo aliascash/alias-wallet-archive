@@ -2649,6 +2649,34 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     return true;
 }
 
+void static validateAnonCache(int nBlockHeight)
+{
+    // -- validate cache against persisted data
+    std::list<CAnonOutputCount> lOutputCounts;
+    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
+    {
+        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", nBlockHeight);
+    };
+    for (const auto & anonOutputStat : lOutputCounts)
+    {
+        if (mapAnonOutputStats[anonOutputStat.nValue].nExists != anonOutputStat.nExists)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nExists cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nExists, anonOutputStat.nExists);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nSpends != anonOutputStat.nSpends)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nSpends cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nSpends, anonOutputStat.nSpends);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMature != anonOutputStat.nMature)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMature cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMature, anonOutputStat.nMature);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixins != anonOutputStat.nMixins)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixins cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixins, anonOutputStat.nMixins);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking != anonOutputStat.nMixinsStaking)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixinsStaking cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking, anonOutputStat.nMixinsStaking);
+    }
+}
+
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 {
     // Check it again in case a previous version let a bad block in, but skip BlockSig checking
@@ -2682,31 +2710,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             LogPrintf("CacheAnonStats() failed.\n");
     }
 
-    // -- validate cache against persisted data
-    std::list<CAnonOutputCount> lOutputCounts;
-    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, pindex->pprev->nHeight) != 0)
-    {
-        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", pindex->pprev->nHeight);
-        return false;
-    };
-    for (const auto & anonOutputStat : lOutputCounts)
-    {
-        if (mapAnonOutputStats[anonOutputStat.nValue].nExists != anonOutputStat.nExists)
-            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nExists cache %d <> %d persisted.\n",
-                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nExists, anonOutputStat.nExists);
-        if (mapAnonOutputStats[anonOutputStat.nValue].nSpends != anonOutputStat.nSpends)
-            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nSpends cache %d <> %d persisted.\n",
-                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nSpends, anonOutputStat.nSpends);
-        if (mapAnonOutputStats[anonOutputStat.nValue].nMature != anonOutputStat.nMature)
-            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMature cache %d <> %d persisted.\n",
-                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMature, anonOutputStat.nMature);
-        if (mapAnonOutputStats[anonOutputStat.nValue].nMixins != anonOutputStat.nMixins)
-            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixins cache %d <> %d persisted.\n",
-                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixins, anonOutputStat.nMixins);
-        if (mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking != anonOutputStat.nMixinsStaking)
-            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixinsStaking cache %d <> %d persisted.\n",
-                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking, anonOutputStat.nMixinsStaking);
-    }
+    validateAnonCache(pindex->pprev->nHeight);
 
     // Prepare anon unspent map
     std::map<int64_t, int> mapAnonUnspents;
