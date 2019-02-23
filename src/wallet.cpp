@@ -6221,7 +6221,7 @@ bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
                 mapAnonOutputStats[nValue].nMixins += nMixinsUpdate;
             }
             mapAnonOutputStats[nValue].nMature += anonBlockStat.nOutputs;
-            if (fDebug)
+            if (fDebugRingSig)
                 LogPrintf("UpdateAnonStats(%d) : [%d/%d] nMature+%d nMixins+%d\n",
                           nBlockHeight, nValue, nMatureHeight, anonBlockStat.nOutputs, nMixinsUpdate);
         }
@@ -6250,7 +6250,7 @@ bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
                 mapAnonOutputStats[nValue].nMixinsStaking += nMixinsStakingUpdate;
             }
             mapAnonOutputStats[nValue].nMature += anonBlockStat.nStakingOutputs;
-            if (fDebug)
+            if (fDebugRingSig)
                 LogPrintf("UpdateAnonStats(%d) : [%d/%d] nMature+%d nMixins+%d nMixinsStaking+%d\n",
                           nBlockHeight, nValue, nMatureStakeHeight, anonBlockStat.nStakingOutputs, nMixinsUpdate, nMixinsStakingUpdate);
         }
@@ -6314,7 +6314,7 @@ bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
                 mapAnonOutputStats[nValue].nMixins -= nMixinsUpdate;
             }
             mapAnonOutputStats[nValue].nMature -= anonBlockStat.nOutputs;
-            if (fDebug)
+            if (fDebugRingSig)
                 LogPrintf("RemoveAnonStats(%d) : [%d/%d] nMature-%d nMixins-%d\n",
                           nBlockHeight, nValue, nMatureHeight, anonBlockStat.nOutputs, nMixinsUpdate);
         }
@@ -6343,7 +6343,7 @@ bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
                 mapAnonOutputStats[nValue].nMixinsStaking -= nMixinsStakingUpdate;
             }
             mapAnonOutputStats[nValue].nMature -= anonBlockStat.nStakingOutputs;
-            if (fDebug)
+            if (fDebugRingSig)
                 LogPrintf("RemoveAnonStats(%d) : [%d/%d] nMature-%d nMixins-%d nMixinsStaking-%d\n",
                           nBlockHeight, nValue, nMatureStakeHeight, anonBlockStat.nStakingOutputs, nMixinsUpdate, nMixinsStakingUpdate);
         }
