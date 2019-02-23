@@ -29,11 +29,20 @@ We have implemented a check for DCBs and we have implemented a replay protection
 Immediate changes:
 - Change max anon output from 10'000 to 1'000
 - Increase default block size created from 250K to 999K
+- ATXOs compromised by an All Spent situation are no longer considered as mixins for new transactions
+- Increase levelDB version to 70512 to force reindex:
+  - new attribute fCoinStake in CAnonOutput
+  - new attribute nBlockHeight in CKeyImageSpent
+  - new compromisedanonheights map for detected All Spent
+- Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
-- RPC: ...
+- RPC: method anoninfo shows new stats per denomination:
+  - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
+  - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
+  - Compromised Height: the last bock height an All Spent situation occured
 
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual
