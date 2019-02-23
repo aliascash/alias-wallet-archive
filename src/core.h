@@ -300,16 +300,7 @@ public:
         READWRITE(txnHash);
         READWRITE(inputNo);
         READWRITE(nValue);
-        if (fRead)
-            try {
-                READWRITE(nBlockHeight);
-            }
-            catch (std::ios_base::failure&) {
-                /* Only available after V3. Will be set with automatic rescan */
-                const_cast<CKeyImageSpent*>(this)->nBlockHeight = 0;
-            }
-        else
-            READWRITE(nBlockHeight);
+        READWRITE(nBlockHeight);
     )
 };
 
@@ -340,17 +331,7 @@ public:
         READWRITE(nValue);
         READWRITE(nBlockHeight);
         READWRITE(nCompromised);
-        if (fRead)
-            try {
-                READWRITE(fCoinStake);
-            }
-            catch (std::ios_base::failure&) {
-                /* flag as non coin stake if we can't read the coinstake attribute
-                   (this will be the case for any wallet before V3 and stealth staking) */
-                const_cast<CAnonOutput*>(this)->fCoinStake = false;
-            }
-        else
-            READWRITE(fCoinStake);
+        READWRITE(fCoinStake);
     )
 };
 
