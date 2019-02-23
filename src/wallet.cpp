@@ -5969,7 +5969,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
         if (itCompromisedHeights != mapCompromisedHeights.end() && itCompromisedHeights->second.size() > 0)
         {
            it->nCompromisedHeight = itCompromisedHeights->second.front();
-//           if (fDebug)
+//           if (fDebugRingSig)
 //               for (auto i = itCompromisedHeights->second.size(); i-- > 0; )
 //                   LogPrintf("CountAllAnonOutputs() : Compromised anon height value %d: index %d height %d\n",it->nValue, i, itCompromisedHeights->second.at(i));
         }
@@ -6268,7 +6268,7 @@ bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
 
 bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
 {
-    if (fDebug)
+    if (fDebugRingSig)
         LogPrintf("RemoveAnonStats(%d)\n", nBlockHeight);
 
     AssertLockHeld(cs_main);

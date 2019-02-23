@@ -2710,7 +2710,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             LogPrintf("CacheAnonStats() failed.\n");
     }
 
-    validateAnonCache(pindex->pprev->nHeight);
+    if (fDebugRingSig)
+        validateAnonCache(pindex->pprev->nHeight);
 
     // Prepare anon unspent map
     std::map<int64_t, int> mapAnonUnspents;
