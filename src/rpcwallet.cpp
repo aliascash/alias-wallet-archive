@@ -2293,10 +2293,6 @@ Value scanforalltxns(const Array& params, bool fHelp)
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
-        if (nFromHeight == 0)
-            // If we start from genesis, rebuild anon data completely
-            pwalletMain->EraseAllAnonData();
-
         pwalletMain->MarkDirty();
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();

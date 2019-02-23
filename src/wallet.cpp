@@ -1675,8 +1675,6 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
     {
         LOCK2(cs_main, cs_wallet);
 
-        bool fUpdateAnonStats = mapAnonOutputStats.size() == 0;
-
         // call progress callback on start
         if (funcProgress) funcProgress(pindex->nHeight, nCurBestHeight, ret);
 
@@ -1697,16 +1695,6 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
                 // abort scanning indicated
                 break;
             };
-            if (fUpdateAnonStats) {
-                UpdateAnonStats(txdb, nBestHeight);
-                if (fStaleAnonCache)
-                {
-                    LogPrintf("ScanForWalletTransactions() : Stale anon cache => rebuild.\n");
-                    if (!CacheAnonStats())
-                        LogPrintf("ScanForWalletTransactions() : CacheAnonStats() failed.\n");
-                }
-            }
-
             pindex = pindex->pnext;
         };
 
