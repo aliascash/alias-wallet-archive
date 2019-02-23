@@ -2650,20 +2650,10 @@ Value anoninfo(const Array& params, bool fHelp)
     } else
     {
         // TODO: make mapAnonOutputStats a vector preinitialised with all possible coin values?
-        for (std::map<int64_t, CAnonOutputCount>::iterator mi = mapAnonOutputStats.begin(); mi != mapAnonOutputStats.end(); ++mi)
+        for (auto & [nValue, anonOutputCount] : mapAnonOutputStats)
         {
-            bool fProcessed = false;
-            CAnonOutputCount aoc = mi->second;
-            for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
-            {
-                if (aoc.nValue > it->nValue)
-                    continue;
-                lOutputCounts.insert(it, aoc);
-                fProcessed = true;
-                break;
-            };
-            if (!fProcessed)
-                lOutputCounts.push_back(aoc);
+            anonOutputCount.nValue = nValue; // make sure nValue is correctly set
+            lOutputCounts.push_back(anonOutputCount);
         };
     };
 
