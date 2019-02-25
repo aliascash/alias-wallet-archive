@@ -16,12 +16,12 @@ We have implemented a check for DCBs and we have implemented a replay protection
 
 ### Changelog
 ## 3.0.0
-**V3 blockchain fork consensus changes / Fork time is GMT: Thursday, 28. March 2019 22:00:00 (1553810400 unix epoch time)**
+**V3 blockchain fork consensus changes / Fork time is GMT: Friday, 24. May 2019 21:00:00 (1558731600 unix epoch time)**
 - Minimum ring size increased from 1 to 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
-- Support for SPECTRE staking (aka Stealth Staking)
+- Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
   - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
@@ -42,7 +42,7 @@ Immediate changes:
 - RPC: method anoninfo shows new stats per denomination:
   - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
   - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
-  - Compromised Height: the last bock height an All Spent situation occured
+  - Compromised Height: the last block height an All Spent situation occured
 
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual
