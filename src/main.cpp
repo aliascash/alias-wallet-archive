@@ -2850,8 +2850,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // Watch for transactions paying to me
     BOOST_FOREACH(CTransaction& tx, vtx)
-        SyncWithWallets(tx, this, true);
+        SyncWithWallets(tx, this, true); // calls ProcessAnonTransaction() which persists anons also in txDB
 
+    // Update anon cache with stats of connected block (added in ProcessAnonTransaction())
     if (!pwalletMain->UpdateAnonStats(txdb, pindex->nHeight))
         return error("ConnectBlock() : UpdateAnonStats failed.");
 
