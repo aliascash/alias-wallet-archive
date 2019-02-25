@@ -4359,7 +4359,7 @@ void PrintBlockTree()
     }
 }
 
-bool LoadExternalBlockFile(int nFile, FILE* fileIn)
+bool LoadExternalBlockFile(int nFile, FILE* fileIn, std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
     {
@@ -4369,7 +4369,7 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
 
     int64_t nStart = GetTimeMillis();
 
-    int nLoaded = 0;
+    uint32_t nLoaded = 0;
 
     {
         try {
@@ -4427,10 +4427,10 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
                         nLoaded++;
                         nPos += 4 + nSize;
 
-                        if (nLoaded % 20000 == 0)
+                        if (nLoaded % 10000 == 0)
                             LogPrintf("Loaded %d blocks and counting.\n", nLoaded);
-                        if (nLoaded % 10 == 0)
-                         uiInterface.InitMessage(strprintf("Reindexing blocks... (%d)", nLoaded));
+                        if (funcProgress)
+                            funcProgress(nLoaded);
                     };
                 };
             };

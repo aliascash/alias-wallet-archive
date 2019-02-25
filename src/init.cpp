@@ -985,7 +985,10 @@ bool AppInit2(boost::thread_group& threadGroup)
             if (!file)
                 break;
             LogPrintf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(nFile, file);
+            LoadExternalBlockFile(nFile, file, [] (const uint32_t& nBlock) -> void {
+                if (nBlock % 10 == 0)
+                    uiInterface.InitMessage(strprintf("Reindexing block... (%d)", nBlock));
+            });
             nFile++;
         };
 
