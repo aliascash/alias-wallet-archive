@@ -3330,9 +3330,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    LogPrintf("found matching spent key image - txn has been processed before -> reprocess.\n");
-//                mapAnonBlockStat.clear();
-//                return UpdateAnonTransaction(ptxdb, tx, blockHash, mapAnonBlockStat);
+                    LogPrintf("found matching spent key image - txn has been processed before -> reprocess vin[%d].\n", i);
             }
             else {
                 if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
@@ -3510,28 +3508,33 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (blockHash != 0)
             {
                 if (fDebugRingSig)
-                    LogPrintf("Found existing anon output - assuming txn has been processed before -> reprocess.\n");
+                    LogPrintf("Found existing anon output - assuming txn has been processed before -> reprocess vout[%d].\n", i);
 
-//                mapAnonBlockStat.clear();
-//                return UpdateAnonTransaction(ptxdb, tx, blockHash, mapAnonBlockStat);
+                if (ao.nBlockHeight && ao.nBlockHeight != nBlockHeight)
+                {
+                    LogPrintf("%s: Warning: persisted block height of anon %s does not match current block %s -> ATXO cache must be rebuild.\n", __func__, ao.nBlockHeight, nBlockHeight);
+                    fStaleAnonCache = true; // force rebuild of anon cache
+                }
+                ao.nBlockHeight = nBlockHeight;
+                ao.fCoinStake = tx.IsCoinStake();
             }
             else {
                 return error("%s: Found duplicate anon output.", __func__);
             }
         }
         else {
-            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0, tx.IsCoinStake());
-            if (!ptxdb->WriteAnonOutput(pkCoin, ao))
-            {
-                LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
+            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0, tx.IsCoinStake());         
+        }
+        if (!ptxdb->WriteAnonOutput(pkCoin, ao))
+        {
+            LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
                 continue;
             };
             // add to anon cache
             if (tx.IsAnonCoinStake())
-                mapAnonBlockStat[txout.nValue].nStakingOutputs++;
-            else
-                mapAnonBlockStat[txout.nValue].nOutputs++;
-        }
+            mapAnonBlockStat[txout.nValue].nStakingOutputs++;
+        else
+            mapAnonBlockStat[txout.nValue].nOutputs++;
 
         memcpy(&vchEphemPK[0], &s[2+EC_COMPRESSED_SIZE+2], EC_COMPRESSED_SIZE);
 
