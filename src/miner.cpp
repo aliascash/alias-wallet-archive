@@ -165,11 +165,6 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         LOCK2(cs_main, mempool.cs);
         CTxDB txdb("r");
 
-        // Prepare anon unspent map
-        std::map<int64_t, int> mapAnonUnspents;
-        for(auto const& [value, stat] : mapAnonOutputStats )
-           mapAnonUnspents[value] = stat.nMature - stat.nSpends;
-
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
         map<uint256, vector<COrphan*> > mapDependers;
@@ -238,17 +233,12 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 int64_t nSumAnon;
                 bool fInvalid;
 
-                std::map<int64_t, int> mapAnonSpends;
-                if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false, &mapAnonUnspents, &mapAnonSpends))
+                if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false))
                 {
                     if (fInvalid)
                         LogPrintf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
                     continue;
                 };
-                // adjust the unspent map with the anon spends of the tx
-                for(auto const& [value, spends] : mapAnonSpends)
-                   mapAnonUnspents[value] -= mapAnonSpends[value];
-
                 nTotalIn += nSumAnon;
             };
 

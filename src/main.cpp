@@ -2264,8 +2264,7 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
     return true;
 };
 
-bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists,
-                                   const std::map<int64_t, int>*const mapAnonUnspents, std::map<int64_t, int>*const mapAnonSpends)
+bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists)
 {
     AssertLockHeld(cs_main);
     // - fCheckExists should only run for anonInputs entering this node
@@ -2377,7 +2376,7 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 if (ao.nBlockHeight == 0
                     || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
                 {
-                    LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%d).\n",
                               i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
                     fInvalid = true; return false;
                 };
@@ -2388,37 +2387,6 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
                 LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
                 fInvalid = true; return false;
             };
-        }
-
-        if (mapAnonSpends && mapAnonUnspents)
-        {
-            int& anonSpends = (*mapAnonSpends)[nCoinValue];
-            anonSpends++;
-            auto it = mapAnonUnspents->find(nCoinValue);
-            if (it != mapAnonUnspents->end())
-            {
-                if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput)
-                {
-                    // A staking transaction must be allowed to spent all but one anon of a denomination.
-                    // This ensures that staking of an anon is possible, even if the block does spend all
-                    // of the same denomination according to the MIN_UNSPENT_ANONS_BLOCK rule.
-                    int minUnspentAnons = IsCoinStake() ? 1 : MIN_UNSPENT_ANONS_BLOCK;
-                    if (anonSpends > it->second - minUnspentAnons)
-                    {
-                        LogPrintf("CheckAnonInputs(): Error ALL SPENT: tx %s input %d, not enough unspend mature anon outputs (%d) of value %d. NumOfUnspent %d.\n",
-                                  GetHash().ToString().substr(0,10).c_str(), i, anonSpends, nCoinValue, it->second);
-                        return false;
-                    }
-                }
-                else if (anonSpends >= it->second)
-                    LogPrintf("CheckAnonInputs(): Ignored ALL SPENT: tx %s input %d, does spend last mature anon output of value %d.\n",
-                              GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
-            }
-            else {
-                LogPrintf("CheckAnonInputs(): Error tx %s input %d, no unspent information for anon output %d.\n",
-                          GetHash().ToString().substr(0,10).c_str(), i, nCoinValue);
-                return false;
-            }
         }
 
         nSumValue += nCoinValue;
@@ -2703,20 +2671,15 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     else
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
 
+    // Init anon cache if needed
     if (fStaleAnonCache)
     {
         LogPrintf("ConnectBlock() : Stale anon cache => rebuild.\n");
         if (!pwalletMain->CacheAnonStats(pindex->pprev->nHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     }
-
     if (fDebugRingSig)
         validateAnonCache(pindex->pprev->nHeight);
-
-    // Prepare anon unspent map
-    std::map<int64_t, int> mapAnonUnspents;
-    for(auto const& [value, stat] : mapAnonOutputStats)
-        mapAnonUnspents[value] = stat.nMature - stat.nSpends;
 
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
@@ -2785,16 +2748,12 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                     if (txout.IsAnonOutput())
                         nAnonOut += txout.nValue;
 
-                std::map<int64_t, int> mapAnonSpends;
-                if (!tx.CheckAnonInputs(txdb, nTxAnonIn, fInvalid, true, &mapAnonUnspents, &mapAnonSpends))
+                if (!tx.CheckAnonInputs(txdb, nTxAnonIn, fInvalid, true))
                 {
                     if (fInvalid)
                         return error("ConnectBlock() : CheckAnonInputs found invalid tx %s", tx.GetHash().ToString().substr(0,10).c_str());
                     return false;
                 }
-                // adjust the unspent map with the anon spends of the tx
-                for(auto const& [value, spends] : mapAnonSpends)
-                    mapAnonUnspents[value] -= mapAnonSpends[value];
 
                 nAnonIn += nTxAnonIn;
                 nTxValueIn += nTxAnonIn;

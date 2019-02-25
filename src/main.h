@@ -491,7 +491,7 @@ public:
                      bool fBlock, bool fMiner, MapPrevTx& inputsRet, bool& fInvalid);
 
     bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int iVin, int nRingSize, const std::vector<uint8_t> &vchImage, int64_t &nCoinValue) const;
-    bool CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists, const std::map<int64_t, int>*const mapAnonUnspents = nullptr, std::map<int64_t, int>*const mapAnonSpends = nullptr);
+    bool CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists);
 
     /** Sanity check previous transactions, then, if all checks succeed,
         mark them as spent by this transaction.
