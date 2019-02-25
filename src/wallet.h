@@ -294,7 +294,6 @@ public:
 
     bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
 
-    bool UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat);
     bool UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, bool fEraseTx=true);
     bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
 
