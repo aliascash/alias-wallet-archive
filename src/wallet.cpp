@@ -3528,10 +3528,10 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         if (!ptxdb->WriteAnonOutput(pkCoin, ao))
         {
             LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
-                continue;
-            };
-            // add to anon cache
-            if (tx.IsAnonCoinStake())
+            continue;
+        };
+        // add to anon cache
+        if (tx.IsAnonCoinStake())
             mapAnonBlockStat[txout.nValue].nStakingOutputs++;
         else
             mapAnonBlockStat[txout.nValue].nOutputs++;
@@ -6765,6 +6765,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 static int64_t nMaxCombineOutput = fTestNet ? 30 * COIN : 300 * COIN;
                 int64_t nLastCombineValue = -1, nSkipValue = 0, nDenomination = 0;
                 unsigned int nConsolidations = 0, nCombineTarget = 0;
+                bool fSkipDenomination = false;
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
                 for (const auto & oaoc : lAvailableCoins)
                 {
@@ -6778,6 +6779,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                         vConsolidateCoins.clear();
                         nLastCombineValue = oaoc.nValue;
                         nDenomination = oaoc.nValue;
+                        fSkipDenomination = false;
                         while (nDenomination > 9)
                             nDenomination = nDenomination / 10;
                         switch(nDenomination)
@@ -6786,11 +6788,16 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                             case 5: nCombineTarget = 14; break;
                             default: nCombineTarget = 15; break;
                         }
+                        // skip denomination if not enough unspent mature coins exist
+                        int nUnspent = mapAnonOutputStats[oaoc.nValue].nMature - mapAnonOutputStats[oaoc.nValue].nSpends;
+                        if (MIN_UNSPENT_ANONS_RESERVED + nCombineTarget > nUnspent)
+                            fSkipDenomination = true;
                     }
-                    vConsolidateCoins.push_back(&oaoc);
-                    if (vConsolidateCoins.size() == nCombineTarget + 9)
+                    if (!fSkipDenomination)
+                        vConsolidateCoins.push_back(&oaoc);
+                    if (vConsolidateCoins.size() == nCombineTarget)
                     {
-                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end() - 9);
+                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end());
                         vConsolidateCoins.clear();
                         nConsolidations++;
                         nConsolidationAmount += oaoc.nValue * nCombineTarget;
