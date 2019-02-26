@@ -426,6 +426,16 @@ public:
         nValue = nCoinValue;
     }
 
+    int numOfUnspends()
+    {
+        return nExists - nSpends;
+    }
+
+    int numOfMatureUnspends()
+    {
+        return nMature - nSpends;
+    }
+
 
     int64_t nValue;
     int nExists;

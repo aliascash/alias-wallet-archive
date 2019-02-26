@@ -3971,6 +3971,17 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
 
 bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared, int64_t maxAnonOutput)
 {
+    std::vector<int64_t> vOutAmounts;
+    if (splitAmount(nValue, vOutAmounts, maxAnonOutput) != 0)
+    {
+        LogPrintf("splitAmount() failed.\n");
+        return false;
+    };
+    return CreateAnonOutputs(sxAddress, vOutAmounts, sNarr, vecSend, scriptNarration, mapPubStealth, vecSecShared);
+}
+
+bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>& vOutAmounts, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared)
+{
     if (fDebugRingSig)
         LogPrintf("CreateAnonOutputs()\n");
 
@@ -3980,16 +3991,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     // -- output scripts OP_RETURN ANON_TOKEN pkTo R enarr
     //    Each outputs split from the amount must go to a unique pk, or the key image would be the same
-    //    Only the first output of the group carries the enarr (if present)
-
-
-    std::vector<int64_t> vOutAmounts;
-    if (splitAmount(nValue, vOutAmounts, maxAnonOutput) != 0)
-    {
-        LogPrintf("splitAmount() failed.\n");
-        return false;
-    };
-
+    //    Only the first output of the group carries the enarr (if present)  
     for (uint32_t i = 0; i < vOutAmounts.size(); ++i)
     {
         ec_secret scShared;
@@ -4622,7 +4624,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
             nAvailableMixins = nFilter == MaturityFilter::FOR_STAKING ? anonOutputCount.nMixinsStaking : anonOutputCount.nMixins;
             if (it->nValue <= nMaxAnonOutput)
                 nMaxSpendable = (anonOutputCount.nMature - anonOutputCount.nSpends) -
-                        (nFilter == MaturityFilter::FOR_STAKING ? 1 : MIN_UNSPENT_ANONS_SELECT);
+                        (nFilter == MaturityFilter::FOR_STAKING ? 1 : UNSPENT_ANON_SELECT_MIN);
             else
                 nMaxSpendable = -1;
             if (fDebugRingSig)
@@ -6248,6 +6250,18 @@ bool CWallet::CacheAnonStats(int nBlockHeight)
     };
 
     mapAnonOutputStats.clear();
+    // initialize stats from nMinTxFee to nMaxAnonOutput
+    for (int64_t nValue = nMinTxFee; nValue <= nMaxAnonOutput; nValue *= 10)
+    {
+        mapAnonOutputStats[nValue].nValue = nValue;
+        if (nValue < nMaxAnonOutput)
+        {
+            mapAnonOutputStats[nValue*3].nValue = nValue*3;
+            mapAnonOutputStats[nValue*4].nValue = nValue*4;
+            mapAnonOutputStats[nValue*5].nValue = nValue*5;
+        }
+    }
+
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
         mapAnonOutputStats[it->nValue].set(
@@ -6733,13 +6747,12 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     if (lAvailableCoins.empty())
         return false;
 
-    int64_t nCredit = 0;
+    bool fKernelFound = false;
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
 
         static int nMaxStakeSearchInterval = 60;
-        bool fKernelFound = false;
         for (unsigned int n=0; n<min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound && pindexPrev == pindexBest; n++)
         {
             boost::this_thread::interruption_point();
@@ -6755,55 +6768,72 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
 
                 txNew.nVersion = ANON_TXN_VERSION;
                 txNew.nTime -= n;
-                nCredit += oao.nValue;
 
+                int64_t nCredit = 0;
                 std::vector<const COwnedAnonOutput*> vPickedCoins;
                 vPickedCoins.push_back(&oao);
 
+                // -- Check if stake should be split for balancing unspent ATXOs
+                std::vector<int64_t> vOutAmounts;
+                // find the anon denomination with the least number of unspent outputs
+                CAnonOutputCount* lowestAOC = nullptr;
+                for (auto it = mapAnonOutputStats.rbegin(); it != mapAnonOutputStats.rend(); it++)
+                {
+                    if (it->first < nMinTxFee)
+                        break;
+                    if (it->first >= oao.nValue)
+                        continue;
+                    if (it->second.numOfUnspends() > UNSPENT_ANON_BALANCE_MIN)
+                        continue;
+                    if (lowestAOC == nullptr || lowestAOC->numOfUnspends() > it->second.numOfUnspends())
+                        lowestAOC = &it->second;
+                }
+                if (lowestAOC)
+                {
+                    int64_t nQuotient = oao.nValue / lowestAOC->nValue;
+                    int nTarget = nQuotient > UNSPENT_ANON_BALANCE_MAX_CREATE ? UNSPENT_ANON_BALANCE_MAX_CREATE : nQuotient;
+                    for (int i = 0; i < nTarget; ++i)
+                        vOutAmounts.push_back(lowestAOC->nValue);
+                    nCredit += oao.nValue - (nTarget * lowestAOC->nValue);
+                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create %d additional ATXOs of value %d which has only %d unspents\n",
+                              oao.nValue, nTarget, lowestAOC->nValue, lowestAOC->numOfUnspends());
+                }
+                else
+                    nCredit += oao.nValue;
+
                 // -- Add more anon inputs for consolidation
-                int64_t nConsolidationAmount = 0;
-                static int64_t nMaxCombineOutput = fTestNet ? 30 * COIN : 300 * COIN;
-                int64_t nLastCombineValue = -1, nSkipValue = 0, nDenomination = 0;
-                unsigned int nConsolidations = 0, nCombineTarget = 0;
-                bool fSkipDenomination = false;
+                int64_t nMaxCombineOutput = nMaxAnonStakeOutput / 10;
+                int64_t lastCombineValue = -1;
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
+                int nMaxConsolidation = 0, nNumOfConsolidated = 0;
                 for (const auto & oaoc : lAvailableCoins)
                 {
-                    if (oaoc.nValue > nMaxCombineOutput || nConsolidations == 3)
+                    if (oaoc.nValue > nMaxCombineOutput)
                         break;
                     // skip the input used for staking (TODO could be optimized by considering in combining inputs)
-                    if (&oaoc == &oao || oaoc.nValue < nSkipValue)
+                    if (&oaoc == &oao)
                         continue;
-                    if (nLastCombineValue != oaoc.nValue)
+                    if (lastCombineValue != oaoc.nValue)
                     {
                         vConsolidateCoins.clear();
-                        nLastCombineValue = oaoc.nValue;
-                        nDenomination = oaoc.nValue;
-                        fSkipDenomination = false;
-                        while (nDenomination > 9)
-                            nDenomination = nDenomination / 10;
-                        switch(nDenomination)
-                        {
-                            case 1: nCombineTarget = 17; break;
-                            case 5: nCombineTarget = 14; break;
-                            default: nCombineTarget = 15; break;
-                        }
-                        // skip denomination if not enough unspent mature coins exist
-                        int nUnspent = mapAnonOutputStats[oaoc.nValue].nMature - mapAnonOutputStats[oaoc.nValue].nSpends;
-                        if (MIN_UNSPENT_ANONS_RESERVED + nCombineTarget > nUnspent)
-                            fSkipDenomination = true;
+                        lastCombineValue = oaoc.nValue;
+                        // calculate how many outputs can be consolidated considering the amount of mature unspents
+                        nMaxConsolidation = mapAnonOutputStats[oaoc.nValue].numOfMatureUnspends() - UNSPENT_ANON_BALANCE_MAX;
+                        nNumOfConsolidated = 0;
                     }
-                    if (!fSkipDenomination)
-                        vConsolidateCoins.push_back(&oaoc);
-                    if (vConsolidateCoins.size() == nCombineTarget)
+                    vConsolidateCoins.push_back(&oaoc);
+                    nNumOfConsolidated++;
+                    if (nNumOfConsolidated <= nMaxConsolidation && vConsolidateCoins.size() == 10)
                     {
                         vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end());
                         vConsolidateCoins.clear();
-                        nConsolidations++;
-                        nConsolidationAmount += oaoc.nValue * nCombineTarget;
-                        // skip all anon outputs of same and next decimal power
-                        nSkipValue = (oaoc.nValue / nDenomination) * 100;
+                        nCredit += oaoc.nValue * 10;
+                        LogPrintf("CreateAnonCoinStake : Consolidate 10 additional ATXOs of value %d which has %d mature unspents\n",
+                                  oaoc.nValue, mapAnonOutputStats[oaoc.nValue].numOfMatureUnspends());
                     }
+                    // Consolidate maximal 50 inputs
+                    if (vPickedCoins.size() == 51)
+                        break;
                 }
 
                 // -- Calculate staking reward
@@ -6834,10 +6864,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 std::vector<std::pair<CScript, int64_t> > vecSend;
                 std::vector<ec_secret> vecSecShared;
                 std::string sNarr;
-                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
+                if (nCredit)
+                    splitAmount(nCredit, vOutAmounts, nMaxAnonStakeOutput);
+                if (!CreateAnonOutputs(&sxAddress, vOutAmounts, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
-                if (nConsolidationAmount && !CreateAnonOutputs(&sxAddress, nConsolidationAmount, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
-                    return error("CreateAnonCoinStake : CreateAnonOutputs() for consolidation outputs failed");
 
                 // Sort anon ouputs together with corresponding ec_secret ascending by anon value
                 std::vector<std::pair<CTxOut, ec_secret>> vTxOutSecret;
@@ -6902,7 +6932,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
             break; // if kernel is found stop searching
     }
 
-    if (nCredit == 0)
+    if (!fKernelFound)
         return false;
 
     // Limit size
