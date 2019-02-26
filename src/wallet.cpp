@@ -4627,7 +4627,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
                         (nFilter == MaturityFilter::FOR_STAKING ? 1 : UNSPENT_ANON_SELECT_MIN);
             else
                 nMaxSpendable = -1;
-            if (fDebugRingSig)
+            if (fDebugRingSig && nFilter == MaturityFilter::FOR_SPENDING) // called to often when staking
                 LogPrintf("ListAvailableAnonOutputs anonValue %d, nAvailableMixins %d, nMaxSpendable %d\n", nLastCoinValue, nAvailableMixins, nMaxSpendable);
         }
 
