@@ -232,14 +232,13 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             {
                 int64_t nSumAnon;
                 bool fInvalid;
+
                 if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false))
                 {
                     if (fInvalid)
                         LogPrintf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
-                    fMissingInputs = true;
                     continue;
                 };
-
                 nTotalIn += nSumAnon;
             };
 

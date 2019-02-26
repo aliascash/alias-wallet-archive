@@ -63,7 +63,10 @@ CMedianFilter<int> cPeerBlockCounts(5, 0); // Amount of blocks that other nodes 
 
 std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
+bool fStaleAnonCache = true;
+int nMaxAnonBlockCache = 1000;
 std::map<int64_t, CAnonOutputCount> mapAnonOutputStats; // display only, not 100% accurate, height could become inaccurate due to undos
+std::map<int, std::map<int64_t, CAnonBlockStat>> mapAnonBlockStats;
 
 std::multimap<uint256, CBlockThin*> mapOrphanBlockThinsByPrev;
 
@@ -2025,7 +2028,7 @@ bool IsInitialBlockDownload()
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
-{
+{ 
     if (pindexNew->nChainTrust > nBestInvalidTrust)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
@@ -2045,6 +2048,8 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
       CBigNum(pindexBest->nChainTrust).ToString().c_str(),
       nBestBlockTrust.Get64(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
+
+    pwalletMain->CacheAnonStats(nBestHeight);
 }
 
 
@@ -2080,6 +2085,9 @@ bool CTransaction::DisconnectInputs(CTxDB& txdb)
     {
         BOOST_FOREACH(const CTxIn& txin, vin)
         {
+            if (txin.IsAnonInput())
+                continue;
+
             COutPoint prevout = txin.prevout;
 
             // Get prev txindex from disk
@@ -2236,6 +2244,15 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
                       i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
             return false;
         };
+
+        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
+        if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput &&
+                (ao.nCompromised > 0 || (nCompromisedHeight != 0 && ao.nBlockHeight < nCompromisedHeight)))
+        {
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised (ao.nCompromised:%s, ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
+                      i, ri, ao.nCompromised, ao.nBlockHeight, nCompromisedHeight);
+            return false;
+        }
     };
 
     if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
@@ -2265,7 +2282,6 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
 
     uint256 txnHash = GetHash();
 
-    std::map<int64_t, int> mapNumOfAnonOutputs;
     for (uint32_t i = 0; i < vin.size(); i++)
     {
         const CTxIn &txin = vin[i];
@@ -2322,68 +2338,55 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
             {
                 fInvalid = true; return false;
             };
-
-            nSumValue += nCoinValue;
-            continue;
-        };
-
-        if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        }
+        else
         {
-            LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
-            fInvalid = true; return false;
-        };
-
-
-        CPubKey pkRingCoin;
-        CAnonOutput ao;
-        const unsigned char* pPubkeys = &s[2];
-        const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
-        const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
-        for (int ri = 0; ri < nRingSize; ++ri)
-        {
-            pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
-            if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+            if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
                 fInvalid = true; return false;
             };
 
-            if (nCoinValue == -1)
+
+            CPubKey pkRingCoin;
+            CAnonOutput ao;
+            const unsigned char* pPubkeys = &s[2];
+            const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
+            const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+            for (int ri = 0; ri < nRingSize; ++ri)
             {
-                nCoinValue = ao.nValue;
-            } else
-            if (nCoinValue != ao.nValue)
-            {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
-                fInvalid = true; return false;
+                pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
+                if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                    fInvalid = true; return false;
+                };
+
+                if (nCoinValue == -1)
+                {
+                    nCoinValue = ao.nValue;
+                } else
+                if (nCoinValue != ao.nValue)
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
+                    fInvalid = true; return false;
+                };
+
+                int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
+                if (ao.nBlockHeight == 0
+                    || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%d).\n",
+                              i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
+                    fInvalid = true; return false;
+                };
             };
 
-            int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
-            if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
+            if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
-                          i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
+                LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
                 fInvalid = true; return false;
             };
-        };
-
-        if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
-        {
-            LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
-            fInvalid = true; return false;
-        };
-
-        if (ao.nValue <= nMaxAnonOutput && Params().IsForkV3(nTime))
-        {
-            mapNumOfAnonOutputs[ao.nValue]++;
-            CAnonOutputCount anonOutputCount = mapAnonOutputStats[ao.nValue];
-            int nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_BLOCK;
-            if (mapNumOfAnonOutputs[ao.nValue] > nMaxSpendable) {
-                LogPrintf("CheckAnonInputs(): Error tx %s input %d, not enough unspend anon outputs (%d) of value %d. NumOfUnspend %d\n",
-                          GetHash().ToString().substr(0,10).c_str(), i, mapNumOfAnonOutputs[ao.nValue], ao.nValue, nMaxSpendable);
-                return false;
-            }
         }
 
         nSumValue += nCoinValue;
@@ -2588,7 +2591,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 }
 
 bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
-{
+{    
     // Disconnect in reverse order
     for (int i = vtx.size()-1; i >= 0; i--)
         if (!vtx[i].DisconnectInputs(txdb))
@@ -2608,7 +2611,38 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     BOOST_FOREACH(CTransaction& tx, vtx)
         SyncWithWallets(tx, this, false, false);
 
+    if (!pwalletMain->RemoveAnonStats(txdb, pindex->nHeight))
+        return error("DiconnectBlock() : RemoveAnonStats failed.");
+
     return true;
+}
+
+void static validateAnonCache(int nBlockHeight)
+{
+    // -- validate cache against persisted data
+    std::list<CAnonOutputCount> lOutputCounts;
+    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
+    {
+        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", nBlockHeight);
+    };
+    for (const auto & anonOutputStat : lOutputCounts)
+    {
+        if (mapAnonOutputStats[anonOutputStat.nValue].nExists != anonOutputStat.nExists)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nExists cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nExists, anonOutputStat.nExists);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nSpends != anonOutputStat.nSpends)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nSpends cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nSpends, anonOutputStat.nSpends);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMature != anonOutputStat.nMature)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMature cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMature, anonOutputStat.nMature);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixins != anonOutputStat.nMixins)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixins cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixins, anonOutputStat.nMixins);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking != anonOutputStat.nMixinsStaking)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixinsStaking cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking, anonOutputStat.nMixinsStaking);
+    }
 }
 
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
@@ -2636,6 +2670,16 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         nTxPos = 1;
     else
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
+
+    // Init anon cache if needed
+    if (fStaleAnonCache)
+    {
+        LogPrintf("ConnectBlock() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats(pindex->pprev->nHeight))
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
+    if (fDebugRingSig)
+        validateAnonCache(pindex->pprev->nHeight);
 
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
@@ -2709,7 +2753,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                     if (fInvalid)
                         return error("ConnectBlock() : CheckAnonInputs found invalid tx %s", tx.GetHash().ToString().substr(0,10).c_str());
                     return false;
-                };
+                }
 
                 nAnonIn += nTxAnonIn;
                 nTxValueIn += nTxAnonIn;
@@ -2806,7 +2850,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // Watch for transactions paying to me
     BOOST_FOREACH(CTransaction& tx, vtx)
-        SyncWithWallets(tx, this, true);
+        SyncWithWallets(tx, this, true); // calls ProcessAnonTransaction() which persists anons also in txDB
+
+    // Update anon cache with stats of connected block (added in ProcessAnonTransaction())
+    if (!pwalletMain->UpdateAnonStats(txdb, pindex->nHeight))
+        return error("ConnectBlock() : UpdateAnonStats failed.");
 
     return true;
 }
@@ -3018,6 +3066,13 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+
+    if (fStaleAnonCache)
+    {
+        LogPrintf("SetBestChain() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
 
     uint256 nBestBlockTrust = pindexBest->nHeight != 0 ? (pindexBest->nChainTrust - pindexBest->pprev->nChainTrust) : pindexBest->nChainTrust;
 
@@ -4138,7 +4193,7 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
         if (!txdb.LoadBlockIndex(funcProgress))
             return 1;
 
-        if (!pwalletMain->CacheAnonStats())
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     } else
     {
@@ -4264,7 +4319,7 @@ void PrintBlockTree()
     }
 }
 
-bool LoadExternalBlockFile(int nFile, FILE* fileIn)
+bool LoadExternalBlockFile(int nFile, FILE* fileIn, std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
     {
@@ -4274,7 +4329,7 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
 
     int64_t nStart = GetTimeMillis();
 
-    int nLoaded = 0;
+    uint32_t nLoaded = 0;
 
     {
         try {
@@ -4332,8 +4387,10 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
                         nLoaded++;
                         nPos += 4 + nSize;
 
-                        if (nLoaded % 20000 == 0)
+                        if (nLoaded % 10000 == 0)
                             LogPrintf("Loaded %d blocks and counting.\n", nLoaded);
+                        if (funcProgress)
+                            funcProgress(nLoaded);
                     };
                 };
             };

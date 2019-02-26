@@ -14,6 +14,7 @@
 #include "kernel.h"
 #include "coincontrol.h"
 #include "pbkdf2.h"
+#include <chrono>
 #include <random>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/random/mersenne_twister.hpp>
@@ -835,6 +836,40 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, const uint256& hashIn)
     return true;
 }
 
+static int GetBlockHeightFromHash(const uint256& blockHash)
+{
+    if (blockHash == 0)
+        return 0;
+
+    if (nNodeMode == NT_FULL)
+    {
+        std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(blockHash);
+        if (mi == mapBlockIndex.end())
+            return 0;
+        return mi->second->nHeight;
+    } else
+    {
+        std::map<uint256, CBlockThinIndex*>::iterator mi = mapBlockThinIndex.find(blockHash);
+        if (mi == mapBlockThinIndex.end()
+            && !fThinFullIndex
+            && pindexRear)
+        {
+            CTxDB txdb("r");
+            CDiskBlockThinIndex diskindex;
+            if (txdb.ReadBlockThinIndex(blockHash, diskindex)
+                || diskindex.hashNext != 0)
+            {
+                return diskindex.nHeight;
+            };
+        } else
+        {
+            return mi->second->nHeight;
+        };
+    };
+
+    return 0;
+}
+
 // Add a transaction to the wallet, or update it.
 // pblock is optional, but should be provided if the transaction is known to be in a block.
 // If fUpdate is true, existing transactions will be updated.
@@ -871,7 +906,8 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
             walletdb.TxnBegin();
             txdb.TxnBegin();
             std::vector<WalletTxMap::iterator> vUpdatedTxns;
-            if (!ProcessAnonTransaction(&walletdb, &txdb, tx, blockHash, fIsMine, mapNarr, vUpdatedTxns))
+            std::map<int64_t, CAnonBlockStat> mapAnonBlockStat;
+            if (!ProcessAnonTransaction(&walletdb, &txdb, tx, blockHash, fIsMine, mapNarr, vUpdatedTxns, mapAnonBlockStat))
             {
                 LogPrintf("ProcessAnonTransaction failed %s\n", hash.ToString().c_str());
                 walletdb.TxnAbort();
@@ -881,6 +917,8 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
             {
                 walletdb.TxnCommit();
                 txdb.TxnCommit();
+                int nBlockHeight = GetBlockHeightFromHash(blockHash);
+                AddToAnonBlockStats(mapAnonBlockStat, nBlockHeight);
                 for (std::vector<WalletTxMap::iterator>::iterator it = vUpdatedTxns.begin();
                     it != vUpdatedTxns.end(); ++it)
                     NotifyTransactionChanged(this, (*it)->first, CT_UPDATED);
@@ -916,6 +954,22 @@ bool CWallet::AddToWalletIfInvolvingMe(const CTransaction& tx, const uint256& ha
     }
     return false;
 }
+
+void CWallet::AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, int nBlockHeight)
+{
+    if(!nBlockHeight)
+        return;
+
+    for (const auto & [nValue, newAnonBlockStat] : mapAnonBlockStat)
+    {
+        CAnonBlockStat& anonBlockStat = mapAnonBlockStats[nBlockHeight][nValue];
+        anonBlockStat.nSpends += newAnonBlockStat.nSpends;
+        anonBlockStat.nOutputs += newAnonBlockStat.nOutputs;
+        anonBlockStat.nStakingOutputs += newAnonBlockStat.nStakingOutputs;
+        anonBlockStat.nCompromisedOutputs += newAnonBlockStat.nCompromisedOutputs;
+    }
+}
+
 
 bool CWallet::EraseFromWallet(uint256 hash)
 {
@@ -1624,11 +1678,13 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
         // call progress callback on start
         if (funcProgress) funcProgress(pindex->nHeight, nCurBestHeight, ret);
 
+        CTxDB txdb;
         while (pindex)
         {
             CBlock block;
             block.ReadFromDisk(pindex, true);
             nBestHeight = pindex->nHeight;
+
             BOOST_FOREACH(CTransaction& tx, block.vtx)
             {
                 uint256 hash = tx.GetHash();
@@ -1649,6 +1705,10 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate, s
 
     nBestHeight = nCurBestHeight;
     fReindexing = false;
+
+    // Make sure anon cache reflects restored nBestHeight
+    if (!CacheAnonStats(nBestHeight))
+        LogPrintf("ScanForWalletTransactions() : CacheAnonStats() failed.\n");
 
     return ret;
 }
@@ -2182,7 +2242,7 @@ bool CWallet::SelectCoinsMinConf(int64_t nTargetValue, unsigned int nSpendTime, 
         nValueRet += coinLowestLarger.first;
     }
     else
-	{
+    {
         for (unsigned int i = 0; i < vValue.size(); i++)
             if (vfBest[i])
             {
@@ -3036,40 +3096,6 @@ bool CWallet::FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNar
     return true;
 };
 
-static int GetBlockHeightFromHash(const uint256& blockHash)
-{
-    if (blockHash == 0)
-        return 0;
-
-    if (nNodeMode == NT_FULL)
-    {
-        std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(blockHash);
-        if (mi == mapBlockIndex.end())
-            return 0;
-        return mi->second->nHeight;
-    } else
-    {
-        std::map<uint256, CBlockThinIndex*>::iterator mi = mapBlockThinIndex.find(blockHash);
-        if (mi == mapBlockThinIndex.end()
-            && !fThinFullIndex
-            && pindexRear)
-        {
-            CTxDB txdb("r");
-            CDiskBlockThinIndex diskindex;
-            if (txdb.ReadBlockThinIndex(blockHash, diskindex)
-                || diskindex.hashNext != 0)
-            {
-                return diskindex.nHeight;
-            };
-        } else
-        {
-            return mi->second->nHeight;
-        };
-    };
-
-    return 0;
-}
-
 static int IsAnonCoinCompromised(CTxDB *txdb, CPubKey &pubKey, CAnonOutput &ao, ec_point &vchSpentImage)
 {
     // check if its been compromised (signer known)
@@ -3083,117 +3109,12 @@ static int IsAnonCoinCompromised(CTxDB *txdb, CPubKey &pubKey, CAnonOutput &ao, 
     {
         ao.nCompromised = 1;
         txdb->WriteAnonOutput(pubKey, ao);
-        if(fDebugRingSig)
-            LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
+        fStaleAnonCache = true; // force rebuild of anon cache
+        LogPrintf("Spent key image, mark as compromised: %s\n", pubKey.GetID().ToString());
         return 1;
     }
     return 0;
 }
-
-bool CWallet::UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash)
-{
-    uint256 txnHash = tx.GetHash();
-    if (fDebugRingSig)
-    {
-        LogPrintf("UpdateAnonTransaction() tx: %s\n", txnHash.GetHex().c_str());
-        AssertLockHeld(cs_main);
-        AssertLockHeld(cs_wallet);
-    };
-
-    // -- update txns not received in a block
-
-    int nNewHeight = GetBlockHeightFromHash(blockHash);
-
-    CKeyImageSpent spentKeyImage;
-    for (uint32_t i = 0; i < tx.vin.size(); ++i)
-    {
-        const CTxIn& txin = tx.vin[i];
-
-        if (!txin.IsAnonInput())
-            continue;
-
-        const CScript &s = txin.scriptSig;
-
-        std::vector<uint8_t> vchImage;
-        txin.ExtractKeyImage(vchImage);
-
-        int nRingSize = txin.ExtractRingSize();
-
-        // -- get nCoinValue by reading first ring element
-        CPubKey pkRingCoin;
-        CAnonOutput ao;
-        CTxIndex txindex;
-
-        const uint8_t *pPubkeys;
-        if (nRingSize > 1 && s.size() == 2 + EC_SECRET_SIZE + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize)
-        {
-            pPubkeys = &s[2 + EC_SECRET_SIZE + EC_SECRET_SIZE * nRingSize];
-        } else
-        if (s.size() >= 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
-        {
-            pPubkeys = &s[2];
-        } else
-            return error("%s: Input %d scriptSig too small.", __func__, i);
-
-        pkRingCoin = CPubKey(&pPubkeys[0 * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
-
-        if (!ptxdb->ReadAnonOutput(pkRingCoin, ao))
-        {
-            LogPrintf("UpdateAnonTransaction(): Error input %u AnonOutput %s not found.\n", i, pkRingCoin.GetID().ToString());
-            //LogPrintf("%s, %s\n", pkRingCoin.GetID().ToString(), CBitcoinAddress(pkRingCoin.GetID()).ToString());
-            return false;
-        };
-        int64_t nCoinValue = ao.nValue;
-
-        spentKeyImage.txnHash = txnHash;
-        spentKeyImage.inputNo = i;
-        spentKeyImage.nValue = nCoinValue;
-
-        if (!ptxdb->WriteKeyImage(vchImage, spentKeyImage))
-        {
-            LogPrintf("UpdateAnonTransaction(): Error input %d WriteKeyImage failed %s .\n", i, HexStr(vchImage).c_str());
-            return false;
-        }
-
-    }
-
-    uint32_t nUpdatedDepth = 0;
-    for (uint32_t i = 0; i < tx.vout.size(); ++i)
-    {
-        const CTxOut& txout = tx.vout[i];
-
-        if (!txout.IsAnonOutput())
-            continue;
-
-        const CScript &s = txout.scriptPubKey;
-
-        CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
-        CAnonOutput ao;
-        if (!ptxdb->ReadAnonOutput(pkCoin, ao))
-        {
-            LogPrintf("ReadAnonOutput %d failed.\n", i);
-            return false;
-        };
-
-        ao.nBlockHeight = nNewHeight;
-        ao.fCoinStake = tx.IsCoinStake();
-
-        if (!ptxdb->WriteAnonOutput(pkCoin, ao))
-        {
-            LogPrintf("ReadAnonOutput %d failed.\n", i);
-            return false;
-        };
-
-        mapAnonOutputStats[ao.nValue].updateDepth(nNewHeight, ao.nValue);
-        nUpdatedDepth++;
-    };
-
-    if (nUpdatedDepth)
-        LogPrintf("UpdateAnonTransaction(): updateDepth: %d, num of anon outputs: %d\n", nNewHeight, nUpdatedDepth);
-
-    return true;
-};
-
 
 bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth, bool fEraseTx)
 {
@@ -3316,6 +3237,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID,
         };
 
         mapAnonOutputStats[ao.nValue].decExists(ao.nValue);
+        mapAnonOutputStats[ao.nValue].nStakes -= ao.fCoinStake;
 
         if (!txdb.EraseAnonOutput(pkCoin))
         {
@@ -3330,7 +3252,8 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID,
 
         if (!walletdb.ReadOwnedAnonOutputLink(pkCoin, vchImage))
         {
-            LogPrintf("ReadOwnedAnonOutputLink(): %u failed - output wasn't owned.\n", i);
+            if (fDebugRingSig)
+                LogPrintf("ReadOwnedAnonOutputLink(): %u failed - output wasn't owned.\n", i);
             continue;
         };
 
@@ -3361,7 +3284,7 @@ bool CWallet::UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID,
     return true;
 };
 
-bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
+bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, const std::map<CKeyID, CStealthAddress> * const mapPubStealth)
 {
     uint256 txnHash = tx.GetHash();
 
@@ -3378,6 +3301,8 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
     {
         return error("%s: Skipped - must run in full mode.\n", __func__);
     };
+
+    int nBlockHeight = GetBlockHeightFromHash(blockHash);
 
     bool fHasNonAnonInputs = false;
     bool fHasNonAnonOutputs = false;
@@ -3405,8 +3330,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 && spentKeyImage.inputNo == i)
             {
                 if (fDebugRingSig)
-                    LogPrintf("found matching spent key image - txn has been processed before\n");
-                return UpdateAnonTransaction(ptxdb, tx, blockHash);
+                    LogPrintf("found matching spent key image - txn has been processed before -> reprocess vin[%d].\n", i);
             }
             else {
                 if (TxnHashInSystem(ptxdb, spentKeyImage.txnHash))
@@ -3512,12 +3436,12 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
                 || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
                 return error("%s: Input %u ring coin %u depth < %d.", __func__, i, ri, minBlockHeight);
 
-            if (nRingSize == 1)
+            if (blockHash != 0 && nRingSize == 1)
             {
                 ao.nCompromised = 1;
                 if (!ptxdb->WriteAnonOutput(pkRingCoin, ao))
                     return error("%s: Input %d WriteAnonOutput failed %s.", __func__, i, HexStr(vchImage).c_str());
-                mapAnonOutputStats[ao.nValue].nCompromised++;
+                fStaleAnonCache = true; // force rebuild of anon cache
             }
 
             // -- ring sig validation is done in CTransaction::CheckAnonInputs()
@@ -3526,6 +3450,9 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         spentKeyImage.txnHash = txnHash;
         spentKeyImage.inputNo = i;
         spentKeyImage.nValue  = nCoinValue;
+        spentKeyImage.nBlockHeight = nBlockHeight;
+
+        mapAnonBlockStat[nCoinValue].nSpends++;
 
         if (blockHash != 0)
         {
@@ -3534,8 +3461,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
         } else
             // -- add keyImage to mempool, will be added to txdb in UpdateAnonTransaction
             mempool.insertKeyImage(vchImage, spentKeyImage);
-
-        mapAnonOutputStats[spentKeyImage.nValue].incSpends(spentKeyImage.nValue);
     }
 
     ec_secret sSpendR;
@@ -3556,8 +3481,6 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
     {
         return error("%s: vchEphemPK.resize threw: %s.", __func__, e.what());
     };
-
-    int nBlockHeight = GetBlockHeightFromHash(blockHash);
 
     std::map<CKeyID, std::string> mapOutReceiveAddr;
     bool fNotAllOutputsOwned = false;
@@ -3585,22 +3508,33 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             if (blockHash != 0)
             {
                 if (fDebugRingSig)
-                    LogPrintf("Found existing anon output - assuming txn has been processed before.\n");
-                return UpdateAnonTransaction(ptxdb, tx, blockHash);
+                    LogPrintf("Found existing anon output - assuming txn has been processed before -> reprocess vout[%d].\n", i);
+
+                if (ao.nBlockHeight && ao.nBlockHeight != nBlockHeight)
+                {
+                    LogPrintf("%s: Warning: persisted block height of anon %s does not match current block %s -> ATXO cache must be rebuild.\n", __func__, ao.nBlockHeight, nBlockHeight);
+                    fStaleAnonCache = true; // force rebuild of anon cache
+                }
+                ao.nBlockHeight = nBlockHeight;
+                ao.fCoinStake = tx.IsCoinStake();
             }
             else {
                 return error("%s: Found duplicate anon output.", __func__);
             }
         }
         else {
-            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0, tx.IsCoinStake());
-            if (!ptxdb->WriteAnonOutput(pkCoin, ao))
-            {
-                LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
-                continue;
-            };
-            mapAnonOutputStats[txout.nValue].addCoin(nBlockHeight, txout.nValue, tx.IsCoinStake());
+            ao = CAnonOutput(outpoint, txout.nValue, nBlockHeight, 0, tx.IsCoinStake());         
         }
+        if (!ptxdb->WriteAnonOutput(pkCoin, ao))
+        {
+            LogPrintf("%s: WriteAnonOutput failed.\n", __func__);
+            continue;
+        };
+        // add to anon cache
+        if (tx.IsAnonCoinStake())
+            mapAnonBlockStat[txout.nValue].nStakingOutputs++;
+        else
+            mapAnonBlockStat[txout.nValue].nOutputs++;
 
         memcpy(&vchEphemPK[0], &s[2+EC_COMPRESSED_SIZE+2], EC_COMPRESSED_SIZE);
 
@@ -4037,6 +3971,17 @@ bool CWallet::CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, st
 
 bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared, int64_t maxAnonOutput)
 {
+    std::vector<int64_t> vOutAmounts;
+    if (splitAmount(nValue, vOutAmounts, maxAnonOutput) != 0)
+    {
+        LogPrintf("splitAmount() failed.\n");
+        return false;
+    };
+    return CreateAnonOutputs(sxAddress, vOutAmounts, sNarr, vecSend, scriptNarration, mapPubStealth, vecSecShared);
+}
+
+bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>& vOutAmounts, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress>* const mapPubStealth, std::vector<ec_secret> * const vecSecShared)
+{
     if (fDebugRingSig)
         LogPrintf("CreateAnonOutputs()\n");
 
@@ -4046,16 +3991,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std:
 
     // -- output scripts OP_RETURN ANON_TOKEN pkTo R enarr
     //    Each outputs split from the amount must go to a unique pk, or the key image would be the same
-    //    Only the first output of the group carries the enarr (if present)
-
-
-    std::vector<int64_t> vOutAmounts;
-    if (splitAmount(nValue, vOutAmounts, maxAnonOutput) != 0)
-    {
-        LogPrintf("splitAmount() failed.\n");
-        return false;
-    };
-
+    //    Only the first output of the group carries the enarr (if present)  
     for (uint32_t i = 0; i < vOutAmounts.size(); ++i)
     {
         ec_secret scShared;
@@ -4358,18 +4294,18 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             return 3;
         }
 
-		int64_t nValueTest;
-		if (feeMode == 1) {
-			nValueTest = nValue;
-		}
-		else {
-			nValueTest = nValue + nFee;
+        int64_t nValueTest;
+        if (feeMode == 1) {
+            nValueTest = nValue;
+        }
+        else {
+            nValueTest = nValue + nFee;
 
             int64_t nFeeDiff = nAmountCheck - nValueTest;
-			if (nFeeDiff < 0)
-			{
-				// substract fee
-				nValueTest += nFeeDiff;
+            if (nFeeDiff < 0)
+            {
+                // substract fee
+                nValueTest += nFeeDiff;
                 if (nValueTest <= 0)
                 {
                     sError = "Not enough (mature) coins with requested ring size to cover amount with fees.";
@@ -4378,28 +4314,28 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                     return 3;
                 }
 
-				if (fDebugRingSig)
-					LogPrintf("AmountWithFeeExceedsBalance! simulate exhaustive trx, lower amount by nFeeDiff: %d\n", nFeeDiff);
+                if (fDebugRingSig)
+                    LogPrintf("AmountWithFeeExceedsBalance! simulate exhaustive trx, lower amount by nFeeDiff: %d\n", nFeeDiff);
 
-				if (nExpectChangeOuts != 0) {
-					// -- set nExpectChangeOuts to 0 to simulate exhaustive payment (total+fee=totalAvailableCoins)
-					nExpectChangeOuts = 0;
-					// -- get nTotalBytes again for 0 change outputs
-					uint32_t nTotalBytes = (4 + 4 + 4) // Ctx: nVersion, nTime, nLockTime
-						+ GetSizeOfCompactSize(nOutputs)
-						+ nSizeOutputs
-						+ (GetSizeOfCompactSize(MIN_ANON_OUT_SIZE) + MIN_ANON_OUT_SIZE + sizeof(int64_t)) * vecChange.size()
-						+ GetSizeOfCompactSize((i + 1))
-						+ nByteSizePerInCoin * (i + 1);
+                if (nExpectChangeOuts != 0) {
+                    // -- set nExpectChangeOuts to 0 to simulate exhaustive payment (total+fee=totalAvailableCoins)
+                    nExpectChangeOuts = 0;
+                    // -- get nTotalBytes again for 0 change outputs
+                    uint32_t nTotalBytes = (4 + 4 + 4) // Ctx: nVersion, nTime, nLockTime
+                        + GetSizeOfCompactSize(nOutputs)
+                        + nSizeOutputs
+                        + (GetSizeOfCompactSize(MIN_ANON_OUT_SIZE) + MIN_ANON_OUT_SIZE + sizeof(int64_t)) * vecChange.size()
+                        + GetSizeOfCompactSize((i + 1))
+                        + nByteSizePerInCoin * (i + 1);
 
-					if (fDebugRingSig)
-						LogPrintf("New nTotalBytes: %d\n", nTotalBytes);
-				}
-			}
-		}
+                    if (fDebugRingSig)
+                        LogPrintf("New nTotalBytes: %d\n", nTotalBytes);
+                }
+            }
+        }
 
-		if (fDebugRingSig)
-			LogPrintf("nValue: %d, nFee: %d, nValueTest: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue, nFee, nValueTest, nAmountCheck, nTotalBytes);
+        if (fDebugRingSig)
+            LogPrintf("nValue: %d, nFee: %d, nValueTest: %d, nAmountCheck: %d, nTotalBytes: %u\n", nValue, nFee, nValueTest, nAmountCheck, nTotalBytes);
 
         vPickedCoins.clear();
         vecChange.clear();
@@ -4466,13 +4402,13 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
 
             nFee = nTestFee;
 
-			if (feeMode != 1 && nValue + nFee > nAmountCheck)
-			{
-				sError = "Not enough (mature) coins with requested ring size to cover amount with fees.";
-				if (fDebugRingSig)
-					LogPrintf("Not enough (mature) coins %d with requested ring size to cover amount %d together with fees %d.\n", nAmountCheck, nValue, nFee);
-				return 3;
-			};
+            if (feeMode != 1 && nValue + nFee > nAmountCheck)
+            {
+                sError = "Not enough (mature) coins with requested ring size to cover amount with fees.";
+                if (fDebugRingSig)
+                    LogPrintf("Not enough (mature) coins %d with requested ring size to cover amount %d together with fees %d.\n", nAmountCheck, nValue, nFee);
+                return 3;
+            };
 
 
             return 1; // found
@@ -4514,9 +4450,6 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
 
 int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p)
 {
-    if (fDebug)
-        LogPrintf("PickHidingOutputs() %d, %d\n", nValue, nRingSize);
-
     // TODO: process multiple inputs in 1 db loop?
 
     // -- offset skip is pre filled with the real coin
@@ -4527,6 +4460,11 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
         throw runtime_error("CWallet::PickHidingOutputs() : cannot get leveldb instance");
+
+    int nCompromisedHeight = mapAnonOutputStats[nValue].nCompromisedHeight;
+
+    if (fDebug)
+        LogPrintf("PickHidingOutputs() nValue %d, nRingSize %d, nCompromisedHeight %d\n", nValue, nRingSize, nCompromisedHeight);
 
     leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
 
@@ -4567,13 +4505,14 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
             int minDepth = fStaking || anonOutput.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
             if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
-                && anonOutput.nValue == nValue
-                && anonOutput.nCompromised == 0)
+                    && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight)
+                    && anonOutput.nValue == nValue
+                    && anonOutput.nCompromised == 0)
                 try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
-                {
-                    LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
-                    return 1;
-                }
+            {
+                LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
+                return 1;
+            }
         }
 
         iterator->Next();
@@ -4669,43 +4608,30 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
         return false;
     };
 
-    std::map<int64_t, int> mOutputCounts;
-    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
-        mOutputCounts[it->nValue] = 0;
-
-    if (CountAnonOutputs(mOutputCounts, nFilter) != 0)
-    {
-        sError = "CountAnonOutputs() failed";
-        return false;
-    };
-
-    if (fDebugRingSig)
-    {
-        for (std::map<int64_t, int>::iterator it = mOutputCounts.begin(); it != mOutputCounts.end(); ++it)
-            LogPrintf("mOutputCounts %ld %d\n", it->first, it->second);
-    };
-
     // -- remove coins that don't have enough same value anonoutputs in the system for the ring size
+    // -- remove coins which spending would lead to ALL SPENT
     int nCoinsPerValue = 0;
     int64_t nLastCoinValue = -1;
     int nMaxSpendable = -1;
+    int nAvailableMixins = 0;
     for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
     {
         if (nLastCoinValue != it->nValue)
         {
             nCoinsPerValue = 0;
             nLastCoinValue = it->nValue;
+            CAnonOutputCount anonOutputCount = mapAnonOutputStats[it->nValue];
+            nAvailableMixins = nFilter == MaturityFilter::FOR_STAKING ? anonOutputCount.nMixinsStaking : anonOutputCount.nMixins;
             if (it->nValue <= nMaxAnonOutput)
-            {
-                CAnonOutputCount anonOutputCount = mapAnonOutputStats[it->nValue];
-                nMaxSpendable = anonOutputCount.nExists - anonOutputCount.nSpends - MIN_UNSPENT_ANONS_SELECT;
-            }
+                nMaxSpendable = (anonOutputCount.nMature - anonOutputCount.nSpends) -
+                        (nFilter == MaturityFilter::FOR_STAKING ? 1 : UNSPENT_ANON_SELECT_MIN);
             else
                 nMaxSpendable = -1;
+            if (fDebugRingSig && nFilter == MaturityFilter::FOR_SPENDING) // called to often when staking
+                LogPrintf("ListAvailableAnonOutputs anonValue %d, nAvailableMixins %d, nMaxSpendable %d\n", nLastCoinValue, nAvailableMixins, nMaxSpendable);
         }
 
-        std::map<int64_t, int>::iterator mi = mOutputCounts.find(it->nValue);
-        if (mi == mOutputCounts.end() || mi->second < nRingSize ||
+        if (nAvailableMixins < nRingSize ||
                 (nMaxSpendable != -1 && nCoinsPerValue >= nMaxSpendable) ||
                 nAmountCheck + it->nValue > nMaxAmount)
             // -- not enough coins of same value, unspends or over max amount, drop coin
@@ -5723,9 +5649,13 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
         int minBlockHeight = anonOutput.fCoinStake || nFilter == MaturityFilter::FOR_STAKING ?
                     Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
 
-        if ((nFilter == MaturityFilter::NONE
-           ||(anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minBlockHeight)) // ao confirmed in last block has depth of 1
-          && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true))
+        // Don't count anons which are compromised by ALL SPENT
+        int nCompromisedHeight = mapAnonOutputStats[anonOutput.nValue].nCompromisedHeight;
+
+        if ((nFilter == MaturityFilter::NONE ||
+             (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minBlockHeight)) // ao confirmed in last block has depth of 1
+                && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true)
+                && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
             if (mi != mOutputCounts.end())
@@ -5740,22 +5670,30 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
     return 0;
 };
 
-int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, MaturityFilter nFilter)
+int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight)
 {
-    if (fDebugRingSig)
-        LogPrintf("CountAllAnonOutputs()\n");
+    auto start = std::chrono::high_resolution_clock::now();
+    int64_t nTotalAoRead = 0;
+    int64_t nTotalKiRead = 0;
 
     // TODO: there are few enough possible coin values to preinitialise a vector with all of them
 
     LOCK(cs_main);
     CTxDB txdb("r");
 
+    // initialize mapAnonBlockStats for last nMaxAnonBlockCache blocks
+    mapAnonBlockStats.clear();
+    for (int i = nBlockHeight;i >= 0 && i >= nBlockHeight - nMaxAnonBlockCache;--i)
+        mapAnonBlockStats[i];
+
+    std::map<int64_t, std::vector<int>> mapCompromisedHeights;
+    txdb.ReadCompromisedAnonHeights(mapCompromisedHeights);
+
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
         throw runtime_error("CWallet::CountAnonOutputs() : cannot get leveldb instance");
 
     leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
-
 
     // Seek to start key.
     CPubKey pkZero;
@@ -5765,9 +5703,8 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
     ssStartKey << make_pair(string("ao"), pkZero);
     iterator->Seek(ssStartKey.str());
 
-
     while (iterator->Valid())
-    {
+    {   
         // Unpack keys and values.
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
@@ -5777,51 +5714,82 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
         if (strType != "ao")
             break;
 
+        nTotalAoRead++;
+
         CDataStream ssValue(SER_DISK, CLIENT_VERSION);
         ssValue.write(iterator->value().data(), iterator->value().size());
 
         CAnonOutput ao;
         ssValue >> ao;
 
-        if (strType != "ao")
-            break;
-
-        int nDepth = ao.nBlockHeight > 0 ? nBestHeight - ao.nBlockHeight + 1: 0; // ao confirmed in last block has depth of 1
-
-        // maturity (minDepth) depends on if the output was created in a staking transaction or is used for staking
-        int minBlockHeight = ao.fCoinStake || nFilter == MaturityFilter::FOR_STAKING ?
-                    Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
-
-        int nMature = nDepth >= minBlockHeight;
-        if (nFilter != MaturityFilter::NONE && !nMature)
+        int nCompromisedHeight = 0;
+        if (ao.nBlockHeight)
         {
-            // -- skip
-        } else
-        {
-            // -- insert by nValue asc
-            bool fProcessed = false;
-            for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+            // ao confirmed in blocks after the given nBlockHeight are skipped
+            if (ao.nBlockHeight > nBlockHeight)
             {
-                if (ao.nValue == it->nValue)
-                {
-                    it->nExists++;
-                    it->nCompromised += ao.nCompromised;
-                    it->nMature += nMature;
-                    it->nStakes += ao.fCoinStake;
-                    if (it->nLeastDepth > nDepth)
-                        it->nLeastDepth = nDepth;
-                    fProcessed = true;
-                    break;
-                };
-                if (ao.nValue > it->nValue)
-                    continue;
-                lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
+                iterator->Next();
+                continue;
+            }
+
+            // Check if ao is compromised as mixin by ALL SPENT
+            std::map<int64_t, std::vector<int>>::iterator it = mapCompromisedHeights.find(ao.nValue);
+            if (it != mapCompromisedHeights.end() && it->second.size() > 0)
+                nCompromisedHeight = it->second.front();
+        }
+        bool fCompromised = ao.nCompromised != 0 || (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= ao.nBlockHeight);
+        int nDepth = ao.nBlockHeight > 0 ? nBlockHeight - ao.nBlockHeight + 1: 0; // ao confirmed in last block has depth of 1
+        // maturity for spending (minDepth) depends on if the output was created in a staking transaction
+        int nMature = nDepth >= (ao.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH);
+        // mixins defines if this ao is usable as mixin for spending.
+        int nMixins = nMature && !fCompromised;
+         // mixinsStaking defines if this ao is usable as mixin for staking.
+        int nMixinsStaking = nMixins && nDepth >= Params().GetAnonStakeMinConfirmations();
+
+        int nExists = 0, nUnconfirmed = 0;
+        if  (ao.nBlockHeight)
+            nExists++;
+        else
+            nUnconfirmed++;
+
+        // -- insert by nValue asc
+        bool fProcessed = false;
+        for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+        {
+            if (ao.nValue == it->nValue)
+            {
+                it->nExists += nExists;
+                it->nUnconfirmed += nUnconfirmed;
+                it->nCompromised += ao.nCompromised;
+                it->nMature += nMature;
+                it->nMixins += nMixins;
+                it->nMixinsStaking += nMixinsStaking;
+                it->nStakes += ao.fCoinStake;
+                if (it->nLastHeight < ao.nBlockHeight)
+                    it->nLastHeight = ao.nBlockHeight;
                 fProcessed = true;
                 break;
             };
-            if (!fProcessed)
-                lOutputCounts.push_back(CAnonOutputCount(ao.nValue, 1, 0, 0, nDepth, ao.nCompromised, nMature, ao.fCoinStake));
+            if (ao.nValue > it->nValue)
+                continue;
+            lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+            fProcessed = true;
+            break;
         };
+        if (!fProcessed)
+            lOutputCounts.push_back(CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+
+
+        // add last 1000 anon blocks to mapAnonBlockStats
+        if (ao.nBlockHeight && nBlockHeight - ao.nBlockHeight <= nMaxAnonBlockCache)
+        {
+            CAnonBlockStat& anonBlockStat = mapAnonBlockStats[ao.nBlockHeight][ao.nValue];
+            anonBlockStat.nCompromisedOutputs += ao.nCompromised;
+            if (ao.fCoinStake)
+                anonBlockStat.nStakingOutputs++;
+            else
+                anonBlockStat.nOutputs++;
+        }
 
         iterator->Next();
     };
@@ -5837,7 +5805,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
     iterator->Seek(ssStartKey.str());
 
     while (iterator->Valid())
-    {
+    {   
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
@@ -5846,29 +5814,54 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, Mat
         if (strType != "ki")
             break;
 
+        nTotalKiRead++;
+
         CDataStream ssValue(SER_DISK, CLIENT_VERSION);
         ssValue.write(iterator->value().data(), iterator->value().size());
 
         CKeyImageSpent kis;
         ssValue >> kis;
 
-
-        bool fProcessed = false;
-        for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+        // ki in blocks after the given nBlockHeight are skipped
+        if (kis.nBlockHeight <= nBlockHeight)
         {
-            if (kis.nValue != it->nValue)
-                continue;
-            it->nSpends++;
-            fProcessed = true;
-            break;
-        };
-        if (!fProcessed)
-            LogPrintf("WARNING: CountAllAnonOutputs found keyimage without matching anon output value.\n");
+            bool fProcessed = false;
+            for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+            {
+                if (kis.nValue != it->nValue)
+                    continue;
+                it->nSpends++;
+                fProcessed = true;
+                break;
+            };
+            if (!fProcessed)
+                LogPrintf("WARNING: CountAllAnonOutputs found keyimage without matching anon output value.\n");
+        }
 
         iterator->Next();
     };
 
     delete iterator;
+
+    // set compromised anon block heights
+    for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
+    {
+        std::map<int64_t, std::vector<int>>::iterator itCompromisedHeights = mapCompromisedHeights.find(it->nValue);
+        if (itCompromisedHeights != mapCompromisedHeights.end() && itCompromisedHeights->second.size() > 0)
+        {
+           it->nCompromisedHeight = itCompromisedHeights->second.front();
+//           if (fDebugRingSig)
+//               for (auto i = itCompromisedHeights->second.size(); i-- > 0; )
+//                   LogPrintf("CountAllAnonOutputs() : Compromised anon height value %d: index %d height %d\n",it->nValue, i, itCompromisedHeights->second.at(i));
+        }
+    }
+
+    if (fDebugRingSig)
+    {
+        auto elapsed = std::chrono::high_resolution_clock::now() - start;
+        LogPrintf("CountAllAnonOutputs(%d) - processed %d anons, %d keyImages in %d µs\n", nBlockHeight, nTotalAoRead, nTotalKiRead,
+                  std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count());
+    }
 
     return 0;
 };
@@ -6021,6 +6014,9 @@ uint64_t CWallet::EraseAllAnonData(std::function<void (const char *, const uint3
     else
         txdb.EraseRange(std::string("ki"), nKi);
 
+    LogPrintf("Erasing compromised anon heights.\n");
+    txdb.EraseCompromisedAnonHeights();
+
     uint32_t nLao = 0;
     uint32_t nOao = 0;
     uint32_t nOal = 0;
@@ -6037,29 +6033,242 @@ uint64_t CWallet::EraseAllAnonData(std::function<void (const char *, const uint3
 
     LogPrintf("EraseAllAnonData() Complete, %d %d %d %d %d %d, %15dms\n", nAo, nKi, nLao, nOao, nOal, nOol, GetTimeMillis() - nStart);
 
+    mapAnonOutputStats.clear();
+    mapAnonBlockStats.clear();
+
     return nAo + nKi + nLao + nOao + nOal + nOol;
 };
 
-bool CWallet::CacheAnonStats()
+bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
+{
+    if (fDebug)
+        LogPrintf("UpdateAnonStats(%d)\n", nBlockHeight);
+
+    AssertLockHeld(cs_main);
+
+    // Update anon cache (mapAnonOutputStats) with block stats (mapAnonBlockStats)
+    std::map<int64_t, CAnonBlockStat> & mapAnonBlockStat = mapAnonBlockStats[nBlockHeight];
+    for (const auto & [nValue, anonBlockStat] : mapAnonBlockStat)
+    {
+        CAnonOutputCount& anonOutputCount = mapAnonOutputStats[nValue];
+        uint16_t nNewAnons = anonBlockStat.nOutputs + anonBlockStat.nStakingOutputs;
+        anonOutputCount.nSpends += anonBlockStat.nSpends;
+        anonOutputCount.nExists += nNewAnons;
+        anonOutputCount.nStakes += anonBlockStat.nStakingOutputs;
+        if (nNewAnons > 0 && anonOutputCount.nLastHeight < nBlockHeight)
+            anonOutputCount.nLastHeight = nBlockHeight;
+
+        // Persist compromised anon block height in case all anons of one denomination has been spent
+        if (anonOutputCount.nMature && anonOutputCount.nMature - anonOutputCount.nSpends <= 0)
+        {
+            LogPrintf("%s: ALL SPENT of mature anon denomination %d in block height %d. -> persist compromised height.\n",
+                      __func__, nValue, nBlockHeight);
+            fStaleAnonCache = true;
+            std::map<int64_t, std::vector<int>> mapCompromisedHeights;
+            txdb.ReadCompromisedAnonHeights(mapCompromisedHeights);
+            std::vector<int>& vCompromisedHeights = mapCompromisedHeights[nValue];
+            if (std::find(vCompromisedHeights.begin(), vCompromisedHeights.end(), nBlockHeight) == vCompromisedHeights.end())
+            {
+                // find proper position in descending order
+                std::vector<int>::iterator it = std::lower_bound(vCompromisedHeights.begin(), vCompromisedHeights.end(), nBlockHeight, std::greater<int>());
+                vCompromisedHeights.insert(it, nBlockHeight); // insert before iterator it
+                if (!txdb.WriteCompromisedAnonHeights(mapCompromisedHeights))
+                    return error("%s: WriteCompromisedAnonHeights failed for anon value %s block height %d.", __func__, nValue, nBlockHeight);
+            }
+        }
+    }
+
+    if (fStaleAnonCache)
+        return true;
+
+    // -- Add outputs of new mature block to mapAnonBlockStats
+    int nMatureHeight = nBlockHeight - MIN_ANON_SPEND_DEPTH + 1;
+    if (nMatureHeight > 0 )
+    {
+        auto itBlockStatMature = mapAnonBlockStats.find(nMatureHeight);
+        if (itBlockStatMature == mapAnonBlockStats.end())
+        {
+            LogPrintf("UpdateAnonStats(%d) - Missing stats for block %d => fStaleAnonCache = true\n", nBlockHeight, nMatureHeight);
+            fStaleAnonCache = true;
+            return true;
+        }
+        std::map<int64_t, CAnonBlockStat> mapBlockSpending = itBlockStatMature->second;
+        for (const auto & [nValue, anonBlockStat] : mapBlockSpending)
+        {
+            uint16_t nMixinsUpdate = 0;
+            if (mapAnonOutputStats[nValue].nCompromisedHeight - MIN_ANON_SPEND_DEPTH < nMatureHeight)
+            {
+                nMixinsUpdate = anonBlockStat.nOutputs - anonBlockStat.nCompromisedOutputs;
+                mapAnonOutputStats[nValue].nMixins += nMixinsUpdate;
+            }
+            mapAnonOutputStats[nValue].nMature += anonBlockStat.nOutputs;
+            if (fDebugRingSig)
+                LogPrintf("UpdateAnonStats(%d) : [%d/%d] nMature+%d nMixins+%d\n",
+                          nBlockHeight, nValue, nMatureHeight, anonBlockStat.nOutputs, nMixinsUpdate);
+        }
+    }
+
+    // -- Add outputs of new stake mature block to mapAnonBlockStats
+    int nMatureStakeHeight = nBlockHeight - Params().GetAnonStakeMinConfirmations() + 1;
+    if (nMatureStakeHeight > 0)
+    {
+        auto itBlockStatStaking = mapAnonBlockStats.find(nMatureStakeHeight);
+        if (itBlockStatStaking == mapAnonBlockStats.end())
+        {
+            LogPrintf("UpdateAnonStats(%d) - Missing stats for block %d => fStaleAnonCache = true\n", nBlockHeight, nMatureHeight);
+            fStaleAnonCache = true;
+            return true;
+        }
+        std::map<int64_t, CAnonBlockStat> mapBlockStaking = itBlockStatStaking->second;
+        for (const auto & [nValue, anonBlockStat] : mapBlockStaking)
+        {
+            uint16_t nMixinsUpdate = 0, nMixinsStakingUpdate = 0;
+            if (mapAnonOutputStats[nValue].nCompromisedHeight - MIN_ANON_SPEND_DEPTH < nMatureStakeHeight)
+            {
+                nMixinsUpdate = anonBlockStat.nStakingOutputs;
+                nMixinsStakingUpdate = anonBlockStat.nStakingOutputs + anonBlockStat.nOutputs - anonBlockStat.nCompromisedOutputs;
+                mapAnonOutputStats[nValue].nMixins += nMixinsUpdate;
+                mapAnonOutputStats[nValue].nMixinsStaking += nMixinsStakingUpdate;
+            }
+            mapAnonOutputStats[nValue].nMature += anonBlockStat.nStakingOutputs;
+            if (fDebugRingSig)
+                LogPrintf("UpdateAnonStats(%d) : [%d/%d] nMature+%d nMixins+%d nMixinsStaking+%d\n",
+                          nBlockHeight, nValue, nMatureStakeHeight, anonBlockStat.nStakingOutputs, nMixinsUpdate, nMixinsStakingUpdate);
+        }
+    }
+
+    if (mapAnonBlockStats.size() > nMaxAnonBlockCache)
+    {
+        auto eraseIter = mapAnonBlockStats.begin();
+        std::advance(eraseIter, mapAnonBlockStats.size() - nMaxAnonBlockCache);
+        mapAnonBlockStats.erase(mapAnonBlockStats.begin(), eraseIter);
+    }
+
+    return true;
+}
+
+bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
 {
     if (fDebugRingSig)
-        LogPrintf("CacheAnonStats()\n");
+        LogPrintf("RemoveAnonStats(%d)\n", nBlockHeight);
 
-    mapAnonOutputStats.clear();
+    AssertLockHeld(cs_main);
+
+    // check if compromised height (ALL SPENT) must be removed
+    for (const auto & [nValue, anonOutputStat] : mapAnonOutputStats)
+    {
+        if (anonOutputStat.nCompromisedHeight >= nBlockHeight)
+        {
+            std::map<int64_t, std::vector<int>> mapCompromisedHeights;
+            if (!txdb.ReadCompromisedAnonHeights(mapCompromisedHeights))
+                return error("%s: ReadCompromisedAnonHeights failed on remove of block %d.", __func__, nBlockHeight);
+            std::vector<int>& vCompromisedHeights = mapCompromisedHeights[nValue];
+            vCompromisedHeights.erase(std::remove(vCompromisedHeights.begin(), vCompromisedHeights.end(), anonOutputStat.nCompromisedHeight), vCompromisedHeights.end());
+            if (!txdb.WriteCompromisedAnonHeights(mapCompromisedHeights))
+                return error("%s: WriteCompromisedAnonHeights failed on remove of block %d.", __func__, nBlockHeight);
+            LogPrintf("RemoveAnonStats(%d) : Removed compromised block height %d for value %d\n", nBlockHeight, anonOutputStat.nCompromisedHeight, nValue);
+            fStaleAnonCache = true; // force rebuild of anon cache
+        }
+    }
+
+    if (fStaleAnonCache)
+        return true;
+
+    // -- Remove outputs of last mature block from mapAnonBlockStats
+    int nMatureHeight = nBlockHeight - MIN_ANON_SPEND_DEPTH + 1;
+    if (nMatureHeight > 0 )
+    {
+        auto itBlockStatMature = mapAnonBlockStats.find(nMatureHeight);
+        if (itBlockStatMature == mapAnonBlockStats.end())
+        {
+            LogPrintf("RemoveAnonStats(%d) - Missing stats for block %d => fStaleAnonCache = true\n", nBlockHeight, nMatureHeight);
+            fStaleAnonCache = true;
+            return true;
+        }
+        std::map<int64_t, CAnonBlockStat> mapBlockSpending = itBlockStatMature->second;
+        for (const auto & [nValue, anonBlockStat] : mapBlockSpending)
+        {
+            uint16_t nMixinsUpdate = 0;
+            if (mapAnonOutputStats[nValue].nCompromisedHeight - MIN_ANON_SPEND_DEPTH < nMatureHeight)
+            {
+                nMixinsUpdate = anonBlockStat.nOutputs - anonBlockStat.nCompromisedOutputs;
+                mapAnonOutputStats[nValue].nMixins -= nMixinsUpdate;
+            }
+            mapAnonOutputStats[nValue].nMature -= anonBlockStat.nOutputs;
+            if (fDebugRingSig)
+                LogPrintf("RemoveAnonStats(%d) : [%d/%d] nMature-%d nMixins-%d\n",
+                          nBlockHeight, nValue, nMatureHeight, anonBlockStat.nOutputs, nMixinsUpdate);
+        }
+    }
+
+    // -- Remove outputs of last stake mature block from mapAnonBlockStats
+    int nMatureStakeHeight = nBlockHeight - Params().GetAnonStakeMinConfirmations() + 1;
+    if (nMatureStakeHeight > 0)
+    {
+        auto itBlockStatStaking = mapAnonBlockStats.find(nMatureStakeHeight);
+        if (itBlockStatStaking == mapAnonBlockStats.end())
+        {
+            LogPrintf("RemoveAnonStats(%d) - Missing stats for block %d => fStaleAnonCache = true\n", nBlockHeight, nMatureHeight);
+            fStaleAnonCache = true;
+            return true;
+        }
+        std::map<int64_t, CAnonBlockStat> mapBlockStaking = itBlockStatStaking->second;
+        for (const auto & [nValue, anonBlockStat] : mapBlockStaking)
+        {
+            uint16_t nMixinsUpdate = 0, nMixinsStakingUpdate = 0;
+            if (mapAnonOutputStats[nValue].nCompromisedHeight - MIN_ANON_SPEND_DEPTH < nMatureStakeHeight)
+            {
+                nMixinsUpdate = anonBlockStat.nStakingOutputs;
+                nMixinsStakingUpdate = anonBlockStat.nStakingOutputs + anonBlockStat.nOutputs - anonBlockStat.nCompromisedOutputs;
+                mapAnonOutputStats[nValue].nMixins -= nMixinsUpdate;
+                mapAnonOutputStats[nValue].nMixinsStaking -= nMixinsStakingUpdate;
+            }
+            mapAnonOutputStats[nValue].nMature -= anonBlockStat.nStakingOutputs;
+            if (fDebugRingSig)
+                LogPrintf("RemoveAnonStats(%d) : [%d/%d] nMature-%d nMixins-%d nMixinsStaking-%d\n",
+                          nBlockHeight, nValue, nMatureStakeHeight, anonBlockStat.nStakingOutputs, nMixinsUpdate, nMixinsStakingUpdate);
+        }
+    }
+
+    mapAnonBlockStats.erase(nBlockHeight);
+
+    return true;
+}
+
+bool CWallet::CacheAnonStats(int nBlockHeight)
+{
+    if (fDebugRingSig)
+        LogPrintf("CacheAnonStats(%d)\n", nBlockHeight);
+
+    AssertLockHeld(cs_main);
 
     std::list<CAnonOutputCount> lOutputCounts;
-    if (CountAllAnonOutputs(lOutputCounts, MaturityFilter::NONE) != 0)
+    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
     {
         LogPrintf("Error: CountAllAnonOutputs() failed.\n");
         return false;
     };
 
+    mapAnonOutputStats.clear();
+    // initialize stats from nMinTxFee to nMaxAnonOutput
+    for (int64_t nValue = nMinTxFee; nValue <= nMaxAnonOutput; nValue *= 10)
+    {
+        mapAnonOutputStats[nValue].nValue = nValue;
+        if (nValue < nMaxAnonOutput)
+        {
+            mapAnonOutputStats[nValue*3].nValue = nValue*3;
+            mapAnonOutputStats[nValue*4].nValue = nValue*4;
+            mapAnonOutputStats[nValue*5].nValue = nValue*5;
+        }
+    }
+
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
         mapAnonOutputStats[it->nValue].set(
-            it->nValue, it->nExists, it->nSpends, it->nOwned,
-            it->nLeastDepth < 1 ? 0 : nBestHeight - it->nLeastDepth, it->nCompromised, it->nMature, it->nStakes); // mapAnonOutputStats stores height in chain instead of depth
+            it->nValue, it->nExists, it->nUnconfirmed, it->nSpends, it->nOwned,
+            it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight, it->nCompromised, it->nMature, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
     };
+    fStaleAnonCache = false;
 
     return true;
 };
@@ -6538,13 +6747,12 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     if (lAvailableCoins.empty())
         return false;
 
-    int64_t nCredit = 0;
+    bool fKernelFound = false;
     for (const auto & oao : lAvailableCoins)
     {
         boost::this_thread::interruption_point();
 
         static int nMaxStakeSearchInterval = 60;
-        bool fKernelFound = false;
         for (unsigned int n=0; n<min(nSearchInterval,(int64_t)nMaxStakeSearchInterval) && !fKernelFound && pindexPrev == pindexBest; n++)
         {
             boost::this_thread::interruption_point();
@@ -6560,48 +6768,72 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
 
                 txNew.nVersion = ANON_TXN_VERSION;
                 txNew.nTime -= n;
-                nCredit += oao.nValue;
 
+                int64_t nCredit = 0;
                 std::vector<const COwnedAnonOutput*> vPickedCoins;
                 vPickedCoins.push_back(&oao);
 
+                // -- Check if stake should be split for balancing unspent ATXOs
+                std::vector<int64_t> vOutAmounts;
+                // find the anon denomination with the least number of unspent outputs
+                CAnonOutputCount* lowestAOC = nullptr;
+                for (auto it = mapAnonOutputStats.rbegin(); it != mapAnonOutputStats.rend(); it++)
+                {
+                    if (it->first < nMinTxFee)
+                        break;
+                    if (it->first >= oao.nValue)
+                        continue;
+                    if (it->second.numOfUnspends() > UNSPENT_ANON_BALANCE_MIN)
+                        continue;
+                    if (lowestAOC == nullptr || lowestAOC->numOfUnspends() > it->second.numOfUnspends())
+                        lowestAOC = &it->second;
+                }
+                if (lowestAOC)
+                {
+                    int64_t nQuotient = oao.nValue / lowestAOC->nValue;
+                    int nTarget = nQuotient > UNSPENT_ANON_BALANCE_MAX_CREATE ? UNSPENT_ANON_BALANCE_MAX_CREATE : nQuotient;
+                    for (int i = 0; i < nTarget; ++i)
+                        vOutAmounts.push_back(lowestAOC->nValue);
+                    nCredit += oao.nValue - (nTarget * lowestAOC->nValue);
+                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create %d additional ATXOs of value %d which has only %d unspents\n",
+                              oao.nValue, nTarget, lowestAOC->nValue, lowestAOC->numOfUnspends());
+                }
+                else
+                    nCredit += oao.nValue;
+
                 // -- Add more anon inputs for consolidation
-                int64_t nConsolidationAmount = 0;
-                static int64_t nMaxCombineOutput = fTestNet ? 30 * COIN : 300 * COIN;
-                int64_t nLastCombineValue = -1, nSkipValue = 0, nDenomination = 0;
-                unsigned int nConsolidations = 0, nCombineTarget = 0;
+                int64_t nMaxCombineOutput = nMaxAnonStakeOutput / 10;
+                int64_t lastCombineValue = -1;
                 std::vector<const COwnedAnonOutput*> vConsolidateCoins;
+                int nMaxConsolidation = 0, nNumOfConsolidated = 0;
                 for (const auto & oaoc : lAvailableCoins)
                 {
-                    if (oaoc.nValue > nMaxCombineOutput || nConsolidations == 3)
+                    if (oaoc.nValue > nMaxCombineOutput)
                         break;
                     // skip the input used for staking (TODO could be optimized by considering in combining inputs)
-                    if (&oaoc == &oao || oaoc.nValue < nSkipValue)
+                    if (&oaoc == &oao)
                         continue;
-                    if (nLastCombineValue != oaoc.nValue)
+                    if (lastCombineValue != oaoc.nValue)
                     {
                         vConsolidateCoins.clear();
-                        nLastCombineValue = oaoc.nValue;
-                        nDenomination = oaoc.nValue;
-                        while (nDenomination > 9)
-                            nDenomination = nDenomination / 10;
-                        switch(nDenomination)
-                        {
-                            case 1: nCombineTarget = 17; break;
-                            case 5: nCombineTarget = 14; break;
-                            default: nCombineTarget = 15; break;
-                        }
+                        lastCombineValue = oaoc.nValue;
+                        // calculate how many outputs can be consolidated considering the amount of mature unspents
+                        nMaxConsolidation = mapAnonOutputStats[oaoc.nValue].numOfMatureUnspends() - UNSPENT_ANON_BALANCE_MAX;
+                        nNumOfConsolidated = 0;
                     }
                     vConsolidateCoins.push_back(&oaoc);
-                    if (vConsolidateCoins.size() == nCombineTarget + 9)
+                    nNumOfConsolidated++;
+                    if (nNumOfConsolidated <= nMaxConsolidation && vConsolidateCoins.size() == 10)
                     {
-                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end() - 9);
+                        vPickedCoins.insert(vPickedCoins.end(), vConsolidateCoins.begin(), vConsolidateCoins.end());
                         vConsolidateCoins.clear();
-                        nConsolidations++;
-                        nConsolidationAmount += oaoc.nValue * nCombineTarget;
-                        // skip all anon outputs of same and next decimal power
-                        nSkipValue = (oaoc.nValue / nDenomination) * 100;
+                        nCredit += oaoc.nValue * 10;
+                        LogPrintf("CreateAnonCoinStake : Consolidate 10 additional ATXOs of value %d which has %d mature unspents\n",
+                                  oaoc.nValue, mapAnonOutputStats[oaoc.nValue].numOfMatureUnspends());
                     }
+                    // Consolidate maximal 50 inputs
+                    if (vPickedCoins.size() == 51)
+                        break;
                 }
 
                 // -- Calculate staking reward
@@ -6630,13 +6862,12 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 // -- create anon output
                 CScript scriptNarration; // needed to match output id of narr
                 std::vector<std::pair<CScript, int64_t> > vecSend;
-                std::vector<std::pair<CScript, int64_t> > vecChange;
                 std::vector<ec_secret> vecSecShared;
                 std::string sNarr;
-                if (!CreateAnonOutputs(&sxAddress, nCredit, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
+                if (nCredit)
+                    splitAmount(nCredit, vOutAmounts, nMaxAnonStakeOutput);
+                if (!CreateAnonOutputs(&sxAddress, vOutAmounts, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared))
                     return error("CreateAnonCoinStake : CreateAnonOutputs() failed");
-                if (nConsolidationAmount && !CreateAnonOutputs(&sxAddress, nConsolidationAmount, sNarr, vecSend, scriptNarration, nullptr, &vecSecShared, nMaxAnonStakeOutput))
-                    return error("CreateAnonCoinStake : CreateAnonOutputs() for consolidation outputs failed");
 
                 // Sort anon ouputs together with corresponding ec_secret ascending by anon value
                 std::vector<std::pair<CTxOut, ec_secret>> vTxOutSecret;
@@ -6677,10 +6908,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 {
                     int oaoRingIndex;
                     if (!AddAnonInput(txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
-                        return false;
+                        return error(("CreateAnonCoinStake : " + sError).c_str());
 
                     if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
-                        return false;
+                        return error(("CreateAnonCoinStake : " + sError).c_str());
 
                     iVin++;
                 }
@@ -6701,7 +6932,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
             break; // if kernel is found stop searching
     }
 
-    if (nCredit == 0)
+    if (!fKernelFound)
         return false;
 
     // Limit size
@@ -6736,7 +6967,8 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CSteal
         walletdb.TxnBegin();
         txdb.TxnBegin();
         std::vector<WalletTxMap::iterator> vUpdatedTxns;
-        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns, mapPubStealth))
+        std::map<int64_t, CAnonBlockStat> mapAnonBlockStat;
+        if (!ProcessAnonTransaction(&walletdb, &txdb, wtxNew, wtxNew.hashBlock, fIsMine, mapNarr, vUpdatedTxns, mapAnonBlockStat, mapPubStealth))
         {
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();

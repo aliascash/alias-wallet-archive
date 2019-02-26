@@ -294,14 +294,14 @@ public:
 
     bool FindStealthTransactions(const CTransaction& tx, mapValue_t& mapNarr);
 
-    bool UpdateAnonTransaction(CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash);
     bool UndoAnonTransaction(const CTransaction& tx, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, bool fEraseTx=true);
-    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
+    bool ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTransaction& tx, const uint256& blockHash, bool& fIsMine, mapValue_t& mapNarr, std::vector<WalletTxMap::iterator>& vUpdatedTxns, std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, const std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr);
 
     bool GetAnonChangeAddress(CStealthAddress& sxAddress);
     bool GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAddress& sxAddress);
     bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError);
     bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, std::vector<ec_secret> * const vecSecShared=nullptr, int64_t maxAnonOutput = nMaxAnonOutput);
+    bool CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>& vOutAmounts, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, std::vector<ec_secret> * const vecSecShared=nullptr);
     int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
     int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p);
@@ -323,14 +323,16 @@ public:
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const;
     bool ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount = MAX_MONEY) const;
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFilter nFilter) const;
-    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, MaturityFilter nFilter);
+    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, MaturityFilter nFilter);
     int CountLockedAnonOutputs();
 
     uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
 
-    bool CacheAnonStats();
-
+    bool CacheAnonStats(int nBlockHeight);
+    bool UpdateAnonStats(CTxDB& txdb, int nBlockHeight);
+    bool RemoveAnonStats(CTxDB& txdb, int nBlockHeight);
+    void AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, int nBlockHeight);
 
     bool InitBloomFilter();
 

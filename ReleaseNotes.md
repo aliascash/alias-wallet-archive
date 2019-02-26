@@ -15,25 +15,35 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
-## 3.0.0
-**V3 blockchain fork consensus changes / Fork time is GMT: Thursday, 28. March 2019 22:00:00 (1553810400 unix epoch time)**
+## 3.0.3
+**V3 blockchain fork consensus changes / Fork time is GMT: Friday, 24. May 2019 21:00:00 (1558731600 unix epoch time)**
 - Minimum ring size increased from 1 to 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
-- Support for SPECTRE staking (aka Stealth Staking)
+- Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
   - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
+  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 5 new ATXO of that denomination
 
 Immediate changes:
 - Change max anon output from 10'000 to 1'000
 - Increase default block size created from 250K to 999K
+- ATXOs compromised by an All Spent situation are no longer considered as mixins for new transactions
+- Increase levelDB version to 70512 to force reindex:
+  - new attribute fCoinStake in CAnonOutput
+  - new attribute nBlockHeight in CKeyImageSpent
+  - new compromisedanonheights map for detected All Spent
+- Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
-- RPC: ...
+- RPC: method anoninfo shows new stats per denomination:
+  - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
+  - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
+  - Compromised Height: the last block height an All Spent situation occured
 
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual
