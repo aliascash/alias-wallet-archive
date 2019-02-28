@@ -6779,7 +6779,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 CAnonOutputCount* lowestAOC = nullptr;
                 for (auto it = mapAnonOutputStats.rbegin(); it != mapAnonOutputStats.rend(); it++)
                 {
-                    if (it->first < nMinTxFee)
+                    if (it->first < nMinTxFee * 10)
                         break;
                     if (it->first >= oao.nValue)
                         continue;
