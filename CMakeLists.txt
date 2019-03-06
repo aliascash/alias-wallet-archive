@@ -120,9 +120,15 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
-# LevelDB https://github.com/google/leveldb must be built and installed.
-# If non default path, leveldb_DIR must point to .../usr/local/lib/cmake/leveldb
-add_subdirectory(leveldb_upstream)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb_upstream/)
+
+# ============================================================================================
+#message(STATUS "=== List of all variables ==================================================")
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach ()
 
 # ============================================================================================
 message(STATUS "=== Git helper =============================================================")
