@@ -138,5 +138,12 @@ include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
 # ============================================================================================
+message(STATUS "=== db4.8... ===================================================")
+# The following flag is needed so that the inclusion
+# of db_cxx.h into C++ files works; it leads to
+# HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+add_definitions(-DHAVE_CXX_STDHEADERS)
+
+# ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
 add_subdirectory(src)
