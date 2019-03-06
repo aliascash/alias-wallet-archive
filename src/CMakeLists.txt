@@ -333,7 +333,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.h
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.h
         ${CMAKE_CURRENT_LIST_DIR}/wallet.h
-        ${CMAKE_CURRENT_LIST_DIR}/../leveldb_upstream/helpers/memenv/memenv.h
 
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/addrman.cpp
@@ -384,7 +383,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.cpp
         ${CMAKE_CURRENT_LIST_DIR}/wallet.cpp
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../leveldb_upstream/helpers/memenv/memenv.cc
         )
 
 add_subdirectory(json)
