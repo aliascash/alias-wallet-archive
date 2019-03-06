@@ -2,9 +2,11 @@ add_executable(Spectrecoin ../spectre.qrc main.cpp)
 
 target_include_directories(Spectrecoin SYSTEM BEFORE
         PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/build/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers>
         )
 
