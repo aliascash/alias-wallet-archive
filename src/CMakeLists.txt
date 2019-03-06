@@ -1,27 +1,5 @@
 add_executable(Spectrecoin ../spectre.qrc main.cpp)
 
-# ===== Handle memenv as library =============================================
-#add_library(memenv "")
-#
-#target_link_libraries(memenv
-#        leveldb)
-#
-#target_include_directories(memenv SYSTEM BEFORE
-#        PUBLIC
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/port
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/port>
-#        )
-#
-#target_sources(memenv
-#        PUBLIC
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers/memenv/memenv.h
-#        PRIVATE
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers/memenv/memenv.cc
-#        )
-
 target_include_directories(Spectrecoin SYSTEM BEFORE
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix>
