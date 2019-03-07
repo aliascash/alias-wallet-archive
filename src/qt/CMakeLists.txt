@@ -14,8 +14,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/editaddressdialog.h
         ${CMAKE_CURRENT_LIST_DIR}/guiconstants.h
         ${CMAKE_CURRENT_LIST_DIR}/guiutil.h
-        ${CMAKE_CURRENT_LIST_DIR}/macdockiconhandler.h
-        ${CMAKE_CURRENT_LIST_DIR}/macnotificationhandler.h
         ${CMAKE_CURRENT_LIST_DIR}/monitoreddatamapper.h
         ${CMAKE_CURRENT_LIST_DIR}/notificator.h
         ${CMAKE_CURRENT_LIST_DIR}/optionsmodel.h
@@ -65,3 +63,11 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/transactiontablemodel.cpp
         ${CMAKE_CURRENT_LIST_DIR}/walletmodel.cpp
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_sources(Spectrecoin
+            PUBLIC
+            ${CMAKE_CURRENT_LIST_DIR}/macdockiconhandler.h
+            ${CMAKE_CURRENT_LIST_DIR}/macnotificationhandler.h
+            )
+endif()
