@@ -21,13 +21,16 @@ else()
 #            PRIVATE
 #            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_vxworks>
 #            )
-    target_sources(Spectrecoin
-            PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_config.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_cxx.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db.h
-            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_int.h
-            )
+#    target_sources(Spectrecoin
+#            PUBLIC
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_config.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_cxx.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_int.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc/rep.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc/repmgr.h
+#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc_auto/repmgr_ext.h
+#            )
 
     # db4.8 C stuff
     target_sources(Spectrecoin
