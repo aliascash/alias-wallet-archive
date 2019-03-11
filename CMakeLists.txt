@@ -123,6 +123,14 @@ message(STATUS "=== LevelDB ====================================================
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb_upstream/)
 
 # ============================================================================================
+message(STATUS "=== DB4.8 ==================================================================")
+# The following flag is needed so that the inclusion
+# of db_cxx.h into C++ files works; it leads to
+# HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+add_definitions(-DHAVE_CXX_STDHEADERS)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db4.8/)
+
+# ============================================================================================
 #message(STATUS "=== List of all variables ==================================================")
 #get_cmake_property(_variableNames VARIABLES)
 #list (SORT _variableNames)
@@ -136,13 +144,6 @@ message(STATUS "=== Git helper =================================================
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
-
-# ============================================================================================
-message(STATUS "=== db4.8... ===================================================")
-# The following flag is needed so that the inclusion
-# of db_cxx.h into C++ files works; it leads to
-# HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-add_definitions(-DHAVE_CXX_STDHEADERS)
 
 # ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
