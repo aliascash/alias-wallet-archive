@@ -140,8 +140,6 @@ progress::-webkit-progress-value{border-radius:50px;box-spectre:inset 0 1px 1px 
 .footable-row-detail-value{display:table-cell}
 .footable-odd{background-color:#f7f7f7}
 .table>tbody>tr>td,.table>tbody>tr>th,.table>tfoot>tr>td,.table>tfoot>tr>th,.table>thead>tr>td,.table>thead>tr>th{padding:18px}
-#balances tr td:nth-child(2) {padding-right:10px}
-#balances tr td:nth-child(3) {padding-left:0;}
 @media (max-width:700px){.padding-right-forms{margin-right:0}
 .hide-this-icon{display:none}
 }

@@ -232,14 +232,13 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             {
                 int64_t nSumAnon;
                 bool fInvalid;
+
                 if (!tx.CheckAnonInputs(txdb, nSumAnon, fInvalid, false))
                 {
                     if (fInvalid)
                         LogPrintf("CreateNewBlock() : CheckAnonInputs found invalid tx %s\n", tx.GetHash().ToString().substr(0,10).c_str());
-                    fMissingInputs = true;
                     continue;
                 };
-
                 nTotalIn += nSumAnon;
             };
 
@@ -545,7 +544,8 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         return error("CheckStake() : proof-of-stake checking failed");
 
     //// debug print
-    LogPrintf("CheckStake() : new proof-of-stake block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
+    LogPrintf("CheckStake() : new %s block found  \n  hash: %s \nproofhash: %s  \ntarget: %s\n",
+              pblock->IsProofOfAnonStake() ? "proof-of-anon-stake" : "proof-of-stake", hashBlock.GetHex().c_str(), proofHash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
 
     int64_t vout = pblock->vtx[1].GetValueOut();

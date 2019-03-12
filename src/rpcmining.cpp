@@ -75,9 +75,9 @@ Value getstakesubsidy(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
     }
 
-    uint64_t nCoinAge;
+    uint64_t nCoinAge = 0;
     CTxDB txdb("r");
-    if (!tx.GetCoinAge(txdb, pindexBest, nCoinAge))
+    if (!Params().IsProtocolV3(pindexBest->nHeight) && !tx.GetCoinAge(txdb, pindexBest, nCoinAge))
         throw JSONRPCError(RPC_MISC_ERROR, "GetCoinAge failed");
 
     return (uint64_t)Params().GetProofOfStakeReward(pindexBest, nCoinAge, 0);
@@ -90,7 +90,7 @@ Value getmininginfo(const Array& params, bool fHelp)
             "getmininginfo\n"
             "Returns an object containing mining-related information.");
 
-    uint64_t nWeight = pwalletMain->GetStakeWeight();
+    uint64_t nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
 
     Object obj, diff, weight;
     obj.push_back(Pair("blocks",                (int)nBestHeight));
@@ -132,7 +132,7 @@ Value getstakinginfo(const Array& params, bool fHelp)
             "getstakinginfo\n"
             "Returns an object containing staking-related information.");
 
-    uint64_t nWeight = pwalletMain->GetStakeWeight();
+    uint64_t nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
 
     uint64_t nNetworkWeight = GetPoSKernelPS();
     bool staking = nLastCoinStakeSearchInterval && nWeight;

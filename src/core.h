@@ -293,12 +293,14 @@ public:
     uint256 txnHash;    // hash of spending transaction
     uint32_t inputNo;   // keyimage is for inputNo of txnHash
     int64_t nValue;     // reporting only
+    int nBlockHeight;   // block which included the spent
 
     IMPLEMENT_SERIALIZE
     (
         READWRITE(txnHash);
         READWRITE(inputNo);
         READWRITE(nValue);
+        READWRITE(nBlockHeight);
     )
 };
 
@@ -309,24 +311,27 @@ public:
 
     CAnonOutput() {};
 
-    CAnonOutput(COutPoint& outpoint_, int64_t nValue_, int nBlockHeight_, uint8_t nCompromised_)
+    CAnonOutput(COutPoint& outpoint_, int64_t nValue_, int nBlockHeight_, uint8_t nCompromised_, char fCoinStake_)
     {
         outpoint = outpoint_;
         nValue = nValue_;
         nBlockHeight = nBlockHeight_;
         nCompromised = nCompromised_;
-    };
+        fCoinStake = fCoinStake_;
+    }
 
     COutPoint outpoint;
     int64_t nValue;         // rather store 2 bytes, digit + power 10 ?
     int nBlockHeight;
     uint8_t nCompromised;   // TODO: mark if output can be identified (spent with ringsig 1)
+    char fCoinStake;
     IMPLEMENT_SERIALIZE
     (
         READWRITE(outpoint);
         READWRITE(nValue);
         READWRITE(nBlockHeight);
         READWRITE(nCompromised);
+        READWRITE(fCoinStake);
     )
 };
 
@@ -340,44 +345,61 @@ public:
         nExists = 0;
         nSpends = 0;
         nOwned = 0;
-        nLeastDepth = 0;
+        nLastHeight = 0;
         nCompromised = 0;
+        nStakes = 0;
+        nMature = 0;
+        nMixins = 0;
+        nMixinsStaking = 0;
+        nCompromisedHeight = 0;
     }
 
-    CAnonOutputCount(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_)
+    CAnonOutputCount(int64_t nValue_, int nExists_, int nUnconfirmed_, int nSpends_, int nOwned_, int nLastHeight_, int nCompromised_, int nMature_, int nMixins_, int nMixinsStaking_, int nStakes_, int nCompromisedHeight_)
     {
         nValue = nValue_;
         nExists = nExists_;
         nSpends = nSpends_;
+        nUnconfirmed = nUnconfirmed_;
         nOwned = nOwned_;
-        nLeastDepth = nLeastDepth_;
+        nLastHeight = nLastHeight_;
         nCompromised = nCompromised_;
+        nMature = nMature_;
+        nMixins = nMixins_;
+        nMixinsStaking = nMixinsStaking_;
+        nStakes = nStakes_;
+        nCompromisedHeight = nCompromisedHeight_;
     }
 
-    void set(int64_t nValue_, int nExists_, int nSpends_, int nOwned_, int nLeastDepth_, int nCompromised_)
+    void set(int64_t nValue_, int nExists_, int nUnconfirmed_, int nSpends_, int nOwned_, int nLastHeight_, int nCompromised_, int nMature_, int nMixins_, int nMixinsStaking_, int nStakes_, int nCompromisedHeight_)
     {
         nValue = nValue_;
         nExists = nExists_;
         nSpends = nSpends_;
+        nUnconfirmed = nUnconfirmed_;
         nOwned = nOwned_;
-        nLeastDepth = nLeastDepth_;
+        nLastHeight = nLastHeight_;
         nCompromised = nCompromised_;
+        nMature = nMature_;
+        nMixins = nMixins_;
+        nMixinsStaking = nMixinsStaking_;
+        nStakes = nStakes_;
+        nCompromisedHeight = nCompromisedHeight_;
     }
 
-    void addCoin(int nCoinDepth, int64_t nCoinValue)
+    void addCoin(int nBlockHeight, int64_t nCoinValue, bool fStake)
     {
         nExists++;
         nValue = nCoinValue;
-        if (nCoinDepth < nLeastDepth)
-            nLeastDepth = nCoinDepth;
+        nStakes += fStake;
+        if (nBlockHeight > nLastHeight)
+            nLastHeight = nBlockHeight;
     }
 
-    void updateDepth(int nCoinDepth, int64_t nCoinValue)
+    void updateDepth(int nBlockHeight, int64_t nCoinValue)
     {
         nValue = nCoinValue;
-        if (nLeastDepth == 0
-            || nCoinDepth < nLeastDepth)
-            nLeastDepth = nCoinDepth;
+        if (nBlockHeight > nLastHeight)
+            nLastHeight = nBlockHeight;
     }
 
     void incSpends(int64_t nCoinValue)
@@ -404,14 +426,29 @@ public:
         nValue = nCoinValue;
     }
 
+    int numOfUnspends()
+    {
+        return nExists - nSpends;
+    }
+
+    int numOfMatureUnspends()
+    {
+        return nMature - nSpends;
+    }
+
 
     int64_t nValue;
     int nExists;
+    int nUnconfirmed;
     int nSpends;
     int nOwned; // todo
-    int nLeastDepth;
+    int nLastHeight;
     int nCompromised;
-
+    int nCompromisedHeight;
+    int nMature;
+    int nMixins;
+    int nMixinsStaking;
+    int nStakes;
 };
 
 

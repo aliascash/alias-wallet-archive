@@ -19,7 +19,7 @@ void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& s
 void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const std::string& narration, bool& narrationHandled);
 void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>& destSubs);
 
-QString explorer(fTestNet ? "http://testnet.spectrechain.info/" : "https://chainz.cryptoid.info/xspec/");
+static QString explorer;
 
 QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 {
@@ -46,6 +46,9 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 
 QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 {
+    if (explorer.isEmpty())
+        explorer = fTestNet ? "https://chainz.cryptoid.info/xspec-test/" : "https://chainz.cryptoid.info/xspec/";
+
     QString strHTML;
 
     LOCK2(cs_main, wallet->cs_wallet);
@@ -85,16 +88,21 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         if (nCredit == 0)
         {
             int64_t nUnmatured = 0;
-            BOOST_FOREACH(const CTxOut& txout, wtx.vout)
-                nUnmatured += wallet->GetCredit(txout);
+            BOOST_FOREACH(const CTxOut& txout, wtx.vout)              
+                nUnmatured += txout.IsAnonOutput() ? wallet->GetSpectreCredit(txout) : wallet->GetCredit(txout);
             strHTML += "<b>" + tr("Credit") + ":</b> ";
             if (wtx.IsInMainChain())
-                strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nUnmatured)+ " (" + tr("matures in %n more block(s)", "", wtx.GetBlocksToMaturity()) + ")";
+            {
+                if (wtx.IsAnonCoinStake())
+                    strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nUnmatured);
+                else
+                    strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nUnmatured);
+                strHTML += " (" + tr("matures in %n more block(s)", "", wtx.GetBlocksToMaturity()) + ")";
+            }
             else
                 strHTML += "(" + tr("not accepted") + ")";
             strHTML += "<br>";
         }
-
     }
 
     int64_t allFee;
@@ -118,12 +126,15 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     else if (listReceived.size() > 0)
         netCurrency = std::get<3>(listSent.front());
 
-    if (netCurrency == SPECTRE)
-        strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nNet, true) + "<br>";
-    else
-        strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nNet, true) + "<br>";
+    if (wtx.GetBlocksToMaturity() == 0)
+    {
+        if (netCurrency == SPECTRE)
+            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, nNet, true) + "<br>";
+        else
+            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nNet, true) + "<br>";
+    }
 
-    if (listReceived.size() > 0 && listSent.size() > 0)
+    if (!(wtx.IsCoinBase() || wtx.IsCoinStake()) &&  listReceived.size() > 0 && listSent.size() > 0)
     {
         // Transfer within account
         const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
@@ -133,13 +144,20 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         }
     }
     else {
-        for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
-        {
-            ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
-        }
         for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
         {
              ::toHTML(wallet, wtx, strHTML, false, destination, destSubs, amount, currency, narration, narrationHandled);
+        }
+        for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+        {
+            if (wtx.IsCoinStake())
+            {
+                // only add contributions/donations
+                std::string strAddress = CBitcoinAddress(destination).ToString();
+                if (strAddress != Params().GetDevContributionAddress())
+                    continue;
+            }
+            ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
         }
     }
 
@@ -244,11 +262,12 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled)
 {
     strHTML += "<hr/><dl>";
-    strHTML += "<dt><b>" + TransactionDesc::tr(debit ? "Debit" : " Credit") + ":</b></dt><dd>";
+    strHTML += "<dt><b>" + TransactionDesc::tr(debit ? !wtx.IsCoinStake() ? "Debit" : wtx.GetDepthAndHeightInMainChain().second % 6 == 0 ? "Contributed" : "Donated" :
+                                               wtx.IsCoinBase() ? "Mined" : wtx.IsCoinStake() ? "Staked" : "Credit") + ":</b></dt><dd>";
     if (currency == XSPEC)
-        strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, -amount) + "</dd>";
+        strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, debit ? -amount : amount) + "</dd>";
     else
-        strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, (debit ? -amount : amount)) + "</dd>";
+        strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, debit ? -amount : amount) + "</dd>";
     strHTML += "<dt><b>" + TransactionDesc::tr(debit ? "Sent to": "With") + ":</b></dt><dd>";
 
     toHTML(wallet, strHTML, destination, currency == XSPEC ? destSubs : std::vector<CTxDestination>(), narration, narrationHandled);
@@ -260,7 +279,7 @@ void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& s
 {
     strHTML += "<hr/><dl>";
     if (sCurrency == currency) {
-        strHTML += "<dt><b>" + TransactionDesc::tr((wtx.IsCoinBase() || wtx.IsCoinStake()) ? "Staked" : "Sent to self") + ":</b></dt><dd>";
+        strHTML += "<dt><b>" + TransactionDesc::tr(wtx.IsCoinBase() ? "Mined" : wtx.IsCoinStake() ? "Staked" : "Sent to self") + ":</b></dt><dd>";
         if (currency == SPECTRE)
             strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, amount) + "</dd>";
         else

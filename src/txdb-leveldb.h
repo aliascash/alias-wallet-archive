@@ -248,6 +248,10 @@ public:
     bool ReadAnonOutput(CPubKey& pkCoin, CAnonOutput& ao);
     bool EraseAnonOutput(CPubKey& pkCoin);
 
+    bool WriteCompromisedAnonHeights(std::map<int64_t, std::vector<int>>& mapCompromisedHeights);
+    bool ReadCompromisedAnonHeights(std::map<int64_t, std::vector<int>>& mapCompromisedHeights);
+    bool EraseCompromisedAnonHeights();
+
     bool EraseRange(const std::string &sPrefix, uint32_t &nAffected, std::function<void (const uint32_t&)> funcProgress = nullptr);
 
     bool ReadTxIndex(uint256 hash, CTxIndex& txindex);

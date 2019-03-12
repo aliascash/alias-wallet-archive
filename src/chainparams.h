@@ -65,8 +65,8 @@ public:
     const std::vector<unsigned char>& AlertKey() const { return vAlertPubKey; }
     int GetDefaultPort() const { return nDefaultPort; }
 
-    const bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
-    const bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
+    bool IsProtocolV2(int nHeight) const { return nHeight > nFirstPosv2Block; }
+    bool IsProtocolV3(int nHeight) const { return nHeight > nFirstPosv3Block; }
 
     const CBigNum& ProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum& ProofOfStakeLimit(int nHeight) const { return IsProtocolV2(nHeight) ? bnProofOfStakeLimitV2 : bnProofOfStakeLimit; }
@@ -92,14 +92,19 @@ public:
 
     int64_t GetProofOfWorkReward(int nHeight, int64_t nFees) const;
     int64_t GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64_t nCoinAge, int64_t nFees) const;
+    int64_t GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nFees) const;
 
     const std::string GetDevContributionAddress() const { return devContributionAddress; }
 
-    const bool IsForkV2(unsigned int nTime) const { return nTime > nForkV2Time; }
-    int GetForkId(unsigned int nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
+    bool IsForkV2(int64_t nTime) const { return nTime > nForkV2Time; }
+    bool IsForkV3(int64_t nTime) const { return nTime > nForkV3Time; }
+    int GetForkId(int64_t nTime) const { return (nTime > nForkV2Time) ? 2 : 0; }
 
     const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
+
+    int GetStakeMinConfirmations(int64_t nTime) const { return IsForkV3(nTime) ? nStakeMinConfirmations : nStakeMinConfirmationsLegacy; }
+    int GetAnonStakeMinConfirmations() const { return nStakeMinConfirmations; }
 
 protected:
     CChainParams() {};
@@ -119,6 +124,9 @@ protected:
     CBigNum bnProofOfStakeLimit;
     CBigNum bnProofOfStakeLimitV2;
 
+    int nStakeMinConfirmationsLegacy;
+    int nStakeMinConfirmations;
+
     std::string strDataDir;
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
@@ -126,7 +134,8 @@ protected:
 
     std::string devContributionAddress;
 
-    unsigned int nForkV2Time;
+    int64_t nForkV2Time;
+    int64_t nForkV3Time;
 };
 
 /**

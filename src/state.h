@@ -53,14 +53,14 @@ const int64_t GENESIS_BLOCK_TIME = 1479594600;
 static const int64_t COIN = 100000000;
 static const int64_t CENT = 1000000;
 
-/** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
-static const int64_t MIN_TX_FEE = 10000;
-static const int64_t MIN_TX_FEE_ANON = 1000000;
-/** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
-static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
 static const int64_t COIN_YEAR_REWARD = 5 * CENT; // 5% per year
 
 static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
+
+static const int UNSPENT_ANON_BALANCE_MAX_CREATE = 5;
+static const int UNSPENT_ANON_BALANCE_MIN = 100;
+static const int UNSPENT_ANON_BALANCE_MAX = 200;
+static const int UNSPENT_ANON_SELECT_MIN = 20;
 
 extern int nNodeMode;
 extern int nNodeState;
@@ -113,12 +113,18 @@ extern unsigned int nMinerSleep;
 extern unsigned int nBlockMaxSize;
 extern unsigned int nBlockPrioritySize;
 extern unsigned int nBlockMinSize;
+
+/** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
 extern int64_t nMinTxFee;
+extern int64_t nMinTxFeeAnonLegacy;
+/** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
+extern int64_t nMinRelayTxFee;
 
 extern unsigned int nStakeSplitAge;
-extern int nStakeMinConfirmations;
 extern int64_t nStakeSplitThreshold;
 extern int64_t nStakeCombineThreshold;
+extern int64_t nMaxAnonOutput;
+extern int64_t nMaxAnonStakeOutput;
 
 extern uint32_t nExtKeyLookAhead;
 extern int64_t nTimeLastMblkRecv;

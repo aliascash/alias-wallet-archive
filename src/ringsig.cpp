@@ -64,10 +64,9 @@ int finaliseRingSigs()
 }
 
 
-int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
+int splitAmount(int64_t nValue, std::vector<int64_t>& vOut, int64_t maxAnonOutput)
 {
 	// First make sure no output bigger than maxAnonOutput is created
-	int64_t maxAnonOutput = 10000 * COIN;
 	for (int numOfMaxAnonOutputs = nValue / maxAnonOutput; numOfMaxAnonOutputs > 0; numOfMaxAnonOutputs--) {
 		vOut.push_back(1 * maxAnonOutput);
 	}
@@ -114,7 +113,7 @@ int splitAmount(int64_t nValue, std::vector<int64_t>& vOut)
 }
 
 
-int getOldKeyImage(CPubKey &publicKey, ec_point &keyImage)
+int getOldKeyImage(const CPubKey &publicKey, ec_point &keyImage)
 {
     // - PublicKey * Hash(PublicKey)
     if (publicKey.size() != EC_COMPRESSED_SIZE)
@@ -195,7 +194,7 @@ static int hashToEC(const uint8_t *p, uint32_t len, BIGNUM *bnTmp, EC_POINT *ptR
 }
 
 
-int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
+int generateKeyImage(const ec_point &publicKey, ec_secret secret, ec_point &keyImage)
 {
     // - keyImage = secret * hash(publicKey) * G
 
@@ -247,7 +246,7 @@ int generateKeyImage(ec_point &publicKey, ec_secret secret, ec_point &keyImage)
 }
 
 
-int generateRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, uint8_t *pSigc, uint8_t *pSigr)
+int generateRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, uint8_t *pSigc, uint8_t *pSigr)
 {
     if (fDebugRingSig)
         LogPrintf("%s: Ring size %d.\n", __func__, nRingSize);
@@ -513,7 +512,7 @@ int generateRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize,
     return rv;
 }
 
-int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const uint8_t *pSigc, const uint8_t *pSigr)
+int verifyRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const uint8_t *pSigc, const uint8_t *pSigr)
 {
     int rv = 0;
 
@@ -693,7 +692,7 @@ int verifyRingSignature(data_chunk &keyImage, uint256 &txnHash, int nRingSize, c
 }
 
 
-int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS)
+int generateRingSignatureAB(const data_chunk &keyImage, int nRingSize, int nSecretOffset, ec_secret secret, const uint8_t *pPubkeys, data_chunk &sigC, uint8_t *pSigS)
 {
     // https://bitcointalk.org/index.php?topic=972541.msg10619684
 
@@ -968,7 +967,7 @@ int generateRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSiz
 }
 
 
-int verifyRingSignatureAB(data_chunk &keyImage, uint256 &txnHash, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS)
+int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8_t *pPubkeys, const data_chunk &sigC, const uint8_t *pSigS)
 {
     // https://bitcointalk.org/index.php?topic=972541.msg10619684
 

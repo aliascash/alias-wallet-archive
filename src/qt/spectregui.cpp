@@ -1048,7 +1048,7 @@ void SpectreGUI::updateWeight()
     if (!lockWallet)
         return;
 
-    nWeight = pwalletMain->GetStakeWeight();
+    nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
 }
 
 void SpectreGUI::updateStakingIcon()

@@ -57,14 +57,29 @@ qint64 WalletModel::getUnconfirmedBalance() const
     return wallet->GetUnconfirmedBalance();
 }
 
+qint64 WalletModel::getUnconfirmedSpectreBalance() const
+{
+    return wallet->GetUnconfirmedSpectreBalance();
+}
+
 qint64 WalletModel::getStake() const
 {
     return wallet->GetStake();
 }
 
+qint64 WalletModel::getSpectreStake() const
+{
+    return wallet->GetSpectreStake();
+}
+
 qint64 WalletModel::getImmatureBalance() const
 {
     return wallet->GetImmatureBalance();
+}
+
+qint64 WalletModel::getImmatureSpectreBalance() const
+{
+    return wallet->GetImmatureSpectreBalance();
 }
 
 int WalletModel::getNumTransactions() const
@@ -124,22 +139,31 @@ void WalletModel::checkBalanceChanged(bool force)
     qint64 newBalance = getBalance();
     qint64 newSpectreBal = getSpectreBalance();
     qint64 newStake = getStake();
+    qint64 newSpectreStake = getSpectreStake();
     qint64 newUnconfirmedBalance = getUnconfirmedBalance();
+    qint64 newUnconfirmedSpectreBalance = getUnconfirmedSpectreBalance();
     qint64 newImmatureBalance = getImmatureBalance();
+    qint64 newImmatureSpectreBalance = getImmatureSpectreBalance();
 
     if (cachedBalance != newBalance
-        || cachedSpectreBal != newSpectreBal
-        || cachedStake != newStake
-        || cachedUnconfirmedBalance != newUnconfirmedBalance
-        || cachedImmatureBalance != newImmatureBalance
-        || force == true)
+            || cachedSpectreBal != newSpectreBal
+            || cachedStake != newStake
+            || cachedSpectreStake != newSpectreStake
+            || cachedUnconfirmedBalance != newUnconfirmedBalance
+            || cachedUnconfirmedSpectreBalance != newUnconfirmedSpectreBalance
+            || cachedImmatureBalance != newImmatureBalance
+            || cachedImmatureSpectreBalance != newImmatureSpectreBalance
+            || force == true)
     {
         cachedBalance = newBalance;
         cachedSpectreBal = newSpectreBal;
         cachedStake = newStake;
+        cachedSpectreStake = newSpectreStake;
         cachedUnconfirmedBalance = newUnconfirmedBalance;
+        cachedUnconfirmedSpectreBalance = newUnconfirmedSpectreBalance;
         cachedImmatureBalance = newImmatureBalance;
-        emit balanceChanged(newBalance, newSpectreBal, newStake, newUnconfirmedBalance, newImmatureBalance);
+        cachedImmatureSpectreBalance = newImmatureSpectreBalance;
+        emit balanceChanged(newBalance, newSpectreBal, newStake, newSpectreStake, newUnconfirmedBalance, newUnconfirmedSpectreBalance, newImmatureBalance, cachedImmatureSpectreBalance);
     }
 }
 
@@ -538,7 +562,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             CStealthAddress sxAddrTo;
             std::string sAddr = rcp.address.toStdString();
             if (!sxAddrTo.SetEncoded(sAddr))
-                return SCR_StealthAddressFail;
+                return rcp.txnTypeInd == TXT_ANON_TO_SPEC ? SCR_StealthAddressFailAnonToSpec :
+                    SCR_StealthAddressFail;
 
             int64_t nValue = rcp.amount;
             std::string sNarr = rcp.narration.toStdString();
@@ -611,13 +636,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             std::string sError;
             if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
-                if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
+                if (nFeeRequired != MAX_MONEY && (nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
                     return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired);
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
-                if (!Params().IsProtocolV3(nBestHeight))
-                    sError += "\nTry again after block 783000.";
-
                 return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
         };
@@ -958,8 +980,8 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
     return;
 }
 
-void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance) {
-    emit balanceChanged(balance, spectreBal, stake, unconfirmedBalance, immatureBalance); }
+void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature) {
+    emit balanceChanged(balance, spectreBal, stake, spectreStake, unconfirmed, spectreUnconfirmed, immature, spectreImmature); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
 void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
 void WalletModel::emitRequireUnlock(UnlockMode mode) { emit requireUnlock(mode); }
