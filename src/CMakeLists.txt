@@ -2,31 +2,10 @@ add_executable(Spectrecoin ../spectre.qrc main.cpp)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(win)
-#    target_include_directories(Spectrecoin
-#            PRIVATE
-#            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_windows>
-#            )
-else()
-#    target_include_directories(Spectrecoin
-#            PRIVATE
-#            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_vxworks>
-#            )
-#    target_sources(Spectrecoin
-#            PUBLIC
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_config.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_cxx.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix/db_int.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc/rep.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc/repmgr.h
-#            ${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/dbinc_auto/repmgr_ext.h
-#            )
 endif ()
 
 target_include_directories(Spectrecoin
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../db4.8/build_unix>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/build/include>
@@ -48,8 +27,8 @@ target_link_libraries(Spectrecoin
         Boost::thread
         OpenSSL::SSL
         OpenSSL::Crypto
+        Oracle::BerkeleyDB
         leveldb
-        db4.8
         )
 
 # Configure a header file to pass some of the CMake settings
