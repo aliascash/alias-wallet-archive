@@ -31,12 +31,18 @@ if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif ()
 
-# Include own cmake modules
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
 if (POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif ()
+
+# ============================================================================================
+message(STATUS "=== Helper functions =======================================================")
+# Include own cmake modules
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# Determine current Git hash
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
 # Must use GNUInstallDirs to install libraries into correct
 # locations on all platforms.
@@ -60,17 +66,6 @@ find_package(Boost 1.65.1 REQUIRED COMPONENTS
         thread
         )
 message(STATUS "Boost version: ${Boost_VERSION}")
-
-# ============================================================================================
-message(STATUS "=== Berkeley DB ============================================================")
-#
-# Use BDB local module
-#FIND_PACKAGE(BerkeleyDB)
-#IF(DB_INCLUDE_DIR)
-#    INCLUDE_DIRECTORIES(${DB_INCLUDE_DIR})
-#ELSE(DB_INCLUDE_DIR)
-#    MESSAGE(FATAL_ERROR "Could not locate BerkeleyDB")
-#ENDIF(DB_INCLUDE_DIR)
 
 # ============================================================================================
 message(STATUS "=== Qt =====================================================================")
@@ -123,12 +118,13 @@ message(STATUS "=== LevelDB ====================================================
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb_upstream/)
 
 # ============================================================================================
-message(STATUS "=== DB4.8 ==================================================================")
-# The following flag is needed so that the inclusion
-# of db_cxx.h into C++ files works; it leads to
-# HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-add_definitions(-DHAVE_CXX_STDHEADERS)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db4.8/)
+message(STATUS "=== Berkeley DB ============================================================")
+#set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
+find_package(BerkeleyDB REQUIRED)
+
+# ============================================================================================
+message(STATUS "=== Dive into subdirs... ===================================================")
+add_subdirectory(src)
 
 # ============================================================================================
 #message(STATUS "=== List of all variables ==================================================")
@@ -137,14 +133,3 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db4.8/)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach ()
-
-# ============================================================================================
-message(STATUS "=== Git helper =============================================================")
-# Determine current Git hash
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-include(GetGitRevisionDescription)
-get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
-
-# ============================================================================================
-message(STATUS "=== Dive into subdirs... ===================================================")
-add_subdirectory(src)
