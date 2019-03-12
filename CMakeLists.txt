@@ -115,7 +115,7 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb_upstream/)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 
 # ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")

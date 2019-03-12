@@ -6,10 +6,10 @@ endif ()
 
 target_include_directories(Spectrecoin
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/build/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb_upstream/helpers>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
         )
 
 target_link_libraries(Spectrecoin
