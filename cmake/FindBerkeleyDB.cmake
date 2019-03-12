@@ -16,6 +16,10 @@ else()
     set(_BERKELEYDB_HINTS "")
 endif()
 
+if(NOT "$ENV{BerkeleyDB_ROOT_DIR}" STREQUAL "")
+    set(BerkeleyDB_ROOT_DIR "$ENV{BerkeleyDB_ROOT_DIR}")
+endif()
+
 # Allow user to pass a path instead of guessing
 if(BerkeleyDB_ROOT_DIR)
     set(_BERKELEYDB_PATHS "${BerkeleyDB_ROOT_DIR}")
