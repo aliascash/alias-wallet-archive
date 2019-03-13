@@ -13,12 +13,19 @@ set(CLIENT_VERSION_REVISION 3)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Configuring on/for macOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring on/for Windows")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
+#    add_definitions(-DBOOST_ALL_DYN_LINK)
+    add_definitions("/wd4244")
+    add_definitions("/wd4267")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else()
@@ -34,6 +41,8 @@ endif ()
 if (POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif ()
+
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # ============================================================================================
 message(STATUS "=== Helper functions =======================================================")
