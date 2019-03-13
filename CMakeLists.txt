@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
-        VERSION 2.2.2
+        VERSION 3.0.3
         LANGUAGES
         CXX
         C
