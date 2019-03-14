@@ -836,7 +836,7 @@ pipeline {
                                 user: 'spectrecoin',
                                 repository: 'spectre',
                                 tag: "${GIT_TAG_TO_USE}",
-                                artifactNameLocal: "${WORKSPACE}/releaseNotesToDeploy.txt",
+                                artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
                         )
                     }
