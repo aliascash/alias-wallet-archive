@@ -832,6 +832,13 @@ pipeline {
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
                                 preRelease: "${PRERELEASE}"
                         )
+                        uploadArtifactToGitHub(
+                                user: 'spectrecoin',
+                                repository: 'spectre',
+                                tag: "${GIT_TAG_TO_USE}",
+                                artifactNameLocal: "${WORKSPACE}/releaseNotesToDeploy.txt",
+                                artifactNameRemote: "RELEASENOTES.txt",
+                        )
                     }
                 }
             }
