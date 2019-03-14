@@ -4227,7 +4227,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     return false;
 }
 
-int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode)
+int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<const COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode)
 {
     if (fDebugRingSig)
         LogPrintf("PickAnonInputs(), ChangeOuts %d, FeeMode %d\n", nExpectChangeOuts, feeMode);
@@ -4448,27 +4448,29 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
     return 0;
 };
 
-int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p)
+bool CWallet::InitMixins(CMixins& mixins, const std::vector<const COwnedAnonOutput*>& vPickedCoins, bool fStaking)
 {
-    // TODO: process multiple inputs in 1 db loop?
-
-    // -- offset skip is pre filled with the real coin
-
     LOCK(cs_main);
-    CTxDB txdb("r");
 
+    int64_t nStart = GetTimeMicros();
+    if (fDebugRingSig)
+        LogPrintf("CWallet::InitMixins() : fStaking=%d\n", fStaking);
+
+    CTxDB txdb("r");
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
-        throw runtime_error("CWallet::PickHidingOutputs() : cannot get leveldb instance");
+        throw runtime_error("CWallet::InitMixins() : cannot get leveldb instance");
 
-    int nCompromisedHeight = mapAnonOutputStats[nValue].nCompromisedHeight;
-
-    if (fDebug)
-        LogPrintf("PickHidingOutputs() nValue %d, nRingSize %d, nCompromisedHeight %d\n", nValue, nRingSize, nCompromisedHeight);
+    // Init denominations needed and used Txs to skip
+    std::set<uint256> setUsedOutputsTxs;
+    std::set<int64_t> setDenominations;
+    for (const auto & oao : vPickedCoins)
+    {
+        setUsedOutputsTxs.insert(oao->outpoint.hash);
+        setDenominations.insert(oao->nValue);
+    }
 
     leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
-
-    std::vector<CPubKey> vHideKeys;
 
     // Seek to start key.
     CPubKey pkZero;
@@ -4480,6 +4482,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
     CPubKey pkAo;
     CAnonOutput anonOutput;
+    uint32_t nTotal = 0, nMixins = 0, nInvalid = 0, nUsedTx = 0, nDiffDenom = 0, nImmature = 0, nCompromised = 0;
     while (iterator->Valid())
     {
         // Unpack keys and values.
@@ -4494,50 +4497,60 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
         CDataStream ssValue(SER_DISK, CLIENT_VERSION);
         ssValue.write(iterator->value().data(), iterator->value().size());
 
-
         ssKey >> pkAo;
+        ssValue >> anonOutput;
 
-        if (pkAo != pkCoin
-            && pkAo.IsValid())
+        nTotal++;
+        if (!pkAo.IsValid())
+            nInvalid++;
+        else if (setDenominations.find(anonOutput.nValue) == setDenominations.end())
+            nDiffDenom++;
+        else if (setUsedOutputsTxs.find(anonOutput.outpoint.hash) != setUsedOutputsTxs.end())
+            nUsedTx++;
+        else
         {
-            ssValue >> anonOutput;
-
+            int nCompromisedHeight = mapAnonOutputStats[anonOutput.nValue].nCompromisedHeight;
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
             int minDepth = fStaking || anonOutput.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
-            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
-                    && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight)
-                    && anonOutput.nValue == nValue
-                    && anonOutput.nCompromised == 0)
-                try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
+            if (anonOutput.nBlockHeight <= 0 || nBestHeight - anonOutput.nBlockHeight + 1 < minDepth) // ao confirmed in last block has depth of 1
+                nImmature++;
+            else if (anonOutput.nCompromised != 0 || (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= anonOutput.nBlockHeight))
+                nCompromised++;
+            else
+                try {
+                nMixins++;
+                mixins.AddAnonOutput(pkAo, anonOutput, nBestHeight);
+            } catch (std::exception& e)
             {
-                LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
-                return 1;
+                LogPrintf("ERROR: CWallet::InitMixins() : mixins.addAnonOutput threw: %s.\n", e.what());
+                return false;
             }
         }
-
         iterator->Next();
     };
 
-    delete iterator;
+    if (fDebugRingSig)
+        LogPrintf("CWallet::InitMixins() : processed %d anons in %d µs; potential mixins: %d; skipped invalid: %d, txUsed: %d, diffDenom: %d, immature: %d, compromised: %d.\n",
+                  nTotal, GetTimeMicros() - nStart, nMixins, nInvalid, nUsedTx, nDiffDenom, nImmature, nCompromised);
 
-    if ((int)vHideKeys.size() < nRingSize-1)
+    delete iterator;
+    return true;
+}
+
+int CWallet::PickHidingOutputs(CMixins& mixins, int64_t nValue, int nRingSize, int skip, uint8_t* p)
+{
+    // -- offset skip is pre filled with the real coin
+    std::vector<CPubKey> vHideKeys;
+    if (!mixins.Pick(nValue, nRingSize - 1, vHideKeys))
         return errorN(1, "%s: Not enough keys found.", __func__);
 
-    for (int i = 0; i < nRingSize; ++i)
+    for (int i = 0, iMixin = 0; i < nRingSize; ++i)
     {
         if (i == skip)
             continue;
 
-        if (vHideKeys.size() < 1)
-            return errorN(1, "%s: vHideKeys.size() < 1", __func__);
-
-        uint32_t pick = GetRand(vHideKeys.size());
-
-        memcpy(p + i * 33, vHideKeys[pick].begin(), 33);
-
-        vHideKeys.erase(vHideKeys.begin()+pick);
+        memcpy(p + i * 33, vHideKeys[iMixin++].begin(), 33);
     };
-
 
     return 0;
 };
@@ -4647,7 +4660,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
 }
 
 
-bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError)
+bool CWallet::AddAnonInput(CMixins& mixins, CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError)
 {
     int nSigSize = GetRingSigSize(rsType, nRingSize);
 
@@ -4705,7 +4718,8 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType,
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     memcpy(pPubkeyStart + oaoRingIndex * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
-    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, fStaking, pPubkeyStart) != 0)
+
+    if (PickHidingOutputs(mixins, oao.nValue, nRingSize, oaoRingIndex, pPubkeyStart) != 0)
     {
         sError = "PickHidingOutputs() failed.\n";
         return false;
@@ -4839,7 +4853,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     int64_t nFee;
     int nExpectChangeOuts = 1;
     std::string sPickError;
-    std::vector<COwnedAnonOutput*> vPickedCoins;
+    std::vector<const COwnedAnonOutput*> vPickedCoins;
     for (int k = 0; k < 50; ++k) // safety
     {
         // -- nExpectChangeOuts is raised if needed (rv == 2)
@@ -4872,12 +4886,18 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     uint32_t ii = 0;
     wtxNew.vin.resize(vPickedCoins.size());
     vCoinOffsets.resize(vPickedCoins.size());
-    for (std::vector<COwnedAnonOutput*>::iterator it = vPickedCoins.begin(); it != vPickedCoins.end(); ++it)
+
+    // -- Initialize mixins set
+    CMixins mixins;
+    if (!InitMixins(mixins, vPickedCoins, false))
+        return false;
+
+    for (std::vector<const COwnedAnonOutput*>::iterator it = vPickedCoins.begin(); it != vPickedCoins.end(); ++it)
     {
         if (fDebugRingSig)
             LogPrintf("pickedCoin %s %d\n", HexStr((*it)->vchImage).c_str(), (*it)->nValue);
 
-        if (!AddAnonInput(wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], false, fTestOnly, sError))
+        if (!AddAnonInput(mixins, wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], false, fTestOnly, sError))
             return false;
 
         ii++;
@@ -6904,10 +6924,15 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 txNew.vin.resize(vPickedCoins.size());
                 uint256 preimage = 0; // not needed for RING_SIG_2
                 uint32_t iVin = 0;
+                // Initialize mixins set
+                CMixins mixins;
+                if (!InitMixins(mixins, vPickedCoins, true))
+                     return error("CreateAnonCoinStake() : InitMixins() failed");
+
                 for (const auto * pickedCoin : vPickedCoins)
                 {
                     int oaoRingIndex;
-                    if (!AddAnonInput(txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
+                    if (!AddAnonInput(mixins, txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
                         return error(("CreateAnonCoinStake : " + sError).c_str());
 
                     if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
