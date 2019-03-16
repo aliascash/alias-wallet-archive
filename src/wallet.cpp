@@ -6944,20 +6944,20 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 {
                     int oaoRingIndex;
                     if (!AddAnonInput(mixins, txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
-                        return error(("CreateAnonCoinStake : " + sError).c_str());
+                        return error(("CreateAnonCoinStake() : " + sError).c_str());
 
                     if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
-                        return error(("CreateAnonCoinStake : " + sError).c_str());
+                        return error(("CreateAnonCoinStake() : " + sError).c_str());
 
                     iVin++;
                 }
 
                 // -- check if new coins already exist (in case random is broken ?)
                 if (!AreOutputsUnique(txNew))
-                    return error("CreateAnonCoinStake : Anon outputs are not unique - is random working?!");
+                    return error("CreateAnonCoinStake() : anon outputs are not unique - is random working?!");
 
                 if (fDebugPoS)
-                    LogPrintf("CreateAnonCoinStake : added kernel for keyImage %s\n", HexStr(oao.vchImage));
+                    LogPrintf("CreateAnonCoinStake() : added kernel for keyImage %s\n", HexStr(oao.vchImage));
 
                 fKernelFound = true;
                 break;
@@ -6974,7 +6974,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     // Limit size
     unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
     if (nBytes >= MAX_BLOCK_SIZE_GEN/5)
-        return error("CreateAnonCoinStake : exceeded coinstake size limit");
+        return error("CreateAnonCoinStake() : exceeded coinstake size limit");
 
     // Successfully generated coinstake
     return true;
