@@ -4825,6 +4825,7 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
 
 bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
+    int64_t nStart = GetTimeMicros();
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
@@ -4839,9 +4840,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     int64_t nAmountCheck;
     if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, MaturityFilter::FOR_SPENDING, sError))
         return false;
-
     if (fDebugRingSig)
-        LogPrintf("%u coins available with ring size %d, total %d\n", lAvailableCoins.size(), nRingSize, nAmountCheck);
+        LogPrintf("Debug: CWallet::AddAnonInputs() : ListAvailableAnonOutputs() : %d anons picked in %d µs, total %d.\n", lAvailableCoins.size(), GetTimeMicros() - nStart, nAmountCheck);
 
     // -- estimate fee
 
@@ -4849,6 +4849,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     for (uint32_t i = 0; i < vecSend.size(); ++i) // need to sum due to narration
         nSizeOutputs += GetSizeOfCompactSize(vecSend[i].first.size()) + vecSend[i].first.size() + sizeof(int64_t); // CTxOut
 
+    int64_t nStartPickAnon = GetTimeMicros();
     bool fFound = false;
     int64_t nFee;
     int nExpectChangeOuts = 1;
@@ -4872,6 +4873,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
             break;
         };
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : PickAnonInputs() : picked %d anons in %d µs.\n", vPickedCoins.size(), GetTimeMicros() - nStartPickAnon);
 
     if (!fFound)
     {
@@ -4892,6 +4895,7 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     if (!InitMixins(mixins, vPickedCoins, false))
         return false;
 
+    int64_t nStartPickMixins = GetTimeMicros();
     for (std::vector<const COwnedAnonOutput*>::iterator it = vPickedCoins.begin(); it != vPickedCoins.end(); ++it)
     {
         if (fDebugRingSig)
@@ -4902,6 +4906,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
 
         ii++;
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : AddAnonInput(): picked mixins for %d ring signatures with ring size %d in %d µs.\n", vPickedCoins.size(), nRingSize, GetTimeMicros() - nStartPickMixins);
 
     for (uint32_t i = 0; i < vecSend.size(); ++i)
         wtxNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));
@@ -4922,12 +4928,14 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
 
     // TODO: Does it lower security to use the same preimage for each input?
     //  cryptonote seems to do so too
-
+    int64_t nStartRingSig = GetTimeMicros();
     for (uint32_t i = 0; i < wtxNew.vin.size(); ++i)
     {
         if (!GenerateRingSignature(wtxNew.vin[i], rsType, nRingSize, vCoinOffsets[i], preimage, sError))
             return false;
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : GenerateRingSignature() : generated %d ring signatures with ring size %d in %d µs.\n", wtxNew.vin.size(), nRingSize, GetTimeMicros() - nStartRingSig);
 
     // -- check if new coins already exist (in case random is broken ?)
     if (!AreOutputsUnique(wtxNew))
@@ -4936,6 +4944,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
         return false;
     };
 
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : finished in %d µs.\n", GetTimeMicros() - nStart);
     return true;
 };
 
