@@ -4119,7 +4119,8 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
 
     if (startL == 0)
     {
-        LogPrintf("checkCombinations() No possible combinations.\n");
+        if (fDebugRingSig)
+            LogPrintf("checkCombinations() No possible combinations.\n");
         return false;
     };
 
