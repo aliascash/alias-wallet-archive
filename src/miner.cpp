@@ -120,6 +120,8 @@ public:
 // CreateNewBlock: create new block (without proof-of-work/proof-of-stake)
 CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
 {
+    int64_t nStart = GetTimeMicros();
+
     // Create new block
     unique_ptr<CBlock> pblock(new CBlock());
     if (!pblock.get())
@@ -418,6 +420,9 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
             pblock->UpdateTime(pindexPrev);
         pblock->nNonce         = 0;
     }
+
+    if (fDebug)
+        LogPrintf("CreateNewBlock() : created block at height: %d, txs: %d, size: %d bytes in %d µs.\n", nBestHeight, pblock->vtx.size(), nLastBlockSize, GetTimeMicros() - nStart);
 
     return pblock.release();
 }
