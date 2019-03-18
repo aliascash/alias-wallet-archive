@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The ShadowCoin developers
+﻿// Copyright (c) 2014 The ShadowCoin developers
 // Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
@@ -15,6 +15,9 @@
 #include "serialize.h"
 #include "script.h"
 #include "ringsig.h"
+
+#include <random>
+#include <boost/random/mersenne_twister.hpp>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/random_access_index.hpp>
@@ -511,12 +514,20 @@ public:
 class CMixins
 {
 // for mixin selection
-private:
-    std::vector<std::pair<int, uint256>> vUsedTx; // vector with used transaction hashes as pair of containerId and tx hash
-    std::map<int64_t, CTxMixinsContainers> mapMixins; // value to CTxMixinsSet
 public:
+    CMixins() : CMixins(initUrng()) {}
     void AddAnonOutput(CPubKey& pkAo, CAnonOutput& anonOutput, int blockHeight);
     bool Pick(int64_t nValue, uint8_t nMixins, std::vector<CPubKey>& vPickedAnons);
+private:
+    CMixins(std::mt19937 urng) : urng(urng) {}
+    static std::mt19937 initUrng()
+    {
+        std::random_device rd;
+        return std::mt19937(rd());
+    }
+    std::vector<std::pair<int, uint256>> vUsedTx; // vector with used transaction hashes as pair of containerId and tx hash
+    std::map<int64_t, CTxMixinsContainers> mapMixins; // value to CTxMixinsSet
+    std::mt19937 urng;
 };
 
 #endif  // SPEC_CORE_H

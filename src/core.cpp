@@ -105,6 +105,8 @@ bool CMixins::Pick(int64_t nValue, uint8_t nMixins, std::vector<CPubKey>& vPicke
             // take mixin from used transactions
             if (fDebugRingSig)
                 LogPrintf("CMixins::Pick() : try to pick from %d previously picked tx.\n", nUsedTx);
+            // shuffle previous picked transaction list to make sure order of tx pick does not reveal its fake nature
+            std::shuffle(vUsedTx.begin(), vUsedTx.begin() + nUsedTx, urng);
             bool foundMixin = false;
             uint64_t iUsedTx = 0;
             for (const auto & [iContainer, txHash] : vUsedTx)
