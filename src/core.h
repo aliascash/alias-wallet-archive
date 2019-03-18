@@ -16,6 +16,11 @@
 #include "script.h"
 #include "ringsig.h"
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/member.hpp>
+
 enum GetMinFee_mode
 {
     GMF_BLOCK,
@@ -465,6 +470,53 @@ public:
     uint256 bnModifierV2;
     int nHeight;
     int64_t nTime;
+};
+
+
+struct CTxMixins
+{
+    CTxMixins(uint256 txHash_)
+    {
+        txHash = txHash_;
+    }
+
+    uint256 txHash;
+    mutable std::vector<std::pair<unsigned int, CPubKey>> vOutPubKeys;
+};
+
+using namespace boost::multi_index;
+// tags
+struct TXHASH{};
+typedef boost::multi_index_container<
+    CTxMixins,
+    indexed_by<
+        random_access<>,
+        ordered_unique<tag<TXHASH>, member<CTxMixins,uint256,&CTxMixins::txHash> >
+    >
+> txMixins_container;
+
+enum TxMixinsContainerId { OLD, RECENT };
+class CTxMixinsContainers
+{
+private:
+    txMixins_container old;
+    txMixins_container recent;
+public:
+    txMixins_container& get(int containerId)
+    {
+        return containerId == RECENT ? recent : old;
+    }
+};
+
+class CMixins
+{
+// for mixin selection
+private:
+    std::vector<std::pair<int, uint256>> vUsedTx; // vector with used transaction hashes as pair of containerId and tx hash
+    std::map<int64_t, CTxMixinsContainers> mapMixins; // value to CTxMixinsSet
+public:
+    void AddAnonOutput(CPubKey& pkAo, CAnonOutput& anonOutput, int blockHeight);
+    bool Pick(int64_t nValue, uint8_t nMixins, std::vector<CPubKey>& vPickedAnons);
 };
 
 #endif  // SPEC_CORE_H

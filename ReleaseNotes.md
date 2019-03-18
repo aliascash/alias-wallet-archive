@@ -34,6 +34,12 @@ Immediate changes:
 - Change max anon output from 10'000 to 1'000
 - Increase default block size created from 250K to 999K
 - ATXOs compromised by an All Spent situation are no longer considered as mixins for new transactions
+- New mixin picking algorithm:
+  - ATXOs are only read once per transaction
+  - handles ATXO_TX_SET problem by adding mixins of same transaction
+  - 33% of mixins are picked from last 2700 blocks if possible
+  - an ATXO is only used once as mixin per transaction
+  - pick all mixins for a vin/ringsignature from different transactions
 - Increase levelDB version to 70512 to force reindex:
   - new attribute fCoinStake in CAnonOutput
   - new attribute nBlockHeight in CKeyImageSpent
