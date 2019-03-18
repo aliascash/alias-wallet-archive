@@ -28,7 +28,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
   - Same maturity rules as for XSPEC (300 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
-  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 5 new ATXO of that denomination
+  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 1 new ATXO of that denomination
 
 Immediate changes:
 - Change max anon output from 10'000 to 1'000
