@@ -15,7 +15,7 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
-## 3.0.3
+## 3.0.4
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 24. May 2019 21:00:00 (1558731600 unix epoch time)**
 - Minimum ring size increased from 1 to 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
@@ -31,6 +31,12 @@ Immediate changes:
 - Change max anon output from 10'000 to 1'000
 - Increase default block size created from 250K to 999K
 - ATXOs compromised by an All Spent situation are no longer considered as mixins for new transactions
+- New mixin picking algorithm:
+  - ATXOs are only read once per transaction
+  - handles ATXO_TX_SET problem by adding mixins of same transaction
+  - 33% of mixins are picked from last 2700 blocks if possible
+  - an ATXO is only used once as mixin per transaction
+  - pick all mixins for a vin/ringsignature from different transactions
 - Increase levelDB version to 70512 to force reindex:
   - new attribute fCoinStake in CAnonOutput
   - new attribute nBlockHeight in CKeyImageSpent

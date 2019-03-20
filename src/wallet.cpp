@@ -4119,7 +4119,8 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
 
     if (startL == 0)
     {
-        LogPrintf("checkCombinations() No possible combinations.\n");
+        if (fDebugRingSig)
+            LogPrintf("checkCombinations() No possible combinations.\n");
         return false;
     };
 
@@ -4227,7 +4228,7 @@ static bool checkCombinations(int64_t nReq, int m, std::vector<COwnedAnonOutput*
     return false;
 }
 
-int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode)
+int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<const COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode)
 {
     if (fDebugRingSig)
         LogPrintf("PickAnonInputs(), ChangeOuts %d, FeeMode %d\n", nExpectChangeOuts, feeMode);
@@ -4448,27 +4449,29 @@ int CWallet::GetTxnPreImage(CTransaction& txn, uint256& hash)
     return 0;
 };
 
-int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p)
+bool CWallet::InitMixins(CMixins& mixins, const std::vector<const COwnedAnonOutput*>& vPickedCoins, bool fStaking)
 {
-    // TODO: process multiple inputs in 1 db loop?
-
-    // -- offset skip is pre filled with the real coin
-
     LOCK(cs_main);
-    CTxDB txdb("r");
 
+    int64_t nStart = GetTimeMicros();
+    if (fDebugRingSig)
+        LogPrintf("CWallet::InitMixins() : fStaking=%d\n", fStaking);
+
+    CTxDB txdb("r");
     leveldb::DB* pdb = txdb.GetInstance();
     if (!pdb)
-        throw runtime_error("CWallet::PickHidingOutputs() : cannot get leveldb instance");
+        throw runtime_error("CWallet::InitMixins() : cannot get leveldb instance");
 
-    int nCompromisedHeight = mapAnonOutputStats[nValue].nCompromisedHeight;
-
-    if (fDebug)
-        LogPrintf("PickHidingOutputs() nValue %d, nRingSize %d, nCompromisedHeight %d\n", nValue, nRingSize, nCompromisedHeight);
+    // Init denominations needed and used Txs to skip
+    std::set<uint256> setUsedOutputsTxs;
+    std::set<int64_t> setDenominations;
+    for (const auto & oao : vPickedCoins)
+    {
+        setUsedOutputsTxs.insert(oao->outpoint.hash);
+        setDenominations.insert(oao->nValue);
+    }
 
     leveldb::Iterator *iterator = pdb->NewIterator(txdb.GetReadOptions());
-
-    std::vector<CPubKey> vHideKeys;
 
     // Seek to start key.
     CPubKey pkZero;
@@ -4480,6 +4483,7 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
 
     CPubKey pkAo;
     CAnonOutput anonOutput;
+    uint32_t nTotal = 0, nMixins = 0, nInvalid = 0, nUsedTx = 0, nDiffDenom = 0, nImmature = 0, nCompromised = 0;
     while (iterator->Valid())
     {
         // Unpack keys and values.
@@ -4494,50 +4498,60 @@ int CWallet::PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, i
         CDataStream ssValue(SER_DISK, CLIENT_VERSION);
         ssValue.write(iterator->value().data(), iterator->value().size());
 
-
         ssKey >> pkAo;
+        ssValue >> anonOutput;
 
-        if (pkAo != pkCoin
-            && pkAo.IsValid())
+        nTotal++;
+        if (!pkAo.IsValid())
+            nInvalid++;
+        else if (setDenominations.find(anonOutput.nValue) == setDenominations.end())
+            nDiffDenom++;
+        else if (setUsedOutputsTxs.find(anonOutput.outpoint.hash) != setUsedOutputsTxs.end())
+            nUsedTx++;
+        else
         {
-            ssValue >> anonOutput;
-
+            int nCompromisedHeight = mapAnonOutputStats[anonOutput.nValue].nCompromisedHeight;
             // If hiding outputs are for staking, all outputs must have a enough confirmations for staking
             int minDepth = fStaking || anonOutput.fCoinStake ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
-            if ((anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minDepth) // ao confirmed in last block has depth of 1
-                    && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight)
-                    && anonOutput.nValue == nValue
-                    && anonOutput.nCompromised == 0)
-                try { vHideKeys.push_back(pkAo); } catch (std::exception& e)
+            if (anonOutput.nBlockHeight <= 0 || nBestHeight - anonOutput.nBlockHeight + 1 < minDepth) // ao confirmed in last block has depth of 1
+                nImmature++;
+            else if (anonOutput.nCompromised != 0 || (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= anonOutput.nBlockHeight))
+                nCompromised++;
+            else
+                try {
+                nMixins++;
+                mixins.AddAnonOutput(pkAo, anonOutput, nBestHeight);
+            } catch (std::exception& e)
             {
-                LogPrintf("Error: PickHidingOutputs() vHideKeys.push_back threw: %s.\n", e.what());
-                return 1;
+                LogPrintf("ERROR: CWallet::InitMixins() : mixins.addAnonOutput threw: %s.\n", e.what());
+                return false;
             }
         }
-
         iterator->Next();
     };
 
-    delete iterator;
+    if (fDebugRingSig)
+        LogPrintf("CWallet::InitMixins() : processed %d anons in %d µs; potential mixins: %d; skipped invalid: %d, txUsed: %d, diffDenom: %d, immature: %d, compromised: %d.\n",
+                  nTotal, GetTimeMicros() - nStart, nMixins, nInvalid, nUsedTx, nDiffDenom, nImmature, nCompromised);
 
-    if ((int)vHideKeys.size() < nRingSize-1)
+    delete iterator;
+    return true;
+}
+
+int CWallet::PickHidingOutputs(CMixins& mixins, int64_t nValue, int nRingSize, int skip, uint8_t* p)
+{
+    // -- offset skip is pre filled with the real coin
+    std::vector<CPubKey> vHideKeys;
+    if (!mixins.Pick(nValue, nRingSize - 1, vHideKeys))
         return errorN(1, "%s: Not enough keys found.", __func__);
 
-    for (int i = 0; i < nRingSize; ++i)
+    for (int i = 0, iMixin = 0; i < nRingSize; ++i)
     {
         if (i == skip)
             continue;
 
-        if (vHideKeys.size() < 1)
-            return errorN(1, "%s: vHideKeys.size() < 1", __func__);
-
-        uint32_t pick = GetRand(vHideKeys.size());
-
-        memcpy(p + i * 33, vHideKeys[pick].begin(), 33);
-
-        vHideKeys.erase(vHideKeys.begin()+pick);
+        memcpy(p + i * 33, vHideKeys[iMixin++].begin(), 33);
     };
-
 
     return 0;
 };
@@ -4647,7 +4661,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
 }
 
 
-bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError)
+bool CWallet::AddAnonInput(CMixins& mixins, CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError)
 {
     int nSigSize = GetRingSigSize(rsType, nRingSize);
 
@@ -4705,7 +4719,8 @@ bool CWallet::AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType,
     uint8_t *pPubkeyStart = GetRingSigPkStart(rsType, nRingSize, &txin.scriptSig[0]);
 
     memcpy(pPubkeyStart + oaoRingIndex * EC_COMPRESSED_SIZE, pkCoin.begin(), EC_COMPRESSED_SIZE);
-    if (PickHidingOutputs(oao.nValue, nRingSize, pkCoin, oaoRingIndex, fStaking, pPubkeyStart) != 0)
+
+    if (PickHidingOutputs(mixins, oao.nValue, nRingSize, oaoRingIndex, pPubkeyStart) != 0)
     {
         sError = "PickHidingOutputs() failed.\n";
         return false;
@@ -4811,6 +4826,7 @@ bool CWallet::GenerateRingSignature(CTxIn& txin, const int& rsType, const int& n
 
 bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError)
 {
+    int64_t nStart = GetTimeMicros();
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
@@ -4825,9 +4841,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     int64_t nAmountCheck;
     if (!ListAvailableAnonOutputs(lAvailableCoins, nAmountCheck, nRingSize, MaturityFilter::FOR_SPENDING, sError))
         return false;
-
     if (fDebugRingSig)
-        LogPrintf("%u coins available with ring size %d, total %d\n", lAvailableCoins.size(), nRingSize, nAmountCheck);
+        LogPrintf("Debug: CWallet::AddAnonInputs() : ListAvailableAnonOutputs() : %d anons picked in %d µs, total %d.\n", lAvailableCoins.size(), GetTimeMicros() - nStart, nAmountCheck);
 
     // -- estimate fee
 
@@ -4835,11 +4850,12 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     for (uint32_t i = 0; i < vecSend.size(); ++i) // need to sum due to narration
         nSizeOutputs += GetSizeOfCompactSize(vecSend[i].first.size()) + vecSend[i].first.size() + sizeof(int64_t); // CTxOut
 
+    int64_t nStartPickAnon = GetTimeMicros();
     bool fFound = false;
     int64_t nFee;
     int nExpectChangeOuts = 1;
     std::string sPickError;
-    std::vector<COwnedAnonOutput*> vPickedCoins;
+    std::vector<const COwnedAnonOutput*> vPickedCoins;
     for (int k = 0; k < 50; ++k) // safety
     {
         // -- nExpectChangeOuts is raised if needed (rv == 2)
@@ -4858,6 +4874,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
             break;
         };
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : PickAnonInputs() : picked %d anons in %d µs.\n", vPickedCoins.size(), GetTimeMicros() - nStartPickAnon);
 
     if (!fFound)
     {
@@ -4872,16 +4890,25 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     uint32_t ii = 0;
     wtxNew.vin.resize(vPickedCoins.size());
     vCoinOffsets.resize(vPickedCoins.size());
-    for (std::vector<COwnedAnonOutput*>::iterator it = vPickedCoins.begin(); it != vPickedCoins.end(); ++it)
+
+    // -- Initialize mixins set
+    CMixins mixins;
+    if (!InitMixins(mixins, vPickedCoins, false))
+        return false;
+
+    int64_t nStartPickMixins = GetTimeMicros();
+    for (std::vector<const COwnedAnonOutput*>::iterator it = vPickedCoins.begin(); it != vPickedCoins.end(); ++it)
     {
         if (fDebugRingSig)
             LogPrintf("pickedCoin %s %d\n", HexStr((*it)->vchImage).c_str(), (*it)->nValue);
 
-        if (!AddAnonInput(wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], false, fTestOnly, sError))
+        if (!AddAnonInput(mixins, wtxNew.vin[ii], *(*it), rsType, nRingSize, vCoinOffsets[ii], false, fTestOnly, sError))
             return false;
 
         ii++;
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : AddAnonInput(): picked mixins for %d ring signatures with ring size %d in %d µs.\n", vPickedCoins.size(), nRingSize, GetTimeMicros() - nStartPickMixins);
 
     for (uint32_t i = 0; i < vecSend.size(); ++i)
         wtxNew.vout.push_back(CTxOut(vecSend[i].second, vecSend[i].first));
@@ -4902,12 +4929,14 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
 
     // TODO: Does it lower security to use the same preimage for each input?
     //  cryptonote seems to do so too
-
+    int64_t nStartRingSig = GetTimeMicros();
     for (uint32_t i = 0; i < wtxNew.vin.size(); ++i)
     {
         if (!GenerateRingSignature(wtxNew.vin[i], rsType, nRingSize, vCoinOffsets[i], preimage, sError))
             return false;
     };
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : GenerateRingSignature() : generated %d ring signatures with ring size %d in %d µs.\n", wtxNew.vin.size(), nRingSize, GetTimeMicros() - nStartRingSig);
 
     // -- check if new coins already exist (in case random is broken ?)
     if (!AreOutputsUnique(wtxNew))
@@ -4916,6 +4945,8 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
         return false;
     };
 
+    if (fDebugRingSig)
+        LogPrintf("Debug: CWallet::AddAnonInputs() : finished in %d µs.\n", GetTimeMicros() - nStart);
     return true;
 };
 
@@ -6779,7 +6810,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 CAnonOutputCount* lowestAOC = nullptr;
                 for (auto it = mapAnonOutputStats.rbegin(); it != mapAnonOutputStats.rend(); it++)
                 {
-                    if (it->first < nMinTxFee)
+                    if (it->first < nMinTxFee * 10)
                         break;
                     if (it->first >= oao.nValue)
                         continue;
@@ -6904,24 +6935,29 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 txNew.vin.resize(vPickedCoins.size());
                 uint256 preimage = 0; // not needed for RING_SIG_2
                 uint32_t iVin = 0;
+                // Initialize mixins set
+                CMixins mixins;
+                if (!InitMixins(mixins, vPickedCoins, true))
+                     return error("CreateAnonCoinStake() : InitMixins() failed");
+
                 for (const auto * pickedCoin : vPickedCoins)
                 {
                     int oaoRingIndex;
-                    if (!AddAnonInput(txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
-                        return error(("CreateAnonCoinStake : " + sError).c_str());
+                    if (!AddAnonInput(mixins, txNew.vin[iVin], *pickedCoin, RING_SIG_2, nRingSize, oaoRingIndex, true, false, sError))
+                        return error(("CreateAnonCoinStake() : " + sError).c_str());
 
                     if (!GenerateRingSignature(txNew.vin[iVin], RING_SIG_2, nRingSize, oaoRingIndex, preimage, sError))
-                        return error(("CreateAnonCoinStake : " + sError).c_str());
+                        return error(("CreateAnonCoinStake() : " + sError).c_str());
 
                     iVin++;
                 }
 
                 // -- check if new coins already exist (in case random is broken ?)
                 if (!AreOutputsUnique(txNew))
-                    return error("CreateAnonCoinStake : Anon outputs are not unique - is random working?!");
+                    return error("CreateAnonCoinStake() : anon outputs are not unique - is random working?!");
 
                 if (fDebugPoS)
-                    LogPrintf("CreateAnonCoinStake : added kernel for keyImage %s\n", HexStr(oao.vchImage));
+                    LogPrintf("CreateAnonCoinStake() : added kernel for keyImage %s\n", HexStr(oao.vchImage));
 
                 fKernelFound = true;
                 break;
@@ -6938,7 +6974,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
     // Limit size
     unsigned int nBytes = ::GetSerializeSize(txNew, SER_NETWORK, PROTOCOL_VERSION);
     if (nBytes >= MAX_BLOCK_SIZE_GEN/5)
-        return error("CreateAnonCoinStake : exceeded coinstake size limit");
+        return error("CreateAnonCoinStake() : exceeded coinstake size limit");
 
     // Successfully generated coinstake
     return true;

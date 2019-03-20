@@ -2657,7 +2657,7 @@ Value anoninfo(const Array& params, bool fHelp)
         };
     };
 
-    result.push_back(Pair("No.Exists, No.Mature, No.Spends, No.Mixins, No.MixinsStaking, No.Stakes, No.Compromised, Compromised Height, Least Depth", "value"));
+    result.push_back(Pair("No.Exists, No.Mature, No.Unspends, No.Mixins, No.MixinsStaking, No.Stakes, No.Compromised, Compromised Height, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
@@ -2671,7 +2671,7 @@ Value anoninfo(const Array& params, bool fHelp)
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
         snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %3d",
-                 it->nExists, it->nMature, it->nSpends, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromised, it->nCompromisedHeight,
+                 it->nExists, it->nMature, it->nExists - it->nSpends, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromised, it->nCompromisedHeight,
                  it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
