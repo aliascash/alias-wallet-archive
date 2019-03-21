@@ -7,7 +7,7 @@ pipeline {
     options {
         timestamps()
         timeout(time: 3, unit: 'HOURS')
-        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '3'))
         disableConcurrentBuilds()
     }
     environment {
@@ -840,6 +840,13 @@ pipeline {
                                 name: "${RELEASE_NAME}",
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
                                 preRelease: "${PRERELEASE}"
+                        )
+                        uploadArtifactToGitHub(
+                                user: 'spectrecoin',
+                                repository: 'spectre',
+                                tag: "${GIT_TAG_TO_USE}",
+                                artifactNameLocal: "releaseNotesToDeploy.txt",
+                                artifactNameRemote: "RELEASENOTES.txt",
                         )
                     }
                 }
