@@ -480,6 +480,8 @@ bool AppInit2(boost::thread_group& threadGroup)
         nMinTxFee /= nTestnetScaleMod;
         nMinTxFeeAnonLegacy /= nTestnetScaleMod;
         nMinRelayTxFee /= nTestnetScaleMod;
+        nStakeReward /= nTestnetScaleMod;
+        nAnonStakeReward /= nTestnetScaleMod;
         nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
         nStakeCombineThreshold /= nTestnetScaleMod;

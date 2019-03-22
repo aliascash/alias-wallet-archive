@@ -6821,13 +6821,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 }
                 if (lowestAOC)
                 {
-                    int64_t nQuotient = oao.nValue / lowestAOC->nValue;
-                    int nTarget = nQuotient > UNSPENT_ANON_BALANCE_MAX_CREATE ? UNSPENT_ANON_BALANCE_MAX_CREATE : nQuotient;
-                    for (int i = 0; i < nTarget; ++i)
-                        vOutAmounts.push_back(lowestAOC->nValue);
-                    nCredit += oao.nValue - (nTarget * lowestAOC->nValue);
-                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create %d additional ATXOs of value %d which has only %d unspents\n",
-                              oao.nValue, nTarget, lowestAOC->nValue, lowestAOC->numOfUnspends());
+                    vOutAmounts.push_back(lowestAOC->nValue);
+                    nCredit += oao.nValue - lowestAOC->nValue;
+                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create 1 additional ATXO of value %d which has only %d unspents\n",
+                              oao.nValue, lowestAOC->nValue, lowestAOC->numOfUnspends());
                 }
                 else
                     nCredit += oao.nValue;
