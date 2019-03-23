@@ -4614,8 +4614,9 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 
 bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount) const
 {
-    nAmountCheck = 0;
+    LOCK2(cs_main, cs_wallet);
 
+    nAmountCheck = 0;
     if (ListUnspentAnonOutputs(lAvailableAnonOutputs, nFilter) != 0)
     {
         sError = "ListUnspentAnonOutputs() failed";
@@ -5558,6 +5559,8 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
 
 int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const
 {
+    LOCK(cs_wallet);
+
     CWalletDB walletdb(strWalletFile, "r");
 
     Dbc* pcursor = walletdb.GetAtCursor();
