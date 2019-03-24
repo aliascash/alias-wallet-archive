@@ -4629,7 +4629,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
     int64_t nLastCoinValue = -1;
     int nMaxSpendable = -1;
     int nAvailableMixins = 0;
-    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
+    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end();)
     {
         if (nLastCoinValue != it->nValue)
         {
@@ -4650,11 +4650,12 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
                 (nMaxSpendable != -1 && nCoinsPerValue >= nMaxSpendable) ||
                 nAmountCheck + it->nValue > nMaxAmount)
             // -- not enough coins of same value, unspends or over max amount, drop coin
-            lAvailableAnonOutputs.erase(it);
+            it = lAvailableAnonOutputs.erase(it);
         else
         {
             nAmountCheck += it->nValue;
             nCoinsPerValue++;
+            ++it;
         }
     }
 
