@@ -729,9 +729,8 @@ void SpectreGUI::closeEvent(QCloseEvent *event)
 void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
 {
     QString strMessage =
-        tr("This transaction is over the size limit.  You can still send it for a fee of %1, "
-          "which goes to the nodes that process your transaction and helps to support the network.  "
-          "Do you want to pay the fee?").arg(
+        tr("To process this transaction, a fee of %1 will be charged to support the network. "
+           "Do you want to submit the transaction?").arg(
                 BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nFeeRequired));
     QMessageBox::StandardButton retval = QMessageBox::question(
           this, tr("Confirm transaction fee"), strMessage,
