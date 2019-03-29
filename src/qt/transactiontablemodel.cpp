@@ -294,13 +294,16 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Conflicted");
         break;
     case TransactionStatus::Immature:
-        status = tr("Immature (%1 confirmations, will be available after %2)").arg(wtx->status.depth).arg(wtx->status.depth + wtx->status.matures_in);
+        status = tr("Immature (%1 confirmations, will be available after %2)").
+                arg(wtx->status.depth).arg(wtx->status.depth + wtx->status.matures_in);
         break;
     case TransactionStatus::MaturesWarning:
-        status = tr("This block was not received by any other nodes and will probably not be accepted!");
+        status = tr("Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!").
+                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");;
         break;
     case TransactionStatus::NotAccepted:
-        status = tr("Generated but not accepted");
+        status = tr("Orphan %1 stake, someone else submitted the block before you.").
+                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");
         break;
     }
 
@@ -465,6 +468,10 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
 
 QString TransactionTableModel::formatTooltip(const TransactionRecord *rec) const
 {
+    if (rec->status.status == TransactionStatus::MaturesWarning || rec->status.status == TransactionStatus::NotAccepted)
+    {
+        return formatTxStatus(rec);
+    }
     QString tooltip = formatTxStatus(rec) + QString("\n") + rec->getTypeLabel(rec->type);
 
     if(rec->type==TransactionRecord::RecvFromOther || rec->type==TransactionRecord::SendToOther ||
