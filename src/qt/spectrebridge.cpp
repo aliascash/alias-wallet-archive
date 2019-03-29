@@ -92,6 +92,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("tt",   status.data(Qt::ToolTipRole).toString());
     transaction.insert("c",    status.data(TransactionTableModel::ConfirmationsRole).toLongLong());
     transaction.insert("s",    status.data(Qt::DecorationRole).toString());
+    transaction.insert("s_i",  status.data(TransactionTableModel::StatusRole).toInt());
     transaction.insert("d",    date.data(Qt::EditRole).toInt());
     transaction.insert("d_s",  date.data().toString());
     transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));

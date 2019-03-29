@@ -3,7 +3,11 @@
 #transaction-info ul li .contact-info .contact-name,td{text-overflow:ellipsis;overflow:hidden}
 .uppercase{text-transform:uppercase}
 .fa.green{color:#499749}
-.fa.red{color:#1481c3}
+.fa.grey{color:#898989}
+.fa.red{color:#E3223C}
+.fa.yellow{color:#c3de00}
+.fa.lightgreen{color:#85bb0b}
+.fa.lightred{color:#ff4b00}
 .fa.orange{color:#f39347}
 .page-content-wrapper{background:#F0F1F3}
 .panel{border:0 solid transparent}

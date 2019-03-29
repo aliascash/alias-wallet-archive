@@ -15,17 +15,20 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
-## 3.0.4
+## 3.0.5
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 24. May 2019 21:00:00 (1558731600 unix epoch time)**
+- Target block time increased from 64 to 96 seconds
+- XSPEC staking reward lowered to fix 2 XSPEC per block
 - Minimum ring size increased from 1 to 10
-- Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 64 seconds * 450 = 8 hours)
+- Minimum maturity for staking and for spending stakes is increased from 288 to 300 blocks (approximately 96 seconds * 300 = 8 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
-  - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
+  - Fix 3 SPECTRE staking reward per block
+  - Same maturity rules as for XSPEC (300 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
-  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 5 new ATXO of that denomination
+  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 1 new ATXO of that denomination
 
 Immediate changes:
 - Change max anon output from 10'000 to 1'000

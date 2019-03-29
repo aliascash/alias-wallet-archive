@@ -4614,8 +4614,9 @@ static uint8_t *GetRingSigPkStart(int rsType, int nRingSize, uint8_t *pStart)
 
 bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount) const
 {
-    nAmountCheck = 0;
+    LOCK2(cs_main, cs_wallet);
 
+    nAmountCheck = 0;
     if (ListUnspentAnonOutputs(lAvailableAnonOutputs, nFilter) != 0)
     {
         sError = "ListUnspentAnonOutputs() failed";
@@ -4628,7 +4629,7 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
     int64_t nLastCoinValue = -1;
     int nMaxSpendable = -1;
     int nAvailableMixins = 0;
-    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end(); ++it)
+    for (std::list<COwnedAnonOutput>::iterator it = lAvailableAnonOutputs.begin(); it != lAvailableAnonOutputs.end();)
     {
         if (nLastCoinValue != it->nValue)
         {
@@ -4649,11 +4650,12 @@ bool CWallet::ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAn
                 (nMaxSpendable != -1 && nCoinsPerValue >= nMaxSpendable) ||
                 nAmountCheck + it->nValue > nMaxAmount)
             // -- not enough coins of same value, unspends or over max amount, drop coin
-            lAvailableAnonOutputs.erase(it);
+            it = lAvailableAnonOutputs.erase(it);
         else
         {
             nAmountCheck += it->nValue;
             nCoinsPerValue++;
+            ++it;
         }
     }
 
@@ -5558,6 +5560,8 @@ bool CWallet::EstimateAnonFee(int64_t nValue, int nRingSize, std::string& sNarr,
 
 int CWallet::ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const
 {
+    LOCK(cs_wallet);
+
     CWalletDB walletdb(strWalletFile, "r");
 
     Dbc* pcursor = walletdb.GetAtCursor();
@@ -6821,13 +6825,10 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 }
                 if (lowestAOC)
                 {
-                    int64_t nQuotient = oao.nValue / lowestAOC->nValue;
-                    int nTarget = nQuotient > UNSPENT_ANON_BALANCE_MAX_CREATE ? UNSPENT_ANON_BALANCE_MAX_CREATE : nQuotient;
-                    for (int i = 0; i < nTarget; ++i)
-                        vOutAmounts.push_back(lowestAOC->nValue);
-                    nCredit += oao.nValue - (nTarget * lowestAOC->nValue);
-                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create %d additional ATXOs of value %d which has only %d unspents\n",
-                              oao.nValue, nTarget, lowestAOC->nValue, lowestAOC->numOfUnspends());
+                    vOutAmounts.push_back(lowestAOC->nValue);
+                    nCredit += oao.nValue - lowestAOC->nValue;
+                    LogPrintf("CreateAnonCoinStake : Split anon stake of value %d to create 1 additional ATXO of value %d which has only %d unspents\n",
+                              oao.nValue, lowestAOC->nValue, lowestAOC->numOfUnspends());
                 }
                 else
                     nCredit += oao.nValue;
