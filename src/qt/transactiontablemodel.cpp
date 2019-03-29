@@ -282,7 +282,10 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Unconfirmed");
         break;
     case TransactionStatus::Confirming:
-        status = tr("Confirming (%1 of %2 recommended confirmations)").arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
+        status = wtx->currency == SPECTRE ? tr("Confirming (%1 of %2 required confirmations)").
+                                            arg(wtx->status.depth).arg(MIN_ANON_SPEND_DEPTH) :
+                                            tr("Confirming (%1 of %2 recommended confirmations)").
+                                            arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
         break;
     case TransactionStatus::Confirmed:
         status = tr("Confirmed (%1 confirmations)").arg(wtx->status.depth);
@@ -438,21 +441,22 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
         return "grey";
     case TransactionStatus::Immature:
     case TransactionStatus::Confirming:
-        status_switch = wtx->status.status == TransactionStatus::Confirming ?
-                    confirmations : (confirmations * 5 /  Params().GetStakeMinConfirmations(wtx->time) + 1);
+        status_switch = (confirmations * 3) / (wtx->status.status == TransactionStatus::Confirming ?
+                    wtx->currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
+                    Params().GetStakeMinConfirmations(wtx->time)) + 1;
         switch(status_switch)
         {
-            case 1: return "fa-clock-o red";
-            case 2: return "fa-clock-o lightred";
-            case 3: return "fa-clock-o orange";
-            case 4: return "fa-clock-o yellow";
+            case 1: return "fa-clock-o grey";
+            case 2: return "fa-clock-o lightgreen";
             default: return "fa-clock-o green";
         };
 
     case TransactionStatus::Confirmed:
         return "fa-check-circle green";
+    case TransactionStatus::NotAccepted:
+        return "fa-exclamation-triangle";
     case TransactionStatus::Conflicted:
-        return "fa-exclamation-triange orange";
+        return "fa-exclamation-triangle orange";
 
     default:
         return "fa-question-circle black";

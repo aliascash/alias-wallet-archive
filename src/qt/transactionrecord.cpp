@@ -460,7 +460,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.status = TransactionStatus::Offline;
         else if (status.depth == 0)
             status.status = TransactionStatus::Unconfirmed;
-        else if (status.depth < RecommendedNumConfirmations)
+        else if (status.depth < (currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
             status.status = TransactionStatus::Confirming;
         else
             status.status = TransactionStatus::Confirmed;
