@@ -3693,7 +3693,7 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             std::vector<uint8_t> vchEmpty;
             CWalletDB *pwalletdbEncryptionOld = pwalletdbEncryption;
             pwalletdbEncryption = pwdb; // HACK, pass pdb to AddCryptedKey
-            AddCryptedKey(cpkE, vchEmpty);
+            AddCryptedKey(pkCoin, vchEmpty);
             pwalletdbEncryption = pwalletdbEncryptionOld;
 
             if (fDebugRingSig)
