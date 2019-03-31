@@ -20,12 +20,12 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - Target block time increased from 64 to 96 seconds
 - XSPEC staking reward lowered to fix 2 XSPEC per block
 - Minimum ring size increased from 1 to 10
-- Minimum maturity for staking and for spending stakes is increased from 288 to 300 blocks (approximately 96 seconds * 300 = 8 hours)
+- Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
   - Fix 3 SPECTRE staking reward per block
-  - Same maturity rules as for XSPEC (300 blocks) but for all ring signature members
+  - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
   - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 1 new ATXO of that denomination

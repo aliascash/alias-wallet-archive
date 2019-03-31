@@ -156,7 +156,7 @@ public:
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 48);
 
         nStakeMinConfirmationsLegacy = 288;
-        nStakeMinConfirmations = 300; // block time 96 seconds * 300 = 8 hours
+        nStakeMinConfirmations = 450; // block time 96 seconds * 450 = 12 hours
 
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 715015;
