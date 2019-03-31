@@ -15,8 +15,8 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
-## 3.0.5
-**V3 blockchain fork consensus changes / Fork time is GMT: Friday, 24. May 2019 21:00:00 (1558731600 unix epoch time)**
+## 3.0.6
+**V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
 - Target block time increased from 64 to 96 seconds
 - XSPEC staking reward lowered to fix 2 XSPEC per block
 - Minimum ring size increased from 1 to 10
@@ -46,6 +46,7 @@ Immediate changes:
   - new compromisedanonheights map for detected All Spent
 - Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
+- UI: Show generated but not accepted stakes as 'Orphan' in overview
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
