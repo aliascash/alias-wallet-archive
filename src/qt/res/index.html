@@ -496,38 +496,48 @@ downloaded 0 blocks of history..."></progress>
                                                     </div>
                                                 </div>
                                                 <div class="panel panel-spectre panel-default no-border" id=portlet-circular-color>
-                                                    <div class=panel-heading>
-                                                        <div class=panel-title>
-                                                            <p style=font-weight:bolder>Balances</div>
-                                                        <div class=panel-controls>
-                                                            <ul>
-                                                                <li><a class=portlet-help href=#><i class="p-b-5 fa fa-question-circle" data-title="Balances overview" style=color:#1481c3></i></a></ul>
-                                                        </div>
-                                                    </div>
-                                                    <hr class=no-margin>
-                                                    <div style=min-height:247px>
+                                                    <div style=min-height:307px;padding-top:8px>
                                                         <div class=wallet>
                                                             <table class="table table-condensed table-hover" id=balances>
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Public
-                                                                    <td class="p-l-20 text-right"><span class=balance>0.00</span>
-                                                                    <td><span class=unit>XSPEC</span>
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Private
-                                                                    <td class="p-l-20 text-right"><span class=spectre_balance>0.00</span>
-                                                                    <td><span class=unitSpectre>SPECTRE</span>
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
-                                                                    <td class="p-l-20 text-right" id=reserved>0.00
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
-                                                                    <td class="p-l-20 text-right" id=stake>0.00
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
-                                                                    <td class="p-l-20 text-right" id=unconfirmed>0.00
-                                                                <tr>
-                                                                    <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
-                                                                    <td class="p-l-20 text-right" id=immature>0.00</table>
+                                                                <thead>
+                                                                    <tr>
+                                                                      <th style="text-align:left">Balance</th>
+                                                                      <th style="text-align:right"><span class="unit">XSPEC</span>
+                                                                        <div style="float: right;margin-left:5px"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Public coins, visible on blockchain" style="color:#1481c3"></i></a></div>
+                                                                      </th>
+                                                                      <th style="text-align:right"><span class="unitSpectre">SPECTRE</span>
+                                                                        <div style="float: right;margin-left:5px"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Private coins, untraceable and unlinkable on blockchain" style="color:#1481c3"></i></a></div>
+                                                                      </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Available
+                                                                            <div style="float: right;"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Available coins for spending" style="color:#1481c3"></i></a></div></td>
+                                                                        <td class="p-l-20 text-right"><span class=balance>0.00
+                                                                        <td class="p-l-20 text-right"><span class=spectre_balance>0.00</span>
+                                                                    <tr>
+                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Reserved
+                                                                            <div style="float: right;"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Reserved coins are not used for staking" style="color:#1481c3"></i></a></div></td>
+                                                                        <td class="p-l-20 text-right" id=reserved>0.00
+                                                                        <td class="p-l-20 text-right" id=reserved_spectre>0.00
+                                                                    <tr>
+                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Stake
+                                                                            <div style="float: right;"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Staked coins must mature before they can be accessed" style="color:#1481c3"></i></a></div></td>
+                                                                        <td class="p-l-20 text-right" id=stake>0.00
+                                                                        <td class="p-l-20 text-right" id=spectre_stake>0.00
+                                                                    <tr>
+                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Unconfirmed
+                                                                            <div style="float: right;"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="XSPEC requires 1 block confirmation<br>SPECTRE requires 10 blocks confirmations" style="color:#1481c3"></i></a></div></td>
+                                                                        <td class="p-l-20 text-right" id=unconfirmed>0.00
+                                                                        <td class="p-l-20 text-right" id=spectre_unconfirmed>0.00
+                                                                    <tr>
+                                                                        <td class="p-l-20 text-left font-montserrat all-caps fs-12 b-r b-dashed b-grey">Immature
+                                                                            <div style="float: right;"><a class="portlet-help" href="#"><i class="p-b-5 fa fa-question-circle" data-title="Immature generated coins with Proof-of-Work" style="color:#1481c3"></i></a></div></td>
+                                                                        <td class="p-l-20 text-right" id=immature>0.00
+                                                                        <td class="p-l-20 text-right" id=spectre_immature>0.00
+                                                                 </tbody>
+                                                              </table>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -71,8 +71,11 @@ public:
     {
         Other,
         Generated,
+        GeneratedSPECTRE,
         GeneratedDonation,
-		GeneratedContribution,
+        GeneratedSPECTREDonation,
+        GeneratedContribution,
+        GeneratedSPECTREContribution,
         SendToAddress,
         SendToOther,
         RecvWithAddress,
