@@ -179,7 +179,7 @@ public:
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
         nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
-        nForkV3Time = 1558731600; // MAINNET V3 chain fork (GMT: Friday, 24. May 2019 21:00:00)
+        nForkV3Time = 1558123200; // MAINNET V3 chain fork (GMT: Friday, 17. May 2019 20:00:00)
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
