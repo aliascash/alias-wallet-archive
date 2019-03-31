@@ -1,24 +1,31 @@
 cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
-        VERSION 2.2.2
+        VERSION 3.0.5
         LANGUAGES
         CXX
         C
         )
 
 # The version number.
-set(CLIENT_VERSION_MAJOR 2)
-set(CLIENT_VERSION_MINOR 2)
-set(CLIENT_VERSION_REVISION 2)
-set(CLIENT_VERSION_BUILD 0)
+set(CLIENT_VERSION_MAJOR 3)
+set(CLIENT_VERSION_MINOR 0)
+set(CLIENT_VERSION_REVISION 5)
+set(CLIENT_VERSION_BUILD 2)
 set(CLIENT_VERSION_GIT_SHA1 "---")
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Configuring on/for macOS")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring on/for Windows")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+    add_definitions("/wd4244")
+    add_definitions("/wd4267")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else()
@@ -34,6 +41,8 @@ endif ()
 if (POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif ()
+
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # ============================================================================================
 message(STATUS "=== Helper functions =======================================================")
@@ -65,7 +74,10 @@ find_package(Boost 1.65.1 REQUIRED COMPONENTS
         system
         thread
         )
-message(STATUS "Boost version: ${Boost_VERSION}")
+message(STATUS "Boost_VERSION:      ${Boost_VERSION}")
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
+message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 
 # ============================================================================================
 message(STATUS "=== Qt =====================================================================")
@@ -115,7 +127,7 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb_upstream/)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 
 # ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")
