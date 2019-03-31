@@ -164,7 +164,7 @@ void AskPassphraseDialog::accept()
         }
         else
         {
-            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked();
+            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked() || UnlockRescan == mode;
             QDialog::accept(); // Success
         }
         break;

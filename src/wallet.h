@@ -302,12 +302,13 @@ public:
     bool CreateStealthOutput(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::string& sError);
     bool CreateAnonOutputs(CStealthAddress* sxAddress, int64_t nValue, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, std::vector<ec_secret> * const vecSecShared=nullptr, int64_t maxAnonOutput = nMaxAnonOutput);
     bool CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>& vOutAmounts, std::string& sNarr, std::vector<std::pair<CScript, int64_t> >& vecSend, CScript& scriptNarration, std::map<CKeyID, CStealthAddress> * const mapPubStealth=nullptr, std::vector<ec_secret> * const vecSecShared=nullptr);
-    int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
+    int PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRingSize, CWalletTx& wtxNew, int nOutputs, int nSizeOutputs, int& nExpectChangeOuts, std::list<COwnedAnonOutput>& lAvailableCoins, std::vector<const COwnedAnonOutput*>& vPickedCoins, std::vector<std::pair<CScript, int64_t> >& vecChange, bool fTest, std::string& sError, int feeMode = 0);
     int GetTxnPreImage(CTransaction& txn, uint256& hash);
-    int PickHidingOutputs(int64_t nValue, int nRingSize, CPubKey& pkCoin, int skip, bool fStaking, uint8_t* p);
+    bool InitMixins(CMixins& mixins, const std::vector<const COwnedAnonOutput*>& vPickedCoins, bool fStaking);
+    int PickHidingOutputs(CMixins& mixins, int64_t nValue, int nRingSize, int skip, uint8_t* p);
     bool AreOutputsUnique(CTransaction& txNew);
     bool GenerateRingSignature(CTxIn& txin, const int& rsType, const int& nRingSize, const int& nSecretOffset, const uint256& preimage, std::string& sError);
-    bool AddAnonInput(CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError);
+    bool AddAnonInput(CMixins& mixins, CTxIn& txin, const COwnedAnonOutput& oao, int rsType, int nRingSize, int& oaoRingIndex, bool fStaking, bool fTestOnly, std::string& sError);
     bool AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const std::vector<std::pair<CScript, int64_t> >&vecSend, std::vector<std::pair<CScript, int64_t> >&vecChange, CWalletTx& wtxNew, int64_t& nFeeRequired, bool fTestOnly, std::string& sError);
 
     bool SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::string& sNarr, CWalletTx& wtxNew, std::string& sError, bool fAskFee=false);

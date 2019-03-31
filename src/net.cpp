@@ -1878,7 +1878,7 @@ bool StopNode()
 
 #ifdef __APPLE__
     // Tor separate process via boost::process
-    if (gTor) {
+    if (gTor && gTor.valid()) {
         LogPrintf("Terminate tor process group\n");
         gTor.terminate();
     }

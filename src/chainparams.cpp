@@ -44,7 +44,9 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     int64_t nSubsidy;
 
     if (IsProtocolV3(pindexPrev->nHeight))
-        nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
+        nSubsidy = Params().IsForkV3(pindexPrev->GetBlockTime()) ?
+                    nStakeReward :
+                    (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
     else
         nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
@@ -61,14 +63,7 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
 
 int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nFees) const
 {
-   int64_t nSubsidy = GetProofOfStakeReward(pindexPrev, 0, nFees);
-
-    // To avoid ATXOs lower than base fee, roundup reward at base fee (2.12345678 becomes 2.1234)
-    // Note: anon staking rewards are only possible from V3 on and then MIN_TX_ANON is effective
-    nSubsidy -= nSubsidy % nMinTxFee;
-    nSubsidy += nMinTxFee;
-
-    return nSubsidy;
+    return nAnonStakeReward + nFees;
 }
 
 //
@@ -161,7 +156,7 @@ public:
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 48);
 
         nStakeMinConfirmationsLegacy = 288;
-        nStakeMinConfirmations = 450; // block time 64 seconds * 450 = 8 hours
+        nStakeMinConfirmations = 450; // block time 96 seconds * 450 = 12 hours
 
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 715015;
@@ -184,7 +179,7 @@ public:
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
         nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
-        nForkV3Time = 1558731600; // MAINNET V3 chain fork (GMT: Friday, 24. May 2019 21:00:00)
+        nForkV3Time = 1558123200; // MAINNET V3 chain fork (GMT: Friday, 17. May 2019 20:00:00)
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
@@ -226,7 +221,7 @@ public:
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 46);
 
         nStakeMinConfirmationsLegacy = 28;
-        nStakeMinConfirmations = 45;
+        nStakeMinConfirmations = 30;
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce = 20;

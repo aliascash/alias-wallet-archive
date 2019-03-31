@@ -969,34 +969,40 @@ var overviewPage = {
   },
   updateTransaction : function(message) {
     var update = function(data) {
-      return "<tr><td class='text-left' width='30%' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><label style='margin-top:6px;' class='label label-important inline fs-12'>" +
-      ("input" == data.t ? "Received" : "output" == data.t ? "Sent" : "inout" == data.t ? "In-Out" : "staked" == data.t ? "Stake" : "donated" == data.t ? "Donated" : "contributed" == data.t ? "Contributed" : "other" == data.t ? "Other" : data.t) +
-      "</label></center></td><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><a id='" + data.id.substring(data.id.length-20) + "' data-title='" + data.tt +
-      "' href='#' onclick='$(\"#navitems [href=#transactions]\").click();$(\"#" + data.id + "\").click();'> " + unit.format(data.am) + " " + ((data.am_curr === 'SPECTRE') ? unit.displaySpectre : unit.display) +
-      " </a></center></td><td width='30%' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><span class='overview_date' data-value='" + data.d + "'><center>" + data.d_s + "</center></span></td></tr>";
+        var label = (8 === data.s_i || 9 === data.s_i) ? "Orphan" :
+                                                       "input" == data.t ? "Received" : "output" == data.t ? "Sent" : "inout" == data.t ? "In-Out" : "staked" == data.t ? "Stake" : "donated" == data.t ? "Donated" : "contributed" == data.t ? "Contributed" : "other" == data.t ? "Other" : data.t;
+        return "<tr><td class='text-left' width='30%' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><label style='margin-top:6px;' class='label label-important inline fs-12'>" +
+                label +
+                "</label></center></td><td class='text-left' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><center><a id='" + data.id.substring(data.id.length-20) + "' data-title='" + data.tt +
+                "' href='#' onclick='$(\"#navitems [href=#transactions]\").click();$(\"#" + data.id + "\").click();'> " + unit.format(data.am) + " " + ((data.am_curr === 'SPECTRE') ? unit.displaySpectre : unit.display) +
+                " </a></center></td><td width='30%' style='border-top: 1px solid rgba(230, 230, 230, 0.7);border-bottom: none;'><span class='overview_date' data-value='" + data.d + "'><center>" + data.d_s + "</center></span></td></tr>";
     };
+    var row = update(message);
     var idfirst = message.id.substring(message.id.length-20);
-    if (0 == $("#" + idfirst).attr("data-title", message.tt).length) {
+    var existingRow = $("#" + idfirst).attr("data-title", message.tt).closest("tr");
+    if (0 == existingRow.length) {
       var $items = $("#recenttxns tr");
-      var error = update(message);
       var o = false;
       var i = 0;
       for (;i < $items.length;i++) {
         var $this = $($items[i]);
         if (parseInt(message.d) > parseInt($this.find(".overview_date").data("value"))) {
-          $this.before(error);
+          $this.before(row);
           o = true;
           break;
         }
       }
       if (!o) {
-        $("#recenttxns").append(error);
+        $("#recenttxns").append(row);
       }
       $items = $("#recenttxns tr");
       for (;$items.length > 8;) {
         $("#recenttxns tr:last").remove();
         $items = $("#recenttxns tr");
       }
+    }
+    else {
+        existingRow.replaceWith(row);
     }
   },
   clientInfo : function() {

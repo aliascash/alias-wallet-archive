@@ -7,7 +7,7 @@ pipeline {
     options {
         timestamps()
         timeout(time: 3, unit: 'HOURS')
-        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '5'))
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '3'))
         disableConcurrentBuilds()
     }
     environment {
@@ -16,7 +16,7 @@ pipeline {
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
-        RELEASE_TAG = '3.0.3'
+        RELEASE_TAG = '3.0.6'
         BLOCKCHAIN_ARCHIVE_VERSION = "2019-01-20"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
@@ -840,6 +840,13 @@ pipeline {
                                 name: "${RELEASE_NAME}",
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
                                 preRelease: "${PRERELEASE}"
+                        )
+                        uploadArtifactToGitHub(
+                                user: 'spectrecoin',
+                                repository: 'spectre',
+                                tag: "${GIT_TAG_TO_USE}",
+                                artifactNameLocal: "releaseNotesToDeploy.txt",
+                                artifactNameRemote: "RELEASENOTES.txt",
                         )
                     }
                 }

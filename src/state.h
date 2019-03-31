@@ -57,7 +57,6 @@ static const int64_t COIN_YEAR_REWARD = 5 * CENT; // 5% per year
 
 static const int64_t MBLK_RECEIVE_TIMEOUT = 60; // seconds
 
-static const int UNSPENT_ANON_BALANCE_MAX_CREATE = 5;
 static const int UNSPENT_ANON_BALANCE_MIN = 100;
 static const int UNSPENT_ANON_BALANCE_MAX = 200;
 static const int UNSPENT_ANON_SELECT_MIN = 20;
@@ -119,6 +118,9 @@ extern int64_t nMinTxFee;
 extern int64_t nMinTxFeeAnonLegacy;
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
 extern int64_t nMinRelayTxFee;
+
+extern int64_t nStakeReward;
+extern int64_t nAnonStakeReward;
 
 extern unsigned int nStakeSplitAge;
 extern int64_t nStakeSplitThreshold;

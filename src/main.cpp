@@ -1926,7 +1926,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
-    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
+    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight, pindexLast->GetBlockTime());
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
@@ -1966,7 +1966,7 @@ unsigned int GetNextTargetRequiredThin(const CBlockThinIndex* pindexLast, bool f
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
-    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
+    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight, pindexLast->GetBlockTime());
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
