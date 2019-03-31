@@ -459,7 +459,7 @@ pipeline {
                         stage('Trigger Blockchain upload') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin-Blockchain',
+                                        job: 'Spectrecoin-Blockchain-v3',
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
