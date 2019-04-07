@@ -240,10 +240,10 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6")
+                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "-Qt5.9.6")
                                     // The following archive step is only for development purposes.
                                     // Remove it before merge to develop!
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4-Qt5.9.6.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                 }
                             }
                         }
@@ -302,7 +302,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}")
+                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "")
                                     // The following archive step is only for development purposes.
                                     // Remove it before merge to develop!
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
@@ -690,8 +690,8 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4-Qt5.9.6.zip"
+                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "-Qt5.9.6")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                 }
                             }
                         }
@@ -701,24 +701,24 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "rm -f Spectrecoin*-Win64.zip*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6-Win64.zip"
+                                    sh "rm -f Spectrecoin*.zip*"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.9.6-Win64.zip",
+                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
                                     )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4-Qt5.9.6.zip"
+                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
                                             tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4-Qt5.9.6.zip",
+                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
                                     )
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip", "Checksum-Spectrecoin-Win64.txt")
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip", "Checksum-Spectrecoin-Win64-OBFS4.txt")
-                                    sh "rm -f Spectrecoin*-Win64.zip* Checksum-Spectrecoin*"
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip", "Checksum-Spectrecoin-Win64-Qt5.9.6.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip", "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt")
+                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
                             post {
@@ -782,7 +782,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}")
+                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                 }
                             }
@@ -793,7 +793,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "rm -f Spectrecoin*-Win64.zip*"
+                                    sh "rm -f Spectrecoin*.zip*"
                                     sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
@@ -808,9 +808,9 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
                                     )
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-Win64.zip", "Checksum-Spectrecoin-Qt5.12-Win64.txt")
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Qt5.12-Win64-OBFS4.zip", "Checksum-Spectrecoin-Qt5.12-Win64-OBFS4.txt")
-                                    sh "rm -f Spectrecoin*-Win64.zip* Checksum-Spectrecoin*"
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip", "Checksum-Spectrecoin-Win64.txt")
+                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip", "Checksum-Spectrecoin-Win64-OBFS4.txt")
+                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
                             post {
@@ -1053,7 +1053,7 @@ def prepareWindowsBuild() {
     }
 }
 
-def createWindowsDelivery(String version) {
+def createWindowsDelivery(String version, String suffix) {
     // Unzip Tor and remove debug content
     fileOperations([
             fileUnZipOperation(
@@ -1088,7 +1088,7 @@ def createWindowsDelivery(String version) {
         ])
     }
     // If archive from previous build exists, move it to directory 'old'
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}.zip"
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}${suffix}.zip"
     if (exists) {
         fileOperations([
                 fileRenameOperation(
@@ -1096,20 +1096,20 @@ def createWindowsDelivery(String version) {
                         destination: "${WORKSPACE}/old/Spectrecoin-${version}.zip"),
         ])
     }
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64.zip"
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip"
     if (exists) {
         fileOperations([
                 fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64.zip"),
+                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64${suffix}.zip"),
         ])
     }
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64-OBFS4.zip"
+    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"
     if (exists) {
         fileOperations([
                 fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64-OBFS4.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64-OBFS4.zip"),
+                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip",
+                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"),
         ])
     }
     // Remove directory with artifacts from previous build
@@ -1123,7 +1123,7 @@ def createWindowsDelivery(String version) {
     fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
-                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64.zip"),
+                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip"),
             fileRenameOperation(
                     source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
                     destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
@@ -1135,7 +1135,7 @@ def createWindowsDelivery(String version) {
     fileOperations([
             fileRenameOperation(
                     source: "${WORKSPACE}/Spectrecoin.zip",
-                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64-OBFS4.zip"),
+                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"),
             fileRenameOperation(
                     source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
                     destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
