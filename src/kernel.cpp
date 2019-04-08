@@ -201,7 +201,7 @@ bool ComputeNextStakeModifier(const CBlockIndex* pindexPrev, uint64_t& nStakeMod
 
     // Sort candidate blocks by timestamp
     std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp;
-    vSortedByTimestamp.reserve(64 * nModifierInterval / GetTargetSpacing(pindexPrev->nHeight));
+    vSortedByTimestamp.reserve(64 * nModifierInterval / GetTargetSpacing(pindexPrev->nHeight, pindexPrev->GetBlockTime()));
     int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
     int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / nModifierInterval) * nModifierInterval - nSelectionInterval;
     const CBlockIndex* pindex = pindexPrev;
@@ -290,7 +290,7 @@ bool ComputeNextStakeModifierThin(const CBlockThinIndex* pindexPrev, uint64_t& n
 
     // Sort candidate blocks by timestamp
     std::vector<std::pair<int64_t, uint256> > vSortedByTimestamp;
-    vSortedByTimestamp.reserve(64 * nModifierInterval / GetTargetSpacing(pindexPrev->nHeight));
+    vSortedByTimestamp.reserve(64 * nModifierInterval / GetTargetSpacing(pindexPrev->nHeight, pindexPrev->GetBlockTime()));
     int64_t nSelectionInterval = GetStakeModifierSelectionInterval();
     int64_t nSelectionIntervalStart = (pindexPrev->GetBlockTime() / nModifierInterval) * nModifierInterval - nSelectionInterval;
     const CBlockThinIndex* pindex = pindexPrev;
@@ -662,9 +662,6 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
     if (nTimeTx < txPrev.nTime)  // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    if (nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation");
-
     // Base target
     CBigNum bnTarget;
     bnTarget.SetCompact(nBits);
@@ -684,36 +681,27 @@ static inline bool CheckStakeKernelHashV2(CStakeModifier* pStakeMod, unsigned in
 
     hashProofOfStake = Hash(ss.begin(), ss.end());
 
-    if (fPrintProofOfStake)
-    {
-        LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from timestamp=%s\n",
-            pStakeMod->nModifier, pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime),
-            DateTimeStrFormat(nTimeBlockFrom));
-        LogPrintf("CheckStakeKernelHash() : check modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s target=%s\n",
-            pStakeMod->nModifier,
-            nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
-            hashProofOfStake.ToString(),
-            bnTarget.ToString());
-    }
 
     // Now check if proof-of-stake hash meets target protocol
-    if (CBigNum(hashProofOfStake) > bnTarget)
-        return false;
+    bool foundHash = CBigNum(hashProofOfStake) < bnTarget;
 
-    if (fDebug && !fPrintProofOfStake)
+    if (fPrintProofOfStake || (foundHash && fDebug))
     {
-        LogPrintf("CheckStakeKernelHash() : using modifier 0x%016x at height=%d timestamp=%s for block from timestamp=%s\n",
-            pStakeMod->nModifier, pStakeMod->nHeight,
-            DateTimeStrFormat(pStakeMod->nTime),
-            DateTimeStrFormat(nTimeBlockFrom));
-        LogPrintf("CheckStakeKernelHash() : pass modifier=0x%016x nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
-            pStakeMod->nModifier,
-            nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
-            hashProofOfStake.ToString());
+        if (Params().IsProtocolV3(pStakeMod->nHeight))
+            LogPrintf("CheckStakeKernelHash() : PoSv3 check=%b with modifierV2=%s at height=%d timestamp=%s, nTimeTxPrev=%u nPrevout=%u nTimeTx=%u, hashProof=%s target=%s\n",
+                      foundHash,
+                      pStakeMod->bnModifierV2.ToString(), pStakeMod->nHeight, DateTimeStrFormat(pStakeMod->nTime),
+                      txPrev.nTime, prevout.n, nTimeTx,
+                      hashProofOfStake.ToString(), bnTarget.ToString());
+        else
+            LogPrintf("CheckStakeKernelHash() : PoSv2 check=%b with modifier=0x%016x at height=%d timestamp=%s, nTimeBlockFrom=%u nTimeTxPrev=%u nPrevout=%u nTimeTx=%u, hashProof=%s target=%s\n",
+                      foundHash,
+                      pStakeMod->nModifier, pStakeMod->nHeight, DateTimeStrFormat(pStakeMod->nTime),
+                      nTimeBlockFrom, txPrev.nTime, prevout.n, nTimeTx,
+                      hashProofOfStake.ToString(), bnTarget.ToString());
     }
 
-    return true;
+    return foundHash;
 }
 
 
@@ -728,6 +716,9 @@ bool CheckStakeKernelHash(int nPrevHeight, CStakeModifier* pStakeMod, unsigned i
 // Check kernel hash target and coinstake signature
 bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
 {
+    if (tx.nVersion == ANON_TXN_VERSION)
+        return CheckAnonProofOfStake(pindexPrev, tx, nBits, hashProofOfStake, targetProofOfStake);
+
     if (!tx.IsCoinStake())
         return error("CheckProofOfStake() : called on non-coinstake %s", tx.GetHash().ToString());
 
@@ -753,15 +744,11 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
     if (Params().IsProtocolV3(pindexPrev->nHeight))
     {
         int nDepth;
-        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, Params().GetStakeMinConfirmations(tx.nTime) - 1, nDepth))
             return tx.DoS(100, error("CheckProofOfStake() : tried to stake at depth %d", nDepth + 1));
     }
-    else
-    {
-        unsigned int nTimeBlockFrom = block.GetBlockTime();
-        if (nTimeBlockFrom + nStakeMinAge > tx.nTime)
-            return error("CheckProofOfStake() : min age violation");
-    }
+    else if (block.GetBlockTime() + nStakeMinAge >  tx.nTime)
+        return error("CheckProofOfStake() : min age violation");
 
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
     if (!CheckStakeKernelHash(pindexPrev->nHeight, &stakeMod, nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, txPrev, txin.prevout, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
@@ -798,11 +785,11 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     if (Params().IsProtocolV3(pindexPrev->nHeight+1))
     {
         int nDepth;
-        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nDepth))
+        if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, Params().GetStakeMinConfirmations(nTime) - 1, nDepth))
             return false;
     }
     else if (block.GetBlockTime() + nStakeMinAge > nTime)
-            return false; // only count coins meeting min age requirement
+        return false; // only count coins meeting min age requirement
 
     if (pBlockTime)
         *pBlockTime = block.GetBlockTime();
@@ -810,4 +797,124 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
     // - workaround for thin mode
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
     return CheckStakeKernelHash(pindexPrev->nHeight, &stakeMod, nBits, block, txindex.pos.nTxPos - txindex.pos.nBlockPos, txPrev, prevout, nTime, hashProofOfStake, targetProofOfStake, fDebugPoS);
+}
+
+
+/**
+ * -----------------------------------------------------------
+ * Stealth Staking
+ * -----------------------------------------------------------
+ *
+ * An anon staking transaction is valid, if
+ *   - transaction is PoSv3 conform
+ *   - a valid rigsignature of MIN_RING_SIZE exists in vin[0]
+ *   - keyImage is unspent (checked in CheckAnonInputs())
+ *   - all ring signature anon outputs meet minDepth maturity requirement (checked in CheckAnonInputs())
+ *   - the kernel hash calculated is below target
+ *
+ * Spectrecoin anon kernel protocol
+ * --------------------------------
+ * coinstake kernel (input 0) must meet hash target according to the formula:
+ *
+ *     hash(nStakeModifier + keyImage + nTime) < bnTarget * nWeight
+ *
+ * this ensures that the chance of getting a coinstake is proportional to the amount of coins one owns.
+ *
+ * The reason this hash is chosen is the following:
+ *   nStakeModifier: scrambles computation to make it very difficult to precompute future proof-of-stake.
+ *                   nStakeModifier is either the UTXO hash or keyImage used for the last staking transaction
+ *   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
+ *             makes sure an ATXO can only be used once for generating a kernel hash
+ *   nTime: current timestamp (granularity set to 16 seconds)
+ *
+ * Note:
+ *   block/tx hash should not be used here as they can be generated in vast
+ *   quantities so as to generate blocks faster, degrading the system back into
+ *   a proof-of-work situation.
+ */
+bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned int nBits, uint256& hashProofOfStake, uint256& targetProofOfStake)
+{
+    if (!tx.IsAnonCoinStake())
+        return error("CheckAnonProofOfStake() : called on non-anon-coinstake %s", tx.GetHash().ToString());
+
+    if (!Params().IsProtocolV3(pindexPrev->nHeight+1))
+        return error("CheckAnonProofOfStake() : not allowed for PoSv2 for coinstake %s", tx.GetHash().ToString());
+
+    if (!Params().IsForkV3(tx.nTime))
+        return error("CheckAnonProofOfStake() : called before V3 fork time for coinstake %s", tx.GetHash().ToString());
+
+    if (!tx.vin[0].IsAnonInput())
+        return error("CheckAnonProofOfStake() : vin[0] is no anon input for coinstake %s", tx.GetHash().ToString());
+
+    if (!tx.vout[1].IsAnonOutput())
+        return error("CheckAnonProofOfStake() : vout[1] is no anon output for coinstake %s", tx.GetHash().ToString());
+
+    CTxDB txdb("r");
+
+    // Kernel (input 0) must match the stake hash target per coin age (nBits)
+    const CTxIn& txin = tx.vin[0];
+    ec_point vchImage;
+    txin.ExtractKeyImage(vchImage);
+
+    // ringsig AB
+    int64_t nCoinValue = -1;
+    int nRingSize = txin.ExtractRingSize();
+    if (nRingSize != MIN_RING_SIZE)
+        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Ringsize not %d for coinstake %s", MIN_RING_SIZE, tx.GetHash().ToString().c_str()));
+
+    {
+        LOCK(cs_main);
+        if (!tx.CheckAnonInputAB(txdb, txin, 0, MIN_RING_SIZE, vchImage, nCoinValue))
+            return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake %s", tx.GetHash().ToString().c_str()));
+    }
+
+    CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
+    if (!CheckAnonStakeKernelHash(&stakeMod, nBits, nCoinValue, vchImage, tx.nTime, hashProofOfStake, targetProofOfStake, fDebugPoS))
+        return tx.DoS(1, error("CheckAnonProofOfStake() : INFO: check kernel failed on coinstake %s, hashProof=%s", tx.GetHash().ToString().c_str(), hashProofOfStake.ToString().c_str())); // may occur during initial download or if behind on block chain sync
+
+    return true;
+}
+// Note: this method does not validate that the keyImage is valid & unspent and that anon output is mature
+bool CheckAnonStakeKernelHash(CStakeModifier* pStakeMod, const unsigned int& nBits, const int64_t& anonValue, const ec_point &anonKeyImage, const unsigned int& nTimeTx, uint256& hashProofOfStake, uint256& targetProofOfStake, const bool fPrintProofOfStake)
+{
+    // Base target
+    CBigNum bnTarget;
+    bnTarget.SetCompact(nBits);
+
+    // Weighted target
+    CBigNum bnWeight = CBigNum(anonValue);
+    bnTarget *= bnWeight;
+
+    targetProofOfStake = bnTarget.getuint256();
+
+    CDataStream ss(SER_GETHASH, 0);
+    ss << pStakeMod->bnModifierV2;
+    ss << anonKeyImage << nTimeTx;
+
+    hashProofOfStake = Hash(ss.begin(), ss.end());
+
+    // Now check if proof-of-stake hash meets target protocol
+    bool foundHash = CBigNum(hashProofOfStake) < bnTarget;
+
+    if (fPrintProofOfStake || (foundHash && fDebug))
+    {
+        LogPrintf("CheckAnonStakeKernelHash() : PoSv3 check=%b with modifier=%s at height=%d timestamp=%s, anonKeyImage=%s nTimeTx=%u, hashProof=%s target=%s\n",
+                  foundHash,
+                  pStakeMod->bnModifierV2.ToString(),
+                  pStakeMod->nHeight,
+                  DateTimeStrFormat(pStakeMod->nTime),
+                  HexStr(anonKeyImage), nTimeTx,
+                  hashProofOfStake.ToString(),
+                  bnTarget.ToString());
+    }
+    return foundHash;
+}
+
+
+bool CheckAnonKernel(const CBlockIndex* pindexPrev, const unsigned int& nBits, const int64_t& anonValue, const ec_point& anonKeyImage, const unsigned int& nTime)
+{
+    uint256 hashProofOfStake, targetProofOfStake;
+
+    CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
+    return CheckAnonStakeKernelHash(&stakeMod, nBits, anonValue, anonKeyImage, nTime, hashProofOfStake, targetProofOfStake, fDebugPoS);
 }

@@ -3,7 +3,11 @@
 #transaction-info ul li .contact-info .contact-name,td{text-overflow:ellipsis;overflow:hidden}
 .uppercase{text-transform:uppercase}
 .fa.green{color:#499749}
-.fa.red{color:#1481c3}
+.fa.grey{color:#898989}
+.fa.red{color:#E3223C}
+.fa.yellow{color:#c3de00}
+.fa.lightgreen{color:#85bb0b}
+.fa.lightred{color:#ff4b00}
 .fa.orange{color:#f39347}
 .page-content-wrapper{background:#F0F1F3}
 .panel{border:0 solid transparent}
@@ -140,8 +144,6 @@ progress::-webkit-progress-value{border-radius:50px;box-spectre:inset 0 1px 1px 
 .footable-row-detail-value{display:table-cell}
 .footable-odd{background-color:#f7f7f7}
 .table>tbody>tr>td,.table>tbody>tr>th,.table>tfoot>tr>td,.table>tfoot>tr>th,.table>thead>tr>td,.table>thead>tr>th{padding:18px}
-#balances tr td:nth-child(2) {padding-right:10px}
-#balances tr td:nth-child(3) {padding-left:0;}
 @media (max-width:700px){.padding-right-forms{margin-right:0}
 .hide-this-icon{display:none}
 }

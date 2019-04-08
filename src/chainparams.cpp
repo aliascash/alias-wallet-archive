@@ -25,8 +25,8 @@ int64_t CChainParams::GetProofOfWorkReward(int nHeight, int64_t nFees) const
     // miner's coin base reward
     int64_t nSubsidy = 0;
 
-	if(nHeight == 1)
-		nSubsidy = (NetworkID() == CChainParams::TESTNET ? 100000 : 20000000) * COIN;  // 20Mill Pre-mine on MainNet
+    if(nHeight == 1)
+        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 2000000 : 20000000) * COIN;  // 20Mill Pre-mine on MainNet, 2Mill pre-mine on TestNet
 
     else if(nHeight <= nLastPOWBlock)
         nSubsidy = 0;
@@ -44,14 +44,26 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     int64_t nSubsidy;
 
     if (IsProtocolV3(pindexPrev->nHeight))
-        nSubsidy = (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
+        nSubsidy = Params().IsForkV3(pindexPrev->GetBlockTime()) ?
+                    nStakeReward :
+                    (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
     else
         nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
     if (fDebug && GetBoolArg("-printcreation"))
-        LogPrintf("GetProofOfStakeReward(): create=%s nCoinAge=%d\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
+    {
+        if (IsProtocolV3(pindexPrev->nHeight))
+            LogPrintf("GetProofOfStakeReward(): create=%s\n", FormatMoney(nSubsidy).c_str());
+        else
+            LogPrintf("GetProofOfStakeReward(): create=%s nCoinAge=%d\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
+    }
 
     return nSubsidy + nFees;
+}
+
+int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nFees) const
+{
+    return nAnonStakeReward + nFees;
 }
 
 //
@@ -104,7 +116,7 @@ public:
         vSeeds.push_back(CDNSSeedData("node1.spectreproject.io", "node1.spectreproject.io"));
         vSeeds.push_back(CDNSSeedData("node2.spectreproject.io", "node2.spectreproject.io"));
         vSeeds.push_back(CDNSSeedData("node3.spectreproject.io", "node3.spectreproject.io"));
-		vSeeds.push_back(CDNSSeedData("node4.spectreproject.io", "node4.spectreproject.io"));
+        vSeeds.push_back(CDNSSeedData("node4.spectreproject.io", "node4.spectreproject.io"));
       }
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual const std::vector<CAddress>& FixedSeeds() const {
@@ -134,20 +146,23 @@ public:
         nRPCPort = 36657;
         nBIP44ID = 0x800000d5;
 
-		//nLastPOWBlock = 2016; // Running for 1 Week after ICO
-		nLastPOWBlock = 17000;
-		nFirstPosv2Block = 17001;
+        //nLastPOWBlock = 2016; // Running for 1 Week after ICO
+        nLastPOWBlock = 17000;
+        nFirstPosv2Block = 17001;
         nFirstPosv3Block = 17010;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
         bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 48);
 
+        nStakeMinConfirmationsLegacy = 288;
+        nStakeMinConfirmations = 450; // block time 96 seconds * 450 = 12 hours
+
         genesis.nBits    = bnProofOfWorkLimit.GetCompact();
         genesis.nNonce   = 715015;
 
         hashGenesisBlock = genesis.GetHash();
-		assert(hashGenesisBlock == uint256("0x000001fd6111f0d71d90b7d8c827c6028dbc867f6c527d90794a0d22f68fecd4"));
+        assert(hashGenesisBlock == uint256("0x000001fd6111f0d71d90b7d8c827c6028dbc867f6c527d90794a0d22f68fecd4"));
         assert(genesis.hashMerkleRoot == uint256("0x48d79d88cdf7d5c84dbb2ffb4fcaab253cebe040a4e7b46cdd507fbb93623e3f"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(63).convert_to_container<std::vector<unsigned char> >();
@@ -164,6 +179,7 @@ public:
         convertSeeds(vFixedSeeds, pnSeed, ARRAYLEN(pnSeed), nDefaultPort);
 
         nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
+        nForkV3Time = 1558123200; // MAINNET V3 chain fork (GMT: Friday, 17. May 2019 20:00:00)
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
     }
@@ -196,19 +212,22 @@ public:
         nRPCPort = 36757;
         nBIP44ID = 0x80000001;
 
-        nLastPOWBlock = 110;
-        nFirstPosv2Block = 110;
+        nLastPOWBlock = 20;
+        nFirstPosv2Block = 20;
         nFirstPosv3Block = 500;
 
         bnProofOfWorkLimit = CBigNum(~uint256(0) >> 1);
         bnProofOfStakeLimit = CBigNum(~uint256(0) >> 20);
-        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 16);
+        bnProofOfStakeLimitV2 = CBigNum(~uint256(0) >> 46);
+
+        nStakeMinConfirmationsLegacy = 28;
+        nStakeMinConfirmations = 30;
 
         genesis.nBits  = bnProofOfWorkLimit.GetCompact();
-        genesis.nNonce = 1001;
+        genesis.nNonce = 20;
 
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x0eaef840827189830c177c345f53a26ad87e0770b200a83d7ff6a928d725d882"));
+        assert(hashGenesisBlock == uint256("0x0a3e03a153b1713ebc1f03fefa5d013bba4d2677ae189fcb727396b98043d95c"));
 
         base58Prefixes[PUBKEY_ADDRESS]      = list_of(127).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[SCRIPT_ADDRESS]      = list_of(196).convert_to_container<std::vector<unsigned char> >();
@@ -224,8 +243,10 @@ public:
         convertSeeds(vFixedSeeds, pnTestnetSeed, ARRAYLEN(pnTestnetSeed), nDefaultPort);
 
         nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
+        nForkV3Time = 1546470000; // TESTNET V3 chain fork (01/02/2019 @ 11:00pm (UTC))
 
-        devContributionAddress = "tQuY2feSvtYogfWPbXLgqgDT2JfdZYUf7h";
+
+        devContributionAddress = "tSJoPZoXumJyDmGKYo9Y7SZkJvymESFYkD";
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };
