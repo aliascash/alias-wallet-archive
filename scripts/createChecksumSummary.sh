@@ -25,8 +25,8 @@ for currentChecksumfile in \
     Checksum-Spectrecoin-Mac-OBFS4.txt \
     Checksum-Spectrecoin-RaspberryPi.txt \
     Checksum-Spectrecoin-Ubuntu.txt \
-    Checksum-Spectrecoin-WIN64.txt \
-    Checksum-Spectrecoin-WIN64-OBFS4.txt \
+    Checksum-Spectrecoin-Win64.txt \
+    Checksum-Spectrecoin-Win64-OBFS4.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt ; do
 #    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
