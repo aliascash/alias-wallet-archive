@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-[ -d .git ] && [ -d leveldb ] && [ -d db4.8 ] || \
+[ -d .git ] && [ -d leveldb ] || \
   { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
 
 git submodule init
