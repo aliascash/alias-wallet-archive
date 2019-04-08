@@ -13,18 +13,36 @@ set(CLIENT_VERSION_REVISION 2)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(STATUS "Configuring on/for Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "Configuring on/for macOS")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "Configuring on/for Windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+    message(STATUS "Configuring on/for IBM AIX")
+else()
+    message(STATUS "Configuring on/for ${CMAKE_SYSTEM_NAME}")
+endif()
+
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 endif ()
 
-# Include own cmake modules
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
 if (POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif ()
+
+# ============================================================================================
+message(STATUS "=== Helper functions =======================================================")
+# Include own cmake modules
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# Determine current Git hash
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 
 # Must use GNUInstallDirs to install libraries into correct
 # locations on all platforms.
@@ -48,17 +66,6 @@ find_package(Boost 1.65.1 REQUIRED COMPONENTS
         thread
         )
 message(STATUS "Boost version: ${Boost_VERSION}")
-
-# ============================================================================================
-message(STATUS "=== Berkeley DB ============================================================")
-#
-# Use BDB local module
-#FIND_PACKAGE(BerkeleyDB)
-#IF(DB_INCLUDE_DIR)
-#    INCLUDE_DIRECTORIES(${DB_INCLUDE_DIR})
-#ELSE(DB_INCLUDE_DIR)
-#    MESSAGE(FATAL_ERROR "Could not locate BerkeleyDB")
-#ENDIF(DB_INCLUDE_DIR)
 
 # ============================================================================================
 message(STATUS "=== Qt =====================================================================")
@@ -107,17 +114,22 @@ message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 # ============================================================================================
-message(STATUS "=== Git helper =============================================================")
-# Determine current Git hash
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-include(GetGitRevisionDescription)
-get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
+message(STATUS "=== LevelDB ================================================================")
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 
 # ============================================================================================
-message(STATUS "=== Threads ================================================================")
-find_package(Threads)
+message(STATUS "=== Berkeley DB ============================================================")
+#set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
+find_package(BerkeleyDB REQUIRED)
 
 # ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
 add_subdirectory(src)
-#add_subdirectory(leveldb)
+
+# ============================================================================================
+#message(STATUS "=== List of all variables ==================================================")
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach ()
