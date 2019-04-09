@@ -565,11 +565,11 @@ bool CTransaction::IsStandard() const
     {
         if (txin.IsAnonInput())
         {
-            int nRingSize = txin.ExtractRingSize();
+            uint32_t nRingSize = (uint32_t)txin.ExtractRingSize();
+            auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax(nTime);
 
             if (nVersion != ANON_TXN_VERSION
-                || nRingSize < 1
-                || nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD)
+                || nRingSize < nMinRingSize || nRingSize > nMaxRingSize
                 || txin.scriptSig.size() > sizeof(COutPoint) + 2 + (33 + 32 + 32) * nRingSize)
             {
                 LogPrintf("IsStandard() anon txin failed.\n");
@@ -2322,11 +2322,11 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         };
 
         int64_t nCoinValue = -1;
-        int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < 1
-          ||nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+        uint32_t nRingSize = (uint32_t)txin.ExtractRingSize();
+        auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax(nTime);
+        if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
         {
-            LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
+            LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, nMinRingSize, nMaxRingSize);
             fInvalid = true; return false;
         };
 

@@ -63,6 +63,16 @@ inline int64_t FutureDriftV2(int64_t nTime) { return nTime + 15; }
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return Params().IsProtocolV2(nHeight) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
 inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? 96 : 64 : 60; }
+inline std::pair<uint32_t, uint32_t> GetRingSizeMinMax(int64_t nTime = 0) {
+    uint32_t nMinRingSize = 1, nMaxRingSize = MAX_RING_SIZE;
+    if (nTime == 0 || Params().IsForkV3(nTime))
+    {
+        nMinRingSize = MIN_RING_SIZE;
+        if (nTime == 0 || !fTestNet) // TODO remove with next TESTNET restart
+            nMaxRingSize = MIN_RING_SIZE;
+    }
+    return std::make_pair(nMinRingSize, nMaxRingSize);
+}
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;

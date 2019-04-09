@@ -3391,10 +3391,10 @@ bool CWallet::ProcessAnonTransaction(CWalletDB *pwdb, CTxDB *ptxdb, const CTrans
             };
         }
 
-        int nRingSize = txin.ExtractRingSize();
-        if (nRingSize <  (Params().IsForkV3(tx.nTime) ? (int)MIN_RING_SIZE : 1)
-          ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
-            return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
+        uint32_t nRingSize = (uint32_t)txin.ExtractRingSize();
+        auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax(tx.nTime);
+        if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+            return error("%s: Input %d ringsize %d not in range [%d, %d].", __func__, i, nRingSize, nMinRingSize, nMaxRingSize);
 
         const uint8_t *pPubkeys;
         int rsType;
@@ -4832,10 +4832,10 @@ bool CWallet::AddAnonInputs(int rsType, int64_t nTotalOut, int nRingSize, const 
     if (fDebugRingSig)
         LogPrintf("AddAnonInputs() %d, %d, rsType:%d\n", nTotalOut, nRingSize, rsType);
 
-    if (nRingSize < (int)MIN_RING_SIZE
-            ||nRingSize > (Params().IsProtocolV3(nBestHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < (int)nMinRingSize || nRingSize > (int)nMaxRingSize)
     {
-        sError = tfm::format("Ringsize %d not in range [%d, %d]: ", nRingSize,  MIN_RING_SIZE, MAX_RING_SIZE);
+        sError = tfm::format("Ringsize %d not in range [%d, %d]: ", nRingSize, nMinRingSize, nMaxRingSize);
         return false;
     }
 
@@ -5194,9 +5194,10 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
     };
 
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
     {
-        sError = tfm::format("Ring size must be >= %d and <= %d.", MIN_RING_SIZE, MAX_RING_SIZE);
+        sError = tfm::format("Ring size must be >= %d and <= %d.", nMinRingSize, nMaxRingSize);
         return false;
     }
 

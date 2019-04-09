@@ -36,7 +36,7 @@ void OptionsModel::Init()
     fAutoRingSize = settings.value("fAutoRingSize", false).toBool();
     fAutoRedeemSpectre = settings.value("fAutoRedeemSpectre", false).toBool();
     nMinRingSize = settings.value("nMinRingSize", MIN_RING_SIZE).toInt();
-    nMaxRingSize = settings.value("nMaxRingSize", MAX_RING_SIZE).toInt();
+    nMaxRingSize = settings.value("nMaxRingSize", MIN_RING_SIZE).toInt();
 
     // These are shared with core Bitcoin; we want
     // command-line options to override the GUI settings:

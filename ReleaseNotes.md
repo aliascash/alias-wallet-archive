@@ -15,11 +15,11 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
 ### Changelog
-## 3.0.6
+## 3.0.7
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
 - Target block time increased from 64 to 96 seconds
 - XSPEC staking reward lowered to fix 2 XSPEC per block
-- Minimum ring size increased from 1 to 10
+- Minimum ring size increased from 1 to fix 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001

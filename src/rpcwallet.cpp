@@ -2378,8 +2378,9 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+        ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".", throw std::runtime_error(ssThrow.str());
 
 
     std::string sNarr;
@@ -2434,8 +2435,9 @@ Value sendanontospec(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[2].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < 1 || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= 1 and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+        ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".", throw std::runtime_error(ssThrow.str());
 
 
     std::string sNarr;
@@ -2484,8 +2486,9 @@ Value estimateanonfee(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[1].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+        ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".", throw std::runtime_error(ssThrow.str());
 
 
     std::string sNarr;
