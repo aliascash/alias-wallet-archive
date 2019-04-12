@@ -4,7 +4,7 @@
 
 This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
 
-17/05/2019 (171th May 2019_) @ 2000 hours (GMT)
+17/05/2019 (_17th May 2019_) @ 2000 hours (GMT)
 
 If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
 
