@@ -5195,9 +5195,10 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     std::ostringstream ssThrow;
     auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
-    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    if (nRingSize < (int)nMinRingSize || nRingSize > (int)nMaxRingSize)
     {
-        sError = tfm::format("Ring size must be >= %d and <= %d.", nMinRingSize, nMaxRingSize);
+        sError = nMinRingSize == nMaxRingSize ? tfm::format("Ring size must be = %d.", nMinRingSize) :
+                                                tfm::format("Ring size must be >= %d and <= %d.", nMinRingSize, nMaxRingSize);
         return false;
     }
 
