@@ -71,7 +71,8 @@ common_SOURCES = anonymize.cpp \
 		 txmempool.cpp \
 		 chainparams.cpp \
 		 state.cpp \
-		 bloom.cpp
+		 bloom.cpp \
+		 shutdown.cpp
 
 bin_PROGRAMS = spectrecoind
 spectrecoind_SOURCES = $(common_SOURCES) \
@@ -268,7 +269,8 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/trafficgraphwidget.cpp \
 		  qt/spectregui.cpp \
 		  qt/spectre.cpp \
-		  qt/spectrebridge.cpp
+		  qt/spectrebridge.cpp \
+		  qt/winshutdownmonitor.cpp
 
 spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS) $(QT5WEBKIT_LIBS)
 spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) $(QT5WEBKIT_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
