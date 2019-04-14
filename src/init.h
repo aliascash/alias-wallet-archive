@@ -7,10 +7,9 @@
 #define BITCOIN_INIT_H
 
 #include "wallet.h"
+#include "shutdown.h"
 
 extern CWallet* pwalletMain;
-void StartShutdown();
-bool ShutdownRequested();
 void Shutdown();
 int BlockSignals();
 bool AppInit2(boost::thread_group& threadGroup);

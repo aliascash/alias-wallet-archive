@@ -69,6 +69,7 @@ HEADERS += \
     $$PWD/qt/transactionrecord.h \
     $$PWD/qt/transactiontablemodel.h \
     $$PWD/qt/walletmodel.h \
+    $$PWD/qt/winshutdownmonitor.h \
     $$PWD/wordlists/chinese_simplified.h \
     $$PWD/wordlists/chinese_traditional.h \
     $$PWD/wordlists/english.h \
@@ -130,6 +131,7 @@ HEADERS += \
     $$PWD/wallet.h \
     $$PWD/walletdb.h \
     $$PWD/addrman.h \
+    $$PWD/shutdown.h \
 
 SOURCES += \
     $$PWD/json/json_spirit_reader.cpp \
@@ -167,6 +169,7 @@ SOURCES += \
     $$PWD/qt/transactionrecord.cpp \
     $$PWD/qt/transactiontablemodel.cpp \
     $$PWD/qt/walletmodel.cpp \
+    $$PWD/qt/winshutdownmonitor.cpp \
 #    $$PWD/test/other/DoS_tests.cpp \
 #    $$PWD/test/other/miner_tests.cpp \
 #    $$PWD/test/other/transaction_tests.cpp \
@@ -249,6 +252,7 @@ SOURCES += \
     $$PWD/lz4/lz4.c \
     $$PWD/xxhash/xxhash.c \
     $$PWD/addrman.cpp \
+    $$PWD/shutdown.cpp \
 
 
 #levelDB additional headers
