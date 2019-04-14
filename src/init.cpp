@@ -147,7 +147,7 @@ void Shutdown()
 // Note: this also handles SIGINT
 void HandleSIGTERM()
 {
-    fRequestShutdown = true;
+    StartShutdown();
 }
 
 void HandleSIGHUP()
