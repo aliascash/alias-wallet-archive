@@ -2011,7 +2011,7 @@ bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
 
-    if (pindexBest == NULL || nBestHeight < Checkpoints::GetTotalBlocksEstimate())
+    if (pindexBest == NULL || nBestHeight < GetNumBlocksOfPeers())
         return true;
 
     static int64_t nLastUpdate;
