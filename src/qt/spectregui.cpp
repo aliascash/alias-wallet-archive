@@ -743,7 +743,7 @@ void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
 void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
     qDebug() << "SpectreGUI::incomingTransaction";
-    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || (nNodeMode != NT_FULL && nNodeState != NS_READY))
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
