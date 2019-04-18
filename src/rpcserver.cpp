@@ -312,6 +312,7 @@ static const CRPCCommand vRPCCommands[] =
     { "createmultisig",         &createmultisig,         true,      false,     true  },
     { "addredeemscript",        &addredeemscript,        false,     false,     false },
     { "getrawmempool",          &getrawmempool,          true,      false,     false },
+    {  "gettxout",              &gettxout,               true,      false,     false },
     { "getblock",               &getblock,               false,     false,     false },
     { "getblockbynumber",       &getblockbynumber,       false,     false,     false },
     { "setbestblockbyheight",   &setbestblockbyheight,   false,     false,     false },
