@@ -759,6 +759,7 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
     // On new transaction, make an info balloon
     // Unless the initial block download is in progress, to prevent balloon-spam
     QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
+    QString narration    = ttm->index(start, TransactionTableModel::Narration, parent).data().toString();
     QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
     qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
     QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
@@ -767,10 +768,9 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                         tr("%1 %2")
                         .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
                         .arg(type),
-                        tr("%1\n"
-                           "Date: %2\n")
-                        .arg(address)
-                        .arg(date), icon);
+                        narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
+                                               tr("Address: %1\n").arg(address),
+                        icon);
 }
 
 void SpectreGUI::optionsClicked()
