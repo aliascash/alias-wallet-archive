@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 project(Spectrecoin
-        VERSION 3.0.6
+        VERSION 3.0.7
         LANGUAGES
         CXX
         C
@@ -9,8 +9,8 @@ project(Spectrecoin
 # The version number.
 set(CLIENT_VERSION_MAJOR 3)
 set(CLIENT_VERSION_MINOR 0)
-set(CLIENT_VERSION_REVISION 6)
-set(CLIENT_VERSION_BUILD 0)
+set(CLIENT_VERSION_REVISION 7)
+set(CLIENT_VERSION_BUILD 3)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
