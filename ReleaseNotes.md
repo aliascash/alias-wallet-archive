@@ -1,10 +1,10 @@
-## SPECTRECOIN V2
+## SPECTRECOIN V3
 
 ```By downloading and using this software, you agree that 1/6 of the staking rewards are contributed to a development fund. The development fund aims to support the long term development and value of Spectrecoin. The fund is managed by the Spectrecoin core team.```
 
 This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
 
-21/08/2018 (_21th August 2018_) @ 2200 hours (GMT)
+17/05/2019 (_17th May 2019_) @ 2000 hours (GMT)
 
 If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
 
@@ -12,14 +12,14 @@ If you do not update your wallet software you will no longer be able to connect 
 After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be designated DCBs and will be sent to the Spectrecoin team development fund wallet. This fund will ensure a future for Spectrecoin and will enable us to pay for certain services and to hire contractors and to pay Spectrecoin core team members in XSPEC to enable them to work full time on the project. We have some long term projects and concepts to implement such as a new proof-of-stake algorithm we call Proof-of-Stealth to enable so called "stealth staking". These developments depend on a source of steady funding. We believe this will give us the opportunity to produce better software and will create value for investors. We currently have some very skilled developers working for us and we want to keep it that way.
 
 ### Replay Protection
-We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
+We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
-## 3.0.6
+## 3.0.7
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
 - Target block time increased from 64 to 96 seconds
 - XSPEC staking reward lowered to fix 2 XSPEC per block
-- Minimum ring size increased from 1 to 10
+- Minimum ring size increased from 1 to fix 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
 - 8 hours maturity rules for staking is removed (Fixes #79)
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
@@ -119,6 +119,7 @@ Attention: Mnemonic seed words used for sub-wallet creation pre 2.0.7 will not w
 - [#75](https://github.com/spectrecoin/spectre/issues/75) Fix Wrong fee calculation when transfer from private to public
 
 ## 2.0.5
+**V2 blockchain fork consensus changes / Fork time is GMT: Tuesday, 21. August 2018 22:00:00 (1534888800 unix epoch time)**
 - [#40](https://github.com/spectrecoin/spectre/issues/40) / [#53](https://github.com/spectrecoin/spectre/issues/53) support cyrillic usernames by using the unicode function of windows to fetch the pathname (Windows)
 - [#42](https://github.com/spectrecoin/spectre/issues/42) Remove additional UI id chars from transaction ID when copy/paste
 - [#50](https://github.com/spectrecoin/spectre/issues/50) Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'

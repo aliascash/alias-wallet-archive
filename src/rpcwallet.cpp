@@ -2365,7 +2365,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
-            "  warning: using a ring_size less than 10 is not possible"
+            "  warning: using a ring_size other than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2378,8 +2378,15 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
 
     std::string sNarr;
@@ -2422,7 +2429,8 @@ Value sendanontospec(const Array& params, bool fHelp)
         throw std::runtime_error(
             "sendanontospec <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
-            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            "<ring_size> is a number of outputs of the same amount to include in the signature\n"
+            "  warning: using a ring_size other than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2434,9 +2442,15 @@ Value sendanontospec(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[2].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < 1 || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= 1 and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
-
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
     std::string sNarr;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -2484,8 +2498,15 @@ Value estimateanonfee(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[1].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
 
     std::string sNarr;

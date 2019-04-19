@@ -472,11 +472,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
             };
 
-            if (ringSizes < (int)MIN_RING_SIZE
-                || ringSizes > (int)MAX_RING_SIZE)
+            auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+            if (ringSizes < (int)nMinRingSize || ringSizes > (int)nMaxRingSize)
             {
-                QMessageBox::critical(window, tr("Error:"), tr("Ring size outside range [%1, %2].").arg(MIN_RING_SIZE).arg(MAX_RING_SIZE),
-                              QMessageBox::Abort, QMessageBox::Abort);
+                QString message = nMinRingSize == nMaxRingSize ? tr("Ring size must be %1.").arg(nMinRingSize) :
+                                                                 tr("Ring size outside range [%1, %2].").arg(nMinRingSize).arg(nMaxRingSize);
+                QMessageBox::critical(window, tr("Error:"), message, QMessageBox::Abort, QMessageBox::Abort);
                 emit sendCoinsResult(false);
             return;
             };

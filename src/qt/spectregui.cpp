@@ -255,7 +255,9 @@ SpectreGUI::~SpectreGUI()
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
 
+    delete webEnginePage;
     delete webEngineView;
+
 #ifdef Q_OS_MAC
     delete appMenuBar;
 #endif
@@ -741,7 +743,7 @@ void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
 void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
     qDebug() << "SpectreGUI::incomingTransaction";
-    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || nNodeState != NS_READY)
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || (nNodeMode != NT_FULL && nNodeState != NS_READY))
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
@@ -757,21 +759,18 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
     // On new transaction, make an info balloon
     // Unless the initial block download is in progress, to prevent balloon-spam
     QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
+    QString narration    = ttm->index(start, TransactionTableModel::Narration, parent).data().toString();
     QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
     qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
     QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
 
     notificator->notify(Notificator::Information,
-                        (amount)<0 ? tr("Sent transaction") :
-                                     tr("Incoming transaction"),
-                          tr("Date: %1\n"
-                             "Amount: %2\n"
-                             "Type: %3\n"
-                             "Address: %4\n")
-                          .arg(date)
-                          .arg(BitcoinUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
-                          .arg(type)
-                          .arg(address), icon);
+                        tr("%1 %2")
+                        .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
+                        .arg(type),
+                        narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
+                                               tr("Address: %1\n").arg(address),
+                        icon);
 }
 
 void SpectreGUI::optionsClicked()
