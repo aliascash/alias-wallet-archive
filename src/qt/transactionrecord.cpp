@@ -121,10 +121,11 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {      
             if (!listReceived.empty()) // should never be empty
             {
+                int64_t stakingReward = nNet > 0 ? nNet : fabs(wtx.GetValueOut() - nDebit);
                 const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
                 TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
                                                 rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
-                                                rNarration, 0, -allFee, rCurrency, parts.size());
+                                                rNarration, 0, stakingReward, rCurrency, parts.size());
 
                 for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
                 {
