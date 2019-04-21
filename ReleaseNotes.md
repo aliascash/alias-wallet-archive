@@ -50,6 +50,7 @@ Immediate changes:
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
+- RPC: add method gettxout
 - RPC: method anoninfo shows new stats per denomination:
   - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
   - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
