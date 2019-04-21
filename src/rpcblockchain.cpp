@@ -917,59 +917,57 @@ Value gettxout(const Array& params, bool fHelp)
     CTransaction tx;
     uint256 hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock, mem))
-      return Value::null;  
+        return Value::null;
 
     if (n<0 || (unsigned int)n>=tx.vout.size() || tx.vout[n].IsNull())
-      return Value::null;
+        return Value::null;
 
     if (hashBlock == 0)
     {
-      ret.push_back(Pair("bestblock", pindexBest->GetBlockHash().GetHex()));
-      ret.push_back(Pair("confirmations", 0));
+        ret.push_back(Pair("bestblock", pindexBest->GetBlockHash().GetHex()));
+        ret.push_back(Pair("confirmations", 0));
     }
     else
     {
-      map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
-      if (mi != mapBlockIndex.end() && (*mi).second)
-      {
-        CBlockIndex* pindex = (*mi).second;
-        if (pindex->IsInMainChain())
+        map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
+        if (mi != mapBlockIndex.end() && (*mi).second)
         {
-          bool isSpent=false;
-          CBlockIndex* p = pindex;
-          p=p->pnext;
-          for (; p; p = p->pnext)
-          {
-            CBlock block;
-            CBlockIndex* pblockindex = mapBlockIndex[p->GetBlockHash()];
-            block.ReadFromDisk(pblockindex, true);
-            BOOST_FOREACH(const CTransaction& tx, block.vtx)
+            CBlockIndex* pindex = (*mi).second;
+            if (pindex->IsInMainChain())
             {
-              BOOST_FOREACH(const CTxIn& txin, tx.vin)
-              {
-                if( hash == txin.prevout.hash &&
-                   (int64_t)txin.prevout.n )
+                if (!tx.vout[n].IsAnonOutput())
                 {
-                  printf("spent at block %s\n", block.GetHash().GetHex().c_str());
-                  isSpent=true; break;
+                    bool isSpent=false;
+                    CBlockIndex* p = pindex;
+                    p=p->pnext;
+                    for (; p; p = p->pnext)
+                    {
+                        CBlock block;
+                        CBlockIndex* pblockindex = mapBlockIndex[p->GetBlockHash()];
+                        block.ReadFromDisk(pblockindex, true);
+                        BOOST_FOREACH(const CTransaction& tx, block.vtx)
+                        {
+                            BOOST_FOREACH(const CTxIn& txin, tx.vin)
+                            {
+                                if(hash == txin.prevout.hash && (int64_t)txin.prevout.n)
+                                {
+                                    printf("spent at block %s\n", block.GetHash().GetHex().c_str());
+                                    isSpent=true; break;
+                                }
+                            }
+                            if(isSpent) break;
+                        }
+                        if(isSpent) break;
+                    }
+                    if(isSpent)
+                        return Value::null;
                 }
-              }
-
-              if(isSpent) break;
+                ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
             }
-
-            if(isSpent) break;
-          }
-
-          if(isSpent)
-            return Value::null;
-
-          ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
+            else
+                return Value::null;
         }
-        else
-          return Value::null;
-      }
-      ret.push_back(Pair("bestblock", hashBlock.GetHex()));
+        ret.push_back(Pair("bestblock", hashBlock.GetHex()));
     }
 
     ret.push_back(Pair("value", ValueFromAmount(tx.vout[n].nValue)));
