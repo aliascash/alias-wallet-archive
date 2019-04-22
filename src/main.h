@@ -165,7 +165,7 @@ int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 bool IsConfirmedInNPrevBlocks(const CTxIndex& txindex, const CBlockIndex* pindexFrom, int nMaxDepth, int& nActualDepth);
 std::string GetWarnings(std::string strFor);
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool s=false);
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool = false);
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock);
 
 bool GetKeyImage(CTxDB* ptxdb, ec_point& keyImage, CKeyImageSpent& keyImageSpent, bool& fInMempool);
