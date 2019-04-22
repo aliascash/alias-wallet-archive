@@ -937,30 +937,16 @@ Value gettxout(const Array& params, bool fHelp)
             {
                 if (!tx.vout[n].IsAnonOutput())
                 {
-                    bool isSpent=false;
-                    CBlockIndex* p = pindex;
-                    p=p->pnext;
-                    for (; p; p = p->pnext)
-                    {
-                        CBlock block;
-                        CBlockIndex* pblockindex = mapBlockIndex[p->GetBlockHash()];
-                        block.ReadFromDisk(pblockindex, true);
-                        BOOST_FOREACH(const CTransaction& tx, block.vtx)
-                        {
-                            BOOST_FOREACH(const CTxIn& txin, tx.vin)
-                            {
-                                if(hash == txin.prevout.hash && (int64_t)txin.prevout.n)
-                                {
-                                    printf("spent at block %s\n", block.GetHash().GetHex().c_str());
-                                    isSpent=true; break;
-                                }
-                            }
-                            if(isSpent) break;
-                        }
-                        if(isSpent) break;
-                    }
-                    if(isSpent)
+                    CTxDB txdb("r");
+                    CTxIndex txindex;
+                    if (!txdb.ReadTxIndex(tx.GetHash(), txindex))
                         return Value::null;
+
+                    if (!txindex.vSpent[n].IsNull())
+                    {
+                        LogPrintf("gettxout: %s prev tx already used at %s", tx.GetHash().ToString(), txindex.vSpent[n].ToString());
+                        return Value::null; // spent
+                    }
                 }
                 ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
             }
