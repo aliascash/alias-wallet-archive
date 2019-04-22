@@ -1131,14 +1131,9 @@ int CTxIndex::GetDepthInMainChainFromIndex() const
 bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool)
 {
     {
-        if(includemempool)
-        {
-            LOCK(cs_main);
-            {
-                if (mempool.lookup(hash, tx))
-                    return true;
-            }
-        }
+        if(includemempool && mempool.lookup(hash, tx))
+            return true;
+
         CTxDB txdb("r");
         CTxIndex txindex;
         if (tx.ReadFromDisk(txdb, COutPoint(hash, 0), txindex))
