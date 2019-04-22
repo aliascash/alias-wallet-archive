@@ -910,6 +910,7 @@ Value gettxout(const Array& params, bool fHelp)
     uint256 hash;
     hash.SetHex(params[0].get_str());
     int n = params[1].get_int();
+    COutPoint out(hash, n);
     bool mem = true;
     if (params.size() == 3)
         mem = params[2].get_bool();
@@ -937,6 +938,9 @@ Value gettxout(const Array& params, bool fHelp)
             {
                 if (!tx.vout[n].IsAnonOutput())
                 {
+                    if (mem && mempool.isSpent(out))
+                        return Value::null;
+
                     CTxDB txdb("r");
                     CTxIndex txindex;
                     if (!txdb.ReadTxIndex(tx.GetHash(), txindex))
