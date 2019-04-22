@@ -66,6 +66,7 @@ public:
     }
 
     bool lookup(uint256 hash, CTransaction& result) const;
+    bool isSpent(const COutPoint& outpoint) const;
 
     bool insertKeyImage(const std::vector<uint8_t>& vchImage, CKeyImageSpent& kis)
     {
