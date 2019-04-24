@@ -209,6 +209,7 @@ extern json_spirit::Value setbestblockbyheight(const json_spirit::Array& params,
 extern json_spirit::Value rewindchain(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value nextorphan(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getnewstealthaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value liststealthaddresses(const json_spirit::Array& params, bool fHelp);

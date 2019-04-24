@@ -1128,12 +1128,12 @@ int CTxIndex::GetDepthInMainChainFromIndex() const
 }
 
 // Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool)
 {
     {
-        LOCK(cs_main);
-        if (mempool.lookup(hash, tx))
+        if(includemempool && mempool.lookup(hash, tx))
             return true;
+
         CTxDB txdb("r");
         CTxIndex txindex;
         if (tx.ReadFromDisk(txdb, COutPoint(hash, 0), txindex))
@@ -1146,6 +1146,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
     }
     return false;
 }
+
 
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock)
 {
