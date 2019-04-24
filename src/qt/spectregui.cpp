@@ -228,9 +228,9 @@ unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
 #ifdef Q_OS_WIN
-    QFile html("C:/spectre/index.html");
+    QFile html("C:/spectrecoin-ui/index.html");
 #else
-    QFile html("/opt/spectre/index.html");
+    QFile html("/opt/spectrecoin-ui/index.html");
 #endif
 
     if(html.exists())
