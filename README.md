@@ -49,6 +49,16 @@ code in development. It is generally stable but can contain features that have h
 testing than released versions. If you want to build a stable version of Spectrecoin, please
 check out the latest release tag before you start building.
 
+### UI development
+
+The following files where maintained on the separate Git repository
+[spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui):
+* src/qt/res/assets/*
+* src/qt/res/index.html
+* spectre.qrc
+
+**Do not modify them here!**
+
 ### Dependencies
 
 To build the Spectrecoin wallet from source, you will need the following dependencies:
