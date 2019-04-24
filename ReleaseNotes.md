@@ -18,13 +18,13 @@ We have implemented a check for DCBs and we have implemented a replay protection
 ## 3.0.7
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
 - Target block time increased from 64 to 96 seconds
-- XSPEC staking reward lowered to fix 2 XSPEC per block
+- XSPEC staking reward lowered to fixed 2 XSPEC per block
 - Minimum ring size increased from 1 to fix 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
-- 8 hours maturity rules for staking is removed (Fixes #79)
+- 8 hours maturity rules for staking is removed (Fixes [#79](https://github.com/spectrecoin/spectre/issues/79))
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
-  - Fix 3 SPECTRE staking reward per block
+  - Staking reward per block fixed 3 SPECTRE
   - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
   - Maximal ATXO stake output value of 1'000 (same as max anon output)
   - Consolidation of up to 50 ATXOs in staking transaction
@@ -45,12 +45,15 @@ Immediate changes:
   - new attribute nBlockHeight in CKeyImageSpent
   - new compromisedanonheights map for detected All Spent
 - Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
+- Fix wallet.dat corruption problem on Windows (On Windows shutdown wallet is safely closed)
+- UI: [#149](https://github.com/spectrecoin/spectre/issues/149) Fixed notifications
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Show generated but not accepted stakes as 'Orphan' in overview
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
+- UI: Rebased all UI changes since initial commit back to separate UI repository [spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui)
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
-- RPC: add method gettxout
+- RPC: [#2](https://github.com/spectrecoin/spectre/issues/2) Integrate API method gettxout
 - RPC: method anoninfo shows new stats per denomination:
   - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
   - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
