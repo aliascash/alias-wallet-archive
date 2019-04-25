@@ -5692,7 +5692,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
         if ((nFilter == MaturityFilter::NONE ||
              (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minBlockHeight)) // ao confirmed in last block has depth of 1
                 && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true)
-                && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight))
+                && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight - MIN_ANON_SPEND_DEPTH))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
             if (mi != mOutputCounts.end())
