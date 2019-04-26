@@ -712,22 +712,11 @@ QVariantMap SpectreBridge::listAnonOutputs()
 
     outputCount mOwnedOutputCounts;
     outputCount mMatureOutputCounts;
-    outputCount mSystemOutputCounts;
 
     if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
      || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
         LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
-        emit listAnonOutputsResult(anonOutputs);
-        return anonOutputs;
-    };
-
-    for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
-        mSystemOutputCounts[mi->first] = 0;
-
-    if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, CWallet::MaturityFilter::FOR_SPENDING) != 0)
-    {
-        LogPrintf("Error: CountAnonOutputs failed.\n");
         emit listAnonOutputsResult(anonOutputs);
         return anonOutputs;
     };
@@ -739,9 +728,16 @@ QVariantMap SpectreBridge::listAnonOutputs()
 
         anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
         anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
-        anonOutput.insert("system_mature",  mSystemOutputCounts[aoc->nValue]);
+        anonOutput.insert("system_mature",  aoc->nMature);
+        anonOutput.insert("system_compromised",  aoc->nCompromised);
         anonOutput.insert("system_outputs", aoc->nExists);
         anonOutput.insert("system_spends",  aoc->nSpends);
+        anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
+        anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
+        anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
+        anonOutput.insert("system_mixins_mature",  aoc->nMixins);
+        anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
+
         anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight);
         anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
