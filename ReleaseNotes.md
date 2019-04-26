@@ -51,6 +51,7 @@ Immediate changes:
 - UI: Show generated but not accepted stakes as 'Orphan' in overview
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
+- UI: Change CHAIN DATA view columns to Unspent (Mature), Mixins (Mature), System (Compromised)
 - UI: Rebased all UI changes since initial commit back to separate UI repository [spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui)
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
 - RPC: [#2](https://github.com/spectrecoin/spectre/issues/2) Integrate API method gettxout
@@ -58,6 +59,7 @@ Immediate changes:
   - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
   - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
   - Compromised Height: the last block height an All Spent situation occured
+  - Compromised: does count mixins compromised by ring signature one AND all spent
 
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual
