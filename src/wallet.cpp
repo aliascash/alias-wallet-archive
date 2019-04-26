@@ -5797,7 +5797,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
             {
                 it->nExists += nExists;
                 it->nUnconfirmed += nUnconfirmed;
-                it->nCompromised += ao.nCompromised;
+                it->nCompromised += fCompromised;
                 it->nMature += nMature;
                 it->nMixins += nMixins;
                 it->nMixinsStaking += nMixinsStaking;
@@ -5809,19 +5809,19 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
             };
             if (ao.nValue > it->nValue)
                 continue;
-            lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+            lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, fCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
             fProcessed = true;
             break;
         };
         if (!fProcessed)
-            lOutputCounts.push_back(CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+            lOutputCounts.push_back(CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, fCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
 
 
         // add last 1000 anon blocks to mapAnonBlockStats
         if (ao.nBlockHeight && nBlockHeight - ao.nBlockHeight <= nMaxAnonBlockCache)
         {
             CAnonBlockStat& anonBlockStat = mapAnonBlockStats[ao.nBlockHeight][ao.nValue];
-            anonBlockStat.nCompromisedOutputs += ao.nCompromised;
+            anonBlockStat.nCompromisedOutputs += fCompromised;
             if (ao.fCoinStake)
                 anonBlockStat.nStakingOutputs++;
             else
