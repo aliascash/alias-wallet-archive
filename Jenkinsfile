@@ -17,7 +17,7 @@ pipeline {
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = '3.0.7'
-        BLOCKCHAIN_ARCHIVE_VERSION = "2019-04-08"
+        BLOCKCHAIN_ARCHIVE_VERSION = "2019-04-26"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
