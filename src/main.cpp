@@ -2251,6 +2251,11 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
             LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised.\n", i, ri);
             return false;
         }
+
+        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
+        if (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= ao.nBlockHeight)
+            LogPrintf("CheckAnonInputsAB(): Warn tx %s, input %d, element %d does use a mixin which is compromised by ALL SPENT (ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
+                      GetHash().ToString(), i, ri, ao.nBlockHeight, nCompromisedHeight);
     };
 
     if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
