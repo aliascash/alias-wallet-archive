@@ -6096,7 +6096,7 @@ bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
             anonOutputCount.nLastHeight = nBlockHeight;
 
         // Persist compromised anon block height in case all anons of one denomination has been spent
-        if (anonOutputCount.nMature && anonOutputCount.nMature - anonOutputCount.nSpends <= 0)
+        if (anonOutputCount.nMature && anonBlockStat.nSpends && anonOutputCount.nMature - anonOutputCount.nSpends <= 0)
         {
             LogPrintf("%s: ALL SPENT of mature anon denomination %d in block height %d. -> persist compromised height.\n",
                       __func__, nValue, nBlockHeight);
