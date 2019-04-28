@@ -62,7 +62,17 @@ inline int64_t FutureDriftV2(int64_t nTime) { return nTime + 15; }
 
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return Params().IsProtocolV2(nHeight) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
-inline unsigned int GetTargetSpacing(int nHeight) { return Params().IsProtocolV2(nHeight) ? 64 : 60; }
+inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? 96 : 64 : 60; }
+inline std::pair<uint32_t, uint32_t> GetRingSizeMinMax(int64_t nTime = 0) {
+    uint32_t nMinRingSize = 1, nMaxRingSize = MAX_RING_SIZE;
+    if (nTime == 0 || Params().IsForkV3(nTime))
+    {
+        nMinRingSize = MIN_RING_SIZE;
+        if (nTime == 0 || !fTestNet) // TODO remove with next TESTNET restart
+            nMaxRingSize = MIN_RING_SIZE;
+    }
+    return std::make_pair(nMinRingSize, nMaxRingSize);
+}
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
@@ -102,7 +112,15 @@ struct COrphanBlock {
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
+extern bool fStaleAnonCache;
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;
+
+struct CAnonBlockStat {
+    uint16_t nSpends, nOutputs, nStakingOutputs, nCompromisedOutputs;
+};
+extern int nMaxAnonBlockCache;
+extern std::map<int, std::map<int64_t, CAnonBlockStat>> mapAnonBlockStats;
+
 
 extern CTxMemPool mempool;
 
@@ -136,7 +154,7 @@ CBlockThinIndex* FindBlockThinByHeight(int nHeight);
 bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle);
 
-bool LoadExternalBlockFile(int nFile, FILE* fileIn);
+bool LoadExternalBlockFile(int nFile, FILE* fileIn, std::function<void (const uint32_t&)> funcProgress = nullptr);
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
@@ -147,7 +165,7 @@ int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 bool IsConfirmedInNPrevBlocks(const CTxIndex& txindex, const CBlockIndex* pindexFrom, int nMaxDepth, int& nActualDepth);
 std::string GetWarnings(std::string strFor);
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock);
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool = false);
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock);
 
 bool GetKeyImage(CTxDB* ptxdb, ec_point& keyImage, CKeyImageSpent& keyImageSpent, bool& fInMempool);
@@ -339,6 +357,12 @@ public:
         return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
     }
 
+    bool IsAnonCoinStake() const
+    {
+        // ppcoin: the coin stake transaction is marked with the first output empty
+        return nVersion == ANON_TXN_VERSION && IsCoinStake();
+    }
+
     /** Check for standard transaction types
         @return True if all outputs (scriptPubKeys) use only standard transaction forms
     */
@@ -476,6 +500,7 @@ public:
     bool FetchInputs(CTxDB& txdb, const std::map<uint256, CTxIndex>& mapTestPool,
                      bool fBlock, bool fMiner, MapPrevTx& inputsRet, bool& fInvalid);
 
+    bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int iVin, int nRingSize, const std::vector<uint8_t> &vchImage, int64_t &nCoinValue) const;
     bool CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInvalid, bool fCheckExists);
 
     /** Sanity check previous transactions, then, if all checks succeed,
@@ -810,6 +835,11 @@ public:
         return (vtx.size() > 1 && vtx[1].IsCoinStake());
     }
 
+    bool IsProofOfAnonStake() const
+    {
+        return (vtx.size() > 1 && vtx[1].IsAnonCoinStake());
+    }
+
     bool IsProofOfWork() const
     {
         return !IsProofOfStake();
@@ -971,6 +1001,7 @@ public:
     bool AcceptBlock();
     bool SignBlock(CWallet& keystore, int64_t nFees);
     bool CheckBlockSignature() const;
+    bool CheckAnonBlockSignature() const;
 
     bool GetHashProof(uint256& hashProof);
 

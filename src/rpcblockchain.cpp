@@ -19,6 +19,7 @@ using namespace json_spirit;
 using namespace std;
 
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, json_spirit::Object& entry);
+extern void ScriptPubKeyToJSON(const CScript& scriptPubKey, Object& out, bool fIncludeHex);
 
 double BitsToDouble(unsigned int nBits)
 {
@@ -320,7 +321,7 @@ Value getdifficulty(const Array& params, bool fHelp)
 
 Value settxfee(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 1 || params.size() > 1 || AmountFromValue(params[0]) < MIN_TX_FEE)
+    if (fHelp || params.size() < 1 || params.size() > 1 || AmountFromValue(params[0]) < nMinTxFee)
         throw runtime_error(
             "settxfee <amount>\n"
             "<amount> is a real and is rounded to the nearest 0.01");
@@ -870,4 +871,101 @@ Value thinforcestate(const Array& params, bool fHelp)
         result.push_back(Pair("result", "Failed."));
 
     return result;
+}
+Value gettxout(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 2 || params.size() > 3)
+        throw runtime_error(
+            "gettxout \"txid\" n ( includemempool )\n"
+            "\nReturns details about an unspent transaction output.\n"
+            "\nArguments:\n"
+            "1. \"txid\"       (string, required) The transaction id\n"
+            "2. n              (numeric, required) vout value\n"
+            "3. includemempool  (boolean, optional) Whether to included the mem pool\n"
+            "\nResult:\n"
+            "{\n"
+            "  \"bestblock\" : \"hash\",    (string) the block hash\n"
+            "  \"confirmations\" : n,       (numeric) The number of confirmations\n"
+            "  \"value\" : x.xxx,           (numeric) The transaction value in btc\n"
+            "  \"scriptPubKey\" : {         (json object)\n"
+            "     \"asm\" : \"code\",       (string) \n"
+            "     \"hex\" : \"hex\",        (string) \n"
+            "     \"reqSigs\" : n,          (numeric) Number of required signatures\n"
+            "     \"type\" : \"pubkeyhash\", (string) The type, eg pubkeyhash\n"
+            "     \"addresses\" : [          (array of string) array of bitcoin addresses\n"
+            "        \"bitcoinaddress\"     (string) bitcoin address\n"
+            "        ,...\n"
+            "     ]\n"
+            "  },\n"
+            "  \"version\" : n,            (numeric) The version\n"
+            "  \"coinbase\" : true|false   (boolean) Coinbase or not\n"
+            "  \"coinstake\" : true|false  (boolean) Coinstake or not\n"
+            "}\n"
+        );
+
+    LOCK(cs_main);
+
+    Object ret;
+
+    uint256 hash;
+    hash.SetHex(params[0].get_str());
+    int n = params[1].get_int();
+    COutPoint out(hash, n);
+    bool mem = true;
+    if (params.size() == 3)
+        mem = params[2].get_bool();
+
+    CTransaction tx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(hash, tx, hashBlock, mem))
+        return Value::null;
+
+    if (n<0 || (unsigned int)n>=tx.vout.size() || tx.vout[n].IsNull())
+        return Value::null;
+
+    if (hashBlock == 0)
+    {
+        ret.push_back(Pair("bestblock", pindexBest->GetBlockHash().GetHex()));
+        ret.push_back(Pair("confirmations", 0));
+    }
+    else
+    {
+        map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
+        if (mi != mapBlockIndex.end() && (*mi).second)
+        {
+            CBlockIndex* pindex = (*mi).second;
+            if (pindex->IsInMainChain())
+            {
+                if (!tx.vout[n].IsAnonOutput())
+                {
+                    if (mem && mempool.isSpent(out))
+                        return Value::null;
+
+                    CTxDB txdb("r");
+                    CTxIndex txindex;
+                    if (!txdb.ReadTxIndex(tx.GetHash(), txindex))
+                        return Value::null;
+
+                    if (!txindex.vSpent[n].IsNull())
+                    {
+                        LogPrintf("gettxout: %s prev tx already used at %s", tx.GetHash().ToString(), txindex.vSpent[n].ToString());
+                        return Value::null; // spent
+                    }
+                }
+                ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
+            }
+            else
+                return Value::null;
+        }
+        ret.push_back(Pair("bestblock", hashBlock.GetHex()));
+    }
+
+    ret.push_back(Pair("value", ValueFromAmount(tx.vout[n].nValue)));
+    Object o;
+    ScriptPubKeyToJSON(tx.vout[n].scriptPubKey, o, true);
+    ret.push_back(Pair("scriptPubKey", o));
+    ret.push_back(Pair("coinbase", tx.IsCoinBase()));
+    ret.push_back(Pair("coinstake", tx.IsCoinStake()));
+
+    return ret;
 }

@@ -1108,9 +1108,9 @@ static const char *strMainNetOnionSeed[][1] = {
 static const char *strTestNetOnionSeed[][1] = {
     // project-maintained nodes
     {"iw5cbprcpm2md7l2.onion"},
-    {"rojwxoxeins7caov.onion"},
+    {"glyxixwz4uk6n7w6.onion"},
     {"almrpkxuhk2r35sw.onion"},
-    {"vwxv3bstufb7kfsr.onion"},
+    {"vwxv3bstufb7kfsr.onion"},   
     {NULL}
 };
 
@@ -1878,7 +1878,7 @@ bool StopNode()
 
 #ifdef __APPLE__
     // Tor separate process via boost::process
-    if (gTor) {
+    if (gTor && gTor.valid()) {
         LogPrintf("Terminate tor process group\n");
         gTor.terminate();
     }

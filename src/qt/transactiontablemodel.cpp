@@ -282,7 +282,10 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Unconfirmed");
         break;
     case TransactionStatus::Confirming:
-        status = tr("Confirming (%1 of %2 recommended confirmations)").arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
+        status = wtx->currency == SPECTRE ? tr("Confirming (%1 of %2 required confirmations)").
+                                            arg(wtx->status.depth).arg(MIN_ANON_SPEND_DEPTH) :
+                                            tr("Confirming (%1 of %2 recommended confirmations)").
+                                            arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
         break;
     case TransactionStatus::Confirmed:
         status = tr("Confirmed (%1 confirmations)").arg(wtx->status.depth);
@@ -291,13 +294,16 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Conflicted");
         break;
     case TransactionStatus::Immature:
-        status = tr("Immature (%1 confirmations, will be available after %2)").arg(wtx->status.depth).arg(wtx->status.depth + wtx->status.matures_in);
+        status = tr("Immature (%1 confirmations, will be available after %2)").
+                arg(wtx->status.depth).arg(wtx->status.depth + wtx->status.matures_in);
         break;
     case TransactionStatus::MaturesWarning:
-        status = tr("This block was not received by any other nodes and will probably not be accepted!");
+        status = tr("Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!").
+                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");;
         break;
     case TransactionStatus::NotAccepted:
-        status = tr("Generated but not accepted");
+        status = tr("Orphan %1 stake, someone else submitted the block before you.").
+                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");
         break;
     }
 
@@ -357,6 +363,9 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::Generated:
     case TransactionRecord::GeneratedDonation:
 	case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTRE:
+    case TransactionRecord::GeneratedSPECTREDonation:
+    case TransactionRecord::GeneratedSPECTREContribution:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:
@@ -386,6 +395,10 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
     case TransactionRecord::GeneratedDonation:
+    case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTRE:
+    case TransactionRecord::GeneratedSPECTREDonation:
+    case TransactionRecord::GeneratedSPECTREContribution:
     case TransactionRecord::RecvSpectre:
     case TransactionRecord::SendSpectre:
     case TransactionRecord::ConvertSPECTREtoXSPEC:
@@ -431,21 +444,22 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
         return "grey";
     case TransactionStatus::Immature:
     case TransactionStatus::Confirming:
-        status_switch = wtx->status.status == TransactionStatus::Confirming ? confirmations : (confirmations * 5 / nCoinbaseMaturity + 1);
-
+        status_switch = (confirmations * 3) / (wtx->status.status == TransactionStatus::Confirming ?
+                    wtx->currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
+                    Params().GetStakeMinConfirmations(wtx->time)) + 1;
         switch(status_switch)
         {
-            case 1: return "fa-clock-o red";
-            case 2: return "fa-clock-o lightred";
-            case 3: return "fa-clock-o orange";
-            case 4: return "fa-clock-o yellow";
+            case 1: return "fa-clock-o grey";
+            case 2: return "fa-clock-o lightgreen";
             default: return "fa-clock-o green";
         };
 
     case TransactionStatus::Confirmed:
         return "fa-check-circle green";
+    case TransactionStatus::NotAccepted:
+        return "fa-exclamation-triangle";
     case TransactionStatus::Conflicted:
-        return "fa-exclamation-triange orange";
+        return "fa-exclamation-triangle orange";
 
     default:
         return "fa-question-circle black";
@@ -454,6 +468,10 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
 
 QString TransactionTableModel::formatTooltip(const TransactionRecord *rec) const
 {
+    if (rec->status.status == TransactionStatus::MaturesWarning || rec->status.status == TransactionStatus::NotAccepted)
+    {
+        return formatTxStatus(rec);
+    }
     QString tooltip = formatTxStatus(rec) + QString("\n") + rec->getTypeLabel(rec->type);
 
     if(rec->type==TransactionRecord::RecvFromOther || rec->type==TransactionRecord::SendToOther ||

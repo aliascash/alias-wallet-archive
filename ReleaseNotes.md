@@ -1,10 +1,10 @@
-## SPECTRECOIN V2
+## SPECTRECOIN V3
 
 ```By downloading and using this software, you agree that 1/6 of the staking rewards are contributed to a development fund. The development fund aims to support the long term development and value of Spectrecoin. The fund is managed by the Spectrecoin core team.```
 
 This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
 
-21/08/2018 (_21th August 2018_) @ 2200 hours (GMT)
+17/05/2019 (_17th May 2019_) @ 2000 hours (GMT)
 
 If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
 
@@ -12,9 +12,55 @@ If you do not update your wallet software you will no longer be able to connect 
 After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be designated DCBs and will be sent to the Spectrecoin team development fund wallet. This fund will ensure a future for Spectrecoin and will enable us to pay for certain services and to hire contractors and to pay Spectrecoin core team members in XSPEC to enable them to work full time on the project. We have some long term projects and concepts to implement such as a new proof-of-stake algorithm we call Proof-of-Stealth to enable so called "stealth staking". These developments depend on a source of steady funding. We believe this will give us the opportunity to produce better software and will create value for investors. We currently have some very skilled developers working for us and we want to keep it that way.
 
 ### Replay Protection
-We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
+We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
+## 3.0.8
+**V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
+- Target block time increased from 64 to 96 seconds
+- XSPEC staking reward lowered to fixed 2 XSPEC per block
+- Minimum ring size increased from 1 to fix 10
+- Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
+- 8 hours maturity rules for staking is removed (Fixes [#79](https://github.com/spectrecoin/spectre/issues/79))
+- Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
+- Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
+  - Staking reward per block fixed 3 SPECTRE
+  - Same maturity rules as for XSPEC (450 blocks) but for all ring signature members
+  - Maximal ATXO stake output value of 1'000 (same as max anon output)
+  - Consolidation of up to 50 ATXOs in staking transaction
+  - If number of unspent anons per denomination is below defined minimum, split staked ATXO to create up to 1 new ATXO of that denomination
+
+Immediate changes:
+- Change max anon output from 10'000 to 1'000
+- Increase default block size created from 250K to 999K
+- ATXOs compromised by an All Spent situation are no longer considered as mixins for new transactions
+- New mixin picking algorithm:
+  - ATXOs are only read once per transaction
+  - handles ATXO_TX_SET problem by adding mixins of same transaction
+  - 33% of mixins are picked from last 2700 blocks if possible
+  - an ATXO is only used once as mixin per transaction
+  - pick all mixins for a vin/ringsignature from different transactions
+- Increase levelDB version to 70512 to force reindex:
+  - new attribute fCoinStake in CAnonOutput
+  - new attribute nBlockHeight in CKeyImageSpent
+  - new compromisedanonheights map for detected All Spent
+- Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
+- Fix wallet.dat corruption problem on Windows (On Windows shutdown wallet is safely closed)
+- UI: [#149](https://github.com/spectrecoin/spectre/issues/149) Fixed notifications
+- UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
+- UI: Show generated but not accepted stakes as 'Orphan' in overview
+- UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
+- UI: Show different balance types for SPECTRE and XSPEC separately
+- UI: Change CHAIN DATA view columns to Unspent (Mature), Mixins (Mature), System (Compromised)
+- UI: Rebased all UI changes since initial commit back to separate UI repository [spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui)
+- UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
+- RPC: [#2](https://github.com/spectrecoin/spectre/issues/2) Integrate API method gettxout
+- RPC: method anoninfo shows new stats per denomination:
+  - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
+  - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
+  - Compromised Height: the last block height an All Spent situation occured
+  - Compromised: does count mixins compromised by ring signature one AND all spent
+
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual
 - Fix: Removed obsolete debug output on stdout
@@ -79,6 +125,7 @@ Attention: Mnemonic seed words used for sub-wallet creation pre 2.0.7 will not w
 - [#75](https://github.com/spectrecoin/spectre/issues/75) Fix Wrong fee calculation when transfer from private to public
 
 ## 2.0.5
+**V2 blockchain fork consensus changes / Fork time is GMT: Tuesday, 21. August 2018 22:00:00 (1534888800 unix epoch time)**
 - [#40](https://github.com/spectrecoin/spectre/issues/40) / [#53](https://github.com/spectrecoin/spectre/issues/53) support cyrillic usernames by using the unicode function of windows to fetch the pathname (Windows)
 - [#42](https://github.com/spectrecoin/spectre/issues/42) Remove additional UI id chars from transaction ID when copy/paste
 - [#50](https://github.com/spectrecoin/spectre/issues/50) Change text 'No combination of coins matches amount and ring size' to 'No combination of (mature) coins matches amount and ring size.'

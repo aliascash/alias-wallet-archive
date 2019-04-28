@@ -10,6 +10,7 @@
 #include "guiutil.h"
 #include "guiconstants.h"
 #include "paymentserver.h"
+#include "winshutdownmonitor.h"
 
 #include "init.h"
 #include "ui_interface.h"
@@ -55,7 +56,7 @@ static bool ThreadSafeAskFee(int64_t nFeeRequired, const std::string& strCaption
 {
     if(!guiref)
         return false;
-    if(nFeeRequired < MIN_TX_FEE || nFeeRequired <= nTransactionFee || fDaemon)
+    if(nFeeRequired < nMinTxFee || nFeeRequired <= nTransactionFee || fDaemon)
         return true;
     bool payFee = false;
 
@@ -139,6 +140,11 @@ int main(int argc, char *argv[])
 
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
+
+    #if defined(Q_OS_WIN)
+        // Install global event filter for processing Windows session related Windows messages (WM_QUERYENDSESSION and WM_ENDSESSION)
+        qApp->installNativeEventFilter(new WinShutdownMonitor());
+    #endif
 
     // ... then spectrecoin.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
@@ -273,6 +279,10 @@ int main(int argc, char *argv[])
 
                 if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
                     emit walletModel.requireUnlock(WalletModel::UnlockMode::rescan);
+
+#if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
+                WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+#endif
 
                 app.exec();
 

@@ -122,9 +122,7 @@ Value getinfo(const Array& params, bool fHelp)
             obj.push_back(Pair("debugpos",          fDebugPoS));
             obj.push_back(Pair("debugringsig",      fDebugRingSig));
 
-
             obj.push_back(Pair("datadir",           GetDataDir().string()));
-
 
             obj.push_back(Pair("walletfile",        pwalletMain->strWalletFile));
             obj.push_back(Pair("walletversion",     pwalletMain->GetVersion()));
@@ -145,13 +143,18 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("mode",          std::string(GetNodeModeName(nNodeMode))));
     obj.push_back(Pair("state",         nNodeMode == NT_THIN ? std::string(GetNodeStateName(nNodeState)) : "Full Node"));
 
-    obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
-    obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
-    obj.push_back(Pair("spectrebalance", ValueFromAmount(pwalletMain->GetSpectreBalance())));
-    obj.push_back(Pair("newmint",       ValueFromAmount(pwalletMain->GetNewMint())));
-    obj.push_back(Pair("stake",         ValueFromAmount(pwalletMain->GetStake())));
-    obj.push_back(Pair("reserve",       ValueFromAmount(nReserveBalance)));
+    obj.push_back(Pair("protocolversion",          (int)PROTOCOL_VERSION));
+    obj.push_back(Pair("walletversion",            pwalletMain->GetVersion()));
+    obj.push_back(Pair("balance",                  ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(Pair("anonbalance",              ValueFromAmount(pwalletMain->GetSpectreBalance())));
+    obj.push_back(Pair("newmint",                  ValueFromAmount(pwalletMain->GetNewMint())));
+    obj.push_back(Pair("stake",                    ValueFromAmount(pwalletMain->GetStake())));
+    obj.push_back(Pair("spectrestake",             ValueFromAmount(pwalletMain->GetSpectreStake())));
+    obj.push_back(Pair("unconfirmedbalance",       ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("unconfirmedanonbalance",   ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
+    obj.push_back(Pair("stakeweight",              ValueFromAmount(pwalletMain->GetStakeWeight())));
+    obj.push_back(Pair("spectrestakeweight",       ValueFromAmount(pwalletMain->GetSpectreStakeWeight())));
+    obj.push_back(Pair("reserve",                  ValueFromAmount(nReserveBalance)));
 
     obj.push_back(Pair("blocks",        (int)nBestHeight));
     if (nNodeMode == NT_THIN)
@@ -162,7 +165,7 @@ Value getinfo(const Array& params, bool fHelp)
     if (nNodeMode == NT_FULL)
     {
         obj.push_back(Pair("moneysupply",  ValueFromAmount(pindexBest->nMoneySupply)));
-        obj.push_back(Pair("spectresupply", ValueFromAmount(pindexBest->nAnonSupply)));
+        obj.push_back(Pair("anonsupply",   ValueFromAmount(pindexBest->nAnonSupply)));
     }
 
     obj.push_back(Pair("connections",   (int)vNodes.size()));
@@ -1210,16 +1213,29 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
     bool fAllAccounts = (strAccount == std::string("*"));
 
     // Sent
-    if ((!wtx.IsCoinStake()) && (!listSent.empty() || nFee != 0) && (fAllAccounts || strAccount == strSentAccount))
+    if (!listSent.empty() && wtx.GetBlocksToMaturity() == 0 && (fAllAccounts || strAccount == strSentAccount))
     {
         for(const auto & [address,destSubs,amount,currency,narration] : listSent)
         {
+            std::string category = "send";
+            if (wtx.IsCoinStake())
+            {
+                // only add contributions/donations
+                std::string strAddress = CBitcoinAddress(address).ToString();
+                if (strAddress != Params().GetDevContributionAddress())
+                    continue;
+                if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
+                    category = "contributed";
+                else
+                    category = "donated";
+            }
             Object entry;
             entry.push_back(Pair("account", strSentAccount));
             MaybePushAddress(entry, address);
-            entry.push_back(Pair("category", "send"));
+            entry.push_back(Pair("category", category));
             entry.push_back(Pair("amount", ValueFromAmount(-amount)));
-            entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
+            if (!(wtx.IsCoinBase() || wtx.IsCoinStake()))
+                entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
             entry.push_back(Pair("currency", currency == SPECTRE ? "SPECTRE" : "XSPEC"));
             if (!narration.empty())
                 entry.push_back(Pair("narration", narration));
@@ -2277,16 +2293,9 @@ Value scanforalltxns(const Array& params, bool fHelp)
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
 
-        if (nFromHeight == 0)
-            // If we start from genesis, rebuild anon data completely
-            pwalletMain->EraseAllAnonData();
-
         pwalletMain->MarkDirty();
         pwalletMain->ScanForWalletTransactions(pindex, true);
         pwalletMain->ReacceptWalletTransactions();
-
-        if (nFromHeight == 0)
-            pwalletMain->CacheAnonStats();
 
     } // cs_main, pwalletMain->cs_wallet
 
@@ -2356,7 +2365,7 @@ Value sendanontoanon(const Array& params, bool fHelp)
             "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
-            "  warning: using a ring_size less than 10 is not possible"
+            "  warning: using a ring_size other than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2369,8 +2378,15 @@ Value sendanontoanon(const Array& params, bool fHelp)
 
     Object result;
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
 
     std::string sNarr;
@@ -2413,7 +2429,8 @@ Value sendanontospec(const Array& params, bool fHelp)
         throw std::runtime_error(
             "sendanontospec <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
-            "<ring_size> is a number of outputs of the same amount to include in the signature"
+            "<ring_size> is a number of outputs of the same amount to include in the signature\n"
+            "  warning: using a ring_size other than 10 is not possible"
             + HelpRequiringPassphrase());
 
     if (pwalletMain->IsLocked())
@@ -2425,9 +2442,15 @@ Value sendanontospec(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[2].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < 1 || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= 1 and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
-
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
     std::string sNarr;
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
@@ -2475,8 +2498,15 @@ Value estimateanonfee(const Array& params, bool fHelp)
     uint32_t nRingSize = (uint32_t)params[1].get_int();
 
     std::ostringstream ssThrow;
-    if (nRingSize < MIN_RING_SIZE || nRingSize > MAX_RING_SIZE)
-        ssThrow << "Ring size must be >= " << MIN_RING_SIZE << " and <= " << MAX_RING_SIZE << ".", throw std::runtime_error(ssThrow.str());
+    auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+    if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
+    {
+        if (nMinRingSize == nMaxRingSize)
+            ssThrow << "Ring size must be = " << nMinRingSize << ".";
+        else
+            ssThrow << "Ring size must be >= " << nMinRingSize << " and <= " << nMaxRingSize << ".";
+        throw std::runtime_error(ssThrow.str());
+    }
 
 
     std::string sNarr;
@@ -2526,16 +2556,16 @@ Value anonoutputs(const Array& params, bool fHelp)
             fSystemTotals = true;
     };
 
-    bool fMatureOnly = true;
+    CWallet::MaturityFilter nFilter = CWallet::MaturityFilter::FOR_SPENDING;
     if (params.size() > 1)
     {
         std::string value   = params[1].get_str();
         if (IsStringBoolPositive(value))
-            fMatureOnly = false;
+            nFilter = CWallet::MaturityFilter::NONE;
     };
 
     std::list<COwnedAnonOutput> lAvailableCoins;
-    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, fMatureOnly) != 0)
+    if (pwalletMain->ListUnspentAnonOutputs(lAvailableCoins, nFilter) != 0)
         throw std::runtime_error("ListUnspentAnonOutputs() failed.");
 
 
@@ -2575,7 +2605,7 @@ Value anonoutputs(const Array& params, bool fHelp)
         for (std::list<COwnedAnonOutput>::iterator it = lAvailableCoins.begin(); it != lAvailableCoins.end(); ++it)
             mOutputCounts[it->nValue] = 0;
 
-        if (pwalletMain->CountAnonOutputs(mOutputCounts, fMatureOnly) != 0)
+        if (pwalletMain->CountAnonOutputs(mOutputCounts, nFilter) != 0)
             throw std::runtime_error("CountAnonOutputs() failed.");
 
         result.push_back(Pair("No. of coins owned, No. of system coins available", "amount"));
@@ -2621,8 +2651,6 @@ Value anoninfo(const Array& params, bool fHelp)
     if (nNodeMode != NT_FULL)
         throw std::runtime_error("Must be in full mode.");
 
-    bool fMatureOnly = false; // TODO: add parameter
-
     bool fRecalculate = false;
 
     if (params.size() > 0)
@@ -2638,55 +2666,59 @@ Value anoninfo(const Array& params, bool fHelp)
 
     if (fRecalculate)
     {
-        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, fMatureOnly) != 0)
+        if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBestHeight) != 0)
             throw std::runtime_error("CountAllAnonOutputs() failed.");
     } else
     {
         // TODO: make mapAnonOutputStats a vector preinitialised with all possible coin values?
-        for (std::map<int64_t, CAnonOutputCount>::iterator mi = mapAnonOutputStats.begin(); mi != mapAnonOutputStats.end(); ++mi)
+        for (auto & [nValue, anonOutputCount] : mapAnonOutputStats)
         {
-            bool fProcessed = false;
-            CAnonOutputCount aoc = mi->second;
-            if (aoc.nLeastDepth > 0)
-                aoc.nLeastDepth = nBestHeight - aoc.nLeastDepth;
-            for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
-            {
-                if (aoc.nValue > it->nValue)
-                    continue;
-                lOutputCounts.insert(it, aoc);
-                fProcessed = true;
-                break;
-            };
-            if (!fProcessed)
-                lOutputCounts.push_back(aoc);
+            anonOutputCount.nValue = nValue; // make sure nValue is correctly set
+            lOutputCounts.push_back(anonOutputCount);
         };
     };
 
-    result.push_back(Pair("No. Exists, No. Spends, No. Compromised, Least Depth", "value"));
+    result.push_back(Pair("No.Exists, No.Mature, No.Unspends, No.Mixins, No.MixinsStaking, No.Stakes, No.Compromised, Compromised Height, Least Depth", "value"));
 
 
     // -- lOutputCounts is ordered by value
     char cbuf[256];
-    int64_t nTotalIn = 0;
-    int64_t nTotalOut = 0;
-    int64_t nTotalCompromised = 0;
     int64_t nTotalCoins = 0;
+    int64_t nTotalIn = 0, nOutputsIn = 0;
+    int64_t nTotalOut = 0, nOutputsOut = 0;
+    int64_t nTotalCompromised = 0, nOutputsCompromised = 0;
+    int64_t nTotalMature = 0, nOutputsMature = 0;
+    int64_t nTotalStakes = 0, nOutputsStakes = 0;
     for (std::list<CAnonOutputCount>::iterator it = lOutputCounts.begin(); it != lOutputCounts.end(); ++it)
     {
-        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %7d, %3d", it->nExists, it->nSpends, it->nCompromised, it->nLeastDepth);
+        snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %3d",
+                 it->nExists, it->nMature, it->nExists - it->nSpends, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromised, it->nCompromisedHeight,
+                 it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
-
-        nTotalIn += it->nValue * it->nExists;
-        nTotalOut += it->nValue * it->nSpends;
-        nTotalCompromised += it->nValue * it->nCompromised;
         nTotalCoins += it->nExists;
+        nTotalIn += it->nValue * it->nExists;
+        nOutputsIn += it->nExists;
+        nTotalOut += it->nValue * it->nSpends;
+        nOutputsOut += it->nSpends;
+        nTotalCompromised += it->nValue * it->nCompromised;
+        nOutputsCompromised += it->nCompromised;
+        nTotalMature += it->nValue * it->nMature;
+        nOutputsMature += it->nMature;
+        nTotalStakes += it->nValue * it->nStakes;
+        nOutputsStakes += it->nStakes;
     };
 
-    result.push_back(Pair("total anon value in", ValueFromAmount(nTotalIn)));
-    result.push_back(Pair("total anon value out", ValueFromAmount(nTotalOut)));
-    result.push_back(Pair("total anon value compromised", ValueFromAmount(nTotalCompromised)));
-    result.push_back(Pair("total anon outputs", nTotalCoins));
+    result.push_back(Pair("total outputs", nTotalCoins));
+    result.push_back(Pair("total value", ValueFromAmount(nTotalIn)));
+    result.push_back(Pair("total mature outputs", nOutputsMature));
+    result.push_back(Pair("total mature value", ValueFromAmount(nTotalMature)));
+    result.push_back(Pair("total spend outputs", nOutputsOut));
+    result.push_back(Pair("total spend value", ValueFromAmount(nTotalOut)));
+    result.push_back(Pair("total stake outputs", nOutputsStakes));
+    result.push_back(Pair("total stake value", ValueFromAmount(nTotalStakes)));
+    result.push_back(Pair("total compromised outputs", nOutputsCompromised));
+    result.push_back(Pair("total compromised value", ValueFromAmount(nTotalCompromised)));
 
     return result;
 }

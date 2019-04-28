@@ -71,7 +71,8 @@ common_SOURCES = anonymize.cpp \
 		 txmempool.cpp \
 		 chainparams.cpp \
 		 state.cpp \
-		 bloom.cpp
+		 bloom.cpp \
+		 shutdown.cpp
 
 bin_PROGRAMS = spectrecoind
 spectrecoind_SOURCES = $(common_SOURCES) \
@@ -142,73 +143,73 @@ BUILT_SOURCES = qt/ui_aboutdialog.h \
 		qt/ui_editaddressdialog.h \
 		qt/ui_rpcconsole.h \
 		qt/ui_transactiondescdialog.h \
-		qt/locale/umbra_af_ZA.qm \
-		qt/locale/umbra_ar.qm \
-		qt/locale/umbra_be_BY.qm \
-		qt/locale/umbra_bg.qm \
-		qt/locale/umbra_bs.qm \
-		qt/locale/umbra_ca_ES.qm \
-		qt/locale/umbra_ca.qm \
-		qt/locale/umbra_ca@valencia.qm \
-		qt/locale/umbra_cs.qm \
-		qt/locale/umbra_cy.qm \
-		qt/locale/umbra_da.qm \
-		qt/locale/umbra_de.qm \
-		qt/locale/umbra_el_GR.qm \
-		qt/locale/umbra_el.qm \
-		qt/locale/umbra_en.qm \
-		qt/locale/umbra_eo.qm \
-		qt/locale/umbra_es_CL.qm \
-		qt/locale/umbra_es_DO.qm \
-		qt/locale/umbra_es_MX.qm \
-		qt/locale/umbra_es.qm \
-		qt/locale/umbra_es_UY.qm \
-		qt/locale/umbra_et.qm \
-		qt/locale/umbra_eu_ES.qm \
-		qt/locale/umbra_fa_IR.qm \
-		qt/locale/umbra_fa.qm \
-		qt/locale/umbra_fi.qm \
-		qt/locale/umbra_fr_CA.qm \
-		qt/locale/umbra_fr.qm \
-		qt/locale/umbra_gl.qm \
-		qt/locale/umbra_he.qm \
-		qt/locale/umbra_hi_IN.qm \
-		qt/locale/umbra_hr.qm \
-		qt/locale/umbra_hu.qm \
-		qt/locale/umbra_id_ID.qm \
-		qt/locale/umbra_it.qm \
-		qt/locale/umbra_ja.qm \
-		qt/locale/umbra_ka.qm \
-		qt/locale/umbra_kk_KZ.qm \
-		qt/locale/umbra_ko_KR.qm \
-		qt/locale/umbra_ky.qm \
-		qt/locale/umbra_la.qm \
-		qt/locale/umbra_lt.qm \
-		qt/locale/umbra_lv_LV.qm \
-		qt/locale/umbra_ms_MY.qm \
-		qt/locale/umbra_nb.qm \
-		qt/locale/umbra_nl.qm \
-		qt/locale/umbra_pam.qm \
-		qt/locale/umbra_pl.qm \
-		qt/locale/umbra_pt_BR.qm \
-		qt/locale/umbra_pt_PT.qm \
-		qt/locale/umbra_ro_RO.qm \
-		qt/locale/umbra_ru.qm \
-		qt/locale/umbra_sah.qm \
-		qt/locale/umbra_sk.qm \
-		qt/locale/umbra_sl_SI.qm \
-		qt/locale/umbra_sq.qm \
-		qt/locale/umbra_sr.qm \
-		qt/locale/umbra_sv.qm \
-		qt/locale/umbra_th_TH.qm \
-		qt/locale/umbra_tr.qm \
-		qt/locale/umbra_uk.qm \
-		qt/locale/umbra_ur_PK.qm \
-		qt/locale/umbra_vi.qm \
-		qt/locale/umbra_vi_VN.qm \
-		qt/locale/umbra_zh_CN.qm \
-		qt/locale/umbra_zh_HK.qm \
-		qt/locale/umbra_zh_TW.qm
+		qt/locale/spectrecoin_af_ZA.qm \
+		qt/locale/spectrecoin_ar.qm \
+		qt/locale/spectrecoin_be_BY.qm \
+		qt/locale/spectrecoin_bg.qm \
+		qt/locale/spectrecoin_bs.qm \
+		qt/locale/spectrecoin_ca_ES.qm \
+		qt/locale/spectrecoin_ca.qm \
+		qt/locale/spectrecoin_ca@valencia.qm \
+		qt/locale/spectrecoin_cs.qm \
+		qt/locale/spectrecoin_cy.qm \
+		qt/locale/spectrecoin_da.qm \
+		qt/locale/spectrecoin_de.qm \
+		qt/locale/spectrecoin_el_GR.qm \
+		qt/locale/spectrecoin_el.qm \
+		qt/locale/spectrecoin_en.qm \
+		qt/locale/spectrecoin_eo.qm \
+		qt/locale/spectrecoin_es_CL.qm \
+		qt/locale/spectrecoin_es_DO.qm \
+		qt/locale/spectrecoin_es_MX.qm \
+		qt/locale/spectrecoin_es.qm \
+		qt/locale/spectrecoin_es_UY.qm \
+		qt/locale/spectrecoin_et.qm \
+		qt/locale/spectrecoin_eu_ES.qm \
+		qt/locale/spectrecoin_fa_IR.qm \
+		qt/locale/spectrecoin_fa.qm \
+		qt/locale/spectrecoin_fi.qm \
+		qt/locale/spectrecoin_fr_CA.qm \
+		qt/locale/spectrecoin_fr.qm \
+		qt/locale/spectrecoin_gl.qm \
+		qt/locale/spectrecoin_he.qm \
+		qt/locale/spectrecoin_hi_IN.qm \
+		qt/locale/spectrecoin_hr.qm \
+		qt/locale/spectrecoin_hu.qm \
+		qt/locale/spectrecoin_id_ID.qm \
+		qt/locale/spectrecoin_it.qm \
+		qt/locale/spectrecoin_ja.qm \
+		qt/locale/spectrecoin_ka.qm \
+		qt/locale/spectrecoin_kk_KZ.qm \
+		qt/locale/spectrecoin_ko_KR.qm \
+		qt/locale/spectrecoin_ky.qm \
+		qt/locale/spectrecoin_la.qm \
+		qt/locale/spectrecoin_lt.qm \
+		qt/locale/spectrecoin_lv_LV.qm \
+		qt/locale/spectrecoin_ms_MY.qm \
+		qt/locale/spectrecoin_nb.qm \
+		qt/locale/spectrecoin_nl.qm \
+		qt/locale/spectrecoin_pam.qm \
+		qt/locale/spectrecoin_pl.qm \
+		qt/locale/spectrecoin_pt_BR.qm \
+		qt/locale/spectrecoin_pt_PT.qm \
+		qt/locale/spectrecoin_ro_RO.qm \
+		qt/locale/spectrecoin_ru.qm \
+		qt/locale/spectrecoin_sah.qm \
+		qt/locale/spectrecoin_sk.qm \
+		qt/locale/spectrecoin_sl_SI.qm \
+		qt/locale/spectrecoin_sq.qm \
+		qt/locale/spectrecoin_sr.qm \
+		qt/locale/spectrecoin_sv.qm \
+		qt/locale/spectrecoin_th_TH.qm \
+		qt/locale/spectrecoin_tr.qm \
+		qt/locale/spectrecoin_uk.qm \
+		qt/locale/spectrecoin_ur_PK.qm \
+		qt/locale/spectrecoin_vi.qm \
+		qt/locale/spectrecoin_vi_VN.qm \
+		qt/locale/spectrecoin_zh_CN.qm \
+		qt/locale/spectrecoin_zh_HK.qm \
+		qt/locale/spectrecoin_zh_TW.qm
 
 bin_PROGRAMS += spectre
 
@@ -268,7 +269,8 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/trafficgraphwidget.cpp \
 		  qt/spectregui.cpp \
 		  qt/spectre.cpp \
-		  qt/spectrebridge.cpp
+		  qt/spectrebridge.cpp \
+		  qt/winshutdownmonitor.cpp
 
 spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS) $(QT5WEBKIT_LIBS)
 spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) $(QT5WEBKIT_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0

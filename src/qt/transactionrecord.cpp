@@ -35,11 +35,17 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case SendToSelfSPECTRE:
         return SpectreGUI::tr("SPECTRE sent to self");
     case Generated:
-        return SpectreGUI::tr("Staked");
+        return SpectreGUI::tr("XSPEC Staked");
     case GeneratedDonation:
-        return SpectreGUI::tr("Donated");
+        return SpectreGUI::tr("XSPEC Donated");
 	case GeneratedContribution:
-		return SpectreGUI::tr("Contributed");
+        return SpectreGUI::tr("XSPEC Contributed");
+    case GeneratedSPECTRE:
+        return SpectreGUI::tr("SPECTRE Staked");
+    case GeneratedSPECTREDonation:
+        return SpectreGUI::tr("SPECTRE Donated");
+    case GeneratedSPECTREContribution:
+        return SpectreGUI::tr("SPECTRE Contributed");
     case RecvSpectre:
         return SpectreGUI::tr("SPECTRE received with");
     case SendSpectre:
@@ -60,11 +66,14 @@ QString TransactionRecord::getTypeShort(const int &type)
     switch(type)
     {
     case TransactionRecord::Generated:
+    case TransactionRecord::GeneratedSPECTRE:
         return "staked";
     case TransactionRecord::GeneratedDonation:
+    case TransactionRecord::GeneratedSPECTREDonation:
         return "donated";
-	case TransactionRecord::GeneratedContribution:
-		return "contributed";
+    case TransactionRecord::GeneratedContribution:
+    case TransactionRecord::GeneratedSPECTREContribution:
+		return "contributed";      
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -73,8 +82,13 @@ QString TransactionRecord::getTypeShort(const int &type)
     case TransactionRecord::SendToOther:
     case TransactionRecord::SendSpectre:
         return "output";
+    case TransactionRecord::SendToSelf:
+    case TransactionRecord::SendToSelfSPECTRE:
+    case TransactionRecord::ConvertXSPECtoSPECTRE:
+    case TransactionRecord::ConvertSPECTREtoXSPEC:
+         return "inout";
     default:
-        return "inout";
+        return "other";
     }
 }
 
@@ -86,12 +100,10 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     QList<TransactionRecord> parts;
     int64_t nTime = wtx.GetTxTime();
 
-    int64_t nCredSPEC, nCredSpectre;
-    wtx.GetCredit(nCredSPEC, nCredSpectre, true);
-    int64_t nCredit = nCredSPEC + nCredSpectre;
+    int64_t nCredit = wtx.GetCredit();
     int64_t nDebit = wtx.GetDebit();
     int64_t nNet = nCredit - nDebit;
-    uint256 hash = wtx.GetHash(), hashPrev = 0;
+    uint256 hash = wtx.GetHash();
     std::map<std::string, std::string> mapValue = wtx.mapValue;
 
     char cbuf[256];
@@ -105,7 +117,31 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
-        if (listReceived.size() > 0 && listSent.size() > 0)
+        if (wtx.IsAnonCoinStake() && !listReceived.empty())
+        {      
+            const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
+            int64_t stakingReward = allFee < 0 ? -allFee : rAmount;
+            TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
+                                            rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
+                                            rNarration, 0, stakingReward, rCurrency, parts.size());
+
+            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+            {
+                std::string strAddress = CBitcoinAddress(destination).ToString();
+                if (strAddress == Params().GetDevContributionAddress())
+                {
+                    sub.address = strAddress;
+                    int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
+                    if (blockHeight < 0 || blockHeight % 6 == 0)
+                        sub.type = TransactionRecord::GeneratedSPECTREContribution;
+                    else
+                        sub.type = TransactionRecord::GeneratedSPECTREDonation;
+                   break;
+                }
+            }
+            parts.append(sub);
+        }
+        else if (listReceived.size() > 0 && listSent.size() > 0)
         {
             // Transfer within account
             TransactionRecord::Type trxType = TransactionRecord::SendToSelfSPECTRE;
@@ -155,7 +191,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             if (wallet->IsMine(txout))
             {
                 TransactionRecord sub(hash, nTime);
-                sub.idx = parts.size(); // sequence number
+                sub.idx = parts.size(); // sequence number         
 
                 CTxDestination address;
 
@@ -186,35 +222,35 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 if (wtx.IsCoinStake())
                 {
                     // Generated (proof-of-stake)
-
-                    if (hashPrev == hash)
-                        continue; // last coinstake output
-
-                    sub.credit = nNet > 0 ? nNet : fabs(wtx.GetValueOut() - nDebit);
                     sub.type = TransactionRecord::Generated;
-                    hashPrev = hash;
-                };
+                    if (nDebit > 0) // handle foreign stakes
+                    {
+                        sub.credit = nNet > 0 ? nNet : fabs(wtx.GetValueOut() - nDebit);
 
-                parts.append(sub);
-            }
-            else if (wtx.IsCoinStake()) {
-                CTxDestination address;
-                if (ExtractDestination(txout.scriptPubKey, address)) {
-                    std::string strAddress = CBitcoinAddress(address).ToString();
-                    if (strAddress == Params().GetDevContributionAddress()) {
-                        TransactionRecord sub(hash, nTime);
-                        sub.address = strAddress;
-						if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0) {
-							sub.type = TransactionRecord::GeneratedContribution;
-						}
-						else {
-							sub.type = TransactionRecord::GeneratedDonation;
-						}
-                        sub.credit = txout.nValue;
-                        sub.idx = parts.size(); // sequence number
-                        parts.append(sub);
+                        // check if stake was contributed
+                        for (const auto & txout : wtx.vout)
+                        {
+                            CTxDestination address;
+                            if (ExtractDestination(txout.scriptPubKey, address))
+                            {
+                                std::string strAddress = CBitcoinAddress(address).ToString();
+                                if (strAddress == Params().GetDevContributionAddress())
+                                {
+                                    sub.address = strAddress;
+                                    int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
+                                    if (blockHeight < 0 || blockHeight % 6 == 0)
+                                        sub.type = TransactionRecord::GeneratedContribution;
+                                    else
+                                        sub.type = TransactionRecord::GeneratedDonation;
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    parts.append(sub);
+                    break;
                 }
+                parts.append(sub);
             }
         }
     } else
@@ -370,12 +406,14 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
         };
     };
 
-    // Sort order, unrecorded transactions sort to the top
+    // Sort order nTime has priority (also for unrecorded transactions with nHeight=max)
+    // only the first 200 transactions are updated in updateTransactions(),
+    // sorted by nTime makes sure the newest trx are considered for update
     status.sortKey = strprintf("%010d-%01d-%010u-%03d",
-        nHeight,
-        (wtx.IsCoinBase() ? 1 : 0),
-        wtx.nTimeReceived,
-        idx);
+                               wtx.nTime,
+                               nHeight,
+                               (wtx.IsCoinBase() ? 1 : 0),
+                               idx);
 
     status.countsForBalance = wtx.IsTrusted() && !(wtx.GetBlocksToMaturity() > 0);
     status.depth = wtx.GetDepthInMainChain();
@@ -393,7 +431,9 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.open_for = wtx.nLockTime;
         };
     } else
-    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedContribution)
+    if (type == TransactionRecord::Generated || type == TransactionRecord::GeneratedSPECTRE ||
+            type == TransactionRecord::GeneratedDonation || type == TransactionRecord::GeneratedSPECTREDonation ||
+            type == TransactionRecord::GeneratedContribution || type == TransactionRecord::GeneratedSPECTREContribution)
     {
         // For generated transactions, determine maturity
         if (wtx.GetBlocksToMaturity() > 0)
@@ -419,7 +459,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.status = TransactionStatus::Offline;
         else if (status.depth == 0)
             status.status = TransactionStatus::Unconfirmed;
-        else if (status.depth < RecommendedNumConfirmations)
+        else if (status.depth < (currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
             status.status = TransactionStatus::Confirming;
         else
             status.status = TransactionStatus::Confirmed;

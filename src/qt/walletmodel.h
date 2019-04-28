@@ -75,6 +75,7 @@ public:
         InputTypeError,
         SCR_NeedFullMode,
         SCR_StealthAddressFail,
+        SCR_StealthAddressFailAnonToSpec,
 		SCR_AmountExceedsBalance,
         SCR_AmountWithFeeExceedsSpectreBalance,
         SCR_Error,
@@ -96,8 +97,11 @@ public:
     qint64 getBalance() const;
     qint64 getSpectreBalance() const;
     qint64 getStake() const;
+    qint64 getSpectreStake() const;
     qint64 getUnconfirmedBalance() const;
+    qint64 getUnconfirmedSpectreBalance() const;
     qint64 getImmatureBalance() const;
+    qint64 getImmatureSpectreBalance() const;
     int getNumTransactions() const;
     EncryptionStatus getEncryptionStatus() const;
 
@@ -163,7 +167,7 @@ public:
     void unlockCoin(COutPoint& output);
     void listLockedCoins(std::vector<COutPoint>& vOutpts);
 
-    void emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature);
     void emitNumTransactionsChanged(int count);
     void emitEncryptionStatusChanged(int status);
     void emitRequireUnlock(UnlockMode mode);
@@ -184,8 +188,11 @@ private:
     qint64 cachedBalance;
     qint64 cachedSpectreBal;
     qint64 cachedStake;
+    qint64 cachedSpectreStake;
     qint64 cachedUnconfirmedBalance;
+    qint64 cachedUnconfirmedSpectreBalance;
     qint64 cachedImmatureBalance;
+    qint64 cachedImmatureSpectreBalance;
     qint64 cachedNumTransactions;
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
@@ -208,7 +215,7 @@ public slots:
 
 signals:
     // Signal that balance in wallet changed
-    void balanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void balanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature);
 
     // Number of transactions in wallet changed
     void numTransactionsChanged(int count);

@@ -36,7 +36,7 @@ public:
     ~TransactionModel();
     void init(ClientModel * clientModel, TransactionTableModel * transactionTableModel);
     QVariantMap addTransaction(int row);
-    void populateRows(int start, int end);
+    void populateRows(int start, int end, int max = 0);
     void populatePage();
     QSortFilterProxyModel * getModel();
     bool isRunning();

@@ -92,6 +92,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("tt",   status.data(Qt::ToolTipRole).toString());
     transaction.insert("c",    status.data(TransactionTableModel::ConfirmationsRole).toLongLong());
     transaction.insert("s",    status.data(Qt::DecorationRole).toString());
+    transaction.insert("s_i",  status.data(TransactionTableModel::StatusRole).toInt());
     transaction.insert("d",    date.data(Qt::EditRole).toInt());
     transaction.insert("d_s",  date.data().toString());
     transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));
@@ -109,17 +110,17 @@ QVariantMap TransactionModel::addTransaction(int row)
     return transaction;
 }
 
-void TransactionModel::populateRows(int start, int end)
+void TransactionModel::populateRows(int start, int end, int max)
 {
-    qDebug() << "populateRows";
-    if(start > ROWS_TO_REFRESH)
+    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
+    if(max && start > max)
         return;
 
     if(!prepare())
         return;
 
-    if (end > ROWS_TO_REFRESH)
-        end = ROWS_TO_REFRESH;
+    if (max && end > max)
+        end = max;
 
     QVariantList transactions;
 
@@ -402,6 +403,14 @@ void SpectreBridge::clearRecipients()
     recipients.clear();
 }
 
+QString lineBreakAddress(QString address)
+{
+    if (address.length() > 50)
+        return address.left(address.length() / 2) + "<br>" + address.mid(address.length() / 2);
+    else
+        return address;
+}
+
 void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 {
     int inputTypes = -1;
@@ -415,21 +424,21 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnTypeInd)
         {
             case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), rcp.address));
+                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 break;
             default:
@@ -463,11 +472,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
             };
 
-            if (ringSizes < (int)MIN_RING_SIZE
-                || ringSizes > (int)MAX_RING_SIZE)
+            auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
+            if (ringSizes < (int)nMinRingSize || ringSizes > (int)nMaxRingSize)
             {
-                QMessageBox::critical(window, tr("Error:"), tr("Ring size outside range [%1, %2].").arg(MIN_RING_SIZE).arg(MAX_RING_SIZE),
-                              QMessageBox::Abort, QMessageBox::Abort);
+                QString message = nMinRingSize == nMaxRingSize ? tr("Ring size must be %1.").arg(nMinRingSize) :
+                                                                 tr("Ring size outside range [%1, %2].").arg(nMinRingSize).arg(nMaxRingSize);
+                QMessageBox::critical(window, tr("Error:"), message, QMessageBox::Abort, QMessageBox::Abort);
                 emit sendCoinsResult(false);
             return;
             };
@@ -622,6 +632,12 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
+        case WalletModel::SCR_StealthAddressFailAnonToSpec:
+            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
+                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            emit sendCoinsResult(false);
+            return;
 		case WalletModel::SCR_AmountExceedsBalance:
 			QMessageBox::warning(window, tr("Send Coins"),
 				tr("The amount exceeds your SPECTRE balance."),
@@ -696,22 +712,11 @@ QVariantMap SpectreBridge::listAnonOutputs()
 
     outputCount mOwnedOutputCounts;
     outputCount mMatureOutputCounts;
-    outputCount mSystemOutputCounts;
 
-    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  false) != 0
-     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, true)  != 0)
+    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
+     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
         LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
-        emit listAnonOutputsResult(anonOutputs);
-        return anonOutputs;
-    };
-
-    for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
-        mSystemOutputCounts[mi->first] = 0;
-
-    if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, true) != 0)
-    {
-        LogPrintf("Error: CountAnonOutputs failed.\n");
         emit listAnonOutputsResult(anonOutputs);
         return anonOutputs;
     };
@@ -721,14 +726,19 @@ QVariantMap SpectreBridge::listAnonOutputs()
         CAnonOutputCount* aoc = &mi->second;
         QVariantMap anonOutput;
 
-        int nDepth = aoc->nLeastDepth == 0 ? 0 : nBestHeight - aoc->nLeastDepth;
-
         anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
         anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
-        anonOutput.insert("system_mature",  mSystemOutputCounts[aoc->nValue]);
+        anonOutput.insert("system_mature",  aoc->nMature);
+        anonOutput.insert("system_compromised",  aoc->nCompromised);
         anonOutput.insert("system_outputs", aoc->nExists);
         anonOutput.insert("system_spends",  aoc->nSpends);
-        anonOutput.insert("least_depth",    nDepth);
+        anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
+        anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
+        anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
+        anonOutput.insert("system_mixins_mature",  aoc->nMixins);
+        anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
+
+        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight);
         anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
         anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
@@ -755,7 +765,7 @@ void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRi
     // Updated transactions...
     qDebug() << "updateTransactions";
     if(topLeft.column() == TransactionTableModel::Status)
-        transactionModel->populateRows(topLeft.row(), bottomRight.row());
+        transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
@@ -767,9 +777,11 @@ void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, in
 
 void SpectreBridge::transactionDetails(QString txid)
 {
-    qDebug() << "Emit transaction details " << window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
-    emit transactionDetailsResult(window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString());
+    QString txDetails = window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
+    qDebug() << "Emit transaction details " << txDetails;
+    emit transactionDetailsResult(txDetails);
 }
+
 
 // Addresses
 void SpectreBridge::populateAddressTable()

@@ -40,8 +40,7 @@ std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
 unsigned int nStakeMinAge       = 8 * 60 * 60;      // 8 hour
 unsigned int nModifierInterval  = 10 * 60;          // time to elapse before new modifier is computed
 
-int nCoinbaseMaturity = 283;		// 288 blocks depth for newly generated coins
-int nStakeMinConfirmations = 288;	// 288 blocks depth for minted coins
+int nCoinbaseMaturity = 100;		// 100 blocks depth for newly generated PoW coins
 CBlockIndex* pindexGenesisBlock = NULL;
 
 CBlockThinIndex* pindexGenesisBlockThin = NULL;
@@ -64,7 +63,10 @@ CMedianFilter<int> cPeerBlockCounts(5, 0); // Amount of blocks that other nodes 
 
 std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
+bool fStaleAnonCache = true;
+int nMaxAnonBlockCache = 1000;
 std::map<int64_t, CAnonOutputCount> mapAnonOutputStats; // display only, not 100% accurate, height could become inaccurate due to undos
+std::map<int, std::map<int64_t, CAnonBlockStat>> mapAnonBlockStats;
 
 std::multimap<uint256, CBlockThin*> mapOrphanBlockThinsByPrev;
 
@@ -87,7 +89,7 @@ CScript COINBASE_FLAGS;
 const string strMessageMagic = "Spectrecoin Signed Message:\n";
 
 // Settings
-int64_t nTransactionFee = MIN_TX_FEE;
+int64_t nTransactionFee = nMinTxFee;
 int64_t nReserveBalance = 0;
 int64_t nMinimumInputValue = 0;
 
@@ -146,20 +148,19 @@ void SyncWithWallets(const CTransaction& tx, const CBlock* pblock, bool fUpdate,
     if (!fConnect)
     {
         // ppcoin: wallets need to refund inputs when disconnecting coinstake
-        if (tx.IsCoinStake())
+        if (tx.nVersion == ANON_TXN_VERSION)
+        {
+            BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
+                pwallet->UndoAnonTransaction(tx, nullptr, !pwallet->IsFromMe(tx)); // don't erase owned tx
+        }
+        else if (tx.IsCoinStake())
         {
             BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
             {
                 if (pwallet->IsFromMe(tx))
                     pwallet->DisableTransaction(tx);
             };
-        };
-
-        if (tx.nVersion == ANON_TXN_VERSION)
-        {
-            BOOST_FOREACH(CWallet* pwallet, setpwalletRegistered)
-                pwallet->UndoAnonTransaction(tx);
-        };
+        }
         return;
     };
 
@@ -564,11 +565,11 @@ bool CTransaction::IsStandard() const
     {
         if (txin.IsAnonInput())
         {
-            int nRingSize = txin.ExtractRingSize();
+            uint32_t nRingSize = (uint32_t)txin.ExtractRingSize();
+            auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax(nTime);
 
             if (nVersion != ANON_TXN_VERSION
-                || nRingSize < 1
-                || nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD)
+                || nRingSize < nMinRingSize || nRingSize > nMaxRingSize
                 || txin.scriptSig.size() > sizeof(COutPoint) + 2 + (33 + 32 + 32) * nRingSize)
             {
                 LogPrintf("IsStandard() anon txin failed.\n");
@@ -846,7 +847,7 @@ bool CTransaction::CheckTransaction() const
 
     if (nVersion == ANON_TXN_VERSION)
     {
-        // -- Check for duplicate anon outputs
+        // -- Check for duplicate anon outputs and max anon output size
         // NOTE: is this necessary, duplicate coins would not be spendable anyway?
         set<CPubKey> vAnonOutPubkeys;
         CPubKey pkTest;
@@ -854,6 +855,9 @@ bool CTransaction::CheckTransaction() const
         {
             if (!txout.IsAnonOutput())
                 continue;
+
+            if (Params().IsForkV3(nTime) && txout.nValue > nMaxAnonOutput)
+                return DoS(100, error("CTransaction::CheckTransaction() : txout.nValue of anon output higher than nMaxAnonOutput"));
 
             const CScript &s = txout.scriptPubKey;
             pkTest = CPubKey(&s[2+1], 33);
@@ -890,9 +894,9 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     int64_t nBaseFee;
     switch (mode)
     {
-        case GMF_RELAY: nBaseFee = MIN_RELAY_TX_FEE; break;
-        case GMF_ANON:  nBaseFee = MIN_TX_FEE_ANON;  break;
-        default:        nBaseFee = MIN_TX_FEE;       break;
+        case GMF_RELAY: nBaseFee = nMinRelayTxFee; break;
+        case GMF_ANON:  nBaseFee = nMinTxFeeAnonLegacy;  if (!Params().IsForkV3(nTime)) break;
+        default:        nBaseFee = nMinTxFee;       break;
     };
 
     unsigned int nNewBlockSize = nBlockSize + nBytes;
@@ -907,7 +911,7 @@ int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mod
     };
 
     // Raise the price as the block approaches full
-    if (mode != GMF_ANON && nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
+    if (nBlockSize != 1 && nNewBlockSize >= MAX_BLOCK_SIZE_GEN/2)
     {
         if (nNewBlockSize >= MAX_BLOCK_SIZE_GEN)
             return MAX_MONEY;
@@ -1027,7 +1031,7 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
             // Continuously rate-limit free transactions
             // This mitigates 'penny-flooding' -- sending thousands of free transactions just to
             // be annoying or make others' transactions take longer to confirm.
-            if (nFees < MIN_RELAY_TX_FEE)
+            if (nFees < nMinRelayTxFee)
             {
                 static CCriticalSection csFreeLimiter;
                 static double dFreeCount;
@@ -1124,12 +1128,12 @@ int CTxIndex::GetDepthInMainChainFromIndex() const
 }
 
 // Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool)
 {
     {
-        LOCK(cs_main);
-        if (mempool.lookup(hash, tx))
+        if(includemempool && mempool.lookup(hash, tx))
             return true;
+
         CTxDB txdb("r");
         CTxIndex txindex;
         if (tx.ReadFromDisk(txdb, COutPoint(hash, 0), txindex))
@@ -1142,6 +1146,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
     }
     return false;
 }
+
 
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock)
 {
@@ -1922,7 +1927,7 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
-    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
+    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight, pindexLast->GetBlockTime());
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
@@ -1962,7 +1967,7 @@ unsigned int GetNextTargetRequiredThin(const CBlockThinIndex* pindexLast, bool f
     if (pindexPrevPrev->pprev == NULL)
         return bnTargetLimit.GetCompact(); // second block
 
-    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight);
+    int64_t nTargetSpacing = GetTargetSpacing(pindexLast->nHeight, pindexLast->GetBlockTime());
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
     if (nActualSpacing < 0)
         nActualSpacing = nTargetSpacing;
@@ -2024,7 +2029,7 @@ bool IsInitialBlockDownload()
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
-{
+{ 
     if (pindexNew->nChainTrust > nBestInvalidTrust)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
@@ -2044,6 +2049,8 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
       CBigNum(pindexBest->nChainTrust).ToString().c_str(),
       nBestBlockTrust.Get64(),
       DateTimeStrFormat("%x %H:%M:%S", pindexBest->GetBlockTime()).c_str());
+
+    pwalletMain->CacheAnonStats(nBestHeight);
 }
 
 
@@ -2079,6 +2086,9 @@ bool CTransaction::DisconnectInputs(CTxDB& txdb)
     {
         BOOST_FOREACH(const CTxIn& txin, vin)
         {
+            if (txin.IsAnonInput())
+                continue;
+
             COutPoint prevout = txin.prevout;
 
             // Get prev txindex from disk
@@ -2190,13 +2200,18 @@ bool CTransaction::FetchInputs(CTxDB& txdb, const map<uint256, CTxIndex>& mapTes
     return true;
 }
 
-static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSize, std::vector<uint8_t> &vchImage, uint256 &preimage, int64_t &nCoinValue)
+bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSize, const std::vector<uint8_t> &vchImage, int64_t &nCoinValue) const
 {
     const CScript &s = txin.scriptSig;
 
+    if (s.size() != 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
+    {
+        LogPrintf("CheckAnonInputAB(): Error input %d scriptSig size does not match for ringsize %d.\n", i, nRingSize);
+        return false;
+    }
+
     CPubKey pkRingCoin;
     CAnonOutput ao;
-    CTxIndex txindex;
 
     ec_point pSigC;
     pSigC.resize(EC_SECRET_SIZE);
@@ -2222,15 +2237,28 @@ static bool CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int nRingSiz
             return false;
         };
 
+        int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
         if (ao.nBlockHeight == 0
-            || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
+            || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
         {
-            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%s).\n",
+                      i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
             return false;
         };
+
+        if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput && ao.nCompromised > 0)
+        {
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised.\n", i, ri);
+            return false;
+        }
+
+        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
+        if (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= ao.nBlockHeight)
+            LogPrintf("CheckAnonInputsAB(): Warn tx %s, input %d, element %d does use a mixin which is compromised by ALL SPENT (ao.nValue:%d, ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
+                      GetHash().ToString(), i, ri, ao.nValue, ao.nBlockHeight, nCompromisedHeight);
     };
 
-    if (verifyRingSignatureAB(vchImage, preimage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
+    if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
     {
         LogPrintf("CheckAnonInputsAB(): Error input %d verifyRingSignatureAB() failed.\n", i);
         return false;
@@ -2297,11 +2325,11 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         };
 
         int64_t nCoinValue = -1;
-        int nRingSize = txin.ExtractRingSize();
-        if (nRingSize < 1
-          ||nRingSize > (Params().IsProtocolV3(pindexBest->nHeight) ? (int)MAX_RING_SIZE : (int)MAX_RING_SIZE_OLD))
+        uint32_t nRingSize = (uint32_t)txin.ExtractRingSize();
+        auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax(nTime);
+        if (nRingSize < nMinRingSize || nRingSize > nMaxRingSize)
         {
-            LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, MIN_RING_SIZE, MAX_RING_SIZE);
+            LogPrintf("CheckAnonInputs(): Error input %d ringsize %d not in range [%d, %d].\n", i, nRingSize, nMinRingSize, nMaxRingSize);
             fInvalid = true; return false;
         };
 
@@ -2309,60 +2337,60 @@ bool CTransaction::CheckAnonInputs(CTxDB& txdb, int64_t& nSumValue, bool& fInval
         if (nRingSize > 1 && s.size() == 2 + EC_SECRET_SIZE + (EC_SECRET_SIZE + EC_COMPRESSED_SIZE) * nRingSize)
         {
             // ringsig AB
-            if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, preimage, nCoinValue))
+            if (!CheckAnonInputAB(txdb, txin, i, nRingSize, vchImage, nCoinValue))
             {
                 fInvalid = true; return false;
             };
-
-            nSumValue += nCoinValue;
-            continue;
-        };
-
-        if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
+        }
+        else
         {
-            LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
-            fInvalid = true; return false;
-        };
-
-
-        CPubKey pkRingCoin;
-        CAnonOutput ao;
-        CTxIndex txindex;
-        const unsigned char* pPubkeys = &s[2];
-        const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
-        const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
-        for (int ri = 0; ri < nRingSize; ++ri)
-        {
-            pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
-            if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+            if (s.size() < 2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE + EC_SECRET_SIZE) * nRingSize)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                LogPrintf("CheckAnonInputs(): Error input %d scriptSig too small.\n", i);
                 fInvalid = true; return false;
             };
 
-            if (nCoinValue == -1)
+
+            CPubKey pkRingCoin;
+            CAnonOutput ao;
+            const unsigned char* pPubkeys = &s[2];
+            const unsigned char* pSigc    = &s[2 + EC_COMPRESSED_SIZE * nRingSize];
+            const unsigned char* pSigr    = &s[2 + (EC_COMPRESSED_SIZE + EC_SECRET_SIZE) * nRingSize];
+            for (int ri = 0; ri < nRingSize; ++ri)
             {
-                nCoinValue = ao.nValue;
-            } else
-            if (nCoinValue != ao.nValue)
-            {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
-                fInvalid = true; return false;
+                pkRingCoin = CPubKey(&pPubkeys[ri * EC_COMPRESSED_SIZE], EC_COMPRESSED_SIZE);
+                if (!txdb.ReadAnonOutput(pkRingCoin, ao))
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d AnonOutput %s not found.\n", i, ri, HexStr(pkRingCoin).c_str());
+                    fInvalid = true; return false;
+                };
+
+                if (nCoinValue == -1)
+                {
+                    nCoinValue = ao.nValue;
+                } else
+                if (nCoinValue != ao.nValue)
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d ring amount mismatch %d, %d.\n", i, ri, nCoinValue, ao.nValue);
+                    fInvalid = true; return false;
+                };
+
+                int minBlockHeight = ao.fCoinStake || IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() : MIN_ANON_SPEND_DEPTH;
+                if (ao.nBlockHeight == 0
+                    || nBestHeight - ao.nBlockHeight + 1 < minBlockHeight) // ao confirmed in last block has depth of 1
+                {
+                    LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < %d (nBestHeight:%d ao.nBlockHeight:%d ao.fCoinstake:%d).\n",
+                              i, ri, minBlockHeight, nBestHeight, ao.nBlockHeight, ao.fCoinStake);
+                    fInvalid = true; return false;
+                };
             };
 
-            if (ao.nBlockHeight == 0
-                || nBestHeight - ao.nBlockHeight < MIN_ANON_SPEND_DEPTH)
+            if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
             {
-                LogPrintf("CheckAnonInputs(): Error input %d, element %d depth < MIN_ANON_SPEND_DEPTH.\n", i, ri);
+                LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
                 fInvalid = true; return false;
             };
-        };
-
-        if (verifyRingSignature(vchImage, preimage, nRingSize, pPubkeys, pSigc, pSigr) != 0)
-        {
-            LogPrintf("CheckAnonInputs(): Error input %d verifyRingSignature() failed.\n", i);
-            fInvalid = true; return false;
-        };
+        }
 
         nSumValue += nCoinValue;
     };
@@ -2454,8 +2482,8 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
                 if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
                 {
                     int nSpendDepth;
-                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, nCoinbaseMaturity, nSpendDepth))
-                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth);
+                    if (IsConfirmedInNPrevBlocks(txindex, pindexBlock, Params().GetStakeMinConfirmations(nTime) -1 , nSpendDepth))
+                        return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", nSpendDepth + 1);
                 }
 
                 if (txPrev.vout[prevout.n].IsEmpty())
@@ -2532,8 +2560,9 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
             bool fInvalid;
             if (!CheckAnonInputs(txdb, nSumAnon, fInvalid, true))
             {
-                //if (fInvalid)
-                DoS(100, error("ConnectInputs() : CheckAnonInputs found invalid tx %s", GetHash().ToString().substr(0,10).c_str()));
+                if (fInvalid)
+                    return DoS(100, error("ConnectInputs() : CheckAnonInputs found invalid tx %s", GetHash().ToString().substr(0,10).c_str()));
+                return false;
             };
 
             nValueIn += nSumAnon;
@@ -2565,7 +2594,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 }
 
 bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
-{
+{    
     // Disconnect in reverse order
     for (int i = vtx.size()-1; i >= 0; i--)
         if (!vtx[i].DisconnectInputs(txdb))
@@ -2585,7 +2614,38 @@ bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
     BOOST_FOREACH(CTransaction& tx, vtx)
         SyncWithWallets(tx, this, false, false);
 
+    if (!pwalletMain->RemoveAnonStats(txdb, pindex->nHeight))
+        return error("DiconnectBlock() : RemoveAnonStats failed.");
+
     return true;
+}
+
+void static validateAnonCache(int nBlockHeight)
+{
+    // -- validate cache against persisted data
+    std::list<CAnonOutputCount> lOutputCounts;
+    if (pwalletMain->CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
+    {
+        LogPrintf("RemoveAnonStats(%d) Error: CountAllAnonOutputs() failed.\n", nBlockHeight);
+    };
+    for (const auto & anonOutputStat : lOutputCounts)
+    {
+        if (mapAnonOutputStats[anonOutputStat.nValue].nExists != anonOutputStat.nExists)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nExists cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nExists, anonOutputStat.nExists);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nSpends != anonOutputStat.nSpends)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nSpends cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nSpends, anonOutputStat.nSpends);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMature != anonOutputStat.nMature)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMature cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMature, anonOutputStat.nMature);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixins != anonOutputStat.nMixins)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixins cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixins, anonOutputStat.nMixins);
+        if (mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking != anonOutputStat.nMixinsStaking)
+            LogPrintf("ConnectBlock(%d) [%d] Cache Stale: nMixinsStaking cache %d <> %d persisted.\n",
+                      nBestHeight, anonOutputStat.nValue, mapAnonOutputStats[anonOutputStat.nValue].nMixinsStaking, anonOutputStat.nMixinsStaking);
+    }
 }
 
 bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
@@ -2613,6 +2673,16 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         nTxPos = 1;
     else
         nTxPos = pindex->nBlockPos + ::GetSerializeSize(CBlock(), SER_DISK, CLIENT_VERSION) - (2 * GetSizeOfCompactSize(0)) + GetSizeOfCompactSize(vtx.size());
+
+    // Init anon cache if needed
+    if (fStaleAnonCache)
+    {
+        LogPrintf("ConnectBlock() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats(pindex->pprev->nHeight))
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
+    if (fDebugRingSig)
+        validateAnonCache(pindex->pprev->nHeight);
 
     map<uint256, CTxIndex> mapQueuedChanges;
     int64_t nFees = 0;
@@ -2686,7 +2756,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                     if (fInvalid)
                         return error("ConnectBlock() : CheckAnonInputs found invalid tx %s", tx.GetHash().ToString().substr(0,10).c_str());
                     return false;
-                };
+                }
 
                 nAnonIn += nTxAnonIn;
                 nTxValueIn += nTxAnonIn;
@@ -2720,11 +2790,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
     if (IsProofOfStake())
     {
         // ppcoin: coin stake tx earns reward instead of paying fee
-        uint64_t nCoinAge;
-        if (!vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
+        uint64_t nCoinAge = 0;
+        if (!Params().IsProtocolV3(pindex->pprev->nHeight) && !vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString());
 
-        int64_t nCalculatedStakeReward = Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = IsProofOfAnonStake() ? Params().GetProofOfAnonStakeReward(pindex->pprev, nFees) : Params().GetProofOfStakeReward(pindex->pprev, nCoinAge, nFees);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
@@ -2783,7 +2853,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
     // Watch for transactions paying to me
     BOOST_FOREACH(CTransaction& tx, vtx)
-        SyncWithWallets(tx, this, true);
+        SyncWithWallets(tx, this, true); // calls ProcessAnonTransaction() which persists anons also in txDB
+
+    // Update anon cache with stats of connected block (added in ProcessAnonTransaction())
+    if (!pwalletMain->UpdateAnonStats(txdb, pindex->nHeight))
+        return error("ConnectBlock() : UpdateAnonStats failed.");
 
     return true;
 }
@@ -2996,6 +3070,13 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
 
+    if (fStaleAnonCache)
+    {
+        LogPrintf("SetBestChain() : Stale anon cache => rebuild.\n");
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
+            LogPrintf("CacheAnonStats() failed.\n");
+    }
+
     uint256 nBestBlockTrust = pindexBest->nHeight != 0 ? (pindexBest->nChainTrust - pindexBest->pprev->nChainTrust) : pindexBest->nChainTrust;
 
     LogPrintf("SetBestChain: new best=%s  height=%d  trust=%s  blocktrust=%d  date=%s\n",
@@ -3136,7 +3217,10 @@ int CMerkleTx::GetBlocksToMaturity() const
     if (pDepthAndHeight.second != -1 && !Params().IsProtocolV3(pDepthAndHeight.second))
         return 0;
 
-    return max(0, (nCoinbaseMaturity + 5) - pDepthAndHeight.first);
+    int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
+                                   IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
+                                                       Params().GetStakeMinConfirmations(nTime);
+    return max(0, nMaturity - pDepthAndHeight.first);
 }
 
 
@@ -3340,7 +3424,7 @@ bool CTransaction::GetCoinAge(CTxDB& txdb, const CBlockIndex* pindexPrev, uint64
         if (Params().IsProtocolV3(pindexPrev->nHeight))
         {
             int nSpendDepth;
-            if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, nStakeMinConfirmations - 1, nSpendDepth))
+            if (IsConfirmedInNPrevBlocks(txindex, pindexPrev, Params().GetStakeMinConfirmations(nTime) - 1, nSpendDepth))
             {
                 LogPrint("coinage", "coin age skip nSpendDepth=%d\n", nSpendDepth + 1);
                 continue; // only count coins meeting min confirmations requirement
@@ -3425,6 +3509,7 @@ bool CBlock::AddToBlockIndex(unsigned int nFile, unsigned int nBlockPos, const u
     if (!ComputeNextStakeModifier(pindexNew->pprev, nStakeModifier, fGeneratedStakeModifier))
         return error("AddToBlockIndex() : ComputeNextStakeModifier() failed");
     pindexNew->SetStakeModifier(nStakeModifier, fGeneratedStakeModifier);
+    // note prevout.hash contains keyImage if vin[0] is anon input
     pindexNew->bnStakeModifierV2 = ComputeStakeModifierV2(pindexNew->pprev, IsProofOfWork() ? hash : vtx[1].vin[0].prevout.hash);
 
     // Add to mapBlockIndex
@@ -3504,7 +3589,8 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
 
         // Check proof-of-stake block signature
         if (fCheckSig && !CheckBlockSignature())
-            return DoS(100, error("CheckBlock() : bad proof-of-stake block signature"));
+            return IsProofOfAnonStake() ? DoS(100, error("CheckBlock() : bad proof-of-anon-stake block signature")) :
+                                          DoS(100, error("CheckBlock() : bad proof-of-stake block signature"));
     }
 
     // Check transactions
@@ -3891,37 +3977,49 @@ bool CBlock::SignBlock(CWallet& wallet, int64_t nFees)
 
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // startup timestamp
 
-    CKey key;
-    CTransaction txCoinStake;
+    int64_t nSearchTime = GetAdjustedTime(); // search to current time
     if (Params().IsProtocolV2(nBestHeight+1))
-        txCoinStake.nTime &= ~STAKE_TIMESTAMP_MASK;
-
-    int64_t nSearchTime = txCoinStake.nTime; // search to current time
+        nSearchTime &= ~STAKE_TIMESTAMP_MASK; // decrease granularity to 16 seconds
 
     if (nSearchTime > nLastCoinStakeSearchTime)
     {
         int64_t nSearchInterval = Params().IsProtocolV2(nBestHeight+1) ? 1 : nSearchTime - nLastCoinStakeSearchTime;
-        if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+
+        CKey key;
+        CTransaction txCoinStake;
+        txCoinStake.nTime = nSearchTime;
+
+        bool foundStake = false;
+        if (Params().IsForkV3(nSearchTime) && Params().IsProtocolV3(nBestHeight+1) &&
+                wallet.CreateAnonCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+            foundStake = true;
+        else
         {
-            if (txCoinStake.nTime >= pindexBest->GetPastTimeLimit()+1)
-            {
-
-                // make sure coinstake would meet timestamp protocol
-                //    as it would be the same as the block timestamp
-                vtx[0].nTime = nTime = txCoinStake.nTime;
-
-                // we have to make sure that we have no future timestamps in
-                //    our transactions set
-                for (vector<CTransaction>::iterator it = vtx.begin(); it != vtx.end();)
-                    if (it->nTime > nTime) { it = vtx.erase(it); } else { ++it; }
-
-                vtx.insert(vtx.begin() + 1, txCoinStake);
-                hashMerkleRoot = BuildMerkleTree();
-
-                // append a signature to our block
-                return key.Sign(GetHash(), vchBlockSig);
-            }
+            key.Clear();
+            txCoinStake.SetNull();
+            txCoinStake.nTime = nSearchTime;
+            if (wallet.CreateCoinStake(nBits, nSearchInterval, nFees, txCoinStake, key))
+                foundStake = true;
         }
+
+        if (foundStake && txCoinStake.nTime >= pindexBest->GetPastTimeLimit()+1)
+        {
+            // make sure coinstake would meet timestamp protocol
+            //    as it would be the same as the block timestamp
+            vtx[0].nTime = nTime = txCoinStake.nTime;
+
+            // we have to make sure that we have no future timestamps in
+            //    our transactions set
+            for (vector<CTransaction>::iterator it = vtx.begin(); it != vtx.end();)
+                if (it->nTime > nTime) { it = vtx.erase(it); } else { ++it; }
+
+            vtx.insert(vtx.begin() + 1, txCoinStake);
+            hashMerkleRoot = BuildMerkleTree();
+
+            // append a signature to our block
+            return key.Sign(GetHash(), vchBlockSig);
+        }
+
         nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
         nLastCoinStakeSearchTime = nSearchTime;
     }
@@ -3936,6 +4034,9 @@ bool CBlock::CheckBlockSignature() const
 
     if (vchBlockSig.empty())
         return false;
+
+    if (IsProofOfAnonStake())
+        return CheckAnonBlockSignature();
 
     vector<valtype> vSolutions;
     txnouttype whichType;
@@ -3970,6 +4071,18 @@ bool CBlock::CheckBlockSignature() const
     }
 
     return false;
+}
+
+bool CBlock::CheckAnonBlockSignature() const
+{
+    if (vtx.size() < 2 || !vtx[1].IsAnonCoinStake())
+        return false;
+
+    const CTxOut& txout = vtx[1].vout[1];
+    const CScript &s = txout.scriptPubKey;
+    const CPubKey pkCoin = CPubKey(&s[2+1], EC_COMPRESSED_SIZE);
+
+    return pkCoin.Verify(GetHash(), vchBlockSig);
 }
 
 bool CBlock::GetHashProof(uint256& hashProof)
@@ -4083,7 +4196,7 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
         if (!txdb.LoadBlockIndex(funcProgress))
             return 1;
 
-        if (!pwalletMain->CacheAnonStats())
+        if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
     } else
     {
@@ -4209,7 +4322,7 @@ void PrintBlockTree()
     }
 }
 
-bool LoadExternalBlockFile(int nFile, FILE* fileIn)
+bool LoadExternalBlockFile(int nFile, FILE* fileIn, std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
     {
@@ -4219,7 +4332,7 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
 
     int64_t nStart = GetTimeMillis();
 
-    int nLoaded = 0;
+    uint32_t nLoaded = 0;
 
     {
         try {
@@ -4277,8 +4390,10 @@ bool LoadExternalBlockFile(int nFile, FILE* fileIn)
                         nLoaded++;
                         nPos += 4 + nSize;
 
-                        if (nLoaded % 20000 == 0)
+                        if (nLoaded % 10000 == 0)
                             LogPrintf("Loaded %d blocks and counting.\n", nLoaded);
+                        if (funcProgress)
+                            funcProgress(nLoaded);
                     };
                 };
             };
@@ -5000,12 +5115,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
         //		Future fork condition. Enforce minimum protcol version based on nTime.
-        if (Params().IsForkV2(nTime)) {
+        if (Params().IsForkV3(nTime)) {
             if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
             {
                 // disconnect from peers older than this proto version
                 LogPrintf("Peer %s using pre-fork version %i; disconnecting\n", pfrom->addr.ToString(), pfrom->nVersion);
-                pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE, strprintf("node < %d", MIN_PEER_PROTO_VERSION));
+                pfrom->PushMessage("reject", strCommand, REJECT_OBSOLETE, strprintf("node < %d", LEGACY_CUTOFF_MIN_PROTOCOL_VERSION));
                 pfrom->fDisconnect = true;
                 return false;
             }

@@ -67,17 +67,7 @@ unsigned short const onion_port = 9089;
 // shutdown thing.
 //
 
-volatile bool fRequestShutdown = false;
-//boost::atomic<bool> fRequestShutdown(false);
-
-void StartShutdown()
-{
-    fRequestShutdown = true;
-}
-bool ShutdownRequested()
-{
-    return fRequestShutdown;
-}
+// see shutdown.h/cpp
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -157,7 +147,7 @@ void Shutdown()
 // Note: this also handles SIGINT
 void HandleSIGTERM()
 {
-    fRequestShutdown = true;
+    StartShutdown();
 }
 
 void HandleSIGHUP()
@@ -425,7 +415,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Largest block you're willing to create.
     // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-    nBlockMaxSize = GetArg("-blockmaxsize", MAX_BLOCK_SIZE_GEN/2);
+    nBlockMaxSize = GetArg("-blockmaxsize", MAX_BLOCK_SIZE-1000);
     nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SIZE-1000), nBlockMaxSize));
 
     // How much of the block should be dedicated to high-priority transactions,
@@ -476,9 +466,18 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (fTestNet)
     {
+        int nTestnetScaleMod = 10;
+        nMinTxFee /= nTestnetScaleMod;
+        nMinTxFeeAnonLegacy /= nTestnetScaleMod;
+        nMinRelayTxFee /= nTestnetScaleMod;
+        nStakeReward /= nTestnetScaleMod;
+        nAnonStakeReward /= nTestnetScaleMod;
         nStakeMinAge = 15 * 60; // test net min age is 15 minutes
         nCoinbaseMaturity = 10; // test maturity is 10 blocks
-        nStakeMinConfirmations = 10; // test maturity is 10 blocks
+        nStakeCombineThreshold /= nTestnetScaleMod;
+        nStakeSplitThreshold /= nTestnetScaleMod;
+        nMaxAnonOutput /= nTestnetScaleMod;
+        nMaxAnonStakeOutput /= nTestnetScaleMod;
     };
 
     // ********************************************************* Step 3: parameter-to-internal-flags
@@ -842,7 +841,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // as LoadBlockIndex can take several minutes, it's possible the user
     // requested to kill bitcoin-qt during the last operation. If so, exit.
     // As the program has not fully started yet, Shutdown() is possibly overkill.
-    if (fRequestShutdown)
+    if (ShutdownRequested())
     {
         LogPrintf("Shutdown requested. Exiting.\n");
         return false;
@@ -927,10 +926,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     RegisterWallet(pwalletMain);
 
     CBlockIndex *pindexRescan = pindexBest;
-    bool fullscan = false;
     if (GetBoolArg("-rescan") || (oltWalletVersion > 0 && oltWalletVersion < 2020009)) // Wallets prior to V2.2 must be rescanned
     {
-        fullscan = true;
         pindexRescan = pindexGenesisBlock;
     } else
     {
@@ -947,22 +944,12 @@ bool AppInit2(boost::thread_group& threadGroup)
 
         {
             LOCK2(cs_main, pwalletMain->cs_wallet);
-
-            if (fullscan) {
-                pwalletMain->EraseAllAnonData([] (const char *cType, const uint32_t& nAffected) -> void {
-                    uiInterface.InitMessage(strprintf("Clear %s cache... (%d)", cType, nAffected));
-                });
-            }
-
             pwalletMain->MarkDirty();
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
                 uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
                 return true;
-            },1000);
+            },100);
             pwalletMain->ReacceptWalletTransactions();
-
-            if (fullscan)
-                pwalletMain->CacheAnonStats();
         }
 
         LogPrintf(" rescan      %15dms\n", GetTimeMillis() - nStart);
@@ -990,7 +977,10 @@ bool AppInit2(boost::thread_group& threadGroup)
             if (!file)
                 break;
             LogPrintf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
-            LoadExternalBlockFile(nFile, file);
+            LoadExternalBlockFile(nFile, file, [] (const uint32_t& nBlock) -> void {
+                if (nBlock % 10 == 0)
+                    uiInterface.InitMessage(strprintf("Reindexing block... (%d)", nBlock));
+            });
             nFile++;
         };
 
@@ -1062,5 +1052,5 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     LogPrintf("Network: %s, port: %d\n", Params().NetworkIDString(), Params().GetDefaultPort());
 
-    return !fRequestShutdown;
+    return !ShutdownRequested();
 }

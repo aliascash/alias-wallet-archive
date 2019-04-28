@@ -17,7 +17,18 @@ if test -e "${releaseDescription}" ; then
 else
     echo "### ${releaseDescription}" > ${workspace}/releaseNotesToDeploy.txt
 fi
-for currentChecksumfile in Checksum-Spectrecoin-CentOS.txt Checksum-Spectrecoin-Debian.txt Checksum-Spectrecoin-Fedora.txt Checksum-Spectrecoin-Mac.txt Checksum-Spectrecoin-OBFS4-Mac.txt Checksum-Spectrecoin-OBFS4-WIN64.txt Checksum-Spectrecoin-Qt5.12-OBFS4-WIN64.txt Checksum-Spectrecoin-Qt5.12-WIN64.txt Checksum-Spectrecoin-RaspberryPi.txt Checksum-Spectrecoin-Ubuntu.txt Checksum-Spectrecoin-WIN64.txt ; do
+for currentChecksumfile in \
+    Checksum-Spectrecoin-CentOS.txt \
+    Checksum-Spectrecoin-Debian.txt \
+    Checksum-Spectrecoin-Fedora.txt \
+    Checksum-Spectrecoin-Mac.txt \
+    Checksum-Spectrecoin-Mac-OBFS4.txt \
+    Checksum-Spectrecoin-RaspberryPi.txt \
+    Checksum-Spectrecoin-Ubuntu.txt \
+    Checksum-Spectrecoin-Win64.txt \
+    Checksum-Spectrecoin-Win64-OBFS4.txt \
+    Checksum-Spectrecoin-Win64-Qt5.9.6.txt \
+    Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt ; do
 #    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
     wget ${jobURL}/artifact/${currentChecksumfile} || true
     if test -e "${currentChecksumfile}" ; then

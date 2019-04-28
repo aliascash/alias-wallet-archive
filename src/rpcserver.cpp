@@ -312,6 +312,7 @@ static const CRPCCommand vRPCCommands[] =
     { "createmultisig",         &createmultisig,         true,      false,     true  },
     { "addredeemscript",        &addredeemscript,        false,     false,     false },
     { "getrawmempool",          &getrawmempool,          true,      false,     false },
+    { "gettxout",               &gettxout,               false,     false,     false },
     { "getblock",               &getblock,               false,     false,     false },
     { "getblockbynumber",       &getblockbynumber,       false,     false,     false },
     { "setbestblockbyheight",   &setbestblockbyheight,   false,     false,     false },
@@ -352,16 +353,15 @@ static const CRPCCommand vRPCCommands[] =
     { "sendalert",              &sendalert,              false,     false,     false },
     { "getnetworkinfo",         &getnetworkinfo,         false,     false,     false },
 
-
     { "getnewstealthaddress",   &getnewstealthaddress,   false,     false,     false },
     { "liststealthaddresses",   &liststealthaddresses,   false,     false,     false },
     { "importstealthaddress",   &importstealthaddress,   false,     false,     false },
     { "clearwallettransactions",&clearwallettransactions,false,     false,     false },
     { "scanforalltxns",         &scanforalltxns,         false,     false,     false },
 
-    { "sendspectoanon",          &sendspectoanon,          false,     false,     false },
+    { "sendspectoanon",         &sendspectoanon,         false,     false,     false },
     { "sendanontoanon",         &sendanontoanon,         false,     false,     false },
-    { "sendanontospec",          &sendanontospec,          false,     false,     false },
+    { "sendanontospec",         &sendanontospec,         false,     false,     false },
     { "estimateanonfee",        &estimateanonfee,        false,     false,     false },
     { "anonoutputs",            &anonoutputs,            false,     false,     false },
     { "anoninfo",               &anoninfo,               false,     false,     false },
