@@ -1005,12 +1005,14 @@ int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8
     EC_POINT *ptT1 = NULL;
     EC_POINT *ptT2 = NULL;
     EC_POINT *ptT3 = NULL;
+    EC_POINT *ptT4 = NULL;
     EC_POINT *ptPk = NULL;
 
     if (!(ptKi = EC_POINT_new(ecGrp))
       ||!(ptT1 = EC_POINT_new(ecGrp))
       ||!(ptT2 = EC_POINT_new(ecGrp))
       ||!(ptT3 = EC_POINT_new(ecGrp))
+      ||!(ptT4 = EC_POINT_new(ecGrp))
       ||!(ptPk = EC_POINT_new(ecGrp)))
     {
         LogPrintf("%s: EC_POINT_new failed.\n", __func__);
@@ -1020,6 +1022,14 @@ int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8
     // get keyimage as point
     if (!EC_POINT_oct2point(ecGrp, ptKi, &keyImage[0], EC_COMPRESSED_SIZE, bnCtx)
       &&(rv = errorN(1, "%s: extract ptKi failed.", __func__)))
+        goto End;
+
+    // test ECC validity with: keyimage * order == infinity/identity
+    if (!EC_POINT_mul(ecGrp, ptT4, NULL, ptKi, bnOrder, bnCtx)
+            &&(rv = errorN(1, "%s: EC_POINT_mul failed.\n", __func__)))
+        goto End;
+    if (!EC_POINT_is_at_infinity(ecGrp, ptT4)
+            &&(rv = errorN(1, "%s: keyImage not valid (ptKi * bnOrder != infinity).\n", __func__)))
         goto End;
 
     if (!bnC1 || !BN_bin2bn(&sigC[0], EC_SECRET_SIZE, bnC1))
@@ -1133,6 +1143,7 @@ int verifyRingSignatureAB(const data_chunk &keyImage, int nRingSize, const uint8
     EC_POINT_free(ptT1);
     EC_POINT_free(ptT2);
     EC_POINT_free(ptT3);
+    EC_POINT_free(ptT4);
     EC_POINT_free(ptPk);
 
     return rv;
