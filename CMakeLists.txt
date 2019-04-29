@@ -36,6 +36,9 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 if (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+
+    # For compile issues with vcpkg
+    add_compile_definitions(NOMINMAX)
 endif ()
 
 if (POLICY CMP0074)
