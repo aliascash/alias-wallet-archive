@@ -738,7 +738,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
         anonOutput.insert("system_mixins_mature",  aoc->nMixins);
         anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
 
-        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight);
+        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
         anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
         anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
