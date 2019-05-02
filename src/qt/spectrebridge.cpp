@@ -96,6 +96,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("d",    date.data(Qt::EditRole).toInt());
     transaction.insert("d_s",  date.data().toString());
     transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));
+    transaction.insert("t_i",  status.data(TransactionTableModel::TypeRole).toInt());
     transaction.insert("t_l",  status.sibling(row, TransactionTableModel::Type).data().toString());
     transaction.insert("ad_c", address.data(Qt::ForegroundRole).value<QColor>().name());
     transaction.insert("ad",   address.data(TransactionTableModel::AddressRole).toString());
@@ -103,7 +104,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("ad_d", address.data().toString());
     transaction.insert("n",    status.sibling(row, TransactionTableModel::Narration).data().toString());
     transaction.insert("am_c", amount.data(Qt::ForegroundRole).value<QColor>().name());
-    transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toString());
+    transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toLongLong());
     transaction.insert("am_d", amount.data().toString());
     transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
 
