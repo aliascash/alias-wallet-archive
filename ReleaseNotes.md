@@ -16,7 +16,10 @@ We have implemented a check for DCBs and we have implemented a replay protection
 
 ### Changelog
 ## 3.0.9
-- Fix column least depth in chaindata view and RPC method anoninfo. (show depth consistently)
+- UI: [#178](https://github.com/spectrecoin/spectre/issues/178) Tooltip for SPECTRE->XSPEC balance transfer
+- UI: Add grouping feature of transactions in TRANSACTION view
+- UI: Show immature instead mature coins in CHAIN DATA view
+- UI & RPC: Fix column least depth in CHAIN DATA view and RPC method anoninfo. (show depth consistently)
 
 ## 3.0.8
 **V3 blockchain fork consensus changes / Fork time is GMT: Friday, 17. May 2019 20:00:00 (1558123200 unix epoch time)**
