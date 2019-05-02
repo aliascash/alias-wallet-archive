@@ -765,7 +765,7 @@ void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRi
     // Updated transactions...
     qDebug() << "updateTransactions";
     if(topLeft.column() == TransactionTableModel::Status)
-        transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
+        transactionModel->populateRows(topLeft.row(), bottomRight.row());
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
