@@ -51,7 +51,7 @@
 #include <QDir>
 #include <QtGui/qtextdocument.h>
 #include <list>
-#define ROWS_TO_REFRESH 200
+#define ROWS_TO_REFRESH 500
 
 extern CWallet* pwalletMain;
 extern CBlockIndex* pindexBest;
@@ -114,24 +114,23 @@ QVariantMap TransactionModel::addTransaction(int row)
 void TransactionModel::populateRows(int start, int end, int max)
 {
     qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
-    if(max && start > max)
-        return;
-
     if(!prepare())
         return;
 
-    if (max && end > max)
-        end = max;
-
     QVariantList transactions;
-
-    while(start <= end)
+    QDateTime lastBlockDate = nNodeMode == NT_FULL ? clientModel->getLastBlockDate() : clientModel->getLastBlockThinDate();
+    for (int row = start; row <= end && (max == 0 || transactions.size() < max); row++)
     {
-        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
-            transactions.append(addTransaction(start));
-
-        start++;
+        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString())) {
+            // don't populate transaction which have been created AFTER the current block (state will be unchanged)
+            if (max != 0 && lastBlockDate < ttm->index(row, TransactionTableModel::Date).data(TransactionTableModel::DateRole).toDateTime())
+                continue;
+            if (transactions.empty() && start != row)
+                qDebug() << "populateRows skipped=" << row;
+            transactions.append(addTransaction(row));
+        }
     }
+
     if(!transactions.isEmpty()) {
         emitTransactions(transactions);
     }
@@ -764,9 +763,10 @@ void SpectreBridge::populateTransactionTable()
 void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRight)
 {
     // Updated transactions...
-    qDebug() << "updateTransactions";
-    if(topLeft.column() == TransactionTableModel::Status)
+    if(topLeft.column() == TransactionTableModel::Status) {
+        qDebug() << "updateTransactions";
         transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
+    }
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
