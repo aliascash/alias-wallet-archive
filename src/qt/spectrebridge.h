@@ -152,7 +152,7 @@ public:
 
 signals:
     void emitPaste(QString text);
-    void emitTransactions(QVariantList transactions);
+    void emitTransactions(QVariantList transactions, bool reset);
     void emitAddresses(QVariantList addresses);
     void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
     void emitAddressBookReturn(QString address, QString label);
