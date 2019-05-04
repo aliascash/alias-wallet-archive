@@ -152,9 +152,7 @@ void TransactionModel::populatePage()
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString()))
             transactions.append(addTransaction(row));
 
-    if(!transactions.isEmpty()) {
-        emitTransactions(transactions);
-    }
+    emitTransactions(transactions, true);
 
     running = false;
 
@@ -753,7 +751,7 @@ void SpectreBridge::populateTransactionTable()
     if(transactionModel->thread() == thread())
     {
         transactionModel->init(window->clientModel, window->walletModel->getTransactionTableModel());
-        connect(transactionModel, SIGNAL(emitTransactions(QVariantList)), SIGNAL(emitTransactions(QVariantList)), Qt::QueuedConnection);
+        connect(transactionModel, SIGNAL(emitTransactions(QVariantList, bool)), SIGNAL(emitTransactions(QVariantList, bool)), Qt::QueuedConnection);
         transactionModel->moveToThread(async);
     }
 
