@@ -69,7 +69,7 @@ Immediate changes:
 
 ## 2.x release notes
 
-See [ReleaseNotes for Pre-3.x](./ReleaseNotes_Pre3.0)
+See [ReleaseNotes for Pre-3.x](./ReleaseNotes_Pre3.0.md)
 
 # Checksums
 ## Verify MacOS
