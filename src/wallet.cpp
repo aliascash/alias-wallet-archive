@@ -6303,7 +6303,7 @@ bool CWallet::CacheAnonStats(int nBlockHeight)
     {
         mapAnonOutputStats[it->nValue].set(
             it->nValue, it->nExists, it->nUnconfirmed, it->nSpends, it->nOwned,
-            it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight, it->nCompromised, it->nMature, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
+            it->nLastHeight, it->nCompromised, it->nMature, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
     };
     fStaleAnonCache = false;
 
