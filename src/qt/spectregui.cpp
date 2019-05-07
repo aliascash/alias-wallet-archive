@@ -170,7 +170,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webEngineView = new QWebEngineView();
-	webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
+
+    if (!GetBoolArg("-debug"))
+        webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
 
     webEnginePage = new WebEnginePage(this);
     webEngineView->setPage(webEnginePage);
