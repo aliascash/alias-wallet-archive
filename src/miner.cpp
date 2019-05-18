@@ -421,7 +421,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
         pblock->nNonce         = 0;
     }
 
-    if (fDebug)
+    if (fDebugPoS)
         LogPrintf("CreateNewBlock() : created block at height: %d, txs: %d, size: %d bytes in %d µs.\n", nBestHeight, pblock->vtx.size(), nLastBlockSize, GetTimeMicros() - nStart);
 
     return pblock.release();
