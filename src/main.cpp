@@ -3219,7 +3219,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 
     int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
                                    IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
-                                                       Params().GetStakeMinConfirmations(nTime);
+                                                       Params().GetStakeMinConfirmations(GetAdjustedTime());
     return max(0, nMaturity - pDepthAndHeight.first);
 }
 
