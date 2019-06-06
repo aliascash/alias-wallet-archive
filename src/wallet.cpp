@@ -7012,6 +7012,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CSteal
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
             txdb.TxnAbort();
+            // TODO erase keyImages in mempool
             return false;
         } else
         {
