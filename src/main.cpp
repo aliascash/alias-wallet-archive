@@ -31,6 +31,7 @@ CCriticalSection cs_main;
 
 CTxMemPool mempool;
 
+CChain chainActive;
 std::map<uint256, CBlockIndex*> mapBlockIndex;
 std::map<uint256, CBlockThinIndex*> mapBlockThinIndex;
 
@@ -3069,6 +3070,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+    chainActive.SetTip(pindexNew);
 
     if (fStaleAnonCache)
     {
@@ -3772,6 +3774,23 @@ uint256 CBlockThinIndex::GetBlockTrust() const
 
     return ((CBigNum(1)<<256) / (bnTarget+1)).getuint256();
 }
+
+
+/**
+ * CChain implementation
+ */
+void CChain::SetTip(CBlockIndex *pindex) {
+    if (pindex == nullptr) {
+        vChain.clear();
+        return;
+    }
+    vChain.resize(pindex->nHeight + 1);
+    while (pindex && vChain[pindex->nHeight] != pindex) {
+        vChain[pindex->nHeight] = pindex;
+        pindex = pindex->pprev;
+    }
+}
+
 
 bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
 {
