@@ -4635,21 +4635,11 @@ static void ProcessGetData(CNode* pfrom)
                 CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
                 if (pcheckpoint && nHeight < pcheckpoint->nHeight)
                 {
-                    //if (!chainActive.Contains(mi->second))
-
                     // -- check if best chain contains block
-                    //    necessary? faster way? (mark unlinked blocks)
-                    CBlockIndex *pindex = pindexBest;
-                    while (pindex && pindex != mi->second && pindex->pprev)
-                        pindex = pindex->pprev;
-
-                    if ((!pindex->pprev && pindex != mi->second)) // reached start of chain.
-                    {
+                    if (!chainActive.Contains(mi->second))
                         LogPrintf("ProcessGetData(): ignoring request for old block that isn't in the main chain\n");
-                    } else
-                    {
+                    else
                         send = true;
-                    };
                 } else
                 {
                     send = true;
