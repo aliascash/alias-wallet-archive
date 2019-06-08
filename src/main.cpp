@@ -3717,6 +3717,48 @@ bool CBlock::AcceptBlock()
     if (fReindexing)
         return true;
 
+    // Prevent fake stake block spam attacks on forks
+    if (IsProofOfStake() && !chainActive.Contains(pindexPrev))
+    {
+        // start at the block we're adding on to
+        CBlockIndex *last = pindexPrev;
+
+        bool isAnonCoinStake = IsProofOfAnonStake();
+        ec_point vchImage, vchImageIn;
+        if (isAnonCoinStake)
+            vtx[1].vin[0].ExtractKeyImage(vchImage);
+
+        // while that block is not on the main chain
+        while (!chainActive.Contains(last))
+        {
+            CBlock bl;
+            if (!bl.ReadFromDisk(last))
+                return error("AcceptBlock() : ReadFromDisk for prev forked block failed");
+
+            // loop through every spent input from said block
+            for (CTransaction t : bl.vtx)
+            {
+                for (CTxIn in: t.vin)
+                {
+                    if (in.IsAnonInput() != isAnonCoinStake)
+                        continue;
+
+                    if (isAnonCoinStake)
+                    {
+                        in.ExtractKeyImage(vchImageIn);
+                        if (vchImage == vchImageIn)
+                            return DoS(100, error("AcceptBlock() : rejected because keyImage spent in prev forked block"));
+                    }
+                    else if (vtx[1].vin[0].prevout == in.prevout)
+                        return DoS(100, error("AcceptBlock() : rejected because prevout spent in prev forked block"));
+                }
+            }
+
+            // go to the parent block
+            last = last->pprev;
+        }
+    }
+
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
         return error("AcceptBlock() : out of disk space");
