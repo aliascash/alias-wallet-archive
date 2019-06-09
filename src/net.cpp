@@ -25,6 +25,8 @@ boost::process::group gTor;
 #include <signal.h>     // signals
 #include <unistd.h>     // fork()
 #include <sys/wait.h>   // waitpid()
+pid_t tor_process_pid = 0;
+bool tor_killed_from_here = false;
 #endif
 
 #ifdef USE_UPNP
