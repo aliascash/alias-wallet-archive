@@ -725,12 +725,15 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
     // Kernel (input 0) must match the stake hash target per coin age (nBits)
     const CTxIn& txin = tx.vin[0];
 
-    // First try finding the previous transaction in database
+    // First try finding the previous transaction in database and check that output is not spent
     CTxDB txdb("r");
     CTransaction txPrev;
     CTxIndex txindex;
     if (!txPrev.ReadFromDisk(txdb, txin.prevout, txindex))
         return tx.DoS(1, error("CheckProofOfStake() : INFO: read txPrev failed"));  // previous transaction not in main chain, may occur during initial download
+    if (!txindex.vSpent[txin.prevout.n].IsNull())
+        return tx.DoS(100, error("CheckProofOfStake() : INFO: txPrev already used at %s", txindex.vSpent[txin.prevout.n].ToString()));
+
 
     // Verify signature
     if (!VerifySignature(txPrev, tx, 0, SCRIPT_VERIFY_NONE, 0))
@@ -860,12 +863,19 @@ bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsi
     int64_t nCoinValue = -1;
     int nRingSize = txin.ExtractRingSize();
     if (nRingSize != MIN_RING_SIZE)
-        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Ringsize not %d for coinstake %s", MIN_RING_SIZE, tx.GetHash().ToString().c_str()));
+        return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Ringsize not %d for coinstake tx %s", MIN_RING_SIZE, tx.GetHash().ToString().c_str()));
 
     {
         LOCK(cs_main);
+        CKeyImageSpent spentKeyImage;
+        bool fInMemPool;
+        if (GetKeyImage(&txdb, vchImage, spentKeyImage, fInMemPool) && // keyImage already spent
+                !(spentKeyImage.txnHash == tx.GetHash() && spentKeyImage.inputNo == 0) && // this can happen for transactions created by the local node
+                TxnHashInSystem(&txdb, spentKeyImage.txnHash)) // keyimage is in db, but invalid as does not point to a known transaction, could be an old mempool keyimag
+            return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Coinstake tx %s has already spent keyImage %s", tx.GetHash().ToString().c_str(), HexStr(vchImage).c_str()));
+
         if (!tx.CheckAnonInputAB(txdb, txin, 0, MIN_RING_SIZE, vchImage, nCoinValue))
-            return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake %s", tx.GetHash().ToString().c_str()));
+            return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: CheckAnonInputAB failed on coinstake tx %s", tx.GetHash().ToString().c_str()));
     }
 
     CStakeModifier stakeMod(pindexPrev->nStakeModifier, pindexPrev->bnStakeModifierV2, pindexPrev->nHeight, pindexPrev->nTime);
