@@ -1746,37 +1746,14 @@ static void run_tor() {
 
     std::string torResult;
     pid_t ppid_before_fork = getpid();
-    pid_t pid = fork();
-    if (pid == -1) {
+    tor_process_pid = fork();
+    if (tor_process_pid == -1) {
         torResult = "Terminating - Error: fork() for tor failed: ";
         torResult += strerror(errno);
         torResult += "\n";
     }
-    else if (pid) {
-        // continue parent execution...
-        // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
-        int status;
-        if (waitpid(pid, &status, 0) > 0) {
-            if (WIFEXITED(status) && !WEXITSTATUS(status)) {
-                torResult = "Tor shutdown successfull\n";
-            }
-            else if (WIFEXITED(status) && WEXITSTATUS(status)) {
-                if (WEXITSTATUS(status) == 127) {
-                    torResult = "Terminating - Error: Could not start tor. Is tor installed and available in PATH?\n";
-                }
-                else {
-                    torResult = "Terminating - Error: Tor did exit with status " + std::to_string(WEXITSTATUS(status)) + "\n";
-                }
-            }
-            else {
-                torResult = "Terminating - Error: Tor was terminated\n";
-            }
-        }
-        else {
-            torResult = "Terminating - Error: waitpid() for tor failed\n";
-        }
-    } else {
-        // continue child execution...
+    else if (tor_process_pid == 0) {
+        // Continue child execution...
         // Make sure tor gets terminated when parent process dies
         int r = prctl(PR_SET_PDEATHSIG, SIGKILL);
         if (r == -1) {
@@ -1792,10 +1769,32 @@ static void run_tor() {
         std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
         argv_c.push_back(nullptr);
 
-        execvp("tor", &argv_c[0]);
-        perror("execvp(\"tor\", ...) failed");
-        _exit(127);
-    }
+        if (execvp("tor", &argv_c[0]) < 0) {
+            perror("execvp(\"tor\", ...) failed");
+            _exit(127);
+        }
+    } else {
+        // Continue parent execution...
+        // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
+        int status;
+        if (waitpid(tor_process_pid, &status, 0) > 0) {
+            if (WIFEXITED(status) && !WEXITSTATUS(status)) {
+                torResult = "Tor shutdown successfull\n";
+            } else if (tor_killed_from_here) {
+                torResult = "Tor shutdown during wallet stop\n";
+            } else if (WIFEXITED(status) && WEXITSTATUS(status)) {
+                if (WEXITSTATUS(status) == 127) {
+                    torResult = "Terminating - Error: Could not start tor. Is tor installed and available in PATH?\n";
+                } else {
+                    torResult = "Terminating - Error: Tor did exit with status " + std::to_string(WEXITSTATUS(status)) +
+                                "\n";
+                }
+            } else {
+                torResult = "Terminating - Error: Tor was terminated\n";
+            }
+        } else {
+            torResult = "Terminating - Error: waitpid() for tor failed\n";
+        }
 
     // If tor could not be started or exits for any reason, shutdown the application
     LogPrintf(torResult.c_str());
@@ -1883,6 +1882,13 @@ bool StopNode()
     if (gTor && gTor.valid()) {
         LogPrintf("Terminate tor process group\n");
         gTor.terminate();
+    }
+#elif __linux__
+    if (tor_process_pid > 0) {
+        // Prevent confusing error output as SIGTERM is not working from here
+        tor_killed_from_here = true;
+
+        kill(tor_process_pid, SIGKILL);
     }
 #endif
 
