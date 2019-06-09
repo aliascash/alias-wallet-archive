@@ -17,6 +17,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 ### Changelog
 ## 3.0.10 (released 2019-??-??)
 - [#184](https://github.com/spectrecoin/spectre/issues/184) Fix fake/spent stake block spam
+- [#173](https://github.com/spectrecoin/spectre/issues/173) Tor process is not cleanly shutting down
 
 ## 3.0.9 (released 2019-05-05)
 - UI: [#178](https://github.com/spectrecoin/spectre/issues/178) Tooltip for SPECTRE->XSPEC balance transfer
