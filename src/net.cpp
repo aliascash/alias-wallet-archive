@@ -1126,7 +1126,7 @@ void ThreadOnionSeed()
 
     int found = 0;
 
-    printf("Loading addresses from .onion seeds\n");
+    LogPrintf("Loading addresses from .onion seeds\n");
 
     for (unsigned int seed_idx = 0; strOnionSeed[seed_idx][0] != NULL; seed_idx++) {
         CNetAddr parsed;
@@ -1144,7 +1144,7 @@ void ThreadOnionSeed()
         addrman.Add(addr, parsed);
     }
 
-    printf("%d addresses found from .onion seeds\n", found);
+    LogPrintf("%d addresses found from .onion seeds\n", found);
 }
 
 
@@ -1761,7 +1761,7 @@ static void run_tor() {
             _exit(1);
         }
         if (getppid() != ppid_before_fork) {
-            printf("Original parent exited just before the prctl() call\n");
+            LogPrintf("Original parent exited just before the prctl() call\n");
             _exit(1);
         }
 
@@ -1796,10 +1796,11 @@ static void run_tor() {
             torResult = "Terminating - Error: waitpid() for tor failed\n";
         }
 
-    // If tor could not be started or exits for any reason, shutdown the application
-    LogPrintf(torResult.c_str());
-    printf("%s", torResult.c_str());
-    kill(getpid(), SIGTERM);
+        // If tor could not be started or exits for any reason, shutdown the application
+        LogPrintf(torResult.c_str());
+        kill(getpid(), SIGTERM);
+    }
+
 #else
     // Tor embedded
     argv.push_back("--Log");
@@ -1828,7 +1829,7 @@ void StartTor(void *nothing)
       PrintException(&e, "StartTor()");
     }
 
-    printf("Onion thread exited.\n");
+    LogPrintf("Onion thread exited.\n");
 }
 
 void StartNode(boost::thread_group& threadGroup)
@@ -1848,7 +1849,7 @@ void StartNode(boost::thread_group& threadGroup)
 
     // start the onion seeder
     if (!GetBoolArg("-onionseed", true))
-        printf(".onion seeding disabled\n");
+        LogPrintf(".onion seeding disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)()>, "onionseed", &ThreadOnionSeed));
 
