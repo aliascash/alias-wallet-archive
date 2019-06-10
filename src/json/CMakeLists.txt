@@ -1,4 +1,4 @@
-target_sources(Spectrecoin
+target_sources(spectrecoin_lib
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/json_spirit_error_position.h
         ${CMAKE_CURRENT_LIST_DIR}/json_spirit.h

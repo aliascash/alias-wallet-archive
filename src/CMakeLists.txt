@@ -1,10 +1,17 @@
-add_executable(Spectrecoin ../spectre.qrc main.cpp)
+# Setup a library with all the common content
+add_library(spectrecoin_lib)
+
+# This is the UI wallet
+add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+
+# This is the daemon
+add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(win)
 endif ()
 
-target_include_directories(Spectrecoin
+target_include_directories(spectrecoin_lib
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
@@ -12,12 +19,31 @@ target_include_directories(Spectrecoin
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
         )
 
+# Link the UI wallet
 target_link_libraries(Spectrecoin
         PUBLIC
+        spectrecoin_lib
         Qt5::Core
         Qt5::Widgets
         Qt5::WebEngine
         Qt5::WebEngineWidgets
+        Boost::boost
+        Boost::chrono
+        Boost::filesystem
+        Boost::iostreams
+        Boost::program_options
+        Boost::system
+        Boost::thread
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        Oracle::BerkeleyDB
+        leveldb
+        )
+
+# Link the daemon
+target_link_libraries(Spectrecoind
+        PUBLIC
+        spectrecoin_lib
         Boost::boost
         Boost::chrono
         Boost::filesystem
@@ -42,7 +68,8 @@ configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
 )
 
-target_sources(Spectrecoin
+# Common sources
+target_sources(spectrecoin_lib
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/addrman.h
         ${CMAKE_CURRENT_LIST_DIR}/alert.h
@@ -140,7 +167,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/script.cpp
         ${CMAKE_CURRENT_LIST_DIR}/scrypt.cpp
         ${CMAKE_CURRENT_LIST_DIR}/smessage.cpp
-#        ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp
         ${CMAKE_CURRENT_LIST_DIR}/state.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stealth.cpp
         ${CMAKE_CURRENT_LIST_DIR}/sync.cpp
