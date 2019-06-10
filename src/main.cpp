@@ -31,6 +31,7 @@ CCriticalSection cs_main;
 
 CTxMemPool mempool;
 
+CChain chainActive;
 std::map<uint256, CBlockIndex*> mapBlockIndex;
 std::map<uint256, CBlockThinIndex*> mapBlockThinIndex;
 
@@ -3069,6 +3070,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+    chainActive.SetTip(pindexNew);
 
     if (fStaleAnonCache)
     {
@@ -3219,7 +3221,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 
     int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
                                    IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
-                                                       Params().GetStakeMinConfirmations(nTime);
+                                                       Params().GetStakeMinConfirmations(GetAdjustedTime());
     return max(0, nMaturity - pDepthAndHeight.first);
 }
 
@@ -3715,6 +3717,48 @@ bool CBlock::AcceptBlock()
     if (fReindexing)
         return true;
 
+    // Prevent fake stake block spam attacks on forks
+    if (IsProofOfStake() && !chainActive.Contains(pindexPrev))
+    {
+        // start at the block we're adding on to
+        CBlockIndex *last = pindexPrev;
+
+        bool isAnonCoinStake = IsProofOfAnonStake();
+        ec_point vchImage, vchImageIn;
+        if (isAnonCoinStake)
+            vtx[1].vin[0].ExtractKeyImage(vchImage);
+
+        // while that block is not on the main chain
+        while (!chainActive.Contains(last))
+        {
+            CBlock bl;
+            if (!bl.ReadFromDisk(last))
+                return error("AcceptBlock() : ReadFromDisk for prev forked block failed");
+
+            // loop through every spent input from said block
+            for (CTransaction t : bl.vtx)
+            {
+                for (CTxIn in: t.vin)
+                {
+                    if (in.IsAnonInput() != isAnonCoinStake)
+                        continue;
+
+                    if (isAnonCoinStake)
+                    {
+                        in.ExtractKeyImage(vchImageIn);
+                        if (vchImage == vchImageIn)
+                            return DoS(100, error("AcceptBlock() : rejected because keyImage spent in prev forked block"));
+                    }
+                    else if (vtx[1].vin[0].prevout == in.prevout)
+                        return DoS(100, error("AcceptBlock() : rejected because prevout spent in prev forked block"));
+                }
+            }
+
+            // go to the parent block
+            last = last->pprev;
+        }
+    }
+
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
         return error("AcceptBlock() : out of disk space");
@@ -3772,6 +3816,23 @@ uint256 CBlockThinIndex::GetBlockTrust() const
 
     return ((CBigNum(1)<<256) / (bnTarget+1)).getuint256();
 }
+
+
+/**
+ * CChain implementation
+ */
+void CChain::SetTip(CBlockIndex *pindex) {
+    if (pindex == nullptr) {
+        vChain.clear();
+        return;
+    }
+    vChain.resize(pindex->nHeight + 1);
+    while (pindex && vChain[pindex->nHeight] != pindex) {
+        vChain[pindex->nHeight] = pindex;
+        pindex = pindex->pprev;
+    }
+}
+
 
 bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
 {
@@ -4616,21 +4677,11 @@ static void ProcessGetData(CNode* pfrom)
                 CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
                 if (pcheckpoint && nHeight < pcheckpoint->nHeight)
                 {
-                    //if (!chainActive.Contains(mi->second))
-
                     // -- check if best chain contains block
-                    //    necessary? faster way? (mark unlinked blocks)
-                    CBlockIndex *pindex = pindexBest;
-                    while (pindex && pindex != mi->second && pindex->pprev)
-                        pindex = pindex->pprev;
-
-                    if ((!pindex->pprev && pindex != mi->second)) // reached start of chain.
-                    {
+                    if (!chainActive.Contains(mi->second))
                         LogPrintf("ProcessGetData(): ignoring request for old block that isn't in the main chain\n");
-                    } else
-                    {
+                    else
                         send = true;
-                    };
                 } else
                 {
                     send = true;

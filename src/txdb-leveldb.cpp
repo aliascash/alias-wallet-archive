@@ -539,6 +539,7 @@ bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
 
     pindexBest = mapBlockIndex[hashBestChain];
     nBestHeight = pindexBest->nHeight;
+    chainActive.SetTip(pindexBest);
 
     // Calculate nChainTrust
     vector<pair<int, CBlockIndex*> > vSortedByHeight;
