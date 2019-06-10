@@ -826,6 +826,7 @@ bool CheckKernel(CBlockIndex* pindexPrev, unsigned int nBits, int64_t nTime, con
  * The reason this hash is chosen is the following:
  *   nStakeModifier: scrambles computation to make it very difficult to precompute future proof-of-stake.
  *                   nStakeModifier is either the UTXO hash or keyImage used for the last staking transaction
+ *                   plus the previous block's stake modifier
  *   keyImage: the keyImage of the ATXO used for staking is unique regardles the mixins,
  *             makes sure an ATXO can only be used once for generating a kernel hash
  *   nTime: current timestamp (granularity set to 16 seconds)
