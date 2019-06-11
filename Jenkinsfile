@@ -852,6 +852,31 @@ pipeline {
                 }
             }
         }
+        stage('Update download links') {
+            when {
+                branch 'automaticDownloadUrlUpdate'
+            }
+            steps {
+                build(
+                        job: 'updateDownloadURLs',
+                        parameters: [
+                                string(
+                                        name: 'RELEASE_VERSION',
+                                        value: "${GIT_TAG_TO_USE}"
+                                ),
+                                string(
+                                        name: 'GIT_COMMIT_SHORT',
+                                        value: "${GIT_COMMIT_SHORT}"
+                                ),
+                                string(
+                                        name: 'BOOTSTRAP_DATE',
+                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
+                                )
+                        ],
+                        wait: false
+                )
+            }
+        }
     }
     post {
         success {
