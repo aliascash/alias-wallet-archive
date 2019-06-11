@@ -854,7 +854,7 @@ pipeline {
         }
         stage('Update download links') {
             when {
-                branch 'automaticDownloadUrlUpdate'
+                branch 'master'
             }
             steps {
                 build(
