@@ -98,7 +98,12 @@ public:
                     status = CT_NEW; /* Not in model, but want to show, treat as new */
                 if (!showTransaction && inModel)
                     status = CT_DELETED; /* In model, but want to hide, treat as deleted */
-            };
+            }
+            else if (status == CT_NEW && inModel)
+            {
+                LogPrintf("Warning: updateWallet: Got CT_NEW, but transaction is already in model => treat as update\n");
+                status = CT_UPDATED;
+            }
 
             LogPrintf("   inModel=%i Index=%i-%i showTransaction=%i derivedStatus=%i\n",
                         inModel, lowerIndex, upperIndex, showTransaction, status);
@@ -106,11 +111,6 @@ public:
             switch(status)
             {
             case CT_NEW:
-                if(inModel)
-                {
-                    LogPrintf("Warning: updateWallet: Got CT_NEW, but transaction is already in model\n");
-                    break;
-                }
                 if(showTransaction)
                 {
                     QList<TransactionRecord> toInsert;
@@ -141,7 +141,6 @@ public:
                     }
                 }
                 break;
-                break;
             case CT_DELETED:
                 if(!inModel)
                 {
@@ -154,8 +153,33 @@ public:
                 parent->endRemoveRows();
                 break;
             case CT_UPDATED:
-                // Miscellaneous updates -- nothing to do, status update will take care of this, and is only computed for
-                // visible transactions.
+                // Miscellaneous updates, we cant rely on status update since for SPECTRE not only the state of a trx can change.
+                if(showTransaction)
+                {
+                    QList<TransactionRecord> toUpdate;
+                    {
+                        LOCK2(cs_main, wallet->cs_wallet);
+                        // Find transaction in wallet
+                        std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(hash);
+                        if(mi == wallet->mapWallet.end())
+                        {
+                            LogPrintf("Warning: updateWallet: Got CT_UPDATED, but transaction is not in wallet\n");
+                            break;
+                        }
+                        toUpdate = TransactionRecord::decomposeTransaction(wallet, mi->second);
+                    }
+                    if(!toUpdate.isEmpty()) /* only if something to update */
+                    {
+                        if (toUpdate.size() != (upperIndex - lowerIndex))
+                            LogPrintf("Warning: updateWallet: Got CT_UPDATED, but existing transaction has different TransactionRecords. (should never happen, not handled)\n");
+                        else {
+                            int insert_idx = lowerIndex;
+                            Q_FOREACH(const TransactionRecord &rec, toUpdate)
+                                cachedWallet.replace(insert_idx++, rec);
+                            parent->emitDataChanged(lowerIndex, upperIndex-1);
+                        }
+                    }
+                }
                 break;
             }
         }
@@ -643,6 +667,11 @@ void TransactionTableModel::updateDisplayUnit()
 {
     // emit dataChanged to update Amount column with the current unit
     emit dataChanged(index(0, Amount), index(priv->size()-1, Amount));
+}
+
+void TransactionTableModel::emitDataChanged(int rowTop, int rowBottom)
+{
+    emit dataChanged(index(rowTop, 0), index(rowBottom, columns.length()-1));
 }
 
 // queue notifications to show a non freezing progress dialog e.g. for rescan
