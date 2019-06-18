@@ -119,6 +119,15 @@ endif ()
 
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
+if (ANDROID)
+    # Set env var LOCAL_OPENSSL_DIR to the folder where the include dir and
+    # libcrypto.a as well as libssl.a are located
+    set(OPENSSL_ROOT_DIR ${LOCAL_OPENSSL_DIR})
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
+    set(OPENSSL_INCLUDE_DIR ${LOCAL_OPENSSL_DIR}/include)
+    set(OPENSSL_CRYPTO_LIBRARY ${LOCAL_OPENSSL_DIR}/libcrypto.a)
+    set(OPENSSL_SSL_LIBRARY ${LOCAL_OPENSSL_DIR}/libssl.a)
+endif()
 # Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
 # https://slproweb.com/products/Win32OpenSSL.html
 find_package(OpenSSL)
