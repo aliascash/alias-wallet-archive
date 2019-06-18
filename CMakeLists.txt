@@ -84,34 +84,38 @@ message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 
 # ============================================================================================
 message(STATUS "=== Qt =====================================================================")
-# Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
-# directory <qt-dir>/msvc2017_64
-#
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed
-set(CMAKE_AUTOMOC ON)
-# Create code from a list of Qt designer ui files
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS qt/forms)
-# Handle .qrc files added as target sources at build time and invoke rcc accordingly
-set(CMAKE_AUTORCC ON)
+if (ANDROID)
+    message(STATUS "Qt disabled for Android build")
+else()
+    # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
+    # directory <qt-dir>/msvc2017_64
+    #
+    # Find includes in corresponding build directories
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+    # Instruct CMake to run moc automatically when needed
+    set(CMAKE_AUTOMOC ON)
+    # Create code from a list of Qt designer ui files
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOUIC_SEARCH_PATHS qt/forms)
+    # Handle .qrc files added as target sources at build time and invoke rcc accordingly
+    set(CMAKE_AUTORCC ON)
 
-find_package(Qt5Core)
-message(STATUS "Qt5Core version: ${Qt5Core_VERSION}")
-get_target_property(QtCore_location Qt5::Core LOCATION)
+    find_package(Qt5Core)
+    message(STATUS "Qt5Core version: ${Qt5Core_VERSION}")
+    get_target_property(QtCore_location Qt5::Core LOCATION)
 
-find_package(Qt5Widgets)
-message(STATUS "Qt5Widgets version: ${Qt5Widgets_VERSION}")
-get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
+    find_package(Qt5Widgets)
+    message(STATUS "Qt5Widgets version: ${Qt5Widgets_VERSION}")
+    get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
 
-find_package(Qt5WebEngine)
-message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
-get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
+    find_package(Qt5WebEngine)
+    message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
+    get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
 
-find_package(Qt5WebEngineWidgets)
-message(STATUS "Qt5WebEngineWidgets version: ${Qt5WebEngineWidgets_VERSION}")
-get_target_property(QtWebEngineWidgets_location Qt5::WebEngineWidgets LOCATION)
+    find_package(Qt5WebEngineWidgets)
+    message(STATUS "Qt5WebEngineWidgets version: ${Qt5WebEngineWidgets_VERSION}")
+    get_target_property(QtWebEngineWidgets_location Qt5::WebEngineWidgets LOCATION)
+endif ()
 
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
