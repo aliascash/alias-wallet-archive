@@ -15,7 +15,10 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+#set(ANDROID 1)
+if(ANDROID)
+    message(STATUS "Configuring for Android")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
