@@ -1,5 +1,9 @@
+# Create dummy file since we want an empty shared library before linking
+set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
+file(WRITE ${DUMMY_SOURCE} "")
+
 # Setup a library with all the common content
-add_library(spectrecoin_lib)
+add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
 # This is the UI wallet
 add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
