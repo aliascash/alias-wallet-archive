@@ -1,65 +1,5 @@
-# Create dummy file since we want an empty shared library before linking
-set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
-file(WRITE ${DUMMY_SOURCE} "")
-
-# Setup a library with all the common content
-add_library(spectrecoin_lib ${DUMMY_SOURCE})
-
-# This is the UI wallet
-add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
-
-# This is the daemon
-add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    add_subdirectory(win)
-endif ()
-
-target_include_directories(spectrecoin_lib
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
-        )
-
-# Link the UI wallet
-target_link_libraries(Spectrecoin
-        PUBLIC
-        spectrecoin_lib
-        Qt5::Core
-        Qt5::Widgets
-        Qt5::WebEngine
-        Qt5::WebEngineWidgets
-        Boost::boost
-        Boost::chrono
-        Boost::filesystem
-        Boost::iostreams
-        Boost::program_options
-        Boost::system
-        Boost::thread
-        OpenSSL::SSL
-        OpenSSL::Crypto
-        Oracle::BerkeleyDB
-        leveldb
-        )
-
-# Link the daemon
-target_link_libraries(Spectrecoind
-        PUBLIC
-        spectrecoin_lib
-        Boost::boost
-        Boost::chrono
-        Boost::filesystem
-        Boost::iostreams
-        Boost::program_options
-        Boost::system
-        Boost::thread
-        OpenSSL::SSL
-        OpenSSL::Crypto
-        Oracle::BerkeleyDB
-        leveldb
-        )
+##############################################################################
+##### Some helper stuff ######################################################
 
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
@@ -71,6 +11,35 @@ configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h.in"
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
 )
+
+
+##############################################################################
+##### Setup a library with all the common content ############################
+
+# Create dummy file since we want an empty shared library before linking
+set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
+file(WRITE ${DUMMY_SOURCE} "")
+
+add_library(spectrecoin_lib ${DUMMY_SOURCE})
+
+if(ANDROID)
+    include_directories(${Boost_INCLUDE_DIRS})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../db5.x>)
+    target_link_libraries(spectrecoin_lib ${Boost_LIBRARIES})
+#else()
+#    # This is the UI wallet
+#    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+endif()
+
+target_include_directories(spectrecoin_lib
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        )
+
+
 
 # Common sources
 target_sources(spectrecoin_lib
@@ -185,6 +154,70 @@ target_sources(spectrecoin_lib
 
 add_subdirectory(json)
 add_subdirectory(lz4)
-add_subdirectory(qt)
+if (!ANDROID)
+    add_subdirectory(qt)
+endif ()
 add_subdirectory(wordlists)
 add_subdirectory(xxhash)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_subdirectory(win)
+endif ()
+
+
+
+##############################################################################
+##### Setup and link the executables #########################################
+
+# The daemon
+add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
+
+if (ANDROID)
+    # Link the daemon for Android with different include settings
+    target_link_libraries(Spectrecoind
+            PUBLIC
+            spectrecoin_lib
+            db5x
+            leveldb
+            )
+else()
+    # The UI wallet
+    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+
+    # Link the daemon
+    target_link_libraries(Spectrecoind
+            PUBLIC
+            spectrecoin_lib
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb
+            )
+
+    # Link the UI wallet
+    target_link_libraries(Spectrecoin
+            PUBLIC
+            spectrecoin_lib
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::WebEngine
+            Qt5::WebEngineWidgets
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb
+            )
+endif ()
