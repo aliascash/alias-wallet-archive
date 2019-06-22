@@ -63,33 +63,65 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 # locations on all platforms.
 include(GNUInstallDirs)
 
+
+
 # ============================================================================================
-message(STATUS "=== Boost ==================================================================")
 # Env var BOOST_ROOT should point to local Boost installation
-#
-#set(BOOST_ROOT C:/boost_1_69_0/)
-#set(Boost_DEBUG on)
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.65.1 REQUIRED COMPONENTS
-        chrono
-        filesystem
-        iostreams
-        program_options
-        system
-        thread
-        )
+if (ANDROID)
+    message(STATUS "=== Boost (Android) ========================================================")
+#    set(BOOST_ROOT       /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a)
+#    set(BOOST_LIBRARYDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/lib)
+#    set(BOOST_INCLUDEDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/include/boost-1_69)
+#    set(BOOST_INCLUDEDIR /usr/include)
+#    set(Boost_NO_SYSTEM_PATHS TRUE)
+#    set(Boost_ADDITIONAL_VERSIONS 1_69 1.69)
+#    set(Boost_COMPILER -clang)
+#    set(Boost_ARCHITECTURE -a32)
+#    set(Boost_LIB_VERSION 1_69)
+#    set(Boost_LIB_PREFIX lib)
+#    set(Boost_USE_DEBUG_LIBS OFF)
+#    set(Boost_USE_DEBUG_LIBS OFF)
+#    set(Boost_USE_STATIC_LIBS ON)
+#    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_INCLUDE_DIRS /usr/include)
+    set(Boost_LIBRARIES ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_chrono-clang-mt-a32-1_69.a;
+            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_filesystem-clang-mt-a32-1_69.a;
+            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_iostreams-clang-mt-a32-1_69.a;
+            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_program_options-clang-mt-a32-1_69.a;
+            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_system-clang-mt-a32-1_69.a;
+            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_thread-clang-mt-a32-1_69.a;
+            )
+#    set(Boost_USE_STATIC_RUNTIME ON)
+#    set(Boost_DEBUG on)
+    message(STATUS "BOOST_ROOT: ${BOOST_ROOT}")
+    message(STATUS "BOOST_LIBRARYDIR: ${BOOST_LIBRARYDIR}")
+    message(STATUS "BOOST_INCLUDEDIR: ${BOOST_INCLUDEDIR}")
+else()
+    message(STATUS "=== Boost ==================================================================")
+    set(Boost_USE_STATIC_LIBS OFF)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    find_package(Boost 1.65.1 REQUIRED COMPONENTS
+            chrono
+            filesystem
+            iostreams
+            program_options
+            system
+            thread
+            )
+endif()
 message(STATUS "Boost_VERSION:      ${Boost_VERSION}")
 message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
 message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 
+
+
 # ============================================================================================
-message(STATUS "=== Qt =====================================================================")
 if (ANDROID)
-    message(STATUS "Qt disabled for Android build")
+    message(STATUS "=== Qt disabled for Android build ==========================================")
 else()
+    message(STATUS "=== Qt =====================================================================")
     # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
     # directory <qt-dir>/msvc2017_64
     #
@@ -120,9 +152,11 @@ else()
     get_target_property(QtWebEngineWidgets_location Qt5::WebEngineWidgets LOCATION)
 endif ()
 
+
+
 # ============================================================================================
-message(STATUS "=== OpenSSL ================================================================")
 if (ANDROID)
+    message(STATUS "=== OpenSSL (Android) ======================================================")
     # Set env var LOCAL_OPENSSL_DIR to the folder where the include dir and
     # libcrypto.a as well as libssl.a are located
     set(OPENSSL_ROOT_DIR ${LOCAL_OPENSSL_DIR})
@@ -130,6 +164,8 @@ if (ANDROID)
     set(OPENSSL_INCLUDE_DIR ${LOCAL_OPENSSL_DIR}/include)
     set(OPENSSL_CRYPTO_LIBRARY ${LOCAL_OPENSSL_DIR}/libcrypto.a)
     set(OPENSSL_SSL_LIBRARY ${LOCAL_OPENSSL_DIR}/libssl.a)
+else()
+    message(STATUS "=== OpenSSL ================================================================")
 endif()
 # Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
 # https://slproweb.com/products/Win32OpenSSL.html
@@ -144,14 +180,23 @@ message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
 message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
+
+
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 
 # ============================================================================================
-message(STATUS "=== Berkeley DB ============================================================")
-#set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
-find_package(BerkeleyDB REQUIRED)
+if (ANDROID)
+    message(STATUS "=== Berkeley DB (Andoird) ==================================================")
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db5.x)
+else()
+    message(STATUS "=== Berkeley DB ============================================================")
+    #set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
+    find_package(BerkeleyDB REQUIRED)
+endif()
+
+
 
 # ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
