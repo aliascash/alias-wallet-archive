@@ -16,7 +16,7 @@ pipeline {
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
-        RELEASE_TAG = '3.0.10'
+        RELEASE_TAG = '3.0.11'
         BLOCKCHAIN_ARCHIVE_VERSION = "2019-06-04"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
@@ -850,6 +850,31 @@ pipeline {
                         )
                     }
                 }
+            }
+        }
+        stage('Update download links') {
+            when {
+                branch 'master'
+            }
+            steps {
+                build(
+                        job: 'updateDownloadURLs',
+                        parameters: [
+                                string(
+                                        name: 'RELEASE_VERSION',
+                                        value: "${GIT_TAG_TO_USE}"
+                                ),
+                                string(
+                                        name: 'GIT_COMMIT_SHORT',
+                                        value: "${GIT_COMMIT_SHORT}"
+                                ),
+                                string(
+                                        name: 'BOOTSTRAP_DATE',
+                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
+                                )
+                        ],
+                        wait: false
+                )
             }
         }
     }
