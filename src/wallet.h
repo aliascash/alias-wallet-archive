@@ -859,7 +859,7 @@ public:
     {
         if (vin.empty())
             return 0;
-        if (fDebitCached)
+        if (fDebitCached == 1)
             return nDebitCached;
         nDebitCached = pwallet->GetDebit(*this);
         fDebitCached = true;
