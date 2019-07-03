@@ -1089,6 +1089,14 @@ void SpectreGUI::updateStakingIcon()
             textDebug = tr(" (last 72 blocks %1)").arg(nNetworkWeightRecent);
 
         stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
+
+        QString text2;
+        unsigned nEstimateTime2 = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeightRecent / nWeight;
+        text2 = (nEstimateTime2 < 60)           ? tr("%1 second(s)").arg(nEstimateTime2) : \
+               (nEstimateTime2 < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime2 / 60).arg(nEstimateTime2 % 60) : \
+               (nEstimateTime2 < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime2 / (60 * 60)).arg((nEstimateTime2 % (60 * 60)) / 60) : \
+                                                tr("%1 day(s), %2 hour(s)").arg(nEstimateTime2 / (60 * 60 * 24)).arg((nEstimateTime2 % (60 * 60 * 24)) / (60 * 60));
+        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4<br/>old: %5").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text).arg(text2));
     } else
     {
         stakingIcon.   addClass("not-staking");
