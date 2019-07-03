@@ -98,7 +98,7 @@ double GetPoWMHashPS()
     return GetDifficulty() * 4294.967296 / nTargetSpacingWork;
 }
 
-double GetPoSKernelPS()
+double GetPoSKernelPSRecent()
 {
     int nPoSInterval = 72;
     double dStakeKernelsTriedAvg = 0;
@@ -150,6 +150,30 @@ double GetPoSKernelPS()
 
     if (nStakesTime)
         result = dStakeKernelsTriedAvg / nStakesTime;
+
+    if (Params().IsProtocolV2(nBestHeight))
+        result *= STAKE_TIMESTAMP_MASK + 1;
+
+    return result;
+}
+
+
+double GetPoSKernelPS()
+{
+    double result = 0;
+    if (nNodeMode == NT_THIN)
+    {
+        if (pindexBestHeader->IsProofOfStake())
+            result = GetHeaderDifficulty(pindexBestHeader) * 4294967296.0;
+    }
+    else
+    {
+        if (pindexBest->IsProofOfStake())
+            result = GetDifficulty(pindexBest) * 4294967296.0;
+    }
+
+    if (result > 0)
+        result /= TARGET_BLOCK_TIME; // relative to current difficulty staked coins
 
     if (Params().IsProtocolV2(nBestHeight))
         result *= STAKE_TIMESTAMP_MASK + 1;
