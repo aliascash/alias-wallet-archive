@@ -18,6 +18,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 ## 3.0.12 (unreleased)
 - Improve expected time to staking reward logic. During network staking weight changes, expected time was calculated wrong.
   RPC: add new field 'netstakeweightrecent' for getstakinginfo and getmininginfo which shows network weight of last 72 blocks
+- Fix "lost" change address issue by increasing address lookahead from 10 to 100
 
 ## 3.0.11 (released 2019-06-30)
 - UI: [#185](https://github.com/spectrecoin/spectre/issues/185) Fix shown staking transaction reward after wallet unlock
