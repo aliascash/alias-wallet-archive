@@ -18,6 +18,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 #set(ANDROID 1)
 if(ANDROID)
     message(STATUS "Configuring for Android")
+    set(ANDROID_ARM_MODE arm)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
@@ -69,6 +71,9 @@ include(GNUInstallDirs)
 # Env var BOOST_ROOT should point to local Boost installation
 if (ANDROID)
     message(STATUS "=== Boost (Android) ========================================================")
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
 #    set(BOOST_ROOT       /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a)
 #    set(BOOST_LIBRARYDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/lib)
 #    set(BOOST_INCLUDEDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/include/boost-1_69)
@@ -83,13 +88,14 @@ if (ANDROID)
 #    set(Boost_USE_DEBUG_LIBS OFF)
 #    set(Boost_USE_STATIC_LIBS ON)
 #    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_INCLUDE_DIRS /usr/include)
-    set(Boost_LIBRARIES ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_chrono-clang-mt-a32-1_69.a;
-            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_filesystem-clang-mt-a32-1_69.a;
-            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_iostreams-clang-mt-a32-1_69.a;
-            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_program_options-clang-mt-a32-1_69.a;
-            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_system-clang-mt-a32-1_69.a;
-            ~/spectre/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_thread-clang-mt-a32-1_69.a;
+#    set(Boost_INCLUDE_DIRS /usr/include)
+    set(Boost_INCLUDE_DIRS ~/Boost/Boost-for-Android/build/out/armeabi-v7a/include/boost-1_69)
+    set(Boost_LIBRARIES ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_chrono-clang-mt-a32-1_69.a;
+            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_filesystem-clang-mt-a32-1_69.a;
+            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_iostreams-clang-mt-a32-1_69.a;
+            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_program_options-clang-mt-a32-1_69.a;
+            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_system-clang-mt-a32-1_69.a;
+            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_thread-clang-mt-a32-1_69.a;
             )
 #    set(Boost_USE_STATIC_RUNTIME ON)
 #    set(Boost_DEBUG on)
