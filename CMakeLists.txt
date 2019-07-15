@@ -75,38 +75,46 @@ include(GNUInstallDirs)
 # Env var BOOST_ROOT should point to local Boost installation
 if (ANDROID)
     message(STATUS "=== Boost (Android) ========================================================")
-    set(Boost_USE_STATIC_LIBS ON)
-    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_USE_STATIC_RUNTIME ON)
-#    set(BOOST_ROOT       /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a)
-#    set(BOOST_LIBRARYDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/lib)
-#    set(BOOST_INCLUDEDIR /home/starwarsfan/spectre/Boost-for-Android/build/out/armeabi-v7a/include/boost-1_69)
-#    set(BOOST_INCLUDEDIR /usr/include)
-#    set(Boost_NO_SYSTEM_PATHS TRUE)
-#    set(Boost_ADDITIONAL_VERSIONS 1_69 1.69)
-#    set(Boost_COMPILER -clang)
-#    set(Boost_ARCHITECTURE -a32)
-#    set(Boost_LIB_VERSION 1_69)
-#    set(Boost_LIB_PREFIX lib)
-#    set(Boost_USE_DEBUG_LIBS OFF)
-#    set(Boost_USE_DEBUG_LIBS OFF)
-#    set(Boost_USE_STATIC_LIBS ON)
-#    set(Boost_USE_MULTITHREADED ON)
-#    set(Boost_INCLUDE_DIRS /usr/include)
-    set(Boost_INCLUDE_DIRS ~/Boost/Boost-for-Android/build/out/armeabi-v7a/include/boost-1_69)
-    set(Boost_LIBRARIES ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_chrono-clang-mt-a32-1_69.a;
-            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_filesystem-clang-mt-a32-1_69.a;
-            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_iostreams-clang-mt-a32-1_69.a;
-            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_program_options-clang-mt-a32-1_69.a;
-            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_system-clang-mt-a32-1_69.a;
-            ~/Boost/Boost-for-Android/build/out/armeabi-v7a/lib/libboost_thread-clang-mt-a32-1_69.a;
+    message(STATUS "= boost_chrono")
+    add_library(boost_chrono SHARED IMPORTED)
+    set_target_properties(boost_chrono PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_chrono.so
             )
-#    set(Boost_USE_STATIC_RUNTIME ON)
-#    set(Boost_DEBUG on)
-    message(STATUS "BOOST_ROOT: ${BOOST_ROOT}")
-    message(STATUS "BOOST_LIBRARYDIR: ${BOOST_LIBRARYDIR}")
-    message(STATUS "BOOST_INCLUDEDIR: ${BOOST_INCLUDEDIR}")
-else()
+
+    message(STATUS "= boost_filesystem")
+    add_library(boost_filesystem SHARED IMPORTED)
+    set_target_properties(boost_filesystem PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_filesystem.so
+            )
+
+    message(STATUS "= boost_iostreams")
+    add_library(boost_iostreams SHARED IMPORTED)
+    set_target_properties(boost_iostreams PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_iostreams.so
+            )
+
+    message(STATUS "= boost_program_options")
+    add_library(boost_program_options SHARED IMPORTED)
+    set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_programm_options.so
+            )
+
+    message(STATUS "= boost_system")
+    add_library(boost_system SHARED IMPORTED)
+    set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_system.so
+            )
+
+    message(STATUS "= boost_thread")
+    add_library(boost_thread SHARED IMPORTED)
+    set_target_properties(boost_thread PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_thread.so
+            )
+
+    message(STATUS "= Boost include dir")
+    include_directories(${MY_BOOST_INC_DIR}
+            )
+else ()
     message(STATUS "=== Boost ==================================================================")
     set(Boost_USE_STATIC_LIBS OFF)
     set(Boost_USE_MULTITHREADED ON)
