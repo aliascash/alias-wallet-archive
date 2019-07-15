@@ -16,26 +16,26 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #set(ANDROID 1)
-if(ANDROID)
+if (ANDROID)
     message(STATUS "Configuring for Android")
     set(ANDROID_ARM_MODE arm)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Configuring on/for macOS")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring on/for Windows")
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
+    #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
     add_definitions(-DBOOST_ALL_DYN_LINK)
     add_definitions("/wd4244")
     add_definitions("/wd4267")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
-else()
+else ()
     message(STATUS "Configuring on/for ${CMAKE_SYSTEM_NAME}")
-endif()
+endif ()
 
 # Compiler flags
 set(CMAKE_CXX_STANDARD 17)
@@ -64,7 +64,6 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 # Must use GNUInstallDirs to install libraries into correct
 # locations on all platforms.
 include(GNUInstallDirs)
-
 
 
 # ============================================================================================
@@ -126,7 +125,7 @@ message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 # ============================================================================================
 if (ANDROID)
     message(STATUS "=== Qt disabled for Android build ==========================================")
-else()
+else ()
     message(STATUS "=== Qt =====================================================================")
     # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
     # directory <qt-dir>/msvc2017_64
@@ -159,7 +158,6 @@ else()
 endif ()
 
 
-
 # ============================================================================================
 if (ANDROID)
     message(STATUS "=== OpenSSL (Android) ======================================================")
@@ -170,9 +168,9 @@ if (ANDROID)
     set(OPENSSL_INCLUDE_DIR ${LOCAL_OPENSSL_DIR}/include)
     set(OPENSSL_CRYPTO_LIBRARY ${LOCAL_OPENSSL_DIR}/libcrypto.a)
     set(OPENSSL_SSL_LIBRARY ${LOCAL_OPENSSL_DIR}/libssl.a)
-else()
+else ()
     message(STATUS "=== OpenSSL ================================================================")
-endif()
+endif ()
 # Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
 # https://slproweb.com/products/Win32OpenSSL.html
 find_package(OpenSSL)
@@ -187,7 +185,6 @@ message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 
-
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
@@ -196,12 +193,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 if (ANDROID)
     message(STATUS "=== Berkeley DB (Andoird) ==================================================")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db5.x)
-else()
+else ()
     message(STATUS "=== Berkeley DB ============================================================")
     #set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
     find_package(BerkeleyDB REQUIRED)
-endif()
-
+endif ()
 
 
 # ============================================================================================
