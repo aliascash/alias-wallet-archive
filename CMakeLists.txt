@@ -15,6 +15,11 @@ set(CLIENT_VERSION_GIT_SHA1 "---")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# https://www.jetbrains.com/help/clion/cmake-profile.html
+# adding two custom build types to the cached value
+# variable CMAKE_CONFIGURATION_TYPES should be defined before other definitions:
+set(CMAKE_CONFIGURATION_TYPES "DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
+
 #set(ANDROID 1)
 if (ANDROID)
     message(STATUS "Configuring for Android")
