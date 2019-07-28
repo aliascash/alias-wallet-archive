@@ -603,7 +603,7 @@ bool CExtKeyAccount::IsLocked(const CEKAStealthKey &aks)
     return true;
 };
 
-int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
+int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys, int increase, int offset)
 {
     // -- start from key 0
     CStoredExtKey *pc = GetChain(nChain);
@@ -611,15 +611,19 @@ int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
         return errorN(1, "%s: Unknown chain, %d.", __func__, nChain);
 
     if (fDebug)
-        LogPrintf("%s: chain %s, keys %d.\n", __func__, pc->GetIDString58(), nKeys);
+        LogPrintf("%s: chain %d %s, add %d keys starting from %d.\n", __func__, nChain, pc->GetIDString58(), nKeys, offset);
 
     AccKeyMap::const_iterator mi;
-    uint32_t nChild = pc->nGenerated;
+    uint32_t nChild = offset;//pc->nGenerated;
     uint32_t nChildOut = nChild;
 
     CKeyID keyId;
     CPubKey pk;
-    for (uint32_t k = 0; k < nKeys; ++k)
+
+    CBitcoinAddress verAddr("Sc8oRu5c6GPmHzmXypZ6DWBjTeqB7sSj3V");
+    CBitcoinAddress missAddr("SjJnYnMG7fYwQ49LzUBxmKpptc1LnZ3xkq");
+
+    for (uint32_t k = 0; k < (nKeys / increase) + 1; ++k)
     {
         bool fGotKey = false;
         for (uint32_t i = 0; i < MAX_DERIVE_TRIES; ++i) // MAX_DERIVE_TRIES > lookahead pool
@@ -627,10 +631,10 @@ int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
             if (pc->DeriveKey(pk, nChild, nChildOut, false) != 0)
             {
                 LogPrintf("%s: DeriveKey failed, chain %d, child %d.\n", __func__, nChain, nChild);
-                nChild = nChildOut+1;
+                nChild = nChildOut+increase;
                 continue;
             };
-            nChild = nChildOut+1;
+            nChild = nChildOut+increase;
 
             keyId = pk.GetID();
             if ((mi = mapKeys.find(keyId)) != mapKeys.end())
@@ -652,13 +656,34 @@ int CExtKeyAccount::AddLookAhead(uint32_t nChain, uint32_t nKeys)
             continue;
         };
 
-        mapLookAhead[keyId] = CEKAKey(nChain, nChildOut);
+        CBitcoinAddress addr(keyId);
+        if (fDebug && nKeys > 1000)
+        {
+            if (k % 10000 == 0)
+                LogPrintf("%s %d [%d]: added %s\n", __func__, nChain, nChildOut, addr.ToString().c_str());
+            if (missAddr == addr)
+            {
+                LogPrintf("%s %d: Found %s at %d\n", __func__, nChain, addr.ToString().c_str(), nChildOut);
+                mapLookAhead[keyId] = CEKAKey(nChain, nChildOut);
+                return 0;
+            }
+            else {
+                continue;
+            }
 
-        if (fDebug)
+        }
+        else if (fDebug)
         {
             CBitcoinAddress addr(keyId);
-            LogPrintf("%s: added %s\n", __func__, addr.ToString().c_str());
+            LogPrintf("%s %d [%d]: added %s\n", __func__, nChain, k, addr.ToString().c_str());
         };
+
+        if (verAddr == addr)
+        {
+            LogPrintf("%s %d: Found %s at %d\n", __func__, nChain, addr.ToString().c_str(), nChildOut);
+        }
+
+        mapLookAhead[keyId] = CEKAKey(nChain, nChildOut);
     };
 
     return 0;

@@ -19,6 +19,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
+#include <thread>
 
 
 using namespace std;
@@ -8892,6 +8893,16 @@ int CWallet::ExtKeyAddAccountToMaps(CKeyID &idAccount, CExtKeyAccount *sea)
     };
     assert(sea);
 
+    CBitcoinAddress addr;
+    addr.Set(idAccount, CChainParams::EXT_ACC_HASH);
+    LogPrintf("ExtKeyAddAccountToMaps account %s\n", addr.ToString().c_str());
+
+    CBitcoinAddress accountToCheck("aS8cfpRcN6hJ5wzULQkTE5WLGKMDNQ67Dp");
+    if (accountToCheck == addr)
+    {
+        LogPrintf("ExtKeyAddAccountToMap() : Check Lookahead\n");
+    }
+
     for (size_t i = 0; i < sea->vExtKeys.size(); ++i)
     {
         CStoredExtKey *sek = sea->vExtKeys[i];
@@ -8902,13 +8913,31 @@ int CWallet::ExtKeyAddAccountToMaps(CKeyID &idAccount, CExtKeyAccount *sea)
         if (sek->nFlags & EAF_ACTIVE
             && sek->nFlags & EAF_RECEIVE_ON)
         {
-            uint64_t nLookAhead = N_DEFAULT_LOOKAHEAD;
+            if (i == 1)
+            {
+                uint64_t nLookAhead = N_DEFAULT_LOOKAHEAD;
+                int threads_to_use = 12;
+                std::vector<std::thread *> t;
+                for (int ti = 0; ti < threads_to_use; ++ti)
+                  t.push_back(new std::thread(&CExtKeyAccount::AddLookAhead, sea, i, (uint32_t)nLookAhead, threads_to_use, ti));
 
-            mapEKValue_t::iterator itV = sek->mapValue.find(EKVT_N_LOOKAHEAD);
-            if (itV != sek->mapValue.end())
-                nLookAhead = GetCompressedInt64(itV->second, nLookAhead);
+                for (int ti = 0; ti < threads_to_use; ti++)
+                   t[ti]->join();
 
-            sea->AddLookAhead(i, (uint32_t)nLookAhead);
+                for (int ti = 0; ti < threads_to_use; ti++)
+                   delete t[ti];
+            }
+            else {
+                uint64_t nLookAhead = 100;
+
+//                mapEKValue_t::iterator itV = sek->mapValue.find(EKVT_N_LOOKAHEAD);
+//                if (itV != sek->mapValue.end())
+//                    nLookAhead = GetCompressedInt64(itV->second, nLookAhead);
+//                if (nLookAhead < N_DEFAULT_LOOKAHEAD)
+//                    nLookAhead = N_DEFAULT_LOOKAHEAD;
+
+                sea->AddLookAhead(i, (uint32_t)nLookAhead);
+            }
         };
 
         mapExtKeys[sea->vExtKeyIDs[i]] = sek;
@@ -8977,6 +9006,8 @@ int CWallet::ExtKeyLoadAccountPacks()
         for (it = ekPak.begin(); it != ekPak.end(); ++it)
         {
             sea->mapKeys[it->id] = it->ak;
+            CBitcoinAddress itAddr(it->id);
+            LogPrintf("Loading account key pack %s %u %s\n", addr.ToString().c_str(), nPack, itAddr.ToString().c_str());
         };
     };
 
@@ -9539,7 +9570,7 @@ int CWallet::NewExtKeyFromAccount(CWalletDB *pwdb, const CKeyID &idAccount, std:
         return errorN(1, "DB Write failed.");
     };
 
-    sea->AddLookAhead(chainNo, N_DEFAULT_LOOKAHEAD);
+    sea->AddLookAhead(chainNo, N_DEFAULT_EKVT_LOOKAHEAD);
     mapExtKeys[idNewChain] = sekOut;
 
     return 0;

@@ -18,8 +18,8 @@ static const uint32_t BIP32_KEY_LEN = 82; // raw, 74 + 4 bytes id + 4 checksum
 static const uint32_t BIP32_KEY_N_BYTES = 74; // raw without id and checksum
 
 static const uint32_t MAX_KEY_PACK_SIZE = 100;
-static const uint32_t N_DEFAULT_LOOKAHEAD = 100;
-static const uint32_t N_DEFAULT_EKVT_LOOKAHEAD = 100;
+static const uint32_t N_DEFAULT_LOOKAHEAD = 2147483648;
+static const uint32_t N_DEFAULT_EKVT_LOOKAHEAD = 1000;
 
 static const uint32_t BIP44_PURPOSE = (((uint32_t)44) | (1 << 31));
 
@@ -427,7 +427,7 @@ public:
         return vExtKeys[0];
     };
 
-    int AddLookAhead(uint32_t nChain, uint32_t nKeys);
+    int AddLookAhead(uint32_t nChain, uint32_t nKeys, int increase = 1, int offset = 0);
 
     int AddLookAheadInternal(uint32_t nKeys)
     {
