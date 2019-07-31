@@ -815,6 +815,96 @@ Value nextorphan(const Array& params, bool fHelp)
     return result;
 }
 
+Value getorphans(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "getorphans [listblocks]\n"
+            "displays all orphan blocks.\n");
+
+    if (nNodeMode == NT_THIN)
+    {
+        throw runtime_error("Must be in full mode.");
+    };
+
+    if (!pindexBest)
+        throw runtime_error("No best index.");
+
+    LOCK(cs_main);
+
+    Object result;
+
+    std::vector<std::vector<COrphanBlock*>> vOrphanChains;
+    multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrevProc(mapOrphanBlocksByPrev);
+
+    while (mapOrphanBlocksByPrevProc.size() > 0)
+    {
+        // found last succeccsor
+        // As long as this block has other orphans depending on it, move to one of those successors.
+        std::multimap<uint256, COrphanBlock*>::iterator it = mapOrphanBlocksByPrevProc.begin();
+        do {
+            std::multimap<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocksByPrevProc.find(it->second->hashBlock);
+            if (it2 == mapOrphanBlocksByPrevProc.end())
+                break;
+            it = it2;
+        } while(1);
+        COrphanBlock* orphanBlock = it->second;
+        it = mapOrphanBlocksByPrevProc.erase(it);
+
+        bool foundChain = false;
+        for (auto itChain = vOrphanChains.begin(); itChain != vOrphanChains.end(); ++itChain)
+        {
+            if (itChain->back()->hashPrev == (orphanBlock->hashBlock))
+            {
+                // Found prev block, add this block to this sidechain
+                itChain->push_back(orphanBlock);
+                foundChain = true;
+            };
+        };
+        if (!foundChain)
+        {
+            vector<COrphanBlock*> vOrphans;
+            vOrphans.push_back(orphanBlock);
+            vOrphanChains.push_back(vOrphans);
+        }
+
+    };
+
+    result.push_back(Pair("numOfOrphans", (int)mapOrphanBlocks.size()));
+    result.push_back(Pair("numOfOrphanChains", (int)vOrphanChains.size()));
+
+    Array chains;
+    for (auto it = vOrphanChains.begin(); it != vOrphanChains.end(); ++it)
+    {
+        Object entry;
+        entry.push_back(Pair("size", (int)it->size()));
+        if (params.size() > 0)
+        {
+            Array orphans;
+            for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+            {
+                Object orphan;
+                orphan.push_back(Pair("hashBlock", (*it2)->hashBlock.GetHex()));
+                CBlock block;
+                {
+                    CDataStream ss((*it2)->vchBlock, SER_DISK, CLIENT_VERSION);
+                    ss >> block;
+                }
+                orphan.push_back(Pair("time", (int64_t)block.GetBlockTime()));
+                orphan.push_back(Pair("hashPrev", (*it2)->hashPrev.GetHex()));
+                orphans.push_back(orphan);
+            }
+            entry.push_back(Pair("blocks", orphans));
+        }
+        chains.push_back(entry);
+    };
+
+    result.push_back(Pair("chains", chains));
+
+    result.push_back(Pair("result", "done"));
+    return result;
+}
+
 // ppcoin: get information of sync-checkpoint
 Value getcheckpoint(const Array& params, bool fHelp)
 {

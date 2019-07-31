@@ -113,6 +113,7 @@ struct COrphanBlock {
     std::vector<unsigned char> vchBlock;
 };
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
+extern std::multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrev;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
 
 extern bool fStaleAnonCache;
