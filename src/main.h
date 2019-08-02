@@ -109,6 +109,7 @@ extern std::set<CWallet*> setpwalletRegistered;
 struct COrphanBlock {
     uint256 hashBlock;
     uint256 hashPrev;
+    unsigned int nTime;
     std::pair<COutPoint, unsigned int> stake;
     std::vector<unsigned char> vchBlock;
 };
