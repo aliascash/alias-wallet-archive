@@ -109,6 +109,7 @@ extern double GetHeaderDifficulty(const CBlockThinIndex* blockindex = NULL);
 
 extern double GetPoWMHashPS();
 extern double GetPoSKernelPS();
+extern double GetPoSKernelPSRecent();
 
 extern std::string HexBits(unsigned int nBits);
 extern std::string HelpRequiringPassphrase();
@@ -208,6 +209,7 @@ extern json_spirit::Value getblockbynumber(const json_spirit::Array& params, boo
 extern json_spirit::Value setbestblockbyheight(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value rewindchain(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value nextorphan(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getorphans(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
 

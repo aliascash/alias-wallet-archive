@@ -15,7 +15,13 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
-## 3.0.11 (unreleased)
+## 3.0.12 (unreleased)
+- Fix unintentional chain fork possibility in fake stake block spam prevention implementation
+- Improve expected time to staking reward logic. During network staking weight changes, expected time was calculated wrong.
+  RPC: add new field 'netstakeweightrecent' for getstakinginfo and getmininginfo which shows network weight of last 72 blocks
+- Increase address lookahead from 10 to 100
+
+## 3.0.11 (released 2019-06-30)
 - UI: [#185](https://github.com/spectrecoin/spectre/issues/185) Fix shown staking transaction reward after wallet unlock
 
 ## 3.0.10 (released 2019-06-10)

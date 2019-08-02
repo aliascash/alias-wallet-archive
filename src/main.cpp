@@ -1857,6 +1857,7 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     orphan->hashBlock = pblock->GetHash();
     orphan->hashPrev = pblock->hashPrevBlock;
     orphan->stake = pblock->GetProofOfStake();
+    orphan->nTime = pblock->nTime;
     nOrphanBlocksSize += orphan->vchBlock.size();
     mapOrphanBlocks.insert(make_pair(pblock->GetHash(), orphan));
     mapOrphanBlocksByPrev.insert(make_pair(orphan->hashPrev, orphan));
@@ -3885,15 +3886,26 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                 if (setStakeSeenOrphan.count(pblock->GetProofOfStake()) && !mapOrphanBlocksByPrev.count(hash))
                     return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for orphan block %s", pblock->GetProofOfStake().first.ToString(), pblock->GetProofOfStake().second, hash.ToString());
             }
-            PruneOrphanBlocks();
-            const COrphanBlock* orphan = AddOrphanBlock(pblock);
 
-            // Ask this guy to fill in what we're missing
-            pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
-            // ppcoin: getblocks may not obtain the ancestor block rejected
-            // earlier by duplicate-stake check so we ask for it again directly
-            if (!IsInitialBlockDownload())
-                pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+            const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+            map<uint256, COrphanBlock*>::iterator it = mapOrphanBlocks.find(GetOrphanRoot(hash));
+            if (it != mapOrphanBlocks.end() && it->second->nTime < pcheckpoint->nTime)
+            {
+                if (pfrom)
+                    pfrom->Misbehaving(1);
+                return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
+            }
+            else {
+                PruneOrphanBlocks();
+
+                const COrphanBlock* orphan = AddOrphanBlock(pblock);
+                // Ask this guy to fill in what we're missing
+                pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
+                // ppcoin: getblocks may not obtain the ancestor block rejected
+                // earlier by duplicate-stake check so we ask for it again directly
+                if (!IsInitialBlockDownload())
+                    pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+            }
         }
         return true;
     }
