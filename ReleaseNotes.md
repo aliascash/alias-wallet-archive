@@ -17,6 +17,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 ### Changelog
 ## 3.0.12 (unreleased)
 - Fix unintentional chain fork possibility in fake stake block spam prevention implementation
+- Added block checkpoints at height 1232433 and 1237500
 - Improve expected time to staking reward logic. During network staking weight changes, expected time was calculated wrong.
   RPC: add new field 'netstakeweightrecent' for getstakinginfo and getmininginfo which shows network weight of last 72 blocks
 - Increase address lookahead from 10 to 100
