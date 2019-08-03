@@ -116,6 +116,7 @@ struct COrphanBlock {
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
 extern std::multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrev;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
+extern size_t nOrphanBlocksSize;
 
 extern bool fStaleAnonCache;
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;
