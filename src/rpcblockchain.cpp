@@ -872,6 +872,9 @@ Value getorphans(const Array& params, bool fHelp)
 
     result.push_back(Pair("numOfOrphans", (int)mapOrphanBlocks.size()));
     result.push_back(Pair("numOfOrphanChains", (int)vOrphanChains.size()));
+    result.push_back(Pair("nOrphanBlocksSize", (uint64_t)nOrphanBlocksSize));
+    size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
+    result.push_back(Pair("nMaxOrphanBlocksSize", (uint64_t)nMaxOrphanBlocksSize));
 
     Array chains;
     for (auto it = vOrphanChains.begin(); it != vOrphanChains.end(); ++it)

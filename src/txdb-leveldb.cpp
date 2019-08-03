@@ -439,7 +439,7 @@ static CBlockIndex *InsertBlockIndex(uint256 hash)
     return pindexNew;
 }
 
-bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
+bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate, std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
         return 0;
@@ -516,6 +516,9 @@ bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
             delete iterator;
             return error("LoadBlockIndex() : CheckIndex failed at %d", pindexNew->nHeight);
         }
+
+        if (funcValidate && !funcValidate(pindexNew))
+            return false;
 
         // NovaCoin: build setStakeSeen
         if (pindexNew->IsProofOfStake())
