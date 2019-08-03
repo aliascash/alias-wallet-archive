@@ -4266,8 +4266,18 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
 
     if (nNodeMode == NT_FULL)
     {
-        if (!txdb.LoadBlockIndex(funcProgress))
-            return 1;
+        int res = 1;
+        if (!txdb.LoadBlockIndex([&res] (const CBlockIndex* const pBlockIndex) -> bool {
+                    // Check that the block matches the known checkpoint blocks
+                    if (Checkpoints::CheckHardened(pBlockIndex->nHeight, pBlockIndex->GetBlockHash()))
+                        return true;
+                    else {
+                        res = 3;
+                        return error("LoadBlockIndex() : Block at height %d with hash %s does not match checkpoint.",
+                                pBlockIndex->nHeight, pBlockIndex->GetBlockHash().GetHex());
+                    }
+            }, funcProgress))
+            return res;
 
         if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
