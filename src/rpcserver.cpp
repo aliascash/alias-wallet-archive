@@ -318,6 +318,7 @@ static const CRPCCommand vRPCCommands[] =
     { "setbestblockbyheight",   &setbestblockbyheight,   false,     false,     false },
     { "rewindchain",            &rewindchain,            false,     false,     false },
     { "nextorphan",             &nextorphan,             false,     false,     false },
+    { "getorphans",             &getorphans,             false,     false,     false },
     { "getblockhash",           &getblockhash,           false,     false,     false },
     { "gettransaction",         &gettransaction,         false,     false,     false },
     { "listtransactions",       &listtransactions,       false,     false,     false },

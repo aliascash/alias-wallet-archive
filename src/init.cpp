@@ -836,6 +836,8 @@ bool AppInit2(boost::thread_group& threadGroup)
                 mapArgs["-reindex"] = 1;
             };
             break;
+        case 3:
+            return InitError(_("Error loading blkindex.dat: Invalid chain detected, please resync or use bootstrap files."));
     };
 
     // as LoadBlockIndex can take several minutes, it's possible the user

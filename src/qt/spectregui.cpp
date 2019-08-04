@@ -57,6 +57,7 @@
 
 extern CWallet* pwalletMain;
 double GetPoSKernelPS();
+double GetPoSKernelPSRecent();
 
 WebEnginePage::WebEnginePage(SpectreGUI* gui) : QWebEnginePage(this->prepareProfile(gui))
 {
@@ -1054,12 +1055,13 @@ void SpectreGUI::updateWeight()
 void SpectreGUI::updateStakingIcon()
 {
     WebElement stakingIcon = WebElement(webEnginePage, "stakingIcon");
-    uint64_t nNetworkWeight = 0;
+    uint64_t nNetworkWeight = 0, nNetworkWeightRecent;
 
     if(fIsStaking)
     {
         updateWeight();
         nNetworkWeight = GetPoSKernelPS();
+        nNetworkWeightRecent = GetPoSKernelPSRecent();
     } else
         nWeight = 0;
 
@@ -1068,21 +1070,25 @@ void SpectreGUI::updateStakingIcon()
         uint64_t nWeight = this->nWeight;
 
         unsigned nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
-        QString text;
+        QString text, textDebug;
 
-        text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
-               (nEstimateTime < 60 * 60)      ? tr("%n minute(s)", "", nEstimateTime / 60) : \
-               (nEstimateTime < 24 * 60 * 60) ? tr("%n hour(s)",   "", nEstimateTime / (60 * 60)) : \
-                                                tr("%n day(s)",    "", nEstimateTime / (60 * 60 * 24));
+        text = (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
+               (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
+               (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
+                                                tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
 
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
-        nWeight        /= COIN,
+        nWeight        /= COIN;
         nNetworkWeight /= COIN;
+        nNetworkWeightRecent /= COIN;
 
-        stakingIcon.setAttribute("data-title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+        if (fDebug)
+            textDebug = tr(" (last 72 blocks %1)").arg(nNetworkWeightRecent);
+
+        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
         stakingIcon.   addClass("not-staking");

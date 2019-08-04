@@ -1857,6 +1857,7 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     orphan->hashBlock = pblock->GetHash();
     orphan->hashPrev = pblock->hashPrevBlock;
     orphan->stake = pblock->GetProofOfStake();
+    orphan->nTime = pblock->nTime;
     nOrphanBlocksSize += orphan->vchBlock.size();
     mapOrphanBlocks.insert(make_pair(pblock->GetHash(), orphan));
     mapOrphanBlocksByPrev.insert(make_pair(orphan->hashPrev, orphan));
@@ -1867,9 +1868,34 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     return orphan;
 }
 
-// Remove a random orphan block (which does not have any dependent orphans).
+// Remove a random orphan block (which does not have any dependent orphans). Remove all due checkpoint obsolete orphans.
 void static PruneOrphanBlocks()
 {
+    const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+    for (auto it = mapOrphanBlocks.begin(); it != mapOrphanBlocks.end(); ++it)
+    {
+        // Block is obsolete due to checkpoint, delete all predecessors.
+        if (it->second->nTime < pcheckpoint->nTime)
+        {
+            map<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocks.find(it->second->hashPrev);
+            while (it2 != mapOrphanBlocks.end())
+            {
+                uint256 hashPrev = it2->second->hashPrev;
+
+                if (fDebug)
+                    LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
+                setStakeSeenOrphan.erase(it2->second->stake);
+                uint256 hash = it2->second->hashBlock;
+                nOrphanBlocksSize -= it2->second->vchBlock.size();
+                delete it2->second;
+                mapOrphanBlocksByPrev.erase(hash);
+                mapOrphanBlocks.erase(it2);
+
+                it2 = mapOrphanBlocks.find(hashPrev);
+            }
+        }
+    }
+
     size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
     while (nOrphanBlocksSize > nMaxOrphanBlocksSize)
     {
@@ -3885,15 +3911,26 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                 if (setStakeSeenOrphan.count(pblock->GetProofOfStake()) && !mapOrphanBlocksByPrev.count(hash))
                     return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for orphan block %s", pblock->GetProofOfStake().first.ToString(), pblock->GetProofOfStake().second, hash.ToString());
             }
-            PruneOrphanBlocks();
+
             const COrphanBlock* orphan = AddOrphanBlock(pblock);
 
-            // Ask this guy to fill in what we're missing
-            pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
-            // ppcoin: getblocks may not obtain the ancestor block rejected
-            // earlier by duplicate-stake check so we ask for it again directly
-            if (!IsInitialBlockDownload())
-                pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+            const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+            map<uint256, COrphanBlock*>::iterator it = mapOrphanBlocks.find(GetOrphanRoot(hash));
+            if (it != mapOrphanBlocks.end() && it->second->nTime < pcheckpoint->nTime)
+            {
+                PruneOrphanBlocks();
+                pfrom->Misbehaving(1);
+                return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
+            }
+            else {         
+                // Ask this guy to fill in what we're missing
+                pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
+                // ppcoin: getblocks may not obtain the ancestor block rejected
+                // earlier by duplicate-stake check so we ask for it again directly
+                if (!IsInitialBlockDownload())
+                    pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+                PruneOrphanBlocks();
+            }
         }
         return true;
     }
@@ -4254,8 +4291,18 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
 
     if (nNodeMode == NT_FULL)
     {
-        if (!txdb.LoadBlockIndex(funcProgress))
-            return 1;
+        int res = 1;
+        if (!txdb.LoadBlockIndex([&res] (const CBlockIndex* const pBlockIndex) -> bool {
+                    // Check that the block matches the known checkpoint blocks
+                    if (Checkpoints::CheckHardened(pBlockIndex->nHeight, pBlockIndex->GetBlockHash()))
+                        return true;
+                    else {
+                        res = 3;
+                        return error("LoadBlockIndex() : Block at height %d with hash %s does not match checkpoint.",
+                                pBlockIndex->nHeight, pBlockIndex->GetBlockHash().GetHex());
+                    }
+            }, funcProgress))
+            return res;
 
         if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
