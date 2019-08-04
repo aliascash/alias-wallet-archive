@@ -50,6 +50,7 @@ static const unsigned int MAX_GETHEADERS_SZ = 2000;
 static const unsigned int MAX_MULTI_BLOCK_SIZE = 5120000;    // 5MiB, most likely to hit MAX_MULTI_BLOCK_ELEMNTS first
 static const unsigned int MAX_MULTI_BLOCK_ELEMENTS = 64;     // processing larger blocks is cpu intensive
 static const unsigned int MAX_MULTI_BLOCK_THIN_ELEMENTS = 128;
+static const unsigned int TARGET_BLOCK_TIME = 96;
 
 /** No amount larger than this (in satoshi) is valid */
 static const int64_t MAX_MONEY = std::numeric_limits<int64_t>::max();
@@ -63,7 +64,7 @@ inline int64_t FutureDriftV2(int64_t nTime) { return nTime + 15; }
 
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return Params().IsProtocolV2(nHeight) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
-inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? 96 : 64 : 60; }
+inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? TARGET_BLOCK_TIME : 64 : 60; }
 inline std::pair<uint32_t, uint32_t> GetRingSizeMinMax(int64_t nTime = 0) {
     uint32_t nMinRingSize = 1, nMaxRingSize = MAX_RING_SIZE;
     if (nTime == 0 || Params().IsForkV3(nTime))
@@ -108,11 +109,14 @@ extern std::set<CWallet*> setpwalletRegistered;
 struct COrphanBlock {
     uint256 hashBlock;
     uint256 hashPrev;
+    unsigned int nTime;
     std::pair<COutPoint, unsigned int> stake;
     std::vector<unsigned char> vchBlock;
 };
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
+extern std::multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrev;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
+extern size_t nOrphanBlocksSize;
 
 extern bool fStaleAnonCache;
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;

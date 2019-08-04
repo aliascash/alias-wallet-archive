@@ -577,21 +577,21 @@ bool CNode::IsBanned(CNetAddr ip)
 
 bool CNode::Misbehaving(int howmuch)
 {
-    if (addr.IsLocal())
-    {
-        LogPrintf("Warning: Local node %s misbehaving (delta: %d)!\n", addrName, howmuch);
-        return false;
-    }
-
     nMisbehavior += howmuch;
     if (nMisbehavior >= GetArg("-banscore", 100))
     {
-        int64_t banTime = GetTime()+GetArg("-bantime", 60*60*24);  // Default 24-hour ban
-        LogPrintf("Misbehaving: %s (%d -> %d) DISCONNECTING\n", addr.ToString(), nMisbehavior-howmuch, nMisbehavior);
+        if (addr.IsLocal())
         {
-            LOCK(cs_setBanned);
-            if (setBanned[addr] < banTime)
-                setBanned[addr] = banTime;
+            LogPrintf("Misbehaving: %s (%d -> %d) DISCONNECTING (Warning: local addr not banned)\n", addr.ToString(), nMisbehavior-howmuch, nMisbehavior);
+        }
+        else {
+            int64_t banTime = GetTime()+GetArg("-bantime", 60*60*24);  // Default 24-hour ban
+            LogPrintf("Misbehaving: %s (%d -> %d) DISCONNECTING\n", addr.ToString(), nMisbehavior-howmuch, nMisbehavior);
+            {
+                LOCK(cs_setBanned);
+                if (setBanned[addr] < banTime)
+                    setBanned[addr] = banTime;
+            }
         }
         CloseSocketDisconnect();
         return true;
@@ -603,18 +603,18 @@ bool CNode::Misbehaving(int howmuch)
 bool CNode::SoftBan()
 {
     // -- same as Misbehaving, but a shorter ban time
-    if (addr.IsLocal())
     {
-        LogPrintf("Warning: Tried to soft ban local node %s !\n", addrName.c_str());
-        return false;
-    };
-
-    int64_t banTime = GetTime()+GetArg("-softbantime", 60*60*1);  // Default 1-hour ban
-    LogPrintf("SoftBan: %s DISCONNECTING\n", addr.ToString().c_str());
-    {
-        LOCK(cs_setBanned);
-        if (setBanned[addr] < banTime)
-            setBanned[addr] = banTime;
+        if (addr.IsLocal())
+        {
+            LogPrintf("SoftBan: %s DISCONNECTING  (Warning: local addr not banned)\n", addr.ToString().c_str());
+        }
+        else {
+            int64_t banTime = GetTime()+GetArg("-softbantime", 60*60*1);  // Default 1-hour ban
+            LogPrintf("SoftBan: %s DISCONNECTING\n", addr.ToString().c_str());
+            LOCK(cs_setBanned);
+            if (setBanned[addr] < banTime)
+                setBanned[addr] = banTime;
+        }
     }
 
     CloseSocketDisconnect();

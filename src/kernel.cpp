@@ -732,8 +732,20 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
     if (!txPrev.ReadFromDisk(txdb, txin.prevout, txindex))
         return tx.DoS(1, error("CheckProofOfStake() : INFO: read txPrev failed"));  // previous transaction not in main chain, may occur during initial download
     if (!txindex.vSpent[txin.prevout.n].IsNull())
-        return tx.DoS(100, error("CheckProofOfStake() : INFO: txPrev already used at %s", txindex.vSpent[txin.prevout.n].ToString()));
-
+    {
+        CBlock block;
+        if (block.ReadFromDisk(txindex.vSpent[txin.prevout.n].nFile, txindex.vSpent[txin.prevout.n].nBlockPos, false))
+        {
+            std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(block.GetHash());
+            if (fDebug)
+                LogPrintf("CheckProofOfStake() : block at height %d spends txPrev staked at height %d\n", mi->second->nHeight, pindexPrev->nHeight + 1);
+            if (mi != mapBlockIndex.end() && mi->second->nHeight < pindexPrev->nHeight + 1) // only consider spends in blocks BEFORE current block
+                return tx.DoS(100, error("CheckProofOfStake() : INFO: txPrev already used at %s height %d", txindex.vSpent[txin.prevout.n].ToString(), mi->second->nHeight));
+        }
+        else {
+            LogPrintf("CheckProofOfStake(): Warning - Could not read block which spends txPrev at %s -> ignore spend", txindex.vSpent[txin.prevout.n].ToString());
+        }
+    }
 
     // Verify signature
     if (!VerifySignature(txPrev, tx, 0, SCRIPT_VERIFY_NONE, 0))
@@ -871,6 +883,7 @@ bool CheckAnonProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsi
         CKeyImageSpent spentKeyImage;
         bool fInMemPool;
         if (GetKeyImage(&txdb, vchImage, spentKeyImage, fInMemPool) && // keyImage already spent
+                spentKeyImage.nBlockHeight < (pindexPrev->nHeight + 1) && // only consider spends in blocks BEFORE current block
                 !(spentKeyImage.txnHash == tx.GetHash() && spentKeyImage.inputNo == 0) && // this can happen for transactions created by the local node
                 TxnHashInSystem(&txdb, spentKeyImage.txnHash)) // keyimage is in db, but invalid as does not point to a known transaction, could be an old mempool keyimag
             return tx.DoS(100, error("CheckAnonProofOfStake() : INFO: Coinstake tx %s has already spent keyImage %s", tx.GetHash().ToString().c_str(), HexStr(vchImage).c_str()));
