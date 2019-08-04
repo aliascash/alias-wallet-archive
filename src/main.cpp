@@ -1882,7 +1882,8 @@ void static PruneOrphanBlocks()
             {
                 uint256 hashPrev = it2->second->hashPrev;
 
-                LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
+                if (fDebug)
+                    LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
                 setStakeSeenOrphan.erase(it2->second->stake);
                 uint256 hash = it2->second->hashBlock;
                 nOrphanBlocksSize -= it2->second->vchBlock.size();
