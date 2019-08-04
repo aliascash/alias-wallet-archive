@@ -737,7 +737,8 @@ bool CheckProofOfStake(CBlockIndex* pindexPrev, const CTransaction& tx, unsigned
         if (block.ReadFromDisk(txindex.vSpent[txin.prevout.n].nFile, txindex.vSpent[txin.prevout.n].nBlockPos, false))
         {
             std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(block.GetHash());
-            LogPrintf("CheckProofOfStake() : block at height %d spends txPrev staked at height %d\n", mi->second->nHeight, pindexPrev->nHeight + 1);
+            if (fDebug)
+                LogPrintf("CheckProofOfStake() : block at height %d spends txPrev staked at height %d\n", mi->second->nHeight, pindexPrev->nHeight + 1);
             if (mi != mapBlockIndex.end() && mi->second->nHeight < pindexPrev->nHeight + 1) // only consider spends in blocks BEFORE current block
                 return tx.DoS(100, error("CheckProofOfStake() : INFO: txPrev already used at %s height %d", txindex.vSpent[txin.prevout.n].ToString(), mi->second->nHeight));
         }

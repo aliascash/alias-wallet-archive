@@ -1868,9 +1868,34 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     return orphan;
 }
 
-// Remove a random orphan block (which does not have any dependent orphans).
+// Remove a random orphan block (which does not have any dependent orphans). Remove all due checkpoint obsolete orphans.
 void static PruneOrphanBlocks()
 {
+    const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+    for (auto it = mapOrphanBlocks.begin(); it != mapOrphanBlocks.end(); ++it)
+    {
+        // Block is obsolete due to checkpoint, delete all predecessors.
+        if (it->second->nTime < pcheckpoint->nTime)
+        {
+            map<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocks.find(it->second->hashPrev);
+            while (it2 != mapOrphanBlocks.end())
+            {
+                uint256 hashPrev = it2->second->hashPrev;
+
+                if (fDebug)
+                    LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
+                setStakeSeenOrphan.erase(it2->second->stake);
+                uint256 hash = it2->second->hashBlock;
+                nOrphanBlocksSize -= it2->second->vchBlock.size();
+                delete it2->second;
+                mapOrphanBlocksByPrev.erase(hash);
+                mapOrphanBlocks.erase(it2);
+
+                it2 = mapOrphanBlocks.find(hashPrev);
+            }
+        }
+    }
+
     size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
     while (nOrphanBlocksSize > nMaxOrphanBlocksSize)
     {
@@ -3887,24 +3912,24 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                     return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for orphan block %s", pblock->GetProofOfStake().first.ToString(), pblock->GetProofOfStake().second, hash.ToString());
             }
 
+            const COrphanBlock* orphan = AddOrphanBlock(pblock);
+
             const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
             map<uint256, COrphanBlock*>::iterator it = mapOrphanBlocks.find(GetOrphanRoot(hash));
             if (it != mapOrphanBlocks.end() && it->second->nTime < pcheckpoint->nTime)
             {
-                if (pfrom)
-                    pfrom->Misbehaving(1);
+                PruneOrphanBlocks();
+                pfrom->Misbehaving(1);
                 return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
             }
-            else {
-                PruneOrphanBlocks();
-
-                const COrphanBlock* orphan = AddOrphanBlock(pblock);
+            else {         
                 // Ask this guy to fill in what we're missing
                 pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
                 // ppcoin: getblocks may not obtain the ancestor block rejected
                 // earlier by duplicate-stake check so we ask for it again directly
                 if (!IsInitialBlockDownload())
                     pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+                PruneOrphanBlocks();
             }
         }
         return true;
