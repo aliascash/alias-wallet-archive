@@ -1880,17 +1880,22 @@ void static PruneOrphanBlocks()
             map<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocks.find(it->second->hashPrev);
             while (it2 != mapOrphanBlocks.end())
             {
-                uint256 hashPrev = it2->second->hashPrev;
-
                 if (fDebug)
                     LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
+
+                uint256 hashPrev = it2->second->hashPrev;
+                for(auto itPrev = mapOrphanBlocksByPrev.find(hashPrev); itPrev != mapOrphanBlocksByPrev.end(); ++itPrev)
+                {
+                    if(itPrev->second == it2->second)
+                    {
+                         itPrev = mapOrphanBlocksByPrev.erase(itPrev);
+                         break;
+                    }
+                }
                 setStakeSeenOrphan.erase(it2->second->stake);
-                uint256 hash = it2->second->hashBlock;
                 nOrphanBlocksSize -= it2->second->vchBlock.size();
                 delete it2->second;
-                mapOrphanBlocksByPrev.erase(hash);
                 mapOrphanBlocks.erase(it2);
-
                 it2 = mapOrphanBlocks.find(hashPrev);
             }
         }

@@ -143,7 +143,7 @@ double GetPoSKernelPSRecent()
             }
 
             pindex = pindex->pprev;
-		}
+        }
     }
 
     double result = 0;
@@ -834,6 +834,8 @@ Value getorphans(const Array& params, bool fHelp)
 
     Object result;
 
+    const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+
     std::vector<std::vector<COrphanBlock*>> vOrphanChains;
     multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrevProc(mapOrphanBlocksByPrev);
 
@@ -872,9 +874,9 @@ Value getorphans(const Array& params, bool fHelp)
 
     result.push_back(Pair("numOfOrphans", (int)mapOrphanBlocks.size()));
     result.push_back(Pair("numOfOrphanChains", (int)vOrphanChains.size()));
-    result.push_back(Pair("nOrphanBlocksSize", (uint64_t)nOrphanBlocksSize));
+    result.push_back(Pair("orphanBlocksSize", (uint64_t)nOrphanBlocksSize));
     size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
-    result.push_back(Pair("nMaxOrphanBlocksSize", (uint64_t)nMaxOrphanBlocksSize));
+    result.push_back(Pair("maxOrphanBlocksSize", (uint64_t)nMaxOrphanBlocksSize));
 
     Array chains;
     for (auto it = vOrphanChains.begin(); it != vOrphanChains.end(); ++it)
@@ -894,6 +896,8 @@ Value getorphans(const Array& params, bool fHelp)
                     ss >> block;
                 }
                 orphan.push_back(Pair("time", (int64_t)block.GetBlockTime()));
+                if (block.GetBlockTime() < pcheckpoint->nTime) // Block is obsolete due to checkpoint
+                    orphan.push_back(Pair("obsoleteDueCheckpointTime", (int64_t)pcheckpoint->nTime));
                 orphan.push_back(Pair("hashPrev", (*it2)->hashPrev.GetHex()));
                 orphans.push_back(orphan);
             }

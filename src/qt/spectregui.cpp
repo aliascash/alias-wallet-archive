@@ -208,6 +208,8 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
+    connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(activateWindow()));
+    connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(raise()));
 
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
