@@ -13,13 +13,24 @@ file(WRITE ${DUMMY_SOURCE} "")
 add_library(db5x ${DUMMY_SOURCE})
 
 target_include_directories(db5x
-        PUBLIC
+        SYSTEM PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/build_android>
         )
+#target_compile_options(db5x PRIVATE
+#        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+#        -Wno-error=error-implicit-function-declaration>
+#        $<$<CXX_COMPILER_ID:MSVC>:
+#        -W4>
+#        )
+if (Android)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=error-implicit-function-declaration")
+endif()
 
 target_sources(db5x
         PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/dbinc/mutex_int.h
+
         ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compact.c
         ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compare.c
         ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compress.c

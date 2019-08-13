@@ -23,8 +23,6 @@ file(WRITE ${DUMMY_SOURCE} "")
 add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
 if(ANDROID)
-#    include_directories(${Boost_INCLUDE_DIRS})
-#    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../db5.x)
     include_directories(
         ${Boost_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x
@@ -38,7 +36,7 @@ if(ANDROID)
 endif()
 
 target_include_directories(spectrecoin_lib
-        PUBLIC
+        SYSTEM PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>

@@ -9,7 +9,7 @@ project(Spectrecoin
 # The version number.
 set(CLIENT_VERSION_MAJOR 3)
 set(CLIENT_VERSION_MINOR 0)
-set(CLIENT_VERSION_REVISION 10)
+set(CLIENT_VERSION_REVISION 14)
 set(CLIENT_VERSION_BUILD 1)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
@@ -21,10 +21,31 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CONFIGURATION_TYPES "DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
 
 #set(ANDROID 1)
+
+# Compiler flags
+set(CMAKE_CXX_STANDARD 17)
+if (WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+
+    # For compile issues with vcpkg
+    add_compile_definitions(NOMINMAX)
+endif ()
+
 if (ANDROID)
     message(STATUS "Configuring for Android")
-    set(ANDROID_ARM_MODE arm)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
+#    set(ANDROID_ARM_MODE arm)
+##    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fexceptions -g")
+##    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fexceptions -g")
+#    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#    set(CMAKE_CXX_EXTENSIONS OFF)
+#    set(C_STANDARD 11)
+#    set(CMAKE_C_STANDARD 11)
+#    set(CMAKE_C_STANDARD_REQUIRED ON)
+#    set(CMAKE_C_EXTENSIONS OFF)
+#    add_compile_definitions(__clang__)
+#    add_compile_definitions(__ANDROID__)
+##    add_compile_definitions(_POSIX_C_SOURCE)
+##    add_compile_definitions(_XOPEN_SOURCE)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
@@ -40,15 +61,6 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else ()
     message(STATUS "Configuring on/for ${CMAKE_SYSTEM_NAME}")
-endif ()
-
-# Compiler flags
-set(CMAKE_CXX_STANDARD 17)
-if (WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-
-    # For compile issues with vcpkg
-    add_compile_definitions(NOMINMAX)
 endif ()
 
 if (POLICY CMP0074)
@@ -75,6 +87,11 @@ include(GNUInstallDirs)
 # Env var BOOST_ROOT should point to local Boost installation
 if (ANDROID)
     message(STATUS "=== Boost (Android) ========================================================")
+    add_compile_definitions(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    add_compile_definitions(BOOST_SPIRIT_THREADSAFE)
+    add_compile_definitions(BOOST_THREAD_USE_LIB)
+#    add_compile_definitions(BOOST_THREAD_POSIX)
+#    add_compile_definitions(BOOST_HAS_THREADS)
     message(STATUS "= boost_chrono")
     add_library(boost_chrono SHARED IMPORTED)
     set_target_properties(boost_chrono PROPERTIES IMPORTED_LOCATION
@@ -96,7 +113,7 @@ if (ANDROID)
     message(STATUS "= boost_program_options")
     add_library(boost_program_options SHARED IMPORTED)
     set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_programm_options.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_program_options.so
             )
 
     message(STATUS "= boost_system")
@@ -111,14 +128,20 @@ if (ANDROID)
             ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_thread.so
             )
 
+    message(STATUS "= boost_timer")
+    add_library(boost_timer SHARED IMPORTED)
+    set_target_properties(boost_timer PROPERTIES IMPORTED_LOCATION
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_timer.so
+            )
+
     message(STATUS "= Boost include dir")
     include_directories(${MY_BOOST_INC_DIR}
             )
 else ()
     message(STATUS "=== Boost ==================================================================")
-    set(Boost_USE_STATIC_LIBS OFF)
+    set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_MULTITHREADED ON)
-    set(Boost_USE_STATIC_RUNTIME OFF)
+    set(Boost_USE_STATIC_RUNTIME ON)
     find_package(Boost 1.65.1 REQUIRED COMPONENTS
             chrono
             filesystem
@@ -198,10 +221,6 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 
 
 # ============================================================================================
-message(STATUS "=== LevelDB ================================================================")
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
-
-# ============================================================================================
 if (ANDROID)
     message(STATUS "=== Berkeley DB (Andoird) ==================================================")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db5.x)
@@ -210,6 +229,11 @@ else ()
     #set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
     find_package(BerkeleyDB REQUIRED)
 endif ()
+
+
+# ============================================================================================
+message(STATUS "=== LevelDB ================================================================")
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/leveldb/)
 
 
 # ============================================================================================
