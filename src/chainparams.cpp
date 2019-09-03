@@ -43,7 +43,9 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
     // miner's coin stake reward based on coin age spent (coin-days)
     int64_t nSubsidy;
 
-    if (IsProtocolV3(pindexPrev->nHeight))
+    if (IsForkV4SupplyIncrease(pindexPrev))
+        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 300000 : 3000000) * COIN;
+    else if (IsProtocolV3(pindexPrev->nHeight))
         nSubsidy = Params().IsForkV3(pindexPrev->GetBlockTime()) ?
                     nStakeReward :
                     (pindexPrev->nMoneySupply / COIN) * COIN_YEAR_REWARD / (365 * 24 * (60 * 60 / 64));
@@ -63,7 +65,19 @@ int64_t CChainParams::GetProofOfStakeReward(const CBlockIndex* pindexPrev, int64
 
 int64_t CChainParams::GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nFees) const
 {
-    return nAnonStakeReward + nFees;
+    int64_t nSubsidy = nAnonStakeReward;
+    if (IsForkV4SupplyIncrease(pindexPrev))
+        nSubsidy = (NetworkID() == CChainParams::TESTNET ? 300000 : 3000000) * COIN;
+
+    if (fDebug && GetBoolArg("-printcreation"))
+        LogPrintf("GetProofOfAnonStakeReward(): create=%s\n", FormatMoney(nSubsidy).c_str());
+
+    return nSubsidy + nFees;
+}
+
+bool CChainParams::IsForkV4SupplyIncrease(const CBlockIndex* pindexPrev) const
+{
+    return pindexPrev->GetBlockTime() >= nForkV4Time && pindexPrev->pprev->GetBlockTime() < nForkV4Time;
 }
 
 //
@@ -180,8 +194,10 @@ public:
 
         nForkV2Time = 1534888800; // MAINNET V2 chain fork (GMT: Tuesday, 21. August 2018 22.00)
         nForkV3Time = 1558123200; // MAINNET V3 chain fork (GMT: Friday, 17. May 2019 20:00:00)
+        nForkV4Time = 1569614400; // MAINNET V4 chain fork (GMT: Friday, 27. September 2019 20:00:00)
 
         devContributionAddress = "SdrdWNtjD7V6BSt3EyQZKCnZDkeE28cZhr";
+        supplyIncreaseAddress = "SSGCEMb6xESgmuGXkx7yozGDxhVSXzBP3a";
     }
 
     virtual Network NetworkID() const { return CChainParams::MAIN; }
@@ -244,9 +260,11 @@ public:
 
         nForkV2Time = 1532466000; // TESTNET V2 chain fork (GMT: Tuesday, 24. July 2018 21.00)
         nForkV3Time = 1546470000; // TESTNET V3 chain fork (01/02/2019 @ 11:00pm (UTC))
+        nForkV4Time = 1567972800; // TESTNET V4 chain fork (Sunday, 8. September 2019 20:00:00)
 
 
         devContributionAddress = "tSJoPZoXumJyDmGKYo9Y7SZkJvymESFYkD";
+        supplyIncreaseAddress = devContributionAddress;
     }
     virtual Network NetworkID() const { return CChainParams::TESTNET; }
 };

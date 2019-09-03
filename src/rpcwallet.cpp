@@ -1222,7 +1222,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
             {
                 // only add contributions/donations
                 std::string strAddress = CBitcoinAddress(address).ToString();
-                if (strAddress != Params().GetDevContributionAddress())
+                if (strAddress != Params().GetDevContributionAddress() && strAddress != Params().GetSupplyIncreaseAddress())
                     continue;
                 if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
                     category = "contributed";

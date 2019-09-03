@@ -2831,9 +2831,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
 
-
-        if (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0) {
-            CBitcoinAddress address(Params().GetDevContributionAddress());
+        bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindex->pprev);
+        if (fSupplyIncrease || (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0)) {
+            CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
             CScript scriptPubKey;
             scriptPubKey.SetDestination(address.Get());
 
@@ -2850,8 +2850,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                 }
             }
             if (!containsDonation) {
-                LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
-                return DoS(100, error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[1].ToString()));
+                LogPrintf("ConnectBlock() : stake does not pay to address %s\n", address.ToString().c_str());
+                return DoS(100, error("ConnectBlock() : stake does not pay to address %s in trx\n%s\n", address.ToString().c_str(), vtx[1].ToString()));
             }
         }
     }
