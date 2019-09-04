@@ -80,7 +80,7 @@ Value getstakesubsidy(const Array& params, bool fHelp)
     if (!Params().IsProtocolV3(pindexBest->nHeight) && !tx.GetCoinAge(txdb, pindexBest, nCoinAge))
         throw JSONRPCError(RPC_MISC_ERROR, "GetCoinAge failed");
 
-    return (uint64_t)Params().GetProofOfStakeReward(pindexBest, nCoinAge, 0);
+    return (uint64_t)Params().GetProofOfStakeReward(pindexBest->pprev, nCoinAge, 0);
 }
 
 Value getmininginfo(const Array& params, bool fHelp)

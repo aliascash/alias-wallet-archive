@@ -1,10 +1,10 @@
-## SPECTRECOIN V3
+## SPECTRECOIN V4
 
 `By downloading and using this software, you agree that 1/6 of the staking rewards are contributed to a development fund. The development fund aims to support the long term development and value of Spectrecoin. The fund is managed by the Spectrecoin core team.`
 
 This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
 
-17/05/2019 (_17th May 2019_) @ 2000 hours (GMT)
+2019-09-27 (_27th September 2019_) @ 2000 hours (GMT)
 
 If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
 
@@ -15,6 +15,10 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
+## 4.0.0 (released 2019-09-06)
+**V4 blockchain fork consensus changes / Fork time is GMT: Friday, 27. September 2019 20:00:00 (1569614400 unix epoch time)**
+- One-time 3'000'000 XSPEC staking reward for foundation address SSGCEMb6xESgmuGXkx7yozGDxhVSXzBP3a
+
 ## 3.0.14 (released 2019-08-11)
 - Improved orphan handling
 

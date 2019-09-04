@@ -6697,9 +6697,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     // (Possibly) donate the stake to developers, according to the configured probability
     int sample = stakingDonationDistribution(stakingDonationRng);
     LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
-    if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
+    bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindexPrev);
+    if (fSupplyIncrease || sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
         LogPrintf("Donating this (potential) stake to the developers\n");
-        CBitcoinAddress address(Params().GetDevContributionAddress());
+        CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
         int64_t reduction = nReward;
         // reduce outputs popping as necessary until we've reduced by nReward
         if (txNew.vout.size() == 3) {
@@ -6879,7 +6880,8 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 int sample = stakingDonationDistribution(stakingDonationRng);
                 LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
                 bool donateReward = false;
-                if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
+                bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindexPrev);
+                if (fSupplyIncrease || sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
                     LogPrintf("Donating this (potential) stake to the developers\n");
                     donateReward = true;
                 }
@@ -6926,7 +6928,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 // -- create donation output
                 if (donateReward)
                 {
-                    CBitcoinAddress address(Params().GetDevContributionAddress());
+                    CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
                     // push a new output donating to the developers
                     CScript script;
                     script.SetDestination(address.Get());
