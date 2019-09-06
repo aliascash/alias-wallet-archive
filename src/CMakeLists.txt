@@ -30,9 +30,13 @@ if(ANDROID)
 #        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x/build_vxworks
     )
     target_link_libraries(spectrecoin_lib ${Boost_LIBRARIES})
-#else()
+else()
 #    # This is the UI wallet
 #    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+    target_link_libraries(spectrecoin_lib
+            ${Boost_LIBRARIES}
+            leveldb
+            )
 endif()
 
 target_include_directories(spectrecoin_lib
