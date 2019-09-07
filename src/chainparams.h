@@ -99,6 +99,7 @@ public:
 
     bool IsForkV2(int64_t nTime) const { return nTime > nForkV2Time; }
     bool IsForkV3(int64_t nTime) const { return nTime > nForkV3Time; }
+    bool IsForkV4(int64_t nTime) const { return nTime >= nForkV4Time; }
     bool IsForkV4SupplyIncrease(const CBlockIndex* pindexPrev) const;
     int GetForkId(int64_t nTime) const { return (nTime >= nForkV4Time) ? 4 : (nTime > nForkV3Time) ? 3 : (nTime > nForkV2Time) ? 2 : 0; }
 

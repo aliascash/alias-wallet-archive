@@ -5218,7 +5218,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
         //		Future fork condition. Enforce minimum protcol version based on nTime.
-        if (Params().IsForkV3(nTime)) {
+        if (Params().IsForkV4(nTime)) {
             if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
             {
                 // disconnect from peers older than this proto version
