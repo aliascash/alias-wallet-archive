@@ -16,8 +16,11 @@ pipeline {
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
-        RELEASE_TAG = '3.0.14'
-        BLOCKCHAIN_ARCHIVE_VERSION = "2019-08-02"
+        RELEASE_TAG = sh(
+                script: "printf \$(grep CLIENT_VERSION_MAJOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r')",
+                returnStdout: true
+        )
+        BLOCKCHAIN_ARCHIVE_VERSION = "2019-09-04"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",

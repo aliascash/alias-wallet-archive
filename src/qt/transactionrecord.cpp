@@ -128,7 +128,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
             {
                 std::string strAddress = CBitcoinAddress(destination).ToString();
-                if (strAddress == Params().GetDevContributionAddress())
+                if (strAddress == Params().GetDevContributionAddress() || strAddress == Params().GetSupplyIncreaseAddress())
                 {
                     sub.address = strAddress;
                     int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
@@ -234,7 +234,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                             if (ExtractDestination(txout.scriptPubKey, address))
                             {
                                 std::string strAddress = CBitcoinAddress(address).ToString();
-                                if (strAddress == Params().GetDevContributionAddress())
+                                if (strAddress == Params().GetDevContributionAddress() || strAddress == Params().GetSupplyIncreaseAddress())
                                 {
                                     sub.address = strAddress;
                                     int blockHeight = wtx.GetDepthAndHeightInMainChain().second;
