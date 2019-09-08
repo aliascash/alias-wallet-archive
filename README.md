@@ -28,12 +28,13 @@ Built in Tor: The Spectrecoin software offers a full integration of Tor
 hidden service using a .onion address to connect to other clients in the network. Your
 real IP address is therefore protected at all times.
 
-## Basic Coin Specs V3
+## Basic Coin Specs V3/V4
 <table>
 <tr><td>Algo</td><td>PoSv3/PoAS</td></tr>
 <tr><td>Block Time</td><td>96 Seconds</td></tr>
 <tr><td>Difficulty Retargeting</td><td>Every Block (Moving average of last 24 hours)</td></tr>
 <tr><td>Initial Coin Supply</td><td>20,000,000 XSPEC</td></tr>
+<tr><td>Funding Coin Supply</td><td>3,000,000 XSPEC</td></tr>
 <tr><td>Max Coin Supply (PoS Phase)</td><td>fix 3 SPECTRE or 2 XSPEC reward per block</td></tr>
 <tr><td>Min Stake Maturity</td><td>450 blocks (~12 hours)</td></tr>
 <tr><td>Min SPECTRE Confirmations</td><td>10 blocks</td></tr>
