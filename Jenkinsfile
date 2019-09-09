@@ -196,48 +196,31 @@ pipeline {
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
-                    stages {
-                        stage('Perform MacOS build') {
-                            steps {
-                                script {
-                                    sh "pwd"
-                                    sh "./scripts/mac-build.sh"
-                                }
-                            }
-                        }
-                        stage('Prepare plain delivery') {
-                            steps {
-                                script {
-                                    sh 'rm -f Spectrecoin*.dmg'
-                                    prepareMacDelivery()
-                                }
-                            }
-                        }
-                        stage('Create plain delivery') {
-                            steps {
-                                script {
-                                    sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                                    // The following archive step is only for development purposes.
-                                    // Remove it before merge to develop!
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                                }
-                            }
-                        }
-                        stage('Prepare OBFS4 delivery') {
-                            steps {
-                                script {
-                                    prepareMacOBFS4Delivery()
-                                }
-                            }
-                        }
-                        stage('Create OBFS4 delivery') {
-                            steps {
-                                script {
-                                    sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
-                                }
-                            }
+                    steps {
+                        script {
+                            sh(
+                                    script: """
+                                        pwd
+                                        ./scripts/mac-build.sh
+                                        rm -f Spectrecoin*.dmg
+                                    """
+                            )
+                            prepareMacDelivery()
+                            sh(
+                                    script: """
+                                        ./scripts/mac-deployqt.sh
+                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                    """
+                            )
+                            // Archive step here only to be able to make feature branch builds available for download
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                            prepareMacOBFS4Delivery()
+                            sh(
+                                    script: """
+                                        ./scripts/mac-deployqt.sh
+                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+                                    """
+                            )
                         }
                     }
                 }
@@ -254,26 +237,21 @@ pipeline {
                                                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                                                  ]]) {
-                                    sh "docker run --rm \\\n" +
-                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
-                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
-                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
-                                            "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
+                                    )
                                 }
                             }
                         }
                         stage('Prepare build') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                }
-                            }
-                        }
-                        stage('Perform build') {
                             agent {
                                 label "windows"
                             }
@@ -282,24 +260,15 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    prepareWindowsBuild()
                                     bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
-                                }
-                            }
-                        }
-                        stage('Create delivery') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
                                     createWindowsDelivery(
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: "-Qt5.9.6"
                                     )
-                                    // The following archive step is only for development purposes.
-                                    // Remove it before merge to develop!
+                                    // Archive step here only to be able to make feature branch builds available for download
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                 }
                             }
@@ -319,26 +288,21 @@ pipeline {
                                                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                                                  ]]) {
-                                    sh "docker run --rm \\\n" +
-                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
-                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
-                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
-                                            "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
+                                    )
                                 }
                             }
                         }
                         stage('Prepare build') {
-                            agent {
-                                label "windows2"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                }
-                            }
-                        }
-                        stage('Perform build') {
                             agent {
                                 label "windows2"
                             }
@@ -347,25 +311,14 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    prepareWindowsBuild()
                                     bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
-                                }
-                            }
-                        }
-                        stage('Create delivery') {
-                            agent {
-                                label "windows2"
-                            }
-                            steps {
-                                script {
                                     createWindowsDelivery(
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: ""
                                     )
-                                    // The following archive step is only for development purposes.
-                                    // Remove it before merge to develop!
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                 }
                             }
                         }
@@ -717,43 +670,31 @@ pipeline {
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
                     stages {
-                        stage('Perform MacOS build') {
+                        stage('MacOS build') {
                             steps {
                                 script {
-                                    sh "pwd"
-                                    sh "./scripts/mac-build.sh"
-                                }
-                            }
-                        }
-                        stage('Prepare plain delivery') {
-                            steps {
-                                script {
-                                    sh 'rm -f Spectrecoin*.dmg'
+                                    sh(
+                                            script: """
+                                                pwd
+                                                ./scripts/mac-build.sh
+                                                rm -f Spectrecoin*.dmg
+                                            """
+                                    )
                                     prepareMacDelivery()
-                                }
-                            }
-                        }
-                        stage('Create plain delivery') {
-                            steps {
-                                script {
-                                    sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    sh(
+                                            script: """
+                                                ./scripts/mac-deployqt.sh
+                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                                }
-                            }
-                        }
-                        stage('Prepare OBFS4 delivery') {
-                            steps {
-                                script {
                                     prepareMacOBFS4Delivery()
-                                }
-                            }
-                        }
-                        stage('Create OBFS4 delivery') {
-                            steps {
-                                script {
-                                    sh "./scripts/mac-deployqt.sh"
-                                    sh "mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+                                    sh(
+                                            script: """
+                                                ./scripts/mac-deployqt.sh
+                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+                                            """
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                 }
                             }
@@ -764,8 +705,12 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "rm -f Spectrecoin*.dmg*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    sh(
+                                            script: """
+                                                rm -f Spectrecoin*.dmg*
+                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
@@ -811,26 +756,21 @@ pipeline {
                                                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                                                  ]]) {
-                                    sh "docker run --rm \\\n" +
-                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
-                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
-                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
-                                            "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
+                                    )
                                 }
                             }
                         }
-                        stage('Prepare build') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                }
-                            }
-                        }
-                        stage('Perform build') {
+                        stage('Win Build') {
                             agent {
                                 label "windows"
                             }
@@ -839,18 +779,10 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    prepareWindowsBuild()
                                     bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
-                                }
-                            }
-                        }
-                        stage('Create delivery') {
-                            agent {
-                                label "windows"
-                            }
-                            steps {
-                                script {
                                     createWindowsDelivery(
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: "-Qt5.9.6"
@@ -865,8 +797,12 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "rm -f Spectrecoin*.zip*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip"
+                                    sh(
+                                            script: """
+                                                rm -f Spectrecoin*.zip*
+                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip
+                                            """
+                                    )
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
@@ -912,26 +848,21 @@ pipeline {
                                                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                                                  ]]) {
-                                    sh "docker run --rm \\\n" +
-                                            "--env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \\\n" +
-                                            "--env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \\\n" +
-                                            "--env AWS_DEFAULT_REGION=eu-west-1 \\\n" +
-                                            "garland/aws-cli-docker \\\n" +
-                                            "aws ec2 start-instances --instance-ids i-06fb7942772e77e55"
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
+                                    )
                                 }
                             }
                         }
-                        stage('Prepare build') {
-                            agent {
-                                label "windows2"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                }
-                            }
-                        }
-                        stage('Perform build') {
+                        stage('Win build') {
                             agent {
                                 label "windows2"
                             }
@@ -940,18 +871,10 @@ pipeline {
                             }
                             steps {
                                 script {
+                                    prepareWindowsBuild()
                                     bat 'scripts\\win-genbuild.bat'
                                     bat 'scripts\\win-build.bat'
 //                                    bat 'scripts\\win-installer.bat'
-                                }
-                            }
-                        }
-                        stage('Create delivery') {
-                            agent {
-                                label "windows2"
-                            }
-                            steps {
-                                script {
                                     createWindowsDelivery(
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: ""
@@ -966,8 +889,12 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh "rm -f Spectrecoin*.zip*"
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                    sh(
+                                            script: """
+                                                rm -f Spectrecoin*.zip*
+                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+                                            """
+                                    )
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
                                             repository: 'spectre',
@@ -1005,13 +932,11 @@ pipeline {
                 always {
                     script {
                         sh(
-                                script: """
+                            script: """
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${
-                                    BUILD_NUMBER
-                                }"
+                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
