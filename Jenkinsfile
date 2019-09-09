@@ -64,7 +64,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-                                    tag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -82,7 +82,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-                                    tag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -101,7 +101,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch_noUpload',
-                                    tag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -119,7 +119,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-                                    tag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -139,7 +139,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-                                    tag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -158,7 +158,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-                                    tag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -176,7 +176,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_noUpload',
-                                    tag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}"
+                                    dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
