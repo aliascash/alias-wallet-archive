@@ -27,8 +27,8 @@ ARG SPECTRECOIN_REPOSITORY=spectre
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Debian.tgz
-ENV CHKSUM_FILE=Checksum-Spectrecoin-Debian.txt
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Debian-Stretch.tgz
+ENV CHKSUM_FILE=Checksum-Spectrecoin-Debian-Stretch.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 

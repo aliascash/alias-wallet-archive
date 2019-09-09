@@ -59,10 +59,25 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
-                stage('Build Debian binaries') {
+                stage('Debian Stretch') {
                     steps {
                         script {
-                            buildFeatureBranch('Docker/Debian/Dockerfile_noUpload', "spectreproject/spectre-debian:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch('Docker/Debian/Dockerfile_Stretch_noUpload', "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}")
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Debian Buster') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch('Docker/Debian/Dockerfile_Buster_noUpload', "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}")
                         }
                     }
                     post {
@@ -72,13 +87,28 @@ pipeline {
                     }
                 }
                 /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Build Raspberry Pi binaries') {
+                stage('Raspberry Pi Stretch') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/RaspberryPi/Dockerfile_noUpload', "spectreproject/spectre-raspi:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch('Docker/RaspberryPi/Dockerfile_Stretch_noUpload', "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}")
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Raspberry Pi Buster') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch('Docker/RaspberryPi/Dockerfile_Buster_noUpload', "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}")
                         }
                     }
                     post {
@@ -89,7 +119,7 @@ pipeline {
                 }
                 */
                 /* CentOS build disabled, not working at the moment
-                stage('Build CentOS binaries') {
+                stage('CentOS') {
                     agent {
                         label "docker"
                     }
@@ -105,7 +135,7 @@ pipeline {
                     }
                 }
                 */
-                stage('Build Fedora binaries') {
+                stage('Fedora') {
                     agent {
                         label "docker"
                     }
@@ -120,7 +150,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Ubuntu binaries') {
+                stage('Ubuntu') {
                     agent {
                         label "docker"
                     }
@@ -394,20 +424,20 @@ pipeline {
                 }
             }
         }
-        stage('Build steps') {
+        stage('Develop/Master') {
             when {
                 anyOf { branch 'master'; branch 'develop'; branch "${BRANCH_TO_DEPLOY}" }
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
-                stage('Build Raspberry Pi binaries') {
+                stage('Raspberry Pi Stretch') {
                     stages {
-                        stage('Build Raspberry Pi binaries') {
+                        stage('Binary build') {
                             steps {
                                 script {
-                                    buildBranch('Docker/RaspberryPi/Dockerfile', "spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-raspi:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi.txt")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi.txt"
+                                    buildBranch('Docker/RaspberryPi/Dockerfile_Stretch', "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi-Stretch.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
                                 }
                             }
                             post {
@@ -416,7 +446,25 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Raspberry Pi image build') {
+                    }
+                }
+                stage('Raspberry Pi Buster') {
+                    stages {
+                        stage('Binary build') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/RaspberryPi/Dockerfile_Buster', "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi-Buster.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
+                        stage('Trigger image build') {
                             steps {
                                 build(
                                         job: 'Spectrecoin/pi-gen/spectrecoin',
@@ -440,17 +488,38 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Debian binaries') {
+                stage('Debian Stretch') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Build Debian binaries') {
+                        stage('Build binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile', "spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-debian:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian.txt")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian.txt"
+                                    buildBranch('Docker/Debian/Dockerfile_Stretch', "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian-Stretch.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Debian Buster') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Build binaries') {
+                            steps {
+                                script {
+                                    buildBranch('Docker/Debian/Dockerfile_Buster', "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
+                                    getChecksumfileFromImage("spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian-Buster.txt")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Buster.txt"
                                 }
                             }
                             post {
@@ -480,7 +549,7 @@ pipeline {
                     }
                 }
                 /* CentOS build disabled, not working at the moment
-                stage('Build CentOS binaries') {
+                stage('CentOS') {
                     agent {
                         label "docker"
                     }
@@ -498,7 +567,7 @@ pipeline {
                     }
                 }
                 */
-                stage('Build Fedora binaries') {
+                stage('Fedora') {
                     agent {
                         label "docker"
                     }
@@ -515,12 +584,12 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Ubuntu binaries') {
+                stage('Ubuntu') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Build Ubuntu binaries') {
+                        stage('Build binaries') {
                             steps {
                                 script {
                                     buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
