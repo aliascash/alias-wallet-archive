@@ -251,7 +251,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Prepare build') {
+                        stage('Windows build') {
                             agent {
                                 label "windows"
                             }
@@ -302,7 +302,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Prepare build') {
+                        stage('Windows build') {
                             agent {
                                 label "windows2"
                             }
@@ -770,7 +770,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Win Build') {
+                        stage('Windows Build') {
                             agent {
                                 label "windows"
                             }
@@ -862,7 +862,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Win build') {
+                        stage('Windows build') {
                             agent {
                                 label "windows2"
                             }
