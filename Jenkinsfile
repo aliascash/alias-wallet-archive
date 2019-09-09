@@ -62,7 +62,10 @@ pipeline {
                 stage('Debian Stretch') {
                     steps {
                         script {
-                            buildFeatureBranch('Docker/Debian/Dockerfile_Stretch_noUpload', "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
+                                    tag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -77,7 +80,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/Debian/Dockerfile_Buster_noUpload', "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
+                                    tag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -93,7 +99,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/RaspberryPi/Dockerfile_Stretch_noUpload', "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch_noUpload',
+                                    tag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -108,7 +117,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/RaspberryPi/Dockerfile_Buster_noUpload', "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
+                                    tag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -125,7 +137,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/CentOS/Dockerfile_noUpload', "spectreproject/spectre-centos:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+                                    tag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -141,7 +156,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/Fedora/Dockerfile_noUpload', "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
+                                    tag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -156,7 +174,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch('Docker/Ubuntu/Dockerfile_noUpload', "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}")
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_noUpload',
+                                    tag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -273,7 +294,10 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "-Qt5.9.6")
+                                    createWindowsDelivery(
+                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+                                            suffix: "-Qt5.9.6"
+                                    )
                                     // The following archive step is only for development purposes.
                                     // Remove it before merge to develop!
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
@@ -335,7 +359,10 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "")
+                                    createWindowsDelivery(
+                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+                                            suffix: ""
+                                    )
                                     // The following archive step is only for development purposes.
                                     // Remove it before merge to develop!
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
@@ -435,8 +462,16 @@ pipeline {
                         stage('Binary build') {
                             steps {
                                 script {
-                                    buildBranch('Docker/RaspberryPi/Dockerfile_Stretch', "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi-Stretch.txt")
+                                    buildBranch(
+                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
+                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
                                 }
                             }
@@ -453,8 +488,16 @@ pipeline {
                         stage('Binary build') {
                             steps {
                                 script {
-                                    buildBranch('Docker/RaspberryPi/Dockerfile_Buster', "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-RaspberryPi-Buster.txt")
+                                    buildBranch(
+                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
+                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
                                 }
                             }
@@ -496,8 +539,16 @@ pipeline {
                         stage('Build binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile_Stretch', "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian-Stretch.txt")
+                                    buildBranch(
+                                            dockerfile: 'Docker/Debian/Dockerfile_Stretch',
+                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Stretch.txt"
                                 }
                             }
@@ -517,8 +568,16 @@ pipeline {
                         stage('Build binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Debian/Dockerfile_Buster', "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Debian-Buster.txt")
+                                    buildBranch(
+                                            dockerfile: 'Docker/Debian/Dockerfile_Buster',
+                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Debian-Buster.txt"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Buster.txt"
                                 }
                             }
@@ -555,8 +614,16 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/CentOS/Dockerfile', "spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                            getChecksumfileFromImage("spectreproject/spectre-centos:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-CentOS.txt")
+                            buildBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile',
+                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
+                                    gitTag: "${GIT_TAG_TO_USE}",
+                                    gitCommit: "${GIT_COMMIT_SHORT}"
+                            )
+                            getChecksumfileFromImage(
+                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
+                                    checksumfile: "Checksum-Spectrecoin-CentOS.txt"
+                            )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-CentOS.txt"
                         }
                     }
@@ -573,8 +640,16 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildBranch('Docker/Fedora/Dockerfile', "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                            getChecksumfileFromImage("spectreproject/spectre-fedora:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Fedora.txt")
+                            buildBranch(
+                                    dockerfile: 'Docker/Fedora/Dockerfile',
+                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
+                                    gitTag: "${GIT_TAG_TO_USE}",
+                                    gitCommit: "${GIT_COMMIT_SHORT}"
+                            )
+                            getChecksumfileFromImage(
+                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
+                                    checksumfile: "Checksum-Spectrecoin-Fedora.txt"
+                            )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Fedora.txt"
                         }
                     }
@@ -592,8 +667,16 @@ pipeline {
                         stage('Build binaries') {
                             steps {
                                 script {
-                                    buildBranch('Docker/Ubuntu/Dockerfile', "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "${GIT_TAG_TO_USE}", "${GIT_COMMIT_SHORT}")
-                                    getChecksumfileFromImage("spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}", "Checksum-Spectrecoin-Ubuntu.txt")
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile',
+                                            dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Ubuntu.txt"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu.txt"
                                 }
                             }
@@ -696,8 +779,14 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
                                     )
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg", "Checksum-Spectrecoin-Mac.txt")
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg", "Checksum-Spectrecoin-Mac-OBFS4.txt")
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            checksumfile: "Checksum-Spectrecoin-Mac.txt"
+                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
+                                            checksumfile: "Checksum-Spectrecoin-Mac-OBFS4.txt"
+                                    )
                                     sh "rm -f Spectrecoin*.dmg* Checksum-Spectrecoin*"
                                 }
                             }
@@ -762,7 +851,10 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "-Qt5.9.6")
+                                    createWindowsDelivery(
+                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+                                            suffix: "-Qt5.9.6"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                 }
                             }
@@ -788,8 +880,14 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
                                     )
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip", "Checksum-Spectrecoin-Win64-Qt5.9.6.txt")
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip", "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt")
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
+                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6.txt"
+                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
+                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
+                                    )
                                     sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
@@ -854,7 +952,10 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    createWindowsDelivery("${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}", "")
+                                    createWindowsDelivery(
+                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+                                            suffix: ""
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                 }
                             }
@@ -880,8 +981,14 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
                                     )
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip", "Checksum-Spectrecoin-Win64.txt")
-                                    createAndArchiveChecksumFile("Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip", "Checksum-Spectrecoin-Win64-OBFS4.txt")
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
+                                            checksumfile: "Checksum-Spectrecoin-Win64.txt"
+                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
+                                            checksumfile: "Checksum-Spectrecoin-Win64-OBFS4.txt"
+                                    )
                                     sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
@@ -898,11 +1005,13 @@ pipeline {
                 always {
                     script {
                         sh(
-                                script:"""
+                                script: """
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${
+                                    BUILD_NUMBER
+                                }"
                             """
                         )
                         editRelease(
@@ -1023,229 +1132,4 @@ pipeline {
             )
         }
     }
-}
-
-def buildFeatureBranch(String dockerfile, String tag) {
-    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh "docker build \\\n" +
-                "-f $dockerfile \\\n" +
-                "--rm \\\n" +
-                "-t $tag \\\n" +
-                "."
-    }
-}
-
-def buildBranch(String dockerfile, String dockerTag, String gitTag, String gitCommit) {
-    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh "docker build \\\n" +
-                "-f ${dockerfile} \\\n" +
-                "--rm \\\n" +
-                "--build-arg GITHUB_TOKEN=${GITHUB_TOKEN} \\\n" +
-                "--build-arg GIT_COMMIT=${gitCommit} \\\n" +
-                "--build-arg SPECTRECOIN_RELEASE=${gitTag} \\\n" +
-                "--build-arg REPLACE_EXISTING_ARCHIVE=--replace \\\n" +
-                "-t ${dockerTag} \\\n" +
-                "."
-    }
-}
-
-def getChecksumfileFromImage(String dockerTag, String checksumfile) {
-    withDockerRegistry(credentialsId: '051efa8c-aebd-40f7-9cfd-0053c413266e') {
-        sh (
-                script: """
-                    docker run --name tmpContainer -dit ${dockerTag} /bin/sh 
-                    docker cp tmpContainer:/filesToUpload/${checksumfile} ${checksumfile}
-                    docker stop tmpContainer
-                    docker rm tmpContainer
-                """
-        )
-    }
-}
-
-def prepareMacDelivery() {
-    def exists = fileExists 'Tor.zip'
-    if (exists) {
-        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-    } else {
-        echo 'Archive \'Tor.zip\' not found, downloading...'
-        fileOperations([
-                fileDownloadOperation(
-                        password: '',
-                        targetFileName: 'Tor.zip',
-                        targetLocation: "${WORKSPACE}",
-                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip',
-                        userName: '')
-        ])
-    }
-    // Unzip Tor and remove debug content
-    fileOperations([
-            folderDeleteOperation(
-                    folderPath: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor"),
-            fileUnZipOperation(
-                    filePath: "${WORKSPACE}/Tor.zip",
-                    targetLocation: "${WORKSPACE}/"),
-            folderDeleteOperation(
-                    folderPath: "${WORKSPACE}/src/bin/debug"),
-    ])
-}
-
-def prepareMacOBFS4Delivery() {
-    fileOperations([
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults",
-                    destination: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_plain"),
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults_obfs4",
-                    destination: "${WORKSPACE}/src/bin/Spectrecoin.app/Contents/MacOS/Tor/torrc-defaults"),
-    ])
-}
-
-def prepareWindowsBuild() {
-    def exists = fileExists 'Spectre.Prebuild.libraries.zip'
-
-    if (exists) {
-        echo 'Archive \'Spectre.Prebuild.libraries.zip\' exists, nothing to download.'
-    } else {
-        echo 'Archive \'Spectre.Prebuild.libraries.zip\' not found, downloading...'
-        fileOperations([
-                fileDownloadOperation(
-                        password: '',
-                        targetFileName: 'Spectre.Prebuild.libraries.zip',
-                        targetLocation: "${WORKSPACE}",
-                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip',
-                        userName: ''),
-                fileUnZipOperation(
-                        filePath: 'Spectre.Prebuild.libraries.zip',
-                        targetLocation: '.'),
-                folderCopyOperation(
-                        destinationFolderPath: 'leveldb',
-                        sourceFolderPath: 'Spectre.Prebuild.libraries/leveldb'),
-                folderCopyOperation(
-                        destinationFolderPath: 'packages64bit',
-                        sourceFolderPath: 'Spectre.Prebuild.libraries/packages64bit'),
-                folderCopyOperation(
-                        destinationFolderPath: 'src',
-                        sourceFolderPath: 'Spectre.Prebuild.libraries/src'),
-                folderCopyOperation(
-                        destinationFolderPath: 'tor',
-                        sourceFolderPath: 'Spectre.Prebuild.libraries/tor'),
-                folderDeleteOperation(
-                        './Spectre.Prebuild.libraries'
-                )
-        ])
-    }
-    exists = fileExists 'Tor.zip'
-    if (exists) {
-        echo 'Archive \'Tor.zip\' exists, nothing to download.'
-    } else {
-        echo 'Archive \'Tor.zip\' not found, downloading...'
-        fileOperations([
-                fileDownloadOperation(
-                        password: '',
-                        targetFileName: 'Tor.zip',
-                        targetLocation: "${WORKSPACE}",
-                        url: 'https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip',
-                        userName: '')
-        ])
-    }
-}
-
-def createWindowsDelivery(String version, String suffix) {
-    // Unzip Tor and remove debug content
-    fileOperations([
-            fileUnZipOperation(
-                    filePath: "${WORKSPACE}/Tor.zip",
-                    targetLocation: "${WORKSPACE}/"),
-            folderDeleteOperation(
-                    folderPath: "${WORKSPACE}/src/bin/debug"),
-    ])
-    // If directory 'Spectrecoin' exists from brevious build, remove it
-    def exists = fileExists "${WORKSPACE}/src/Spectrecoin"
-    if (exists) {
-        fileOperations([
-                folderDeleteOperation(
-                        folderPath: "${WORKSPACE}/src/Spectrecoin"),
-        ])
-    }
-    // Rename build directory to 'Spectrecoin' and create directory for content to remove later
-    fileOperations([
-            folderRenameOperation(
-                    source: "${WORKSPACE}/src/bin",
-                    destination: "${WORKSPACE}/src/Spectrecoin"),
-            folderCreateOperation(
-                    folderPath: "${WORKSPACE}/old"),
-    ])
-    // If archive from previous build exists, move it to directory 'old'
-    exists = fileExists "${WORKSPACE}/Spectrecoin.zip"
-    if (exists) {
-        fileOperations([
-                fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin.zip"),
-        ])
-    }
-    // If archive from previous build exists, move it to directory 'old'
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}${suffix}.zip"
-    if (exists) {
-        fileOperations([
-                fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin-${version}.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin-${version}.zip"),
-        ])
-    }
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip"
-    if (exists) {
-        fileOperations([
-                fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64${suffix}.zip"),
-        ])
-    }
-    exists = fileExists "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"
-    if (exists) {
-        fileOperations([
-                fileRenameOperation(
-                        source: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip",
-                        destination: "${WORKSPACE}/old/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"),
-        ])
-    }
-    // Remove directory with artifacts from previous build
-    // Create new delivery archive
-    // Rename build directory back to initial name
-    fileOperations([
-            folderDeleteOperation(
-                    folderPath: "${WORKSPACE}/old"),
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
-    ])
-    fileOperations([
-            fileRenameOperation(
-                    source: "${WORKSPACE}/Spectrecoin.zip",
-                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}.zip"),
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain"),
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-            fileZipOperation("${WORKSPACE}/src/Spectrecoin")
-    ])
-    fileOperations([
-            fileRenameOperation(
-                    source: "${WORKSPACE}/Spectrecoin.zip",
-                    destination: "${WORKSPACE}/Spectrecoin-${version}-Win64${suffix}-OBFS4.zip"),
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_obfs4"),
-            fileRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults_plain",
-                    destination: "${WORKSPACE}/src/Spectrecoin/Tor/torrc-defaults"),
-            folderRenameOperation(
-                    source: "${WORKSPACE}/src/Spectrecoin",
-                    destination: "${WORKSPACE}/src/bin")
-    ])
-}
-
-def createAndArchiveChecksumFile(String filename, String checksumfile) {
-    sh "./scripts/createChecksums.sh $filename $checksumfile"
-    archiveArtifacts allowEmptyArchive: true, artifacts: "$checksumfile"
 }
