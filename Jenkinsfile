@@ -410,32 +410,6 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
-                stage('Raspberry Pi Stretch') {
-                    stages {
-                        stage('Binary build') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Raspberry Pi Buster') {
                     stages {
                         stage('Binary build') {
@@ -480,6 +454,35 @@ pipeline {
                                         ],
                                         wait: false
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('Raspberry Pi Stretch') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Binary build') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
+                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }
