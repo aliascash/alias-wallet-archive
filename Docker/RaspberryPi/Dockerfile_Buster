@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-raspi:1.4 as build
+FROM spectreproject/spectre-builder-raspi-buster:1.6 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -27,8 +27,8 @@ ARG SPECTRECOIN_REPOSITORY=spectre
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-RaspberryPi.tgz
-ENV CHKSUM_FILE=Checksum-Spectrecoin-RaspberryPi.txt
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-RaspberryPi-Buster.tgz
+ENV CHKSUM_FILE=Checksum-Spectrecoin-RaspberryPi-Buster.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
