@@ -703,6 +703,9 @@ pipeline {
                             }
                         }
                         stage('Upload deliveries') {
+                            agent {
+                                label "housekeeping"
+                            }
                             steps {
                                 script {
                                     sh(
@@ -793,7 +796,7 @@ pipeline {
                                 script {
                                     sh(
                                             script: """
-                                                rm -f Spectrecoin*.zip*
+                                                rm -f Spectrecoin-*-Win64-Qt5.9.6.zip Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip
                                                 wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip
                                             """
                                     )
@@ -879,7 +882,7 @@ pipeline {
                                 script {
                                     sh(
                                             script: """
-                                                rm -f Spectrecoin*.zip*
+                                                rm -f Spectrecoin-*-Win64.zip Spectrecoin-*-Win64-OBFS4.zip
                                                 wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
                                             """
                                     )
