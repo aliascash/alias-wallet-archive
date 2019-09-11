@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label "docker"
+        label "housekeeping"
     }
     options {
         timestamps()
@@ -60,6 +60,9 @@ pipeline {
             //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Debian Stretch') {
+                    agent {
+                        label "docker"
+                    }
                     steps {
                         script {
                             buildFeatureBranch(
@@ -95,7 +98,7 @@ pipeline {
                 /* Raspi build disabled on all branches different than develop and master to increase build speed
                 stage('Raspberry Pi Stretch') {
                     agent {
-                        label "docker"
+                        label "raspi-builder"
                     }
                     steps {
                         script {
@@ -113,7 +116,7 @@ pipeline {
                 }
                 stage('Raspberry Pi Buster') {
                     agent {
-                        label "docker"
+                        label "raspi-builder"
                     }
                     steps {
                         script {
@@ -225,9 +228,6 @@ pipeline {
                     }
                 }
                 stage('Windows-Qt5.9.6') {
-                    agent {
-                        label "housekeeping"
-                    }
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -276,9 +276,6 @@ pipeline {
                     }
                 }
                 stage('Windows-Qt5.12.0') {
-                    agent {
-                        label "housekeeping"
-                    }
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -411,6 +408,9 @@ pipeline {
             //noinspection GroovyAssignabilityCheck
             parallel {
                 stage('Raspberry Pi Buster') {
+                    agent {
+                        label "raspi-builder"
+                    }
                     stages {
                         stage('Binary build') {
                             steps {
@@ -460,7 +460,7 @@ pipeline {
                 }
                 stage('Raspberry Pi Stretch') {
                     agent {
-                        label "docker"
+                        label "raspi-builder"
                     }
                     stages {
                         stage('Binary build') {
@@ -703,9 +703,6 @@ pipeline {
                             }
                         }
                         stage('Upload deliveries') {
-                            agent {
-                                label "housekeeping"
-                            }
                             steps {
                                 script {
                                     sh(
@@ -747,9 +744,6 @@ pipeline {
                     }
                 }
                 stage('Windows-Qt5.9.6') {
-                    agent {
-                        label "housekeeping"
-                    }
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -795,9 +789,6 @@ pipeline {
                             }
                         }
                         stage('Upload deliveries') {
-                            agent {
-                                label "housekeeping"
-                            }
                             steps {
                                 script {
                                     sh(
@@ -839,9 +830,6 @@ pipeline {
                     }
                 }
                 stage('Windows-Qt5.12.0') {
-                    agent {
-                        label "housekeeping"
-                    }
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -887,9 +875,6 @@ pipeline {
                             }
                         }
                         stage('Upload deliveries') {
-                            agent {
-                                label "housekeeping"
-                            }
                             steps {
                                 script {
                                     sh(
