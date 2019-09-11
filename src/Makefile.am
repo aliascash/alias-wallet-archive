@@ -240,6 +240,7 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/moc_bitcoinaddressvalidator.cpp \
 		  qt/moc_monitoreddatamapper.cpp \
 		  qt/moc_bitcoinamountfield.cpp \
+		  qt/moc_setupwalletwizard.cpp \
 		  qt/transactiontablemodel.cpp \
 		  qt/coincontroldialog.cpp \
 		  qt/coincontroltreewidget.cpp \
@@ -270,7 +271,8 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/spectregui.cpp \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp \
-		  qt/winshutdownmonitor.cpp
+		  qt/winshutdownmonitor.cpp \
+		  qt/setupwalletwizard.cpp
 
 spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS) $(QT5WEBKIT_LIBS)
 spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) $(QT5WEBKIT_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0
