@@ -21,10 +21,9 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
 
     setStartId(Page_Intro);
 
-#ifndef Q_OS_MAC
+//#ifndef Q_OS_MAC
     setWizardStyle(ModernStyle);
-#endif
-    setWizardStyle(ModernStyle);
+//#endif
     setOption(HaveHelpButton, true);
     setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
 
@@ -75,7 +74,8 @@ IntroPage::IntroPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Setup Your Private Keys"));
-    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/about"));
+
+    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark"));
 
     topLabel = new QLabel(tr("The application has detected that you don't have a wallet.dat with your private keys. Please choose how you want to create or restore your private keys."));
     topLabel->setWordWrap(true);
@@ -277,7 +277,7 @@ void NewMnemonicResultPage::initializePage()
 {
     NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
     for (int i = 0; i < 24; i++)
-        vMnemonicResultLabel[i]->setText(QString("%1. %2").arg(i + 1).arg(mnemonicPage->mnemonicList[i]));
+        vMnemonicResultLabel[i]->setText(QString("%1. %2").arg(i + 1, 2).arg(mnemonicPage->mnemonicList[i]));
 }
 
 NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
