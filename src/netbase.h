@@ -39,6 +39,8 @@ class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
+        unsigned char ip_tor[41]; //for compatibility with onion v3 addresses
+        bool isv3; // v2 or v3 onion address
 
     public:
         CNetAddr();
@@ -53,7 +55,6 @@ class CNetAddr
          * @note Only NET_IPV4 and NET_IPV6 are allowed for network.
          */
         void SetRaw(Network network, const uint8_t *data);
-
         bool SetSpecial(const std::string &strName); // for Tor addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor/i2p)
@@ -80,6 +81,7 @@ class CNetAddr
         std::string ToString() const;
         std::string ToStringIP() const;
         unsigned int GetByte(int n) const;
+        unsigned int GetByteTorV3(int n) const;
         uint64_t GetHash() const;
         bool GetInAddr(struct in_addr* pipv4Addr) const;
         std::vector<unsigned char> GetGroup() const;
@@ -94,7 +96,19 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
-             READWRITE(FLATDATA(ip));
+             if (nType == SER_DISK)
+             {
+                READWRITE(FLATDATA(ip));
+                READWRITE(FLATDATA(ip_tor));
+                READWRITE(isv3);
+             }
+             else
+             {
+                if (isv3 && nVersion != INIT_PROTO_VERSION)
+                   READWRITE(FLATDATA(ip_tor));
+                else
+                   READWRITE(FLATDATA(ip));
+             }
             )
 };
 
@@ -155,7 +169,8 @@ class CService : public CNetAddr
         IMPLEMENT_SERIALIZE
             (
              CService* pthis = const_cast<CService*>(this);
-             READWRITE(FLATDATA(ip));
+             CNetAddr* pip = (CNetAddr*)pthis;
+             READWRITE(*pip);
              unsigned short portN = htons(port);
              READWRITE(portN);
              if (fRead)

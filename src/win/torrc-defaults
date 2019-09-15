@@ -9,6 +9,9 @@
 # If non-zero, try to write to disk less frequently than we would otherwise.
 AvoidDiskWrites 1
 
+# If non-zero, try to use built-in (static) crypto hardware acceleration when available.
+HardwareAccel 1
+
 ## fteproxy configuration
 ClientTransportPlugin fte exec PluggableTransports\fteproxy.exe --managed
 
