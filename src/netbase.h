@@ -40,7 +40,7 @@ class CNetAddr
     protected:
         unsigned char ip[16]; // in network byte order
         unsigned char ip_tor[41]; //for compatibility with onion v3 addresses
-        bool isv3; // v2 or v3 onion address
+        bool fTorV3; // v2 or v3 onion address
 
     public:
         CNetAddr();
@@ -100,11 +100,11 @@ class CNetAddr
              {
                 READWRITE(FLATDATA(ip));
                 READWRITE(FLATDATA(ip_tor));
-                READWRITE(isv3);
+                READWRITE(fTorV3);
              }
              else
              {
-                if (isv3 && nVersion != INIT_PROTO_VERSION)
+                if (fTorV3 && nVersion != INIT_PROTO_VERSION)
                    READWRITE(FLATDATA(ip_tor));
                 else
                    READWRITE(FLATDATA(ip));
