@@ -907,42 +907,24 @@ std::string CNetAddr::ToString() const
 
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
-    if (a.fTorV3 == b.fTorV3 && !b.fTorV3)
-        return (memcmp(a.ip, b.ip, 16) == 0);
-    if (a.fTorV3 == b.fTorV3 && b.fTorV3)
-        return (memcmp(a.ip_tor, b.ip_tor, 41) == 0);
+    if (a.fTorV3 == b.fTorV3)
+        return b.fTorV3 ? (memcmp(a.ip_tor, b.ip_tor, 41) == 0) : (memcmp(a.ip, b.ip, 16) == 0);
     return false;
 }
 
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
-    if (a.fTorV3 == b.fTorV3 && !b.fTorV3)
-        return (memcmp(a.ip, b.ip, 16) != 0);
-    if (a.fTorV3 == b.fTorV3 && b.fTorV3)
-        return (memcmp(a.ip_tor, b.ip_tor, 41) != 0);
+    if (a.fTorV3 == b.fTorV3)
+        return b.fTorV3 ? (memcmp(a.ip_tor, b.ip_tor, 41) != 0) : (memcmp(a.ip, b.ip, 16) != 0);
     return true;
 }
 
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
-    if (a.fTorV3 == b.fTorV3 && !b.fTorV3)
-        return (memcmp(a.ip, b.ip, 16) < 0);
-    if (a.fTorV3 == b.fTorV3 && b.fTorV3)
-        return (memcmp(a.ip_tor, b.ip_tor, 41) < 0);
-    if (a.fTorV3)
-    {
-        if (memcmp(a.ip_tor, b.ip, 16) == 0)
-            return false;
-        else
-            return memcmp(a.ip_tor, b.ip, 16);
-    }
-    else
-    {
-        if (memcmp(a.ip, b.ip_tor, 16) == 0)
-            return true;
-        else
-            return memcmp(a.ip, b.ip_tor, 16);
-    }
+    if (a.fTorV3 == b.fTorV3)
+        return b.fTorV3 ? (memcmp(a.ip_tor, b.ip_tor, 41) < 0) : (memcmp(a.ip, b.ip, 16) < 0);
+    int result = memcmp(a.ip_tor, b.ip, 16);
+    return (result == 0) ? b.fTorV3 : (result < 0);
 }
 
 bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
