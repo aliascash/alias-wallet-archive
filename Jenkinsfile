@@ -268,8 +268,6 @@ pipeline {
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: "-Qt5.9.6"
                                     )
-                                    // Archive step here only to be able to make feature branch builds available for download
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
                                 }
                             }
                         }
@@ -316,6 +314,7 @@ pipeline {
                                             version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
                                             suffix: ""
                                     )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                 }
                             }
                         }
