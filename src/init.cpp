@@ -1001,7 +1001,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         CAddrDB adb;
         if (!adb.Read(addrman))
+        {
             LogPrintf("Invalid or missing peers.dat; recreating\n");
+            addrman.Clear();
+        }
     }
 
     LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
