@@ -765,6 +765,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         string automatic_onion;
         boost::filesystem::path hostname_path = GetDataDir() / "tor" / "onion" / "hostname";
+        if ((GetBoolArg("-onionv2") && fs::file_size(hostname_path) != 23) || (!GetBoolArg("-onionv2") && fs::file_size(hostname_path) != 63))
+            remove(hostname_path.string().c_str());
 
         int attempts = 0;
         while (1) {
