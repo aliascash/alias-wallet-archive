@@ -116,6 +116,8 @@ public:
 
     int nextId() const override;
     bool isComplete() const override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void cleanupPage() override;
 
 private:
     QLabel *mnemonicLabel;

@@ -304,6 +304,59 @@ void NewMnemonicResultPage::initializePage()
         vMnemonicResultLabel[i]->setText(QString("%1. %2").arg(i + 1, 2).arg(mnemonicPage->mnemonicList[i]));
 }
 
+void NewMnemonicVerificationPage::cleanupPage()
+{
+    QWizardPage::cleanupPage();
+
+    passwordEdit->setStyleSheet("");
+    passwordEdit->setReadOnly(false);
+    for (int i = 0; i < 24; i++)
+    {
+        vMnemonicEdit[i]->setStyleSheet("");
+        vMnemonicEdit[i]->setReadOnly(false);
+    }
+}
+
+bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::FocusOut)
+    {
+        if (obj == passwordEdit)
+        {
+
+            QString sPassword = field("newmnemonic.password").toString();
+            if (sPassword != passwordEdit->text())
+                passwordEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+            else {
+                passwordEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
+                passwordEdit->setReadOnly(true);
+            }
+        }
+        else {
+            for (int i = 0; i < 24; i++)
+            {
+                QLineEdit* pLineEdit = vMnemonicEdit[i];
+                if (pLineEdit != obj)
+                    continue;
+
+                NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
+                if (pLineEdit->text().size() == 0)
+                    pLineEdit->setStyleSheet("");
+                else if (mnemonicPage->mnemonicList[i] != pLineEdit->text())
+                    pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                else {
+                    pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
+                    pLineEdit->setReadOnly(true);
+                }
+                break;
+            }
+        }
+    }
+
+    // standard event processing
+    return QObject::eventFilter(obj, event);
+}
+
 NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     : QWizardPage(parent)
 {
@@ -312,6 +365,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
+    passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("verification.password", passwordEdit);
     connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
@@ -326,7 +380,9 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     vMnemonicEdit.reserve(24);
     for (int i = 0; i < 24; i++)
     {
-        vMnemonicEdit.push_back(new QLineEdit);
+        QLineEdit *qLineEdit = new QLineEdit;
+        qLineEdit->installEventFilter(this);
+        vMnemonicEdit.push_back(qLineEdit);
         registerField(QString("verification.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
 
         QFormLayout *formLayout = new QFormLayout;
