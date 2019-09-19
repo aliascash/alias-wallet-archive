@@ -9,6 +9,8 @@
 
 #include <QtWidgets>
 
+namespace fs = boost::filesystem;
+
 SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     : QWizard(parent)
 {
@@ -43,7 +45,7 @@ void SetupWalletWizard::showHelp()
         message = tr("The private keys are stored in the file 'wallet.dat'. The file was not detected on startup and must now be created.");
         break;
     case Page_ImportWalletDat:
-        message = tr("If you have a backup of wallet.dat, you can import this file.");
+        message = tr("If you have a backup of a wallet.dat, you can import this file.");
         break;
     case Page_NewMnemonic_Settings:
         message = tr("Creating a mnemonic is a three step procedure. First: define language and optional password. Second: write down created seed words. Third: Verify seed words.");
@@ -82,7 +84,7 @@ IntroPage::IntroPage(QWidget *parent)
 
     newMnemonicRadioButton = new QRadioButton(tr("&Create new mnemonic recovery seed words"));
     recoverFromMnemonicRadioButton = new QRadioButton(tr("&Recover from your existing mnemonic seed words"));
-    importWalletRadioButton = new QRadioButton(tr("&Import existing wallet.dat"));
+    importWalletRadioButton = new QRadioButton(tr("&Import wallet.dat file"));
     newMnemonicRadioButton->setChecked(true);
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -108,17 +110,20 @@ ImportWalletDatPage::ImportWalletDatPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Import wallet.dat"));
-    setSubTitle(tr("Please import an existing wallet.dat files with your private keys."));
+    setSubTitle(tr("Please import a wallet.dat file with your private keys."));
 
     openFileNameLabel = new QLabel;
     openFileNameLabel->setWordWrap(true);
-     int frameStyle = QFrame::Sunken | QFrame::Panel;
-    //openFileNameLabel->setFrameStyle(frameStyle);
-    openFileNameButton = new QPushButton(tr("&Open wallet.dat"));
+    openFileNameLabel->setFrameStyle(QFrame::Panel);
+
+    openFileNameButton = new QPushButton(tr("&Select wallet.dat"));
+    QVBoxLayout *buttonLayout = new QVBoxLayout;
+    buttonLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    buttonLayout->addWidget(openFileNameButton);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(openFileNameLabel);
-    layout->addWidget(openFileNameButton);
+    layout->addLayout(buttonLayout);
     setLayout(layout);
 
     connect(openFileNameButton, &QAbstractButton::clicked,
@@ -129,19 +134,38 @@ void ImportWalletDatPage::setOpenFileName()
 {
     const QFileDialog::Options options = QFileDialog::Options();
     QString selectedFilter;
-    QString fileName = QFileDialog::getOpenFileName(this,
+    fileName = QFileDialog::getOpenFileName(this,
                                 tr("QFileDialog::getOpenFileName()"),
                                 openFileNameLabel->text(),
                                 tr("Wallet Files (*.dat)"),
                                 &selectedFilter,
                                 options);
-    if (!fileName.isEmpty())
-        openFileNameLabel->setText(fileName);
+
+    openFileNameLabel->setText(fileName);
+
+    completeChanged();
 }
 
 int ImportWalletDatPage::nextId() const
 {
     return -1;
+}
+
+bool ImportWalletDatPage::isComplete() const
+{
+    return fileName.size() > 0;
+}
+
+bool ImportWalletDatPage::validatePage()
+{
+    try {
+        fs::copy_file(fs::path(fileName.toStdString()), GetDataDir() / "wallet.dat");
+        return true;
+    }
+    catch (const boost::filesystem::filesystem_error& e) {
+        QMessageBox::critical(this, tr("Error"), tr("Failed to copy wallet.dat: %1").arg(e.what()));
+    }
+    return false;
 }
 
 NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
@@ -339,7 +363,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Recover private keys from Mnemonic Seed Words"));
-    setSubTitle(tr("Please enter (optional) password and your mnemomic seed words to recover private keys."));
+    setSubTitle(tr("Please enter (optional) password and your mnemonic seed words to recover private keys."));
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
