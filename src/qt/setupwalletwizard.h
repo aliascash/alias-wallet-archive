@@ -55,11 +55,14 @@ public:
     ImportWalletDatPage(QWidget *parent = 0);
 
     int nextId() const override;
+    bool isComplete() const override;
+    bool validatePage() override;
 
 private slots:
     void setOpenFileName();
 
 private:
+    QString fileName;
     QLabel *openFileNameLabel;
     QPushButton *openFileNameButton;
 };
