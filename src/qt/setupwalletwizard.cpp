@@ -318,10 +318,8 @@ void NewMnemonicResultPage::initializePage()
         vMnemonicResultLabel[i]->setText(QString("%1. %2").arg(i + 1, 2).arg(mnemonicPage->mnemonicList[i]));
 }
 
-void NewMnemonicVerificationPage::cleanupPage()
+void NewMnemonicVerificationPage::initializePage()
 {
-    QWizardPage::cleanupPage();
-
     passwordEdit->setStyleSheet("");
     passwordEdit->setReadOnly(false);
     for (int i = 0; i < 24; i++)
