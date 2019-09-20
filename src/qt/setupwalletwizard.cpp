@@ -50,10 +50,7 @@ void SetupWalletWizard::showHelp()
         message = tr("If you have a backup of a wallet.dat, you can import this file.");
         break;
     case Page_NewMnemonic_Settings:
-        message = tr("Creating mnemonic seed words is a three step procedure:<br><br>"
-                     "1st: Define language and optional password.<br>"
-                     "2nd: Write down created seed words.<br>"
-                     "3rd: Verify seed words.");
+        message = tr("Mnemonic Seed Words allow you to create and later recover your private keys.");
         break;
     case Page_NewMnemonic_Result:
         message = tr("It is recommended to make multiple copies of the seed words, stored in different locations.<br><br>"
@@ -178,6 +175,12 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
     setSubTitle(tr("Step 1/3: Please define language to use and optional password."));
 
+    noteLabel = new QLabel(tr("Creating mnemonic seed words is a three step procedure:"
+                             "<ol><li>Define language and optional password.</li>"
+                             "<li>Write down created seed words.</li>"
+                             "<li>Verify seed words.</li></ol>"));
+    noteLabel->setWordWrap(true);
+
     languageLabel = new QLabel(tr("&Language:"));
     languageComboBox = new QComboBox;
     languageLabel->setBuddy(languageComboBox);
@@ -196,11 +199,18 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     registerField("newmnemonic.language", languageComboBox, "currentData", "currentIndexChanged");
     registerField("newmnemonic.password", passwordEdit);
 
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(languageLabel, 0, 0);
-    layout->addWidget(languageComboBox, 0, 1);
-    layout->addWidget(passwordLabel, 1, 0);
-    layout->addWidget(passwordEdit, 1, 1);
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QGridLayout *formLayout = new QGridLayout;
+    formLayout->addWidget(languageLabel, 0, 0);
+    formLayout->addWidget(languageComboBox, 0, 1);
+    formLayout->addWidget(passwordLabel, 1, 0);
+    formLayout->addWidget(passwordEdit, 1, 1);
+    layout->addLayout(formLayout);
+
+    noteLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->addWidget(noteLabel, Qt::AlignBottom);
+
     setLayout(layout);
 }
 

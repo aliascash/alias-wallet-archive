@@ -82,6 +82,7 @@ public:
     std::string sKey;
 
 private:
+    QLabel *noteLabel;
     QLabel *languageLabel;
     QLabel *passwordLabel;
     QComboBox *languageComboBox;
