@@ -32,6 +32,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
 
     setWindowTitle(tr("Spectrecoin Wallet Setup"));
+    setWindowIcon(QIcon(":icons/spectre"));
 }
 
 void SetupWalletWizard::showHelp()
@@ -42,16 +43,22 @@ void SetupWalletWizard::showHelp()
 
     switch (currentId()) {
     case Page_Intro:
-        message = tr("The private keys are stored in the file 'wallet.dat'. The file was not detected on startup and must now be created.");
+        message = tr("The file 'wallet.dat', which holds your private keys, could not be found during startup. It must be created now.<br><br>"
+                     "The private key consists of alphanumerical characters that give a user access and control over their funds to their corresponding cryptocurrency address. In other words, the private key creates unique digital signatures for every transaction that enable a user to spend their funds, by proving that the user does in fact have ownership of those funds.");
         break;
     case Page_ImportWalletDat:
         message = tr("If you have a backup of a wallet.dat, you can import this file.");
         break;
     case Page_NewMnemonic_Settings:
-        message = tr("Creating a mnemonic is a three step procedure. First: define language and optional password. Second: write down created seed words. Third: Verify seed words.");
+        message = tr("Creating mnemonic seed words is a three step procedure:<br><br>"
+                     "1st: Define language and optional password.<br>"
+                     "2nd: Write down created seed words.<br>"
+                     "3rd: Verify seed words.");
         break;
     case Page_NewMnemonic_Result:
-        message = tr("It is recommended to make multiple copies of the seed words, stored on different locations.");
+        message = tr("It is recommended to make multiple copies of the seed words, stored in different locations.<br><br>"
+                     "<b>Attention:</b> Seed Words cannot later be (re)created from your exsting private keys.<br>"
+                     "If you you loose your Seed Words and don't have a backup of the wallet.dat file, you loose your coins!");
         break;
     case Page_NewMnemonic_Verification:
         message = tr("Please enter the mnemonic words and password given on the previous screen.");
@@ -79,7 +86,7 @@ IntroPage::IntroPage(QWidget *parent)
 
     setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark"));
 
-    topLabel = new QLabel(tr("The application has detected that you don't have a wallet.dat with your private keys. Please choose how you want to create or restore your private keys."));
+    topLabel = new QLabel(tr("The application has detected that you don't have a wallet.dat file, which holds your private keys. Please choose how you want to create or restore your private keys."));
     topLabel->setWordWrap(true);
 
     newMnemonicRadioButton = new QRadioButton(tr("&Create new mnemonic recovery seed words"));
@@ -89,6 +96,7 @@ IntroPage::IntroPage(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(topLabel);
+    layout->addSpacing(20);
     layout->addWidget(newMnemonicRadioButton);
     layout->addWidget(recoverFromMnemonicRadioButton);
     layout->addWidget(importWalletRadioButton);
@@ -275,7 +283,7 @@ NewMnemonicResultPage::NewMnemonicResultPage(QWidget *parent)
     setSubTitle(tr("Step 2/3: Write down your mnemonic recovery seed words."));
 
     mnemonicLabel = new QLabel(tr("Mnemonic Recovery Seed Words:"));
-    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write it down and keep them somewhere safe.<br>You will be asked to confirm the Wallet Recovery Phrase in the next screen to ensure you have written it down correctly."));
+    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.<br>You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly."));
     noticeLabel->setWordWrap(true);
 
     QGridLayout *layout = new QGridLayout;
