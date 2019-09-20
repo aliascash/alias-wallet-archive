@@ -559,13 +559,13 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Synchronizing with network...");
-                + "\n"
+                + "<br>"
                 + tr("Downloading filtered blocks...");
 
         int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
         float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
 
-        tooltip += "\n"
+        tooltip += "<br>"
                  + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
         count = pwalletMain->nLastFilteredHeight;
@@ -584,20 +584,20 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
             if (nNodeMode == NT_FULL)
             {
-                tooltip += "\n"
+                tooltip += "<br>"
                          + tr("~%n block(s) remaining", "", nRemainingBlocks);
             } else
             {
                 char temp[128];
                 snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
 
-                tooltip += "\n"
+                tooltip += "<br>"
                          + tr(temp, "", nRemainingBlocks);
 
             };
         }
 
-        tooltip += (tooltip.isEmpty()? "" : "\n")
+        tooltip += (tooltip.isEmpty()? "" : "<br>")
          + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
                  + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
     } else
@@ -643,7 +643,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     if (secs < 90*60 && count >= nTotalBlocks
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
-        tooltip = tr("Up to date") + "\n" + tooltip;
+        tooltip = tr("Up to date") + "<br>" + tooltip;
         blocksIcon.removeClass("none");
         syncingIcon.addClass("none");
 
@@ -658,7 +658,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         syncProgressBar.setAttribute("style", "display:none;");
     } else
     {
-        tooltip = tr("Catching up...") + "\n" + tooltip;
+        tooltip = tr("Catching up...") + "<br>" + tooltip;
 
         blocksIcon.addClass("none");
         syncingIcon.removeClass("none");
@@ -676,7 +676,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
     if (!text.isEmpty())
     {
-        tooltip += "\n";
+        tooltip += "<br>";
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
 
