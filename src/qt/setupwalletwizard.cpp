@@ -70,10 +70,6 @@ void SetupWalletWizard::showHelp()
         message = tr("This help is likely not to be of any help.");
     }
 
-    if (lastHelpMessage == message)
-        message = tr("Sorry, I already gave what help I could. "
-                     "Maybe you should try asking a human?");
-
     QMessageBox::information(this, tr("Spectrecoin Wallet Setup Help"), message);
 
     lastHelpMessage = message;
