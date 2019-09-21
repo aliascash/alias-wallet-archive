@@ -17,6 +17,7 @@ extern bool fNameLookup;
 
 /** -timeout default */
 static const int DEFAULT_CONNECT_TIMEOUT = 5000;
+static const unsigned char NULL_ADDR[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0, 0, 0 };
 
 #ifdef WIN32
 // In MSVC, this is defined as a macro, undefine it to prevent a compile and link error
@@ -96,18 +97,27 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
-             if (nType == SER_DISK)
+             if (!(nType & SER_NETWORK) || nVersion >= 60050)
              {
-                READWRITE(FLATDATA(ip));
-                READWRITE(FLATDATA(ip_tor));
-                READWRITE(fTorV3);
+                 READWRITE(FLATDATA(ip));
+                 READWRITE(FLATDATA(ip_tor));
+                 READWRITE(fTorV3);
              }
              else
              {
-                if (fTorV3 && nVersion != INIT_PROTO_VERSION)
-                   READWRITE(FLATDATA(ip_tor));
+                if (!fRead)
+                {
+                    if (!fTorV3 || nVersion == INIT_PROTO_VERSION)
+                       READWRITE(FLATDATA(ip));
+                    else
+                       READWRITE(FLATDATA(NULL_ADDR));
+                }
                 else
-                   READWRITE(FLATDATA(ip));
+                {
+                    CNetAddr* pthis = const_cast<CNetAddr*>(this);
+                    pthis->Init();
+                    READWRITE(FLATDATA(ip));
+                }
              }
             )
 };
