@@ -97,7 +97,7 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
-             if (!(nType & SER_NETWORK) || nVersion >= 60050)
+             if (!(nType & SER_NETWORK) || nVersion >= 60041)
              {
                  READWRITE(FLATDATA(ip));
                  READWRITE(FLATDATA(ip_tor));
