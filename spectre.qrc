@@ -2033,6 +2033,7 @@
     <qresource prefix="/images">
         <file alias="about">src/qt/res/images/about.png</file>
         <file alias="splash">src/qt/res/images/splash.png</file>
+        <file alias="watermark">src/qt/res/images/watermark.png</file>
     </qresource>
     <qresource prefix="/translations">
         <file alias="af_ZA">src/qt/locale/spectrecoin_af_ZA.qm</file>
