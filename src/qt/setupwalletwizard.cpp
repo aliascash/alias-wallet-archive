@@ -398,7 +398,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
         registerField(QString("verification.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
 
         QFormLayout *formLayout = new QFormLayout;
-        formLayout->addRow(QString("&%1.").arg(i + 1, 2), vMnemonicEdit[i]);
+        formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
         layout->addLayout(formLayout, i / 4 + 2,  i % 4);
     }
 
@@ -452,7 +452,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
         registerField(QString("recover.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
 
         QFormLayout *formLayout = new QFormLayout;
-        formLayout->addRow(QString("&%1.").arg(i + 1, 2), vMnemonicEdit[i]);
+        formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
         layout->addLayout(formLayout, i / 4 + 2,  i % 4);
     }
 
