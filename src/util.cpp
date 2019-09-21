@@ -188,6 +188,12 @@ uint256 GetRandHash()
     return hash;
 }
 
+void GetRandBytes(std::vector<uint8_t>& vRandBytes, int nBytes)
+{
+  vRandBytes.resize(nBytes);
+  if (1 != RAND_bytes(&vRandBytes[0], nBytes))
+      throw std::runtime_error("RAND_bytes failed.");
+}
 
 // LogPrintf() has been broken a couple of times now
 // by well-meaning people adding mutexes in the most straightforward way.

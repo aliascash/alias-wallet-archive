@@ -203,6 +203,7 @@ int GetRandInt(int nMax);
 uint32_t GetRandUInt32();
 uint64_t GetRand(uint64_t nMax);
 uint256 GetRandHash();
+void GetRandBytes(std::vector<uint8_t>& vRandBytes, int nBytes);
 int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
 int64_t GetAdjustedTime();
