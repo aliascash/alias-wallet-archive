@@ -791,6 +791,11 @@ bool CNetAddr::IsTor() const
     return (memcmp(ip, pchOnionCat, sizeof(pchOnionCat)) == 0);
 }
 
+bool CNetAddr::IsTorV3() const
+{
+    return fTorV3;
+}
+
 bool CNetAddr::IsI2P() const
 {
     return (memcmp(ip, pchGarliCat, sizeof(pchGarliCat)) == 0);
