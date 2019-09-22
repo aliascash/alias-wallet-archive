@@ -688,7 +688,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile-19-04',
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_04',
                                             dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
