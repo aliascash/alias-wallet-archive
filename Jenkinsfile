@@ -171,15 +171,33 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Ubuntu 18.04') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
                             buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}"
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+                                    dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Ubuntu 19.04') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
+                                    dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -614,7 +632,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu') {
+                stage('Ubuntu 18.04') {
                     agent {
                         label "docker"
                     }
@@ -623,16 +641,16 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile',
-                                            dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}",
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
+                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu.txt"
+                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
                                 }
                             }
                             post {
@@ -657,6 +675,35 @@ pipeline {
                                         ],
                                         wait: false
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('Ubuntu-19-04') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Build binaries') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile-19-04',
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }
