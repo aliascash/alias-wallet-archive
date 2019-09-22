@@ -5457,7 +5457,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     int nRelayNodes = fReachable ? 2 : 1; // limited relaying of addresses outside our network(s)
                     for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi)
                     {
-                        if (!addr.IsTorV3() || (addr.IsTorV3() && ((*mi).second)->nRecvVersion >= 60041))
+                        if (!addr.IsTorV3() || ((*mi).second)->nRecvVersion >= 60041)
                            ((*mi).second)->PushAddress(addr);
                         else
                             nRelayNodes++;
