@@ -17,7 +17,6 @@ extern bool fNameLookup;
 
 /** -timeout default */
 static const int DEFAULT_CONNECT_TIMEOUT = 5000;
-static const unsigned char NULL_ADDR[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0, 0, 0 };
 
 #ifdef WIN32
 // In MSVC, this is defined as a macro, undefine it to prevent a compile and link error
@@ -108,10 +107,7 @@ class CNetAddr
              {
                 if (!fRead)
                 {
-                    if (!fTorV3 || nVersion == INIT_PROTO_VERSION)
-                       READWRITE(FLATDATA(ip));
-                    else
-                       READWRITE(FLATDATA(NULL_ADDR));
+                    READWRITE(FLATDATA(ip));
                 }
                 else
                 {
