@@ -163,17 +163,20 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
 
     int nBestScore = -1;
     int nBestReachability = -1;
+    int nBestTorScore = -1;
     {
         LOCK(cs_mapLocalHost);
         for (map<CNetAddr, LocalServiceInfo>::iterator it = mapLocalHost.begin(); it != mapLocalHost.end(); it++)
         {
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
-            if (nReachability > nBestReachability || (nReachability == nBestReachability && nScore > nBestScore))
+            int nTorScore = (*it).first.IsTorV3() ? 1 : 0;
+            if (nReachability > nBestReachability || (nReachability == nBestReachability && nTorScore > nBestTorScore || (nTorScore == nBestTorScore && nScore > nBestScore)))
             {
                 addr = CService((*it).first, (*it).second.nPort);
                 nBestReachability = nReachability;
                 nBestScore = nScore;
+                nBestTorScore = nTorScore;
             }
         }
     }
