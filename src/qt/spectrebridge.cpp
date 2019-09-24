@@ -51,7 +51,7 @@
 #include <QDir>
 #include <QtGui/qtextdocument.h>
 #include <list>
-#define ROWS_TO_REFRESH 200
+#define ROWS_TO_REFRESH 500
 
 extern CWallet* pwalletMain;
 extern CBlockIndex* pindexBest;
@@ -96,6 +96,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("d",    date.data(Qt::EditRole).toInt());
     transaction.insert("d_s",  date.data().toString());
     transaction.insert("t",    TransactionRecord::getTypeShort(status.data(TransactionTableModel::TypeRole).toInt()));
+    transaction.insert("t_i",  status.data(TransactionTableModel::TypeRole).toInt());
     transaction.insert("t_l",  status.sibling(row, TransactionTableModel::Type).data().toString());
     transaction.insert("ad_c", address.data(Qt::ForegroundRole).value<QColor>().name());
     transaction.insert("ad",   address.data(TransactionTableModel::AddressRole).toString());
@@ -103,7 +104,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("ad_d", address.data().toString());
     transaction.insert("n",    status.sibling(row, TransactionTableModel::Narration).data().toString());
     transaction.insert("am_c", amount.data(Qt::ForegroundRole).value<QColor>().name());
-    transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toString());
+    transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toLongLong());
     transaction.insert("am_d", amount.data().toString());
     transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
 
@@ -113,24 +114,23 @@ QVariantMap TransactionModel::addTransaction(int row)
 void TransactionModel::populateRows(int start, int end, int max)
 {
     qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
-    if(max && start > max)
-        return;
-
     if(!prepare())
         return;
 
-    if (max && end > max)
-        end = max;
-
     QVariantList transactions;
-
-    while(start <= end)
+    QDateTime lastBlockDate = nNodeMode == NT_FULL ? clientModel->getLastBlockDate() : clientModel->getLastBlockThinDate();
+    for (int row = start; row <= end && (max == 0 || transactions.size() < max); row++)
     {
-        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(start, TransactionTableModel::Type).data().toString()))
-            transactions.append(addTransaction(start));
-
-        start++;
+        if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString())) {
+            // don't populate transaction which have been created AFTER the current block (state will be unchanged)
+            if (max != 0 && lastBlockDate < ttm->index(row, TransactionTableModel::Date).data(TransactionTableModel::DateRole).toDateTime())
+                continue;
+            if (transactions.empty() && start != row)
+                qDebug() << "populateRows skipped=" << row;
+            transactions.append(addTransaction(row));
+        }
     }
+
     if(!transactions.isEmpty()) {
         emitTransactions(transactions);
     }
@@ -152,9 +152,7 @@ void TransactionModel::populatePage()
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString()))
             transactions.append(addTransaction(row));
 
-    if(!transactions.isEmpty()) {
-        emitTransactions(transactions);
-    }
+    emitTransactions(transactions, true);
 
     running = false;
 
@@ -712,22 +710,11 @@ QVariantMap SpectreBridge::listAnonOutputs()
 
     outputCount mOwnedOutputCounts;
     outputCount mMatureOutputCounts;
-    outputCount mSystemOutputCounts;
 
     if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
      || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
         LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
-        emit listAnonOutputsResult(anonOutputs);
-        return anonOutputs;
-    };
-
-    for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
-        mSystemOutputCounts[mi->first] = 0;
-
-    if (pwalletMain->CountAnonOutputs(mSystemOutputCounts, CWallet::MaturityFilter::FOR_SPENDING) != 0)
-    {
-        LogPrintf("Error: CountAnonOutputs failed.\n");
         emit listAnonOutputsResult(anonOutputs);
         return anonOutputs;
     };
@@ -739,10 +726,17 @@ QVariantMap SpectreBridge::listAnonOutputs()
 
         anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
         anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
-        anonOutput.insert("system_mature",  mSystemOutputCounts[aoc->nValue]);
+        anonOutput.insert("system_mature",  aoc->nMature);
+        anonOutput.insert("system_compromised",  aoc->nCompromised);
         anonOutput.insert("system_outputs", aoc->nExists);
         anonOutput.insert("system_spends",  aoc->nSpends);
-        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight);
+        anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
+        anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
+        anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
+        anonOutput.insert("system_mixins_mature",  aoc->nMixins);
+        anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
+
+        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
         anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
         anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
@@ -757,7 +751,7 @@ void SpectreBridge::populateTransactionTable()
     if(transactionModel->thread() == thread())
     {
         transactionModel->init(window->clientModel, window->walletModel->getTransactionTableModel());
-        connect(transactionModel, SIGNAL(emitTransactions(QVariantList)), SIGNAL(emitTransactions(QVariantList)), Qt::QueuedConnection);
+        connect(transactionModel, SIGNAL(emitTransactions(QVariantList, bool)), SIGNAL(emitTransactions(QVariantList, bool)), Qt::QueuedConnection);
         transactionModel->moveToThread(async);
     }
 
@@ -767,9 +761,10 @@ void SpectreBridge::populateTransactionTable()
 void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRight)
 {
     // Updated transactions...
-    qDebug() << "updateTransactions";
-    if(topLeft.column() == TransactionTableModel::Status)
+    if(topLeft.column() == TransactionTableModel::Status) {
+        qDebug() << "updateTransactions";
         transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
+    }
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
@@ -947,7 +942,11 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
     if(key == "aboutQtClicked")
         window->aboutQtAction->trigger();
     if(key == "debugClicked")
+    {
         window->rpcConsole->show();
+        window->rpcConsole->activateWindow();
+        window->rpcConsole->raise();
+    }
     if(key == "clearRecipients")
         clearRecipients();
 

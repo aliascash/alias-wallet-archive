@@ -1222,7 +1222,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
             {
                 // only add contributions/donations
                 std::string strAddress = CBitcoinAddress(address).ToString();
-                if (strAddress != Params().GetDevContributionAddress())
+                if (strAddress != Params().GetDevContributionAddress() && strAddress != Params().GetSupplyIncreaseAddress())
                     continue;
                 if (wtx.GetDepthAndHeightInMainChain().second % 6 == 0)
                     category = "contributed";
@@ -2693,7 +2693,7 @@ Value anoninfo(const Array& params, bool fHelp)
     {
         snprintf(cbuf, sizeof(cbuf), "%5d, %5d, %5d, %5d, %5d, %5d, %5d, %5d, %3d",
                  it->nExists, it->nMature, it->nExists - it->nSpends, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromised, it->nCompromisedHeight,
-                 it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight);
+                 it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight + 1);
         result.push_back(Pair(cbuf, ValueFromAmount(it->nValue)));
 
         nTotalCoins += it->nExists;

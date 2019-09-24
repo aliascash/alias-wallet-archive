@@ -57,6 +57,7 @@
 
 extern CWallet* pwalletMain;
 double GetPoSKernelPS();
+double GetPoSKernelPSRecent();
 
 WebEnginePage::WebEnginePage(SpectreGUI* gui) : QWebEnginePage(this->prepareProfile(gui))
 {
@@ -170,7 +171,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     nWeight(0)
 {
     webEngineView = new QWebEngineView();
-	webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
+
+    if (!GetBoolArg("-debug"))
+        webEngineView->setContextMenuPolicy(Qt::ContextMenuPolicy::PreventContextMenu);
 
     webEnginePage = new WebEnginePage(this);
     webEngineView->setPage(webEnginePage);
@@ -205,6 +208,8 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
+    connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(activateWindow()));
+    connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(raise()));
 
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
@@ -228,9 +233,9 @@ unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
 #ifdef Q_OS_WIN
-    QFile html("C:/spectre/index.html");
+    QFile html("C:/spectrecoin-ui/index.html");
 #else
-    QFile html("/opt/spectre/index.html");
+    QFile html("/opt/spectrecoin-ui/index.html");
 #endif
 
     if(html.exists())
@@ -554,13 +559,13 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Synchronizing with network...");
-                + "\n"
+                + "<br>"
                 + tr("Downloading filtered blocks...");
 
         int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
         float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
 
-        tooltip += "\n"
+        tooltip += "<br>"
                  + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
         count = pwalletMain->nLastFilteredHeight;
@@ -579,20 +584,20 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
             if (nNodeMode == NT_FULL)
             {
-                tooltip += "\n"
+                tooltip += "<br>"
                          + tr("~%n block(s) remaining", "", nRemainingBlocks);
             } else
             {
                 char temp[128];
                 snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
 
-                tooltip += "\n"
+                tooltip += "<br>"
                          + tr(temp, "", nRemainingBlocks);
 
             };
         }
 
-        tooltip += (tooltip.isEmpty()? "" : "\n")
+        tooltip += (tooltip.isEmpty()? "" : "<br>")
          + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
                  + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
     } else
@@ -638,7 +643,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     if (secs < 90*60 && count >= nTotalBlocks
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
-        tooltip = tr("Up to date") + "\n" + tooltip;
+        tooltip = tr("Up to date") + "<br>" + tooltip;
         blocksIcon.removeClass("none");
         syncingIcon.addClass("none");
 
@@ -653,7 +658,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         syncProgressBar.setAttribute("style", "display:none;");
     } else
     {
-        tooltip = tr("Catching up...") + "\n" + tooltip;
+        tooltip = tr("Catching up...") + "<br>" + tooltip;
 
         blocksIcon.addClass("none");
         syncingIcon.removeClass("none");
@@ -671,7 +676,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
     if (!text.isEmpty())
     {
-        tooltip += "\n";
+        tooltip += "<br>";
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
 
@@ -1052,12 +1057,13 @@ void SpectreGUI::updateWeight()
 void SpectreGUI::updateStakingIcon()
 {
     WebElement stakingIcon = WebElement(webEnginePage, "stakingIcon");
-    uint64_t nNetworkWeight = 0;
+    uint64_t nNetworkWeight = 0, nNetworkWeightRecent;
 
     if(fIsStaking)
     {
         updateWeight();
         nNetworkWeight = GetPoSKernelPS();
+        nNetworkWeightRecent = GetPoSKernelPSRecent();
     } else
         nWeight = 0;
 
@@ -1066,21 +1072,25 @@ void SpectreGUI::updateStakingIcon()
         uint64_t nWeight = this->nWeight;
 
         unsigned nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
-        QString text;
+        QString text, textDebug;
 
-        text = (nEstimateTime < 60)           ? tr("%n second(s)", "", nEstimateTime) : \
-               (nEstimateTime < 60 * 60)      ? tr("%n minute(s)", "", nEstimateTime / 60) : \
-               (nEstimateTime < 24 * 60 * 60) ? tr("%n hour(s)",   "", nEstimateTime / (60 * 60)) : \
-                                                tr("%n day(s)",    "", nEstimateTime / (60 * 60 * 24));
+        text = (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
+               (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
+               (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
+                                                tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
 
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
-        nWeight        /= COIN,
+        nWeight        /= COIN;
         nNetworkWeight /= COIN;
+        nNetworkWeightRecent /= COIN;
 
-        stakingIcon.setAttribute("data-title", tr("Staking.\nYour weight is %1\nNetwork weight is %2\nExpected time to earn reward is %3").arg(nWeight).arg(nNetworkWeight).arg(text));
+        if (fDebug)
+            textDebug = tr(" (last 72 blocks %1)").arg(nNetworkWeightRecent);
+
+        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
         stakingIcon.   addClass("not-staking");

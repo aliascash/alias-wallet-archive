@@ -154,7 +154,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
             {
                 // only add contributions/donations
                 std::string strAddress = CBitcoinAddress(destination).ToString();
-                if (strAddress != Params().GetDevContributionAddress())
+                if (strAddress != Params().GetDevContributionAddress() && strAddress != Params().GetSupplyIncreaseAddress())
                     continue;
             }
             ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);

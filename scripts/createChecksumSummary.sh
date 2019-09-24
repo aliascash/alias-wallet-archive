@@ -19,12 +19,15 @@ else
 fi
 for currentChecksumfile in \
     Checksum-Spectrecoin-CentOS.txt \
-    Checksum-Spectrecoin-Debian.txt \
+    Checksum-Spectrecoin-Debian-Buster.txt \
+    Checksum-Spectrecoin-Debian-Stretch.txt \
     Checksum-Spectrecoin-Fedora.txt \
     Checksum-Spectrecoin-Mac.txt \
     Checksum-Spectrecoin-Mac-OBFS4.txt \
-    Checksum-Spectrecoin-RaspberryPi.txt \
-    Checksum-Spectrecoin-Ubuntu.txt \
+    Checksum-Spectrecoin-RaspberryPi-Buster.txt \
+    Checksum-Spectrecoin-RaspberryPi-Stretch.txt \
+    Checksum-Spectrecoin-Ubuntu-18-04.txt \
+    Checksum-Spectrecoin-Ubuntu-19-04.txt \
     Checksum-Spectrecoin-Win64.txt \
     Checksum-Spectrecoin-Win64-OBFS4.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6.txt \

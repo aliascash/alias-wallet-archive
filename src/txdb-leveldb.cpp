@@ -439,7 +439,7 @@ static CBlockIndex *InsertBlockIndex(uint256 hash)
     return pindexNew;
 }
 
-bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
+bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate, std::function<void (const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
         return 0;
@@ -517,6 +517,9 @@ bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
             return error("LoadBlockIndex() : CheckIndex failed at %d", pindexNew->nHeight);
         }
 
+        if (funcValidate && !funcValidate(pindexNew))
+            return false;
+
         // NovaCoin: build setStakeSeen
         if (pindexNew->IsProofOfStake())
             setStakeSeen.insert(make_pair(pindexNew->prevoutStake, pindexNew->nStakeTime));
@@ -539,6 +542,7 @@ bool CTxDB::LoadBlockIndex(std::function<void (const uint32_t&)> funcProgress)
 
     pindexBest = mapBlockIndex[hashBestChain];
     nBestHeight = pindexBest->nHeight;
+    chainActive.SetTip(pindexBest);
 
     // Calculate nChainTrust
     vector<pair<int, CBlockIndex*> > vSortedByHeight;

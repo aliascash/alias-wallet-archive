@@ -29,6 +29,7 @@ class CBlock;
 class CBlockThin;
 class CBlockIndex;
 class CBlockThinIndex;
+class CChain;
 class CKeyItem;
 class CReserveKey;
 
@@ -49,6 +50,7 @@ static const unsigned int MAX_GETHEADERS_SZ = 2000;
 static const unsigned int MAX_MULTI_BLOCK_SIZE = 5120000;    // 5MiB, most likely to hit MAX_MULTI_BLOCK_ELEMNTS first
 static const unsigned int MAX_MULTI_BLOCK_ELEMENTS = 64;     // processing larger blocks is cpu intensive
 static const unsigned int MAX_MULTI_BLOCK_THIN_ELEMENTS = 128;
+static const unsigned int TARGET_BLOCK_TIME = 96;
 
 /** No amount larger than this (in satoshi) is valid */
 static const int64_t MAX_MONEY = std::numeric_limits<int64_t>::max();
@@ -62,7 +64,7 @@ inline int64_t FutureDriftV2(int64_t nTime) { return nTime + 15; }
 
 inline int64_t FutureDrift(int64_t nTime, int nHeight) { return Params().IsProtocolV2(nHeight) ? FutureDriftV2(nTime) : FutureDriftV1(nTime); }
 
-inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? 96 : 64 : 60; }
+inline unsigned int GetTargetSpacing(int nHeight, int64_t nBlockTime) { return Params().IsProtocolV2(nHeight) ? Params().IsForkV3(nBlockTime) ? TARGET_BLOCK_TIME : 64 : 60; }
 inline std::pair<uint32_t, uint32_t> GetRingSizeMinMax(int64_t nTime = 0) {
     uint32_t nMinRingSize = 1, nMaxRingSize = MAX_RING_SIZE;
     if (nTime == 0 || Params().IsForkV3(nTime))
@@ -76,6 +78,7 @@ inline std::pair<uint32_t, uint32_t> GetRingSizeMinMax(int64_t nTime = 0) {
 
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
+extern CChain chainActive;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
 extern std::map<uint256, CBlockThinIndex*> mapBlockThinIndex;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
@@ -106,11 +109,14 @@ extern std::set<CWallet*> setpwalletRegistered;
 struct COrphanBlock {
     uint256 hashBlock;
     uint256 hashPrev;
+    unsigned int nTime;
     std::pair<COutPoint, unsigned int> stake;
     std::vector<unsigned char> vchBlock;
 };
 extern std::map<uint256, COrphanBlock*> mapOrphanBlocks;
+extern std::multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrev;
 extern std::map<uint256, CBlockThin*> mapOrphanBlockThins;
+extern size_t nOrphanBlocksSize;
 
 extern bool fStaleAnonCache;
 extern std::map<int64_t, CAnonOutputCount> mapAnonOutputStats;
@@ -165,7 +171,7 @@ int GetNumBlocksOfPeers();
 bool IsInitialBlockDownload();
 bool IsConfirmedInNPrevBlocks(const CTxIndex& txindex, const CBlockIndex* pindexFrom, int nMaxDepth, int& nActualDepth);
 std::string GetWarnings(std::string strFor);
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool s=false);
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool = false);
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock);
 
 bool GetKeyImage(CTxDB* ptxdb, ec_point& keyImage, CKeyImageSpent& keyImageSpent, bool& fInMempool);
@@ -2028,6 +2034,68 @@ public:
         return pindex->nHeight;
     }
 };
+
+
+/** An in-memory indexed chain of blocks. */
+class CChain {
+private:
+    std::vector<CBlockIndex*> vChain;
+
+public:
+    /** Returns the index entry for the genesis block of this chain, or nullptr if none. */
+    CBlockIndex *Genesis() const {
+        return vChain.size() > 0 ? vChain[0] : nullptr;
+    }
+
+    /** Returns the index entry for the tip of this chain, or nullptr if none. */
+    CBlockIndex *Tip() const {
+        return vChain.size() > 0 ? vChain[vChain.size() - 1] : nullptr;
+    }
+
+    /** Returns the index entry at a particular height in this chain, or nullptr if no such height exists. */
+    CBlockIndex *operator[](int nHeight) const {
+        if (nHeight < 0 || nHeight >= (int)vChain.size())
+            return nullptr;
+        return vChain[nHeight];
+    }
+
+    /** Compare two chains efficiently. */
+    friend bool operator==(const CChain &a, const CChain &b) {
+        return a.vChain.size() == b.vChain.size() &&
+               a.vChain[a.vChain.size() - 1] == b.vChain[b.vChain.size() - 1];
+    }
+
+    /** Efficiently check whether a block is present in this chain. */
+    bool Contains(const CBlockIndex *pindex) const {
+        return (*this)[pindex->nHeight] == pindex;
+    }
+
+    /** Find the successor of a block in this chain, or nullptr if the given index is not found or is the tip. */
+    CBlockIndex *Next(const CBlockIndex *pindex) const {
+        if (Contains(pindex))
+            return (*this)[pindex->nHeight + 1];
+        else
+            return nullptr;
+    }
+
+    /** Return the maximal height in the chain. Is equal to chain.Tip() ? chain.Tip()->nHeight : -1. */
+    int Height() const {
+        return vChain.size() - 1;
+    }
+
+    /** Set/initialize a chain with a given tip. */
+    void SetTip(CBlockIndex *pindex);
+
+    /** Return a CBlockLocator that refers to a block in this chain (by default the tip). */
+    CBlockLocator GetLocator(const CBlockIndex *pindex = nullptr) const;
+
+    /** Find the last common block between this chain and a block index entry. */
+    const CBlockIndex *FindFork(const CBlockIndex *pindex) const;
+
+    /** Find the earliest block with timestamp equal or greater than the given. */
+    CBlockIndex* FindEarliestAtLeast(int64_t nTime) const;
+};
+
 
 /** Data structure that represents a partial merkle tree.
  *

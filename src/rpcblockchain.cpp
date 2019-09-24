@@ -98,7 +98,7 @@ double GetPoWMHashPS()
     return GetDifficulty() * 4294.967296 / nTargetSpacingWork;
 }
 
-double GetPoSKernelPS()
+double GetPoSKernelPSRecent()
 {
     int nPoSInterval = 72;
     double dStakeKernelsTriedAvg = 0;
@@ -143,13 +143,37 @@ double GetPoSKernelPS()
             }
 
             pindex = pindex->pprev;
-		}
+        }
     }
 
     double result = 0;
 
     if (nStakesTime)
         result = dStakeKernelsTriedAvg / nStakesTime;
+
+    if (Params().IsProtocolV2(nBestHeight))
+        result *= STAKE_TIMESTAMP_MASK + 1;
+
+    return result;
+}
+
+
+double GetPoSKernelPS()
+{
+    double result = 0;
+    if (nNodeMode == NT_THIN)
+    {
+        if (pindexBestHeader->IsProofOfStake())
+            result = GetHeaderDifficulty(pindexBestHeader) * 4294967296.0;
+    }
+    else
+    {
+        if (pindexBest->IsProofOfStake())
+            result = GetDifficulty(pindexBest) * 4294967296.0;
+    }
+
+    if (result > 0)
+        result /= TARGET_BLOCK_TIME; // relative to current difficulty staked coins
 
     if (Params().IsProtocolV2(nBestHeight))
         result *= STAKE_TIMESTAMP_MASK + 1;
@@ -791,6 +815,103 @@ Value nextorphan(const Array& params, bool fHelp)
     return result;
 }
 
+Value getorphans(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 1)
+        throw runtime_error(
+            "getorphans [listblocks]\n"
+            "displays all orphan blocks.\n");
+
+    if (nNodeMode == NT_THIN)
+    {
+        throw runtime_error("Must be in full mode.");
+    };
+
+    if (!pindexBest)
+        throw runtime_error("No best index.");
+
+    LOCK(cs_main);
+
+    Object result;
+
+    const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+
+    std::vector<std::vector<COrphanBlock*>> vOrphanChains;
+    multimap<uint256, COrphanBlock*> mapOrphanBlocksByPrevProc(mapOrphanBlocksByPrev);
+
+    while (mapOrphanBlocksByPrevProc.size() > 0)
+    {
+        // found last succeccsor
+        // As long as this block has other orphans depending on it, move to one of those successors.
+        std::multimap<uint256, COrphanBlock*>::iterator it = mapOrphanBlocksByPrevProc.begin();
+        do {
+            std::multimap<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocksByPrevProc.find(it->second->hashBlock);
+            if (it2 == mapOrphanBlocksByPrevProc.end())
+                break;
+            it = it2;
+        } while(1);
+        COrphanBlock* orphanBlock = it->second;
+        it = mapOrphanBlocksByPrevProc.erase(it);
+
+        bool foundChain = false;
+        for (auto itChain = vOrphanChains.begin(); itChain != vOrphanChains.end(); ++itChain)
+        {
+            if (itChain->back()->hashPrev == (orphanBlock->hashBlock))
+            {
+                // Found prev block, add this block to this sidechain
+                itChain->push_back(orphanBlock);
+                foundChain = true;
+            };
+        };
+        if (!foundChain)
+        {
+            vector<COrphanBlock*> vOrphans;
+            vOrphans.push_back(orphanBlock);
+            vOrphanChains.push_back(vOrphans);
+        }
+
+    };
+
+    result.push_back(Pair("numOfOrphans", (int)mapOrphanBlocks.size()));
+    result.push_back(Pair("numOfOrphanChains", (int)vOrphanChains.size()));
+    result.push_back(Pair("orphanBlocksSize", (uint64_t)nOrphanBlocksSize));
+    size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
+    result.push_back(Pair("maxOrphanBlocksSize", (uint64_t)nMaxOrphanBlocksSize));
+
+    Array chains;
+    for (auto it = vOrphanChains.begin(); it != vOrphanChains.end(); ++it)
+    {
+        Object entry;
+        entry.push_back(Pair("size", (int)it->size()));
+        if (params.size() > 0)
+        {
+            Array orphans;
+            for (auto it2 = it->begin(); it2 != it->end(); ++it2)
+            {
+                Object orphan;
+                orphan.push_back(Pair("hashBlock", (*it2)->hashBlock.GetHex()));
+                CBlock block;
+                {
+                    CDataStream ss((*it2)->vchBlock, SER_DISK, CLIENT_VERSION);
+                    ss >> block;
+                }
+                orphan.push_back(Pair("time", (int64_t)block.GetBlockTime()));
+                if (block.GetBlockTime() < pcheckpoint->nTime) // Block is obsolete due to checkpoint
+                    orphan.push_back(Pair("obsoleteDueCheckpointTime", (int64_t)pcheckpoint->nTime));
+                orphan.push_back(Pair("hashPrev", (*it2)->hashPrev.GetHex()));
+                orphans.push_back(orphan);
+            }
+            entry.push_back(Pair("blocks", orphans));
+        }
+        chains.push_back(entry);
+    };
+
+    result.push_back(Pair("chains", chains));
+
+    result.push_back(Pair("result", "done"));
+    return result;
+}
+
 // ppcoin: get information of sync-checkpoint
 Value getcheckpoint(const Array& params, bool fHelp)
 {
@@ -910,6 +1031,7 @@ Value gettxout(const Array& params, bool fHelp)
     uint256 hash;
     hash.SetHex(params[0].get_str());
     int n = params[1].get_int();
+    COutPoint out(hash, n);
     bool mem = true;
     if (params.size() == 3)
         mem = params[2].get_bool();
@@ -917,59 +1039,46 @@ Value gettxout(const Array& params, bool fHelp)
     CTransaction tx;
     uint256 hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock, mem))
-      return Value::null;  
+        return Value::null;
 
     if (n<0 || (unsigned int)n>=tx.vout.size() || tx.vout[n].IsNull())
-      return Value::null;
+        return Value::null;
 
     if (hashBlock == 0)
     {
-      ret.push_back(Pair("bestblock", pindexBest->GetBlockHash().GetHex()));
-      ret.push_back(Pair("confirmations", 0));
+        ret.push_back(Pair("bestblock", pindexBest->GetBlockHash().GetHex()));
+        ret.push_back(Pair("confirmations", 0));
     }
     else
     {
-      map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
-      if (mi != mapBlockIndex.end() && (*mi).second)
-      {
-        CBlockIndex* pindex = (*mi).second;
-        if (pindex->IsInMainChain())
+        map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hashBlock);
+        if (mi != mapBlockIndex.end() && (*mi).second)
         {
-          bool isSpent=false;
-          CBlockIndex* p = pindex;
-          p=p->pnext;
-          for (; p; p = p->pnext)
-          {
-            CBlock block;
-            CBlockIndex* pblockindex = mapBlockIndex[p->GetBlockHash()];
-            block.ReadFromDisk(pblockindex, true);
-            BOOST_FOREACH(const CTransaction& tx, block.vtx)
+            CBlockIndex* pindex = (*mi).second;
+            if (pindex->IsInMainChain())
             {
-              BOOST_FOREACH(const CTxIn& txin, tx.vin)
-              {
-                if( hash == txin.prevout.hash &&
-                   (int64_t)txin.prevout.n )
+                if (!tx.vout[n].IsAnonOutput())
                 {
-                  printf("spent at block %s\n", block.GetHash().GetHex().c_str());
-                  isSpent=true; break;
+                    if (mem && mempool.isSpent(out))
+                        return Value::null;
+
+                    CTxDB txdb("r");
+                    CTxIndex txindex;
+                    if (!txdb.ReadTxIndex(tx.GetHash(), txindex))
+                        return Value::null;
+
+                    if (!txindex.vSpent[n].IsNull())
+                    {
+                        LogPrintf("gettxout: %s prev tx already used at %s", tx.GetHash().ToString(), txindex.vSpent[n].ToString());
+                        return Value::null; // spent
+                    }
                 }
-              }
-
-              if(isSpent) break;
+                ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
             }
-
-            if(isSpent) break;
-          }
-
-          if(isSpent)
-            return Value::null;
-
-          ret.push_back(Pair("confirmations", pindexBest->nHeight - pindex->nHeight + 1));
+            else
+                return Value::null;
         }
-        else
-          return Value::null;
-      }
-      ret.push_back(Pair("bestblock", hashBlock.GetHex()));
+        ret.push_back(Pair("bestblock", hashBlock.GetHex()));
     }
 
     ret.push_back(Pair("value", ValueFromAmount(tx.vout[n].nValue)));

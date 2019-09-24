@@ -11,6 +11,7 @@
 #include "guiconstants.h"
 #include "paymentserver.h"
 #include "winshutdownmonitor.h"
+#include "setupwalletwizard.h"
 
 #include "init.h"
 #include "ui_interface.h"
@@ -29,6 +30,8 @@
 #include <signal.h>
 #endif
 
+namespace fs = boost::filesystem;
+
 // Need a global reference for the notifications to find the GUI
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
@@ -38,6 +41,9 @@ static void ThreadSafeMessageBox(const std::string& message, const std::string& 
     // Message from network thread
     if(guiref)
     {
+        if (splashref)
+            splashref->finish(guiref);
+
         bool modal = (style & CClientUIInterface::MODAL);
         // in case of modal message, use blocking connection to wait for user to click OK
         QMetaObject::invokeMethod(guiref, "error",
@@ -130,6 +136,14 @@ int main(int argc, char *argv[])
     // Command-line options take precedence:
     ParseParameters(argc, argv);
 
+    // Make sure TESTNET flag and specific chainparams are set (Init in AppInit2 is to late)
+    fTestNet = GetBoolArg("-testnet", false);
+    if (!SelectParamsFromCommandLine())
+    {
+        QMessageBox::critical(0, "Spectrecoin", QString("Error: Invalid combination of -testnet and -regtest."));
+        return 1;
+    }
+
     QApplication app(argc, argv);
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
@@ -215,6 +229,22 @@ int main(int argc, char *argv[])
         GUIUtil::HelpMessageBox help;
         help.showOrPrint();
         return 1;
+    }
+
+    // Start SetupWalletWizard if no wallet.dat exists
+    if (!mapArgs.count("-bip44key") && !mapArgs.count("-wallet") && !mapArgs.count("-salvagewallet") && !fs::exists(GetDataDir() / "wallet.dat"))
+    {
+        SetupWalletWizard wizard;
+        wizard.show();
+        if (!wizard.exec())
+            return 0;
+        if (wizard.hasVisitedPage(SetupWalletWizard::Page_RecoverFromMnemonic))
+        {
+            SoftSetArg("-bip44key", static_cast<RecoverFromMnemonicPage*>(wizard.page(SetupWalletWizard::Page_RecoverFromMnemonic))->sKey);
+            SoftSetBoolArg("-rescan", true);
+        }
+        else if (wizard.hasVisitedPage(SetupWalletWizard::Page_NewMnemonic_Verification))
+            SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
     QSplashScreen splash(QPixmap(":/images/splash"), 0);

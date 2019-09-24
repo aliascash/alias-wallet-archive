@@ -28,12 +28,13 @@ Built in Tor: The Spectrecoin software offers a full integration of Tor
 hidden service using a .onion address to connect to other clients in the network. Your
 real IP address is therefore protected at all times.
 
-## Basic Coin Specs V3
+## Basic Coin Specs V3/V4
 <table>
 <tr><td>Algo</td><td>PoSv3/PoAS</td></tr>
 <tr><td>Block Time</td><td>96 Seconds</td></tr>
 <tr><td>Difficulty Retargeting</td><td>Every Block (Moving average of last 24 hours)</td></tr>
 <tr><td>Initial Coin Supply</td><td>20,000,000 XSPEC</td></tr>
+<tr><td>Funding Coin Supply</td><td>3,000,000 XSPEC</td></tr>
 <tr><td>Max Coin Supply (PoS Phase)</td><td>fix 3 SPECTRE or 2 XSPEC reward per block</td></tr>
 <tr><td>Min Stake Maturity</td><td>450 blocks (~12 hours)</td></tr>
 <tr><td>Min SPECTRE Confirmations</td><td>10 blocks</td></tr>
@@ -44,10 +45,20 @@ real IP address is therefore protected at all times.
 
 ## Building from source
 
-**NOTE** that these instructions are relevant for building from master, which is the latest
+**NOTE** that these instructions are relevant for building from develop, which is the latest
 code in development. It is generally stable but can contain features that have had less
 testing than released versions. If you want to build a stable version of Spectrecoin, please
 check out the latest release tag before you start building.
+
+### UI development
+
+The following files where maintained on the separate Git repository
+[spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui):
+* src/qt/res/assets/*
+* src/qt/res/index.html
+* spectre.qrc
+
+**Do not modify them here!**
 
 ### Dependencies
 
@@ -65,7 +76,7 @@ To build the Spectrecoin wallet from source, you will need the following depende
 
 Additionally, you'll need the native C/C++ compiler for your platform and the basic
 dependencies needed for any kind of development. Because of Qt Webengine cross compiling
-is currently not possible:
+is currently not possible.
 
  * macOS - Xcode with Command Line Tools and clang, QTs QMAKE
  * Windows - [vcpkg](https://github.com/Microsoft/vcpkg) and MSVC, QTs QMAKE
@@ -91,8 +102,10 @@ https://github.com/spectrecoin/spectre/blob/develop/src/osx.pri for instructions
 
 ### Linux
 
-Check the dockerfile of your corresponding platform for which packages must be installed
-using the package manager:
+#### Preconditions, Dependencies
+
+Check the dockerfile of your corresponding platform to get the list of packages which 
+must be installed on your system. You can find them here:
 
 To _build_ Spectrecoin (build time dependencies):
  * Debian - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile
