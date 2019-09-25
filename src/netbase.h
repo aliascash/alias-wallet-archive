@@ -2,16 +2,15 @@
 // Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+#include "util.h"
 #ifndef BITCOIN_NETBASE_H
 #define BITCOIN_NETBASE_H
 
 #include "compat.h"
 #include "serialize.h"
-
 #include <stdint.h>
 #include <string>
 #include <vector>
-
 extern int nConnectTimeout;
 extern bool fNameLookup;
 
@@ -33,6 +32,8 @@ enum Network
 
     NET_MAX,
 };
+
+
 
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
@@ -97,6 +98,14 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
+             LogPrintf("(patch) nType : SER_NETWORK : %d\n", nType & SER_NETWORK);
+             LogPrintf("(patch) nType : SER_DISK : %d\n", nType & SER_DISK);
+             LogPrintf("(patch) nType : SER_GETHASH : %d\n", nType & SER_GETHASH);
+             LogPrintf("(patch) nType : SER_SKIPSIG : %d\n", nType & SER_SKIPSIG);
+             LogPrintf("(patch) nType : SER_BLOCKHEADERONLY : %d\n", nType & SER_BLOCKHEADERONLY);
+             LogPrintf("(patch) nType : fRead : %d\n", fRead);
+             LogPrintf("(patch) nType : fWrite : %d\n", fWrite);
+
              if (!(nType & SER_NETWORK) || nVersion >= 60041)
              {
                  READWRITE(FLATDATA(ip));
