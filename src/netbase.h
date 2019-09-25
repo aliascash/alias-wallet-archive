@@ -39,9 +39,9 @@ enum Network
 class CNetAddr
 {
     protected:
+        bool fTorV3; // v2 or v3 onion address
         unsigned char ip[16]; // in network byte order
         unsigned char ip_tor[41]; //for compatibility with onion v3 addresses
-        bool fTorV3; // v2 or v3 onion address
 
     public:
         CNetAddr();
@@ -106,24 +106,41 @@ class CNetAddr
              LogPrintf("(patch) nType : fRead : %d\n", fRead);
              LogPrintf("(patch) nType : fWrite : %d\n", fWrite);
 
-             if (!(nType & SER_NETWORK) || nVersion >= 60041)
+             CNetAddr* pthis = const_cast<CNetAddr*>(this);
+             if (nType == SER_NETWORK && nVersion >= INIT_PROTO_VERSION && nVersion < 60042)
              {
-                 READWRITE(FLATDATA(ip));
-                 READWRITE(FLATDATA(ip_tor));
-                 READWRITE(fTorV3);
+                 if (fRead)
+                 {
+                     pthis->Init();
+                     READWRITE(FLATDATA(ip));
+                 }
+                 else
+                     READWRITE(FLATDATA(ip));
              }
              else
              {
-                if (!fRead)
-                {
-                    READWRITE(FLATDATA(ip));
-                }
-                else
-                {
-                    CNetAddr* pthis = const_cast<CNetAddr*>(this);
-                    pthis->Init();
-                    READWRITE(FLATDATA(ip));
-                }
+                 if (fRead)
+                 {
+                     READWRITE(fTorV3);
+                     if (fTorV3)
+                     {
+                         READWRITE(FLATDATA(ip_tor));
+                         pthis->SetSpecial(std::string((char *)(ip_tor)));
+                     }
+                     else
+                     {
+                         pthis->Init();
+                         READWRITE(FLATDATA(ip));
+                     }
+                 }
+                 else
+                 {
+                     READWRITE(fTorV3);
+                     if (fTorV3)
+                         READWRITE(FLATDATA(ip_tor));
+                     else
+                         READWRITE(FLATDATA(ip));
+                 }
              }
             )
 };
