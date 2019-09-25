@@ -810,15 +810,17 @@ public:
 
     void Clear()
     {
-        LOCK(cs);
-        vRandom.clear();
-        vvTried = std::vector<std::vector<int> >(ADDRMAN_TRIED_BUCKET_COUNT, std::vector<int>(0));
-        vvNew = std::vector<std::set<int> >(ADDRMAN_NEW_BUCKET_COUNT, std::set<int>());
-        nIdCount = 0;
-        nTried = 0;
-        nNew = 0;
-        mapInfo.clear();
-        mapAddr.clear();
+        {
+            LOCK(cs);
+            vRandom.clear();
+            vvTried = std::vector<std::vector<int> >(ADDRMAN_TRIED_BUCKET_COUNT, std::vector<int>(0));
+            vvNew = std::vector<std::set<int> >(ADDRMAN_NEW_BUCKET_COUNT, std::set<int>());
+            nIdCount = 0;
+            nTried = 0;
+            nNew = 0;
+            mapInfo.clear();
+            mapAddr.clear();
+        }
     }
 
     CAddrMan() : vRandom(0), vvTried(ADDRMAN_TRIED_BUCKET_COUNT, std::vector<int>(0)), vvNew(ADDRMAN_NEW_BUCKET_COUNT, std::set<int>())
