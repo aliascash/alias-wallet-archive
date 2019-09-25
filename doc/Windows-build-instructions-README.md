@@ -23,6 +23,7 @@ Modify Visual Studio and make sure all those components are picked:
 
 ![CMake environment variables](CMakeEnvVars.png)
 
+Please use the default installation path `C:\Program Files (x86)\Microsoft Visual Studio`.
 
 
 # OLD stuff:

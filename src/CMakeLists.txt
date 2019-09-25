@@ -1,35 +1,5 @@
-add_executable(Spectrecoin ../spectre.qrc main.cpp)
-
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    add_subdirectory(win)
-endif ()
-
-target_include_directories(Spectrecoin
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
-        )
-
-target_link_libraries(Spectrecoin
-        PUBLIC
-        Qt5::Core
-        Qt5::Widgets
-        Qt5::WebEngine
-        Qt5::WebEngineWidgets
-        Boost::boost
-        Boost::chrono
-        Boost::filesystem
-        Boost::iostreams
-        Boost::program_options
-        Boost::system
-        Boost::thread
-        OpenSSL::SSL
-        OpenSSL::Crypto
-        Oracle::BerkeleyDB
-        leveldb
-        )
+##############################################################################
+##### Some helper stuff ######################################################
 
 # Configure a header file to pass some of the CMake settings
 # to the source code like version and Git hash
@@ -42,7 +12,46 @@ configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
 )
 
-target_sources(Spectrecoin
+
+##############################################################################
+##### Setup a library with all the common content ############################
+
+# Create dummy file since we want an empty shared library before linking
+set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
+file(WRITE ${DUMMY_SOURCE} "")
+
+add_library(spectrecoin_lib ${DUMMY_SOURCE})
+
+if(ANDROID)
+    include_directories(
+        ${Boost_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x
+        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x/build_android
+#        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x/build_vxworks
+    )
+    target_link_libraries(spectrecoin_lib ${Boost_LIBRARIES})
+else()
+#    # This is the UI wallet
+#    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+    target_link_libraries(spectrecoin_lib
+            ${Boost_LIBRARIES}
+            leveldb
+            )
+endif()
+
+target_include_directories(spectrecoin_lib
+        SYSTEM PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        ${OPENSSL_INCLUDE_DIR}
+        )
+
+
+
+# Common sources
+target_sources(spectrecoin_lib
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/addrman.h
         ${CMAKE_CURRENT_LIST_DIR}/alert.h
@@ -99,6 +108,7 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.h
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.h
         ${CMAKE_CURRENT_LIST_DIR}/wallet.h
+        ${CMAKE_CURRENT_LIST_DIR}/shutdown.h
 
         PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/addrman.cpp
@@ -139,7 +149,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/script.cpp
         ${CMAKE_CURRENT_LIST_DIR}/scrypt.cpp
         ${CMAKE_CURRENT_LIST_DIR}/smessage.cpp
-#        ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp
         ${CMAKE_CURRENT_LIST_DIR}/state.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stealth.cpp
         ${CMAKE_CURRENT_LIST_DIR}/sync.cpp
@@ -149,10 +158,75 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/version.cpp
         ${CMAKE_CURRENT_LIST_DIR}/wallet.cpp
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/shutdown.cpp
         )
 
 add_subdirectory(json)
 add_subdirectory(lz4)
-add_subdirectory(qt)
+if (!ANDROID)
+    add_subdirectory(qt)
+endif ()
 add_subdirectory(wordlists)
 add_subdirectory(xxhash)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_subdirectory(win)
+endif ()
+
+
+
+##############################################################################
+##### Setup and link the executables #########################################
+
+# The daemon
+add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
+
+if (ANDROID)
+    # Link the daemon for Android with different include settings
+    target_link_libraries(Spectrecoind
+            PUBLIC
+            spectrecoin_lib
+            db5x
+            leveldb
+            )
+else()
+    # The UI wallet
+    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
+
+    # Link the daemon
+    target_link_libraries(Spectrecoind
+            PUBLIC
+            spectrecoin_lib
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb
+            )
+
+    # Link the UI wallet
+    target_link_libraries(Spectrecoin
+            PUBLIC
+            spectrecoin_lib
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::WebEngine
+            Qt5::WebEngineWidgets
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb
+            )
+endif ()

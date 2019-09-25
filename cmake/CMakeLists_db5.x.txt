@@ -1,0 +1,207 @@
+##############################################################################
+##### Some helper stuff to build BerkeleyDB 5.0.32 ###########################
+
+# Create dummy file since we want an empty shared library before linking
+set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
+file(WRITE ${DUMMY_SOURCE} "")
+
+
+
+##############################################################################
+##### Setup library build ####################################################
+
+add_library(db5x ${DUMMY_SOURCE})
+
+target_include_directories(db5x
+        SYSTEM PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/build_android>
+        )
+#target_compile_options(db5x PRIVATE
+#        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+#        -Wno-error=error-implicit-function-declaration>
+#        $<$<CXX_COMPILER_ID:MSVC>:
+#        -W4>
+#        )
+if (Android)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=error-implicit-function-declaration")
+endif()
+
+target_sources(db5x
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/dbinc/mutex_int.h
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compact.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compare.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_compress.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_conv.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_curadj.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_cursor.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_delete.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_open.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_put.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_rec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_reclaim.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_recno.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_rsearch.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_search.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_split.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/bt_upgrade.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/btree/btree_auto.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/clib/rand.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/clib/snprintf.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/clock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/crypto_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_byteorder.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_compint.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_err.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_getlong.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_idspace.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_log2.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/db_shash.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/dbt.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/mkpath.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/os_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/zerofill.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/crdel_auto.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/crdel_rec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_am.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_auto.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_cam.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_cds.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_compact.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_conv.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_dispatch.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_dup.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_iface.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_join.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_meta.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_open.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_overflow.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_pr.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_rec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_reclaim.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_remove.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_rename.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_ret.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_setid.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_setlsn.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_sort_multiple.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_stati.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_truncate.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_upg.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_upg_opd.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/db_vrfy_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/db/partition.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_alloc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_config.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_failchk.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_file.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_globals.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_name.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_open.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_recover.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_region.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_register.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_sig.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/env/env_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/fileops/fileops_auto.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/fileops/fop_basic.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/fileops/fop_rec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/fileops/fop_util.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/hash/hash_func.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/hash/hash_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/hmac/hmac.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/hmac/sha1.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_deadlock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_failchk.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_id.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_list.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_region.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_timer.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/lock/lock_util.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_archive.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_compare.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_debug.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_get.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_print.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_put.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/log/log_verify_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_alloc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_bh.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_fget.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_fmethod.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_fopen.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_fput.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_fset.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_mvcc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_region.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_register.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_resize.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_sync.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mp/mp_trickle.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_alloc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_failchk.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_region.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/mutex/mut_tas.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_abort.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_abs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_alloc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_clock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_config.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_cpu.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_ctime.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_dir.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_errno.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_fid.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_flock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_fsync.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_getenv.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_handle.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_map.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_mkdir.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_open.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_pid.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_rename.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_root.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_rpath.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_rw.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_seek.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_stack.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_tmpdir.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_truncate.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_uid.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_unlink.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/os/os_yield.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/qam/qam_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/rep/rep_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/repmgr/repmgr_stub.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/sequence/seq_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/sequence/sequence.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_auto.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_chkpt.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_failchk.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_method.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_rec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_recover.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_region.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_stat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/txn/txn_util.c
+        )
