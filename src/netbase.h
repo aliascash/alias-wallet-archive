@@ -108,12 +108,8 @@ class CNetAddr
              if (nType == SER_NETWORK && nVersion >= INIT_PROTO_VERSION && nVersion < 60042)
              {
                  if (fRead)
-                 {
                      pthis->Init();
-                     READWRITE(FLATDATA(ip));
-                 }
-                 else
-                     READWRITE(FLATDATA(ip));
+                 READWRITE(FLATDATA(ip));
              }
              else
              {
