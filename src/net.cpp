@@ -171,7 +171,7 @@ bool GetLocal(CService& addr, const CNetAddr *paddrPeer)
             int nScore = (*it).second.nScore;
             int nReachability = (*it).first.GetReachabilityFrom(paddrPeer);
             int nTorScore = (*it).first.IsTorV3() ? 1 : 0;
-            if (nReachability > nBestReachability || (nReachability == nBestReachability && nTorScore > nBestTorScore || (nTorScore == nBestTorScore && nScore > nBestScore)))
+            if (nReachability > nBestReachability || (nReachability == nBestReachability && (nTorScore > nBestTorScore || (nTorScore == nBestTorScore && nScore > nBestScore))))
             {
                 addr = CService((*it).first, (*it).second.nPort);
                 nBestReachability = nReachability;
