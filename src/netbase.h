@@ -100,11 +100,9 @@ class CNetAddr
             (
              LogPrintf("(patch) nType : SER_NETWORK : %d\n", nType & SER_NETWORK);
              LogPrintf("(patch) nType : SER_DISK : %d\n", nType & SER_DISK);
-             LogPrintf("(patch) nType : SER_GETHASH : %d\n", nType & SER_GETHASH);
-             LogPrintf("(patch) nType : SER_SKIPSIG : %d\n", nType & SER_SKIPSIG);
-             LogPrintf("(patch) nType : SER_BLOCKHEADERONLY : %d\n", nType & SER_BLOCKHEADERONLY);
              LogPrintf("(patch) nType : fRead : %d\n", fRead);
              LogPrintf("(patch) nType : fWrite : %d\n", fWrite);
+             LogPrintf("(patch) nVersion : %s\n", nVersion);
 
              CNetAddr* pthis = const_cast<CNetAddr*>(this);
              if (nType == SER_NETWORK && nVersion >= INIT_PROTO_VERSION && nVersion < 60042)
