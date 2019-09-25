@@ -95,10 +95,13 @@ public:
     int64_t GetProofOfAnonStakeReward(const CBlockIndex* pindexPrev, int64_t nFees) const;
 
     const std::string GetDevContributionAddress() const { return devContributionAddress; }
+    const std::string GetSupplyIncreaseAddress() const { return supplyIncreaseAddress; }
 
     bool IsForkV2(int64_t nTime) const { return nTime > nForkV2Time; }
     bool IsForkV3(int64_t nTime) const { return nTime > nForkV3Time; }
-    int GetForkId(int64_t nTime) const { return (nTime > nForkV3Time) ? 3 : (nTime > nForkV2Time) ? 2 : 0; }
+    bool IsForkV4(int64_t nTime) const { return nTime >= nForkV4Time; }
+    bool IsForkV4SupplyIncrease(const CBlockIndex* pindexPrev) const;
+    int GetForkId(int64_t nTime) const { return (nTime >= nForkV4Time) ? 4 : (nTime > nForkV3Time) ? 3 : (nTime > nForkV2Time) ? 2 : 0; }
 
     const CBigNum BnProofOfWorkLimit() const { return bnProofOfWorkLimit; }
     const CBigNum BnProofOfStakeLimit() const { return bnProofOfStakeLimit; }
@@ -133,9 +136,11 @@ protected:
     int nLastPOWBlock;
 
     std::string devContributionAddress;
+    std::string supplyIncreaseAddress;
 
     int64_t nForkV2Time;
     int64_t nForkV3Time;
+    int64_t nForkV4Time;
 };
 
 /**

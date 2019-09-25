@@ -89,6 +89,9 @@ private:
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
 
+    /** Notify listeners that data changed. */
+    void emitDataChanged(int rowTop, int rowBottom);
+
 public slots:
     void updateTransaction(const QString &hash, int status, bool showTransaction);
     void updateConfirmations();

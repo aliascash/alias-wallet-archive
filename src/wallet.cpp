@@ -5692,7 +5692,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
         if ((nFilter == MaturityFilter::NONE ||
              (anonOutput.nBlockHeight > 0 && nBestHeight - anonOutput.nBlockHeight + 1 >= minBlockHeight)) // ao confirmed in last block has depth of 1
                 && (Params().IsProtocolV3(nBestHeight) ? anonOutput.nCompromised == 0 : true)
-                && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight))
+                && (nCompromisedHeight == 0 || anonOutput.nBlockHeight > nCompromisedHeight - MIN_ANON_SPEND_DEPTH))
         {
             std::map<int64_t, int>::iterator mi = mOutputCounts.find(anonOutput.nValue);
             if (mi != mOutputCounts.end())
@@ -5797,7 +5797,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
             {
                 it->nExists += nExists;
                 it->nUnconfirmed += nUnconfirmed;
-                it->nCompromised += ao.nCompromised;
+                it->nCompromised += fCompromised;
                 it->nMature += nMature;
                 it->nMixins += nMixins;
                 it->nMixinsStaking += nMixinsStaking;
@@ -5809,19 +5809,19 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
             };
             if (ao.nValue > it->nValue)
                 continue;
-            lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+            lOutputCounts.insert(it, CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, fCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
             fProcessed = true;
             break;
         };
         if (!fProcessed)
-            lOutputCounts.push_back(CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, ao.nCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
+            lOutputCounts.push_back(CAnonOutputCount(ao.nValue, nExists, nUnconfirmed, 0, 0, ao.nBlockHeight, fCompromised, nMature, nMixins, nMixinsStaking, ao.fCoinStake, 0));
 
 
         // add last 1000 anon blocks to mapAnonBlockStats
         if (ao.nBlockHeight && nBlockHeight - ao.nBlockHeight <= nMaxAnonBlockCache)
         {
             CAnonBlockStat& anonBlockStat = mapAnonBlockStats[ao.nBlockHeight][ao.nValue];
-            anonBlockStat.nCompromisedOutputs += ao.nCompromised;
+            anonBlockStat.nCompromisedOutputs += fCompromised;
             if (ao.fCoinStake)
                 anonBlockStat.nStakingOutputs++;
             else
@@ -6096,7 +6096,7 @@ bool CWallet::UpdateAnonStats(CTxDB& txdb, int nBlockHeight)
             anonOutputCount.nLastHeight = nBlockHeight;
 
         // Persist compromised anon block height in case all anons of one denomination has been spent
-        if (anonOutputCount.nMature && anonOutputCount.nMature - anonOutputCount.nSpends <= 0)
+        if (anonOutputCount.nMature && anonBlockStat.nSpends && anonOutputCount.nMature - anonOutputCount.nSpends <= 0)
         {
             LogPrintf("%s: ALL SPENT of mature anon denomination %d in block height %d. -> persist compromised height.\n",
                       __func__, nValue, nBlockHeight);
@@ -6303,7 +6303,7 @@ bool CWallet::CacheAnonStats(int nBlockHeight)
     {
         mapAnonOutputStats[it->nValue].set(
             it->nValue, it->nExists, it->nUnconfirmed, it->nSpends, it->nOwned,
-            it->nLastHeight == 0 ? -1 : nBestHeight - it->nLastHeight, it->nCompromised, it->nMature, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
+            it->nLastHeight, it->nCompromised, it->nMature, it->nMixins, it->nMixinsStaking, it->nStakes, it->nCompromisedHeight); // mapAnonOutputStats stores height in chain instead of depth
     };
     fStaleAnonCache = false;
 
@@ -6697,9 +6697,10 @@ bool CWallet::CreateCoinStake(unsigned int nBits, int64_t nSearchInterval, int64
     // (Possibly) donate the stake to developers, according to the configured probability
     int sample = stakingDonationDistribution(stakingDonationRng);
     LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
-    if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
+    bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindexPrev);
+    if (fSupplyIncrease || sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
         LogPrintf("Donating this (potential) stake to the developers\n");
-        CBitcoinAddress address(Params().GetDevContributionAddress());
+        CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
         int64_t reduction = nReward;
         // reduce outputs popping as necessary until we've reduced by nReward
         if (txNew.vout.size() == 3) {
@@ -6879,7 +6880,8 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 int sample = stakingDonationDistribution(stakingDonationRng);
                 LogPrintf("sample: %d, donation: %d\n", sample, nStakingDonation);
                 bool donateReward = false;
-                if (sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
+                bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindexPrev);
+                if (fSupplyIncrease || sample < nStakingDonation || (pindexPrev->nHeight+1) % 6 == 0) {
                     LogPrintf("Donating this (potential) stake to the developers\n");
                     donateReward = true;
                 }
@@ -6926,7 +6928,7 @@ bool CWallet::CreateAnonCoinStake(unsigned int nBits, int64_t nSearchInterval, i
                 // -- create donation output
                 if (donateReward)
                 {
-                    CBitcoinAddress address(Params().GetDevContributionAddress());
+                    CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
                     // push a new output donating to the developers
                     CScript script;
                     script.SetDestination(address.Get());
@@ -7012,6 +7014,7 @@ bool CWallet::CommitTransaction(CWalletTx& wtxNew, const std::map<CKeyID, CSteal
             LogPrintf("%s: ProcessAnonTransaction() failed %s.\n", __func__, wtxNew.GetHash().ToString().c_str());
             walletdb.TxnAbort();
             txdb.TxnAbort();
+            // TODO erase keyImages in mempool
             return false;
         } else
         {
@@ -8157,7 +8160,7 @@ int CWallet::ExtKeySetMaster(CWalletDB *pwdb, CKeyID &idNewMaster)
     return 0;
 };
 
-int CWallet::ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenerated)
+int CWallet::ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenerated, CExtKey* pRootKey)
 {
     // - Must pair with ExtKeySetMaster
 
@@ -8174,7 +8177,10 @@ int CWallet::ExtKeyNewMaster(CWalletDB *pwdb, CKeyID &idMaster, bool fAutoGenera
 
     CExtKey evRootKey;
     CStoredExtKey sekRoot;
-    if (ExtKeyNew32(evRootKey) != 0)
+
+    if (pRootKey)
+        evRootKey = *pRootKey;
+    else if (ExtKeyNew32(evRootKey) != 0)
         return errorN(1, "ExtKeyNew32 failed.");
 
     std::vector<uint8_t> v;
@@ -8640,7 +8646,28 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
     if (!pwdb->TxnBegin())
         return errorN(1, "TxnBegin failed.");
 
-    if (ExtKeyNewMaster(pwdb, idMaster, true) != 0
+    CExtKey ekBip44;
+    std::string sBip44Key = GetArg("-bip44key", "");
+    if (!sBip44Key.empty())
+    {
+        CExtKey58 eKey58;
+        if (eKey58.Set58(sBip44Key.c_str()) == 0)
+        {
+            if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
+            {
+                pwdb->TxnAbort();
+                return errorN(1, "-bip44key defines invalid key. Key must begin with Spectrecoin prefix.");
+            }
+            ekBip44 = eKey58.GetKey().GetExtKey();
+            LogPrintf("Using given -bip44key for initial master key.\n");
+        } else
+        {
+            pwdb->TxnAbort();
+            return errorN(1, "-bip44key defines invalid key");
+        };
+    }
+
+    if (ExtKeyNewMaster(pwdb, idMaster, true, ekBip44.IsValid() ? &ekBip44 : nullptr ) != 0
         || ExtKeySetMaster(pwdb, idMaster) != 0)
     {
         pwdb->TxnAbort();

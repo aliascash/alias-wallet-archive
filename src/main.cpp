@@ -31,6 +31,7 @@ CCriticalSection cs_main;
 
 CTxMemPool mempool;
 
+CChain chainActive;
 std::map<uint256, CBlockIndex*> mapBlockIndex;
 std::map<uint256, CBlockThinIndex*> mapBlockThinIndex;
 
@@ -1128,12 +1129,12 @@ int CTxIndex::GetDepthInMainChainFromIndex() const
 }
 
 // Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock
-bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
+bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, bool includemempool)
 {
     {
-        LOCK(cs_main);
-        if (mempool.lookup(hash, tx))
+        if(includemempool && mempool.lookup(hash, tx))
             return true;
+
         CTxDB txdb("r");
         CTxIndex txindex;
         if (tx.ReadFromDisk(txdb, COutPoint(hash, 0), txindex))
@@ -1146,6 +1147,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock)
     }
     return false;
 }
+
 
 bool GetTransactionBlockHash(const uint256 &hash, uint256 &hashBlock)
 {
@@ -1855,6 +1857,7 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     orphan->hashBlock = pblock->GetHash();
     orphan->hashPrev = pblock->hashPrevBlock;
     orphan->stake = pblock->GetProofOfStake();
+    orphan->nTime = pblock->nTime;
     nOrphanBlocksSize += orphan->vchBlock.size();
     mapOrphanBlocks.insert(make_pair(pblock->GetHash(), orphan));
     mapOrphanBlocksByPrev.insert(make_pair(orphan->hashPrev, orphan));
@@ -1865,9 +1868,39 @@ const COrphanBlock* AddOrphanBlock(const CBlock* pblock)
     return orphan;
 }
 
-// Remove a random orphan block (which does not have any dependent orphans).
+// Remove a random orphan block (which does not have any dependent orphans). Remove all due checkpoint obsolete orphans.
 void static PruneOrphanBlocks()
 {
+    const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+    for (auto it = mapOrphanBlocks.begin(); it != mapOrphanBlocks.end(); ++it)
+    {
+        // Block is obsolete due to checkpoint, delete all predecessors.
+        if (it->second->nTime < pcheckpoint->nTime)
+        {
+            map<uint256, COrphanBlock*>::iterator it2 = mapOrphanBlocks.find(it->second->hashPrev);
+            while (it2 != mapOrphanBlocks.end())
+            {
+                if (fDebug)
+                    LogPrintf("PruneOrphanBlocks: Delete obsolete orphan %s with time %d (checkpoint time %d)\n", it2->second->hashBlock.GetHex(), it2->second->nTime, pcheckpoint->nTime);
+
+                uint256 hashPrev = it2->second->hashPrev;
+                for(auto itPrev = mapOrphanBlocksByPrev.find(hashPrev); itPrev != mapOrphanBlocksByPrev.end(); ++itPrev)
+                {
+                    if(itPrev->second == it2->second)
+                    {
+                         itPrev = mapOrphanBlocksByPrev.erase(itPrev);
+                         break;
+                    }
+                }
+                setStakeSeenOrphan.erase(it2->second->stake);
+                nOrphanBlocksSize -= it2->second->vchBlock.size();
+                delete it2->second;
+                mapOrphanBlocks.erase(it2);
+                it2 = mapOrphanBlocks.find(hashPrev);
+            }
+        }
+    }
+
     size_t nMaxOrphanBlocksSize = GetArg("-maxorphanblocksmib", DEFAULT_MAX_ORPHAN_BLOCKS) * ((size_t) 1 << 20);
     while (nOrphanBlocksSize > nMaxOrphanBlocksSize)
     {
@@ -2245,14 +2278,16 @@ bool CTransaction::CheckAnonInputAB(CTxDB &txdb, const CTxIn &txin, int i, int n
             return false;
         };
 
-        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
-        if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput &&
-                (ao.nCompromised > 0 || (nCompromisedHeight != 0 && ao.nBlockHeight < nCompromisedHeight)))
+        if (Params().IsForkV3(nTime) && nCoinValue <= nMaxAnonOutput && ao.nCompromised > 0)
         {
-            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised (ao.nCompromised:%s, ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
-                      i, ri, ao.nCompromised, ao.nBlockHeight, nCompromisedHeight);
+            LogPrintf("CheckAnonInputsAB(): Error input %d, element %d is compromised.\n", i, ri);
             return false;
         }
+
+        int nCompromisedHeight = mapAnonOutputStats[nCoinValue].nCompromisedHeight;
+        if (nCompromisedHeight != 0 && nCompromisedHeight - MIN_ANON_SPEND_DEPTH >= ao.nBlockHeight)
+            LogPrintf("CheckAnonInputsAB(): Warn tx %s, input %d, element %d does use a mixin which is compromised by ALL SPENT (ao.nValue:%d, ao.nBlockHeight:%d, nCompromisedHeight:%d).\n",
+                      GetHash().ToString(), i, ri, ao.nValue, ao.nBlockHeight, nCompromisedHeight);
     };
 
     if (verifyRingSignatureAB(vchImage, nRingSize, pPubkeys, pSigC, pSigS) != 0)
@@ -2796,9 +2831,9 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%d vs calculated=%d)", nStakeReward, nCalculatedStakeReward));
 
-
-        if (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0) {
-            CBitcoinAddress address(Params().GetDevContributionAddress());
+        bool fSupplyIncrease = Params().IsForkV4SupplyIncrease(pindex->pprev);
+        if (fSupplyIncrease || (Params().IsForkV2(nTime) && pindex->nHeight % 6 == 0)) {
+            CBitcoinAddress address(fSupplyIncrease ? Params().GetSupplyIncreaseAddress() : Params().GetDevContributionAddress());
             CScript scriptPubKey;
             scriptPubKey.SetDestination(address.Get());
 
@@ -2815,8 +2850,8 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
                 }
             }
             if (!containsDonation) {
-                LogPrintf("ConnectBlock() : stake does not pay to the donation address\n");
-                return DoS(100, error("ConnectBlock() : stake does not pay to the donation address in trx\n%s\n", vtx[1].ToString()));
+                LogPrintf("ConnectBlock() : stake does not pay to address %s\n", address.ToString().c_str());
+                return DoS(100, error("ConnectBlock() : stake does not pay to address %s in trx\n%s\n", address.ToString().c_str(), vtx[1].ToString()));
             }
         }
     }
@@ -3066,6 +3101,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
     mempool.AddTransactionsUpdated(1);
+    chainActive.SetTip(pindexNew);
 
     if (fStaleAnonCache)
     {
@@ -3216,7 +3252,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 
     int nMaturity = IsCoinBase() ? nCoinbaseMaturity :
                                    IsAnonCoinStake() ? Params().GetAnonStakeMinConfirmations() :
-                                                       Params().GetStakeMinConfirmations(nTime);
+                                                       Params().GetStakeMinConfirmations(GetAdjustedTime());
     return max(0, nMaturity - pDepthAndHeight.first);
 }
 
@@ -3712,6 +3748,48 @@ bool CBlock::AcceptBlock()
     if (fReindexing)
         return true;
 
+    // Prevent fake stake block spam attacks on forks
+    if (IsProofOfStake() && !chainActive.Contains(pindexPrev))
+    {
+        // start at the block we're adding on to
+        CBlockIndex *last = pindexPrev;
+
+        bool isAnonCoinStake = IsProofOfAnonStake();
+        ec_point vchImage, vchImageIn;
+        if (isAnonCoinStake)
+            vtx[1].vin[0].ExtractKeyImage(vchImage);
+
+        // while that block is not on the main chain
+        while (!chainActive.Contains(last))
+        {
+            CBlock bl;
+            if (!bl.ReadFromDisk(last))
+                return error("AcceptBlock() : ReadFromDisk for prev forked block failed");
+
+            // loop through every spent input from said block
+            for (CTransaction t : bl.vtx)
+            {
+                for (CTxIn in: t.vin)
+                {
+                    if (in.IsAnonInput() != isAnonCoinStake)
+                        continue;
+
+                    if (isAnonCoinStake)
+                    {
+                        in.ExtractKeyImage(vchImageIn);
+                        if (vchImage == vchImageIn)
+                            return DoS(100, error("AcceptBlock() : rejected because keyImage spent in prev forked block"));
+                    }
+                    else if (vtx[1].vin[0].prevout == in.prevout)
+                        return DoS(100, error("AcceptBlock() : rejected because prevout spent in prev forked block"));
+                }
+            }
+
+            // go to the parent block
+            last = last->pprev;
+        }
+    }
+
     // Write block to history file
     if (!CheckDiskSpace(::GetSerializeSize(*this, SER_DISK, CLIENT_VERSION)))
         return error("AcceptBlock() : out of disk space");
@@ -3770,6 +3848,23 @@ uint256 CBlockThinIndex::GetBlockTrust() const
     return ((CBigNum(1)<<256) / (bnTarget+1)).getuint256();
 }
 
+
+/**
+ * CChain implementation
+ */
+void CChain::SetTip(CBlockIndex *pindex) {
+    if (pindex == nullptr) {
+        vChain.clear();
+        return;
+    }
+    vChain.resize(pindex->nHeight + 1);
+    while (pindex && vChain[pindex->nHeight] != pindex) {
+        vChain[pindex->nHeight] = pindex;
+        pindex = pindex->pprev;
+    }
+}
+
+
 bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
 {
     AssertLockHeld(cs_main);
@@ -3821,15 +3916,26 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                 if (setStakeSeenOrphan.count(pblock->GetProofOfStake()) && !mapOrphanBlocksByPrev.count(hash))
                     return error("ProcessBlock() : duplicate proof-of-stake (%s, %d) for orphan block %s", pblock->GetProofOfStake().first.ToString(), pblock->GetProofOfStake().second, hash.ToString());
             }
-            PruneOrphanBlocks();
+
             const COrphanBlock* orphan = AddOrphanBlock(pblock);
 
-            // Ask this guy to fill in what we're missing
-            pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
-            // ppcoin: getblocks may not obtain the ancestor block rejected
-            // earlier by duplicate-stake check so we ask for it again directly
-            if (!IsInitialBlockDownload())
-                pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+            const CBlockIndex* pcheckpoint = Checkpoints::AutoSelectSyncCheckpoint();
+            map<uint256, COrphanBlock*>::iterator it = mapOrphanBlocks.find(GetOrphanRoot(hash));
+            if (it != mapOrphanBlocks.end() && it->second->nTime < pcheckpoint->nTime)
+            {
+                PruneOrphanBlocks();
+                pfrom->Misbehaving(1);
+                return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
+            }
+            else {         
+                // Ask this guy to fill in what we're missing
+                pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
+                // ppcoin: getblocks may not obtain the ancestor block rejected
+                // earlier by duplicate-stake check so we ask for it again directly
+                if (!IsInitialBlockDownload())
+                    pfrom->AskFor(CInv(MSG_BLOCK, WantedByOrphan(orphan)));
+                PruneOrphanBlocks();
+            }
         }
         return true;
     }
@@ -4190,8 +4296,18 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
 
     if (nNodeMode == NT_FULL)
     {
-        if (!txdb.LoadBlockIndex(funcProgress))
-            return 1;
+        int res = 1;
+        if (!txdb.LoadBlockIndex([&res] (const CBlockIndex* const pBlockIndex) -> bool {
+                    // Check that the block matches the known checkpoint blocks
+                    if (Checkpoints::CheckHardened(pBlockIndex->nHeight, pBlockIndex->GetBlockHash()))
+                        return true;
+                    else {
+                        res = 3;
+                        return error("LoadBlockIndex() : Block at height %d with hash %s does not match checkpoint.",
+                                pBlockIndex->nHeight, pBlockIndex->GetBlockHash().GetHex());
+                    }
+            }, funcProgress))
+            return res;
 
         if (!pwalletMain->CacheAnonStats(nBestHeight))
             LogPrintf("CacheAnonStats() failed.\n");
@@ -4613,21 +4729,11 @@ static void ProcessGetData(CNode* pfrom)
                 CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(mapBlockIndex);
                 if (pcheckpoint && nHeight < pcheckpoint->nHeight)
                 {
-                    //if (!chainActive.Contains(mi->second))
-
                     // -- check if best chain contains block
-                    //    necessary? faster way? (mark unlinked blocks)
-                    CBlockIndex *pindex = pindexBest;
-                    while (pindex && pindex != mi->second && pindex->pprev)
-                        pindex = pindex->pprev;
-
-                    if ((!pindex->pprev && pindex != mi->second)) // reached start of chain.
-                    {
+                    if (!chainActive.Contains(mi->second))
                         LogPrintf("ProcessGetData(): ignoring request for old block that isn't in the main chain\n");
-                    } else
-                    {
+                    else
                         send = true;
-                    };
                 } else
                 {
                     send = true;
@@ -5112,7 +5218,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
         //		Future fork condition. Enforce minimum protcol version based on nTime.
-        if (Params().IsForkV3(nTime)) {
+        if (Params().IsForkV4(nTime)) {
             if (pfrom->nVersion < LEGACY_CUTOFF_MIN_PROTOCOL_VERSION)
             {
                 // disconnect from peers older than this proto version

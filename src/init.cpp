@@ -556,6 +556,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (strWalletFileName != fs::basename(strWalletFileName) + fs::extension(strWalletFileName))
         return InitError(strprintf(_("Wallet %s resides outside data directory %s."), strWalletFileName.c_str(), strDataDir.c_str()));
 
+    if (mapArgs.count("-bip44key") && fs::exists(GetDataDir() / strWalletFileName))
+        return InitError(_("-bip44key is not allowed if wallet.dat already exists"));
+
     // Make sure only a single Bitcoin process is using the data directory.
     fs::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
@@ -836,6 +839,8 @@ bool AppInit2(boost::thread_group& threadGroup)
                 mapArgs["-reindex"] = 1;
             };
             break;
+        case 3:
+            return InitError(_("Error loading blkindex.dat: Invalid chain detected, please resync or use bootstrap files."));
     };
 
     // as LoadBlockIndex can take several minutes, it's possible the user

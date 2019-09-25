@@ -283,11 +283,14 @@ var utils = (function () {
 function IScroll (el, options) {
 	this.wrapper = typeof el == 'string' ? document.querySelector(el) : el;
 	this.scroller = this.wrapper.children[0];
-	this.scrollerStyle = this.scroller.style;
+	this.scrollerStyle = this.scroller.style;		// cache style for better performance
 
 	this.options = {
+
 		resizeScrollbars: true,
+
 		mouseWheelSpeed: 20,
+
 		snapThreshold: 0.334,
 
 // INSERT POINT: OPTIONS
@@ -2110,7 +2113,7 @@ IScroll.utils = utils;
 if ( typeof module != 'undefined' && module.exports ) {
 	module.exports = IScroll;
 } else if ( typeof define == 'function' && define.amd ) {
-  define( function () { return IScroll; } );
+        define( function () { return IScroll; } );
 } else {
 	window.IScroll = IScroll;
 }

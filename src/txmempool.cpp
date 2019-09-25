@@ -114,3 +114,9 @@ bool CTxMemPool::lookup(uint256 hash, CTransaction& result) const
     result = i->second;
     return true;
 }
+
+bool CTxMemPool::isSpent(const COutPoint& outpoint) const
+{
+    LOCK(cs);
+    return mapNextTx.count(outpoint);
+}
