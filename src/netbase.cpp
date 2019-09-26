@@ -925,7 +925,7 @@ bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
     if (a.fTorV3 == b.fTorV3)
         return b.fTorV3 ? (memcmp(a.ip_tor, b.ip_tor, 41) < 0) : (memcmp(a.ip, b.ip, 16) < 0);
-    int result = memcmp(a.ip_tor, b.ip, 16);
+    int result = memcmp(a.ip, b.ip, 16);
     return (result == 0) ? b.fTorV3 : (result < 0);
 }
 
