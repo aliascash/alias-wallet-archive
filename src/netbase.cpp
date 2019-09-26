@@ -902,17 +902,24 @@ std::string CNetAddr::ToString() const
 
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
-    return memcmp(a.ip_tor, b.ip_tor, 16) == 0;
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) == 0) : (memcmp(a.ip, b.ip, 16) == 0);
+    return false;
 }
 
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
-    return memcmp(a.ip, b.ip, 16) != 0;
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) != 0) : (memcmp(a.ip, b.ip, 16) != 0);
+    return true;
 }
 
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
-    return memcmp(a.ip, b.ip, 16) < 0;
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) < 0) : (memcmp(a.ip, b.ip, 16) < 0);
+    int result = memcmp(a.ip, b.ip, 16);
+    return (result == 0) ? b.IsTorV3() : (result < 0);
 }
 
 bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
