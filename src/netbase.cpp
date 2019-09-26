@@ -602,19 +602,20 @@ void CNetAddr::SetIP(const CNetAddr& ipIn)
 
 void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
 {
-    memset(ip_tor, 0, sizeof(ip_tor));
-    fTorV3 = false;
     switch(network)
     {
         case NET_IPV4:
+            fTorV3 = false;
             memcpy(ip, pchIPv4, 12);
             memcpy(ip+12, ip_in, 4);
+            memset(ip_tor, 0, sizeof(ip_tor));
             break;
         case NET_IPV6:
+            fTorV3 = false;
             memcpy(ip, ip_in, 16);
+            memset(ip_tor, 0, sizeof(ip_tor));
             break;
         default:
-            memset(ip, 0, sizeof(ip));
             assert(!"invalid network");
     }
 }
