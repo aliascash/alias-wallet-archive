@@ -595,14 +595,9 @@ void CNetAddr::Init()
 
 void CNetAddr::SetIP(const CNetAddr& ipIn)
 {
-    if (ipIn.fTorV3)
-    {
-        fTorV3 = true;
-        memcpy(ip_tor, ipIn.ip_tor, sizeof(ip_tor));
-    }
-    else
-        fTorV3 = false;
+    fTorV3 = ipIn.fTorV3;
     memcpy(ip, ipIn.ip, sizeof(ip));
+    memcpy(ip_tor, ipIn.ip_tor, sizeof(ip_tor));
 }
 
 void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
@@ -612,15 +607,15 @@ void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
         case NET_IPV4:
             memcpy(ip, pchIPv4, 12);
             memcpy(ip+12, ip_in, 4);
-            fTorV3 = false;
             break;
         case NET_IPV6:
             memcpy(ip, ip_in, 16);
-            fTorV3 = false;
             break;
         default:
             assert(!"invalid network");
     }
+    memset(ip_tor, 0, sizeof(ip_tor));
+    fTorV3 = false;
 }
 
 static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
