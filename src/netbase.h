@@ -2,15 +2,16 @@
 // Copyright (c) 2016-2019 The Spectrecoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#include "util.h"
 #ifndef BITCOIN_NETBASE_H
 #define BITCOIN_NETBASE_H
 
 #include "compat.h"
 #include "serialize.h"
+
 #include <stdint.h>
 #include <string>
 #include <vector>
+
 extern int nConnectTimeout;
 extern bool fNameLookup;
 
@@ -101,12 +102,6 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
-             LogPrintf("(patch) nType : SER_NETWORK : %d\n", nType & SER_NETWORK);
-             LogPrintf("(patch) nType : SER_DISK : %d\n", nType & SER_DISK);
-             LogPrintf("(patch) nType : fRead : %d\n", fRead);
-             LogPrintf("(patch) nType : fWrite : %d\n", fWrite);
-             LogPrintf("(patch) nVersion : %s\n", nVersion);
-
              CNetAddr* pthis = const_cast<CNetAddr*>(this);
              if (nType == SER_NETWORK && nVersion >= INIT_PROTO_VERSION && nVersion < 60042)
              {

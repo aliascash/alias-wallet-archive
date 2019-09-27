@@ -32,7 +32,7 @@
 #include <openssl/sha.h>
 #include <openssl/ripemd.h>
 
-
+#include "netbase.h" // for AddTimeData
 
 
 
@@ -143,7 +143,6 @@ static inline int errorN(int n, const char* format)
 }
 
 
-#include "netbase.h" // for AddTimeData
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
@@ -210,9 +209,7 @@ int64_t GetTimeOffset();
 std::string FormatClientVersion();
 std::string FormatFullVersion();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
-#ifdef BITCOIN_NETBASE_H
 void AddTimeData(const CNetAddr& ip, int64_t nTime);
-#endif
 void runCommand(std::string strCommand);
 
 /**

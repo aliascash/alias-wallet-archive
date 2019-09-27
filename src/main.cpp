@@ -5315,7 +5315,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             if (!fNoListen && !IsInitialBlockDownload())
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr);
-                LogPrintf( "(patch) main.cpp : version command : Advertise our address : %s\n", addr.ToString());
                 if (addr.IsRoutable())
                     pfrom->PushAddress(addr);
             }
@@ -5425,7 +5424,6 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         int64_t nSince = nNow - 10 * 60;
         BOOST_FOREACH(CAddress& addr, vAddr)
         {
-            LogPrintf( "(patch) main.cpp : addr command : Received : %s\n", addr.ToString());
             boost::this_thread::interruption_point();
 
             if (addr.nTime <= 100000000 || addr.nTime > nNow + 10 * 60)
@@ -6478,7 +6476,6 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
             if (!fNoListen)
             {
                 CAddress addr = GetLocalAddress(&pnode->addr);
-                LogPrintf("(patch) main.cpp : SendMessages them=%s, us=%s\n", pnode->addr.ToString(), addr.ToString());
                 if (addr.IsRoutable())
                     pnode->PushAddress(addr);
             }
@@ -6498,7 +6495,6 @@ bool SendMessages(CNode* pto, std::vector<CNode*> &vNodesCopy, bool fSendTrickle
             // returns true if wasn't already contained in the set
             if (pto->setAddrKnown.insert(addr).second)
             {
-                LogPrintf( "(patch) main.cpp : addr command : Sent : %s\n", addr.ToString());
                 vAddr.push_back(addr);
                 // receiver rejects addr messages larger than 1000
                 if (vAddr.size() >= 1000)

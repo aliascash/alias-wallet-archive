@@ -277,7 +277,6 @@ void static AdvertizeLocal()
             CAddress addrLocal = GetLocalAddress(&pnode->addr);
             if (addrLocal.IsRoutable() && (CService)addrLocal != (CService)pnode->addrLocal)
             {
-                LogPrintf( "(patch) net.cpp : AdvertizeLocal() : %s\n", addrLocal.ToString());
                 pnode->PushAddress(addrLocal);
                 pnode->addrLocal = addrLocal;
             };
@@ -541,7 +540,7 @@ void CNode::PushVersion()
     CAddress addrYou = (addr.IsRoutable() && !IsProxy(addr) ? addr : CAddress(CService("0.0.0.0",0)));
     CAddress addrMe = GetLocalAddress(&addr);
     RAND_bytes((unsigned char*)&nLocalHostNonce, sizeof(nLocalHostNonce));
-    LogPrintf("(patch) send version message: version %d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, addrMe.ToString(), addrYou.ToString(), addr.ToString());
+    LogPrint("net", "send version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", PROTOCOL_VERSION, nBestHeight, addrMe.ToString(), addrYou.ToString(), addr.ToString());
 
     // -- node requirements are packed into the top 32 bits of nServices
     //uint64_t nServices = ((uint64_t) nLocalRequirements) << 32 | nLocalServices;
@@ -1603,10 +1602,8 @@ bool BindListenPort(const CService &addrBind, string& strError)
     vhListenSocket.push_back(hListenSocket);
 
     if (addrBind.IsRoutable() && fDiscover)
-    {
-        LogPrintf( "(patch) net.cpp : BindListenPort : %s\n", addrBind.ToString());
         AddLocal(addrBind, LOCAL_BIND);
-}
+
     return true;
 }
 
