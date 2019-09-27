@@ -39,7 +39,6 @@ enum Network
 class CNetAddr
 {
     protected:
-        bool fTorV3; // v2 or v3 onion address
         unsigned char ip[16]; // in network byte order
         unsigned char ip_tor[41]; //for compatibility with onion v3 addresses
 
@@ -113,8 +112,10 @@ class CNetAddr
              }
              else
              {
+                 bool fTorV3;
                  if (fRead)
                  {
+                     pthis->Init();
                      READWRITE(fTorV3);
                      if (fTorV3)
                      {
@@ -122,10 +123,7 @@ class CNetAddr
                          pthis->SetSpecial(std::string((char *)(ip_tor)));
                      }
                      else
-                     {
-                         pthis->Init();
                          READWRITE(FLATDATA(ip));
-                     }
                  }
                  else
                  {
