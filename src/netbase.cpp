@@ -634,6 +634,8 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             else
                 return false;
         }
+        else
+            memset(ip_tor, 0, sizeof(ip_tor));
 
         memcpy(ip, pchOnionCat, sizeof(pchOnionCat));
         for (unsigned int i=0; i<16-sizeof(pchOnionCat); i++)
