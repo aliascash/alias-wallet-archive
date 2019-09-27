@@ -112,27 +112,13 @@ class CNetAddr
              }
              else
              {
-                 bool fTorV3;
                  if (fRead)
                  {
-                     pthis->Init();
-                     READWRITE(fTorV3);
-                     if (fTorV3)
-                     {
-                         READWRITE(FLATDATA(ip_tor));
-                         pthis->SetSpecial(std::string((char *)(ip_tor)));
-                     }
-                     else
-                         READWRITE(FLATDATA(ip));
+                     READWRITE(FLATDATA(ip_tor));
+                     pthis->SetSpecial(std::string((char *)(ip_tor)));
                  }
                  else
-                 {
-                     READWRITE(fTorV3);
-                     if (fTorV3)
-                         READWRITE(FLATDATA(ip_tor));
-                     else
-                         READWRITE(FLATDATA(ip));
-                 }
+                     READWRITE(FLATDATA(ip_tor));
              }
             )
 };

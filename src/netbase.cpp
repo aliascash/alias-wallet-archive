@@ -632,14 +632,20 @@ bool CNetAddr::SetSpecial(const std::string &strName)
                     ip_tor[i + sizeof(pchOnionCat)] = vchAddr[i];
             }
             else
+            {
+                Init();
                 return false;
+            }
         }
         else
-            memset(ip_tor, 0, sizeof(ip_tor));
+            memset(ip_tor+16, 0, sizeof(ip_tor)-16);
 
         memcpy(ip, pchOnionCat, sizeof(pchOnionCat));
         for (unsigned int i=0; i<16-sizeof(pchOnionCat); i++)
+        {
             ip[i + sizeof(pchOnionCat)] = vchAddr[i];
+            ip_tor[i + sizeof(pchOnionCat)] = vchAddr[i];
+        }
 
         return true;
     }
@@ -652,6 +658,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             ip[i + sizeof(pchGarliCat)] = vchAddr[i];
         return true;
     }
+    Init();
     return false;
 }
 
@@ -786,7 +793,8 @@ bool CNetAddr::IsTor() const
 
 bool CNetAddr::IsTorV3() const
 {
-    return (memcmp(ip_tor, pchOnionCat, sizeof(pchOnionCat)) == 0);
+    unsigned char zerod[25] = {0};
+    return (memcmp(ip_tor, pchOnionCat, sizeof(pchOnionCat)) == 0) && (memcmp(ip_tor+16, zerod, sizeof(zerod)) != 0);
 }
 
 bool CNetAddr::IsI2P() const
