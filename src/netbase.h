@@ -33,8 +33,12 @@ enum Network
     NET_MAX,
 };
 
+enum AddressFormat
+{
+    ADDR_LEGACY = 0,
+    ADDR_TORV3,
+};
 
-bool DecodeOnion(unsigned char const *onion_encoded, std::string &onion_decoded);
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
 {
@@ -112,15 +116,34 @@ class CNetAddr
              }
              else
              {
+                 int fTorV3;
                  if (fRead)
                  {
-                     READWRITE(FLATDATA(ip_tor));
-                     std::string onion_decoded;
-                     if (DecodeOnion(ip_tor,onion_decoded))
-                         pthis->SetSpecial(onion_decoded);
+                     pthis->Init();
+                     READWRITE(fTorV3);
+                     if (fTorV3 == ADDR_TORV3)
+                     {
+                         READWRITE(FLATDATA(ip_tor));
+                         std::memcpy((char *)(ip), ip_tor, sizeof(ip));
+                     }
+                     else
+                         READWRITE(FLATDATA(ip));
                  }
                  else
-                     READWRITE(FLATDATA(ip_tor));
+                 {
+                     if (pthis->IsTorV3())
+                     {
+                         fTorV3 = ADDR_TORV3;
+                         READWRITE(fTorV3);
+                         READWRITE(FLATDATA(ip_tor));
+                     }
+                     else
+                     {
+                         fTorV3 = ADDR_LEGACY;
+                         READWRITE(fTorV3);
+                         READWRITE(FLATDATA(ip));
+                     }
+                 }
              }
             )
 };
