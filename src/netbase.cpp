@@ -619,6 +619,20 @@ void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
 static const unsigned char pchOnionCat[] = {0xFD,0x87,0xD8,0x7E,0xEB,0x43};
 static const unsigned char pchGarliCat[] = {0xFD,0x60,0xDB,0x4D,0xDD,0xB5};
 
+bool DecodeOnion(unsigned char const *onion_encoded, std::string &onion_decoded)
+{
+    if (memcmp(onion_encoded, pchOnionCat, sizeof(pchOnionCat)) == 0)
+    {
+        unsigned char zerod[25] = {0};
+        if (memcmp(onion_encoded+16, zerod, sizeof(zerod)) != 0)
+            onion_decoded = EncodeBase32(&onion_encoded[6], 35) + ".onion";
+        else
+            onion_decoded = EncodeBase32(&onion_encoded[6], 10) + ".onion";
+        return true;
+    }
+    return false;
+}
+
 bool CNetAddr::SetSpecial(const std::string &strName)
 {
     if (strName.size()>6 && strName.substr(strName.size() - 6, 6) == ".onion") {
@@ -632,10 +646,7 @@ bool CNetAddr::SetSpecial(const std::string &strName)
                     ip_tor[i + sizeof(pchOnionCat)] = vchAddr[i];
             }
             else
-            {
-                Init();
                 return false;
-            }
         }
         else
             memset(ip_tor+16, 0, sizeof(ip_tor)-16);
@@ -658,7 +669,6 @@ bool CNetAddr::SetSpecial(const std::string &strName)
             ip[i + sizeof(pchGarliCat)] = vchAddr[i];
         return true;
     }
-    Init();
     return false;
 }
 
@@ -794,7 +804,7 @@ bool CNetAddr::IsTor() const
 bool CNetAddr::IsTorV3() const
 {
     unsigned char zerod[25] = {0};
-    return (memcmp(ip_tor, pchOnionCat, sizeof(pchOnionCat)) == 0) && (memcmp(ip_tor+16, zerod, sizeof(zerod)) != 0);
+    return IsTor() && (memcmp(ip_tor, pchOnionCat, sizeof(pchOnionCat)) == 0) && (memcmp(ip_tor+16, zerod, sizeof(zerod)) != 0);
 }
 
 bool CNetAddr::IsI2P() const

@@ -34,7 +34,7 @@ enum Network
 };
 
 
-
+bool DecodeOnion(unsigned char const *onion_encoded, std::string &onion_decoded);
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
 {
@@ -115,7 +115,9 @@ class CNetAddr
                  if (fRead)
                  {
                      READWRITE(FLATDATA(ip_tor));
-                     pthis->SetSpecial(std::string((char *)(ip_tor)));
+                     std::string onion_decoded;
+                     if (DecodeOnion(ip_tor,onion_decoded))
+                         pthis->SetSpecial(onion_decoded);
                  }
                  else
                      READWRITE(FLATDATA(ip_tor));
