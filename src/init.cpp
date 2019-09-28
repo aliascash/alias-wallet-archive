@@ -35,11 +35,6 @@ namespace fs = boost::filesystem;
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 
-if (GetBoolArg("-testnet", false))
-    unsigned short const onion_port = 9089;
-else
-    unsigned short const onion_port = 9090;
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -719,7 +714,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     // Tor implementation
 
     CService addrOnion;
-    //unsigned short const onion_port = 9075;
+    if (!fTestNet)
+        unsigned short const onion_port = 9089;
+    else
+        unsigned short const onion_port = 9090;
 
     if (mapArgs.count("-tor") && mapArgs["-tor"] != "0") {
         addrOnion = CService(mapArgs["-tor"], onion_port);
