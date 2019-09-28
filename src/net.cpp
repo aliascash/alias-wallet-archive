@@ -1646,6 +1646,11 @@ static void run_tor() {
     argv.push_back("tor");
 #endif
     argv.push_back("--SocksPort");
+        if (TestNet()) {
+        argv.push_back(quoteArg(bQuoteArg,"9090 OnionTrafficOnly"));
+    } else {
+        argv.push_back(quoteArg(bQuoteArg,"9089 OnionTrafficOnly"));
+    }
     argv.push_back(quoteArg(bQuoteArg,"9089 OnionTrafficOnly"));
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
