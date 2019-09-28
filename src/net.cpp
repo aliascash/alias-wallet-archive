@@ -1651,7 +1651,6 @@ static void run_tor() {
     } else {
         argv.push_back(quoteArg(bQuoteArg,"9089 OnionTrafficOnly"));
     }
-    argv.push_back(quoteArg(bQuoteArg,"9089 OnionTrafficOnly"));
     argv.push_back("--ignore-missing-torrc");
     argv.push_back("-f");
     // Move the location of the torrc to the .spectrecoin folder instead of .spectrecoin/tor
