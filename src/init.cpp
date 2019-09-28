@@ -713,11 +713,12 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Tor implementation
 
+    unsigned short onion_port;
     CService addrOnion;
-    if (!fTestNet)
-        unsigned short const onion_port = 9089;
+    if (fTestNet)
+        onion_port = 9090;
     else
-        unsigned short const onion_port = 9090;
+        onion_port = 9089;
 
     if (mapArgs.count("-tor") && mapArgs["-tor"] != "0") {
         addrOnion = CService(mapArgs["-tor"], onion_port);
