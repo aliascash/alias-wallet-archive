@@ -1103,12 +1103,13 @@ void ThreadSocketHandler()
 
 // hidden service seeds
 static const char *strMainNetOnionSeed[][1] = {
-// project-maintained nodes
+    // project-maintained nodes
+    {"gji6yid3u2gozq5hvoufkfyybcvj3ftajvrlhmjjrtzv42o7oeosllqd.onion"},
     {"zhn7wjfhk232kkmb.onion"},
 	{"qe6swgcfktc5l3l7.onion"},
 	{"r5mk35ekwr6j7ccb.onion"},
 
-// other stable nodes that are monitored by the project
+    // other stable nodes that are monitored by the project
     {NULL}
 };
 
@@ -1118,7 +1119,7 @@ static const char *strTestNetOnionSeed[][1] = {
     {"iw5cbprcpm2md7l2.onion"},
     {"glyxixwz4uk6n7w6.onion"},
     {"almrpkxuhk2r35sw.onion"},
-    {"vwxv3bstufb7kfsr.onion"},   
+    {"vwxv3bstufb7kfsr.onion"},
     {NULL}
 };
 
