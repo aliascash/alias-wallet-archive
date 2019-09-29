@@ -5456,7 +5456,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                     }
                     int nRelayNodes = fReachable ? 2 : 1; // limited relaying of addresses outside our network(s)
                     for (multimap<uint256, CNode*>::iterator mi = mapMix.begin(); mi != mapMix.end() && nRelayNodes-- > 0; ++mi)
-                        ((*mi).second)->PushAddress(addr);
+                    {
+                        if (!addr.IsTorV3() || ((*mi).second)->nRecvVersion >= 60042)
+                           ((*mi).second)->PushAddress(addr);
+                        else
+                            nRelayNodes++;
+                    }
                 }
             }
             // Do not store addresses outside our network

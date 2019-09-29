@@ -589,11 +589,13 @@ bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest
 void CNetAddr::Init()
 {
     memset(ip, 0, sizeof(ip));
+    memset(ip_tor, 0, sizeof(ip_tor));
 }
 
 void CNetAddr::SetIP(const CNetAddr& ipIn)
 {
     memcpy(ip, ipIn.ip, sizeof(ip));
+    memcpy(ip_tor, ipIn.ip_tor, sizeof(ip_tor));
 }
 
 void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
@@ -603,9 +605,11 @@ void CNetAddr::SetRaw(Network network, const uint8_t *ip_in)
         case NET_IPV4:
             memcpy(ip, pchIPv4, 12);
             memcpy(ip+12, ip_in, 4);
+            memset(ip_tor, 0, sizeof(ip_tor));
             break;
         case NET_IPV6:
             memcpy(ip, ip_in, 16);
+            memset(ip_tor, 0, sizeof(ip_tor));
             break;
         default:
             assert(!"invalid network");
@@ -620,10 +624,25 @@ bool CNetAddr::SetSpecial(const std::string &strName)
     if (strName.size()>6 && strName.substr(strName.size() - 6, 6) == ".onion") {
         std::vector<unsigned char> vchAddr = DecodeBase32(strName.substr(0, strName.size() - 6).c_str());
         if (vchAddr.size() != 16-sizeof(pchOnionCat))
-            return false;
+        {
+            if (vchAddr.size() == 41-sizeof(pchOnionCat))
+            {
+                memcpy(ip_tor, pchOnionCat, sizeof(pchOnionCat));
+                for (unsigned int i=0; i<41-sizeof(pchOnionCat); i++)
+                    ip_tor[i + sizeof(pchOnionCat)] = vchAddr[i];
+            }
+            else
+                return false;
+        }
+        else
+            memset(ip_tor, 0, sizeof(ip_tor));
+
         memcpy(ip, pchOnionCat, sizeof(pchOnionCat));
         for (unsigned int i=0; i<16-sizeof(pchOnionCat); i++)
+        {
             ip[i + sizeof(pchOnionCat)] = vchAddr[i];
+        }
+
         return true;
     }
     if (strName.size()>11 && strName.substr(strName.size() - 11, 11) == ".oc.b32.i2p") {
@@ -672,6 +691,11 @@ CNetAddr::CNetAddr(const std::string &strIp, bool fAllowLookup)
 unsigned int CNetAddr::GetByte(int n) const
 {
     return ip[15-n];
+}
+
+unsigned int CNetAddr::GetByteTorV3(int n) const
+{
+    return ip_tor[40-n];
 }
 
 bool CNetAddr::IsIPv4() const
@@ -762,6 +786,11 @@ bool CNetAddr::IsTor() const
     return (memcmp(ip, pchOnionCat, sizeof(pchOnionCat)) == 0);
 }
 
+bool CNetAddr::IsTorV3() const
+{
+    return IsTor() && (memcmp(ip_tor, pchOnionCat, sizeof(pchOnionCat)) == 0);
+}
+
 bool CNetAddr::IsI2P() const
 {
     return (memcmp(ip, pchGarliCat, sizeof(pchGarliCat)) == 0);
@@ -847,6 +876,8 @@ enum Network CNetAddr::GetNetwork() const
 
 std::string CNetAddr::ToStringIP() const
 {
+    if (IsTorV3())
+        return EncodeBase32(&ip_tor[6], 35) + ".onion";
     if (IsTor())
         return EncodeBase32(&ip[6], 10) + ".onion";
     if (IsI2P())
@@ -876,17 +907,24 @@ std::string CNetAddr::ToString() const
 
 bool operator==(const CNetAddr& a, const CNetAddr& b)
 {
-    return (memcmp(a.ip, b.ip, 16) == 0);
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) == 0) : (memcmp(a.ip, b.ip, 16) == 0);
+    return false;
 }
 
 bool operator!=(const CNetAddr& a, const CNetAddr& b)
 {
-    return (memcmp(a.ip, b.ip, 16) != 0);
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) != 0) : (memcmp(a.ip, b.ip, 16) != 0);
+    return true;
 }
 
 bool operator<(const CNetAddr& a, const CNetAddr& b)
 {
-    return (memcmp(a.ip, b.ip, 16) < 0);
+    if (a.IsTorV3() == b.IsTorV3())
+        return b.IsTorV3() ? (memcmp(a.ip_tor, b.ip_tor, 41) < 0) : (memcmp(a.ip, b.ip, 16) < 0);
+    int result = memcmp(a.ip, b.ip, 16);
+    return (result == 0) ? b.IsTorV3() : (result < 0);
 }
 
 bool CNetAddr::GetInAddr(struct in_addr* pipv4Addr) const
@@ -968,19 +1006,31 @@ std::vector<unsigned char> CNetAddr::GetGroup() const
     vchRet.push_back(nClass);
     while (nBits >= 8)
     {
-        vchRet.push_back(GetByte(15 - nStartByte));
+        if (IsTorV3())
+            vchRet.push_back(GetByteTorV3(40 - nStartByte));
+        else
+            vchRet.push_back(GetByte(15 - nStartByte));
         nStartByte++;
         nBits -= 8;
     }
     if (nBits > 0)
-        vchRet.push_back(GetByte(15 - nStartByte) | ((1 << nBits) - 1));
+    {
+        if (IsTorV3())
+            vchRet.push_back(GetByteTorV3(40 - nStartByte) | ((1 << nBits) - 1));
+        else
+            vchRet.push_back(GetByte(15 - nStartByte) | ((1 << nBits) - 1));
+    }
 
     return vchRet;
 }
 
 uint64_t CNetAddr::GetHash() const
 {
-    uint256 hash = Hash(&ip[0], &ip[16]);
+    uint256 hash;
+    if (IsTorV3())
+        hash = Hash(&ip_tor[0], &ip_tor[41]);
+    else
+        hash = Hash(&ip[0], &ip[16]);
     uint64_t nRet;
     memcpy(&nRet, &hash, sizeof(nRet));
     return nRet;
@@ -1194,10 +1244,20 @@ bool CService::GetSockAddr(struct sockaddr* paddr, socklen_t *addrlen) const
 std::vector<unsigned char> CService::GetKey() const
 {
      std::vector<unsigned char> vKey;
-     vKey.resize(18);
-     memcpy(&vKey[0], ip, 16);
-     vKey[16] = port / 0x100;
-     vKey[17] = port & 0x0FF;
+     if (IsTorV3())
+     {
+       vKey.resize(43);
+       memcpy(&vKey[0], ip_tor, 41);
+       vKey[41] = port / 0x100;
+       vKey[42] = port & 0x0FF;
+     }
+     else
+     {
+       vKey.resize(18);
+       memcpy(&vKey[0], ip, 16);
+       vKey[16] = port / 0x100;
+       vKey[17] = port & 0x0FF;
+     }
      return vKey;
 }
 

@@ -37,7 +37,6 @@
 
 
 
-
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
 #define UBEGIN(a)           ((unsigned char*)&(a))
@@ -142,7 +141,6 @@ static inline int errorN(int n, const char* format)
     LogPrintStr(std::string("ERROR: ") + format + "\n");
     return n;
 }
-
 
 
 
