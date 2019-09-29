@@ -469,7 +469,7 @@ public:
         // Known checking here is only to save space from duplicates.
         // SendMessages will filter it again for knowns that were added
         // after addresses were pushed.
-        if (addr.IsValid() && !setAddrKnown.count(addr))
+        if (addr.IsValid() && !setAddrKnown.count(addr) && (!addr.IsTorV3() || nRecvVersion >= 60042))
             vAddrToSend.push_back(addr);
     }
 
