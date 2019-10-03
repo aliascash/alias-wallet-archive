@@ -1,3 +1,6 @@
+# The UI wallet
+add_executable(Spectrecoin ../../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/spectre.cpp)
+
 target_sources(Spectrecoin
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/aboutdialog.h
@@ -55,7 +58,6 @@ target_sources(Spectrecoin
         ${CMAKE_CURRENT_LIST_DIR}/rpcconsole.cpp
         ${CMAKE_CURRENT_LIST_DIR}/scicon.cpp
         ${CMAKE_CURRENT_LIST_DIR}/spectrebridge.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/spectre.cpp
         ${CMAKE_CURRENT_LIST_DIR}/spectregui.cpp
         ${CMAKE_CURRENT_LIST_DIR}/trafficgraphwidget.cpp
         ${CMAKE_CURRENT_LIST_DIR}/transactiondesc.cpp
@@ -71,3 +73,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             ${CMAKE_CURRENT_LIST_DIR}/macnotificationhandler.h
             )
 endif()
+
+# Link the UI wallet
+target_link_libraries(Spectrecoin
+        PUBLIC
+        spectrecoin_lib
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::WebEngine
+        Qt5::WebEngineWidgets
+        Boost::boost
+        Boost::chrono
+        Boost::filesystem
+        Boost::iostreams
+        Boost::program_options
+        Boost::system
+        Boost::thread
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        Oracle::BerkeleyDB
+        leveldb
+        )

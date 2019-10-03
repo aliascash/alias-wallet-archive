@@ -163,13 +163,15 @@ target_sources(spectrecoin_lib
 
 add_subdirectory(json)
 add_subdirectory(lz4)
-if (!ANDROID)
-    add_subdirectory(qt)
-endif ()
 add_subdirectory(wordlists)
 add_subdirectory(xxhash)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(win)
+endif ()
+if (ANDROID)
+    message(STATUS "Skipping Qt for Android build")
+else()
+    add_subdirectory(qt)
 endif ()
 
 
@@ -189,34 +191,10 @@ if (ANDROID)
             leveldb
             )
 else()
-    # The UI wallet
-    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
-
     # Link the daemon
     target_link_libraries(Spectrecoind
             PUBLIC
             spectrecoin_lib
-            Boost::boost
-            Boost::chrono
-            Boost::filesystem
-            Boost::iostreams
-            Boost::program_options
-            Boost::system
-            Boost::thread
-            OpenSSL::SSL
-            OpenSSL::Crypto
-            Oracle::BerkeleyDB
-            leveldb
-            )
-
-    # Link the UI wallet
-    target_link_libraries(Spectrecoin
-            PUBLIC
-            spectrecoin_lib
-            Qt5::Core
-            Qt5::Widgets
-            Qt5::WebEngine
-            Qt5::WebEngineWidgets
             Boost::boost
             Boost::chrono
             Boost::filesystem
