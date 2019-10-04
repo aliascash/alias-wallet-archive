@@ -168,11 +168,6 @@ add_subdirectory(xxhash)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(win)
 endif ()
-if (ANDROID)
-    message(STATUS "Skipping Qt for Android build")
-else()
-    add_subdirectory(qt)
-endif ()
 
 
 
@@ -195,6 +190,109 @@ else()
     target_link_libraries(Spectrecoind
             PUBLIC
             spectrecoin_lib
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb
+            )
+endif ()
+
+if (ANDROID)
+    message(STATUS "Skipping Qt for Android build")
+else()
+    # The UI wallet
+    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+
+    target_sources(Spectrecoin
+            PUBLIC
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiconstants.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.h
+
+            PRIVATE
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.cpp
+            )
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        target_sources(Spectrecoin
+            PUBLIC
+            ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.h
+            )
+    endif()
+
+    # Link the UI wallet
+    target_link_libraries(Spectrecoin
+            PUBLIC
+            spectrecoin_lib
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::WebEngine
+            Qt5::WebEngineWidgets
             Boost::boost
             Boost::chrono
             Boost::filesystem
