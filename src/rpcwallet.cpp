@@ -1571,6 +1571,38 @@ Value gettransaction(const Array& params, bool fHelp)
     return entry;
 }
 
+Value settxkey(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw std::runtime_error(
+        "settxkey <txid> <tx_key>\n"
+        "Set the transaction key (r) for a given <txid> in case the tx was made by some other device or 3rd party wallet.");
+    // TODO
+    Object entry;
+    return entry;
+}
+
+Value gettxkey(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw std::runtime_error(
+        "gettxkey <txid>\n"
+        "Get the transaction key (r) for a given <txid>.");
+    // TODO
+    Object entry;
+    return entry;
+}
+
+Value checktxkey(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 3)
+        throw std::runtime_error(
+        "checktxkey <txid> <txkey> <address>\n"
+        "Check the amount going to <address> in <txid>.");
+    // TODO
+    Object entry;
+    return entry;
+}
 
 Value backupwallet(const Array& params, bool fHelp)
 {

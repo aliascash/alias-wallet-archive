@@ -174,6 +174,9 @@ extern json_spirit::Value listaddressgroupings(const json_spirit::Array& params,
 extern json_spirit::Value listaccounts(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value listsinceblock(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value gettransaction(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value settxkey(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value gettxkey(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value checktxkey(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value backupwallet(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value keypoolrefill(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value walletpassphrase(const json_spirit::Array& params, bool fHelp);
