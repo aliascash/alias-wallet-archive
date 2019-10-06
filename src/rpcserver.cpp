@@ -322,8 +322,8 @@ static const CRPCCommand vRPCCommands[] =
     { "getblockhash",           &getblockhash,           false,     false,     false },
     { "gettransaction",         &gettransaction,         false,     false,     false },
     { "listtransactions",       &listtransactions,       false,     false,     false },
-    { "settx_key",              &settxkey,               true,      false,     true  }, // TODO : verify all three boolean values
-    { "gettx_key",              &gettxkey,               true,      false,     true  }, // TODO : verify all three boolean values
+    { "settxkey",               &settxkey,               true,      false,     true  }, // TODO : verify all three boolean values
+    { "gettxkey",               &gettxkey,               true,      false,     true  }, // TODO : verify all three boolean values
     { "checktxkey",             &checktxkey,             false,     true,      false }, // TODO : verify all three boolean values
     { "listaddressgroupings",   &listaddressgroupings,   false,     false,     false },
     { "signmessage",            &signmessage,            false,     false,     false },
