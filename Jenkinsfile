@@ -870,11 +870,13 @@ pipeline {
                                     sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
+                            /*
                             post {
                                 always {
                                     sh "docker system prune --all --force"
                                 }
                             }
+                            */
                         }
                     }
                 }
@@ -956,11 +958,13 @@ pipeline {
                                     sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
+                            /*
                             post {
                                 always {
                                     sh "docker system prune --all --force"
                                 }
                             }
+                            */
                         }
                     }
                 }
@@ -991,6 +995,7 @@ pipeline {
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
                         )
+                        sh "docker system prune --all --force"
                     }
                 }
             }

@@ -154,7 +154,7 @@ public:
         pchMessageStart[2] = 0x5c;
         pchMessageStart[3] = 0xd3;
 
-        vAlertPubKey = ParseHex("0410414dfffd27c90e4d77fc6905c488eb67dba6834f1b578640c70fdcef4562b7516b61ad2976c4f6752d7ff0b1fc15b9d40cecc34443366b5621b9c856a81ee9");
+        vAlertPubKey = ParseHex("04f7bbad03208ea942e292080854d422d046d457949ea70ad3306438fc8357343dccaa73e52291ebe07de85c6701d88d87af2d29c2e3b024fb0ad53f045a6d3ad6");
 
         nDefaultPort = 37347;
         nRPCPort = 36657;
@@ -222,7 +222,7 @@ public:
         pchMessageStart[2] = 0x44;
         pchMessageStart[3] = 0xb4;
 
-        vAlertPubKey = ParseHex("042245fcbce048cb5a93c26dc1cdb613f2d866c66ede4bb806eb6ea373d8378775984d36905c9c8b1ba891901324351ac0d8c49bb46f937fa3c57eaae4da1e54aa");
+        vAlertPubKey = ParseHex("04e564bc9bf28e6d395cd89c4d2bdb235c3873f59b1330d2e6a30c6fa85d8a8637693ae367ce39c2fe0f4e8e3c7c3a34feb82305388f19030aa4fcd4955abeb810");
 
         nDefaultPort = 37111;
         nRPCPort = 36757;

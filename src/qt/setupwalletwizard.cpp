@@ -160,7 +160,7 @@ bool ImportWalletDatPage::isComplete() const
 bool ImportWalletDatPage::validatePage()
 {
     try {
-        fs::copy_file(fs::path(fileName.toStdString()), GetDataDir() / "wallet.dat");
+        fs::copy_file(fs::path(fileName.toStdWString()), GetDataDir() / "wallet.dat");
         return true;
     }
     catch (const boost::filesystem::filesystem_error& e) {
