@@ -47,7 +47,7 @@ bool fNameLookup = false;
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
 
 // Need ample time for negotiation for very slow proxies such as Tor (milliseconds)
-static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
+static const int SOCKS5_RECV_TIMEOUT = 60 * 1000;
 
 enum Network ParseNetwork(std::string net) {
     boost::to_lower(net);
