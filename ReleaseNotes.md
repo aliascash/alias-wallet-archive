@@ -38,6 +38,8 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - [#218](https://github.com/spectrecoin/spectre/issues/218) Provide binaries for Ubuntu 19.04.
   Binaries for both Ubuntu 18.04 and 19.04 will be provided.
 
+- Updated packaged Tor for MacOS and Windows to 0.4.1.5
+
 ## 4.0.0 (released 2019-09-08)
 **V4 blockchain fork consensus changes / Fork time is GMT: Friday, 27. September 2019 20:00:00 (1569614400 unix epoch time)**
 - One-time 3'000'000 XSPEC staking reward for foundation address SSGCEMb6xESgmuGXkx7yozGDxhVSXzBP3a
