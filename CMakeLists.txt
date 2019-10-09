@@ -194,30 +194,31 @@ endif ()
 
 
 # ============================================================================================
-if (ANDROID)
-    message(STATUS "=== OpenSSL (Android) ======================================================")
-    # Set env var LOCAL_OPENSSL_DIR to the folder where the include dir and
-    # libcrypto.a as well as libssl.a are located
-    set(OPENSSL_ROOT_DIR ${LOCAL_OPENSSL_DIR})
-    set(OPENSSL_USE_STATIC_LIBS TRUE)
-    set(OPENSSL_INCLUDE_DIR ${LOCAL_OPENSSL_DIR}/include)
-    set(OPENSSL_CRYPTO_LIBRARY ${LOCAL_OPENSSL_DIR}/libcrypto.a)
-    set(OPENSSL_SSL_LIBRARY ${LOCAL_OPENSSL_DIR}/libssl.a)
-else ()
+#if (ANDROID)
+#    message(STATUS "=== OpenSSL (Android) ======================================================")
+#    # Set env var LOCAL_OPENSSL_DIR to the folder where the include dir and
+#    # libcrypto.a as well as libssl.a are located
+#    set(OPENSSL_ROOT_DIR ${LOCAL_OPENSSL_DIR})
+#    set(OPENSSL_USE_STATIC_LIBS TRUE)
+#    set(OPENSSL_INCLUDE_DIR ${LOCAL_OPENSSL_DIR}/include)
+#    set(OPENSSL_CRYPTO_LIBRARY ${LOCAL_OPENSSL_DIR}/libcrypto.a)
+#    set(OPENSSL_SSL_LIBRARY ${LOCAL_OPENSSL_DIR}/libssl.a)
+#else ()
     message(STATUS "=== OpenSSL ================================================================")
-endif ()
-# Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
-# https://slproweb.com/products/Win32OpenSSL.html
-find_package(OpenSSL)
-message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
-get_target_property(OpenSSL_location OpenSSL::SSL LOCATION)
-get_target_property(OpenSSL_location OpenSSL::Crypto LOCATION)
-
-message(STATUS "OPENSSL_FOUND: ${OPENSSL_FOUND}")
-message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
-message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
-message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
-message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
+#endif ()
+## Env var OPENSSL_ROOT_DIR should point to local OpenSSL installation from
+## https://slproweb.com/products/Win32OpenSSL.html
+#find_package(OpenSSL)
+#message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
+#get_target_property(OpenSSL_location OpenSSL::SSL LOCATION)
+#get_target_property(OpenSSL_location OpenSSL::Crypto LOCATION)
+#
+#message(STATUS "OPENSSL_FOUND: ${OPENSSL_FOUND}")
+#message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
+#message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
+#message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
+#message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
+add_subdirectory(external/openssl-cmake)
 
 
 # ============================================================================================
