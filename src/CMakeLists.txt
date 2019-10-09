@@ -197,10 +197,10 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            OpenSSL::SSL
-            OpenSSL::Crypto
             Oracle::BerkeleyDB
             leveldb
+            ssl
+            crypto
             )
 endif ()
 
@@ -300,9 +300,9 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            OpenSSL::SSL
-            OpenSSL::Crypto
             Oracle::BerkeleyDB
             leveldb
+            crypto
+            ssl
             )
 endif ()
