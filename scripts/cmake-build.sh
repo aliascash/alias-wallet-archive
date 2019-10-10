@@ -16,6 +16,25 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
 . ./include/helpers_console.sh
 
+helpMe() {
+    echo "
+
+    Helper script to build Spectrecoin wallet and daemon using CMake.
+
+    Usage:
+    ${0} [options]
+
+    Optional parameters:
+    -c <cores-to-use>
+        The amount of cores to use for build. If not using this option
+        the script determines the available cores on this machine.
+    -f  Perform fullbuild by cleanup all generated data from previous
+        build runs.
+    -h  Show this help
+
+    "
+}
+
 _init
 
 # Determine amount of cores:
@@ -44,7 +63,6 @@ cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
 if ${FULLBUILD} ; then
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
-
 fi
 
 info "Generating build configuration"
