@@ -490,9 +490,10 @@ bool RecoverFromMnemonicPage::validatePage()
     sKey.clear();
 
     // - decode to determine validity of mnemonic
-    if (0 == MnemonicDecode(-1, sMnemonic.toStdString(), vEntropy, sError))
+    auto sMnemonicLower = sMnemonic.toLower().toStdString();
+    if (0 == MnemonicDecode(-1, sMnemonicLower, vEntropy, sError))
     {
-        if (0 == MnemonicToSeed(sMnemonic.toStdString(), sPassword.toStdString(), vSeed))
+        if (0 == MnemonicToSeed(sMnemonicLower, sPassword.toStdString(), vSeed))
         {
             CExtKey ekMaster;
             ekMaster.SetMaster(&vSeed[0], vSeed.size());
