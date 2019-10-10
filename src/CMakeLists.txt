@@ -190,6 +190,8 @@ else()
     target_link_libraries(Spectrecoind
             PUBLIC
             spectrecoin_lib
+            ssl
+            crypto
             Boost::boost
             Boost::chrono
             Boost::filesystem
@@ -199,8 +201,6 @@ else()
             Boost::thread
             Oracle::BerkeleyDB
             leveldb
-            ssl
-            crypto
             )
 endif ()
 
@@ -289,6 +289,8 @@ else()
     target_link_libraries(Spectrecoin
             PUBLIC
             spectrecoin_lib
+            ssl
+            crypto
             Qt5::Core
             Qt5::Widgets
             Qt5::WebEngine
@@ -302,7 +304,5 @@ else()
             Boost::thread
             Oracle::BerkeleyDB
             leveldb
-            crypto
-            ssl
             )
 endif ()
