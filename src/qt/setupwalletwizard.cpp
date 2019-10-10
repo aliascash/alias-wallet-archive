@@ -278,7 +278,14 @@ bool NewMnemonicSettingsPage::validatePage()
         return false;
     }
 
-    mnemonicList = QString::fromStdString(sMnemonic).split(" ");
+    if (nLanguage == WLL_JAPANESE)
+        mnemonicList = QString::fromStdString(sMnemonic).split("\u3000");
+    else
+        mnemonicList = QString::fromStdString(sMnemonic).split(" ");
+
+    if (mnemonicList.size() != 24)
+       throw std::runtime_error(strprintf("%s : Error splitting mnemonic words. 24 words expected!", __func__).c_str());
+
     return true;
 }
 
