@@ -252,7 +252,7 @@ bool NewMnemonicSettingsPage::validatePage()
         if (0 != MnemonicEncode(nLanguage, vEntropy, sMnemonic, sError))
             break;
 
-        if (0 != MnemonicToSeed(sMnemonic, sPassword.toStdString(), vSeed))
+        if (0 != MnemonicToSeed(sMnemonic, sPassword.normalized(QString::NormalizationForm_KD).toStdString(), vSeed))
         {
             sError = "MnemonicToSeed failed.";
             break;
@@ -361,7 +361,7 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
                 NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
                 if (pLineEdit->text().size() == 0)
                     pLineEdit->setStyleSheet("");
-                else if (mnemonicPage->mnemonicList[i] != pLineEdit->text())
+                else if (mnemonicPage->mnemonicList[i] != pLineEdit->text().normalized(QString::NormalizationForm_KD))
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
                 else {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
@@ -427,7 +427,7 @@ bool NewMnemonicVerificationPage::isComplete() const
     NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
     for (int i = 0; i < 24; i++)
     {
-        QString sVerificationMnemonic = field(QString("verification.mnemonic.%1").arg(i)).toString();
+        QString sVerificationMnemonic = field(QString("verification.mnemonic.%1").arg(i)).toString().normalized(QString::NormalizationForm_KD);
         if (mnemonicPage->mnemonicList[i] != sVerificationMnemonic)
             return false;
     }
@@ -473,13 +473,13 @@ int RecoverFromMnemonicPage::nextId() const
 
 bool RecoverFromMnemonicPage::validatePage()
 {
-    QString sPassword = field("recover.password").toString();
+    QString sPassword = field("recover.password").toString().normalized(QString::NormalizationForm_KD);
     QString sMnemonic;
     for (int i = 0; i < 24; i++)
     {
         if (i != 0)
             sMnemonic.append(" ");
-        QString sWord = field(QString("recover.mnemonic.%1").arg(i)).toString();
+        QString sWord = field(QString("recover.mnemonic.%1").arg(i)).toString().toLower().normalized(QString::NormalizationForm_KD);
         sMnemonic.append(sWord);
     }
 
@@ -490,10 +490,9 @@ bool RecoverFromMnemonicPage::validatePage()
     sKey.clear();
 
     // - decode to determine validity of mnemonic
-    auto sMnemonicLower = sMnemonic.toLower().toStdString();
-    if (0 == MnemonicDecode(-1, sMnemonicLower, vEntropy, sError))
+    if (0 == MnemonicDecode(-1, sMnemonic.toStdString(), vEntropy, sError))
     {
-        if (0 == MnemonicToSeed(sMnemonicLower, sPassword.toStdString(), vSeed))
+        if (0 == MnemonicToSeed(sMnemonic.toStdString(), sPassword.toStdString(), vSeed))
         {
             CExtKey ekMaster;
             ekMaster.SetMaster(&vSeed[0], vSeed.size());
