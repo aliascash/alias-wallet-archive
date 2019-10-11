@@ -1105,6 +1105,7 @@ void ThreadSocketHandler()
 static const char *strMainNetOnionSeed[][1] = {
     // project-maintained nodes
     {"gji6yid3u2gozq5hvoufkfyybcvj3ftajvrlhmjjrtzv42o7oeosllqd.onion"},
+    {"nounwopyxdcwe72v5xey5jgjf6ypsmyitzolambc7c4vgvheyquekmyd.onion"},
     {"zhn7wjfhk232kkmb.onion"},
 	{"qe6swgcfktc5l3l7.onion"},
 	{"r5mk35ekwr6j7ccb.onion"},
