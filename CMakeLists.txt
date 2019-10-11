@@ -225,14 +225,16 @@ add_subdirectory(external/openssl-cmake)
 
 
 # ============================================================================================
-if (ANDROID)
-    message(STATUS "=== Berkeley DB (Andoird) ==================================================")
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db5.x)
-else ()
+#if (ANDROID)
+#    message(STATUS "=== Berkeley DB (Andoird) ==================================================")
+#    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/db5.x)
+#else ()
     message(STATUS "=== Berkeley DB ============================================================")
-    #set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
-    find_package(BerkeleyDB REQUIRED)
-endif ()
+#    #set(BerkeleyDB_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db4.8)
+#    find_package(BerkeleyDB REQUIRED)
+#endif ()
+set(BERKELEYDB_BUILD_VERSION 6.2.38)
+add_subdirectory(external/berkeleydb-cmake)
 
 
 # ============================================================================================

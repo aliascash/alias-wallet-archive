@@ -182,7 +182,7 @@ if (ANDROID)
     target_link_libraries(Spectrecoind
             PUBLIC
             spectrecoin_lib
-            db5x
+            bdb
             leveldb
             )
 else()
@@ -199,7 +199,7 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            Oracle::BerkeleyDB
+            bdb
             leveldb
             )
 endif ()
@@ -302,7 +302,7 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            Oracle::BerkeleyDB
+            bdb
             leveldb
             )
 endif ()
