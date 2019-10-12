@@ -34,6 +34,8 @@ helpMe() {
     -c <cores-to-use>
         The amount of cores to use for build. If not using this option
         the script determines the available cores on this machine.
+        Not used for build steps of external libraries like OpenSSL or
+        BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -b <version>
