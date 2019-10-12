@@ -26,6 +26,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(berkeleydb-cmake)
 
+set(BERKELEYDB_ARCHIVE_LOCATION OFF CACHE STRING "Location of BerkeleyDB archive")
 set(BERKELEYDB_BUILD_VERSION OFF CACHE STRING "BerkeleyDB version to build")
 set(CROSS_ANDROID OFF CACHE BOOL "Cross-compiling for Android?")
 set(CROSS OFF CACHE BOOL "Cross-compiling?")
@@ -45,7 +46,7 @@ target_link_libraries(bdb INTERFACE bdb_lib)
 # Set up prefix
 set(BERKELEYDB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
 
-set(BERKELEYDB_LIBDB_PATH ${BERKELEYDB_PREFIX}/usr/local/BerkeleyDB.6.2/lib/libdb.a)
+set(BERKELEYDB_LIBDB_PATH ${BERKELEYDB_PREFIX}/usr/local/BerkeleyDB.${BERKELEYDB_BUILD_VERSION_SHORT}/lib/libdb.a)
 
 # Set up BerkeleyDB target
 include(BuildBerkeleyDB)

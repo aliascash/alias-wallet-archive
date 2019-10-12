@@ -8,6 +8,9 @@
 # ===========================================================================
 
 BUILD_DIR=cmake-build-cmdline
+BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
+BERKELEYDB_VERSION=4.8.30
+OPENSSL_VERSION=1.1.0l
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -20,6 +23,9 @@ helpMe() {
     echo "
 
     Helper script to build Spectrecoin wallet and daemon using CMake.
+    Assumptions:
+    - The BerkeleyDB archive to use must be located on ${BERKELEYDB_ARCHIVE_LOCATION}
+    - Naming must be default like 'db-4.8.30.zip'
 
     Usage:
     ${0} [options]
@@ -30,6 +36,12 @@ helpMe() {
         the script determines the available cores on this machine.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -b <version>
+        BerkeleyDB version to use. Corresponding archive must be located
+        on ${BERKELEYDB_ARCHIVE_LOCATION}. Default: ${BERKELEYDB_VERSION}
+    -o <version>
+        OpenSSL version to use. Corresponding version will be downloaded
+        automatically. Default: ${OPENSSL_VERSION}
     -h  Show this help
 
     "
@@ -41,10 +53,12 @@ _init
 CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
 FULLBUILD=false
 
-while getopts c:fh? option; do
+while getopts b:c:fo:h? option; do
     case ${option} in
+        b) BERKELEYDB_VERSION="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        o) OPENSSL_VERSION="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
@@ -54,6 +68,7 @@ done
 cd ..
 
 if [[ ! -d ${BUILD_DIR} ]] ; then
+    info ""
     info "Creating build directory ${BUILD_DIR}"
     mkdir ${BUILD_DIR}
 fi
@@ -61,16 +76,22 @@ fi
 cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
 
 if ${FULLBUILD} ; then
+    info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
 fi
 
+info ""
 info "Generating build configuration"
 cmake \
     -DBUILD_OPENSSL=ON \
-    -DOPENSSL_BUILD_VERSION=1.1.0l \
+    -DOPENSSL_BUILD_VERSION="${OPENSSL_VERSION}" \
+    -DBERKELEYDB_ARCHIVE_LOCATION="${BERKELEYDB_ARCHIVE_LOCATION}" \
+    -DBERKELEYDB_BUILD_VERSION="${BERKELEYDB_VERSION}" \
+    -DBERKELEYDB_BUILD_VERSION_SHORT="${BERKELEYDB_VERSION%.*}" \
     ..
 
+info ""
 info "Building with ${CORES_TO_USE} cores:"
 cmake \
     --build . \
@@ -78,6 +99,7 @@ cmake \
     -j "${CORES_TO_USE}"
 
 rtc=$?
+info ""
 if [[ $rtc = 0 ]] ; then
     info "Finished"
 else
