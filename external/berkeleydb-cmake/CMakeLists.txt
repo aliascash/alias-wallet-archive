@@ -55,7 +55,7 @@ include(BuildBerkeleyDB)
 set_target_properties(bdb_lib PROPERTIES IMPORTED_LOCATION ${BERKELEYDB_LIBDB_PATH})
 
 # Set include locations
-target_include_directories(bdb BEFORE INTERFACE ${BERKELEYDB_PREFIX}/usr/local/include)
+target_include_directories(bdb BEFORE INTERFACE ${BERKELEYDB_PREFIX}/usr/local/BerkeleyDB.${BERKELEYDB_BUILD_VERSION_SHORT}/include)
 
 # Add fake targets to common target
 add_dependencies(bdb_lib berkeleydb)

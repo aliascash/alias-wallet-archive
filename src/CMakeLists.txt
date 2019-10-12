@@ -181,17 +181,18 @@ if (ANDROID)
     # Link the daemon for Android with different include settings
     target_link_libraries(Spectrecoind
             PUBLIC
-            spectrecoin_lib
             bdb
             leveldb
+            spectrecoin_lib
             )
 else()
     # Link the daemon
     target_link_libraries(Spectrecoind
             PUBLIC
-            spectrecoin_lib
+            bdb
             ssl
             crypto
+            leveldb
             Boost::boost
             Boost::chrono
             Boost::filesystem
@@ -199,8 +200,7 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            bdb
-            leveldb
+            spectrecoin_lib
             )
 endif ()
 
@@ -288,9 +288,10 @@ else()
     # Link the UI wallet
     target_link_libraries(Spectrecoin
             PUBLIC
-            spectrecoin_lib
+            bdb
             ssl
             crypto
+            leveldb
             Qt5::Core
             Qt5::Widgets
             Qt5::WebEngine
@@ -302,7 +303,6 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            bdb
-            leveldb
+            spectrecoin_lib
             )
 endif ()
