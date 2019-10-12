@@ -50,7 +50,8 @@ void SetupWalletWizard::showHelp()
         message = tr("If you have a backup of a wallet.dat, you can import this file.");
         break;
     case Page_NewMnemonic_Settings:
-        message = tr("Mnemonic Seed Words allow you to create and later recover your private keys.");
+        message = tr("Mnemonic Seed Words allow you to create and later recover your private keys. "
+                     "The seed consists of 24 words and the optional password functions as a 25th word that you can keep secret to protect your seed.");
         break;
     case Page_NewMnemonic_Result:
         message = tr("It is recommended to make multiple copies of the seed words, stored in different locations.<br><br>"
@@ -75,7 +76,7 @@ void SetupWalletWizard::showHelp()
 IntroPage::IntroPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Setup Your Private Keys"));
+    setTitle(tr("Set Up Your Wallet"));
 
     setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark"));
 
@@ -173,12 +174,12 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
-    setSubTitle(tr("Step 1/3: Please define language to use and optional password."));
+    setSubTitle(tr("Step 1/3: Please define language to use and optional password to protect your seed."));
 
     noteLabel = new QLabel(tr("Creating mnemonic seed words is a three step procedure:"
-                             "<ol><li>Define language and optional password.</li>"
+                             "<ol><li>Define language and optional password for your seed.</li>"
                              "<li>Write down created seed words.</li>"
-                             "<li>Verify seed words.</li></ol>"));
+                             "<li>Verify seed words and password.</li></ol>"));
     noteLabel->setWordWrap(true);
 
     languageLabel = new QLabel(tr("&Language:"));
