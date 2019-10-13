@@ -16,7 +16,7 @@ extern int nConnectTimeout;
 extern bool fNameLookup;
 
 /** -timeout default */
-static const int DEFAULT_CONNECT_TIMEOUT = 5000;
+static const int DEFAULT_CONNECT_TIMEOUT = 10000;
 
 #ifdef WIN32
 // In MSVC, this is defined as a macro, undefine it to prevent a compile and link error
@@ -34,11 +34,18 @@ enum Network
     NET_MAX,
 };
 
+enum AddressFormat
+{
+    ADDR_LEGACY = 0,
+    ADDR_TORV3,
+};
+
 /** IP address (IPv6, or IPv4 using mapped IPv6 range (::FFFF:0:0/96)) */
 class CNetAddr
 {
     protected:
         unsigned char ip[16]; // in network byte order
+        unsigned char ip_tor[41]; //for compatibility with onion v3 addresses
 
     public:
         CNetAddr();
@@ -53,7 +60,6 @@ class CNetAddr
          * @note Only NET_IPV4 and NET_IPV6 are allowed for network.
          */
         void SetRaw(Network network, const uint8_t *data);
-
         bool SetSpecial(const std::string &strName); // for Tor addresses
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor/i2p)
@@ -71,6 +77,7 @@ class CNetAddr
         bool IsRFC6052() const; // IPv6 well-known prefix (64:FF9B::/96)
         bool IsRFC6145() const; // IPv6 IPv4-translated address (::FFFF:0:0:0/96)
         bool IsTor() const;
+        bool IsTorV3() const;
         bool IsI2P() const;
         bool IsLocal() const;
         bool IsRoutable() const;
@@ -80,6 +87,7 @@ class CNetAddr
         std::string ToString() const;
         std::string ToStringIP() const;
         unsigned int GetByte(int n) const;
+        unsigned int GetByteTorV3(int n) const;
         uint64_t GetHash() const;
         bool GetInAddr(struct in_addr* pipv4Addr) const;
         std::vector<unsigned char> GetGroup() const;
@@ -94,7 +102,44 @@ class CNetAddr
 
         IMPLEMENT_SERIALIZE
             (
-             READWRITE(FLATDATA(ip));
+             CNetAddr* pthis = const_cast<CNetAddr*>(this);
+             if (nType == SER_NETWORK && nVersion >= INIT_PROTO_VERSION && nVersion < 60042)
+             {
+                 if (fRead)
+                     pthis->Init();
+                 READWRITE(FLATDATA(ip));
+             }
+             else
+             {
+                 int fTorV3;
+                 if (fRead)
+                 {
+                     pthis->Init();
+                     READWRITE(fTorV3);
+                     if (fTorV3 == ADDR_TORV3)
+                     {
+                         READWRITE(FLATDATA(ip_tor));
+                         std::memcpy((char *)(ip), ip_tor, sizeof(ip));
+                     }
+                     else
+                         READWRITE(FLATDATA(ip));
+                 }
+                 else
+                 {
+                     if (pthis->IsTorV3())
+                     {
+                         fTorV3 = ADDR_TORV3;
+                         READWRITE(fTorV3);
+                         READWRITE(FLATDATA(ip_tor));
+                     }
+                     else
+                     {
+                         fTorV3 = ADDR_LEGACY;
+                         READWRITE(fTorV3);
+                         READWRITE(FLATDATA(ip));
+                     }
+                 }
+             }
             )
 };
 
@@ -155,7 +200,8 @@ class CService : public CNetAddr
         IMPLEMENT_SERIALIZE
             (
              CService* pthis = const_cast<CService*>(this);
-             READWRITE(FLATDATA(ip));
+             CNetAddr* pip = (CNetAddr*)pthis;
+             READWRITE(*pip);
              unsigned short portN = htons(port);
              READWRITE(portN);
              if (fRead)

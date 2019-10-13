@@ -37,7 +37,6 @@
 
 
 
-
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
 #define UBEGIN(a)           ((unsigned char*)&(a))
@@ -145,7 +144,6 @@ static inline int errorN(int n, const char* format)
 
 
 
-
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 
@@ -203,6 +201,7 @@ int GetRandInt(int nMax);
 uint32_t GetRandUInt32();
 uint64_t GetRand(uint64_t nMax);
 uint256 GetRandHash();
+void GetRandBytes(std::vector<uint8_t>& vRandBytes, int nBytes);
 int64_t GetTime();
 void SetMockTime(int64_t nMockTimeIn);
 int64_t GetAdjustedTime();

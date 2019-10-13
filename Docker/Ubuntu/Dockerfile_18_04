@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian:1.5 as build
+FROM spectreproject/spectre-builder-ubuntu-18-04:1.6 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -27,8 +27,8 @@ ARG SPECTRECOIN_REPOSITORY=spectre
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Debian.tgz
-ENV CHKSUM_FILE=Checksum-Spectrecoin-Debian.txt
+ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-Ubuntu-18-04.tgz
+ENV CHKSUM_FILE=Checksum-Spectrecoin-Ubuntu-18-04.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 

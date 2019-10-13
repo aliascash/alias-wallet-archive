@@ -35,8 +35,6 @@ namespace fs = boost::filesystem;
 CWallet* pwalletMain;
 CClientUIInterface uiInterface;
 
-unsigned short const onion_port = 9089;
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Shutdown
@@ -240,6 +238,7 @@ std::string HelpMessage()
     strUsage += "  -proxy=<ip:port>       " + _("Connect through socks proxy") + "\n";
     strUsage += "  -socks=<n>             " + _("Select the version of socks proxy to use (4-5, default: 5)") + "\n";
     strUsage += "  -tor=<ip:port>         " + _("Use proxy to reach tor hidden services (default: same as -proxy)") + "\n";
+    strUsage += "  -onionv2               " + _("Use tor hidden services version 2 instead of version 3") + "\n";
     strUsage += "  -dns                   " + _("Allow DNS lookups for -addnode, -seednode and -connect") + "\n";
     strUsage += "  -port=<port>           " + _("Listen for connections on <port> (default: 37347 or testnet: 37111)") + "\n";
     strUsage += "  -maxconnections=<n>    " + _("Maintain at most <n> connections to peers (default: 125)") + "\n";
@@ -556,6 +555,9 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (strWalletFileName != fs::basename(strWalletFileName) + fs::extension(strWalletFileName))
         return InitError(strprintf(_("Wallet %s resides outside data directory %s."), strWalletFileName.c_str(), strDataDir.c_str()));
 
+    if (mapArgs.count("-bip44key") && fs::exists(GetDataDir() / strWalletFileName))
+        return InitError(_("-bip44key is not allowed if wallet.dat already exists"));
+
     // Make sure only a single Bitcoin process is using the data directory.
     fs::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
@@ -711,8 +713,12 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // Tor implementation
 
+    unsigned short onion_port;
     CService addrOnion;
-    //unsigned short const onion_port = 9075;
+    if (fTestNet)
+        onion_port = 9090;
+    else
+        onion_port = 9089;
 
     if (mapArgs.count("-tor") && mapArgs["-tor"] != "0") {
         addrOnion = CService(mapArgs["-tor"], onion_port);
@@ -764,6 +770,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         string automatic_onion;
         boost::filesystem::path hostname_path = GetDataDir() / "tor" / "onion" / "hostname";
+        if (fs::exists(hostname_path) && ((GetBoolArg("-onionv2") && fs::file_size(hostname_path) != 23) || (!GetBoolArg("-onionv2") && fs::file_size(hostname_path) != 63)))
+            remove(hostname_path.string().c_str());
 
         int attempts = 0;
         while (1) {
@@ -1000,7 +1008,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         CAddrDB adb;
         if (!adb.Read(addrman))
+        {
             LogPrintf("Invalid or missing peers.dat; recreating\n");
+            addrman.Clear();
+        }
     }
 
     LogPrintf("Loaded %i addresses from peers.dat  %dms\n",
