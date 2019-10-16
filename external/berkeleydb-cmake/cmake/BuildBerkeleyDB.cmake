@@ -101,7 +101,8 @@ else()
 
     # additional configure script parameters
     #set(CONFIGURE_BERKELEYDB_PARAMS --libdir=lib)
-    
+    set(CONFIGURE_BERKELEYDB_PARAMS --disable-cryptography --disable-partition --disable-compression --disable-replication --enable-cxx)
+
     # cross-compiling
     if (CROSS)
         set(COMMAND_CONFIGURE ./Configure ${CONFIGURE_BERKELEYDB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_BERKELEYDB_MODULES} --prefix=/usr/local/)
