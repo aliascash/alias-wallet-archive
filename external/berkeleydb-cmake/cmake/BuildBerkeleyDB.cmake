@@ -73,8 +73,8 @@ else()
     endif()
 
     # save old git values for core.autocrlf and core.eol
-    execute_process(COMMAND ${GIT_EXECUTABLE} config --global --get core.autocrlf OUTPUT_VARIABLE GIT_CORE_AUTOCRLF OUTPUT_STRIP_TRAILING_WHITESPACE)
-    execute_process(COMMAND ${GIT_EXECUTABLE} config --global --get core.eol OUTPUT_VARIABLE GIT_CORE_EOL OUTPUT_STRIP_TRAILING_WHITESPACE)
+#    execute_process(COMMAND ${GIT_EXECUTABLE} config --global --get core.autocrlf OUTPUT_VARIABLE GIT_CORE_AUTOCRLF OUTPUT_STRIP_TRAILING_WHITESPACE)
+#    execute_process(COMMAND ${GIT_EXECUTABLE} config --global --get core.eol OUTPUT_VARIABLE GIT_CORE_EOL OUTPUT_STRIP_TRAILING_WHITESPACE)
 
     # On windows we need to replace path to perl since CreateProcess(..) cannot handle unix paths
     if (WIN32 AND NOT CROSS)
@@ -163,41 +163,41 @@ else()
     )
 
     # set git config values to berkeleydb requirements (no impact on linux though)
-    ExternalProject_Add_Step(berkeleydb setGitConfig
-        COMMAND ${GIT_EXECUTABLE} config --global core.autocrlf false
-        COMMAND ${GIT_EXECUTABLE} config --global core.eol lf
-        DEPENDEES
-        DEPENDERS download
-        ALWAYS ON
-    )
+#    ExternalProject_Add_Step(berkeleydb setGitConfig
+#        COMMAND ${GIT_EXECUTABLE} config --global core.autocrlf false
+#        COMMAND ${GIT_EXECUTABLE} config --global core.eol lf
+#        DEPENDEES
+#        DEPENDERS download
+#        ALWAYS ON
+#    )
 
     # Set, don't abort if it fails (due to variables being empty). To realize this we must only call git if the configs
     # are set globally, otherwise do a no-op command ("echo 1", since "true" is not available everywhere)
-    if (GIT_CORE_AUTOCRLF)
-        set (GIT_CORE_AUTOCRLF_CMD ${GIT_EXECUTABLE} config --global core.autocrlf ${GIT_CORE_AUTOCRLF})
-    else()
-        set (GIT_CORE_AUTOCRLF_CMD echo)
-    endif()
-    if (GIT_CORE_EOL)
-        set (GIT_CORE_EOL_CMD ${GIT_EXECUTABLE} config --global core.eol ${GIT_CORE_EOL})
-    else()
-        set (GIT_CORE_EOL_CMD echo)
-    endif()
+#    if (GIT_CORE_AUTOCRLF)
+#        set (GIT_CORE_AUTOCRLF_CMD ${GIT_EXECUTABLE} config --global core.autocrlf ${GIT_CORE_AUTOCRLF})
+#    else()
+#        set (GIT_CORE_AUTOCRLF_CMD echo)
+#    endif()
+#    if (GIT_CORE_EOL)
+#        set (GIT_CORE_EOL_CMD ${GIT_EXECUTABLE} config --global core.eol ${GIT_CORE_EOL})
+#    else()
+#        set (GIT_CORE_EOL_CMD echo)
+#    endif()
     ##
 
     # Set git config values to previous values
-    ExternalProject_Add_Step(berkeleydb restoreGitConfig
-        # Unset first (is required, since old value could be omitted, which wouldn't take any effect in "set"
-        COMMAND ${GIT_EXECUTABLE} config --global --unset core.autocrlf
-        COMMAND ${GIT_EXECUTABLE} config --global --unset core.eol
-
-        COMMAND ${GIT_CORE_AUTOCRLF_CMD}
-        COMMAND ${GIT_CORE_EOL_CMD}
-
-        DEPENDEES download
-        DEPENDERS configure
-        ALWAYS ON
-    )
+#    ExternalProject_Add_Step(berkeleydb restoreGitConfig
+#        # Unset first (is required, since old value could be omitted, which wouldn't take any effect in "set"
+#        COMMAND ${GIT_EXECUTABLE} config --global --unset core.autocrlf
+#        COMMAND ${GIT_EXECUTABLE} config --global --unset core.eol
+#
+#        COMMAND ${GIT_CORE_AUTOCRLF_CMD}
+#        COMMAND ${GIT_CORE_EOL_CMD}
+#
+#        DEPENDEES download
+#        DEPENDERS configure
+#        ALWAYS ON
+#    )
 
     # Write environment to file, is picked up by python script
     get_cmake_property(_variableNames VARIABLES)
