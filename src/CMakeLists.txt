@@ -34,13 +34,14 @@ else()
 #    # This is the UI wallet
 #    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
     target_link_libraries(spectrecoin_lib
-            ${Boost_LIBRARIES}
+            bdb
             leveldb
+            ${Boost_LIBRARIES}
             )
 endif()
 
 target_include_directories(spectrecoin_lib
-        SYSTEM PUBLIC
+        SYSTEM BEFORE PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
