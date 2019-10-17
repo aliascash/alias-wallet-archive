@@ -150,9 +150,7 @@ else()
         URL ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
         ${BERKELEYDB_CHECK_HASH}
         UPDATE_COMMAND ""
-#        PATCH_COMMAND patch -p1 -d  < ${CMAKE_CURRENT_SOURCE_DIR}/db-atomic.patch
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/db-atomic.patch
-        PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/atomic_compare_exchange.patch
 
         CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/build_unix ${COMMAND_CONFIGURE}
 
