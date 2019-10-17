@@ -105,7 +105,7 @@ else()
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ./Configure ${CONFIGURE_BERKELEYDB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_BERKELEYDB_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_BERKELEYDB_MODULES} --prefix=/usr/local/)
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
         
@@ -136,7 +136,7 @@ else()
         set(PATH "${ANDROID_TOOLCHAIN_ROOT}/bin/:${ANDROID_TOOLCHAIN_ROOT}/${ANDROID_TOOLCHAIN_NAME}/bin/")
         set(LDFLAGS ${CMAKE_MODULE_LINKER_FLAGS})
         
-        set(COMMAND_CONFIGURE ./Configure android-${BERKELEYDB_PLATFORM} ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
+        set(COMMAND_CONFIGURE ../dist/configure android-${BERKELEYDB_PLATFORM} ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
         set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
