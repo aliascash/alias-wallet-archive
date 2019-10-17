@@ -46,7 +46,6 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
-        ${OPENSSL_INCLUDE_DIR}
         )
 
 
@@ -190,10 +189,9 @@ else()
     # Link the daemon
     target_link_libraries(Spectrecoind
             PUBLIC
-            bdb
+            spectrecoin_lib
             ssl
             crypto
-            leveldb
             Boost::boost
             Boost::chrono
             Boost::filesystem
@@ -201,7 +199,6 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            spectrecoin_lib
             )
 endif ()
 
@@ -289,10 +286,9 @@ else()
     # Link the UI wallet
     target_link_libraries(Spectrecoin
             PUBLIC
-            bdb
+            spectrecoin_lib
             ssl
             crypto
-            leveldb
             Qt5::Core
             Qt5::Widgets
             Qt5::WebEngine
@@ -304,6 +300,5 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            spectrecoin_lib
             )
 endif ()
