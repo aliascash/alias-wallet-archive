@@ -46,6 +46,7 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        ${BERKELEYDB_INCLUDE_PATH}
         )
 
 
@@ -302,3 +303,5 @@ else()
             Boost::thread
             )
 endif ()
+
+message(STATUS "BERKELEYDB_INCLUDE_PATH ${BERKELEYDB_INCLUDE_PATH}")
