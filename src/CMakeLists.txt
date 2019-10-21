@@ -162,6 +162,15 @@ target_sources(spectrecoin_lib
         ${CMAKE_CURRENT_LIST_DIR}/shutdown.cpp
         )
 
+if (EXISTS ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h)
+    target_sources(spectrecoin_lib
+        PUBLIC
+        ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h
+    )
+else()
+    message(WARNING "${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
+endif()
+
 add_subdirectory(json)
 add_subdirectory(lz4)
 add_subdirectory(wordlists)
