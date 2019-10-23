@@ -85,13 +85,23 @@ fi
 
 info ""
 info "Generating build configuration"
+read -r -d '' cmd << EOM
 cmake \
     -DBUILD_OPENSSL=ON \
-    -DOPENSSL_BUILD_VERSION="${OPENSSL_VERSION}" \
-    -DBERKELEYDB_ARCHIVE_LOCATION="${BERKELEYDB_ARCHIVE_LOCATION}" \
-    -DBERKELEYDB_BUILD_VERSION="${BERKELEYDB_VERSION}" \
-    -DBERKELEYDB_BUILD_VERSION_SHORT="${BERKELEYDB_VERSION%.*}" \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_VERSION} \
+    -DOPENSSL_API_COMPAT=0x00908000L \
+    -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
+    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_VERSION} \
+    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_VERSION%.*} \
     ..
+EOM
+
+echo "=============================================================================="
+echo "Executing the following CMake cmd:"
+echo "${cmd}"
+echo "=============================================================================="
+#read a
+${cmd}
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
