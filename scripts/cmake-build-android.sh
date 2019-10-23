@@ -13,7 +13,10 @@ MY_BOOST_LIBS_DIR=/home/spectre/coding/Boost-for-Android/build/out
 
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
 BERKELEYDB_VERSION=4.8.30
-OPENSSL_VERSION=1.1.0l
+
+#OPENSSL_VERSION=1.1.0l
+OPENSSL_VERSION=1.1.1d
+
 ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
 ANDROID_ABI=arm64-v8a
 ANDROID_NDK_ROOT=/home/spectre/Android/ndk/20.0.5594570

@@ -8,9 +8,12 @@
 # ===========================================================================
 
 BUILD_DIR=cmake-build-cmdline
+
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
 BERKELEYDB_VERSION=4.8.30
-OPENSSL_VERSION=1.1.0l
+
+#OPENSSL_VERSION=1.1.0l
+OPENSSL_VERSION=1.1.1d
 
 # Store path from where script was called, determine own location
 # and source helper content from there
