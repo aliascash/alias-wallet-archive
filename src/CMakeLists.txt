@@ -23,13 +23,15 @@ file(WRITE ${DUMMY_SOURCE} "")
 add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
 if(ANDROID)
-    include_directories(
-        ${Boost_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x
-        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x/build_android
-#        ${CMAKE_CURRENT_SOURCE_DIR}/../db5.x/build_vxworks
+    target_include_directories(spectrecoin_lib
+        SYSTEM BEFORE PUBLIC
+        ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/include/boost-1_70
     )
-    target_link_libraries(spectrecoin_lib ${Boost_LIBRARIES})
+    target_link_libraries(spectrecoin_lib
+            bdb
+            leveldb
+            ${Boost_LIBRARIES}
+            )
 else()
 #    # This is the UI wallet
 #    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
@@ -191,9 +193,10 @@ if (ANDROID)
     # Link the daemon for Android with different include settings
     target_link_libraries(Spectrecoind
             PUBLIC
-            bdb
-            leveldb
             spectrecoin_lib
+            ssl
+            crypto
+            ${Boost_LIBRARIES}
             )
 else()
     # Link the daemon
