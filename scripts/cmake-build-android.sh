@@ -8,10 +8,15 @@
 # ===========================================================================
 
 BUILD_DIR=cmake-build-android-cmdline
+
+MY_BOOST_LIBS_DIR=/home/spectre/coding/Boost-for-Android/build/out
+
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
 BERKELEYDB_VERSION=4.8.30
 OPENSSL_VERSION=1.1.0l
 ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
+ANDROID_ABI=arm64-v8a
+ANDROID_NDK_ROOT=/home/spectre/Android/ndk/20.0.5594570
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -88,15 +93,32 @@ fi
 
 info ""
 info "Generating build configuration"
+read -r -d '' cmd << EOM
 cmake \
-    -DBUILD_OPENSSL=ON \
-    -DOPENSSL_BUILD_VERSION="${OPENSSL_VERSION}" \
-    -DBERKELEYDB_ARCHIVE_LOCATION="${BERKELEYDB_ARCHIVE_LOCATION}" \
-    -DBERKELEYDB_BUILD_VERSION="${BERKELEYDB_VERSION}" \
-    -DBERKELEYDB_BUILD_VERSION_SHORT="${BERKELEYDB_VERSION%.*}" \
     -DANDROID=1 \
-    -DCMAKE_TOOLCHAIN_FILE="${ANDROID_TOOLCHAIN_CMAKE}" \
+    \
+    -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
+    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_VERSION} \
+    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_VERSION%.*} \
+    \
+    -DMY_BOOST_LIBS_DIR=${MY_BOOST_LIBS_DIR} \
+    \
+    -DBUILD_OPENSSL=ON \
+    -DOPENSSL_API_COMPAT=0x00908000L \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_VERSION} \
+    -DCROSS_ANDROID=ON \
+    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
+    -DANDROID_ABI=${ANDROID_ABI} \
+    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
     ..
+EOM
+
+echo "=============================================================================="
+echo "Executing the following CMake cmd:"
+echo "${cmd}"
+echo "=============================================================================="
+#read a
+${cmd}
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
