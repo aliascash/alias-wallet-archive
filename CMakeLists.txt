@@ -95,43 +95,43 @@ if (ANDROID)
     message(STATUS "= boost_chrono")
     add_library(boost_chrono SHARED IMPORTED)
     set_target_properties(boost_chrono PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_chrono.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_chrono-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_filesystem")
     add_library(boost_filesystem SHARED IMPORTED)
     set_target_properties(boost_filesystem PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_filesystem.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_filesystem-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_iostreams")
     add_library(boost_iostreams SHARED IMPORTED)
     set_target_properties(boost_iostreams PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_iostreams.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_iostreams-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_program_options")
     add_library(boost_program_options SHARED IMPORTED)
     set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_program_options.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_program_options-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_system")
     add_library(boost_system SHARED IMPORTED)
     set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_system.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_system-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_thread")
     add_library(boost_thread SHARED IMPORTED)
     set_target_properties(boost_thread PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_thread.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_thread-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= boost_timer")
     add_library(boost_timer SHARED IMPORTED)
     set_target_properties(boost_timer PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/libboost_timer.so
+            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_timer-clang-mt-a32-1_70.a
             )
 
     message(STATUS "= Boost include dir")
