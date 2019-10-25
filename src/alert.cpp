@@ -187,13 +187,41 @@ bool CAlert::ProcessAlert(bool fThread)
                 nMaxVer == maxInt &&
                 setSubVer.empty() &&
                 nPriority == maxInt &&
-                strStatusBar == "URGENT: Alert key compromised, upgrade required"
+                strStatusBar == "URGENT: Alert key compromised, upgrade required" &&
+                strComment == "" &&
+                strReserved == "" &&
+                nVersion == 1
                 ))
             return false;
     }
 
     {
         LOCK(cs_mapAlerts);
+
+        // Check if this alert has been cancelled
+        BOOST_FOREACH(PAIRTYPE(const uint256, CAlert)& item, mapAlerts)
+        {
+            const CAlert& alert = item.second;
+            if (alert.Cancels(*this))
+            {
+                LogPrint("alert", "alert already cancelled by %d\n", alert.nID);
+                return false;
+            }
+            if (
+                alert.nExpiration == maxInt &&
+                alert.nCancel == (maxInt-1) &&
+                alert.nMinVer == 0 &&
+                alert.nMaxVer == maxInt &&
+                alert.setSubVer.empty() &&
+                alert.nPriority == maxInt &&
+                alert.strStatusBar == "URGENT: Alert key compromised, upgrade required" &&
+                alert.strComment == "" &&
+                alert.strReserved == "" &&
+                alert.nVersion == 1
+                ) { // If we have a final alert, do not continue
+                return false;
+            }
+        }
         // Cancel previous alerts
         for (std::map<uint256, CAlert>::iterator mi = mapAlerts.begin(); mi != mapAlerts.end();)
         {
@@ -215,16 +243,10 @@ bool CAlert::ProcessAlert(bool fThread)
             }
         }
 
-        // Check if this alert has been cancelled
-        BOOST_FOREACH(PAIRTYPE(const uint256, CAlert)& item, mapAlerts)
-        {
-            const CAlert& alert = item.second;
-            if (alert.Cancels(*this))
-            {
-                LogPrintf("alert already cancelled by %d\n", alert.nID);
-                return false;
-            }
-        }
+        // Do not allow more than 5 concurrent alerts
+        if (mapAlerts.size() >= 5) {
+            return false;
+         }
 
         // Add to mapAlerts
         mapAlerts.insert(std::make_pair(GetHash(), *this));

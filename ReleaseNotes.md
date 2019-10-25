@@ -15,11 +15,30 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
-## 4.1.0 (released 2019-??-??)
+## 4.1.0 (released 2019-10-13)
+- [#82](https://github.com/spectrecoin/spectre/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
+  If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
+  - Create new `wallet.dat` file based on mnemonic seed words.
+  - Restore `wallet.dat` from mnemonic seed words.
+  - Import existing `wallet.dat` file.
+
+  For further details see [here](https://medium.com/coinmonks/mnemonic-generation-bip39-simply-explained-e9ac18db9477).
+  Duplicated by [#115](https://github.com/spectrecoin/spectre/issues/115)
+
 - [#214](https://github.com/spectrecoin/spectre/issues/214) Migrate Debian/Raspbian build to Buster.
-  For the next time binaries for both Stretch and Buster will be provided.
+  Binaries for both Stretch and Buster will be provided.
+
+- [#216](https://github.com/spectrecoin/spectre/issues/216) Tor Hidden Service v3 implementation + minor Tor improvements.
+  - Implementation of Tor Hidden Service v3.
+  - Creation of launch argument `-onionv2`, allowing the usage of legacy v2 addresses.
+  - Creation of an torrc-defaults file on Linux.
+  - By default, Tor will now use hardware crypto acceleration if available, only connect to Hidden Services,
+    and will write to disk less frequently, preserving the lifespan of SD cards on Raspbian.
+
 - [#218](https://github.com/spectrecoin/spectre/issues/218) Provide binaries for Ubuntu 19.04.
-  For the next time binaries for both Ubuntu 18.04 and 19.04 will be provided.
+  Binaries for both Ubuntu 18.04 and 19.04 will be provided.
+
+- Updated packaged Tor for MacOS and Windows to 0.4.1.5
 
 ## 4.0.0 (released 2019-09-08)
 **V4 blockchain fork consensus changes / Fork time is GMT: Friday, 27. September 2019 20:00:00 (1569614400 unix epoch time)**
