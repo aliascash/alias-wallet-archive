@@ -11,11 +11,18 @@ BUILD_DIR=cmake-build-android-cmdline
 
 MY_BOOST_LIBS_DIR=/home/spectre/coding/Boost-for-Android/build/out
 
+# Location of archive will be resolved like this:
+# ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
-BERKELEYDB_VERSION=4.8.30
+#BERKELEYDB_BUILD_VERSION=4.8.30
+BERKELEYDB_BUILD_VERSION=5.0.32
 
-#OPENSSL_VERSION=1.1.0l
-OPENSSL_VERSION=1.1.1d
+# Location of archive will be resolved like this:
+# ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+#OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
+OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
+#OPENSSL_BUILD_VERSION=1.1.0l
+OPENSSL_BUILD_VERSION=1.1.1d
 
 ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
 ANDROID_ABI=arm64-v8a
@@ -50,10 +57,10 @@ helpMe() {
         build runs.
     -b <version>
         BerkeleyDB version to use. Corresponding archive must be located
-        on ${BERKELEYDB_ARCHIVE_LOCATION}. Default: ${BERKELEYDB_VERSION}
+        on ${BERKELEYDB_ARCHIVE_LOCATION}. Default: ${BERKELEYDB_BUILD_VERSION}
     -o <version>
         OpenSSL version to use. Corresponding version will be downloaded
-        automatically. Default: ${OPENSSL_VERSION}
+        automatically. Default: ${OPENSSL_BUILD_VERSION}
     -h  Show this help
 
     "
@@ -68,10 +75,10 @@ FULLBUILD=false
 while getopts a:b:c:fo:h? option; do
     case ${option} in
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
-        b) BERKELEYDB_VERSION="${OPTARG}";;
+        b) BERKELEYDB_BUILD_VERSION="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
-        o) OPENSSL_VERSION="${OPTARG}";;
+        o) OPENSSL_BUILD_VERSION="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
@@ -101,14 +108,15 @@ cmake \
     -DANDROID=1 \
     \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
-    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_VERSION} \
-    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_VERSION%.*} \
+    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
+    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
     \
     -DMY_BOOST_LIBS_DIR=${MY_BOOST_LIBS_DIR} \
     \
     -DBUILD_OPENSSL=ON \
+    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
-    -DOPENSSL_BUILD_VERSION=${OPENSSL_VERSION} \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DCROSS_ANDROID=ON \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
     -DANDROID_ABI=${ANDROID_ABI} \
