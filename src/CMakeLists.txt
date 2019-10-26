@@ -202,7 +202,6 @@ else()
     # Link the daemon
     target_link_libraries(Spectrecoind
             PUBLIC
-            spectrecoin_lib
             ssl
             crypto
             Boost::boost
@@ -212,6 +211,7 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
+            spectrecoin_lib
             )
 endif ()
 
@@ -299,7 +299,6 @@ else()
     # Link the UI wallet
     target_link_libraries(Spectrecoin
             PUBLIC
-            spectrecoin_lib
             ssl
             crypto
             Qt5::Core
@@ -313,6 +312,7 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
+            spectrecoin_lib
             )
 endif ()
 
