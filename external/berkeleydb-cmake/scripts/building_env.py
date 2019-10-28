@@ -67,7 +67,7 @@ if not os.path.exists(target_dir):
 # read environment from file if cross-compiling
 if os_s == "LINUX_CROSS_ANDROID":
     expr = re.compile('^(.*?)="(.*?)"', re.MULTILINE | re.DOTALL)
-    f = open(binary_berkeleydb_dir_source+"/../../../buildenv.txt", "r")
+    f = open(binary_berkeleydb_dir_source+"../../../../buildenv.txt", "r")
     content = f.read()
     f.close()
 

@@ -110,7 +110,7 @@ else()
     elseif(CROSS_ANDROID)
         
         # Android specific configuration options
-        set(CONFIGURE_BERKELEYDB_MODULES ${CONFIGURE_BERKELEYDB_MODULES} no-hw)
+#        set(CONFIGURE_BERKELEYDB_MODULES ${CONFIGURE_BERKELEYDB_MODULES} no-hw)
                 
         # Silence warnings about unused arguments (Clang specific)
         set(CFLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
@@ -138,9 +138,10 @@ else()
         
         set(COMMAND_CONFIGURE ../dist/configure android-${BERKELEYDB_PLATFORM} ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
         set(COMMAND_TEST "true")
+        set(CONFIGURE_DIR build_android)
     else()                   # detect host system automatically
         set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
-        
+        set(CONFIGURE_DIR build_unix)
     endif()
     
     # Add berkeleydb target
@@ -152,16 +153,17 @@ else()
         UPDATE_COMMAND ""
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/db-atomic.patch
 
-        CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/build_unix ${COMMAND_CONFIGURE}
+        CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${COMMAND_CONFIGURE}
 
-        BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/build_unix ${MAKE_PROGRAM} -j ${NUM_JOBS}
+        BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
         BUILD_BYPRODUCTS ${BERKELEYDB_LIBDB_PATH}
 
-        INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/build_unix ${PERL_PATH_FIX_INSTALL}
-        COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/build_unix ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
+        INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
+        COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
         COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
 
         LOG_INSTALL 1
+        LOG_CONFIGURE 1
     )
 
     # set git config values to berkeleydb requirements (no impact on linux though)
