@@ -33,12 +33,16 @@ if(ANDROID)
             ${Boost_LIBRARIES}
             )
 else()
-#    # This is the UI wallet
-#    add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/main.cpp)
     target_link_libraries(spectrecoin_lib
             bdb
             leveldb
-            ${Boost_LIBRARIES}
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
             )
 endif()
 
@@ -48,10 +52,9 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        ${OPENSSL_INCLUDE_PATH}
         ${BERKELEYDB_INCLUDE_PATH}
         )
-
-
 
 # Common sources
 target_sources(spectrecoin_lib
@@ -192,18 +195,19 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 if (ANDROID)
     # Link the daemon for Android with different include settings
     target_link_libraries(Spectrecoind
-            PUBLIC
-            spectrecoin_lib
             ssl
             crypto
             ${Boost_LIBRARIES}
+            spectrecoin_lib
             )
 else()
     # Link the daemon
     target_link_libraries(Spectrecoind
-            PUBLIC
             ssl
             crypto
+            bdb
+            leveldb
+            spectrecoin_lib
             Boost::boost
             Boost::chrono
             Boost::filesystem
@@ -211,7 +215,6 @@ else()
             Boost::program_options
             Boost::system
             Boost::thread
-            spectrecoin_lib
             )
 endif ()
 
@@ -221,7 +224,27 @@ else()
     # The UI wallet
     add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
 
-    target_sources(Spectrecoin
+    # Link the UI wallet
+    target_link_libraries(Spectrecoin
+            ssl
+            crypto
+            bdb
+            leveldb
+            spectrecoin_lib
+            Boost::boost
+            Boost::chrono
+            Boost::filesystem
+            Boost::iostreams
+            Boost::program_options
+            Boost::system
+            Boost::thread
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::WebEngine
+            Qt5::WebEngineWidgets
+            )
+
+target_sources(Spectrecoin
             PUBLIC
             ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
@@ -295,25 +318,7 @@ else()
             ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.h
             )
     endif()
-
-    # Link the UI wallet
-    target_link_libraries(Spectrecoin
-            PUBLIC
-            ssl
-            crypto
-            Qt5::Core
-            Qt5::Widgets
-            Qt5::WebEngine
-            Qt5::WebEngineWidgets
-            Boost::boost
-            Boost::chrono
-            Boost::filesystem
-            Boost::iostreams
-            Boost::program_options
-            Boost::system
-            Boost::thread
-            spectrecoin_lib
-            )
 endif ()
 
 message(STATUS "BERKELEYDB_INCLUDE_PATH ${BERKELEYDB_INCLUDE_PATH}")
+message(STATUS "OPENSSL_INCLUDE_PATH ${OPENSSL_INCLUDE_PATH}")
