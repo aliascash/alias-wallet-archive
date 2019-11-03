@@ -41,11 +41,9 @@ const std::string CLIENT_NAME("Ghost_Protocol");
 //#    define GIT_COMMIT_DATE "$Format:%cD"
 //#endif
 //
-//#define BUILD_DESC_FROM_COMMIT(maj,min,rev,build,commit) \
-//    "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-g" commit
+//#define BUILD_DESC_FROM_COMMIT(maj,min,rev,build,commit) "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-g" commit
 //
-//#define BUILD_DESC_FROM_UNKNOWN(maj,min,rev,build) \
-//    "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-unk"
+//#define BUILD_DESC_FROM_UNKNOWN(maj,min,rev,build) "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-unk"
 
 #define DEFINE_PLAIN_VERSION(maj,min,rev,build) \
     "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build)
