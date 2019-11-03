@@ -74,9 +74,9 @@ To build the Spectrecoin wallet from source, you will need the following depende
  * Qt 5 with Qt Webengine if you want to build the GUI wallet. Qt is not needed for the
  console wallet.
 
-Additionally, you'll need the native C/C++ compiler for your platform and the basic
-dependencies needed for any kind of development. Because of Qt Webengine cross compiling
-is currently not possible.
+Additionally, you'll need the native C/C++ compiler for your platform, CMake at least in 
+version 3.14 and the basic dependencies needed for any kind of development. Because of 
+Qt Webengine cross compiling is currently not possible.
 
  * macOS - Xcode with Command Line Tools and clang, QTs QMAKE
  * Windows - [vcpkg](https://github.com/Microsoft/vcpkg) and MSVC, QTs QMAKE
@@ -127,13 +127,11 @@ To fetch the source code and build the wallet run the following commands:
 git clone --recursive https://github.com/spectrecoin/spectre
 cd spectre
 ./autogen.sh
-./configure --enable-gui
-make -j2  # Use a higher number if you have many cores and memory, leave
-          # '-j2' out if you are on a very low-powered system like Raspberry Pi
+./scripts/cmake-build.sh
 ```
 
-The resulting binaries will be in the `src` directory and called `spectre` for the GUI
-wallet and `spectrecoind` for the console wallet.
+The resulting binaries will be in the `src` directory and called `Spectrecoin` for the GUI
+wallet and `Spectrecoind` for the console wallet.
 
 Distribution specfic instructions are found in the corresponding dockerfile. See
 https://github.com/spectrecoin/spectre/tree/develop/Docker
