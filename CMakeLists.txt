@@ -196,15 +196,13 @@ endif ()
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
 set(BUILD_OPENSSL ON)
-set(OPENSSL_ENABLE_TESTS ON)
-set(OPENSSL_BUILD_VERSION OpenSSL_1_1_0g)
+set(OPENSSL_ENABLE_TESTS OFF)
 add_subdirectory(external/openssl-cmake)
 
 
 # ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")
 add_subdirectory(external/berkeleydb-cmake)
-
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
