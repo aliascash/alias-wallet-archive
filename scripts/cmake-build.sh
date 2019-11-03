@@ -60,6 +60,38 @@ helpMe() {
     "
 }
 
+checkOpenSSLArchive(){
+    info ""
+    if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
+    else
+        OPENSSL_ARCHIVE_URL=https://mirror.viaduck.org/openssl/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+        info "Downloading OpenSSL archive ${OPENSSL_ARCHIVE_URL}"
+        if [[ ! -e ${OPENSSL_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${OPENSSL_ARCHIVE_LOCATION}
+        fi
+        cd ${OPENSSL_ARCHIVE_LOCATION}
+        wget ${OPENSSL_ARCHIVE_URL}
+        cd -
+    fi
+}
+
+checkBerkeleyDBArchive(){
+    info ""
+    if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
+    else
+        BERKELEYDB_ARCHIVE_URL=https://download.oracle.com/berkeley-db/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
+        info "Downloading BerkeleyDB archive ${BERKELEYDB_ARCHIVE_URL}"
+        if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
+        fi
+        cd ${BERKELEYDB_ARCHIVE_LOCATION}
+        wget ${BERKELEYDB_ARCHIVE_URL}
+        cd -
+    fi
+}
+
 _init
 
 # Determine amount of cores:
@@ -94,6 +126,9 @@ if ${FULLBUILD} ; then
     rm -rf ./*
 fi
 
+checkBerkeleyDBArchive
+checkOpenSSLArchive
+
 info ""
 info "Generating build configuration"
 read -r -d '' cmd << EOM
@@ -114,6 +149,7 @@ echo "${cmd}"
 echo "=============================================================================="
 #read a
 ${cmd}
+#read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
@@ -124,7 +160,7 @@ cmake \
 
 rtc=$?
 info ""
-if [[ $rtc = 0 ]] ; then
+if [[ ${rtc} = 0 ]] ; then
     info "Finished"
 else
     error "Finished with return code ${rtc}"
