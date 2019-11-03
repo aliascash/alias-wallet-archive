@@ -20,8 +20,8 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 # ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
 #OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
 OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
-#OPENSSL_BUILD_VERSION=1.1.0l
-OPENSSL_BUILD_VERSION=1.1.1d
+OPENSSL_BUILD_VERSION=1.1.0l
+#OPENSSL_BUILD_VERSION=1.1.1d
 
 # Store path from where script was called, determine own location
 # and source helper content from there
