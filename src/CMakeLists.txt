@@ -201,20 +201,15 @@ if (ANDROID)
             spectrecoin_lib
             )
 else()
-    # Link the daemon
+    # Link the daemon as static binary
     target_link_libraries(Spectrecoind
             ssl
             crypto
             bdb
             leveldb
             spectrecoin_lib
-            Boost::boost
-            Boost::chrono
-            Boost::filesystem
-            Boost::iostreams
-            Boost::program_options
-            Boost::system
-            Boost::thread
+            ${Boost_LIBRARIES}
+            -static
             )
 endif ()
 
@@ -225,19 +220,14 @@ else()
     add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
 
     # Link the UI wallet
+    # QtWebEngine not static available, so no static binary here :-(
     target_link_libraries(Spectrecoin
             ssl
             crypto
             bdb
             leveldb
             spectrecoin_lib
-            Boost::boost
-            Boost::chrono
-            Boost::filesystem
-            Boost::iostreams
-            Boost::program_options
-            Boost::system
-            Boost::thread
+            ${Boost_LIBRARIES}
             Qt5::Core
             Qt5::Widgets
             Qt5::WebEngine

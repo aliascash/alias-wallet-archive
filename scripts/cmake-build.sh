@@ -9,6 +9,9 @@
 
 BUILD_DIR=cmake-build-cmdline
 
+BOOST_INCLUDEDIR=~/Boost/boost_1_69_0
+BOOST_LIBRARYDIR=~/Boost/boost_1_69_0/stage/lib
+
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
@@ -140,6 +143,8 @@ cmake \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
+    -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
+    -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     ..
 EOM
 
@@ -147,9 +152,9 @@ echo "==========================================================================
 echo "Executing the following CMake cmd:"
 echo "${cmd}"
 echo "=============================================================================="
-#read a
+read a
 ${cmd}
-#read a
+read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
