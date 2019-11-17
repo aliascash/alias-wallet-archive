@@ -9,9 +9,15 @@
 
 BUILD_DIR=cmake-build-cmdline
 
-BOOST_INCLUDEDIR=~/Boost/boost_1_69_0
-BOOST_LIBRARYDIR=~/Boost/boost_1_69_0/stage/lib
+##### ### # Boost # ### #####################################################
+# Location of Boost will be resolved by trying to find required Boost libs
+BOOST_VERSION=1.69.0
+BOOST_DIR=~/Boost
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0/stage/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
 
+##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
@@ -19,6 +25,7 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 #BERKELEYDB_BUILD_VERSION=5.0.32
 #BERKELEYDB_BUILD_VERSION=6.2.38
 
+##### ### # OpenSSL # ### ###################################################
 # Location of archive will be resolved like this:
 # ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
 #OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
@@ -26,6 +33,7 @@ OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
 
+# ===========================================================================
 # Store path from where script was called, determine own location
 # and source helper content from there
 callDir=$(pwd)
@@ -95,6 +103,37 @@ checkBerkeleyDBArchive(){
     fi
 }
 
+checkBoost(){
+    info ""
+    info "Searching required static Boost libs"
+    buildBoost=false
+    for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
+        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
+            info "${currentBoostDependency}: OK"
+        else
+            warning "${currentBoostDependency}: Not found!"
+            buildBoost=true
+        fi
+    done
+    if ${buildBoost} ; then
+        cd ${BOOST_DIR}
+        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
+            info "Downloading and extracting Boost archive"
+            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
+        else
+            info "Using existing Boost archive"
+        fi
+        rm -rf boost_${BOOST_VERSION//./_}
+        tar xzf boost_${BOOST_VERSION//./_}.tar.gz
+        info "Building Boost"
+        cd boost_${BOOST_VERSION//./_}
+#        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
+        ./bootstrap.sh
+        ./b2
+        cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
+    fi
+}
+
 _init
 
 # Determine amount of cores:
@@ -131,6 +170,7 @@ fi
 
 checkBerkeleyDBArchive
 checkOpenSSLArchive
+checkBoost
 
 info ""
 info "Generating build configuration"
@@ -152,9 +192,9 @@ echo "==========================================================================
 echo "Executing the following CMake cmd:"
 echo "${cmd}"
 echo "=============================================================================="
-read a
+#read a
 ${cmd}
-read a
+#read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
