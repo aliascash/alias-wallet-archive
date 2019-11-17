@@ -11,10 +11,10 @@ BUILD_DIR=cmake-build-android-cmdline
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.69.0
+BOOST_VERSION=1.68.0
 BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0_android
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0_android/stage/lib
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_68_0_android
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_68_0_android/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
 
 ##### ### # BerkeleyDB # ### ################################################
@@ -112,7 +112,7 @@ checkBoost(){
     info "Searching required static Boost libs"
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
+        if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]] ; then
             info "${currentBoostDependency}: OK"
         else
             warning "${currentBoostDependency}: Not found!"

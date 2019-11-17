@@ -11,10 +11,10 @@ BUILD_DIR=cmake-build-cmdline
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.69.0
+BOOST_VERSION=1.68.0
 BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0/stage/lib
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_68_0
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_68_0/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
 
 ##### ### # BerkeleyDB # ### ################################################
@@ -130,7 +130,7 @@ checkBoost(){
         cd boost_${BOOST_VERSION//./_}
 #        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
         ./bootstrap.sh
-        ./b2
+        ./b2 -j${CORES_TO_USE}
         cd "${currentDir}"
     fi
 }
