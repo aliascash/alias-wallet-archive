@@ -116,6 +116,7 @@ checkBoost(){
         fi
     done
     if ${buildBoost} ; then
+        local currentDir=$(pwd)
         cd ${BOOST_DIR}
         if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
             info "Downloading and extracting Boost archive"
@@ -130,7 +131,7 @@ checkBoost(){
 #        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
         ./bootstrap.sh
         ./b2
-        cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
+        cd "${currentDir}"
     fi
 }
 
