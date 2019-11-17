@@ -9,8 +9,15 @@
 
 BUILD_DIR=cmake-build-android-cmdline
 
-MY_BOOST_LIBS_DIR=/home/spectre/coding/Boost-for-Android/build/out
+##### ### # Boost # ### #####################################################
+# Location of Boost will be resolved by trying to find required Boost libs
+BOOST_VERSION=1.69.0
+BOOST_DIR=~/Boost
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0_android
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0_android/stage/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
 
+##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
 BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
@@ -18,12 +25,13 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 #BERKELEYDB_BUILD_VERSION=5.0.32
 #BERKELEYDB_BUILD_VERSION=6.2.38
 
+##### ### # OpenSSL # ### ###################################################
 # Location of archive will be resolved like this:
 # ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
 #OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
 OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
-#OPENSSL_BUILD_VERSION=1.1.0l
-OPENSSL_BUILD_VERSION=1.1.1d
+OPENSSL_BUILD_VERSION=1.1.0l
+#OPENSSL_BUILD_VERSION=1.1.1d
 
 ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
 ANDROID_ABI=arm64-v8a
@@ -99,6 +107,45 @@ checkBerkeleyDBArchive(){
     fi
 }
 
+checkBoost(){
+    info ""
+    info "Searching required static Boost libs"
+    buildBoost=false
+    for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
+        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
+            info "${currentBoostDependency}: OK"
+        else
+            warning "${currentBoostDependency}: Not found!"
+            buildBoost=true
+        fi
+    done
+    if ${buildBoost} ; then
+        local currentDir=$(pwd)
+        cd ${BOOST_DIR}
+        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
+            info "Downloading and extracting Boost archive"
+            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
+        else
+            info "Using existing Boost archive"
+        fi
+        rm -rf boost_${BOOST_VERSION//./_}_android
+        mkdir boost_${BOOST_VERSION//./_}_android
+        cd boost_${BOOST_VERSION//./_}_android
+        tar xzf ../boost_${BOOST_VERSION//./_}.tar.gz
+        cd boost_${BOOST_VERSION//./_}
+        mv * ../
+        cd -
+        rm -rf boost_${BOOST_VERSION//./_}
+        pwd
+        ls -l
+        info "Building Boost"
+
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION}
+
+        cd "${currentDir}"
+    fi
+}
+
 _init
 
 # Determine amount of cores:
@@ -136,6 +183,7 @@ fi
 
 checkBerkeleyDBArchive
 checkOpenSSLArchive
+checkBoost
 
 info ""
 info "Generating build configuration"
@@ -147,7 +195,8 @@ cmake \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
     \
-    -DMY_BOOST_LIBS_DIR=${MY_BOOST_LIBS_DIR} \
+    -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
+    -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     \
     -DBUILD_OPENSSL=ON \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
@@ -164,9 +213,9 @@ echo "==========================================================================
 echo "Executing the following CMake cmd:"
 echo "${cmd}"
 echo "=============================================================================="
-#read a
+read a
 ${cmd}
-#read a
+read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
