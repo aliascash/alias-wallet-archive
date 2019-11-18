@@ -11,11 +11,11 @@ BUILD_DIR=cmake-build-android-cmdline
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.68.0
+BOOST_VERSION=1.69.0
 BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_68_0_android
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_68_0_android/stage/lib
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0_android_arm64/include
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0_android_arm64/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
@@ -36,6 +36,9 @@ OPENSSL_BUILD_VERSION=1.1.0l
 ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
 ANDROID_ABI=arm64-v8a
 ANDROID_NDK_ROOT=/home/spectre/Android/ndk/20.0.5594570
+
+ANDROID_ARCH=arm64
+CMAKE_ANDROID_STANDALONE_TOOLCHAIN=/home/spectre/Android/standalone_toolchains/${ANDROID_ARCH}
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -107,6 +110,18 @@ checkBerkeleyDBArchive(){
     fi
 }
 
+disableUserConfig(){
+    if [[ -e ~/user-config.jam ]] ; then
+        mv ~/user-config.jam ~/user-config.jam.disabled
+    fi
+}
+
+enableUserConfig(){
+    if [[ -e ~/user-config.jam.disabled ]] ; then
+        mv ~/user-config.jam.disabled ~/user-config.jam
+    fi
+}
+
 checkBoost(){
     info ""
     info "Searching required static Boost libs"
@@ -140,7 +155,9 @@ checkBoost(){
         ls -l
         info "Building Boost"
 
+        enableUserConfig
         ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION}
+        disableUserConfig
 
         cd "${currentDir}"
     fi
@@ -190,6 +207,16 @@ info "Generating build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \
+    -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ARCH}-v8a \
+    -DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
+    -DANDROID_TOOLCHAIN_ROOT=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
+    -DANDROID_TOOLCHAIN_NAME=aarch64-linux-android \
+    \
+    -DCMAKE_ASM_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-as \
+    -DCMAKE_AR=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-ar \
+    -DCMAKE_LINKER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-ld \
+    -DCMAKE_C_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android21-clang \
+    -DCMAKE_CXX_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android21-clang++ \
     \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
@@ -202,12 +229,12 @@ cmake \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DCROSS_ANDROID=ON \
-    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
     -DANDROID_ABI=${ANDROID_ABI} \
-    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
+    -DCROSS_ANDROID=ON \
     ..
 EOM
+#    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
+#    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
 
 echo "=============================================================================="
 echo "Executing the following CMake cmd:"

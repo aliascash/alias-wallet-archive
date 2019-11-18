@@ -11,11 +11,11 @@ BUILD_DIR=cmake-build-cmdline
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.68.0
+BOOST_VERSION=1.69.0
 BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_68_0
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_68_0/stage/lib
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
+BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0
+BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0/stage/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
@@ -103,6 +103,18 @@ checkBerkeleyDBArchive(){
     fi
 }
 
+disableUserConfig(){
+    if [[ -e ~/user-config.jam ]] ; then
+        mv ~/user-config.jam ~/user-config.jam.disabled
+    fi
+}
+
+enableUserConfig(){
+    if [[ -e ~/user-config.jam.disabled ]] ; then
+        mv ~/user-config.jam.disabled ~/user-config.jam
+    fi
+}
+
 checkBoost(){
     info ""
     info "Searching required static Boost libs"
@@ -128,9 +140,11 @@ checkBoost(){
         tar xzf boost_${BOOST_VERSION//./_}.tar.gz
         info "Building Boost"
         cd boost_${BOOST_VERSION//./_}
-#        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
-        ./bootstrap.sh
+        disableUserConfig
+        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
+#        ./bootstrap.sh
         ./b2 -j${CORES_TO_USE}
+        enableUserConfig
         cd "${currentDir}"
     fi
 }
