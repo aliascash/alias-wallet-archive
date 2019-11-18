@@ -126,14 +126,19 @@ checkBoost(){
     info ""
     info "Searching required static Boost libs"
     buildBoost=false
-    for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
-        if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]] ; then
-            info "${currentBoostDependency}: OK"
-        else
-            warning "${currentBoostDependency}: Not found!"
-            buildBoost=true
-        fi
-    done
+    if [[ -d ${BOOST_LIBRARYDIR} ]] ; then
+        for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
+            if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]] ; then
+                info "${currentBoostDependency}: OK"
+            else
+                warning "${currentBoostDependency}: Not found!"
+                buildBoost=true
+            fi
+        done
+    else
+        warning "Boost library directory ${BOOST_LIBRARYDIR} not found!"
+        buildBoost=true
+    fi
     if ${buildBoost} ; then
         local currentDir=$(pwd)
         cd ${BOOST_DIR}
@@ -149,14 +154,12 @@ checkBoost(){
         tar xzf ../boost_${BOOST_VERSION//./_}.tar.gz
         cd boost_${BOOST_VERSION//./_}
         mv * ../
-        cd -
+        cd - >/dev/null
         rm -rf boost_${BOOST_VERSION//./_}
-        pwd
-        ls -l
         info "Building Boost"
 
         enableUserConfig
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION}
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -t ${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} -l ${BOOST_REQUIRED_LIBS// /,}
         disableUserConfig
 
         cd "${currentDir}"
