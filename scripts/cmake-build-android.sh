@@ -11,11 +11,13 @@ BUILD_DIR=cmake-build-android-cmdline
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.69.0
+BOOST_VERSION=1.68.0
 BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0_android_arm64/include
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0_android_arm64/lib
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
+BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_arm64
+BOOST_INCLUDEDIR=${BOOST_ROOT}/include
+BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
+# regex date_time atomic
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
@@ -33,12 +35,10 @@ OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
 
-ANDROID_TOOLCHAIN_CMAKE=/home/spectre/Android/ndk/20.0.5594570/build/cmake/android.toolchain.cmake
-ANDROID_ABI=arm64-v8a
-ANDROID_NDK_ROOT=/home/spectre/Android/ndk/20.0.5594570
-
+ANDROID_NDK_ROOT=/home/spectre/Android/ndk/android-ndk-r20
+ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
 ANDROID_ARCH=arm64
-CMAKE_ANDROID_STANDALONE_TOOLCHAIN=/home/spectre/Android/standalone_toolchains/${ANDROID_ARCH}
+ANDROID_ABI=arm64-v8a
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -159,7 +159,7 @@ checkBoost(){
         info "Building Boost"
 
         enableUserConfig
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -t ${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} -l ${BOOST_REQUIRED_LIBS// /,}
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
         disableUserConfig
 
         cd "${currentDir}"
@@ -211,9 +211,8 @@ read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \
     -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ARCH}-v8a \
-    -DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
-    -DANDROID_TOOLCHAIN_ROOT=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
-    -DANDROID_TOOLCHAIN_NAME=aarch64-linux-android \
+    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
+    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
     \
     -DCMAKE_ASM_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-as \
     -DCMAKE_AR=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-ar \
@@ -225,8 +224,11 @@ cmake \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
     \
+    -DBOOST_ROOT=${BOOST_ROOT} \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
+    -DBoost_INCLUDE_DIR=${BOOST_INCLUDEDIR} \
+    -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
     \
     -DBUILD_OPENSSL=ON \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
@@ -236,6 +238,10 @@ cmake \
     -DCROSS_ANDROID=ON \
     ..
 EOM
+#    -DANDROID_TOOLCHAIN_NAME=aarch64-linux-android \
+#    -DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
+#    -DANDROID_TOOLCHAIN_ROOT=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
+
 #    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
 #    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
 
