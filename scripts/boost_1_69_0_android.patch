@@ -1,0 +1,11 @@
+--- a/tools/build/src/engine/boehm_gc/libtool.m4
++++ b/tools/build/src/engine/boehm_gc/libtool.m4
+@@ -1559,7 +1559,7 @@
+ 
+ # This must be Linux ELF.
+ linux*)
+-  version_type=linux
++  version_type=none
+   need_lib_prefix=no
+   need_version=no
+   library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
