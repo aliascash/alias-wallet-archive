@@ -33,19 +33,6 @@ endif ()
 
 if (ANDROID)
     message(STATUS "Configuring for Android")
-#    set(ANDROID_ARM_MODE arm)
-##    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -fexceptions -g")
-##    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fexceptions -g")
-#    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#    set(CMAKE_CXX_EXTENSIONS OFF)
-#    set(C_STANDARD 11)
-#    set(CMAKE_C_STANDARD 11)
-#    set(CMAKE_C_STANDARD_REQUIRED ON)
-#    set(CMAKE_C_EXTENSIONS OFF)
-#    add_compile_definitions(__clang__)
-#    add_compile_definitions(__ANDROID__)
-##    add_compile_definitions(_POSIX_C_SOURCE)
-##    add_compile_definitions(_XOPEN_SOURCE)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
@@ -85,78 +72,25 @@ include(GNUInstallDirs)
 
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
-if (ANDROID)
-    message(STATUS "=== Boost (Android) ========================================================")
-    add_compile_definitions(BOOST_ASIO_ENABLE_OLD_SERVICES)
-    add_compile_definitions(BOOST_SPIRIT_THREADSAFE)
-    add_compile_definitions(BOOST_THREAD_USE_LIB)
-#    add_compile_definitions(BOOST_THREAD_POSIX)
-#    add_compile_definitions(BOOST_HAS_THREADS)
-    message(STATUS "= boost_chrono")
-    add_library(boost_chrono SHARED IMPORTED)
-    set_target_properties(boost_chrono PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_chrono-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_filesystem")
-    add_library(boost_filesystem SHARED IMPORTED)
-    set_target_properties(boost_filesystem PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_filesystem-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_iostreams")
-    add_library(boost_iostreams SHARED IMPORTED)
-    set_target_properties(boost_iostreams PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_iostreams-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_program_options")
-    add_library(boost_program_options SHARED IMPORTED)
-    set_target_properties(boost_program_options PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_program_options-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_system")
-    add_library(boost_system SHARED IMPORTED)
-    set_target_properties(boost_system PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_system-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_thread")
-    add_library(boost_thread SHARED IMPORTED)
-    set_target_properties(boost_thread PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_thread-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= boost_timer")
-    add_library(boost_timer SHARED IMPORTED)
-    set_target_properties(boost_timer PROPERTIES IMPORTED_LOCATION
-            ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/lib/libboost_timer-clang-mt-a32-1_70.a
-            )
-
-    message(STATUS "= Boost include dir")
-    include_directories(${MY_BOOST_INC_DIR}
-            )
-else ()
-    message(STATUS "=== Boost ==================================================================")
-    set(Boost_USE_STATIC_LIBS ON)
-    set(Boost_USE_DEBUG_LIBS OFF) # ignore debug libs and
-    set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
-    set(Boost_USE_MULTITHREADED ON)
-    set(Boost_USE_STATIC_RUNTIME ON)
-    find_package(Boost 1.65.1 REQUIRED COMPONENTS
-            chrono
-            filesystem
-            iostreams
-            program_options
-            system
-            thread
-            )
-    message(STATUS "Boost_VERSION:      ${Boost_VERSION}")
-    message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
-    message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-    message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
-endif ()
+message(STATUS "=== Boost ==================================================================")
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_DEBUG_LIBS OFF) # ignore debug libs and
+set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME ON)
+set(Boost_NO_SYSTEM_PATHS ON)
+find_package(Boost 1.65.1 REQUIRED COMPONENTS
+        chrono
+        filesystem
+        iostreams
+        program_options
+        system
+        thread
+        )
+message(STATUS "Boost_VERSION:      ${Boost_VERSION}")
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
+message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 
 
 # ============================================================================================
