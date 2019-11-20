@@ -197,7 +197,6 @@ if (ANDROID)
     target_link_libraries(Spectrecoind
             ssl
             crypto
-            ${Boost_LIBRARIES}
             spectrecoin_lib
             )
 else()
@@ -208,7 +207,6 @@ else()
             bdb
             leveldb
             spectrecoin_lib
-            ${Boost_LIBRARIES}
             -static
             )
 endif ()
@@ -227,7 +225,6 @@ else()
             bdb
             leveldb
             spectrecoin_lib
-            ${Boost_LIBRARIES}
             Qt5::Core
             Qt5::Widgets
             Qt5::WebEngine
