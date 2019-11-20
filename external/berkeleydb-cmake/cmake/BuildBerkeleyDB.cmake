@@ -111,7 +111,10 @@ else()
         
         # Android specific configuration options
 #        set(CONFIGURE_BERKELEYDB_MODULES ${CONFIGURE_BERKELEYDB_MODULES} no-hw)
-                
+
+        set(CFLAGS ${CMAKE_C_FLAGS})
+        set(CXXFLAGS ${CMAKE_CXX_FLAGS})
+
         # Silence warnings about unused arguments (Clang specific)
         set(CFLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
         set(CXXFLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
@@ -122,21 +125,46 @@ else()
         endif()
         
         if (ARMEABI_V7A)
-            set(BERKELEYDB_PLATFORM "arm")
+            set(BERKELEYDB_PLATFORM "armeabi")
             set(CONFIGURE_BERKELEYDB_PARAMS ${CONFIGURE_BERKELEYDB_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(BERKELEYDB_PLATFORM "arm64")
+                set(BERKELEYDB_PLATFORM "aarch64")
             else()
                 set(BERKELEYDB_PLATFORM ${CMAKE_ANDROID_ARCH_ABI})
             endif()
         endif()
-                
+
+        set(ANDROID_STRING "android")
+        if (CMAKE_ANDROID_ARCH_ABI MATCHES "64")
+            set(ANDROID_STRING "${ANDROID_STRING}64")
+        endif()
+
+        # copy over both sysroots to a common sysroot (workaround OpenSSL failing without one single sysroot)
+        string(REPLACE "-clang" "" ANDROID_TOOLCHAIN_NAME ${ANDROID_TOOLCHAIN_NAME})
+        file(COPY ${ANDROID_TOOLCHAIN_ROOT}/sysroot/usr/lib/${ANDROID_TOOLCHAIN_NAME}/${ANDROID_PLATFORM_LEVEL}/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/sysroot/usr/lib/)
+        file(COPY ${ANDROID_TOOLCHAIN_ROOT}/sysroot/usr/lib/${ANDROID_TOOLCHAIN_NAME}/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/sysroot/usr/lib/ PATTERN *.*)
+        file(COPY ${CMAKE_SYSROOT}/usr/include DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/sysroot/usr/)
+
         # ... but we have to convert all the CMake options to environment variables!
-        set(PATH "${ANDROID_TOOLCHAIN_ROOT}/bin/:${ANDROID_TOOLCHAIN_ROOT}/${ANDROID_TOOLCHAIN_NAME}/bin/")
+        set(CROSS_SYSROOT ${CMAKE_CURRENT_BINARY_DIR}/sysroot/)
+        set(AS ${CMAKE_ASM_COMPILER})
+        set(AR ${CMAKE_AR})
+        set(LD ${CMAKE_LINKER})
         set(LDFLAGS ${CMAKE_MODULE_LINKER_FLAGS})
-        
-        set(COMMAND_CONFIGURE ../dist/configure android-${BERKELEYDB_PLATFORM} ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
+
+        # have to surround variables with double quotes, otherwise they will be merged together without any separator
+        set(CC "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_C_COMPILER_TARGET}")
+
+        message(STATUS "AS: ${AS}")
+        message(STATUS "AR: ${AR}")
+        message(STATUS "LD: ${LD}")
+        message(STATUS "LDFLAGS: ${LDFLAGS}")
+        message(STATUS "CC: ${CC}")
+        message(STATUS "OPENSSL_PLATFORM: ${OPENSSL_PLATFORM}")
+        message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
+
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} ${CONFIGURE_BERKELEYDB_MODULES})
         set(COMMAND_TEST "true")
         set(CONFIGURE_DIR build_android)
     else()                   # detect host system automatically
