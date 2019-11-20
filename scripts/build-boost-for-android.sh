@@ -77,4 +77,4 @@ info "Building..."
     install
 
 info "Done!"
-read a
+#read a

@@ -241,9 +241,9 @@ echo "==========================================================================
 echo "Executing the following CMake cmd:"
 echo "${cmd}"
 echo "=============================================================================="
-read a
+#read a
 ${cmd}
-read a
+#read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
