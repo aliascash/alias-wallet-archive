@@ -9,6 +9,13 @@
 
 BUILD_DIR=cmake-build-android-cmdline
 
+##### ### # Android # ### ###################################################
+ANDROID_NDK_ROOT=/home/spectre/Android/ndk/android-ndk-r20
+ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
+ANDROID_ARCH=arm64
+ANDROID_ABI=arm64-v8a
+ANDROID_API=23
+
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.68.0
@@ -34,11 +41,6 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
-
-ANDROID_NDK_ROOT=/home/spectre/Android/ndk/android-ndk-r20
-ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
-ANDROID_ARCH=arm64
-ANDROID_ABI=arm64-v8a
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -210,15 +212,12 @@ info "Generating build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \
+    -DCMAKE_ANDROID_API=${ANDROID_API} \
+    -DANDROID_PLATFORM=${ANDROID_API} \
     -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ARCH}-v8a \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
     -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
-    \
-    -DCMAKE_ASM_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-as \
-    -DCMAKE_AR=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-ar \
-    -DCMAKE_LINKER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android-ld \
-    -DCMAKE_C_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android21-clang \
-    -DCMAKE_CXX_COMPILER=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN}/bin/aarch64-linux-android21-clang++ \
+    -DANDROID_ABI=${ANDROID_ABI} \
     \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
@@ -234,16 +233,9 @@ cmake \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DANDROID_ABI=${ANDROID_ABI} \
     -DCROSS_ANDROID=ON \
     ..
 EOM
-#    -DANDROID_TOOLCHAIN_NAME=aarch64-linux-android \
-#    -DCMAKE_ANDROID_STANDALONE_TOOLCHAIN=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
-#    -DANDROID_TOOLCHAIN_ROOT=${CMAKE_ANDROID_STANDALONE_TOOLCHAIN} \
-
-#    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
-#    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
 
 echo "=============================================================================="
 echo "Executing the following CMake cmd:"
