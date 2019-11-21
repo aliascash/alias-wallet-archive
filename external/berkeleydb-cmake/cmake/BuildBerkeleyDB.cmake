@@ -155,12 +155,14 @@ else()
 
         # have to surround variables with double quotes, otherwise they will be merged together without any separator
         set(CC "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_C_COMPILER_TARGET}")
+        set(CXX "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_CXX_COMPILER_TARGET}")
 
-        message(STATUS "AS: ${AS}")
-        message(STATUS "AR: ${AR}")
-        message(STATUS "LD: ${LD}")
+        message(STATUS "AS:  ${AS}")
+        message(STATUS "AR:  ${AR}")
+        message(STATUS "LD:  ${LD}")
         message(STATUS "LDFLAGS: ${LDFLAGS}")
-        message(STATUS "CC: ${CC}")
+        message(STATUS "CC:  ${CC}")
+        message(STATUS "CXX: ${CXX}")
         message(STATUS "OPENSSL_PLATFORM: ${OPENSSL_PLATFORM}")
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
