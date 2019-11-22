@@ -22,29 +22,20 @@ file(WRITE ${DUMMY_SOURCE} "")
 
 add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
-if(ANDROID)
-    target_include_directories(spectrecoin_lib
-        SYSTEM BEFORE PUBLIC
-        ${MY_BOOST_LIBS_DIR}/${ANDROID_ABI}/include/boost-1_70
-    )
-    target_link_libraries(spectrecoin_lib
-            bdb
-            leveldb
-            ${Boost_LIBRARIES}
-            )
-else()
-    target_link_libraries(spectrecoin_lib
-            bdb
-            leveldb
-            Boost::boost
-            Boost::chrono
-            Boost::filesystem
-            Boost::iostreams
-            Boost::program_options
-            Boost::system
-            Boost::thread
-            )
-endif()
+target_link_libraries(spectrecoin_lib
+        bdb
+        leveldb
+        Boost::atomic
+        Boost::boost
+        Boost::chrono
+        Boost::date_time
+        Boost::filesystem
+        Boost::iostreams
+        Boost::program_options
+        Boost::regex
+        Boost::system
+        Boost::thread
+        )
 
 target_include_directories(spectrecoin_lib
         SYSTEM BEFORE PUBLIC
