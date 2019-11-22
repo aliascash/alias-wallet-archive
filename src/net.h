@@ -543,6 +543,7 @@ public:
         }
 
         if (ssSend.size() == 0) {
+            LEAVE_CRITICAL_SECTION(cs_vSend);
             return;
         }
 
