@@ -23,7 +23,7 @@ BOOST_DIR=~/Boost
 BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_arm64
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
 BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread'
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
 ##### ### # BerkeleyDB # ### ################################################

@@ -81,10 +81,13 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost 1.65.1 REQUIRED COMPONENTS
+        atomic
         chrono
+        date_time
         filesystem
         iostreams
         program_options
+        regex
         system
         thread
         )
