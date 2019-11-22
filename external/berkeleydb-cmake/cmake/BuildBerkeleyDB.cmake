@@ -182,6 +182,7 @@ else()
         ${BERKELEYDB_CHECK_HASH}
         UPDATE_COMMAND ""
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/db-atomic.patch
+        COMMAND patch -p1 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/fix-string-is-not-a-string-literal.patch
 
         CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${COMMAND_CONFIGURE}
 
