@@ -18,7 +18,7 @@ ANDROID_API=23
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.68.0
+BOOST_VERSION=1.69.0
 BOOST_DIR=~/Boost
 BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_arm64
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
