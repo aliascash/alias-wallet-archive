@@ -161,7 +161,7 @@ checkBoost(){
         info "Building Boost"
 
         enableUserConfig
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -b ${ANDROID_ABI} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
         disableUserConfig
 
         cd "${currentDir}"
