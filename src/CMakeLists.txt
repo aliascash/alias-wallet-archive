@@ -183,24 +183,15 @@ endif ()
 # The daemon
 add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
-if (ANDROID)
-    # Link the daemon for Android with different include settings
-    target_link_libraries(Spectrecoind
-            ssl
-            crypto
-            spectrecoin_lib
-            )
-else()
-    # Link the daemon as static binary
-    target_link_libraries(Spectrecoind
-            ssl
-            crypto
-            bdb
-            leveldb
-            spectrecoin_lib
-            -static
-            )
-endif ()
+# Link the daemon as static binary
+target_link_libraries(Spectrecoind
+        ssl
+        crypto
+        bdb
+        leveldb
+        spectrecoin_lib
+        -static
+        )
 
 if (ANDROID)
     message(STATUS "Skipping Qt for Android build")
@@ -300,3 +291,4 @@ endif ()
 
 message(STATUS "BERKELEYDB_INCLUDE_PATH ${BERKELEYDB_INCLUDE_PATH}")
 message(STATUS "OPENSSL_INCLUDE_PATH ${OPENSSL_INCLUDE_PATH}")
+message(STATUS "OPENSSL_API_COMPAT ${OPENSSL_API_COMPAT}")
