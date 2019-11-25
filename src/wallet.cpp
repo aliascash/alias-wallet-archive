@@ -3877,7 +3877,7 @@ bool CWallet::GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAdd
         sxAddress = *it;
         return true;
     };
-
+    return false;
 }
 
 
