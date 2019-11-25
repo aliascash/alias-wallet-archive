@@ -7,20 +7,18 @@
 #
 # ===========================================================================
 
-BUILD_DIR=cmake-build-android-cmdline
-
 ##### ### # Android # ### ###################################################
 ANDROID_NDK_ROOT=/home/spectre/Android/ndk/android-ndk-r20
 ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
-ANDROID_ARCH=arm64
-ANDROID_ABI=arm64-v8a
+ANDROID_ARCH=x86_64
+ANDROID_ABI=x86_64
 ANDROID_API=23
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.69.0
 BOOST_DIR=~/Boost
-BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_arm64
+BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
 BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
@@ -41,6 +39,8 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
+
+BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
 
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -161,7 +161,7 @@ checkBoost(){
         info "Building Boost"
 
         enableUserConfig
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -b ${ANDROID_ABI} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
         disableUserConfig
 
         cd "${currentDir}"

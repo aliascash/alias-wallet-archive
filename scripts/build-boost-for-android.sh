@@ -49,10 +49,21 @@ done
 info "Building boost $BOOST_VERSION..."
 cd ${callDir}
 
+case ${ANDROID_ARCH} in
+    arm64)
+        jamEntry1="7.0~arm64"
+        jamEntry2="aarch64"
+        ;;
+    *)
+        jamEntry1="${ANDROID_ARCH}"
+        jamEntry2="${ANDROID_ARCH}"
+        ;;
+esac
+
 set -eu
 info "Generating config..."
-echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > arm64-v8a-config.jam
-echo "using clang : 7.0~arm64 : \$(ndk)/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android23-clang++ ;" >> arm64-v8a-config.jam
+echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > ${ANDROID_ARCH}-config.jam
+echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/linux-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
 
 info "Patching..."
 patch -p1 < ${ownLocation}/boost_1_69_0_android.patch
@@ -66,13 +77,13 @@ info "Building..."
     -j 15 \
     --reconfigure \
     target-os=android \
-    toolset=clang-7.0~arm64 \
+    toolset=clang-${jamEntry1} \
     link=static \
     variant=release \
     threading=multi \
     cxxflags="-std=c++14 -fPIC" \
     --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
-    --user-config=arm64-v8a-config.jam \
+    --user-config=${ANDROID_ARCH}-config.jam \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install
 
