@@ -17,8 +17,8 @@ ANDROID_API=23
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.69.0
-BOOST_DIR=~/Boost
-BOOST_ROOT=${BOOST_DIR}/boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+BOOST_ARCHIVE_LOCATION=~/Boost
+BOOST_ROOT=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
 BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
@@ -42,6 +42,7 @@ OPENSSL_BUILD_VERSION=1.1.0l
 
 BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
 
+# ===========================================================================
 # Store path from where script was called, determine own location
 # and source helper content from there
 callDir=$(pwd)
@@ -112,18 +113,6 @@ checkBerkeleyDBArchive(){
     fi
 }
 
-disableUserConfig(){
-    if [[ -e ~/user-config.jam ]] ; then
-        mv ~/user-config.jam ~/user-config.jam.disabled
-    fi
-}
-
-enableUserConfig(){
-    if [[ -e ~/user-config.jam.disabled ]] ; then
-        mv ~/user-config.jam.disabled ~/user-config.jam
-    fi
-}
-
 checkBoost(){
     info ""
     info "Searching required static Boost libs"
@@ -143,27 +132,28 @@ checkBoost(){
     fi
     if ${buildBoost} ; then
         local currentDir=$(pwd)
-        cd ${BOOST_DIR}
+        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${BOOST_ARCHIVE_LOCATION}
+        fi
+        cd ${BOOST_ARCHIVE_LOCATION}
         if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info "Downloading and extracting Boost archive"
+            info "Downloading Boost archive"
             wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
         else
             info "Using existing Boost archive"
         fi
-        rm -rf boost_${BOOST_VERSION//./_}_android
-        mkdir boost_${BOOST_VERSION//./_}_android
-        cd boost_${BOOST_VERSION//./_}_android
+        info "Cleanup before extraction"
+        rm -rf boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+        mkdir boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+        cd boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+        info "Extracting Boost archive"
         tar xzf ../boost_${BOOST_VERSION//./_}.tar.gz
         cd boost_${BOOST_VERSION//./_}
         mv * ../
         cd - >/dev/null
         rm -rf boost_${BOOST_VERSION//./_}
         info "Building Boost"
-
-        enableUserConfig
         ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
-        disableUserConfig
-
         cd "${currentDir}"
     fi
 }
@@ -231,8 +221,8 @@ cmake \
     \
     -DBUILD_OPENSSL=ON \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
-    -DOPENSSL_API_COMPAT=0x00908000L \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
+    -DOPENSSL_API_COMPAT=0x00908000L \
     -DCROSS_ANDROID=ON \
     ..
 EOM

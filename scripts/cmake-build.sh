@@ -7,14 +7,12 @@
 #
 # ===========================================================================
 
-BUILD_DIR=cmake-build-cmdline
-
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.69.0
-BOOST_DIR=~/Boost
-BOOST_INCLUDEDIR=${BOOST_DIR}/boost_1_69_0
-BOOST_LIBRARYDIR=${BOOST_DIR}/boost_1_69_0/stage/lib
+BOOST_ARCHIVE_LOCATION=~/Boost
+BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0
+BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 
 ##### ### # BerkeleyDB # ### ################################################
@@ -32,6 +30,8 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
+
+BUILD_DIR=cmake-build-cmdline
 
 # ===========================================================================
 # Store path from where script was called, determine own location
@@ -103,18 +103,6 @@ checkBerkeleyDBArchive(){
     fi
 }
 
-disableUserConfig(){
-    if [[ -e ~/user-config.jam ]] ; then
-        mv ~/user-config.jam ~/user-config.jam.disabled
-    fi
-}
-
-enableUserConfig(){
-    if [[ -e ~/user-config.jam.disabled ]] ; then
-        mv ~/user-config.jam.disabled ~/user-config.jam
-    fi
-}
-
 checkBoost(){
     info ""
     info "Searching required static Boost libs"
@@ -129,22 +117,25 @@ checkBoost(){
     done
     if ${buildBoost} ; then
         local currentDir=$(pwd)
-        cd ${BOOST_DIR}
+        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${BOOST_ARCHIVE_LOCATION}
+        fi
+        cd ${BOOST_ARCHIVE_LOCATION}
         if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info "Downloading and extracting Boost archive"
+            info "Downloading Boost archive"
             wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
         else
             info "Using existing Boost archive"
         fi
+        info "Cleanup before extraction"
         rm -rf boost_${BOOST_VERSION//./_}
+        info "Extracting Boost archive"
         tar xzf boost_${BOOST_VERSION//./_}.tar.gz
         info "Building Boost"
         cd boost_${BOOST_VERSION//./_}
-        disableUserConfig
-        ./bootstrap.sh --with-libraries=${BOOST_REQUIRED_LIBS// /,}
+        ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
 #        ./bootstrap.sh
-        ./b2 -j${CORES_TO_USE}
-        enableUserConfig
+        ./b2 -j"${CORES_TO_USE}"
         cd "${currentDir}"
     fi
 }
@@ -191,17 +182,17 @@ info ""
 info "Generating build configuration"
 read -r -d '' cmd << EOM
 cmake \
-    -DBUILD_OPENSSL=ON \
-    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
-    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DOPENSSL_API_COMPAT=0x00908000L \
-    \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
     \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
+    \
+    -DBUILD_OPENSSL=ON \
+    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
+    -DOPENSSL_API_COMPAT=0x00908000L \
     ..
 EOM
 
