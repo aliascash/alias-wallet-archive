@@ -1724,6 +1724,13 @@ static void run_tor() {
             fprintf(file, "#\n");
             fprintf(file, "# If non-zero, try to use built-in (static) crypto hardware acceleration when available.\n");
             fprintf(file, "HardwareAccel 1\n");
+#if defined(ANDROID) || defined(__ANDROID__)
+            fprintf(file, "# If it is set to 0, Tor will not send any padding cells. This option should be offered to mobile users for use where bandwidth may be expensive.\n");
+            fprintf(file, "ConnectionPadding 0\n");
+            fprintf(file, "#\n");
+            fprintf(file, "# If set to 1, Tor will not not hold OR connections open for very long. This option should be offered to mobile users for use where bandwidth may be expensive.\n");
+            fprintf(file, "ReducedConnectionPadding 1\n");
+#endif
             fclose(file);
         }
     }
