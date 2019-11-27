@@ -102,7 +102,7 @@ Makefile\.am\.user
 # CLion/IntelliJ files
 .idea/
 *.iml
-cmake-build-*/
+cmake-*/
 
 moc_predefs.h
 /build-tests-Desktop_Qt*

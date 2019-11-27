@@ -17,8 +17,8 @@ ARCHIVES_ROOT_DIR=/home/spectre
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.69.0
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0/stage/lib
+BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
+BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 
 ##### ### # BerkeleyDB # ### ################################################
@@ -36,6 +36,30 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
+
+##### ### # EventLib # ### ##################################################
+# Location of archive will be resolved like this:
+# ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
+EVENTLIB_ARCHIVE_LOCATION=~/EventLib
+EVENTLIB_BUILD_VERSION=2.1.11
+
+##### ### # ZLib # ### ######################################################
+# Location of archive will be resolved like this:
+# ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
+ZLIB_ARCHIVE_LOCATION=~/ZLib
+ZLIB_BUILD_VERSION=1.2.11
+
+##### ### # XZLib # ### #####################################################
+# Location of archive will be resolved like this:
+# ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
+XZLIB_ARCHIVE_LOCATION=~/XZLib
+XZLIB_BUILD_VERSION=5.2.4
+
+##### ### # Tor # ### #######################################################
+# Location of archive will be resolved like this:
+# ${XZLIB_ARCHIVE_LOCATION}/tor-${XZLIB_BUILD_VERSION}.tar.gz
+TOR_ARCHIVE_LOCATION=~/Tor
+TOR_BUILD_VERSION=0.4.1.6
 
 BUILD_DIR=cmake-build-cmdline
 
@@ -66,12 +90,6 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -b <version>
-        BerkeleyDB version to use. Corresponding archive must be located
-        on ${BERKELEYDB_ARCHIVE_LOCATION}. Default: ${BERKELEYDB_BUILD_VERSION}
-    -o <version>
-        OpenSSL version to use. Corresponding version will be downloaded
-        automatically. Default: ${OPENSSL_BUILD_VERSION}
     -h  Show this help
 
     "
@@ -146,18 +164,80 @@ checkBoost(){
     fi
 }
 
+checkEventLibArchive(){
+    info ""
+    if [[ -e "${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz" ]] ; then
+        info "Using EventLib archive ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz"
+    else
+        EVENTLIB_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${EVENTLIB_BUILD_VERSION}-stable/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
+        info "Downloading EventLib archive ${EVENTLIB_ARCHIVE_URL}"
+        if [[ ! -e ${EVENTLIB_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${EVENTLIB_ARCHIVE_LOCATION}
+        fi
+        cd ${EVENTLIB_ARCHIVE_LOCATION}
+        wget ${EVENTLIB_ARCHIVE_URL}
+        cd -
+    fi
+}
+
+checkZLibArchive(){
+    info ""
+    if [[ -e "${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using ZLib archive ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz"
+    else
+        ZLIB_ARCHIVE_URL=https://github.com/madler/zlib/archive/v${ZLIB_BUILD_VERSION}.tar.gz
+        info "Downloading ZLib archive ${ZLIB_ARCHIVE_URL}"
+        if [[ ! -e ${ZLIB_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${ZLIB_ARCHIVE_LOCATION}
+        fi
+        cd ${ZLIB_ARCHIVE_LOCATION}
+        wget ${ZLIB_ARCHIVE_URL}
+        cd -
+    fi
+}
+
+checkXZLibArchive(){
+    info ""
+    if [[ -e "${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using XZLib archive ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz"
+    else
+        XZLIB_ARCHIVE_URL=https://tukaani.org/xz/xz-${XZLIB_BUILD_VERSION}.tar.gz
+        info "Downloading XZLib archive ${ZLIB_ARCHIVE_URL}"
+        if [[ ! -e ${XZLIB_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${XZLIB_ARCHIVE_LOCATION}
+        fi
+        cd ${XZLIB_ARCHIVE_LOCATION}
+        wget ${XZLIB_ARCHIVE_URL}
+        cd -
+    fi
+}
+
+checkTorArchive(){
+    info ""
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
+    else
+        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
+        info "Downloading Tor archive ${ZLIB_ARCHIVE_URL}"
+        if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${TOR_ARCHIVE_LOCATION}
+        fi
+        cd ${TOR_ARCHIVE_LOCATION}
+        wget ${TOR_ARCHIVE_URL}
+        cd -
+    fi
+}
+
 _init
 
 # Determine amount of cores:
 CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
 FULLBUILD=false
 
-while getopts b:c:fo:h? option; do
+while getopts c:fh? option; do
     case ${option} in
-        b) BERKELEYDB_BUILD_VERSION="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
-        o) OPENSSL_BUILD_VERSION="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
@@ -181,8 +261,12 @@ if ${FULLBUILD} ; then
 fi
 
 checkBerkeleyDBArchive
-checkOpenSSLArchive
 checkBoost
+checkEventLibArchive
+checkOpenSSLArchive
+checkTorArchive
+checkXZLibArchive
+checkZLibArchive
 
 info ""
 info "Generating build configuration"
@@ -194,6 +278,22 @@ cmake \
     \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
+    \
+    -DEVENTLIB_ARCHIVE_LOCATION=${EVENTLIB_ARCHIVE_LOCATION} \
+    -DEVENTLIB_BUILD_VERSION=${EVENTLIB_BUILD_VERSION} \
+    -DEVENTLIB_BUILD_VERSION_SHORT=${EVENTLIB_BUILD_VERSION%.*} \
+    \
+    -DZLIB_ARCHIVE_LOCATION=${ZLIB_ARCHIVE_LOCATION} \
+    -DZLIB_BUILD_VERSION=${ZLIB_BUILD_VERSION} \
+    -DZLIB_BUILD_VERSION_SHORT=${ZLIB_BUILD_VERSION%.*} \
+    \
+    -DXZLIB_ARCHIVE_LOCATION=${XZLIB_ARCHIVE_LOCATION} \
+    -DXZLIB_BUILD_VERSION=${XZLIB_BUILD_VERSION} \
+    -DXZLIB_BUILD_VERSION_SHORT=${XZLIB_BUILD_VERSION%.*} \
+    \
+    -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
+    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
+    -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
     \
     -DBUILD_OPENSSL=ON \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
