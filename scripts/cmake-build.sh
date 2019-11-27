@@ -7,10 +7,16 @@
 #
 # ===========================================================================
 
+##### ### # Global definitions # ### ########################################
+# Windows with msys2
+#ARCHIVES_ROOT_DIR=C:/msys64/home/starw
+# Linux
+ARCHIVES_ROOT_DIR=/home/spectre
+
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_VERSION=1.69.0
-BOOST_ARCHIVE_LOCATION=~/Boost
+BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
 BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0
 BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_1_69_0/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
@@ -18,7 +24,7 @@ BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread r
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
-BERKELEYDB_ARCHIVE_LOCATION=~/BerkeleyDB
+BERKELEYDB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/BerkeleyDB
 BERKELEYDB_BUILD_VERSION=4.8.30
 #BERKELEYDB_BUILD_VERSION=5.0.32
 #BERKELEYDB_BUILD_VERSION=6.2.38
@@ -27,7 +33,7 @@ BERKELEYDB_BUILD_VERSION=4.8.30
 # Location of archive will be resolved like this:
 # ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
 #OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
-OPENSSL_ARCHIVE_LOCATION=~/OpenSSL
+OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
 OPENSSL_BUILD_VERSION=1.1.0l
 #OPENSSL_BUILD_VERSION=1.1.1d
 
