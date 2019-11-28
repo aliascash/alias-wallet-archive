@@ -100,6 +100,7 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -t  Build with included Tor
     -h  Show this help
 
     "
@@ -251,12 +252,14 @@ _init
 # Determine amount of cores:
 CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
 FULLBUILD=false
+WITH_TOR=''
 
-while getopts a:c:fh? option; do
+while getopts a:c:fth? option; do
     case ${option} in
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        t) WITH_TOR="-DWITH_TOR=ON";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
@@ -330,6 +333,7 @@ cmake \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
     -DCROSS_ANDROID=ON \
+    ${WITH_TOR} \
     ..
 EOM
 

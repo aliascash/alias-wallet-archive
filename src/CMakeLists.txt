@@ -184,14 +184,30 @@ endif ()
 add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
 # Link the daemon as static binary
-target_link_libraries(Spectrecoind
-        ssl
-        crypto
-        bdb
-        leveldb
-        spectrecoin_lib
-        -static
-        )
+# ============================================================================================
+if (WITH_TOR)
+    target_link_libraries(Spectrecoind
+            ssl
+            crypto
+            bdb
+            leveldb
+            spectrecoin_lib
+            eventlib
+            zlib
+            xzlib
+            tor
+            -static
+            )
+else()
+    target_link_libraries(Spectrecoind
+            ssl
+            crypto
+            bdb
+            leveldb
+            spectrecoin_lib
+            -static
+            )
+endif()
 
 if (ANDROID)
     message(STATUS "Skipping Qt for Android build")
