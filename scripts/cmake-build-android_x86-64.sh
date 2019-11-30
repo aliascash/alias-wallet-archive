@@ -250,7 +250,8 @@ checkNDKArchive(){
         if [[ -e "${ANDROID_NDK_ARCHIVE}" ]] ; then
             info "Using existing NDK archive"
         else
-            info "Downloading NDK archive"
+            ANDROID_NDK_ARCHIVE_URL=https://dl.google.com/android/repository/${ANDROID_NDK_ARCHIVE}
+            info "Downloading NDK archive ${ANDROID_NDK_ARCHIVE_URL}"
             wget ${ANDROID_NDK_ARCHIVE_URL}
         fi
         info "Cleanup before extraction"
