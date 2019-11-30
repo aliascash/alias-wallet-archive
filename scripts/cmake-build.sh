@@ -231,8 +231,25 @@ checkTorArchive(){
 
 _init
 
+# Determine system
 # Determine amount of cores:
-CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    CORES_TO_USE=$(system_profiler SPHardwareDataType | grep "Total Number of Cores" | tr -s " " | cut -d " " -f 6)
+#elif [[ "$OSTYPE" == "cygwin" ]]; then
+#    # POSIX compatibility layer and Linux environment emulation for Windows
+#elif [[ "$OSTYPE" == "msys" ]]; then
+#    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+#elif [[ "$OSTYPE" == "win32" ]]; then
+#    # I'm not sure this can happen.
+#elif [[ "$OSTYPE" == "freebsd"* ]]; then
+#    CORES_TO_USE=1
+else
+    CORES_TO_USE=1
+fi
+
 FULLBUILD=false
 WITH_TOR=''
 
