@@ -7,62 +7,6 @@
 #
 # ===========================================================================
 
-##### ### # Global definitions # ### ########################################
-# Windows with msys2
-#ARCHIVES_ROOT_DIR=C:/msys64/home/starw
-# Linux
-ARCHIVES_ROOT_DIR=/home/starwarsfan
-
-##### ### # Boost # ### #####################################################
-# Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.69.0
-BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
-
-##### ### # BerkeleyDB # ### ################################################
-# Location of archive will be resolved like this:
-# ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
-BERKELEYDB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/BerkeleyDB
-BERKELEYDB_BUILD_VERSION=4.8.30
-#BERKELEYDB_BUILD_VERSION=5.0.32
-#BERKELEYDB_BUILD_VERSION=6.2.38
-
-##### ### # OpenSSL # ### ###################################################
-# Location of archive will be resolved like this:
-# ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
-#OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
-OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
-OPENSSL_BUILD_VERSION=1.1.0l
-#OPENSSL_BUILD_VERSION=1.1.1d
-
-##### ### # EventLib # ### ##################################################
-# Location of archive will be resolved like this:
-# ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
-EVENTLIB_ARCHIVE_LOCATION=~/EventLib
-EVENTLIB_BUILD_VERSION=2.1.11
-
-##### ### # ZLib # ### ######################################################
-# Location of archive will be resolved like this:
-# ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
-ZLIB_ARCHIVE_LOCATION=~/ZLib
-ZLIB_BUILD_VERSION=1.2.11
-
-##### ### # XZLib # ### #####################################################
-# Location of archive will be resolved like this:
-# ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
-XZLIB_ARCHIVE_LOCATION=~/XZLib
-XZLIB_BUILD_VERSION=5.2.4
-
-##### ### # Tor # ### #######################################################
-# Location of archive will be resolved like this:
-# ${XZLIB_ARCHIVE_LOCATION}/tor-${XZLIB_BUILD_VERSION}.tar.gz
-TOR_ARCHIVE_LOCATION=~/Tor
-TOR_BUILD_VERSION=0.4.1.6
-
-BUILD_DIR=cmake-build-cmdline
-
 # ===========================================================================
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -70,6 +14,50 @@ callDir=$(pwd)
 ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
 . ./include/helpers_console.sh
+_init
+. ./include/handle_buildconfig.sh
+
+##### ### # Global definitions # ### ########################################
+##### ### # Boost # ### #####################################################
+# Location of Boost will be resolved by trying to find required Boost libs
+BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
+BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
+BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
+# regex date_time atomic
+
+##### ### # BerkeleyDB # ### ################################################
+# Location of archive will be resolved like this:
+# ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
+BERKELEYDB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/BerkeleyDB
+
+##### ### # OpenSSL # ### ###################################################
+# Location of archive will be resolved like this:
+# ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
+#OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
+OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
+
+##### ### # EventLib # ### ##################################################
+# Location of archive will be resolved like this:
+# ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
+EVENTLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/EventLib
+
+##### ### # ZLib # ### ######################################################
+# Location of archive will be resolved like this:
+# ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
+ZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/ZLib
+
+##### ### # XZLib # ### #####################################################
+# Location of archive will be resolved like this:
+# ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
+XZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
+
+##### ### # Tor # ### #######################################################
+# Location of archive will be resolved like this:
+# ${XZLIB_ARCHIVE_LOCATION}/tor-${XZLIB_BUILD_VERSION}.tar.gz
+TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
+
+BUILD_DIR=cmake-build-cmdline
 
 helpMe() {
     echo "
@@ -228,8 +216,6 @@ checkTorArchive(){
         cd -
     fi
 }
-
-_init
 
 # Determine system
 # Determine amount of cores:

@@ -7,14 +7,20 @@
 #
 # ===========================================================================
 
-##### ### # Global definitions # ### ########################################
-# Windows with msys2
-#ARCHIVES_ROOT_DIR=C:/msys64/home/starw
-# Linux
-ARCHIVES_ROOT_DIR=/home/spectre
+# ===========================================================================
+# Store path from where script was called, determine own location
+# and source helper content from there
+callDir=$(pwd)
+ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
+. ./include/helpers_console.sh
+_init
+. ./include/handle_buildconfig.sh
 
+##### ### # Global definitions # ### ########################################
 ##### ### # Android # ### ###################################################
-ANDROID_NDK_ROOT=${ARCHIVES_ROOT_DIR}/Android/ndk/android-ndk-r20
+ANDROID_NDK_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Android
+ANDROID_NDK_ROOT=${ANDROID_NDK_ARCHIVE_LOCATION}/android-ndk-${ANDROID_NDK_VERSION}
 ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
 ANDROID_ARCH=arm64
 ANDROID_ABI=arm64-v8a
@@ -22,7 +28,6 @@ ANDROID_API=23
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
-BOOST_VERSION=1.69.0
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
 BOOST_ROOT=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
@@ -34,51 +39,34 @@ BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread r
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
 BERKELEYDB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/BerkeleyDB
-BERKELEYDB_BUILD_VERSION=4.8.30
-#BERKELEYDB_BUILD_VERSION=5.0.32
-#BERKELEYDB_BUILD_VERSION=6.2.38
 
 ##### ### # OpenSSL # ### ###################################################
 # Location of archive will be resolved like this:
 # ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
 #OPENSSL_ARCHIVE_LOCATION=https://mirror.viaduck.org/openssl
 OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
-OPENSSL_BUILD_VERSION=1.1.0l
-#OPENSSL_BUILD_VERSION=1.1.1d
 
 ##### ### # EventLib # ### ##################################################
 # Location of archive will be resolved like this:
 # ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
-EVENTLIB_ARCHIVE_LOCATION=~/EventLib
-EVENTLIB_BUILD_VERSION=2.1.11
+EVENTLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/EventLib
 
 ##### ### # ZLib # ### ######################################################
 # Location of archive will be resolved like this:
 # ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
-ZLIB_ARCHIVE_LOCATION=~/ZLib
-ZLIB_BUILD_VERSION=1.2.11
+ZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/ZLib
 
 ##### ### # XZLib # ### #####################################################
 # Location of archive will be resolved like this:
 # ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
-XZLIB_ARCHIVE_LOCATION=~/XZLib
-XZLIB_BUILD_VERSION=5.2.4
+XZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 
 ##### ### # Tor # ### #######################################################
 # Location of archive will be resolved like this:
 # ${XZLIB_ARCHIVE_LOCATION}/tor-${XZLIB_BUILD_VERSION}.tar.gz
-TOR_ARCHIVE_LOCATION=~/Tor
-TOR_BUILD_VERSION=0.4.1.6
+TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
 BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
-
-# ===========================================================================
-# Store path from where script was called, determine own location
-# and source helper content from there
-callDir=$(pwd)
-ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
-. ./include/helpers_console.sh
 
 helpMe() {
     echo "
@@ -118,7 +106,7 @@ checkOpenSSLArchive(){
         fi
         cd ${OPENSSL_ARCHIVE_LOCATION}
         wget ${OPENSSL_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -134,7 +122,7 @@ checkBerkeleyDBArchive(){
         fi
         cd ${BERKELEYDB_ARCHIVE_LOCATION}
         wget ${BERKELEYDB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -195,7 +183,7 @@ checkEventLibArchive(){
         fi
         cd ${EVENTLIB_ARCHIVE_LOCATION}
         wget ${EVENTLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -211,7 +199,7 @@ checkZLibArchive(){
         fi
         cd ${ZLIB_ARCHIVE_LOCATION}
         wget ${ZLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -227,7 +215,7 @@ checkXZLibArchive(){
         fi
         cd ${XZLIB_ARCHIVE_LOCATION}
         wget ${XZLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -243,7 +231,33 @@ checkTorArchive(){
         fi
         cd ${TOR_ARCHIVE_LOCATION}
         wget ${TOR_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
+    fi
+}
+
+checkNDKArchive(){
+    info ""
+    info "Searching Android toolchain file ${ANDROID_TOOLCHAIN_CMAKE}"
+    if [[ -e ${ANDROID_TOOLCHAIN_CMAKE} ]] ; then
+        info "Found it! :-)"
+    else
+        warning "Android toolchain file ${ANDROID_TOOLCHAIN_CMAKE} not found!"
+        local currentDir=$(pwd)
+        if [[ ! -e ${ANDROID_NDK_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${ANDROID_NDK_ARCHIVE_LOCATION}
+        fi
+        cd ${ANDROID_NDK_ARCHIVE_LOCATION}
+        if [[ -e "${ANDROID_NDK_ARCHIVE}" ]] ; then
+            info "Using existing NDK archive"
+        else
+            info "Downloading NDK archive"
+            wget ${ANDROID_NDK_ARCHIVE_URL}
+        fi
+        info "Cleanup before extraction"
+        rm -rf android-ndk-${ANDROID_NDK_VERSION}
+        info "Extracting NDK archive"
+        unzip ${ANDROID_NDK_ARCHIVE}
+        cd - >/dev/null
     fi
 }
 
@@ -253,9 +267,11 @@ _init
 # Determine amount of cores:
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
+    ANDROID_NDK_ARCHIVE=android-ndk-${ANDROID_NDK_VERSION}-linux-x86_64.zip
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # Mac OSX
     CORES_TO_USE=$(system_profiler SPHardwareDataType | grep "Total Number of Cores" | tr -s " " | cut -d " " -f 6)
+    ANDROID_NDK_ARCHIVE=android-ndk-${ANDROID_NDK_VERSION}-darwin-x86_64.zip
 #elif [[ "$OSTYPE" == "cygwin" ]]; then
 #    # POSIX compatibility layer and Linux environment emulation for Windows
 #elif [[ "$OSTYPE" == "msys" ]]; then
@@ -299,6 +315,7 @@ if ${FULLBUILD} ; then
     rm -rf ./*
 fi
 
+checkNDKArchive
 checkBoost
 checkBerkeleyDBArchive
 checkOpenSSLArchive
