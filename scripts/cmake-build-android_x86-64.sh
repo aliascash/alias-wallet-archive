@@ -269,14 +269,14 @@ else
 fi
 
 FULLBUILD=false
-WITH_TOR=''
+WITH_TOR=false
 
 while getopts a:c:fth? option; do
     case ${option} in
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
-        t) WITH_TOR="-DWITH_TOR=ON";;
+        t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
@@ -299,13 +299,15 @@ if ${FULLBUILD} ; then
     rm -rf ./*
 fi
 
-checkBerkeleyDBArchive
 checkBoost
-checkEventLibArchive
+checkBerkeleyDBArchive
 checkOpenSSLArchive
-checkTorArchive
-checkXZLibArchive
-checkZLibArchive
+if ${WITH_TOR} ; then
+    checkEventLibArchive
+    checkXZLibArchive
+    checkZLibArchive
+    checkTorArchive
+fi
 
 info ""
 info "Generating build configuration"
@@ -329,6 +331,15 @@ cmake \
     -DBoost_INCLUDE_DIR=${BOOST_INCLUDEDIR} \
     -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
     \
+    -DBUILD_OPENSSL=ON \
+    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
+    -DOPENSSL_API_COMPAT=0x00908000L
+EOM
+if ${WITH_TOR} ; then
+    read -r -d '' cmd << EOM
+${cmd} \
+    \
     -DEVENTLIB_ARCHIVE_LOCATION=${EVENTLIB_ARCHIVE_LOCATION} \
     -DEVENTLIB_BUILD_VERSION=${EVENTLIB_BUILD_VERSION} \
     -DEVENTLIB_BUILD_VERSION_SHORT=${EVENTLIB_BUILD_VERSION%.*} \
@@ -345,14 +356,15 @@ cmake \
     -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
     -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
     \
-    -DBUILD_OPENSSL=ON \
-    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
-    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DOPENSSL_API_COMPAT=0x00908000L \
-    -DCROSS_ANDROID=ON \
-    ${WITH_TOR} \
+    -DWITH_TOR=ON \
     ..
 EOM
+else
+    read -r -d '' cmd << EOM
+${cmd} \
+    ..
+EOM
+fi
 
 echo "=============================================================================="
 echo "Executing the following CMake cmd:"
