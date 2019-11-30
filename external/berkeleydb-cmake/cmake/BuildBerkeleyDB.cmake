@@ -177,7 +177,7 @@ else()
     ExternalProject_Add(berkeleydb
 #        URL https://download.oracle.com/otn/berkeley-db/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
 #        URL file:///home/spectre/db-6.2.38.zip
-        URL ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
+        URL ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
         ${BERKELEYDB_CHECK_HASH}
         UPDATE_COMMAND ""
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/db-atomic.patch

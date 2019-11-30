@@ -11,7 +11,7 @@
 # Windows with msys2
 #ARCHIVES_ROOT_DIR=C:/msys64/home/starw
 # Linux
-ARCHIVES_ROOT_DIR=/home/spectre
+ARCHIVES_ROOT_DIR=/home/starwarsfan
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
@@ -23,7 +23,7 @@ BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread r
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
-# ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.zip
+# ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
 BERKELEYDB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/BerkeleyDB
 BERKELEYDB_BUILD_VERSION=4.8.30
 #BERKELEYDB_BUILD_VERSION=5.0.32
@@ -77,7 +77,7 @@ helpMe() {
     Helper script to build Spectrecoin wallet and daemon using CMake.
     Assumptions:
     - The BerkeleyDB archive to use must be located on ${BERKELEYDB_ARCHIVE_LOCATION}
-    - Naming must be default like 'db-4.8.30.zip'
+    - Naming must be default like 'db-4.8.30.tar.gz'
 
     Usage:
     ${0} [options]
