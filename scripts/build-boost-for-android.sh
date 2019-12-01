@@ -1,10 +1,5 @@
 #!/bin/bash
 
-ANDROID_NDK_ROOT=/home/spectre/Android/ndk/android-ndk-r20
-BOOST_VERSION=1.68.0
-BOOST_LIBS_TO_BUILD=chrono
-ANDROID_ARCH=arm64
-
 # ===========================================================================
 # Store path from where script was called, determine own location
 # and source helper content from there
@@ -12,6 +7,13 @@ callDir=$(pwd)
 ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
 . ./include/helpers_console.sh
+_init
+. ./include/handle_buildconfig.sh
+
+ANDROID_NDK_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Android
+ANDROID_NDK_ROOT=${ANDROID_NDK_ARCHIVE_LOCATION}/android-ndk-${ANDROID_NDK_VERSION}
+ANDROID_ARCH=arm64
+BOOST_LIBS_TO_BUILD=chrono
 
 helpMe() {
     echo "
@@ -32,8 +34,6 @@ helpMe() {
 
     "
 }
-
-_init
 
 while getopts a:l:n:v:h? option; do
     case ${option} in
@@ -72,7 +72,19 @@ info "Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
 ./bootstrap.sh #--with-libraries=${BOOST_LIBS_TO_BUILD}
 
-info "Building..."
+info "Building boost with './b2 -d+2 \
+    -j 15 \
+    --reconfigure \
+    target-os=android \
+    toolset=clang-${jamEntry1} \
+    link=static \
+    variant=release \
+    threading=multi \
+    cxxflags="-std=c++14 -fPIC" \
+    --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
+    --user-config=${ANDROID_ARCH}-config.jam \
+    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
+    install'"
 ./b2 -d+2 \
     -j 15 \
     --reconfigure \
@@ -86,6 +98,5 @@ info "Building..."
     --user-config=${ANDROID_ARCH}-config.jam \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install
-
 info "Done!"
 #read a
