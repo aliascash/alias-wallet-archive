@@ -262,8 +262,6 @@ checkNDKArchive(){
     fi
 }
 
-_init
-
 # Determine system
 # Determine amount of cores:
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
