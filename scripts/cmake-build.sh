@@ -96,7 +96,7 @@ checkOpenSSLArchive(){
         fi
         cd ${OPENSSL_ARCHIVE_LOCATION}
         wget ${OPENSSL_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -112,7 +112,7 @@ checkBerkeleyDBArchive(){
         fi
         cd ${BERKELEYDB_ARCHIVE_LOCATION}
         wget ${BERKELEYDB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -165,7 +165,7 @@ checkEventLibArchive(){
         fi
         cd ${EVENTLIB_ARCHIVE_LOCATION}
         wget ${EVENTLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -181,7 +181,7 @@ checkZLibArchive(){
         fi
         cd ${ZLIB_ARCHIVE_LOCATION}
         wget ${ZLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -197,7 +197,7 @@ checkXZLibArchive(){
         fi
         cd ${XZLIB_ARCHIVE_LOCATION}
         wget ${XZLIB_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
@@ -213,7 +213,7 @@ checkTorArchive(){
         fi
         cd ${TOR_ARCHIVE_LOCATION}
         wget ${TOR_ARCHIVE_URL}
-        cd -
+        cd - >/dev/null
     fi
 }
 
