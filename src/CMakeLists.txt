@@ -25,6 +25,8 @@ add_library(spectrecoin_lib ${DUMMY_SOURCE})
 target_link_libraries(spectrecoin_lib
         bdb
         leveldb
+        ssl
+        crypto
         Boost::atomic
         Boost::boost
         Boost::chrono
