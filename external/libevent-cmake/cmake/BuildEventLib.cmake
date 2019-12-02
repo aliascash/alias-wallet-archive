@@ -172,8 +172,8 @@ else()
         set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_EVENTLIB_PARAMS} ${CONFIGURE_EVENTLIB_MODULES})
     endif()
 
-    # Add eventlib target
-    ExternalProject_Add(libevent
+    # Add libevent target
+    ExternalProject_Add(libeventExternal
             URL ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
             ${EVENTLIB_CHECK_HASH}
             UPDATE_COMMAND ""
@@ -189,8 +189,8 @@ else()
             LOG_CONFIGURE 1
             )
 
-    # set git config values to eventlib requirements (no impact on linux though)
-    #    ExternalProject_Add_Step(eventlib setGitConfig
+    # set git config values to libevent requirements (no impact on linux though)
+    #    ExternalProject_Add_Step(libevent setGitConfig
     #        COMMAND ${GIT_EXECUTABLE} config --global core.autocrlf false
     #        COMMAND ${GIT_EXECUTABLE} config --global core.eol lf
     #        DEPENDEES
@@ -213,7 +213,7 @@ else()
     ##
 
     # Set git config values to previous values
-    #    ExternalProject_Add_Step(eventlib restoreGitConfig
+    #    ExternalProject_Add_Step(libevent restoreGitConfig
     #        # Unset first (is required, since old value could be omitted, which wouldn't take any effect in "set"
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.autocrlf
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.eol
@@ -235,5 +235,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(event_lib PROPERTIES IMPORTED_LOCATION ${EVENTLIB_PATH})
+    set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${EVENTLIB_PATH})
 endif()

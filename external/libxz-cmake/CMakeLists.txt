@@ -24,7 +24,7 @@
 #
 
 cmake_minimum_required(VERSION 3.2)
-project(xzlib-cmake)
+project(libxz-cmake)
 
 set(XZLIB_ARCHIVE_LOCATION OFF CACHE STRING "Location of XZLib archive")
 set(XZLIB_BUILD_VERSION OFF CACHE STRING "XZLib version to build")
@@ -36,12 +36,12 @@ set(CROSS_TARGET OFF CACHE STRING "Cross-compilation target")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # Mimic system db targets
-add_library(xzlib INTERFACE)
+add_library(libxz INTERFACE)
 
 # Set up fake targets
-add_library(xz_lib STATIC IMPORTED GLOBAL)
+add_library(lib_xz STATIC IMPORTED GLOBAL)
 
-target_link_libraries(xzlib INTERFACE xz_lib)
+target_link_libraries(libxz INTERFACE lib_xz)
 
 # Set up prefix
 set(XZLIB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
@@ -56,10 +56,10 @@ set(XZLIB_INCLUDE_PATH ${XZLIB_PREFIX}/usr/local/include PARENT_SCOPE)
 include(BuildXZLib)
 
 # Set import locations
-set_target_properties(xz_lib PROPERTIES IMPORTED_LOCATION ${XZLIB_PATH})
+set_target_properties(lib_xz PROPERTIES IMPORTED_LOCATION ${XZLIB_PATH})
 
 # Set include locations
-target_include_directories(xzlib BEFORE INTERFACE ${XZLIB_PREFIX}/usr/local/XZLib.${XZLIB_BUILD_VERSION_SHORT}/include)
+target_include_directories(libxz BEFORE INTERFACE ${XZLIB_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
-add_dependencies(xz_lib event)
+add_dependencies(lib_xz event)

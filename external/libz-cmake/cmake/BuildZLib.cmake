@@ -170,8 +170,8 @@ else()
         set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_ZLIB_PARAMS} ${CONFIGURE_ZLIB_MODULES})
     endif()
 
-    # Add zlib target
-    ExternalProject_Add(libz
+    # Add libz target
+    ExternalProject_Add(libzExternal
             URL ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
             ${ZLIB_CHECK_HASH}
             UPDATE_COMMAND ""
@@ -186,8 +186,8 @@ else()
             LOG_CONFIGURE 1
             )
 
-    # set git config values to zlib requirements (no impact on linux though)
-    #    ExternalProject_Add_Step(zlib setGitConfig
+    # set git config values to libz requirements (no impact on linux though)
+    #    ExternalProject_Add_Step(libz setGitConfig
     #        COMMAND ${GIT_EXECUTABLE} config --global core.autocrlf false
     #        COMMAND ${GIT_EXECUTABLE} config --global core.eol lf
     #        DEPENDEES
@@ -210,7 +210,7 @@ else()
     ##
 
     # Set git config values to previous values
-    #    ExternalProject_Add_Step(zlib restoreGitConfig
+    #    ExternalProject_Add_Step(libz restoreGitConfig
     #        # Unset first (is required, since old value could be omitted, which wouldn't take any effect in "set"
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.autocrlf
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.eol
@@ -232,5 +232,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(z_lib PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
+    set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
 endif()

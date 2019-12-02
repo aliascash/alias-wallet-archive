@@ -194,9 +194,9 @@ if (WITH_TOR)
             bdb
             leveldb
             spectrecoin_lib
-            eventlib
-            zlib
-            xzlib
+            libevent
+            libz
+            libxz
             tor
             -static
             )

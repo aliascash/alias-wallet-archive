@@ -24,7 +24,7 @@
 #
 
 cmake_minimum_required(VERSION 3.2)
-project(zlib-cmake)
+project(libz-cmake)
 
 set(ZLIB_ARCHIVE_LOCATION OFF CACHE STRING "Location of ZLib archive")
 set(ZLIB_BUILD_VERSION OFF CACHE STRING "ZLib version to build")
@@ -36,12 +36,12 @@ set(CROSS_TARGET OFF CACHE STRING "Cross-compilation target")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # Mimic system db targets
-add_library(zlib INTERFACE)
+add_library(libz INTERFACE)
 
 # Set up fake targets
-add_library(z_lib STATIC IMPORTED GLOBAL)
+add_library(lib_z STATIC IMPORTED GLOBAL)
 
-target_link_libraries(zlib INTERFACE z_lib)
+target_link_libraries(libz INTERFACE lib_z)
 
 # Set up prefix
 set(ZLIB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
@@ -56,10 +56,10 @@ set(ZLIB_INCLUDE_PATH ${ZLIB_PREFIX}/usr/local/include PARENT_SCOPE)
 include(BuildZLib)
 
 # Set import locations
-set_target_properties(z_lib PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
+set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
 
 # Set include locations
-target_include_directories(zlib BEFORE INTERFACE ${ZLIB_PREFIX}/usr/local/ZLib.${ZLIB_BUILD_VERSION_SHORT}/include)
+target_include_directories(libz BEFORE INTERFACE ${ZLIB_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
-add_dependencies(z_lib event)
+add_dependencies(lib_z event)
