@@ -97,16 +97,24 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # disable everything we dont need
-    set(CONFIGURE_TOR_MODULES--enable-static-libevent --enable-static-openssl --enable-static-zlib --disable-systemd --disable-lzma --disable-seccomp)
+    set(CONFIGURE_TOR_MODULES
+            --enable-static-libevent
+            --enable-static-openssl
+            --enable-static-zlib
+            --disable-systemd
+            --disable-lzma
+            --disable-seccomp
+            )
 
     # additional configure script parameters
     set(CONFIGURE_TOR_PARAMS
             --disable-gcc-hardening
             --disable-system-torrc
             --disable-asciidoc
-            --with-libevent-dir=${eventlib-cmake_BINARY_DIR}/usr/local/lib
-            --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/lib
-            --with-zlib-dir=${xzlib-cmake_BINARY_DIR}/usr/local/lib
+            --disable-tool-name-check
+            --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local
+            --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local
+            --with-zlib-dir=${libxz-cmake_BINARY_DIR}/usr/local
             --enable-pic
             )
 
@@ -132,13 +140,13 @@ else()
         endif()
 
         if (ARMEABI_V7A)
-            set(TOR_PLATFORM "--host armeabi")
+            set(TOR_PLATFORM "--host=armeabi")
             #set(CONFIGURE_TOR_PARAMS ${CONFIGURE_TOR_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(TOR_PLATFORM "--host arm")
+                set(TOR_PLATFORM "--host=arm")
             else()
-                set(TOR_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
+                set(TOR_PLATFORM "--host=${CMAKE_ANDROID_ARCH_ABI}")
             endif()
         endif()
 
@@ -181,12 +189,12 @@ else()
     endif()
 
     # Add tor target
-    ExternalProject_Add(libtor
+    ExternalProject_Add(libtorExternal
             URL ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl_lib z_lib xz_lib event_lib
+            DEPENDS ssl libz libxz libevent
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
             BUILD_BYPRODUCTS ${TOR_PATH}
