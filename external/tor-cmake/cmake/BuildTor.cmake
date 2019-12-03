@@ -113,9 +113,9 @@ else()
             --disable-system-torrc
             --disable-asciidoc
             --disable-tool-name-check
-            --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local
-            --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local
-            --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local
+            --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local/
+            --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/
+            --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local/
             --enable-pic
             )
 
@@ -195,7 +195,7 @@ else()
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl libz libevent
+            DEPENDS ssl_lib lib_z lib_event
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
             BUILD_BYPRODUCTS ${TOR_LIBTOR_PATH}
@@ -206,7 +206,7 @@ else()
             LOG_BUILD 1
             LOG_INSTALL 1
             )
-#    ExternalProject_Add_StepDependencies(libtorExternal install libeventExternal libzExternal)
+#    ExternalProject_Add_StepDependencies(libtorExternal install openssl libeventExternal libzExternal)
 
     # set git config values to libtor requirements (no impact on linux though)
     #    ExternalProject_Add_Step(libtor setGitConfig
