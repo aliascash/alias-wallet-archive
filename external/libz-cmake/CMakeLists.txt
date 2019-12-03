@@ -26,8 +26,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(libz-cmake)
 
-set(ZLIB_ARCHIVE_LOCATION OFF CACHE STRING "Location of ZLib archive")
-set(ZLIB_BUILD_VERSION OFF CACHE STRING "ZLib version to build")
+set(LIBZ_ARCHIVE_LOCATION OFF CACHE STRING "Location of ZLib archive")
+set(LIBZ_BUILD_VERSION OFF CACHE STRING "ZLib version to build")
 set(CROSS_ANDROID OFF CACHE BOOL "Cross-compiling for Android?")
 set(CROSS OFF CACHE BOOL "Cross-compiling?")
 set(CROSS_TARGET OFF CACHE STRING "Cross-compilation target")
@@ -44,22 +44,22 @@ add_library(lib_z STATIC IMPORTED GLOBAL)
 target_link_libraries(libz INTERFACE lib_z)
 
 # Set up prefix
-set(ZLIB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "ZLIB_PREFIX: ${ZLIB_PREFIX}")
+set(LIBZ_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "LIBZ_PREFIX: ${LIBZ_PREFIX}")
 
-set(ZLIB_PATH ${ZLIB_PREFIX}/usr/local/lib/libz.a)
-message(STATUS "ZLIB_PATH ${ZLIB_PATH}")
+set(LIBZ_PATH ${LIBZ_PREFIX}/usr/local/lib/libz.a)
+message(STATUS "LIBZ_PATH ${LIBZ_PATH}")
 
-set(ZLIB_INCLUDE_PATH ${ZLIB_PREFIX}/usr/local/include PARENT_SCOPE)
+set(LIBZ_INCLUDE_PATH ${LIBZ_PREFIX}/usr/local/include PARENT_SCOPE)
 
 # Set up ZLib target
 include(BuildZLib)
 
 # Set import locations
-set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
+set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${LIBZ_PATH})
 
 # Set include locations
-target_include_directories(libz BEFORE INTERFACE ${ZLIB_PREFIX}/usr/local/include)
+target_include_directories(libz BEFORE INTERFACE ${LIBZ_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
 add_dependencies(lib_z event)

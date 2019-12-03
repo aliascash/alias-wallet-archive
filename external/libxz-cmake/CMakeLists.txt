@@ -26,8 +26,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(libxz-cmake)
 
-set(XZLIB_ARCHIVE_LOCATION OFF CACHE STRING "Location of XZLib archive")
-set(XZLIB_BUILD_VERSION OFF CACHE STRING "XZLib version to build")
+set(LIBXZ_ARCHIVE_LOCATION OFF CACHE STRING "Location of XZLib archive")
+set(LIBXZ_BUILD_VERSION OFF CACHE STRING "XZLib version to build")
 set(CROSS_ANDROID OFF CACHE BOOL "Cross-compiling for Android?")
 set(CROSS OFF CACHE BOOL "Cross-compiling?")
 set(CROSS_TARGET OFF CACHE STRING "Cross-compilation target")
@@ -44,22 +44,22 @@ add_library(lib_xz STATIC IMPORTED GLOBAL)
 target_link_libraries(libxz INTERFACE lib_xz)
 
 # Set up prefix
-set(XZLIB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "XZLIB_PREFIX: ${XZLIB_PREFIX}")
+set(LIBXZ_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "LIBXZ_PREFIX: ${LIBXZ_PREFIX}")
 
-set(XZLIB_PATH ${XZLIB_PREFIX}/usr/local/lib/liblzma.a)
-message(STATUS "XZLIB_PATH ${XZLIB_PATH}")
+set(LIBXZ_PATH ${LIBXZ_PREFIX}/usr/local/lib/liblzma.a)
+message(STATUS "LIBXZ_PATH ${LIBXZ_PATH}")
 
-set(XZLIB_INCLUDE_PATH ${XZLIB_PREFIX}/usr/local/include PARENT_SCOPE)
+set(LIBXZ_INCLUDE_PATH ${LIBXZ_PREFIX}/usr/local/include PARENT_SCOPE)
 
 # Set up XZLib target
 include(BuildXZLib)
 
 # Set import locations
-set_target_properties(lib_xz PROPERTIES IMPORTED_LOCATION ${XZLIB_PATH})
+set_target_properties(lib_xz PROPERTIES IMPORTED_LOCATION ${LIBXZ_PATH})
 
 # Set include locations
-target_include_directories(libxz BEFORE INTERFACE ${XZLIB_PREFIX}/usr/local/include)
+target_include_directories(libxz BEFORE INTERFACE ${LIBXZ_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
 add_dependencies(lib_xz event)

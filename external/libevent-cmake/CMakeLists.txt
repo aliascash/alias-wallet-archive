@@ -26,8 +26,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(libevent-cmake)
 
-set(EVENTLIB_ARCHIVE_LOCATION OFF CACHE STRING "Location of EventLib archive")
-set(EVENTLIB_BUILD_VERSION OFF CACHE STRING "EventLib version to build")
+set(LIBEVENT_ARCHIVE_LOCATION OFF CACHE STRING "Location of EventLib archive")
+set(LIBEVENT_BUILD_VERSION OFF CACHE STRING "EventLib version to build")
 set(CROSS_ANDROID OFF CACHE BOOL "Cross-compiling for Android?")
 set(CROSS OFF CACHE BOOL "Cross-compiling?")
 set(CROSS_TARGET OFF CACHE STRING "Cross-compilation target")
@@ -44,22 +44,22 @@ add_library(lib_event STATIC IMPORTED GLOBAL)
 target_link_libraries(libevent INTERFACE lib_event)
 
 # Set up prefix
-set(EVENTLIB_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
-message(STATUS "EVENTLIB_PREFIX: ${EVENTLIB_PREFIX}")
+set(LIBEVENT_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
+message(STATUS "LIBEVENT_PREFIX: ${LIBEVENT_PREFIX}")
 
-set(EVENTLIB_PATH ${EVENTLIB_PREFIX}/usr/local/lib/libevent.a)
-message(STATUS "EVENTLIB_PATH ${EVENTLIB_PATH}")
+set(LIBEVENT_PATH ${LIBEVENT_PREFIX}/usr/local/lib/libevent.a)
+message(STATUS "LIBEVENT_PATH ${LIBEVENT_PATH}")
 
-set(EVENTLIB_INCLUDE_PATH ${EVENTLIB_PREFIX}/usr/local/include PARENT_SCOPE)
+set(LIBEVENT_INCLUDE_PATH ${LIBEVENT_PREFIX}/usr/local/include PARENT_SCOPE)
 
 # Set up EventLib target
 include(BuildEventLib)
 
 # Set import locations
-set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${EVENTLIB_PATH})
+set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${LIBEVENT_PATH})
 
 # Set include locations
-target_include_directories(libevent BEFORE INTERFACE ${EVENTLIB_PREFIX}/usr/local/include)
+target_include_directories(libevent BEFORE INTERFACE ${LIBEVENT_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
 add_dependencies(lib_event event)
