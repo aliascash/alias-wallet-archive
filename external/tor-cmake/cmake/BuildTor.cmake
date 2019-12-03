@@ -38,12 +38,12 @@ endif()
 ProcessorCount(NUM_JOBS)
 set(OS "UNIX")
 
-if (TOR_BUILD_HASH)
-    set(TOR_CHECK_HASH URL_HASH SHA256=${TOR_BUILD_HASH})
+if (TOR_ARCHIVE_HASH)
+    set(TOR_CHECK_HASH URL_HASH SHA256=${TOR_ARCHIVE_HASH})
 endif()
 
-if (EXISTS ${TOR_PATH})
-    message(WARNING "Not building Tor again. Remove ${TOR_PATH} for rebuild")
+if (EXISTS ${TOR_LIBTOR_PATH})
+    message(WARNING "Not building Tor again. Remove ${TOR_LIBTOR_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
@@ -101,6 +101,7 @@ else()
             --enable-static-libevent
             --enable-static-openssl
             --enable-static-zlib
+            --enable-static-tor
             --disable-systemd
             --disable-lzma
             --disable-seccomp
@@ -114,7 +115,7 @@ else()
             --disable-tool-name-check
             --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local
             --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local
-            --with-zlib-dir=${libxz-cmake_BINARY_DIR}/usr/local
+            --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local
             --enable-pic
             )
 
@@ -188,16 +189,16 @@ else()
         set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} ${CONFIGURE_TOR_MODULES})
     endif()
 
-    # Add tor target
+    # Add libtor target
     ExternalProject_Add(libtorExternal
             URL ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl libz libxz libevent
+            DEPENDS ssl libz libevent
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
-            BUILD_BYPRODUCTS ${TOR_PATH}
+            BUILD_BYPRODUCTS ${TOR_LIBTOR_PATH}
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
@@ -205,9 +206,10 @@ else()
             LOG_BUILD 1
             LOG_INSTALL 1
             )
+#    ExternalProject_Add_StepDependencies(libtorExternal install libeventExternal libzExternal)
 
-    # set git config values to tor requirements (no impact on linux though)
-    #    ExternalProject_Add_Step(tor setGitConfig
+    # set git config values to libtor requirements (no impact on linux though)
+    #    ExternalProject_Add_Step(libtor setGitConfig
     #        COMMAND ${GIT_EXECUTABLE} config --global core.autocrlf false
     #        COMMAND ${GIT_EXECUTABLE} config --global core.eol lf
     #        DEPENDEES
@@ -230,7 +232,7 @@ else()
     ##
 
     # Set git config values to previous values
-    #    ExternalProject_Add_Step(tor restoreGitConfig
+    #    ExternalProject_Add_Step(libtor restoreGitConfig
     #        # Unset first (is required, since old value could be omitted, which wouldn't take any effect in "set"
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.autocrlf
     #        COMMAND ${GIT_EXECUTABLE} config --global --unset core.eol
@@ -252,5 +254,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(tor_lib PROPERTIES IMPORTED_LOCATION ${TOR_PATH})
+    set_target_properties(lib_tor PROPERTIES IMPORTED_LOCATION ${TOR_LIBTOR_PATH})
 endif()

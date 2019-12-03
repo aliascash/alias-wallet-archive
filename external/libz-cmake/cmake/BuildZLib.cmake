@@ -38,12 +38,12 @@ endif()
 ProcessorCount(NUM_JOBS)
 set(OS "UNIX")
 
-if (ZLIB_BUILD_HASH)
-    set(ZLIB_CHECK_HASH URL_HASH SHA256=${ZLIB_BUILD_HASH})
+if (LIBZ_ARCHIVE_HASH)
+    set(LIBZ_CHECK_HASH URL_HASH SHA256=${LIBZ_ARCHIVE_HASH})
 endif()
 
-if (EXISTS ${ZLIB_PATH})
-    message(WARNING "Not building ZLib again. Remove ${ZLIB_PATH} for rebuild")
+if (EXISTS ${LIBZ_PATH})
+    message(WARNING "Not building ZLib again. Remove ${LIBZ_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
@@ -97,19 +97,19 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # disable everything we dont need
-#    set(CONFIGURE_ZLIB_MODULES --enable-shared --enable-static --with-pic --disable-samples --disable-libevent-regress)
+#    set(CONFIGURE_LIBZ_MODULES --enable-shared --enable-static --with-pic --disable-samples --disable-libevent-regress)
 
     # additional configure script parameters
-#    set(CONFIGURE_ZLIB_PARAMS --libdir=lib)
+#    set(CONFIGURE_LIBZ_PARAMS --libdir=lib)
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_ZLIB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_ZLIB_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_LIBZ_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_LIBZ_MODULES} --prefix=/usr/local/)
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
 
         # Android specific configuration options
-        #set(CONFIGURE_ZLIB_MODULES ${CONFIGURE_ZLIB_MODULES} no-hw)
+        #set(CONFIGURE_LIBZ_MODULES ${CONFIGURE_LIBZ_MODULES} no-hw)
 
         set(CFLAGS ${CMAKE_C_FLAGS})
         set(CXXFLAGS ${CMAKE_CXX_FLAGS})
@@ -124,13 +124,13 @@ else()
         endif()
 
 #        if (ARMEABI_V7A)
-#            set(ZLIB_PLATFORM "--host armeabi")
-#            #set(CONFIGURE_ZLIB_PARAMS ${CONFIGURE_ZLIB_PARAMS} "-march=armv7-a")
+#            set(LIBZ_PLATFORM "--host armeabi")
+#            #set(CONFIGURE_LIBZ_PARAMS ${CONFIGURE_LIBZ_PARAMS} "-march=armv7-a")
 #        else()
 #            if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-#                set(ZLIB_PLATFORM "--host arm")
+#                set(LIBZ_PLATFORM "--host arm")
 #            else()
-#                set(ZLIB_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
+#                set(LIBZ_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
 #            endif()
 #        endif()
 
@@ -164,21 +164,21 @@ else()
         message(STATUS "CXX: ${CXX}")
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_ZLIB_PARAMS} ${CONFIGURE_ZLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBZ_PARAMS} ${CONFIGURE_LIBZ_MODULES})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_ZLIB_PARAMS} ${CONFIGURE_ZLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBZ_PARAMS} ${CONFIGURE_LIBZ_MODULES})
     endif()
 
     # Add libz target
     ExternalProject_Add(libzExternal
-            URL ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
-            ${ZLIB_CHECK_HASH}
+            URL ${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz
+            ${LIBZ_CHECK_HASH}
             UPDATE_COMMAND ""
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             DEPENDS ssl
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
-            BUILD_BYPRODUCTS ${ZLIB_PATH}
+            BUILD_BYPRODUCTS ${LIBZ_PATH}
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
@@ -232,5 +232,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${ZLIB_PATH})
+    set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${LIBZ_PATH})
 endif()

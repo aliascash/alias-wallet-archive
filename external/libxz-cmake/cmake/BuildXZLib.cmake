@@ -38,12 +38,12 @@ endif()
 ProcessorCount(NUM_JOBS)
 set(OS "UNIX")
 
-if (XZLIB_BUILD_HASH)
-    set(XZLIB_CHECK_HASH URL_HASH SHA256=${XZLIB_BUILD_HASH})
+if (LIBXZ_ARCHIVE_HASH)
+    set(LIBXZ_CHECK_HASH URL_HASH SHA256=${LIBXZ_ARCHIVE_HASH})
 endif()
 
-if (EXISTS ${XZLIB_PATH})
-    message(WARNING "Not building XZLib again. Remove ${XZLIB_PATH} for rebuild")
+if (EXISTS ${LIBXZ_PATH})
+    message(WARNING "Not building XZLib again. Remove ${LIBXZ_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
@@ -97,19 +97,19 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # disable everything we dont need
-    set(CONFIGURE_XZLIB_MODULES --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links)
+    set(CONFIGURE_LIBXZ_MODULES --disable-doc --disable-scripts --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links)
 
     # additional configure script parameters
-    set(CONFIGURE_XZLIB_PARAMS --enable-shared --enable-static)
+    set(CONFIGURE_LIBXZ_PARAMS --enable-shared --enable-static)
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_XZLIB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_XZLIB_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_LIBXZ_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_LIBXZ_MODULES} --prefix=/usr/local/)
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
 
         # Android specific configuration options
-        #set(CONFIGURE_XZLIB_MODULES ${CONFIGURE_XZLIB_MODULES} no-hw)
+        #set(CONFIGURE_LIBXZ_MODULES ${CONFIGURE_LIBXZ_MODULES} no-hw)
 
         set(CFLAGS ${CMAKE_C_FLAGS})
         set(CXXFLAGS ${CMAKE_CXX_FLAGS})
@@ -124,13 +124,13 @@ else()
         endif()
 
         if (ARMEABI_V7A)
-            set(XZLIB_PLATFORM "--host armeabi")
-            #set(CONFIGURE_XZLIB_PARAMS ${CONFIGURE_XZLIB_PARAMS} "-march=armv7-a")
+            set(LIBXZ_PLATFORM "--host armeabi")
+            #set(CONFIGURE_LIBXZ_PARAMS ${CONFIGURE_LIBXZ_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(XZLIB_PLATFORM "--host arm")
+                set(LIBXZ_PLATFORM "--host arm")
             else()
-                set(XZLIB_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
+                set(LIBXZ_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
             endif()
         endif()
 
@@ -165,23 +165,23 @@ else()
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_XZLIB_PARAMS} ${XZLIB_PLATFORM} ${CONFIGURE_XZLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBXZ_PARAMS} ${LIBXZ_PLATFORM} ${CONFIGURE_LIBXZ_MODULES})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_XZLIB_PARAMS} ${CONFIGURE_XZLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBXZ_PARAMS} ${CONFIGURE_LIBXZ_MODULES})
     endif()
 
     # Add libxz target
     ExternalProject_Add(libxzExternal
-            URL ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
-            ${XZLIB_CHECK_HASH}
+            URL ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz
+            ${LIBXZ_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             DEPENDS ssl
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
-            BUILD_BYPRODUCTS ${XZLIB_PATH}
+            BUILD_BYPRODUCTS ${LIBXZ_PATH}
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
@@ -235,5 +235,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(lib_xz PROPERTIES IMPORTED_LOCATION ${XZLIB_PATH})
+    set_target_properties(lib_xz PROPERTIES IMPORTED_LOCATION ${LIBXZ_PATH})
 endif()

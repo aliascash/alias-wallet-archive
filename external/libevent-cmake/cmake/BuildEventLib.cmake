@@ -38,12 +38,12 @@ endif()
 ProcessorCount(NUM_JOBS)
 set(OS "UNIX")
 
-if (EVENTLIB_BUILD_HASH)
-    set(EVENTLIB_CHECK_HASH URL_HASH SHA256=${EVENTLIB_BUILD_HASH})
+if (LIBEVENT_ARCHIVE_HASH)
+    set(LIBEVENT_CHECK_HASH URL_HASH SHA256=${LIBEVENT_ARCHIVE_HASH})
 endif()
 
-if (EXISTS ${EVENTLIB_PATH})
-    message(WARNING "Not building EventLib again. Remove ${EVENTLIB_PATH} for rebuild")
+if (EXISTS ${LIBEVENT_PATH})
+    message(WARNING "Not building EventLib again. Remove ${LIBEVENT_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
@@ -97,19 +97,19 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # disable everything we dont need
-    set(CONFIGURE_EVENTLIB_MODULES --disable-samples --disable-libevent-regress)
+    set(CONFIGURE_LIBEVENT_MODULES --disable-samples --disable-libevent-regress)
 
     # additional configure script parameters
-    set(CONFIGURE_EVENTLIB_PARAMS --enable-shared --enable-static --with-pic )
+    set(CONFIGURE_LIBEVENT_PARAMS --enable-shared --enable-static --with-pic )
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_EVENTLIB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_EVENTLIB_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_LIBEVENT_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_LIBEVENT_MODULES} --prefix=/usr/local/)
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
 
         # Android specific configuration options
-        #set(CONFIGURE_EVENTLIB_MODULES ${CONFIGURE_EVENTLIB_MODULES} no-hw)
+        #set(CONFIGURE_LIBEVENT_MODULES ${CONFIGURE_LIBEVENT_MODULES} no-hw)
 
         set(CFLAGS ${CMAKE_C_FLAGS})
         set(CXXFLAGS ${CMAKE_CXX_FLAGS})
@@ -124,13 +124,13 @@ else()
         endif()
 
         if (ARMEABI_V7A)
-            set(EVENTLIB_PLATFORM "--host armeabi")
-            #set(CONFIGURE_EVENTLIB_PARAMS ${CONFIGURE_EVENTLIB_PARAMS} "-march=armv7-a")
+            set(LIBEVENT_PLATFORM "--host armeabi")
+            #set(CONFIGURE_LIBEVENT_PARAMS ${CONFIGURE_LIBEVENT_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(EVENTLIB_PLATFORM "--host arm")
+                set(LIBEVENT_PLATFORM "--host arm")
             else()
-                set(EVENTLIB_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
+                set(LIBEVENT_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
             endif()
         endif()
 
@@ -165,23 +165,23 @@ else()
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_EVENTLIB_PARAMS} ${EVENTLIB_PLATFORM} ${CONFIGURE_EVENTLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBEVENT_PARAMS} ${LIBEVENT_PLATFORM} ${CONFIGURE_LIBEVENT_MODULES})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_EVENTLIB_PARAMS} ${CONFIGURE_EVENTLIB_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBEVENT_PARAMS} ${CONFIGURE_LIBEVENT_MODULES})
     endif()
 
     # Add libevent target
     ExternalProject_Add(libeventExternal
-            URL ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
-            ${EVENTLIB_CHECK_HASH}
+            URL ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
+            ${LIBEVENT_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             DEPENDS ssl
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
-            BUILD_BYPRODUCTS ${EVENTLIB_PATH}
+            BUILD_BYPRODUCTS ${LIBEVENT_PATH}
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
@@ -235,5 +235,5 @@ else()
     endforeach()
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/buildenv.txt ${OUT_FILE})
 
-    set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${EVENTLIB_PATH})
+    set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${LIBEVENT_PATH})
 endif()
