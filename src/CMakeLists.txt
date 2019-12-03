@@ -37,6 +37,7 @@ target_link_libraries(spectrecoin_lib
         Boost::regex
         Boost::system
         Boost::thread
+        libtor
         )
 
 target_include_directories(spectrecoin_lib
@@ -47,6 +48,7 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
         ${OPENSSL_INCLUDE_PATH}
         ${BERKELEYDB_INCLUDE_PATH}
+        ${TOR_INCLUDE_PATH}
         )
 
 # Common sources
@@ -197,7 +199,7 @@ if (WITH_TOR)
             libevent
             libz
             libxz
-            tor
+            libtor
             -static
             )
 else()
