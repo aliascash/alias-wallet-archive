@@ -168,7 +168,16 @@ if (EXISTS ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h)
         ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h
     )
 else()
-    message(WARNING "${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
+    message(STATUS "===> BerkeleyDB: ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
+endif()
+
+if (EXISTS ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h)
+    target_sources(spectrecoin_lib
+        PUBLIC
+        ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h
+    )
+else()
+    message(STATUS "===> OpenSSL: ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h not found. Please re-run cmake after OpenSSL was build.")
 endif()
 
 add_subdirectory(json)
@@ -309,6 +318,6 @@ target_sources(Spectrecoin
     endif()
 endif ()
 
-message(STATUS "BERKELEYDB_INCLUDE_PATH ${BERKELEYDB_INCLUDE_PATH}")
-message(STATUS "OPENSSL_INCLUDE_PATH ${OPENSSL_INCLUDE_PATH}")
-message(STATUS "OPENSSL_API_COMPAT ${OPENSSL_API_COMPAT}")
+message(STATUS "BERKELEYDB_INCLUDE_PATH: ${BERKELEYDB_INCLUDE_PATH}")
+message(STATUS "OPENSSL_INCLUDE_PATH: ${OPENSSL_INCLUDE_PATH}")
+message(STATUS "OPENSSL_API_COMPAT: ${OPENSSL_API_COMPAT}")
