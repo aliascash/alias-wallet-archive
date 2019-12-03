@@ -48,22 +48,22 @@ OPENSSL_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/OpenSSL
 
 ##### ### # EventLib # ### ##################################################
 # Location of archive will be resolved like this:
-# ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
-EVENTLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/EventLib
+# ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
+LIBEVENT_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/EventLib
 
 ##### ### # ZLib # ### ######################################################
 # Location of archive will be resolved like this:
-# ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz
-ZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/ZLib
+# ${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz
+LIBZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/ZLib
 
 ##### ### # XZLib # ### #####################################################
 # Location of archive will be resolved like this:
-# ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz
-XZLIB_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
+# ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz
+LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 
 ##### ### # Tor # ### #######################################################
 # Location of archive will be resolved like this:
-# ${XZLIB_ARCHIVE_LOCATION}/tor-${XZLIB_BUILD_VERSION}.tar.gz
+# ${LIBXZ_ARCHIVE_LOCATION}/tor-${LIBXZ_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
 BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
@@ -173,48 +173,48 @@ checkBoost(){
 
 checkEventLibArchive(){
     info ""
-    if [[ -e "${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz" ]] ; then
-        info "Using EventLib archive ${EVENTLIB_ARCHIVE_LOCATION}/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz"
+    if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
+        info "Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
     else
-        EVENTLIB_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${EVENTLIB_BUILD_VERSION}-stable/libevent-${EVENTLIB_BUILD_VERSION}-stable.tar.gz
-        info "Downloading EventLib archive ${EVENTLIB_ARCHIVE_URL}"
-        if [[ ! -e ${EVENTLIB_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${EVENTLIB_ARCHIVE_LOCATION}
+        LIBEVENT_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_BUILD_VERSION}-stable/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
+        info "Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
+        if [[ ! -e ${LIBEVENT_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${LIBEVENT_ARCHIVE_LOCATION}
         fi
-        cd ${EVENTLIB_ARCHIVE_LOCATION}
-        wget ${EVENTLIB_ARCHIVE_URL}
+        cd ${LIBEVENT_ARCHIVE_LOCATION}
+        wget ${LIBEVENT_ARCHIVE_URL}
         cd - >/dev/null
     fi
 }
 
 checkZLibArchive(){
     info ""
-    if [[ -e "${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using ZLib archive ${ZLIB_ARCHIVE_LOCATION}/v${ZLIB_BUILD_VERSION}.tar.gz"
+    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz"
     else
-        ZLIB_ARCHIVE_URL=https://github.com/madler/zlib/archive/v${ZLIB_BUILD_VERSION}.tar.gz
-        info "Downloading ZLib archive ${ZLIB_ARCHIVE_URL}"
-        if [[ ! -e ${ZLIB_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${ZLIB_ARCHIVE_LOCATION}
+        LIBZ_ARCHIVE_URL=https://github.com/madler/zlib/archive/v${LIBZ_BUILD_VERSION}.tar.gz
+        info "Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
+        if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${LIBZ_ARCHIVE_LOCATION}
         fi
-        cd ${ZLIB_ARCHIVE_LOCATION}
-        wget ${ZLIB_ARCHIVE_URL}
+        cd ${LIBZ_ARCHIVE_LOCATION}
+        wget ${LIBZ_ARCHIVE_URL}
         cd - >/dev/null
     fi
 }
 
 checkXZLibArchive(){
     info ""
-    if [[ -e "${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using XZLib archive ${XZLIB_ARCHIVE_LOCATION}/xz-${XZLIB_BUILD_VERSION}.tar.gz"
+    if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using XZLib archive ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz"
     else
-        XZLIB_ARCHIVE_URL=https://tukaani.org/xz/xz-${XZLIB_BUILD_VERSION}.tar.gz
-        info "Downloading XZLib archive ${ZLIB_ARCHIVE_URL}"
-        if [[ ! -e ${XZLIB_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${XZLIB_ARCHIVE_LOCATION}
+        LIBXZ_ARCHIVE_URL=https://tukaani.org/xz/xz-${LIBXZ_BUILD_VERSION}.tar.gz
+        info "Downloading XZLib archive ${LIBZ_ARCHIVE_URL}"
+        if [[ ! -e ${LIBXZ_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${LIBXZ_ARCHIVE_LOCATION}
         fi
-        cd ${XZLIB_ARCHIVE_LOCATION}
-        wget ${XZLIB_ARCHIVE_URL}
+        cd ${LIBXZ_ARCHIVE_LOCATION}
+        wget ${LIBXZ_ARCHIVE_URL}
         cd - >/dev/null
     fi
 }
@@ -225,7 +225,7 @@ checkTorArchive(){
         info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
     else
         TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
-        info "Downloading Tor archive ${ZLIB_ARCHIVE_URL}"
+        info "Downloading Tor archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
         fi
@@ -341,37 +341,44 @@ cmake \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
     -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
+    -DBERKELEYDB_ARCHIVE_HASH=${BERKELEYDB_ARCHIVE_HASH} \
     \
     -DBOOST_ROOT=${BOOST_ROOT} \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     -DBoost_INCLUDE_DIR=${BOOST_INCLUDEDIR} \
     -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
+    -DBOOST_ARCHIVE_HASH=${BOOST_ARCHIVE_HASH} \
     \
     -DBUILD_OPENSSL=ON \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DOPENSSL_API_COMPAT=0x00908000L
+    -DOPENSSL_API_COMPAT=0x00908000L \
+    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH}
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
 ${cmd} \
     \
-    -DEVENTLIB_ARCHIVE_LOCATION=${EVENTLIB_ARCHIVE_LOCATION} \
-    -DEVENTLIB_BUILD_VERSION=${EVENTLIB_BUILD_VERSION} \
-    -DEVENTLIB_BUILD_VERSION_SHORT=${EVENTLIB_BUILD_VERSION%.*} \
+    -DLIBEVENT_ARCHIVE_LOCATION=${LIBEVENT_ARCHIVE_LOCATION} \
+    -DLIBEVENT_BUILD_VERSION=${LIBEVENT_BUILD_VERSION} \
+    -DLIBEVENT_BUILD_VERSION_SHORT=${LIBEVENT_BUILD_VERSION%.*} \
+    -DLIBEVENT_ARCHIVE_HASH=${LIBEVENT_ARCHIVE_HASH} \
     \
-    -DZLIB_ARCHIVE_LOCATION=${ZLIB_ARCHIVE_LOCATION} \
-    -DZLIB_BUILD_VERSION=${ZLIB_BUILD_VERSION} \
-    -DZLIB_BUILD_VERSION_SHORT=${ZLIB_BUILD_VERSION%.*} \
+    -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
+    -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
+    -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
+    -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
     \
-    -DXZLIB_ARCHIVE_LOCATION=${XZLIB_ARCHIVE_LOCATION} \
-    -DXZLIB_BUILD_VERSION=${XZLIB_BUILD_VERSION} \
-    -DXZLIB_BUILD_VERSION_SHORT=${XZLIB_BUILD_VERSION%.*} \
+    -DLIBXZ_ARCHIVE_LOCATION=${LIBXZ_ARCHIVE_LOCATION} \
+    -DLIBXZ_BUILD_VERSION=${LIBXZ_BUILD_VERSION} \
+    -DLIBXZ_BUILD_VERSION_SHORT=${LIBXZ_BUILD_VERSION%.*} \
+    -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
     \
     -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
     -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
     -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
+    -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
     \
     -DWITH_TOR=ON \
     ..
