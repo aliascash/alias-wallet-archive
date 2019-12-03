@@ -37,7 +37,6 @@ target_link_libraries(spectrecoin_lib
         Boost::regex
         Boost::system
         Boost::thread
-        libtor
         )
 
 target_include_directories(spectrecoin_lib
@@ -48,8 +47,18 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
         ${OPENSSL_INCLUDE_PATH}
         ${BERKELEYDB_INCLUDE_PATH}
-        ${TOR_INCLUDE_PATH}
         )
+
+if (WITH_TOR)
+    target_link_libraries(spectrecoin_lib
+            libtor
+            )
+
+    target_include_directories(spectrecoin_lib
+            SYSTEM BEFORE PUBLIC
+            ${TOR_INCLUDE_PATH}
+            )
+endif()
 
 # Common sources
 target_sources(spectrecoin_lib
@@ -242,7 +251,7 @@ else()
             Qt5::WebEngineWidgets
             )
 
-target_sources(Spectrecoin
+    target_sources(Spectrecoin
             PUBLIC
             ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
