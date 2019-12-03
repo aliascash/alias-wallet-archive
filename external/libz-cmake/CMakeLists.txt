@@ -62,4 +62,4 @@ set_target_properties(lib_z PROPERTIES IMPORTED_LOCATION ${LIBZ_PATH})
 target_include_directories(libz BEFORE INTERFACE ${LIBZ_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
-add_dependencies(lib_z event)
+add_dependencies(lib_z libzExternal)

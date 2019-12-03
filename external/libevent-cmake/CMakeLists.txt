@@ -62,4 +62,4 @@ set_target_properties(lib_event PROPERTIES IMPORTED_LOCATION ${LIBEVENT_PATH})
 target_include_directories(libevent BEFORE INTERFACE ${LIBEVENT_PREFIX}/usr/local/include)
 
 # Add fake targets to common target
-add_dependencies(lib_event event)
+add_dependencies(lib_event libeventExternal)
