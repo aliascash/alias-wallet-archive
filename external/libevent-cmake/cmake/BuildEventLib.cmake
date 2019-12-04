@@ -43,7 +43,7 @@ if (LIBEVENT_ARCHIVE_HASH)
 endif()
 
 if (EXISTS ${LIBEVENT_PATH})
-    message(WARNING "Not building EventLib again. Remove ${LIBEVENT_PATH} for rebuild")
+    message(STATUS "Not building EventLib again. Remove ${LIBEVENT_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment

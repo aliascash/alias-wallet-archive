@@ -43,7 +43,7 @@ if (LIBZ_ARCHIVE_HASH)
 endif()
 
 if (EXISTS ${LIBZ_PATH})
-    message(WARNING "Not building ZLib again. Remove ${LIBZ_PATH} for rebuild")
+    message(STATUS "Not building ZLib again. Remove ${LIBZ_PATH} for rebuild")
 else()
     if (WIN32 AND NOT CROSS)
         # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
