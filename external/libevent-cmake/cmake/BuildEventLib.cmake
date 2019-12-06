@@ -97,10 +97,17 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # disable everything we dont need
-    set(CONFIGURE_LIBEVENT_MODULES --disable-samples --disable-libevent-regress)
+    set(CONFIGURE_LIBEVENT_MODULES
+            --disable-samples
+            --disable-libevent-regress
+            )
 
     # additional configure script parameters
-    set(CONFIGURE_LIBEVENT_PARAMS --enable-shared --enable-static --with-pic )
+    set(CONFIGURE_LIBEVENT_PARAMS
+            --disable-shared
+            --enable-static
+            --with-pic
+            )
 
     # cross-compiling
     if (CROSS)
@@ -124,13 +131,13 @@ else()
         endif()
 
         if (ARMEABI_V7A)
-            set(LIBEVENT_PLATFORM "--host armeabi")
+            set(LIBEVENT_PLATFORM "--host=armeabi")
             #set(CONFIGURE_LIBEVENT_PARAMS ${CONFIGURE_LIBEVENT_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(LIBEVENT_PLATFORM "--host arm")
+                set(LIBEVENT_PLATFORM "--host=aarch64-linux-android")
             else()
-                set(LIBEVENT_PLATFORM "--host ${CMAKE_ANDROID_ARCH_ABI}")
+                set(LIBEVENT_PLATFORM "--host=${CMAKE_ANDROID_ARCH_ABI}")
             endif()
         endif()
 

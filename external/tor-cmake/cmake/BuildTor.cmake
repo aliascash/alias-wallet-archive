@@ -98,9 +98,6 @@ else()
 
     # disable everything we dont need
     set(CONFIGURE_TOR_MODULES
-            --enable-static-libevent
-            --enable-static-openssl
-            --enable-static-zlib
             --enable-static-tor
             --disable-systemd
             --disable-lzma
@@ -145,7 +142,7 @@ else()
             #set(CONFIGURE_TOR_PARAMS ${CONFIGURE_TOR_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
-                set(TOR_PLATFORM "--host=arm")
+                set(TOR_PLATFORM "--host=aarch64-linux-android")
             else()
                 set(TOR_PLATFORM "--host=${CMAKE_ANDROID_ARCH_ABI}")
             endif()
@@ -155,6 +152,11 @@ else()
         if (CMAKE_ANDROID_ARCH_ABI MATCHES "64")
             set(ANDROID_STRING "${ANDROID_STRING}64")
         endif()
+
+        set(CONFIGURE_TOR_PARAMS
+                ${CONFIGURE_TOR_PARAMS}
+                --enable-android
+                )
 
         # copy over both sysroots to a common sysroot (workaround OpenSSL failing without one single sysroot)
         string(REPLACE "-clang" "" ANDROID_TOOLCHAIN_NAME ${ANDROID_TOOLCHAIN_NAME})
