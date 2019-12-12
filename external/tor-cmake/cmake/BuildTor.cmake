@@ -96,34 +96,28 @@ else()
     # python helper script for corrent building environment
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
-    # disable everything we dont need
-    set(CONFIGURE_TOR_MODULES
-            --enable-static-tor
-            --disable-systemd
-            --disable-lzma
-            --disable-seccomp
-            )
-
     # additional configure script parameters
     set(CONFIGURE_TOR_PARAMS
+            --enable-android
+            --enable-lzma
+            --enable-pic
+            --enable-restart-debugging
+            --enable-static-libevent --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local/
+            --enable-static-openssl --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/
+            --enable-zstd --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local/
+            --disable-module-dirauth
+
             --disable-gcc-hardening
             --disable-system-torrc
             --disable-asciidoc
             --disable-tool-name-check
-            --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local/
-            --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/
-            --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local/
-            --enable-pic
             )
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ./configure ${CONFIGURE_TOR_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_TOR_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ./configure ${CONFIGURE_TOR_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} --prefix=/usr/local/)
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
-
-        # Android specific configuration options
-        #set(CONFIGURE_TOR_MODULES ${CONFIGURE_TOR_MODULES} no-hw)
 
         set(CFLAGS ${CMAKE_C_FLAGS})
         set(CXXFLAGS ${CMAKE_CXX_FLAGS})
@@ -184,11 +178,11 @@ else()
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} ${TOR_PLATFORM} ${CONFIGURE_TOR_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} ${TOR_PLATFORM})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} ${CONFIGURE_TOR_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS})
     endif()
 
     # Add libtor target
@@ -198,6 +192,7 @@ else()
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
             DEPENDS ssl_lib lib_z lib_event
+            PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
             BUILD_BYPRODUCTS ${TOR_LIBTOR_PATH}
