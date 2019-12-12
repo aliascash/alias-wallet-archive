@@ -64,7 +64,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 ##### ### # Tor # ### #######################################################
 # Location of archive will be resolved like this:
 # ${LIBXZ_ARCHIVE_LOCATION}/tor-${LIBXZ_BUILD_VERSION}.tar.gz
-TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
+TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor_Android
 
 BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
 
@@ -221,16 +221,17 @@ checkXZLibArchive(){
 
 checkTorArchive(){
     info ""
-    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz" ]] ; then
+        info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz"
     else
-        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
+#        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
+        TOR_ARCHIVE_URL=https://github.com/guardianproject/tor/archive/tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz
         info "Downloading Tor archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
         fi
         cd ${TOR_ARCHIVE_LOCATION}
-        wget ${TOR_ARCHIVE_URL}
+        wget ${TOR_ARCHIVE_URL} -O tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz
         cd - >/dev/null
     fi
 }
@@ -376,9 +377,9 @@ ${cmd} \
     -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
     \
     -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
-    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
-    -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
-    -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
+    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION_ANDROID%%-*} \
+    -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION_ANDROID%.*} \
+    -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH_ANDROID} \
     \
     -DWITH_TOR=ON \
     ..
