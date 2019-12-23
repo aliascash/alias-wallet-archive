@@ -105,12 +105,10 @@ else()
             --enable-static-libevent --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local/
             --enable-static-openssl --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/
             --enable-zstd --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local/
+            --enable-static-tor
             --disable-module-dirauth
-
-            --disable-gcc-hardening
-            --disable-system-torrc
-            --disable-asciidoc
             --disable-tool-name-check
+            --disable-asciidoc
             )
 
     # cross-compiling
@@ -193,6 +191,7 @@ else()
             COMMAND ${COMMAND_AUTOGEN}
             DEPENDS ssl_lib lib_z lib_event
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
+            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-openssl-binary-check.patch || true
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
             BUILD_BYPRODUCTS ${TOR_LIBTOR_PATH}
