@@ -63,9 +63,11 @@ helpMe() {
     echo "
 
     Helper script to build Spectrecoin wallet and daemon using CMake.
-    Assumptions:
-    - The BerkeleyDB archive to use must be located on ${BERKELEYDB_ARCHIVE_LOCATION}
-    - Naming must be default like 'db-4.8.30.tar.gz'
+    Required library archives will be downloaded once and will be used
+    on subsequent builds.
+
+    Default download location is ~/Archives. You can change this by
+    modifying '${ownLocation}/scripts/.buildconfig'.
 
     Usage:
     ${0} [options]

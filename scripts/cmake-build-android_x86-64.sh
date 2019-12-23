@@ -72,10 +72,11 @@ helpMe() {
     echo "
 
     Helper script to build Spectrecoin wallet and daemon using CMake.
-    Assumptions:
-    - The BerkeleyDB archive to use must be located on ${BERKELEYDB_ARCHIVE_LOCATION}
-    - Naming must be default like 'db-4.8.30.tar.gz'
-    - Android toolchain already installed
+    Required library archives will be downloaded once and will be used
+    on subsequent builds. This includes also Android NDK.
+
+    Default download location is ~/Archives. You can change this by
+    modifying '${ownLocation}/scripts/.buildconfig'.
 
     Usage:
     ${0} [options]
@@ -189,10 +190,10 @@ checkEventLibArchive(){
 
 checkZLibArchive(){
     info ""
-    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz"
+    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
     else
-        LIBZ_ARCHIVE_URL=https://github.com/madler/zlib/archive/v${LIBZ_BUILD_VERSION}.tar.gz
+        LIBZ_ARCHIVE_URL=https://github.com/facebook/zstd/releases/download/v${LIBZ_BUILD_VERSION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
         info "Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBZ_ARCHIVE_LOCATION}
@@ -355,7 +356,9 @@ cmake \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
-    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH}
+    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
+    \
+    -DCORES_TO_USE=${CORES_TO_USE}
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
@@ -401,7 +404,7 @@ ${cmd}
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
-cmake \
+CORES_TO_USE=${CORES_TO_USE} cmake \
     --build . \
     -- \
     -j "${CORES_TO_USE}"
