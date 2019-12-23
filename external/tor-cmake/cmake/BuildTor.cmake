@@ -190,8 +190,11 @@ else()
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
             DEPENDS ssl_lib lib_z lib_event
+
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
             COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-openssl-binary-check.patch || true
+            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-002-disable-zlib-binary-check.patch || true
+
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
             BUILD_BYPRODUCTS ${TOR_LIBTOR_PATH}
