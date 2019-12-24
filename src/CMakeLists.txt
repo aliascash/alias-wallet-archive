@@ -215,7 +215,7 @@ if (WITH_TOR)
             leveldb
             spectrecoin_lib
             libevent
-            libz
+            libzstd
             libxz
             libtor
             -static
