@@ -102,9 +102,10 @@ else()
             --enable-lzma
             --enable-pic
             --enable-restart-debugging
-            --enable-static-libevent --with-libevent-dir=${libevent-cmake_BINARY_DIR}/usr/local/
-            --enable-static-openssl --with-openssl-dir=${openssl-cmake_BINARY_DIR}/usr/local/
-            --enable-zstd --with-zlib-dir=${libz-cmake_BINARY_DIR}/usr/local/
+            --with-libevent-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --enable-zstd
             --enable-static-tor
             --disable-module-dirauth
             --disable-tool-name-check
@@ -189,10 +190,10 @@ else()
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl_lib lib_z lib_event
+            DEPENDS ssl_lib lib_zstd lib_event
 
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
-            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-openssl-binary-check.patch || true
+            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-binary-checks.patch || true
             COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-002-disable-zlib-binary-check.patch || true
 
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
@@ -201,6 +202,7 @@ else()
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
+
             LOG_CONFIGURE 1
             LOG_BUILD 1
             LOG_INSTALL 1

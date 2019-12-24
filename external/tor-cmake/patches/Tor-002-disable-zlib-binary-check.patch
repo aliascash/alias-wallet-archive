@@ -1,10 +1,12 @@
 diff --git a/tor/configure.ac b/tor/configure.ac
 --- a/configure.ac
 +++ b/configure.ac
-@@ -133,7 +133,6 @@ fi
+@@ -117,9 +117,6 @@
+ fi
+
  if test "$enable_static_tor" = "yes"; then
-   enable_static_libevent="yes";
-   enable_static_openssl="yes";
+-  enable_static_libevent="yes";
+-  enable_static_openssl="yes";
 -  enable_static_zlib="yes";
    CFLAGS="$CFLAGS -static"
  fi
