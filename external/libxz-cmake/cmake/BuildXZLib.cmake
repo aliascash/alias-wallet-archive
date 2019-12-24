@@ -185,8 +185,12 @@ else()
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
             COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
-            LOG_INSTALL 1
+
+            COMMAND cp -r ${LIBXZ_PREFIX}/usr/ ${LIBXZ_PREFIX}/..
+
             LOG_CONFIGURE 1
+            LOG_BUILD 1
+            LOG_INSTALL 1
             )
 
     # set git config values to libxz requirements (no impact on linux though)
