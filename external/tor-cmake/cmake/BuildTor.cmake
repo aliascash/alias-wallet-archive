@@ -102,7 +102,7 @@ else()
             --enable-lzma
             --enable-pic
             --enable-restart-debugging
-            --with-libevent-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --with-libevent-dir=${libevent_BINARY_DIR}/
             --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
             --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
             --enable-zstd
@@ -190,7 +190,7 @@ else()
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl_lib lib_zstd lib_event
+            DEPENDS ssl_lib lib_zstd event
 
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
             COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-binary-checks.patch || true
