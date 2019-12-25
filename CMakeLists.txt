@@ -13,7 +13,8 @@ set(CLIENT_VERSION_REVISION 0)
 set(CLIENT_VERSION_BUILD 5)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # https://www.jetbrains.com/help/clion/cmake-profile.html
 # adding two custom build types to the cached value
