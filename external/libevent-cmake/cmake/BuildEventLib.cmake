@@ -104,8 +104,8 @@ else()
 
     # additional configure script parameters
 #           --disable-shared
+#           --enable-static
     set(CONFIGURE_LIBEVENT_PARAMS
-            --enable-static
             --with-pic
             )
 
@@ -172,7 +172,8 @@ else()
         message(STATUS "ANDROID_TOOLCHAIN_ROOT: ${ANDROID_TOOLCHAIN_ROOT}")
 
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBEVENT_PARAMS} ${LIBEVENT_PLATFORM} ${CONFIGURE_LIBEVENT_MODULES})
+#        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBEVENT_PARAMS} ${LIBEVENT_PLATFORM} ${CONFIGURE_LIBEVENT_MODULES})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_LIBEVENT_PARAMS} ${LIBEVENT_PLATFORM})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
         set(COMMAND_AUTOGEN ./autogen.sh)
@@ -184,16 +185,20 @@ else()
             URL ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
             ${LIBEVENT_CHECK_HASH}
             UPDATE_COMMAND ""
-            COMMAND ${COMMAND_AUTOGEN}
-            CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             DEPENDS ssl
+            CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
+#            CONFIGURE_COMMAND <SOURCE_DIR>/./configure --prefix=/usr/local
+#            CONFIGURE_COMMAND ""
+#            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/buildEventlib.sh "<SOURCE_DIR>"
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
-            BUILD_BYPRODUCTS ${LIBEVENT_PATH}
-            INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
-            COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
+#            BUILD_COMMAND ${MAKE_PROGRAM} -j ${NUM_JOBS} -C <SOURCE_DIR>
+#            BUILD_BYPRODUCTS ${LIBEVENT_PATH}
+#            INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
+            INSTALL_COMMAND ${MAKE_PROGRAM} -C <SOURCE_DIR> DESTDIR=${LIBEVENT_PREFIX}/.. install
+#            COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} DESTDIR=${CMAKE_CURRENT_BINARY_DIR} install
             COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}                    # force CMake-reload
 
-            COMMAND cp -r ${LIBEVENT_PREFIX}/usr/ ${LIBEVENT_PREFIX}/..
+#            COMMAND cp -r ${LIBEVENT_PREFIX}/usr/ ${LIBEVENT_PREFIX}/..
 
             LOG_CONFIGURE 1
             LOG_BUILD 1
