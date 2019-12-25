@@ -173,10 +173,10 @@ checkEventLibArchive(){
 
 checkZLibArchive(){
     info ""
-    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/v${LIBZ_BUILD_VERSION}.tar.gz"
+    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
+        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
     else
-        LIBZ_ARCHIVE_URL=https://github.com/madler/zlib/archive/v${LIBZ_BUILD_VERSION}.tar.gz
+        LIBZ_ARCHIVE_URL=https://github.com/facebook/zstd/releases/download/v${LIBZ_BUILD_VERSION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
         info "Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBZ_ARCHIVE_LOCATION}
@@ -295,7 +295,9 @@ cmake \
     -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
-    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH}
+    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
+    \
+    -DCORES_TO_USE=${CORES_TO_USE}
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
@@ -305,6 +307,10 @@ ${cmd} \
     -DLIBEVENT_BUILD_VERSION=${LIBEVENT_BUILD_VERSION} \
     -DLIBEVENT_BUILD_VERSION_SHORT=${LIBEVENT_BUILD_VERSION%.*} \
     -DLIBEVENT_ARCHIVE_HASH=${LIBEVENT_ARCHIVE_HASH} \
+    -DEVENT__DISABLE_OPENSSL=ON \
+    -DEVENT__DISABLE_REGRESS=ON \
+    -DEVENT__DISABLE_SAMPLES=ON \
+    -DEVENT__DISABLE_TESTS=ON \
     \
     -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
     -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
@@ -341,7 +347,7 @@ ${cmd}
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
-cmake \
+CORES_TO_USE=${CORES_TO_USE} cmake \
     --build . \
     -- \
     -j "${CORES_TO_USE}"
