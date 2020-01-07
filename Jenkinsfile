@@ -20,7 +20,7 @@ pipeline {
                 script: "printf \$(grep CLIENT_VERSION_MAJOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r')",
                 returnStdout: true
         )
-        BLOCKCHAIN_ARCHIVE_VERSION = "2019-11-11"
+        BLOCKCHAIN_ARCHIVE_VERSION = "2020-01-07"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
