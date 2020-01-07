@@ -212,8 +212,9 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
@@ -713,8 +714,9 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
