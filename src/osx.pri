@@ -104,11 +104,11 @@ QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
     # $BOOST_PATH is set via environment
 #    _BOOST_PATH = /usr/local/Cellar/boost/1.68.0_1
 #    BOOST_PATH = /usr/local/Cellar/boost/1.68.0_1
-    INCLUDEPATH += "$${BOOST_PATH}/include/"
-    LIBS += -L$${BOOST_PATH}/lib
+    INCLUDEPATH += "${BOOST_PATH}/include/"
+    LIBS += -L${BOOST_PATH}/lib
     LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt -lboost_unit_test_framework-mt -lboost_timer-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
     DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB BOOST_THREAD_POSIX BOOST_HAS_THREADS
-    #LIBS += $${BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
+    #LIBS += ${BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
     # $OPENSSL_PATH is set via environment

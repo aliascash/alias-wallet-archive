@@ -30,6 +30,13 @@ else
     info "OPENSSL_PATH: ${OPENSSL_PATH}"
 fi
 
+if [[ -z "${BOOST_PATH}" ]] ; then
+    BOOST_PATH=/usr/local/Cellar/boost/1.68.0_1
+    warning "BOOST_PATH not set, using '${BOOST_PATH}'"
+else
+    info "BOOST_PATH: ${BOOST_PATH}"
+fi
+
 info "Cleanup previous build artifacts"
 if [ -e Spectrecoin.dmg ] ; then
     rm -f Spectrecoin.dmg
