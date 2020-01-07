@@ -121,7 +121,8 @@ QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
     #libevent-2.1.6.dylib
     #brew install libevent
-    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.8
+#    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.8
+    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.11_1
     INCLUDEPATH += "$${_LIBEVENT_PATH}/include/"
     LIBS += -L$${_LIBEVENT_PATH}/lib
     #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
