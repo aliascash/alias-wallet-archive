@@ -24,7 +24,7 @@ else
     info "QT_PATH: ${QT_PATH}"
 fi
 if [[ -z "${OPENSSL_PATH}" ]] ; then
-    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1
+    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1d
     warning "OPENSSL_PATH not set, using '${OPENSSL_PATH}'"
 else
     info "OPENSSL_PATH: ${OPENSSL_PATH}"
