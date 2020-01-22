@@ -264,6 +264,8 @@ public:
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
     unsigned int nLockTime;
+    ec_point pkTxKey;
+    ec_secret scTxKey;
 
     // Denial-of-service detection:
     mutable int nDoS;

@@ -3988,10 +3988,23 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>
     ec_secret scEphem;
     ec_point  pkSendTo;
     ec_point  pkEphem;
+    
+    // Transaction key
+    ec_point  pkTxKey;
+    ec_secret scTxKey;
+
+    // TODO : add pkTxkey to the CTransaction
+    // TODO : also save scTxkey
+
+    if (GenerateRandomSecret(scTxKey) != 0)
+       return false;
+    if (SecretToPublicKey(scTxKey, pkTxKey) != 0)
+       return false;
 
     // -- output scripts OP_RETURN ANON_TOKEN pkTo R enarr
     //    Each outputs split from the amount must go to a unique pk, or the key image would be the same
     //    Only the first output of the group carries the enarr (if present)  
+    size_t output_index = 0;
     for (uint32_t i = 0; i < vOutAmounts.size(); ++i)
     {
         ec_secret scShared;
@@ -4002,6 +4015,11 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>
             LogPrintf("GenerateRandomSecret failed.\n");
             return false;
         };
+
+      crypto::key_derivation derivation;
+      crypto::public_key out_eph_public_key;
+      bool r = crypto::generate_key_derivation(sxAddress->scan_pubkey, scTxKey, derivation);  // derivation ?
+      r = crypto::derive_public_key(derivation, output_index, sxAddress->spend_pubkey, out_eph_public_key); // derivation ?  out_eph_public_key = pkEphem ?
 
         if (sxAddress) // NULL for test only
         {
@@ -4034,6 +4052,7 @@ bool CWallet::CreateAnonOutputs(CStealthAddress* sxAddress, std::vector<int64_t>
         scriptSendTo.push_back(OP_ANON_MARKER);
         scriptSendTo << cpkTo;
         scriptSendTo << pkEphem;
+        output_index++;
 
         if (i == 0 && sNarr.length() > 0)
         {
