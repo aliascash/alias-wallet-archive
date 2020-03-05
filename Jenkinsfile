@@ -20,7 +20,6 @@ pipeline {
                 script: "printf \$(grep CLIENT_VERSION_MAJOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r')",
                 returnStdout: true
         )
-        BLOCKCHAIN_ARCHIVE_VERSION = "2020-02-09"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
@@ -464,10 +463,6 @@ pipeline {
                                                 string(
                                                         name: 'GIT_COMMIT_SHORT',
                                                         value: "${GIT_COMMIT_SHORT}"
-                                                ),
-                                                string(
-                                                        name: 'BLOCKCHAIN_ARCHIVE_VERSION',
-                                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                                 )
                                         ],
                                         wait: false
@@ -1017,10 +1012,6 @@ pipeline {
                                 string(
                                         name: 'GIT_COMMIT_SHORT',
                                         value: "${GIT_COMMIT_SHORT}"
-                                ),
-                                string(
-                                        name: 'BOOTSTRAP_DATE',
-                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                 )
                         ],
                         wait: false
