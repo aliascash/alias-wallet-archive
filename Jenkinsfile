@@ -20,7 +20,6 @@ pipeline {
                 script: "printf \$(grep CLIENT_VERSION_MAJOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r')",
                 returnStdout: true
         )
-        BLOCKCHAIN_ARCHIVE_VERSION = "2020-01-07"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
@@ -212,8 +211,9 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
@@ -463,10 +463,6 @@ pipeline {
                                                 string(
                                                         name: 'GIT_COMMIT_SHORT',
                                                         value: "${GIT_COMMIT_SHORT}"
-                                                ),
-                                                string(
-                                                        name: 'BLOCKCHAIN_ARCHIVE_VERSION',
-                                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                                 )
                                         ],
                                         wait: false
@@ -563,7 +559,7 @@ pipeline {
                         stage('Trigger Blockchain upload') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin-Blockchain-v3',
+                                        job: 'Spectrecoin-Blockchain-v4',
                                         parameters: [
                                                 string(
                                                         name: 'SPECTRECOIN_RELEASE',
@@ -713,8 +709,9 @@ pipeline {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
@@ -1015,10 +1012,6 @@ pipeline {
                                 string(
                                         name: 'GIT_COMMIT_SHORT',
                                         value: "${GIT_COMMIT_SHORT}"
-                                ),
-                                string(
-                                        name: 'BOOTSTRAP_DATE',
-                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                 )
                         ],
                         wait: false

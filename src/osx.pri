@@ -101,12 +101,14 @@ QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
 
     #brew install boost
-    _BOOST_PATH = /usr/local/Cellar/boost/1.68.0_1
-    INCLUDEPATH += "$${_BOOST_PATH}/include/"
-    LIBS += -L$${_BOOST_PATH}/lib
+    # $BOOST_PATH is set via environment
+#    _BOOST_PATH = /usr/local/Cellar/boost/1.68.0_1
+#    BOOST_PATH = /usr/local/Cellar/boost/1.68.0_1
+    INCLUDEPATH += "${BOOST_PATH}/include/"
+    LIBS += -L${BOOST_PATH}/lib
     LIBS += -lboost_system-mt -lboost_chrono-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_thread-mt -lboost_unit_test_framework-mt -lboost_timer-mt # using dynamic lib (not sure if you need that "-mt" at the end or not)
     DEFINES += BOOST_ASIO_ENABLE_OLD_SERVICES BOOST_SPIRIT_THREADSAFE BOOST_THREAD_USE_LIB BOOST_THREAD_POSIX BOOST_HAS_THREADS
-    #LIBS += $${_BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
+    #LIBS += ${BOOST_PATH}/lib/libboost_chrono-mt.a # using static lib
 
     #brew install openssl@1.1
     # $OPENSSL_PATH is set via environment
@@ -119,7 +121,8 @@ QMAKE_CXXFLAGS += -std=c++17 -mmacosx-version-min=10.10 -isysroot
 
     #libevent-2.1.6.dylib
     #brew install libevent
-    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.8
+#    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.8
+    _LIBEVENT_PATH = /usr/local/Cellar/libevent/2.1.11_1
     INCLUDEPATH += "$${_LIBEVENT_PATH}/include/"
     LIBS += -L$${_LIBEVENT_PATH}/lib
     #Shblis-MacBook-Pro:src Shbli$ find /usr/local/Cellar/libevent/2.1.8/lib/ -name *a
