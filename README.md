@@ -104,20 +104,26 @@ https://github.com/spectrecoin/spectre/blob/develop/src/osx.pri for instructions
 
 #### Preconditions, Dependencies
 
-Check the dockerfile of your corresponding platform to get the list of packages which 
+Check the dockerfile of your corresponding platform to get the list of packages which
 must be installed on your system. You can find them here:
 
 To _build_ Spectrecoin (build time dependencies):
- * Debian - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile
+ * Debian Stretch - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile_Stretch
+ * Debian Buster - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile_Buster
  * Fedora - https://github.com/spectrecoin/spectre-builder/blob/develop/Fedora/Dockerfile
- * RasperryPi - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile
- * Ubuntu - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile
+ * RasperryPi Stretch - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile_Stretch
+ * RasperryPi Buster - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile_Buster
+ * Ubuntu 18.04 - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile_18_04
+ * Ubuntu 19.04 - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile_19_04
 
 To _run_ Spectrecoin (run time dependencies):
- * Debian - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile
+ * Debian Stretch - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile_Stretch
+ * Debian Buster - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile_Buster
  * Fedora - https://github.com/spectrecoin/spectre-base/blob/develop/Fedora/Dockerfile
- * RasperryPi - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile
- * Ubuntu - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile
+ * RasperryPi Stretch - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile_Stretch
+ * RasperryPi Buster - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile_Buster
+ * Ubuntu 18.04 - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile_18_04
+ * Ubuntu 19.04 - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile_19_04
 
 #### Building
 
