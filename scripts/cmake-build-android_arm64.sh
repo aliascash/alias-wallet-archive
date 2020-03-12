@@ -190,14 +190,17 @@ checkEventLibArchive(){
 
 checkEventLibClone(){
     info ""
+    local currentDir=$(pwd)
     cd ${ownLocation}/../external
-    if [[ -d libevent-azat ]] ; then
-        cd libevent-azat
+    if [[ -d libevent ]] ; then
+        info "Updating libevent clone"
+        cd libevent
         git pull --prune
     else
-        git clone git@github.com:azat/libevent.git libevent-azat
+        info "Cloning libevent"
+        git clone git@github.com:azat/libevent.git libevent
     fi
-    cd - >/dev/null
+    cd "${currentDir}"
 }
 
 checkZLibArchive(){
