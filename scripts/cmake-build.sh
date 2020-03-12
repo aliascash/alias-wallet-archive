@@ -200,6 +200,15 @@ checkZLibArchive(){
         wget ${LIBZ_ARCHIVE_URL}
         cd - >/dev/null
     fi
+    cd ${ownLocation}/../external
+    if [[ -d libz ]] ; then
+        info "Directory external/libz already existing. Remove it to extract it again"
+    else
+        info "Extracting zstd-${LIBZ_BUILD_VERSION}.tar.gz..."
+        tar xzf ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
+        mv zstd-${LIBZ_BUILD_VERSION} libz
+    fi
+    cd - >/dev/null
 }
 
 checkXZLibArchive(){
