@@ -176,7 +176,7 @@ else()
             ${LIBZ_CHECK_HASH}
             UPDATE_COMMAND ""
             CONFIGURE_COMMAND ""
-            DEPENDS ssl
+            DEPENDS ssl liblzma
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS} -C lib
             BUILD_BYPRODUCTS ""
             INSTALL_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${PERL_PATH_FIX_INSTALL}
