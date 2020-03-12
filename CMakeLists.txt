@@ -161,7 +161,7 @@ if (WITH_TOR)
     # Direct usage of upstream project
     set(OPENSSL_SSL_LIBRARY ssl_lib ${CMAKE_DL_LIBS} CACHE STRING "" FORCE)
     set(OPENSSL_CRYPTO_LIBRARY crypto_lib CACHE STRING "" FORCE)
-    add_subdirectory(external/libevent-azat)
+    add_subdirectory(external/libevent)
 
     # Own wrapper as CMake External Project
 #    add_subdirectory(external/libevent-cmake)
