@@ -158,15 +158,13 @@ if (WITH_TOR)
     message(STATUS "============================================================================")
     # ============================================================================================
     message(STATUS "=== EventLib ===============================================================")
-    # Own wrapper as CMake External Project
-#    add_subdirectory(external/libevent-cmake)
-
     # Direct usage of upstream project
     set(OPENSSL_SSL_LIBRARY ssl_lib ${CMAKE_DL_LIBS} CACHE STRING "" FORCE)
     set(OPENSSL_CRYPTO_LIBRARY crypto_lib CACHE STRING "" FORCE)
-    # For now disable OpenSSL until https://github.com/libevent/libevent/issues/937 is fixed
-    set(EVENT__DISABLE_OPENSSL ON)
-    add_subdirectory(external/libevent)
+    add_subdirectory(external/libevent-azat)
+
+    # Own wrapper as CMake External Project
+#    add_subdirectory(external/libevent-cmake)
 
     # ============================================================================================
     message(STATUS "=== ZLib ===================================================================")

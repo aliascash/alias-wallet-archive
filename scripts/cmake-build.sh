@@ -171,6 +171,18 @@ checkEventLibArchive(){
     fi
 }
 
+checkEventLibClone(){
+    info ""
+    cd ${ownLocation}/../external
+    if [[ -d libevent-azat ]] ; then
+        cd libevent-azat
+        git pull --prune
+    else
+        git clone git@github.com:azat/libevent.git libevent-azat
+    fi
+    cd - >/dev/null
+}
+
 checkZLibArchive(){
     info ""
     if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
@@ -272,7 +284,8 @@ checkBoost
 checkBerkeleyDBArchive
 checkOpenSSLArchive
 if ${WITH_TOR} ; then
-    checkEventLibArchive
+#    checkEventLibArchive
+    checkEventLibClone
     checkXZLibArchive
     checkZLibArchive
     checkTorArchive
