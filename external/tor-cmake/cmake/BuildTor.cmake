@@ -102,11 +102,11 @@ else()
             --enable-lzma
             --enable-pic
             --enable-restart-debugging
-            --with-libevent-dir=${libevent_BINARY_DIR}/
-            --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-            --enable-zstd
-            --enable-static-tor
+            --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
+            --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+            --disable-gcc-hardening
+            --disable-system-torrc
             --disable-module-dirauth
             --disable-tool-name-check
             --disable-asciidoc
