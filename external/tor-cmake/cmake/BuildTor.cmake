@@ -96,22 +96,6 @@ else()
     # python helper script for corrent building environment
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
-    # additional configure script parameters
-    set(CONFIGURE_TOR_PARAMS
-            --enable-android
-            --enable-lzma
-            --enable-pic
-            --enable-restart-debugging
-            --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
-            --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-            --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-            --disable-gcc-hardening
-            --disable-system-torrc
-            --disable-module-dirauth
-            --disable-tool-name-check
-            --disable-asciidoc
-            )
-
     # cross-compiling
     if (CROSS)
         set(COMMAND_CONFIGURE ./configure ${CONFIGURE_TOR_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} --prefix=/usr/local/)
@@ -129,6 +113,22 @@ else()
         if (NOT ANDROID)
             message(FATAL_ERROR "Use NDK cmake toolchain or cmake android autoconfig")
         endif()
+
+        # additional configure script parameters
+        set(CONFIGURE_TOR_PARAMS
+                --enable-android
+                --enable-lzma
+                --enable-pic
+                --enable-restart-debugging
+                --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
+                --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --disable-gcc-hardening
+                --disable-system-torrc
+                --disable-module-dirauth
+                --disable-tool-name-check
+                --disable-asciidoc
+                )
 
         if (ARMEABI_V7A)
             set(TOR_PLATFORM "--host=armeabi")
@@ -180,6 +180,21 @@ else()
         set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} ${TOR_PLATFORM})
         set(COMMAND_TEST "true")
     else()                   # detect host system automatically
+
+        # additional configure script parameters
+        set(CONFIGURE_TOR_PARAMS
+                --enable-lzma
+                --enable-pic
+                --enable-restart-debugging
+                --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
+                --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --enable-static-tor
+                --disable-module-dirauth
+                --disable-tool-name-check
+                --disable-asciidoc
+                )
+
         set(COMMAND_AUTOGEN ./autogen.sh)
         set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS})
     endif()
