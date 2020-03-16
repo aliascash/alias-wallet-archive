@@ -199,7 +199,8 @@ checkEventLibClone(){
     else
         info "Cloning libevent"
 #        git clone git@github.com:azat/libevent.git libevent
-        git clone https://github.com/azat/libevent.git libevent
+#        git clone https://github.com/azat/libevent.git libevent
+        git clone https://github.com/libevent/libevent.git libevent
     fi
     cd "${currentDir}"
 }
