@@ -120,11 +120,12 @@ else()
                 --enable-lzma
                 --enable-pic
                 --enable-restart-debugging
-                --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
-                --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-                --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-                --disable-gcc-hardening
+                --with-libevent-dir=${libevent_BINARY_DIR}
+                --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local
+                --with-zlib-dir=${TOR_LIBTOR_PREFIX}/sysroot/usr
+                --enable-zstd
                 --disable-system-torrc
+                --enable-static-tor
                 --disable-module-dirauth
                 --disable-tool-name-check
                 --disable-asciidoc
@@ -146,11 +147,6 @@ else()
             set(ANDROID_STRING "${ANDROID_STRING}64")
         endif()
 
-        set(CONFIGURE_TOR_PARAMS
-                ${CONFIGURE_TOR_PARAMS}
-                --enable-android
-                )
-
         # copy over both sysroots to a common sysroot (workaround OpenSSL failing without one single sysroot)
         string(REPLACE "-clang" "" ANDROID_TOOLCHAIN_NAME ${ANDROID_TOOLCHAIN_NAME})
         file(COPY ${ANDROID_TOOLCHAIN_ROOT}/sysroot/usr/lib/${ANDROID_TOOLCHAIN_NAME}/${ANDROID_PLATFORM_LEVEL}/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/sysroot/usr/lib/)
@@ -167,6 +163,15 @@ else()
         # have to surround variables with double quotes, otherwise they will be merged together without any separator
         set(CC "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_C_COMPILER_TARGET}")
         set(CXX "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_CXX_COMPILER_TARGET}")
+
+        # Copy headers to library install location during build, so Tor could find them
+        file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
+        file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libz/build/cmake/include/)
+
+        set(LZMA_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../usr/local/include")
+        set(LZMA_LIBS "-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma")
+        set(ZSTD_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../libz/build/cmake/include")
+        set(ZSTD_LIBS "-L${TOR_LIBTOR_PREFIX}/../libz/build/cmake/lib -lzstd")
 
         message(STATUS "AS:  ${AS}")
         message(STATUS "AR:  ${AR}")
@@ -186,9 +191,10 @@ else()
                 --enable-lzma
                 --enable-pic
                 --enable-restart-debugging
-                --enable-static-libevent --with-libevent-dir=${libevent_BINARY_DIR}/
-                --enable-static-openssl  --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-                --enable-zstd            --with-zlib-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --with-libevent-dir=${libevent_BINARY_DIR}/
+                --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
+                --with-zlib-dir=${TOR_LIBTOR_PREFIX}/sysroot/usr/
+                --enable-zstd
                 --enable-static-tor
                 --disable-module-dirauth
                 --disable-tool-name-check
@@ -207,9 +213,7 @@ else()
             COMMAND ${COMMAND_AUTOGEN}
             DEPENDS ssl_lib zstd event
 
-            PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/0001-move-Android-build-setup-into-enable-android-flag.patch || true
-            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-binary-checks.patch || true
-            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-002-disable-zlib-binary-check.patch || true
+            PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-deprecated-android-log.patch || true
 
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
