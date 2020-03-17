@@ -96,6 +96,15 @@ else()
     # python helper script for corrent building environment
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
+    # Copy headers to library install location during build, so Tor could find them
+    file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
+    file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include/)
+
+    set(LZMA_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../usr/local/include")
+    set(LZMA_LIBS "-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma")
+    set(ZSTD_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include")
+    set(ZSTD_LIBS "-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd")
+
     # cross-compiling
     if (CROSS)
         set(COMMAND_CONFIGURE ./configure ${CONFIGURE_TOR_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} --prefix=/usr/local/)
@@ -163,15 +172,6 @@ else()
         # have to surround variables with double quotes, otherwise they will be merged together without any separator
         set(CC "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_C_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_C_COMPILER_TARGET}")
         set(CXX "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILE_OPTIONS_EXTERNAL_TOOLCHAIN}${CMAKE_CXX_COMPILER_EXTERNAL_TOOLCHAIN} ${CFLAGS} -target ${CMAKE_CXX_COMPILER_TARGET}")
-
-        # Copy headers to library install location during build, so Tor could find them
-        file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
-        file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libz/build/cmake/include/)
-
-        set(LZMA_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../usr/local/include")
-        set(LZMA_LIBS "-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma")
-        set(ZSTD_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../libz/build/cmake/include")
-        set(ZSTD_LIBS "-L${TOR_LIBTOR_PREFIX}/../libz/build/cmake/lib -lzstd")
 
         message(STATUS "AS:  ${AS}")
         message(STATUS "AR:  ${AR}")
