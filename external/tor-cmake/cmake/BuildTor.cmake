@@ -100,11 +100,6 @@ else()
     file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
     file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include/)
 
-    set(LZMA_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../usr/local/include")
-    set(LZMA_LIBS "-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma")
-    set(ZSTD_CFLAGS "-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include")
-    set(ZSTD_LIBS "-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd")
-
     # cross-compiling
     if (CROSS)
         set(COMMAND_CONFIGURE ./configure ${CONFIGURE_TOR_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} --prefix=/usr/local/)
@@ -115,8 +110,8 @@ else()
         set(CXXFLAGS ${CMAKE_CXX_FLAGS})
 
         # Silence warnings about unused arguments (Clang specific)
-        set(CFLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
-        set(CXXFLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
+        set(CFLAGS "${CMAKE_C_FLAGS} -Qunused-arguments -fuse-ld=gold")
+        set(CXXFLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -fuse-ld=gold")
 
         # Required environment configuration is already set (by e.g. ndk) so no need to fiddle around with all the options ...
         if (NOT ANDROID)
@@ -125,6 +120,10 @@ else()
 
         # additional configure script parameters
         set(CONFIGURE_TOR_PARAMS
+                ZSTD_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include'
+                ZSTD_LIBS='-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd'
+                LZMA_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../usr/local/include'
+                LZMA_LIBS='-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma'
                 --enable-android
                 --enable-lzma
                 --enable-pic
@@ -188,12 +187,17 @@ else()
 
         # additional configure script parameters
         set(CONFIGURE_TOR_PARAMS
+                CFLAGS='-fuse-ld=gold'
+                ZSTD_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include'
+                ZSTD_LIBS='-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd'
+                LZMA_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../usr/local/include'
+                LZMA_LIBS='-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma'
                 --enable-lzma
                 --enable-pic
                 --enable-restart-debugging
-                --with-libevent-dir=${libevent_BINARY_DIR}/
-                --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local/
-                --with-zlib-dir=${TOR_LIBTOR_PREFIX}/sysroot/usr/
+                --with-libevent-dir=${libevent_BINARY_DIR}
+                --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local
+                --with-zlib-dir=/usr/lib/x86_64-linux-gnu
                 --enable-zstd
                 --enable-static-tor
                 --disable-module-dirauth
@@ -202,7 +206,7 @@ else()
                 )
 
         set(COMMAND_AUTOGEN ./autogen.sh)
-        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS})
+        set(COMMAND_CONFIGURE ./configure --prefix=/usr/local/ ${CONFIGURE_TOR_PARAMS} && "echo '#define HAVE_ZSTD_ESTIMATECSTREAMSIZE 1' >> ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/orconfig.h")
     endif()
 
     # Add libtor target
@@ -214,6 +218,7 @@ else()
             DEPENDS ssl_lib zstd event
 
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-deprecated-android-log.patch || true
+            COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-002-fix-openssl-checks.patch || true
 
             CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR> ${COMMAND_CONFIGURE}
             BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
