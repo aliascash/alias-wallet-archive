@@ -41,10 +41,10 @@ target_link_libraries(spectrecoin_lib
 
 target_include_directories(spectrecoin_lib
         SYSTEM BEFORE PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/build/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../leveldb/helpers>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/build/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/helpers>
         ${OPENSSL_INCLUDE_PATH}
         ${BERKELEYDB_INCLUDE_PATH}
         )

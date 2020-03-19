@@ -147,7 +147,7 @@ add_subdirectory(external/berkeleydb-cmake)
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
-add_subdirectory(external/leveldb/)
+add_subdirectory(external/leveldb)
 
 # ============================================================================================
 if (WITH_TOR)
