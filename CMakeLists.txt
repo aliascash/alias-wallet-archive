@@ -163,16 +163,12 @@ if (WITH_TOR)
     set(OPENSSL_CRYPTO_LIBRARY crypto_lib CACHE STRING "" FORCE)
     add_subdirectory(external/libevent)
 
-    # Own wrapper as CMake External Project
-#    add_subdirectory(external/libevent-cmake)
-
     # ============================================================================================
     message(STATUS "=== XZLib ==================================================================")
     add_subdirectory(external/libxz-cmake)
 
     # ============================================================================================
     message(STATUS "=== ZLib ===================================================================")
-#    add_subdirectory(external/libz-cmake)
     add_subdirectory(external/libzstd/build/cmake)
 
     # ============================================================================================
