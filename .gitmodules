@@ -6,3 +6,7 @@
 	path = external/libevent
 	url = https://github.com/libevent/libevent.git
 	branch = master
+[submodule "external/leveldb"]
+	path = external/leveldb
+	url = https://github.com/google/leveldb.git
+	branch = master
