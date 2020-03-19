@@ -1,5 +1,5 @@
-[submodule "leveldb"]
-	path = leveldb
+[submodule "external/leveldb"]
+	path = external/leveldb
 	url = https://github.com/google/leveldb.git
 	branch = master
 #[submodule "db4.8"]
