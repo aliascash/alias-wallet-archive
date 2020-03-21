@@ -132,7 +132,6 @@ else()
                 --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local
                 --with-zlib-dir=${TOR_LIBTOR_PREFIX}/sysroot/usr
                 --enable-zstd
-                --disable-system-torrc
                 --enable-static-tor
                 --disable-module-dirauth
                 --disable-tool-name-check
