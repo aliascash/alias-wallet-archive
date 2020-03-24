@@ -103,6 +103,16 @@ if (ANDROID)
     message(STATUS "=== Qt disabled for Android build ==========================================")
 else ()
     message(STATUS "=== Qt =====================================================================")
+    if (WIN32)
+#        -DQt5_DIR=C:/Qt/5.12.7/msvc2017_64
+        set(Qt5Core_DIR "${Qt5_DIR}/lib/cmake/Qt5Core")
+        set(Qt5Widgets_DIR "${Qt5_DIR}/lib/cmake/Qt5Widgets")
+        set(Qt5WebEngine_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngine")
+        set(Qt5WebEngineWidgets_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngineWidgets")
+        set(Qt5_DIR "${Qt5_DIR}/lib/cmake/Qt5")
+        set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake.exe")
+    endif ()
+
     # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
     # directory <qt-dir>/msvc2017_64
     #
@@ -136,14 +146,22 @@ endif ()
 
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
-set(BUILD_OPENSSL ON)
-set(OPENSSL_ENABLE_TESTS OFF)
-add_subdirectory(external/openssl-cmake)
+if (WIN32)
+    find_package(OpenSSL)
+else()
+    set(BUILD_OPENSSL ON)
+    set(OPENSSL_ENABLE_TESTS OFF)
+    add_subdirectory(external/openssl-cmake)
+endif ()
 
 
 # ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")
-add_subdirectory(external/berkeleydb-cmake)
+if (WIN32)
+    find_package(BerkeleyDB)
+else()
+    add_subdirectory(external/berkeleydb-cmake)
+endif()
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")

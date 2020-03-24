@@ -60,8 +60,8 @@ else()
             
             set(MINGW_MAKE ${CMAKE_MAKE_PROGRAM})
             message(WARNING "Assuming your make program is a sibling of your compiler (resides in same directory)")
-        elseif(NOT (CYGWIN OR MSYS))
-            message(FATAL_ERROR "Unsupported compiler infrastructure")
+#        elseif(NOT (CYGWIN OR MSYS))
+#            message(FATAL_ERROR "Unsupported compiler infrastructure")
         endif(MINGW)
         
         set(MAKE_PROGRAM ${CMAKE_MAKE_PROGRAM})
