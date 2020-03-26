@@ -101,11 +101,18 @@ else()
 
     # additional configure script parameters
     #set(CONFIGURE_BERKELEYDB_PARAMS --libdir=lib)
-    set(CONFIGURE_BERKELEYDB_PARAMS --disable-cryptography --disable-partition --disable-compression --disable-replication --enable-cxx)
+    set(CONFIGURE_BERKELEYDB_PARAMS
+            --disable-cryptography
+            --disable-partition
+            --disable-compression
+            --disable-replication
+            --enable-cxx
+            --prefix=${CMAKE_INSTALL_PREFIX}
+            )
 
     # cross-compiling
     if (CROSS)
-        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_BERKELEYDB_MODULES} --prefix=/usr/local/)
+        set(COMMAND_CONFIGURE ../dist/configure ${CONFIGURE_BERKELEYDB_PARAMS} --cross-compile-prefix=${CROSS_PREFIX} ${CROSS_TARGET} ${CONFIGURE_BERKELEYDB_MODULES})
         set(COMMAND_TEST "true")
     elseif(CROSS_ANDROID)
         

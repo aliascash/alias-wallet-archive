@@ -145,23 +145,23 @@ endif ()
 
 
 # ============================================================================================
-message(STATUS "=== OpenSSL ================================================================")
-if (WIN32)
-    find_package(OpenSSL)
-else()
-    set(BUILD_OPENSSL ON)
-    set(OPENSSL_ENABLE_TESTS OFF)
-    add_subdirectory(external/openssl-cmake)
-endif ()
-
-
-# ============================================================================================
-message(STATUS "=== Berkeley DB ============================================================")
-if (WIN32)
+#message(STATUS "=== OpenSSL ================================================================")
+#if (WIN32)
+#    find_package(OpenSSL)
+#else()
+#    set(BUILD_OPENSSL ON)
+#    set(OPENSSL_ENABLE_TESTS OFF)
+#    add_subdirectory(external/openssl-cmake)
+#endif ()
+#
+#
+## ============================================================================================
+#message(STATUS "=== Berkeley DB ============================================================")
+#if (WIN32)
     find_package(BerkeleyDB)
-else()
-    add_subdirectory(external/berkeleydb-cmake)
-endif()
+#else()
+#    add_subdirectory(external/berkeleydb-cmake)
+#endif()
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
@@ -171,27 +171,27 @@ add_subdirectory(external/leveldb)
 if (WITH_TOR)
     add_compile_definitions(WITH_TOR)
 
-    message(STATUS "============================================================================")
-    message(STATUS "=== Build with Tor =========================================================")
-    message(STATUS "============================================================================")
-    # ============================================================================================
-    message(STATUS "=== EventLib ===============================================================")
-    # Direct usage of upstream project
-    set(OPENSSL_SSL_LIBRARY ssl_lib ${CMAKE_DL_LIBS} CACHE STRING "" FORCE)
-    set(OPENSSL_CRYPTO_LIBRARY crypto_lib CACHE STRING "" FORCE)
-    add_subdirectory(external/libevent)
-
-    # ============================================================================================
-    message(STATUS "=== XZLib ==================================================================")
-    add_subdirectory(external/libxz-cmake)
-
-    # ============================================================================================
-    message(STATUS "=== ZLib ===================================================================")
-    add_subdirectory(external/libzstd/build/cmake)
-
-    # ============================================================================================
-    message(STATUS "=== Tor ====================================================================")
-    add_subdirectory(external/tor-cmake)
+#    message(STATUS "============================================================================")
+#    message(STATUS "=== Build with Tor =========================================================")
+#    message(STATUS "============================================================================")
+#    # ============================================================================================
+#    message(STATUS "=== EventLib ===============================================================")
+#    # Direct usage of upstream project
+#    set(OPENSSL_SSL_LIBRARY ssl_lib ${CMAKE_DL_LIBS} CACHE STRING "" FORCE)
+#    set(OPENSSL_CRYPTO_LIBRARY crypto_lib CACHE STRING "" FORCE)
+#    add_subdirectory(external/libevent)
+#
+#    # ============================================================================================
+#    message(STATUS "=== XZLib ==================================================================")
+#    add_subdirectory(external/libxz-cmake)
+#
+#    # ============================================================================================
+#    message(STATUS "=== ZLib ===================================================================")
+#    add_subdirectory(external/libzstd/build/cmake)
+#
+#    # ============================================================================================
+#    message(STATUS "=== Tor ====================================================================")
+#    add_subdirectory(external/tor-cmake)
 endif()
 
 # ============================================================================================

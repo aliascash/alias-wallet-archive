@@ -97,8 +97,8 @@ else()
     set(BUILD_ENV_TOOL ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/building_env.py ${OS} ${MSYS_BASH} ${MINGW_MAKE})
 
     # Copy headers to library install location during build, so Tor could find them
-    file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
-    file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include/)
+#    file(COPY ${libevent_SOURCE_DIR}/include DESTINATION ${TOR_LIBTOR_PREFIX}/../libevent/)
+#    file(COPY ${libzstd_SOURCE_DIR}/../../../lib/zstd.h DESTINATION ${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include/)
 
     # cross-compiling
     if (CROSS)
@@ -185,16 +185,16 @@ else()
     else()                   # detect host system automatically
 
         # additional configure script parameters
+#                ZSTD_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include'
+#                ZSTD_LIBS='-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd'
+#                LZMA_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../usr/local/include'
+#                LZMA_LIBS='-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma'
         set(CONFIGURE_TOR_PARAMS
                 CFLAGS='-fuse-ld=gold'
-                ZSTD_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/include'
-                ZSTD_LIBS='-L${TOR_LIBTOR_PREFIX}/../libzstd/build/cmake/lib -lzstd'
-                LZMA_CFLAGS='-I${TOR_LIBTOR_PREFIX}/../usr/local/include'
-                LZMA_LIBS='-L${TOR_LIBTOR_PREFIX}/../usr/local/lib -llzma'
                 --enable-lzma
                 --enable-pic
                 --enable-restart-debugging
-                --with-libevent-dir=${libevent_BINARY_DIR}
+                --with-libevent-dir=${TOR_LIBTOR_PREFIX}/../usr/local
                 --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local
                 --with-zlib-dir=/usr/lib/x86_64-linux-gnu
                 --enable-zstd
@@ -214,7 +214,7 @@ else()
             ${TOR_CHECK_HASH}
             UPDATE_COMMAND ""
             COMMAND ${COMMAND_AUTOGEN}
-            DEPENDS ssl_lib zstd event
+#            DEPENDS ssl_lib zstd event
 
             PATCH_COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-001-disable-deprecated-android-log.patch || true
             COMMAND ${PATCH_PROGRAM} -p1 --forward -r - < ${CMAKE_CURRENT_SOURCE_DIR}/patches/Tor-002-fix-openssl-checks.patch || true

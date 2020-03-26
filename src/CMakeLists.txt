@@ -45,8 +45,10 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/build/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/helpers>
-        ${OPENSSL_INCLUDE_PATH}
-        ${BERKELEYDB_INCLUDE_PATH}
+        ${PROJECT_BINARY_DIR}/usr/local/include>
+        ${PROJECT_BINARY_DIR}/libdb/libdb-install/include>
+#        ${OPENSSL_INCLUDE_PATH}
+#        ${BERKELEYDB_INCLUDE_PATH}
         )
 
 #if (WITH_TOR)

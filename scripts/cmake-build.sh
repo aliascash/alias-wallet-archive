@@ -86,6 +86,7 @@ helpMe() {
     "
 }
 
+# ===== Start of berkeleydb functions ========================================
 checkOpenSSLArchive(){
     info ""
     if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
@@ -101,7 +102,61 @@ checkOpenSSLArchive(){
         cd - >/dev/null
     fi
 }
+checkOpenSSLBuild(){
+    mkdir -p ${BUILD_DIR}/openssl
+    cd ${BUILD_DIR}/openssl
 
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DBUILD_OPENSSL=ON \
+    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
+    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
+    -DOPENSSL_API_COMPAT=0x00908000L \
+    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
+    ${BUILD_DIR}/../external/openssl-cmake
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished openssl build and install"
+    else
+        error "Finished openssl with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkOpenSSL(){
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]] ; then
+        info "Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
+    else
+        checkOpenSSLArchive
+        checkOpenSSLBuild
+    fi
+}
+# ===== End of openssl functions =============================================
+
+# ============================================================================
+
+# ===== Start of berkeleydb functions ========================================
 checkBerkeleyDBArchive(){
     info ""
     if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]] ; then
@@ -118,6 +173,61 @@ checkBerkeleyDBArchive(){
     fi
 }
 
+checkBerkeleyDBBuild(){
+    mkdir -p ${BUILD_DIR}/libdb
+    cd ${BUILD_DIR}/libdb
+
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
+    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
+    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
+    -DBERKELEYDB_ARCHIVE_HASH=${BERKELEYDB_ARCHIVE_HASH} \
+    -DCMAKE_INSTALL_PREFIX=/libdb-install \
+    ${BUILD_DIR}/../external/berkeleydb-cmake
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished libdb build and install"
+    else
+        error "Finished libdb with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkBerkeleyDB(){
+    if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]] ; then
+        info "Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
+    else
+        checkBerkeleyDBArchive
+        checkBerkeleyDBBuild
+    fi
+}
+# ===== End of berkeleydb functions ==========================================
+
+# ============================================================================
+
+# ===== Start of boost functions =============================================
 checkBoost(){
     info ""
     info "Searching required static Boost libs"
@@ -154,7 +264,11 @@ checkBoost(){
         cd "${currentDir}"
     fi
 }
+# ===== End of boost functions ===============================================
 
+# ============================================================================
+
+# ===== Start of libevent functions ==========================================
 checkEventLibArchive(){
     info ""
     if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
@@ -188,7 +302,61 @@ checkEventLibClone(){
     cd "${currentDir}"
 }
 
-checkZLibArchive(){
+checkEventLibBuild(){
+    mkdir -p ${BUILD_DIR}/libevent
+    cd ${BUILD_DIR}/libevent
+
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DEVENT__DISABLE_OPENSSL=ON \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    ${BUILD_DIR}/../external/libevent
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished libevent build, installing..."
+        make install || error "Error during installation of libevent"
+    else
+        error "Finished libevent with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkEventLib(){
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]] ; then
+        info "Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+    else
+        checkEventLibClone
+        checkEventLibBuild
+    fi
+}
+
+# ===== End of libevent functions ============================================
+
+# ============================================================================
+
+# ===== Start of libzstd functions ===========================================
+checkZStdLibArchive(){
     info ""
     if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
@@ -213,6 +381,62 @@ checkZLibArchive(){
     cd - >/dev/null
 }
 
+checkZStdLibBuild(){
+    mkdir -p ${BUILD_DIR}/libzstd
+    cd ${BUILD_DIR}/libzstd
+
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
+    -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
+    -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
+    -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    ${BUILD_DIR}/../external/libzstd/build/cmake
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished libzstd build, installing..."
+        make install || error "Error during installation of libzstd"
+    else
+        error "Finished libzstd with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkZStdLib(){
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]] ; then
+        info "Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
+    else
+        checkZStdLibArchive
+        checkZStdLibBuild
+    fi
+}
+# ===== End of libzstd functions =============================================
+
+# ============================================================================
+
+# ===== Start of libxz functions =============================================
 checkXZLibArchive(){
     info ""
     if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]] ; then
@@ -229,6 +453,60 @@ checkXZLibArchive(){
     fi
 }
 
+checkXZLibBuild(){
+    mkdir -p ${BUILD_DIR}/libxz
+    cd ${BUILD_DIR}/libxz
+
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DLIBXZ_ARCHIVE_LOCATION=${LIBXZ_ARCHIVE_LOCATION} \
+    -DLIBXZ_BUILD_VERSION=${LIBXZ_BUILD_VERSION} \
+    -DLIBXZ_BUILD_VERSION_SHORT=${LIBXZ_BUILD_VERSION%.*} \
+    -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
+    ${BUILD_DIR}/../external/libxz-cmake
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished libxz build and install"
+    else
+        error "Finished libxz with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkXZLib(){
+    if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]] ; then
+        info "Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
+    else
+        checkXZLibArchive
+        checkXZLibBuild
+    fi
+}
+# ===== End of libxz functions ===============================================
+
+# ============================================================================
+
+# ===== Start of tor functions ===============================================
 checkTorArchive(){
     info ""
     if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz" ]] ; then
@@ -244,6 +522,59 @@ checkTorArchive(){
         cd - >/dev/null
     fi
 }
+
+checkTorBuild(){
+    mkdir -p ${BUILD_DIR}/tor
+    cd ${BUILD_DIR}/tor
+
+    info ""
+    info "Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
+    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
+    -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
+    -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
+    ${BUILD_DIR}/../external/tor-cmake
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info "Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info "Finished tor build and install"
+    else
+        error "Finished tor with return code ${rtc}"
+    fi
+
+    cd - >/dev/null
+}
+
+checkTor(){
+    if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]] ; then
+        info "Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
+    else
+        checkTorArchive
+        checkTorBuild
+    fi
+}
+# ===== End of libxz functions ===============================================
+
+# ============================================================================
 
 # Determine system
 # Determine amount of cores:
@@ -287,6 +618,7 @@ if [[ ! -d ${BUILD_DIR} ]] ; then
 fi
 
 cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
+BUILD_DIR=$(pwd)
 
 if ${FULLBUILD} ; then
     info ""
@@ -295,65 +627,30 @@ if ${FULLBUILD} ; then
 fi
 
 checkBoost
-checkBerkeleyDBArchive
-checkOpenSSLArchive
+checkBerkeleyDB
+checkOpenSSL
 if ${WITH_TOR} ; then
-#    checkEventLibArchive
-    checkEventLibClone
-    checkXZLibArchive
-    checkZLibArchive
-    checkTorArchive
+    checkEventLib
+    checkXZLib
+    checkZStdLib
+    checkTor
 fi
 
 info ""
 info "Generating build configuration"
 read -r -d '' cmd << EOM
 cmake \
-    -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
-    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
-    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
-    -DBERKELEYDB_ARCHIVE_HASH=${BERKELEYDB_ARCHIVE_HASH} \
-    \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     -DBOOST_ARCHIVE_HASH=${BOOST_ARCHIVE_HASH} \
     \
-    -DBUILD_OPENSSL=ON \
-    -DOPENSSL_ARCHIVE_LOCATION=${OPENSSL_ARCHIVE_LOCATION} \
-    -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
-    -DOPENSSL_API_COMPAT=0x00908000L \
-    -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
+    -DBERKELEYDB_ROOT=${BUILD_DIR}/libdb \
     \
     -DCORES_TO_USE=${CORES_TO_USE}
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
 ${cmd} \
-    \
-    -DLIBEVENT_ARCHIVE_LOCATION=${LIBEVENT_ARCHIVE_LOCATION} \
-    -DLIBEVENT_BUILD_VERSION=${LIBEVENT_BUILD_VERSION} \
-    -DLIBEVENT_BUILD_VERSION_SHORT=${LIBEVENT_BUILD_VERSION%.*} \
-    -DLIBEVENT_ARCHIVE_HASH=${LIBEVENT_ARCHIVE_HASH} \
-    -DEVENT__DISABLE_OPENSSL=ON \
-    -DEVENT__DISABLE_REGRESS=ON \
-    -DEVENT__DISABLE_SAMPLES=ON \
-    -DEVENT__DISABLE_TESTS=ON \
-    \
-    -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
-    -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
-    -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
-    -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
-    \
-    -DLIBXZ_ARCHIVE_LOCATION=${LIBXZ_ARCHIVE_LOCATION} \
-    -DLIBXZ_BUILD_VERSION=${LIBXZ_BUILD_VERSION} \
-    -DLIBXZ_BUILD_VERSION_SHORT=${LIBXZ_BUILD_VERSION%.*} \
-    -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
-    \
-    -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
-    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
-    -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
-    -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
-    \
     -DWITH_TOR=ON \
     ..
 EOM

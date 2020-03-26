@@ -50,8 +50,6 @@ message(STATUS "LIBLZMA_PREFIX: ${LIBLZMA_PREFIX}")
 set(LIBLZMA_PATH ${LIBLZMA_PREFIX}/usr/local/lib/liblzma.a)
 message(STATUS "LIBLZMA_PATH ${LIBLZMA_PATH}")
 
-set(LIBLZMA_INCLUDE_PATH ${LIBLZMA_PREFIX}/usr/local/include PARENT_SCOPE)
-
 # Set up XZLib target
 include(BuildXZLib)
 

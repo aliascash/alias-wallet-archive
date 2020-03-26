@@ -59,12 +59,12 @@ set_target_properties(lib_tor PROPERTIES IMPORTED_LOCATION ${TOR_LIBTOR_PATH})
 # Set include locations
 target_include_directories(libtor BEFORE INTERFACE ${TOR_LIBTOR_PREFIX}/usr/local/include)
 
-set(TOR_INCLUDE_PATH
-        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/
-        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/src/app/main/
-        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/src/feature/api/
-        PARENT_SCOPE
-        )
+#set(TOR_INCLUDE_PATH
+#        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/
+#        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/src/app/main/
+#        ${TOR_LIBTOR_PREFIX}/libtorExternal-prefix/src/libtorExternal/src/feature/api/
+#        PARENT_SCOPE
+#        )
 
 # Add fake targets to common target
 add_dependencies(lib_tor libtorExternal)
