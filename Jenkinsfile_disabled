@@ -556,24 +556,6 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Blockchain upload') {
-                            steps {
-                                build(
-                                        job: 'Spectrecoin-Blockchain-v4',
-                                        parameters: [
-                                                string(
-                                                        name: 'SPECTRECOIN_RELEASE',
-                                                        value: "${GIT_TAG_TO_USE}"
-                                                ),
-                                                string(
-                                                        name: 'SPECTRECOIN_REPOSITORY',
-                                                        value: "spectre"
-                                                )
-                                        ],
-                                        wait: false
-                                )
-                            }
-                        }
                     }
                 }
                 /* CentOS build disabled, not working at the moment
