@@ -249,8 +249,11 @@ else()
             spectrecoin_lib
             Qt5::Core
             Qt5::Widgets
-            Qt5::WebEngine
-            Qt5::WebEngineWidgets
+            Qt5::WebView
+            Qt5::WebChannel
+            Qt5::WebSockets
+            Qt5::Quick
+            Qt5::QuickWidgets
             )
 
     target_sources(Spectrecoin
@@ -286,6 +289,8 @@ else()
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.h
 
             PRIVATE
             ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
@@ -318,6 +323,8 @@ else()
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.cpp
             )
 
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
