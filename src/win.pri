@@ -14,6 +14,7 @@ QMAKE_CFLAGS += -O2 -MT
 QMAKE_CXXFLAGS += -O2 -MT
 
 DEFINES -= NDEBUG
+DEFINES += _WINSOCKAPI_
 
 
 CONFIG(release, debug|release) {
