@@ -276,6 +276,7 @@ void SpectreBridge::setWalletModel() {
 }
 
 void SpectreBridge::jsReady() {
+    window->pageLoaded(true);
     window->walletModel->getOptionsModel()->emitDisplayUnitChanged(window->walletModel->getOptionsModel()->getDisplayUnit());
     window->walletModel->getOptionsModel()->emitReserveBalanceChanged(window->walletModel->getOptionsModel()->getReserveBalance());
     window->walletModel->getOptionsModel()->emitRowsPerPageChanged(window->walletModel->getOptionsModel()->getRowsPerPage());
@@ -935,8 +936,6 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         window->changePassphrase();
     if(key == "toggleLock")
         window->toggleLock();
-    if(key == "developerConsole")
-        window->webEngineView->page()->triggerAction(QWebEnginePage::InspectElement);
     if(key == "aboutClicked")
         window->aboutClicked();
     if(key == "aboutQtClicked")
@@ -997,7 +996,6 @@ void SpectreBridge::listLatestBlocks()
 
     for (int x = 0; x < 5 && recentBlock; x++)
     {
-
         block.ReadFromDisk(recentBlock, true);
 
         if (block.IsNull() || block.vtx.size() < 1)

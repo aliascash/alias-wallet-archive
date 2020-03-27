@@ -4655,7 +4655,7 @@
         "\uD83D\uDDB1": "1f5b1"
     };
     ns.imagePathPNG = '//cdn.jsdelivr.net/emojione/assets/png/';
-    ns.imagePathSVG = 'qrc:///assets/plugins/emojione/assets/svg/';
+    ns.imagePathSVG = './assets/plugins/emojione/assets/svg/';
     ns.imagePathSVGSprites = './../assets/sprites/emojione.sprites.svg';
     ns.imageType = 'svg'; // or svg
     ns.sprites = false; // if this is true then sprite markup will be used (if SVG image type is set then you must include the SVG sprite file locally)
