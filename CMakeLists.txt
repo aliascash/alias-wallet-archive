@@ -146,14 +146,8 @@ endif ()
 
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
-#if (WIN32)
-    set(OPENSSL_USE_STATIC_LIBS TRUE)
-    find_package(OpenSSL)
-#else()
-#    set(BUILD_OPENSSL ON)
-#    set(OPENSSL_ENABLE_TESTS OFF)
-#    add_subdirectory(external/openssl-cmake)
-#endif ()
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package(OpenSSL)
 
 message(STATUS "OPENSSL_FOUND: ${OPENSSL_FOUND}")
 message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
@@ -164,11 +158,7 @@ message(STATUS "OPENSSL_VERSION: ${OPENSSL_VERSION}")
 
 ## ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")
-#if (WIN32)
-    find_package(BerkeleyDB)
-#else()
-#    add_subdirectory(external/berkeleydb-cmake)
-#endif()
+find_package(BerkeleyDB)
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
