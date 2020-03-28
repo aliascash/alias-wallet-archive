@@ -649,15 +649,9 @@ cmake \
     -DBOOST_ARCHIVE_HASH=${BOOST_ARCHIVE_HASH} \
     \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
-    -DBerkeleyDB_INCLUDE_DIRS=${BUILD_DIR}/libdb/libdb-install/include \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
-    -DBerkeleyDB_LIBRARY=${BUILD_DIR}/libdb/libdb-install/lib \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local \
-    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DOPENSSL_LIBRARIES=${BUILD_DIR}/usr/local/lib \
-    -DOPENSSL_CRYPTO_LIBRARY=${BUILD_DIR}/usr/local/lib/crypto \
-    -DOPENSSL_SSL_LIBRARY=${BUILD_DIR}/usr/local/lib/ssl
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM

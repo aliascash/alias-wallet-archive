@@ -359,10 +359,6 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
 EOM
-#    -DEVENT__DISABLE_OPENSSL=ON \
-#    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-#    -DOPENSSL_CRYPTO_LIBRARY=crypto \
-#    -DOPENSSL_SSL_LIBRARY=ssl \
 
     echo "=============================================================================="
     echo "Executing the following CMake cmd:"
@@ -760,6 +756,9 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
     -DANDROID_ABI=${ANDROID_ABI} \
     \
+    -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
+    -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
+    \
     -DBOOST_ROOT=${BOOST_ROOT} \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
@@ -767,15 +766,9 @@ cmake \
     -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
     \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
-    -DBerkeleyDB_INCLUDE_DIRS=${BUILD_DIR}/libdb/libdb-install/include \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
-    -DBerkeleyDB_LIBRARY=${BUILD_DIR}/libdb/libdb-install/lib \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local \
-    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DOPENSSL_LIBRARIES=${BUILD_DIR}/usr/local/lib \
-    -DOPENSSL_CRYPTO_LIBRARY=${BUILD_DIR}/usr/local/lib/crypto \
-    -DOPENSSL_SSL_LIBRARY=${BUILD_DIR}/usr/local/lib/ssl
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM

@@ -145,18 +145,24 @@ endif ()
 
 
 # ============================================================================================
-#message(STATUS "=== OpenSSL ================================================================")
+message(STATUS "=== OpenSSL ================================================================")
 #if (WIN32)
-#    find_package(OpenSSL)
+    find_package(OpenSSL)
 #else()
 #    set(BUILD_OPENSSL ON)
 #    set(OPENSSL_ENABLE_TESTS OFF)
 #    add_subdirectory(external/openssl-cmake)
 #endif ()
-#
-#
+
+message(STATUS "OPENSSL_FOUND: ${OPENSSL_FOUND}")
+message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
+message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
+message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
+message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
+message(STATUS "OPENSSL_VERSION: ${OPENSSL_VERSION}")
+
 ## ============================================================================================
-#message(STATUS "=== Berkeley DB ============================================================")
+message(STATUS "=== Berkeley DB ============================================================")
 #if (WIN32)
     find_package(BerkeleyDB)
 #else()
