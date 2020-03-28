@@ -128,7 +128,7 @@ else()
                 --enable-lzma
                 --enable-pic
                 --enable-restart-debugging
-                --with-libevent-dir=${libevent_BINARY_DIR}
+                --with-libevent-dir=${TOR_LIBTOR_PREFIX}/../usr/local
                 --with-openssl-dir=${TOR_LIBTOR_PREFIX}/../usr/local
                 --with-zlib-dir=${TOR_LIBTOR_PREFIX}/sysroot/usr
                 --enable-zstd
