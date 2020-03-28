@@ -63,8 +63,8 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 
 ##### ### # Tor # ### #######################################################
 # Location of archive will be resolved like this:
-# ${LIBXZ_ARCHIVE_LOCATION}/tor-${LIBXZ_BUILD_VERSION}.tar.gz
-TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor_Android
+# ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
+TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
 BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
 
@@ -351,11 +351,10 @@ cmake \
     -DCMAKE_ANDROID_API=${ANDROID_API} \
     -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ABI} \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
+    -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
+    -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local \
-    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DOPENSSL_CRYPTO_LIBRARY=crypto \
-    -DOPENSSL_SSL_LIBRARY=ssl \
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
@@ -440,18 +439,12 @@ checkZStdLibBuild(){
     read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \
-    -DCROSS_ANDROID=ON \
     -DCMAKE_ANDROID_API=${ANDROID_API} \
     -DANDROID_PLATFORM=${ANDROID_API} \
     -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ABI} \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
-    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
     -DANDROID_ABI=${ANDROID_ABI} \
     \
-    -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
-    -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
-    -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
-    -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libzstd/build/cmake
 EOM
@@ -610,7 +603,7 @@ cmake \
     -DANDROID_ABI=${ANDROID_ABI} \
     \
     -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
-    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
+    -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION_ANDROID} \
     -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
     -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
     ${BUILD_DIR}/../external/tor-cmake
@@ -753,17 +746,18 @@ read a
 read a
 fi
 
+mkdir -p ${BUILD_DIR}/spectrecoin
+cd ${BUILD_DIR}/spectrecoin
+
 info ""
 info "Generating build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \
-    -DCROSS_ANDROID=ON \
     -DCMAKE_ANDROID_API=${ANDROID_API} \
     -DANDROID_PLATFORM=${ANDROID_API} \
     -DCMAKE_ANDROID_ARCH_ABI=${ANDROID_ABI} \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
-    -DANDROID_NDK_ROOT=${ANDROID_NDK_ROOT} \
     -DANDROID_ABI=${ANDROID_ABI} \
     \
     -DBOOST_ROOT=${BOOST_ROOT} \
@@ -771,22 +765,28 @@ cmake \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     -DBoost_INCLUDE_DIR=${BOOST_INCLUDEDIR} \
     -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
-    -DBOOST_ARCHIVE_HASH=${BOOST_ARCHIVE_HASH} \
     \
-    -DBERKELEYDB_ROOT=${BUILD_DIR}/libdb \
+    -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
+    -DBerkeleyDB_INCLUDE_DIRS=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBerkeleyDB_LIBRARY=${BUILD_DIR}/libdb/libdb-install/lib \
     \
-    -DCORES_TO_USE=${CORES_TO_USE}
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local \
+    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
+    -DOPENSSL_LIBRARIES=${BUILD_DIR}/usr/local/lib \
+    -DOPENSSL_CRYPTO_LIBRARY=${BUILD_DIR}/usr/local/lib/crypto \
+    -DOPENSSL_SSL_LIBRARY=${BUILD_DIR}/usr/local/lib/ssl
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
 ${cmd} \
     -DWITH_TOR=ON \
-    ..
+    ${BUILD_DIR}/..
 EOM
 else
     read -r -d '' cmd << EOM
 ${cmd} \
-    ..
+    ${BUILD_DIR}/..
 EOM
 fi
 
@@ -796,7 +796,7 @@ echo "${cmd}"
 echo "=============================================================================="
 #read a
 ${cmd}
-#read a
+read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"

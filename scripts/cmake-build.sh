@@ -310,7 +310,8 @@ checkEventLibBuild(){
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
-    -DEVENT__DISABLE_OPENSSL=ON \
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
+    \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
 EOM
@@ -636,6 +637,9 @@ if ${WITH_TOR} ; then
     checkTor
 fi
 
+mkdir -p ${BUILD_DIR}/spectrecoin
+cd ${BUILD_DIR}/spectrecoin
+
 info ""
 info "Generating build configuration"
 read -r -d '' cmd << EOM
@@ -644,20 +648,27 @@ cmake \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     -DBOOST_ARCHIVE_HASH=${BOOST_ARCHIVE_HASH} \
     \
-    -DBERKELEYDB_ROOT=${BUILD_DIR}/libdb \
+    -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
+    -DBerkeleyDB_INCLUDE_DIRS=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBerkeleyDB_LIBRARY=${BUILD_DIR}/libdb/libdb-install/lib \
     \
-    -DCORES_TO_USE=${CORES_TO_USE}
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local \
+    -DOPENSSL_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
+    -DOPENSSL_LIBRARIES=${BUILD_DIR}/usr/local/lib \
+    -DOPENSSL_CRYPTO_LIBRARY=${BUILD_DIR}/usr/local/lib/crypto \
+    -DOPENSSL_SSL_LIBRARY=${BUILD_DIR}/usr/local/lib/ssl
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
 ${cmd} \
     -DWITH_TOR=ON \
-    ..
+    ${BUILD_DIR}/..
 EOM
 else
     read -r -d '' cmd << EOM
 ${cmd} \
-    ..
+    ${BUILD_DIR}/..
 EOM
 fi
 
@@ -667,7 +678,7 @@ echo "${cmd}"
 echo "=============================================================================="
 #read a
 ${cmd}
-#read a
+read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
