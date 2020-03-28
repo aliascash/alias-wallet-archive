@@ -23,10 +23,10 @@ file(WRITE ${DUMMY_SOURCE} "")
 add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
 target_link_libraries(spectrecoin_lib
-        bdb
+        Oracle::BerkeleyDB
         leveldb
-        ssl
-        crypto
+        OpenSSL::SSL
+        OpenSSL::Crypto
         Boost::atomic
         Boost::boost
         Boost::chrono
@@ -47,8 +47,8 @@ target_include_directories(spectrecoin_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../external/leveldb/helpers>
         ${PROJECT_BINARY_DIR}/usr/local/include>
         ${PROJECT_BINARY_DIR}/libdb/libdb-install/include>
-#        ${OPENSSL_INCLUDE_PATH}
-#        ${BERKELEYDB_INCLUDE_PATH}
+        ${OPENSSL_INCLUDE_DIR}
+        ${BERKELEYDB_INCLUDE_DIR}
         )
 
 #if (WITH_TOR)
@@ -173,23 +173,23 @@ target_sources(spectrecoin_lib
         ${CMAKE_CURRENT_LIST_DIR}/shutdown.cpp
         )
 
-if (EXISTS ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h)
-    target_sources(spectrecoin_lib
-        PUBLIC
-        ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h
-    )
-else()
-    message(STATUS "===> BerkeleyDB: ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
-endif()
-
-if (EXISTS ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h)
-    target_sources(spectrecoin_lib
-        PUBLIC
-        ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h
-    )
-else()
-    message(STATUS "===> OpenSSL: ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h not found. Please re-run cmake after OpenSSL was build.")
-endif()
+#if (EXISTS ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h)
+#    target_sources(spectrecoin_lib
+#        PUBLIC
+#        ${BERKELEYDB_INCLUDE_DIR}/db_cxx.h
+#    )
+#else()
+#    message(STATUS "===> BerkeleyDB: ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
+#endif()
+#
+#if (EXISTS ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h)
+#    target_sources(spectrecoin_lib
+#        PUBLIC
+#        ${OPENSSL_INCLUDE_DIR}/openssl/crypto.h
+#    )
+#else()
+#    message(STATUS "===> OpenSSL: ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h not found. Please re-run cmake after OpenSSL was build.")
+#endif()
 
 add_subdirectory(json)
 add_subdirectory(lz4)
@@ -224,9 +224,9 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 #            )
 #else()
     target_link_libraries(Spectrecoind
-            ssl
-            crypto
-            bdb
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
             leveldb
             spectrecoin_lib
             -static
@@ -244,9 +244,9 @@ else()
     # Link the UI wallet
     # QtWebEngine not static available, so no static binary here :-(
     target_link_libraries(Spectrecoin
-            ssl
-            crypto
-            bdb
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
             leveldb
             spectrecoin_lib
             Qt5::Core
