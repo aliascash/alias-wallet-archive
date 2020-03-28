@@ -55,7 +55,7 @@ endif()
 
 # Find includes path
 find_path(BerkeleyDB_INCLUDE_DIRS
-        NAMES "db.h"
+        NAMES "db_cxx.h"
         HINTS ${_BERKELEYDB_HINTS}
         PATH_SUFFIXES "include" "includes"
         PATHS ${_BERKELEYDB_PATHS}
