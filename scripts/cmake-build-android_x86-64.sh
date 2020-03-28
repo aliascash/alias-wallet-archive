@@ -364,9 +364,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-    read a
+#    read a
     ${cmd}
-    read a
+#    read a
 
     info ""
     info "Building with ${CORES_TO_USE} cores:"
@@ -733,13 +733,9 @@ checkBerkeleyDB
 checkOpenSSL
 if ${WITH_TOR} ; then
     checkEventLib
-read a
     checkXZLib
-read a
     checkZStdLib
-read a
     checkTor
-read a
 fi
 
 mkdir -p ${BUILD_DIR}/spectrecoin
@@ -789,7 +785,7 @@ echo "${cmd}"
 echo "=============================================================================="
 #read a
 ${cmd}
-read a
+#read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"

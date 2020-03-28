@@ -672,7 +672,7 @@ echo "${cmd}"
 echo "=============================================================================="
 #read a
 ${cmd}
-read a
+#read a
 
 info ""
 info "Building with ${CORES_TO_USE} cores:"
