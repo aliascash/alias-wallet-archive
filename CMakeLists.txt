@@ -147,6 +147,7 @@ endif ()
 # ============================================================================================
 message(STATUS "=== OpenSSL ================================================================")
 #if (WIN32)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
     find_package(OpenSSL)
 #else()
 #    set(BUILD_OPENSSL ON)
