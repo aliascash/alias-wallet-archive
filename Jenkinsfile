@@ -245,6 +245,7 @@ pipeline {
                         }
                     }
                 }
+                /*
                 stage('Windows-Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
@@ -291,7 +292,8 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.12.0') {
+                */
+                stage('Windows-Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -771,6 +773,7 @@ pipeline {
                         }
                     }
                 }
+                /*
                 stage('Windows-Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
@@ -849,17 +852,16 @@ pipeline {
                                     sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
                                 }
                             }
-                            /*
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                            */
+//                            post {
+//                                always {
+//                                    sh "docker system prune --all --force"
+//                                }
+//                            }
                         }
                     }
                 }
-                stage('Windows-Qt5.12.0') {
+                */
+                stage('Windows-Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
