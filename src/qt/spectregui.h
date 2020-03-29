@@ -7,8 +7,8 @@
 #define SPECTREGUI_H
 
 #include <QMainWindow>
-#include <QWebEngineView>
-#include <QWebEngineProfile>
+#include <QtWebView>
+#include <QWebChannel>
 #include <QSystemTrayIcon>
 #include <QLabel>
 #include <QModelIndex>
@@ -34,42 +34,6 @@ class QUrl;
 QT_END_NAMESPACE
 
 /**
- * @brief The WebEnginePage class is written to override and provide the linkClicked signal as from the previous QtWebKit inspired from
- * https://stackoverflow.com/questions/36446246/how-to-emulate-linkclickedqurl-signal-in-qwebengineview
- */
-class WebEnginePage : public QWebEnginePage
-{
-    Q_OBJECT
-public:
-    WebEnginePage(SpectreGUI* gui);
-    ~WebEnginePage();
-
-    bool acceptNavigationRequest(const QUrl & url, QWebEnginePage::NavigationType type, bool);
-    QWebEngineProfile *prepareProfile(SpectreGUI* gui);
-
-signals:
-    void linkClicked(const QUrl&);
-
-};
-
-/**
- * @brief The WebElement class is written to provide easy access for modifying HTML objects with Javascript
- */
-class WebElement {
-public:
-    enum SelectorType {ID,CLASS};
-    WebElement(WebEnginePage* webEnginePage, QString name, SelectorType type = SelectorType::ID);
-    void setAttribute(QString attribute, QString value);
-    void removeAttribute(QString attribute);
-    void addClass(QString className);
-    void removeClass(QString className);
-private:
-    WebEnginePage* webEnginePage;
-    QString name;
-    QString getElementJS;
-};
-
-/**
   Spectre GUI main class. This class represents the main window of the Spectre UI. It communicates with both the client and
   wallet models to give the user an up-to-date view of the current core state.
 */
@@ -77,7 +41,7 @@ class SpectreGUI : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit SpectreGUI(QWidget *parent = 0);
+    explicit SpectreGUI(QWebChannel *webChannel, QWidget *parent = 0);
     ~SpectreGUI();
 
     /** Set the client model.
@@ -100,6 +64,8 @@ public:
     /** Indicate that SpectreGUI is fully initialized and can be shown */
     void readyGUI();
 
+    void runJavaScript(QString javascriptCode);
+
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *event);
@@ -108,10 +74,10 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
-    QWebEngineView* webEngineView;
-    WebEnginePage* webEnginePage;
-
     SpectreBridge *bridge;
+    QWebChannel * webChannel;
+    QObject* qmlWebView;
+    bool uiReady;
 
     ClientModel *clientModel;
     WalletModel *walletModel;
@@ -148,11 +114,29 @@ private:
 
     friend class SpectreBridge;
 
+    /**
+     * @brief The WebElement class is written to provide easy access for modifying HTML objects with Javascript
+     */
+    class WebElement {
+    public:
+        enum SelectorType {ID,CLASS};
+        WebElement(SpectreGUI* spectreGUI, QString name, SelectorType type = SelectorType::ID);
+        void setAttribute(QString attribute, QString value);
+        void removeAttribute(QString attribute);
+        void addClass(QString className);
+        void removeClass(QString className);
+    private:
+        SpectreGUI* spectreGUI;
+        QString name;
+        QString getElementJS;
+    };
+
+
 private slots:
     /** Page finished loading */
     void pageLoaded(bool ok);
     /** Add JavaScript objects to page */
-    void addJavascriptObjects();
+    void addJavascriptObjects(const QString &id, QObject *object);
     /** Handle external URLs **/
     void urlClicked(const QUrl & link);
 

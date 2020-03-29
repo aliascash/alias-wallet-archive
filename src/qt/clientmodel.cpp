@@ -21,11 +21,10 @@ static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     QObject(parent), optionsModel(optionsModel),
-    cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0)
+    cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0), cachedLastBlockTime(GENESIS_BLOCK_TIME)
 {
     peerTableModel = new PeerTableModel(this);
-
-    numBlocksAtStartup = -1;
+    updateFromCore();
 
     pollTimer = new QTimer(this);
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
@@ -38,6 +37,29 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 ClientModel::~ClientModel()
 {
     unsubscribeFromCoreSignals();
+}
+
+void ClientModel::updateFromCore() {
+    LOCK(cs_main);
+
+    fInitialBlockDownload = IsInitialBlockDownload();
+
+    cachedNumBlocks = nBestHeight;
+    cachedNumBlocksOfPeers = GetNumBlocksOfPeers();
+
+    if (nNodeMode == NT_FULL)
+    {
+        if (pindexBest)
+            cachedLastBlockTime = pindexBest->GetBlockTime();
+        else
+            cachedLastBlockTime = GENESIS_BLOCK_TIME;
+    }
+    else {
+        if (pindexBestHeader)
+            cachedLastBlockTime = pindexBestHeader->GetBlockTime();
+        else
+            cachedLastBlockTime = GENESIS_BLOCK_TIME;
+    }
 }
 
 int ClientModel::getNumConnections(unsigned int flags) const
@@ -56,15 +78,7 @@ int ClientModel::getNumConnections(unsigned int flags) const
 
 int ClientModel::getNumBlocks() const
 {
-    LOCK(cs_main);
-    return nBestHeight;
-}
-
-int ClientModel::getNumBlocksAtStartup()
-{
-    if (numBlocksAtStartup == -1)
-        numBlocksAtStartup = getNumBlocks();
-    return numBlocksAtStartup;
+    return cachedNumBlocks;
 }
 
 quint64 ClientModel::getTotalBytesRecv() const
@@ -79,23 +93,8 @@ quint64 ClientModel::getTotalBytesSent() const
 
 QDateTime ClientModel::getLastBlockDate() const
 {
-    LOCK(cs_main);
-    if (pindexBest)
-        return QDateTime::fromTime_t(pindexBest->GetBlockTime());
-    else
-        return QDateTime::fromTime_t(GENESIS_BLOCK_TIME);
+    return QDateTime::fromTime_t(cachedLastBlockTime);
 }
-
-QDateTime ClientModel::getLastBlockThinDate() const
-{
-    LOCK(cs_main);
-    if (pindexBestHeader)
-        return QDateTime::fromTime_t(pindexBestHeader->GetBlockTime());
-    else
-        return QDateTime::fromTime_t(GENESIS_BLOCK_TIME);
-}
-
-
 
 void ClientModel::updateTimer()
 {
@@ -108,17 +107,16 @@ void ClientModel::updateTimer()
     // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
     // Periodically check and update with a timer.
 
-    int newNumBlocks = getNumBlocks();
-    int newNumBlocksOfPeers = getNumBlocksOfPeers();
+    int lastNumBlocks = cachedNumBlocks;
+    int lastBlocksOfPeers = cachedNumBlocksOfPeers;
 
-    if (cachedNumBlocks != newNumBlocks
-        || cachedNumBlocksOfPeers != newNumBlocksOfPeers
+    updateFromCore();
+
+    if (cachedNumBlocks != lastNumBlocks
+        || cachedNumBlocksOfPeers != lastBlocksOfPeers
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        cachedNumBlocks = newNumBlocks;
-        cachedNumBlocksOfPeers = newNumBlocksOfPeers;
-
-        emit numBlocksChanged(newNumBlocks, newNumBlocksOfPeers);
+        emit numBlocksChanged(cachedNumBlocks, cachedNumBlocksOfPeers);
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -160,12 +158,12 @@ int ClientModel::getClientMode() const
 
 bool ClientModel::inInitialBlockDownload() const
 {
-    return IsInitialBlockDownload();
+    return fInitialBlockDownload;
 }
 
 int ClientModel::getNumBlocksOfPeers() const
 {
-    return GetNumBlocksOfPeers();
+    return cachedNumBlocksOfPeers;
 }
 bool ClientModel::isImporting() const
 {

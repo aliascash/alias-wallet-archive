@@ -113,3 +113,6 @@ Checksum-Spectrecoin-*
 
 # Visual Studio
 .vs/
+
+# Mac
+*.dmg

@@ -61,7 +61,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     int64_t nNet = nCredit - nDebit;
 
     QString txid(wtx.GetHash().ToString().c_str());
-    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='"+explorer+"tx.dws?" + txid + "'>" + txid + "</a><br>";
+    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='"+explorer+"tx.dws?" + txid + "' target='_blank'>" + txid + "</a><br>";
 
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx);
     int nRequests = wtx.GetRequestCount();
@@ -241,7 +241,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                     CTxDestination address;
                     if (ExtractDestination(vout.scriptPubKey, address))
                     {
-                        strHTML +="<a href='"+explorer+"address.dws?"+QString::fromStdString(CBitcoinAddress(address).ToString())+"'>";
+                        strHTML +="<a href='"+explorer+"address.dws?"+QString::fromStdString(CBitcoinAddress(address).ToString())+"' target='_blank'>";
                         if (wallet->mapAddressBook.count(address) && !wallet->mapAddressBook[address].empty())
                             strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[address]) + " ";
                         strHTML += QString::fromStdString(CBitcoinAddress(address).ToString()) + "</a>";
@@ -320,7 +320,7 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
     else {
         CBitcoinAddress btcAddress(destination);
         if (btcAddress.IsValid()) {
-            strHTML += "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"'>";
+            strHTML += "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"' target='_blank'>";
             if (wallet->mapAddressBook.count(destination) && !wallet->mapAddressBook[destination].empty())
                  strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[destination]) + "<br>";
             strHTML += GUIUtil::HtmlEscape(btcAddress.ToString());
@@ -342,7 +342,7 @@ void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>
         CBitcoinAddress btcAddress(destination);
         if (btcAddress.IsValid()) {
             strHTML += "<dt>-</dt>";
-            strHTML += TransactionDesc::tr("<dd>") + "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"'>";
+            strHTML += TransactionDesc::tr("<dd>") + "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"' target='_blank'>";
             strHTML += GUIUtil::HtmlEscape(btcAddress.ToString());
             strHTML += "</a></dd>";
         }
