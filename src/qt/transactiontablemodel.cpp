@@ -12,6 +12,7 @@
 #include "optionsmodel.h"
 #include "addresstablemodel.h"
 #include "bitcoinunits.h"
+#include "sync.h"
 
 #include "wallet.h"
 #include "ui_interface.h"
@@ -22,6 +23,7 @@
 #include <QIcon>
 #include <QDateTime>
 #include <QtAlgorithms>
+#include <QApplication>
 
 // Amount column is right-aligned it contains numbers
 static int column_alignments[] = {
@@ -126,10 +128,7 @@ public:
                         }
                         // Added -- insert at the right position
                         toInsert = TransactionRecord::decomposeTransaction(wallet, mi->second);
-                    }
 
-                    if(!toInsert.isEmpty()) /* only if something to insert */
-                    {
                         parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex+toInsert.size()-1);
                         int insert_idx = lowerIndex;
                         Q_FOREACH(const TransactionRecord &rec, toInsert)
@@ -139,6 +138,7 @@ public:
                         }
                         parent->endInsertRows();
                     }
+
                 }
                 break;
             case CT_DELETED:
@@ -167,9 +167,7 @@ public:
                             break;
                         }
                         toUpdate = TransactionRecord::decomposeTransaction(wallet, mi->second);
-                    }
-                    if(!toUpdate.isEmpty()) /* only if something to update */
-                    {
+
                         if (toUpdate.size() != (upperIndex - lowerIndex))
                             LogPrintf("Warning: updateWallet: Got CT_UPDATED, but existing transaction has different TransactionRecords. (should never happen, not handled)\n");
                         else {
@@ -262,7 +260,19 @@ void TransactionTableModel::updateTransaction(const QString &hash, int status, b
     uint256 updated;
     updated.SetHex(hash.toStdString());
 
-    priv->updateWallet(updated, status, showTransaction);
+    while(true)
+    {
+        if (QApplication::instance()->closingDown())
+            return;
+        TRY_LOCK(cs_main, lockMain);
+        if(!lockMain) {
+            QApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
+            continue;
+        }
+        LOCK(wallet->cs_wallet);
+        priv->updateWallet(updated, status, showTransaction);
+        break;
+    }
 }
 
 void TransactionTableModel::updateConfirmations()
