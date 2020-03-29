@@ -564,6 +564,9 @@ bool AddressTableModel::removeRows(int row, int count, const QModelIndex &parent
  */
 QString AddressTableModel::labelForAddress(const QString &address) const
 {
+    if (address.isEmpty())
+        return "";
+
     int row(lookupAddress(address));
 
     if(row == -1)

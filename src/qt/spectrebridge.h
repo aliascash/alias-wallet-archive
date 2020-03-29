@@ -91,6 +91,7 @@ public:
     void setTransactionModel();
     void setAddressModel();
 
+public slots:
     Q_INVOKABLE void jsReady();
 
     Q_INVOKABLE void copy(QString text);
