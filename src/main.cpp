@@ -5850,9 +5850,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         nTimeLastMblkRecv = GetTime();
 
         {
-            LOCK(cs_main);
             for (uint32_t i = 0; i < nBlocks; ++i)
             {
+                LOCK(cs_main);
                 CBlock &block = vBlocks[i];
 
                 uint256 hashBlock = block.GetHash();
@@ -5871,8 +5871,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 if (block.nDoS)
                     pfrom->Misbehaving(block.nDoS);
-            };
-        } // cs_main
+            } // cs_main
+        }
     } else
     if (strCommand == "mblkt" && !fImporting && !fReindexing)  // Ignore blocks received while importing
     {

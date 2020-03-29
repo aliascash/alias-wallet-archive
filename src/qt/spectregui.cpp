@@ -544,12 +544,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     if (!strStatusBarWarnings.isEmpty())
         bridge->networkAlert(strStatusBarWarnings);
 
-    QDateTime lastBlockDate;
-    if (nNodeMode == NT_FULL)
-        lastBlockDate = clientModel->getLastBlockDate();
-    else
-        lastBlockDate = clientModel->getLastBlockThinDate();
-
+    QDateTime lastBlockDate = clientModel->getLastBlockDate();
     int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
     QString text;
 
@@ -1036,7 +1031,7 @@ void SpectreGUI::updateStakingIcon()
                                                (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
                                                (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                                (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-                                               (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
+                                               (clientModel->inInitialBlockDownload())   ? tr("Not staking because wallet is syncing") : \
                                                (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
                                                                                           tr("Not staking"));
     }
