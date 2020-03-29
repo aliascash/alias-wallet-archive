@@ -47,13 +47,11 @@ public:
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
     int getNumBlocks() const;
-    int getNumBlocksAtStartup();
 
     quint64 getTotalBytesRecv() const;
     quint64 getTotalBytesSent() const;
 
     QDateTime getLastBlockDate() const;
-    QDateTime getLastBlockThinDate() const;
 
     //! Return true if client connected to testnet
     bool isTestNet() const;
@@ -82,12 +80,15 @@ private:
     int cachedNumBlocks;
     int cachedNumBlocksOfPeers;
 
-    int numBlocksAtStartup;
+    int64_t cachedLastBlockTime;
+    bool fInitialBlockDownload;
 
     QTimer *pollTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
+    void updateFromCore();
+
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count, int countOfPeers);

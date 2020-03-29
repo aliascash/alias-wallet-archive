@@ -388,11 +388,7 @@ void RPCConsole::setNumConnections(int count)
 void RPCConsole::setNumBlocks(int count, int countOfPeers)
 {
     ui->numberOfBlocks->setText(QString::number(count));
-    QDateTime lastBlockDate;
-    if (nNodeMode == NT_FULL)
-        lastBlockDate = clientModel->getLastBlockDate();
-    else
-        lastBlockDate = clientModel->getLastBlockThinDate();
+    QDateTime lastBlockDate = clientModel->getLastBlockDate();
     ui->lastBlockTime->setText(lastBlockDate.toString());
 }
 
