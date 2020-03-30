@@ -24,19 +24,12 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 {
     peerTableModel = new PeerTableModel(this);
 
-    // Fetch data from core in separate thread to not block event loop when waiting for the main lock
-    CoreInfoWorker *worker = new CoreInfoWorker();
-    worker->moveToThread(&workerThread);
-    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
-    connect(worker, &CoreInfoWorker::dataFromCore, this, &ClientModel::updateFromCore, Qt::QueuedConnection);
-    workerThread.start();
-
     // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
     // Periodically fetch data from core with a timer.
     pollTimer = new QTimer(this);
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
     pollTimer->start();
-    connect(pollTimer, &QTimer::timeout, worker, &CoreInfoWorker::fetchDataFromCore);
+    connect(pollTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
 
     subscribeToCoreSignals();
 }
@@ -44,41 +37,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 ClientModel::~ClientModel()
 {
     unsubscribeFromCoreSignals();
-    workerThread.quit();
-    workerThread.wait();
 }
-
-void CoreInfoWorker::fetchDataFromCore() {
-    if (QDateTime::currentMSecsSinceEpoch() - lastExecutionEpochMS < MODEL_UPDATE_DELAY)
-        return; // prevent fetchDataFromCore being executed to often (might happen if thread has to wait long time for lock)
-
-    CoreInfoModel coreInfo;
-    {
-        LOCK(cs_main);
-
-        coreInfo.numBlocks = nBestHeight;
-        coreInfo.numBlocksOfPeers = GetNumBlocksOfPeers();
-        coreInfo.isInitialBlockDownload = IsInitialBlockDownload();
-
-        if (nNodeMode == NT_FULL)
-        {
-            if (pindexBest)
-                coreInfo.lastBlockTime = pindexBest->GetBlockTime();
-            else
-                coreInfo.lastBlockTime = GENESIS_BLOCK_TIME;
-        }
-        else {
-            if (pindexBestHeader)
-                coreInfo.lastBlockTime = pindexBestHeader->GetBlockTime();
-            else
-                coreInfo.lastBlockTime = GENESIS_BLOCK_TIME;
-        }
-    }
-    lastExecutionEpochMS = QDateTime::currentMSecsSinceEpoch();
-
-    emit dataFromCore(coreInfo);
-}
-
 
 int ClientModel::getNumConnections(unsigned int flags) const
 {
@@ -115,16 +74,15 @@ QDateTime ClientModel::getLastBlockDate() const
 }
 
 void ClientModel::updateFromCore(const CoreInfoModel &coreInfo) {
-    int lastNumBlocks = this->coreInfo.numBlocks;
-    int lastBlocksOfPeers = this->coreInfo.numBlocksOfPeers;
-
-    // Update our coreInfo data
     this->coreInfo = coreInfo;
+}
 
-    if (coreInfo.numBlocks != lastNumBlocks
-        || coreInfo.numBlocksOfPeers != lastBlocksOfPeers
+void ClientModel::updateTimer() {
+    if (coreInfo.numBlocks != lastPublishedCoreInfo.numBlocks
+        || coreInfo.numBlocksOfPeers != lastPublishedCoreInfo.numBlocksOfPeers
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
+        lastPublishedCoreInfo = coreInfo;
         emit numBlocksChanged(coreInfo.numBlocks, coreInfo.numBlocksOfPeers);
     }
 
@@ -215,10 +173,10 @@ QString ClientModel::formatClientStartupTime() const
 }
 
 // Handlers for core signals
-static void NotifyBlocksChanged(ClientModel *clientmodel)
+static void NotifyBlocksChanged(ClientModel *clientmodel, const BlockChangedEvent &blockChangedEvent)
 {
-    // This notification is too frequent. Don't trigger a signal.
-    // Don't remove it, though, as it might be useful later.
+   CoreInfoModel coreInfoModel = {blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers, blockChangedEvent.isInitialBlockDownload, blockChangedEvent.lastBlockTime};
+   QMetaObject::invokeMethod(clientmodel, "updateFromCore", Qt::QueuedConnection, Q_ARG(CoreInfoModel, coreInfoModel));
 }
 
 static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConnections)
@@ -239,7 +197,7 @@ static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, Ch
 void ClientModel::subscribeToCoreSignals()
 {
     // Connect signals to client
-    uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this, _1));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
 }
@@ -247,7 +205,7 @@ void ClientModel::subscribeToCoreSignals()
 void ClientModel::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
-    uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this, _1));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
 }
