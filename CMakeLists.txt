@@ -138,9 +138,25 @@ else ()
     message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
     get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
 
-    find_package(Qt5WebEngineWidgets)
-    message(STATUS "Qt5WebEngineWidgets version: ${Qt5WebEngineWidgets_VERSION}")
-    get_target_property(QtWebEngineWidgets_location Qt5::WebEngineWidgets LOCATION)
+    find_package(Qt5WebView)
+    message(STATUS "Qt5WebView version: ${Qt5WebView_VERSION}")
+    get_target_property(QtWebView_location Qt5::WebView LOCATION)
+
+    find_package(Qt5WebChannel)
+    message(STATUS "Qt5WebChannel version: ${Qt5WebChannel_VERSION}")
+    get_target_property(Qt5WebChannel_location Qt5::WebChannel LOCATION)
+
+    find_package(Qt5WebSockets)
+    message(STATUS "Qt5WebSockets version: ${Qt5WebSockets_VERSION}")
+    get_target_property(Qt5WebSockets_location Qt5::WebSockets LOCATION)
+
+    find_package(Qt5QuickWidgets)
+    message(STATUS "Qt5QuickWidgets version: ${Qt5QuickWidgets_VERSION}")
+    get_target_property(QtQuickWidgets_location Qt5::QuickWidgets LOCATION)
+
+    find_package(Qt5Quick)
+    message(STATUS "Qt5Quick version: ${Qt5Quick_VERSION}")
+    get_target_property(QtQuick_location Qt5::Quick LOCATION)
 endif ()
 
 
