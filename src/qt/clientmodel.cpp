@@ -20,16 +20,23 @@
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    QObject(parent), optionsModel(optionsModel),
-    cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0), cachedLastBlockTime(GENESIS_BLOCK_TIME)
+    QObject(parent), optionsModel(optionsModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
-    updateFromCore();
 
+    // Fetch data from core in separate thread to not block event loop when waiting for the main lock
+    CoreInfoWorker *worker = new CoreInfoWorker();
+    worker->moveToThread(&workerThread);
+    connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+    connect(worker, &CoreInfoWorker::dataFromCore, this, &ClientModel::updateFromCore, Qt::QueuedConnection);
+    workerThread.start();
+
+    // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
+    // Periodically fetch data from core with a timer.
     pollTimer = new QTimer(this);
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
     pollTimer->start();
-    connect(pollTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
+    connect(pollTimer, &QTimer::timeout, worker, &CoreInfoWorker::fetchDataFromCore);
 
     subscribeToCoreSignals();
 }
@@ -37,30 +44,41 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 ClientModel::~ClientModel()
 {
     unsubscribeFromCoreSignals();
+    workerThread.quit();
+    workerThread.wait();
 }
 
-void ClientModel::updateFromCore() {
-    LOCK(cs_main);
+void CoreInfoWorker::fetchDataFromCore() {
+    if (QDateTime::currentMSecsSinceEpoch() - lastExecutionEpochMS < MODEL_UPDATE_DELAY)
+        return; // prevent fetchDataFromCore being executed to often (might happen if thread has to wait long time for lock)
 
-    fInitialBlockDownload = IsInitialBlockDownload();
-
-    cachedNumBlocks = nBestHeight;
-    cachedNumBlocksOfPeers = GetNumBlocksOfPeers();
-
-    if (nNodeMode == NT_FULL)
+    CoreInfoModel coreInfo;
     {
-        if (pindexBest)
-            cachedLastBlockTime = pindexBest->GetBlockTime();
-        else
-            cachedLastBlockTime = GENESIS_BLOCK_TIME;
+        LOCK(cs_main);
+
+        coreInfo.numBlocks = nBestHeight;
+        coreInfo.numBlocksOfPeers = GetNumBlocksOfPeers();
+        coreInfo.isInitialBlockDownload = IsInitialBlockDownload();
+
+        if (nNodeMode == NT_FULL)
+        {
+            if (pindexBest)
+                coreInfo.lastBlockTime = pindexBest->GetBlockTime();
+            else
+                coreInfo.lastBlockTime = GENESIS_BLOCK_TIME;
+        }
+        else {
+            if (pindexBestHeader)
+                coreInfo.lastBlockTime = pindexBestHeader->GetBlockTime();
+            else
+                coreInfo.lastBlockTime = GENESIS_BLOCK_TIME;
+        }
     }
-    else {
-        if (pindexBestHeader)
-            cachedLastBlockTime = pindexBestHeader->GetBlockTime();
-        else
-            cachedLastBlockTime = GENESIS_BLOCK_TIME;
-    }
+    lastExecutionEpochMS = QDateTime::currentMSecsSinceEpoch();
+
+    emit dataFromCore(coreInfo);
 }
+
 
 int ClientModel::getNumConnections(unsigned int flags) const
 {
@@ -78,7 +96,7 @@ int ClientModel::getNumConnections(unsigned int flags) const
 
 int ClientModel::getNumBlocks() const
 {
-    return cachedNumBlocks;
+    return coreInfo.numBlocks;
 }
 
 quint64 ClientModel::getTotalBytesRecv() const
@@ -93,30 +111,21 @@ quint64 ClientModel::getTotalBytesSent() const
 
 QDateTime ClientModel::getLastBlockDate() const
 {
-    return QDateTime::fromTime_t(cachedLastBlockTime);
+    return QDateTime::fromTime_t(coreInfo.lastBlockTime);
 }
 
-void ClientModel::updateTimer()
-{
-    // Get required lock upfront. This avoids the GUI from getting stuck on
-    // periodical polls if the core is holding the locks for a longer time -
-    // for example, during a wallet rescan.
-    TRY_LOCK(cs_main, lockMain);
-    if(!lockMain)
-        return;
-    // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
-    // Periodically check and update with a timer.
+void ClientModel::updateFromCore(const CoreInfoModel &coreInfo) {
+    int lastNumBlocks = this->coreInfo.numBlocks;
+    int lastBlocksOfPeers = this->coreInfo.numBlocksOfPeers;
 
-    int lastNumBlocks = cachedNumBlocks;
-    int lastBlocksOfPeers = cachedNumBlocksOfPeers;
+    // Update our coreInfo data
+    this->coreInfo = coreInfo;
 
-    updateFromCore();
-
-    if (cachedNumBlocks != lastNumBlocks
-        || cachedNumBlocksOfPeers != lastBlocksOfPeers
+    if (coreInfo.numBlocks != lastNumBlocks
+        || coreInfo.numBlocksOfPeers != lastBlocksOfPeers
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        emit numBlocksChanged(cachedNumBlocks, cachedNumBlocksOfPeers);
+        emit numBlocksChanged(coreInfo.numBlocks, coreInfo.numBlocksOfPeers);
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -158,12 +167,12 @@ int ClientModel::getClientMode() const
 
 bool ClientModel::inInitialBlockDownload() const
 {
-    return fInitialBlockDownload;
+    return coreInfo.isInitialBlockDownload;
 }
 
 int ClientModel::getNumBlocksOfPeers() const
 {
-    return cachedNumBlocksOfPeers;
+    return coreInfo.numBlocksOfPeers;
 }
 bool ClientModel::isImporting() const
 {

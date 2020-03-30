@@ -7,6 +7,7 @@
 #define CLIENTMODEL_H
 
 #include <QObject>
+#include <QThread>
 
 enum BlockSource {
     BLOCK_SOURCE_NONE,
@@ -33,10 +34,34 @@ class QDateTime;
 class QTimer;
 QT_END_NAMESPACE
 
+struct CoreInfoModel {
+    int numBlocks;
+    int numBlocksOfPeers;
+    bool isInitialBlockDownload;
+    int64_t lastBlockTime;
+};
+Q_DECLARE_METATYPE(CoreInfoModel);
+
+class CoreInfoWorker : public QObject
+{
+    Q_OBJECT
+
+public slots:
+    void fetchDataFromCore();
+
+signals:
+    void dataFromCore(const CoreInfoModel &updatedModel);
+
+private:
+    qint64 lastExecutionEpochMS;
+};
+
+
 /** Model for Bitcoin network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT
+    QThread workerThread;
 public:
     explicit ClientModel(OptionsModel *optionsModel, QObject *parent = 0);
     ~ClientModel();
@@ -77,17 +102,12 @@ private:
     OptionsModel *optionsModel;
     PeerTableModel *peerTableModel;
 
-    int cachedNumBlocks;
-    int cachedNumBlocksOfPeers;
-
-    int64_t cachedLastBlockTime;
-    bool fInitialBlockDownload;
+    CoreInfoModel coreInfo;
 
     QTimer *pollTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
-    void updateFromCore();
 
 signals:
     void numConnectionsChanged(int count);
@@ -98,7 +118,7 @@ signals:
     void error(const QString &title, const QString &message, bool modal);
 
 public slots:
-    void updateTimer();
+    void updateFromCore(const CoreInfoModel &coreInfo);
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
 };
