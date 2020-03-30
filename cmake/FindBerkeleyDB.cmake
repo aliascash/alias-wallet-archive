@@ -122,9 +122,9 @@ macro(_berkeleydb_get_lib _BERKELEYDB_OUTPUT_VARNAME _TARGET_BERKELEYDB_LIB)
 endmacro()
 
 # Find and set the paths of the specific library to the variable
-_berkeleydb_get_lib(BerkeleyDB_LIBRARY "db")
+_berkeleydb_get_lib(BerkeleyDB_LIBRARY "db.a")
 # NOTE: Windows doesn't have a db_cxx lib, but instead compiles the cxx code into the "db" lib
-_berkeleydb_get_lib(BerkeleyDB_Cxx_LIBRARY "db_cxx")
+_berkeleydb_get_lib(BerkeleyDB_Cxx_LIBRARY "db_cxx.a")
 # NOTE: I don't think Linux/Unix gets an SQL lib
 _berkeleydb_get_lib(BerkeleyDB_Sql_LIBRARY "db_sql")
 _berkeleydb_get_lib(BerkeleyDB_Stl_LIBRARY "db_stl")
