@@ -2063,7 +2063,7 @@ Hides the menu at `56.625em`, but modify this based on your app's needs.
     /*#txnsearch {
         width: 100%;
         padding: 10px 25px 10px 15px;
-        background: url('../images/search_icon.png') no-repeat 100% 7px;
+        background: url(qrc:///assets/images/search_icon.png) no-repeat 100% 7px;
         background-color: #ecf0f1;
         border: 1px #e5e5e5 solid;
         text-transform: uppercase;
