@@ -7,10 +7,15 @@ first.
 
 ## Install required tools and libs
 
+- Git: https://git-scm.com/
 - Visual studio: https://www.visualstudio.com/downloads/
 - Qt SDK: https://www.qt.io/download-qt-installer
 - VCPKG: https://github.com/microsoft/vcpkg/
-- Boost ...
+
+
+
+### Git
+Just install it with default settings. ;-)
 
 
 
@@ -40,31 +45,26 @@ may untick that, unless you need it for other projects.
 
 Clone VCPKG Git repository
 
-**Important 1:** It must be reset to the state before the update of Boost to
-1.70, as we're based on Boost 1.69 at the moment.
+**Important 1:** The Boost directories must be reset to the state before the
+update of Boost to 1.70 or newer, as we're based on Boost 1.69 at the moment.
 
 **Important 2:** You need to use `Start menu` > `Visual Studio 2019` > 
-`Developer Command Prompt for VS 2019` for all the next steps!
+`x64 Native Tools Command Prompt for VS 2019` for all the next steps! To build
+x86 (32Bit) dependencies, just use `Developer Command Prompt for VS 2019` or
+use both if you want to build 32Bit and 64Bit versions.
 
 ```
 D:\coding> git clone https://github.com/Microsoft/vcpkg.git
 D:\coding> cd vcpkg
-D:\coding\vcpkg> git checkout 208bb8ee -- ports/boost
+D:\coding\vcpkg> git checkout 208bb8ee -- ports/boost*
 D:\coding\vcpkg> .\bootstrap-vcpkg.bat
 ```
 
-After this, make vcpkg global available by executing the following cmd once 
-as Administrator:
+After this, make vcpkg global available by executing the following cmd **once 
+as Administrator**:
 
 ```
 D:\coding\vcpkg> .\vcpkg.exe integrate install
-```
-
-Additionally you need to setup the environment variable `asdf` with the path
-to the tools directory on your Visual Studio installation:
-
-```
-VS150COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools
 ```
 
 Subsequent executions could be done with normal user permissions.
@@ -80,15 +80,18 @@ too new for Boost 1.69. To tweak the boost build, the required files needs to
 be created at first. So start the build of boost, even if it will fail:
 
 ```
-D:\coding\vcpkg> .\vcpkg.exe install boost-atomic boost-chrono boost-date-time boost-filesystem boost-iostreams boost-program-options boost-regex boost-system boost-thread 
+D:\coding\vcpkg> .\vcpkg.exe install boost
 ```
 
-Now modify the file `D:\coding\vcpkg\installed\x86-windows\tools\boost-build\src\tools\msvc.jam`
-by replacing all occurrences of `VS150COMNTOOLS` with `VS160COMNTOOLS`. After
-this, restart the Boost build:
+Now modify the file `D:\coding\vcpkg\installed\x64-windows\tools\boost-build\src\tools\msvc.jam`
+by replacing all occurrences of `VS150COMNTOOLS` with `VS160COMNTOOLS`. If 
+you're building for x86 aka 32Bit, the same change must be performed on 
+`D:\coding\vcpkg\installed\x86-windows\tools\boost-build\src\tools\msvc.jam`.
+
+Restart the Boost build afterwards and have patience, this might take a long time:
 
 ```
-D:\coding\vcpkg> .\vcpkg.exe install boost-atomic boost-chrono boost-date-time boost-filesystem boost-iostreams boost-program-options boost-regex boost-system boost-thread 
+D:\coding\vcpkg> .\vcpkg.exe install boost
 ```
 
 ToDocument: 
