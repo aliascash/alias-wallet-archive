@@ -12,6 +12,7 @@
 #include <QSystemTrayIcon>
 #include <QLabel>
 #include <QModelIndex>
+#include <QSplashScreen>
 
 #include "spectrebridge.h"
 #include "walletmodel.h"
@@ -95,6 +96,8 @@ public:
     */
     void setMessageModel(MessageModel *messageModel);
 
+    void setSplashScreen(QSplashScreen* splash);
+
     void loadIndex();
 
     /** Indicate that SpectreGUI is fully initialized and can be shown */
@@ -118,6 +121,8 @@ private:
     MessageModel *messageModel;
 
     QMenuBar *appMenuBar;
+
+    QSplashScreen *splashScreen;
 
     QAction *quitAction;
     QAction *aboutAction;

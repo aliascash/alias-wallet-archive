@@ -224,9 +224,46 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     addJavascriptObjects();
 }
 
+void initMessage(QSplashScreen *splashScreen, const std::string &message)
+{
+    if(splashScreen)
+    {
+        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        QApplication::instance()->processEvents();
+    }
+}
+
 void SpectreGUI::readyGUI() {
+    initMessage(splashScreen, "..Start UI..");
+
     // Create the tray icon (or setup the dock icon)
     createTrayIcon();
+
+    // Populate data
+    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+    setNumConnections(clientModel->getNumConnections());
+    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
+    setEncryptionStatus(walletModel->getEncryptionStatus());
+    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
+
+    bridge->populateTransactionTable();
+    bridge->populateAddressTable();
+
+    initMessage(splashScreen, "Ready!");
+
+    if (splashScreen)
+        splashScreen->finish(this);
+
+    // If -min option passed, start window minimized.
+    if(GetBoolArg("-min"))
+    {
+        showMinimized();
+    } else
+    {
+        show();
+    }
 }
 
 unsigned short const onion_port = 9089;
@@ -457,6 +494,11 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
 
         bridge->setWalletModel();
     }
+}
+
+void SpectreGUI::setSplashScreen(QSplashScreen * splashScreen)
+{
+    this->splashScreen = splashScreen;
 }
 
 void SpectreGUI::createTrayIcon()

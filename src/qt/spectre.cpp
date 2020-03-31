@@ -268,6 +268,7 @@ int main(int argc, char *argv[])
         boost::thread_group threadGroup;
 
         SpectreGUI window;
+        window.setSplashScreen(&splash);
         guiref = &window;
 
         QTimer* pollShutdownTimer = new QTimer(guiref);
@@ -279,6 +280,7 @@ int main(int argc, char *argv[])
             {
                 // Put this in a block, so that the Model objects are cleaned up before
                 // calling Shutdown().
+                InitMessage("...Start UI...");
 
                 paymentServer->setOptionsModel(&optionsModel);
 
@@ -297,19 +299,7 @@ int main(int argc, char *argv[])
                 }
 
                 window.loadIndex();
-                window.readyGUI();
 
-                if (splashref)
-                    splash.finish(&window);
-
-                // If -min option passed, start window minimized.
-                if(GetBoolArg("-min"))
-                {
-                    window.showMinimized();
-                } else
-                {
-                    window.show();
-                }
 
                 // Now that initialization/startup is done, process any command-line
                 // spectre: URIs
