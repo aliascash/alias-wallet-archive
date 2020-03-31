@@ -344,6 +344,7 @@ void SpectreGUI::createActions()
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
 
+    connect(quitAction, SIGNAL(triggered()), SLOT(requestShutdown()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -1100,6 +1101,11 @@ void SpectreGUI::updateStakingIcon()
                                                (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
                                                                                           tr("Not staking"));
     }
+}
+
+void SpectreGUI::requestShutdown()
+{
+    StartShutdown();
 }
 
 void SpectreGUI::detectShutdown()

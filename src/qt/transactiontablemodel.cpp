@@ -16,6 +16,7 @@
 
 #include "wallet.h"
 #include "ui_interface.h"
+#include "shutdown.h"
 
 #include <QLocale>
 #include <QList>
@@ -257,22 +258,36 @@ TransactionTableModel::~TransactionTableModel()
 
 void TransactionTableModel::updateTransaction(const QString &hash, int status, bool showTransaction)
 {
-    uint256 updated;
-    updated.SetHex(hash.toStdString());
+    TransactionNotification notification(hash, status, showTransaction);
+    vQueueNotifications.push_back(notification);
 
-    while(true)
+    if (fProcessTransactionNotifications)
+        return;
+
+    fProcessTransactionNotifications = true;
+
+    while(!vQueueNotifications.empty() && !QApplication::instance()->closingDown() && !ShutdownRequested())
     {
-        if (QApplication::instance()->closingDown())
-            return;
         TRY_LOCK(cs_main, lockMain);
         if(!lockMain) {
             QApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
             continue;
         }
         LOCK(wallet->cs_wallet);
-        priv->updateWallet(updated, status, showTransaction);
-        break;
+
+        auto itTrx = vQueueNotifications.begin();
+        while (itTrx !=vQueueNotifications.end())
+        {
+            // Process transaction notification
+            uint256 updated;
+            updated.SetHex(itTrx->hash.toStdString());
+            priv->updateWallet(updated, itTrx->status, itTrx->showTransaction);
+            // Remove processed notificaiton from vector
+            itTrx = vQueueNotifications.erase(itTrx);
+        }
     }
+
+    fProcessTransactionNotifications = false;
 }
 
 void TransactionTableModel::updateConfirmations()
@@ -684,31 +699,6 @@ void TransactionTableModel::emitDataChanged(int rowTop, int rowBottom)
     emit dataChanged(index(rowTop, 0), index(rowBottom, columns.length()-1));
 }
 
-// queue notifications to show a non freezing progress dialog e.g. for rescan
-struct TransactionNotification
-{
-public:
-    TransactionNotification() {}
-    TransactionNotification(uint256 hash, ChangeType status, bool showTransaction):
-        hash(hash), status(status), showTransaction(showTransaction) {}
-
-    void invoke(QObject *ttm)
-    {
-        LogPrintf("NotifyTransactionChanged: %s status= %i", hash.GetHex(), status);
-        QMetaObject::invokeMethod(ttm, "updateTransaction", Qt::QueuedConnection,
-                                  Q_ARG(QString, QString::fromStdString(hash.GetHex())),
-                                  Q_ARG(int, status),
-                                  Q_ARG(bool, showTransaction));
-    }
-private:
-    uint256 hash;
-    ChangeType status;
-    bool showTransaction;
-};
-
-static bool fQueueNotifications = false;
-static std::vector< TransactionNotification > vQueueNotifications;
-
 static void NotifyTransactionChanged(TransactionTableModel *ttm, CWallet *wallet, const uint256 &hash, ChangeType status)
 {
     // Find transaction in wallet
@@ -717,14 +707,11 @@ static void NotifyTransactionChanged(TransactionTableModel *ttm, CWallet *wallet
     bool inWallet = mi != wallet->mapWallet.end();
     bool showTransaction = (inWallet && TransactionRecord::showTransaction(mi->second));
 
-    TransactionNotification notification(hash, status, showTransaction);
-
-    if (fQueueNotifications)
-    {
-        vQueueNotifications.push_back(notification);
-        return;
-    }
-    notification.invoke(ttm);
+    LogPrintf("NotifyTransactionChanged: %s status= %i", hash.GetHex(), status);
+    QMetaObject::invokeMethod(ttm, "updateTransaction", Qt::QueuedConnection,
+                              Q_ARG(QString, QString::fromStdString(hash.GetHex())),
+                              Q_ARG(int, status),
+                              Q_ARG(bool, showTransaction));
 }
 
 void TransactionTableModel::subscribeToCoreSignals()
