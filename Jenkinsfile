@@ -473,35 +473,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Raspberry Pi Stretch') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    stages {
-                        stage('Binary build') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
