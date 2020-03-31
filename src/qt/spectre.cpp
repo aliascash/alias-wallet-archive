@@ -305,16 +305,25 @@ int main(int argc, char *argv[])
 
                 paymentServer->setOptionsModel(&optionsModel);
 
-                if (splashref)
-                    splash.finish(&window);
-
                 ClientModel clientModel(&optionsModel);
                 WalletModel walletModel(pwalletMain, &optionsModel);
-
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
+
+                // Manually create a blockChangedEvent to set initial values for the UI
+                {
+                    LOCK(cs_main);
+                    BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
+                                                           pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
+                                                           pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME};
+                    uiInterface.NotifyBlocksChanged(blockChangedEvent);
+                }
+
                 window.loadIndex();
                 window.readyGUI();
+
+                if (splashref)
+                    splash.finish(&window);
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))

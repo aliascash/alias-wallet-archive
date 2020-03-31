@@ -20,12 +20,12 @@
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    QObject(parent), optionsModel(optionsModel),
-    cachedNumBlocks(0), cachedNumBlocksOfPeers(0), pollTimer(0), cachedLastBlockTime(GENESIS_BLOCK_TIME)
+    QObject(parent), optionsModel(optionsModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
-    updateFromCore();
 
+    // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
+    // Periodically fetch data from core with a timer.
     pollTimer = new QTimer(this);
     pollTimer->setInterval(MODEL_UPDATE_DELAY);
     pollTimer->start();
@@ -37,29 +37,6 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
 ClientModel::~ClientModel()
 {
     unsubscribeFromCoreSignals();
-}
-
-void ClientModel::updateFromCore() {
-    LOCK(cs_main);
-
-    fInitialBlockDownload = IsInitialBlockDownload();
-
-    cachedNumBlocks = nBestHeight;
-    cachedNumBlocksOfPeers = GetNumBlocksOfPeers();
-
-    if (nNodeMode == NT_FULL)
-    {
-        if (pindexBest)
-            cachedLastBlockTime = pindexBest->GetBlockTime();
-        else
-            cachedLastBlockTime = GENESIS_BLOCK_TIME;
-    }
-    else {
-        if (pindexBestHeader)
-            cachedLastBlockTime = pindexBestHeader->GetBlockTime();
-        else
-            cachedLastBlockTime = GENESIS_BLOCK_TIME;
-    }
 }
 
 int ClientModel::getNumConnections(unsigned int flags) const
@@ -78,7 +55,7 @@ int ClientModel::getNumConnections(unsigned int flags) const
 
 int ClientModel::getNumBlocks() const
 {
-    return cachedNumBlocks;
+    return coreInfo.numBlocks;
 }
 
 quint64 ClientModel::getTotalBytesRecv() const
@@ -93,30 +70,20 @@ quint64 ClientModel::getTotalBytesSent() const
 
 QDateTime ClientModel::getLastBlockDate() const
 {
-    return QDateTime::fromTime_t(cachedLastBlockTime);
+    return QDateTime::fromTime_t(coreInfo.lastBlockTime);
 }
 
-void ClientModel::updateTimer()
-{
-    // Get required lock upfront. This avoids the GUI from getting stuck on
-    // periodical polls if the core is holding the locks for a longer time -
-    // for example, during a wallet rescan.
-    TRY_LOCK(cs_main, lockMain);
-    if(!lockMain)
-        return;
-    // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
-    // Periodically check and update with a timer.
+void ClientModel::updateFromCore(const CoreInfoModel &coreInfo) {
+    this->coreInfo = coreInfo;
+}
 
-    int lastNumBlocks = cachedNumBlocks;
-    int lastBlocksOfPeers = cachedNumBlocksOfPeers;
-
-    updateFromCore();
-
-    if (cachedNumBlocks != lastNumBlocks
-        || cachedNumBlocksOfPeers != lastBlocksOfPeers
+void ClientModel::updateTimer() {
+    if (coreInfo.numBlocks != lastPublishedCoreInfo.numBlocks
+        || coreInfo.numBlocksOfPeers != lastPublishedCoreInfo.numBlocksOfPeers
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        emit numBlocksChanged(cachedNumBlocks, cachedNumBlocksOfPeers);
+        lastPublishedCoreInfo = coreInfo;
+        emit numBlocksChanged(coreInfo.numBlocks, coreInfo.numBlocksOfPeers);
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -158,12 +125,12 @@ int ClientModel::getClientMode() const
 
 bool ClientModel::inInitialBlockDownload() const
 {
-    return fInitialBlockDownload;
+    return coreInfo.isInitialBlockDownload;
 }
 
 int ClientModel::getNumBlocksOfPeers() const
 {
-    return cachedNumBlocksOfPeers;
+    return coreInfo.numBlocksOfPeers;
 }
 bool ClientModel::isImporting() const
 {
@@ -206,10 +173,10 @@ QString ClientModel::formatClientStartupTime() const
 }
 
 // Handlers for core signals
-static void NotifyBlocksChanged(ClientModel *clientmodel)
+static void NotifyBlocksChanged(ClientModel *clientmodel, const BlockChangedEvent &blockChangedEvent)
 {
-    // This notification is too frequent. Don't trigger a signal.
-    // Don't remove it, though, as it might be useful later.
+   CoreInfoModel coreInfoModel = {blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers, blockChangedEvent.isInitialBlockDownload, blockChangedEvent.lastBlockTime};
+   QMetaObject::invokeMethod(clientmodel, "updateFromCore", Qt::QueuedConnection, Q_ARG(CoreInfoModel, coreInfoModel));
 }
 
 static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConnections)
@@ -230,7 +197,7 @@ static void NotifyAlertChanged(ClientModel *clientmodel, const uint256 &hash, Ch
 void ClientModel::subscribeToCoreSignals()
 {
     // Connect signals to client
-    uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.NotifyBlocksChanged.connect(boost::bind(NotifyBlocksChanged, this, _1));
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this, _1, _2));
 }
@@ -238,7 +205,7 @@ void ClientModel::subscribeToCoreSignals()
 void ClientModel::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
-    uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this));
+    uiInterface.NotifyBlocksChanged.disconnect(boost::bind(NotifyBlocksChanged, this, _1));
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this, _1));
     uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this, _1, _2));
 }
