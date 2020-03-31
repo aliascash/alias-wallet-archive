@@ -97,24 +97,6 @@ pipeline {
                     }
                 }
                 /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi Stretch') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
                 stage('Raspberry Pi Buster') {
                     agent {
                         label "raspi-builder"
@@ -124,26 +106,6 @@ pipeline {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
                                     dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
-                /* CentOS build disabled, not working at the moment
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -199,6 +161,24 @@ pipeline {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
                                     dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Ubuntu 19.10') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
+                                    dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -476,37 +456,6 @@ pipeline {
                     }
                 }
                 /*
-                stage('Raspberry Pi Stretch') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    stages {
-                        stage('Binary build') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
-                */
-                /*
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
@@ -566,33 +515,6 @@ pipeline {
                         }
                     }
                 }
-                /* CentOS build disabled, not working at the moment
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildBranch(
-                                    dockerfile: 'Docker/CentOS/Dockerfile',
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
-                                    gitTag: "${GIT_TAG_TO_USE}",
-                                    gitCommit: "${GIT_COMMIT_SHORT}"
-                            )
-                            getChecksumfileFromImage(
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
-                                    checksumfile: "Checksum-Spectrecoin-CentOS.txt"
-                            )
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-CentOS.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
                 stage('Fedora') {
                     agent {
                         label "docker"
@@ -694,6 +616,35 @@ pipeline {
                         }
                     }
                 }
+                stage('Ubuntu-19-10') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Build binaries') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
+                    }
+                }
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -779,94 +730,6 @@ pipeline {
                         }
                     }
                 }
-                /*
-                stage('Windows-Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Windows Build') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                }
-                            }
-                        }
-                        stage('Upload deliveries') {
-                            steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Spectrecoin-*-Win64-Qt5.9.6.zip Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
-                                }
-                            }
-//                            post {
-//                                always {
-//                                    sh "docker system prune --all --force"
-//                                }
-//                            }
-                        }
-                    }
-                }
-                */
                 stage('Windows-Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
