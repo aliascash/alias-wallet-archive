@@ -282,12 +282,8 @@ int main(int argc, char *argv[])
 
                 paymentServer->setOptionsModel(&optionsModel);
 
-                if (splashref)
-                    splash.finish(&window);
-
                 ClientModel clientModel(&optionsModel);
                 WalletModel walletModel(pwalletMain, &optionsModel);
-
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
 
@@ -302,6 +298,9 @@ int main(int argc, char *argv[])
 
                 window.loadIndex();
                 window.readyGUI();
+
+                if (splashref)
+                    splash.finish(&window);
 
                 // If -min option passed, start window minimized.
                 if(GetBoolArg("-min"))
