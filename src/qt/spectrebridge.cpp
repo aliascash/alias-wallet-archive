@@ -281,7 +281,7 @@ void SpectreBridge::setWalletModel() {
 }
 
 void SpectreBridge::jsReady() {
-    window->readyGUI();
+    window->pageLoaded(true);
 }
 
 void SpectreBridge::copy(QString text)

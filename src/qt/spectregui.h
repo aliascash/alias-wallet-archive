@@ -100,8 +100,8 @@ public:
 
     void loadIndex();
 
-    /** Indicate that SpectreGUI is fully initialized and can be shown */
-    void readyGUI();
+    /** Page finished loading and connection to core established */
+    void pageLoaded(bool ok);
 
 protected:
     void changeEvent(QEvent *e);
@@ -154,8 +154,6 @@ private:
     friend class SpectreBridge;
 
 private slots:
-    /** Page finished loading */
-    void pageLoaded(bool ok);
     /** Add JavaScript objects to page */
     void addJavascriptObjects();
     /** Handle external URLs **/

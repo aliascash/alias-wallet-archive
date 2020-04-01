@@ -214,10 +214,6 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
-
-    //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
-
-    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
     connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
@@ -230,39 +226,6 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
     {
         splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
-    }
-}
-
-void SpectreGUI::readyGUI() {
-    initMessage(splashScreen, "..Start UI..");
-
-    // Create the tray icon (or setup the dock icon)
-    createTrayIcon();
-
-    // Populate data
-    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
-    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-    setNumConnections(clientModel->getNumConnections());
-    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
-    setEncryptionStatus(walletModel->getEncryptionStatus());
-    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
-
-    bridge->populateTransactionTable();
-    bridge->populateAddressTable();
-
-    initMessage(splashScreen, "Ready!");
-
-    if (splashScreen)
-        splashScreen->finish(this);
-
-    // If -min option passed, start window minimized.
-    if(GetBoolArg("-min"))
-    {
-        showMinimized();
-    } else
-    {
-        show();
     }
 }
 
@@ -307,6 +270,25 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded(bool ok)
 {
+    initMessage(splashScreen, "..Start UI..");
+
+    // Create the tray icon (or setup the dock icon)
+    createTrayIcon();
+
+    // Populate data
+    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+    setNumConnections(clientModel->getNumConnections());
+    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
+    setEncryptionStatus(walletModel->getEncryptionStatus());
+    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
+
+    bridge->populateTransactionTable();
+    bridge->populateAddressTable();
+
+    initMessage(splashScreen, ".Start UI.");
+    walletModel->checkBalanceChanged(true);
     if (GetBoolArg("-staking", true))
     {
         QTimer *timerStakingIcon = new QTimer(this);
@@ -315,9 +297,14 @@ void SpectreGUI::pageLoaded(bool ok)
         updateStakingIcon();
     }
 
-    if (walletModel != NULL) {
-        walletModel->checkBalanceChanged(true);
-    }
+    initMessage(splashScreen, "Ready!");
+    if (splashScreen) splashScreen->finish(this);
+
+    // If -min option passed, start window minimized.
+    if(GetBoolArg("-min"))
+        showMinimized();
+    else
+        show();
 }
 
 void SpectreGUI::addJavascriptObjects()
