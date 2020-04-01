@@ -272,7 +272,9 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/spectre.cpp \
 		  qt/spectrebridge.cpp \
 		  qt/winshutdownmonitor.cpp \
-		  qt/setupwalletwizard.cpp
+		  qt/setupwalletwizard.cpp \
+		  qt/websocketclientwrapper.cpp \
+		  qt/websockettransport.cpp
 
 spectre_LDADD = $(spectrecoind_LDADD) $(QT5_LIBS) $(QT5WEBKIT_LIBS)
 spectre_CPPFLAGS = $(spectrecoind_CPPFLAGS) $(QT5_CFLAGS) $(QT5WEBKIT_CFLAGS) -DQT_DISABLE_DEPRECATED_BEFORE=0

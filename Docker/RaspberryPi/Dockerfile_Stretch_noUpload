@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-raspi:1.4
+FROM spectreproject/spectre-builder-raspi:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
