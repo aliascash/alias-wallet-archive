@@ -90,7 +90,6 @@ helpMe() {
 
 # ===== Start of berkeleydb functions ========================================
 checkOpenSSLArchive(){
-    info ""
     if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
     else
@@ -108,7 +107,6 @@ checkOpenSSLBuild(){
     mkdir -p ${BUILD_DIR}/openssl
     cd ${BUILD_DIR}/openssl
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -147,8 +145,10 @@ EOM
 }
 
 checkOpenSSL(){
+    info ""
+    info "OpenSSL:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
         checkOpenSSLBuild
@@ -160,7 +160,6 @@ checkOpenSSL(){
 
 # ===== Start of berkeleydb functions ========================================
 checkBerkeleyDBArchive(){
-    info ""
     if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
     else
@@ -179,7 +178,6 @@ checkBerkeleyDBBuild(){
     mkdir -p ${BUILD_DIR}/libdb
     cd ${BUILD_DIR}/libdb
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -218,8 +216,10 @@ EOM
 }
 
 checkBerkeleyDB(){
+    info ""
+    info "BerkeleyDB:"
     if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]] ; then
-        info "Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
+        info " -> Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
     else
         checkBerkeleyDBArchive
         checkBerkeleyDBBuild
@@ -272,7 +272,6 @@ checkBoost(){
 
 # ===== Start of libevent functions ==========================================
 checkEventLibArchive(){
-    info ""
     if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
         info "Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
     else
@@ -288,7 +287,6 @@ checkEventLibArchive(){
 }
 
 checkEventLibClone(){
-    info ""
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
     if [[ -d libevent ]] ; then
@@ -308,7 +306,6 @@ checkEventLibBuild(){
     mkdir -p ${BUILD_DIR}/libevent
     cd ${BUILD_DIR}/libevent
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -346,6 +343,8 @@ EOM
 }
 
 checkEventLib(){
+    info ""
+    info "EventLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]] ; then
         info "Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
@@ -360,7 +359,6 @@ checkEventLib(){
 
 # ===== Start of libzstd functions ===========================================
 checkZStdLibArchive(){
-    info ""
     if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
     else
@@ -388,7 +386,6 @@ checkZStdLibBuild(){
     mkdir -p ${BUILD_DIR}/libzstd
     cd ${BUILD_DIR}/libzstd
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -428,6 +425,8 @@ EOM
 }
 
 checkZStdLib(){
+    info ""
+    info "ZStdLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]] ; then
         info "Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
@@ -441,7 +440,6 @@ checkZStdLib(){
 
 # ===== Start of libxz functions =============================================
 checkXZLibArchive(){
-    info ""
     if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using XZLib archive ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz"
     else
@@ -460,7 +458,6 @@ checkXZLibBuild(){
     mkdir -p ${BUILD_DIR}/libxz
     cd ${BUILD_DIR}/libxz
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -498,6 +495,8 @@ EOM
 }
 
 checkXZLib(){
+    info ""
+    info "XZLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]] ; then
         info "Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
@@ -530,7 +529,6 @@ checkTorBuild(){
     mkdir -p ${BUILD_DIR}/tor
     cd ${BUILD_DIR}/tor
 
-    info ""
     info "Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
@@ -568,6 +566,8 @@ EOM
 }
 
 checkTor(){
+    info ""
+    info "Tor:"
     if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]] ; then
         info "Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
