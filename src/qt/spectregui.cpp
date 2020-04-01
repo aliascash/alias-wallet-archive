@@ -218,6 +218,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
+
+    // This timer will be fired repeatedly to update the balance
+    pollTimer = new QTimer(this);
 }
 
 void initMessage(QSplashScreen *splashScreen, const std::string &message)
@@ -309,6 +312,8 @@ void SpectreGUI::pageLoaded(bool ok)
         showMinimized();
     else
         show();
+
+    pollTimer->start(MODEL_UPDATE_DELAY);
 }
 
 void SpectreGUI::addJavascriptObjects()
@@ -484,6 +489,8 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
         connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
 
         bridge->setWalletModel();
+
+        connect(pollTimer, SIGNAL(timeout()), walletModel, SLOT(pollBalanceChanged()));
     }
 }
 

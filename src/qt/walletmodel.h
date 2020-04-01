@@ -196,9 +196,9 @@ private:
     qint64 cachedNumTransactions;
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
+    int cachedLockedAnonOutputs;
     bool fForceCheckBalanceChanged;
-
-    QTimer *pollTimer;
+    bool fRequestingUnlock;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();

@@ -137,6 +137,7 @@ private:
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
     RPCConsole *rpcConsole;
+    QTimer *pollTimer;
 
     uint64_t nWeight;
 

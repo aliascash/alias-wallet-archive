@@ -24,15 +24,11 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedNumTransactions(0),
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0),
-    fForceCheckBalanceChanged(false)
+    fForceCheckBalanceChanged(false),
+    fRequestingUnlock(false)
 {
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
-
-    // This timer will be fired repeatedly to update the balance
-    pollTimer = new QTimer(this);
-    connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollBalanceChanged()));
-    pollTimer->start(MODEL_UPDATE_DELAY);
 
     subscribeToCoreSignals();
 }
@@ -173,6 +169,18 @@ void WalletModel::updateTransaction(const QString &hash, int status)
 {
     // Balance and number of transactions might have changed
     fForceCheckBalanceChanged = true;
+
+    // Check if wallet unlock is needed to determine current balance
+   if (status == CT_NEW && !fRequestingUnlock && wallet->IsLocked() && wallet->CountLockedAnonOutputs() > cachedLockedAnonOutputs)
+   {
+       fRequestingUnlock = true;
+       WalletModel::UnlockContext unlockContext = requestUnlock(WalletModel::UnlockMode::rescan);
+       if (unlockContext.isValid())
+           cachedLockedAnonOutputs = 0;
+       else
+           cachedLockedAnonOutputs = wallet->CountLockedAnonOutputs();
+       fRequestingUnlock = false;
+   }
 }
 
 void WalletModel::updateAddressBook(const QString &address, const QString &label, bool isMine, int status, bool fManual)
