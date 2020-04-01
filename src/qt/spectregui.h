@@ -100,9 +100,6 @@ public:
 
     void loadIndex();
 
-    /** Page finished loading and connection to core established */
-    void pageLoaded(bool ok);
-
 protected:
     void changeEvent(QEvent *e);
     void closeEvent(QCloseEvent *event);
@@ -147,9 +144,12 @@ private:
     void createActions();
     /** Create the menu bar and sub-menus. */
     void createMenuBar();
-
     /** Create system tray (notification) icon */
     void createTrayIcon();
+
+    /** Page finished loading and connection to core established */
+    void pageLoaded(bool ok);
+    bool initialized = false;
 
     friend class SpectreBridge;
 

@@ -273,7 +273,7 @@ void SpectreGUI::pageLoaded(bool ok)
     initMessage(splashScreen, "..Start UI..");
 
     // Create the tray icon (or setup the dock icon)
-    createTrayIcon();
+    if (!initialized) createTrayIcon();
 
     // Populate data
     walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
@@ -291,14 +291,18 @@ void SpectreGUI::pageLoaded(bool ok)
     walletModel->checkBalanceChanged(true);
     if (GetBoolArg("-staking", true))
     {
-        QTimer *timerStakingIcon = new QTimer(this);
-        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-        timerStakingIcon->start(15 * 1000);
         updateStakingIcon();
+        if (!initialized)
+        {
+            QTimer *timerStakingIcon = new QTimer(this);
+            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
+            timerStakingIcon->start(15 * 1000);
+        }
     }
 
     initMessage(splashScreen, "Ready!");
     if (splashScreen) splashScreen->finish(this);
+    initialized = true;
 
     // If -min option passed, start window minimized.
     if(GetBoolArg("-min"))
