@@ -26,6 +26,9 @@ ANDROID_ARCH=arm64
 ANDROID_ABI=arm64-v8a
 ANDROID_API=28
 
+##### ### # Android Qt # ### ################################################
+ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
+
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
@@ -34,6 +37,11 @@ BOOST_INCLUDEDIR=${BOOST_ROOT}/include
 BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
+
+##### ### # Qt # ### ########################################################
+# Location of Qt will be resolved by trying to find required Qt libs
+QT_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Qt
+QT_REQUIRED_LIBS='foo bar'
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
@@ -302,6 +310,70 @@ checkBoost(){
     fi
 }
 # ===== End of boost functions ===============================================
+
+# ============================================================================
+
+# ===== Start of Qt functions ================================================
+checkQt(){
+    info ""
+    info "Searching required Qt libs"
+    buildQt=false
+    if [[ -d ${QT_LIBRARYDIR} ]] ; then
+        for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
+            if [[ -n $(find ${QT_LIBRARYDIR}/ -name "libqt5${currentQtDependency}*") ]] ; then
+                info " -> ${currentQtDependency}: OK"
+            else
+                warning " -> ${currentQtDependency}: Not found!"
+                buildQt=true
+            fi
+        done
+    else
+        info " -> Qt library directory ${QT_LIBRARYDIR} not found"
+        buildQt=true
+    fi
+    if ${buildQt} ; then
+        local currentDir=$(pwd)
+        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${QT_ARCHIVE_LOCATION}
+        fi
+        cd ${QT_ARCHIVE_LOCATION}
+        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
+            info " -> Downloading Qt archive"
+            wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
+            info " -> Verifying downloaded archive"
+            determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
+            if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
+                warn " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
+            else
+                info " -> Archive checksum ok"
+            fi
+        else
+            info " -> Using existing Qt archive"
+        fi
+        info " -> Cleanup before extraction"
+        rm -rf qt-everywhere-src-${QT_VERSION}
+        info " -> Extracting Qt archive"
+        tar xf qt-everywhere-src-${QT_VERSION}.tar.xz
+        info " -> Configuring Qt build"
+        cd qt-everywhere-src-${QT_VERSION}
+        echo "y" | ./configure \
+            -xplatform android-clang \
+            --disable-rpath \
+            -nomake tests \
+            -nomake examples \
+            -android-ndk ${ANDROID_NDK_ROOT} \
+            -android-sdk ${ANDROID_SDK_ROOT} \
+            -no-warnings-are-errors \
+            -opensource \
+            -prefix $(pwd)/../qt_${QT_VERSION}_android_${ANDROID_ARCH} || die 23 "Error during Qt configure step"
+        info " -> Building Qt"
+        make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
+        info " -> Installing Qt"
+        make install || die 25 "Error during Qt install step"
+        cd "${currentDir}"
+    fi
+}
+# ===== End of Qt functions ==================================================
 
 # ============================================================================
 
@@ -751,6 +823,9 @@ if ${WITH_TOR} ; then
     checkZStdLib
     checkTor
 fi
+if ${ENABLE_GUI} ; then
+    checkQt
+fi
 
 mkdir -p ${BUILD_DIR}/spectrecoin
 cd ${BUILD_DIR}/spectrecoin
@@ -768,6 +843,8 @@ cmake \
     \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
+    \
+    -DENABLE_GUI=${ENABLE_GUI_PARAMETERS} \
     \
     -DBOOST_ROOT=${BOOST_ROOT} \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
