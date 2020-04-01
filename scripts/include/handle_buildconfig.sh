@@ -16,9 +16,17 @@ if [[ ! -e .buildconfig ]] ; then
 # Do not use '~' as later steps might not be able to expand this!
 ARCHIVES_ROOT_DIR=${HOME}/Archives
 
+##### ### # Android # ### ###################################################
+ANDROID_NDK_VERSION=r20
+ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
+
 ##### ### # Boost # ### #####################################################
 BOOST_VERSION=1.69.0
 BOOST_ARCHIVE_HASH=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
+
+##### ### # Qt (Android) # ### ##############################################
+QT_VERSION=5.12.7
+QT_ARCHIVE_HASH=ce2c5661c028b9de6183245982d7c120
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30
@@ -57,9 +65,6 @@ TOR_ARCHIVE_HASH=94ad248f4d852a8f38bd8902a12b9f41897c76e389fcd5b8a7d272aa265fd6c
 
 TOR_BUILD_VERSION_ANDROID=0.4.2.3-alpha
 TOR_ARCHIVE_HASH_ANDROID=be22b9326093dd6b012377d9e3c456028cd2104e5a454a7773aebf75d44c1ccf
-
-##### ### # Android # ### ###################################################
-ANDROID_NDK_VERSION=r20
 
 EOF
 fi
