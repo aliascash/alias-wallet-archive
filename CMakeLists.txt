@@ -99,12 +99,25 @@ message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 
 
 # ============================================================================================
-if (ANDROID)
-    message(STATUS "=== Qt disabled for Android build ==========================================")
-else ()
-    message(STATUS "=== Qt =====================================================================")
-    if (WIN32)
-#        -DQt5_DIR=C:/Qt/5.12.7/msvc2017_64
+message(STATUS "=== Qt =====================================================================")
+if (ENABLE_GUI)
+    if (ANDROID)
+    #    message(STATUS "=== Qt disabled for Android build ==========================================")
+        set(Qt5Core_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Core")
+        set(Qt5Widgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Widgets")
+        set(Qt5WebView_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebView")
+        set(Qt5WebChannel_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebChannel")
+        set(Qt5WebSockets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebSockets")
+        set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
+        set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
+
+        # Additional entries:
+        set(Qt5_DIR "${QT_CMAKE_MODULE_PATH}/Qt5")
+        set(Qt5Gui_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Gui")
+        set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
+        set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
+    elseif(WIN32)
+        # -DQt5_DIR=C:/Qt/5.12.7/msvc2017_64
         set(Qt5Core_DIR "${Qt5_DIR}/lib/cmake/Qt5Core")
         set(Qt5Widgets_DIR "${Qt5_DIR}/lib/cmake/Qt5Widgets")
         set(Qt5WebEngine_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngine")
@@ -154,6 +167,8 @@ else ()
     find_package(Qt5Quick)
     message(STATUS "Qt5Quick version: ${Qt5Quick_VERSION}")
     get_target_property(QtQuick_location Qt5::Quick LOCATION)
+else()
+    message(STATUS "Building without UI, skipping Qt detection")
 endif ()
 
 

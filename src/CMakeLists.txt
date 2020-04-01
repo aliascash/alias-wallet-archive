@@ -204,11 +204,7 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
             )
 #endif()
 
-if (ANDROID)
-    message(STATUS "Skipping Qt for Android build")
-elseif(WITH_TOR)
-    message(STATUS "Building with Tor integration, skipping Qt for now as Tor integration is experimental")
-else()
+if (ENABLE_GUI)
     # The UI wallet
     add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
 
