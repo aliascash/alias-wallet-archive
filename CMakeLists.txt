@@ -144,10 +144,6 @@ if (ENABLE_GUI)
     message(STATUS "Qt5Widgets version: ${Qt5Widgets_VERSION}")
     get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
 
-    find_package(Qt5WebEngine)
-    message(STATUS "Qt5WebEngine version: ${Qt5WebEngine_VERSION}")
-    get_target_property(QtWebEngine_location Qt5::WebEngine LOCATION)
-
     find_package(Qt5WebView)
     message(STATUS "Qt5WebView version: ${Qt5WebView_VERSION}")
     get_target_property(QtWebView_location Qt5::WebView LOCATION)
