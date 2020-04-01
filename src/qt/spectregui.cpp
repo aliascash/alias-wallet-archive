@@ -288,15 +288,15 @@ void SpectreGUI::pageLoaded(bool ok)
     bridge->populateAddressTable();
 
     initMessage(splashScreen, ".Start UI.");
-    walletModel->checkBalanceChanged(true);
-    if (GetBoolArg("-staking", true))
     {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+        walletModel->checkBalanceChanged(true);
         updateStakingIcon();
-        if (!initialized)
+        if (GetBoolArg("-staking", true) && !initialized)
         {
             QTimer *timerStakingIcon = new QTimer(this);
             connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-            timerStakingIcon->start(15 * 1000);
+            timerStakingIcon->start(5 * 1000);
         }
     }
 
@@ -1122,7 +1122,7 @@ void SpectreGUI::updateStakingIcon()
         stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
-        stakingIcon.   addClass("not-staking");
+        stakingIcon.addClass("not-staking");
         stakingIcon.removeClass("staking");
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
@@ -1130,7 +1130,8 @@ void SpectreGUI::updateStakingIcon()
                                                (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
                                                (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                                (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-                                               (clientModel->inInitialBlockDownload())   ? tr("Not staking because wallet is syncing") : \
+                                               (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
+                                               (!fIsStaking)                            ? tr("Initializing staking...") : \
                                                (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
                                                                                           tr("Not staking"));
     }
