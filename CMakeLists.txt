@@ -113,9 +113,6 @@ else ()
         set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake.exe")
     endif ()
 
-    # Env vars Qt5Core_DIR, Qt5Widgets_DIR and Qt5WebEngine_DIR should point to
-    # directory <qt-dir>/msvc2017_64
-    #
     # Find includes in corresponding build directories
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
     # Instruct CMake to run moc automatically when needed

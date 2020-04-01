@@ -51,17 +51,6 @@ target_include_directories(spectrecoin_lib
         ${BERKELEYDB_INCLUDE_DIR}
         )
 
-#if (WITH_TOR)
-#    target_link_libraries(spectrecoin_lib
-#            libtor
-#            )
-#
-#    target_include_directories(spectrecoin_lib
-#            SYSTEM BEFORE PUBLIC
-#            ${TOR_INCLUDE_PATH}
-#            )
-#endif()
-
 # Common sources
 target_sources(spectrecoin_lib
         PUBLIC
@@ -172,24 +161,6 @@ target_sources(spectrecoin_lib
         ${CMAKE_CURRENT_LIST_DIR}/walletdb.cpp
         ${CMAKE_CURRENT_LIST_DIR}/shutdown.cpp
         )
-
-#if (EXISTS ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h)
-#    target_sources(spectrecoin_lib
-#        PUBLIC
-#        ${BERKELEYDB_INCLUDE_DIR}/db_cxx.h
-#    )
-#else()
-#    message(STATUS "===> BerkeleyDB: ${BERKELEYDB_INCLUDE_PATH}/db_cxx.h not found. Please re-run cmake after BerkeleyDB was build.")
-#endif()
-#
-#if (EXISTS ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h)
-#    target_sources(spectrecoin_lib
-#        PUBLIC
-#        ${OPENSSL_INCLUDE_DIR}/openssl/crypto.h
-#    )
-#else()
-#    message(STATUS "===> OpenSSL: ${OPENSSL_INCLUDE_PATH}/openssl/crypto.h not found. Please re-run cmake after OpenSSL was build.")
-#endif()
 
 add_subdirectory(json)
 add_subdirectory(lz4)
