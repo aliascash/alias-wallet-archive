@@ -80,6 +80,8 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
+        will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
 
@@ -597,12 +599,14 @@ else
 fi
 
 FULLBUILD=false
+BUILD_ONLY_SPECTRECOIN=false
 WITH_TOR=false
 
-while getopts c:fth? option; do
+while getopts c:fsth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
@@ -625,6 +629,12 @@ if ${FULLBUILD} ; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
+    info " -> Done"
+elif ${BUILD_ONLY_SPECTRECOIN} ; then
+    info ""
+    info "Cleanup spectrecoin folder from previous build run"
+    rm -rf ./spectrecoin
+    info " -> Done"
 fi
 
 checkBoost

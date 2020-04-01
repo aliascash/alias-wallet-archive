@@ -89,6 +89,8 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
+        will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
 
@@ -696,13 +698,19 @@ else
 fi
 
 FULLBUILD=false
+ENABLE_GUI=false
+ENABLE_GUI_PARAMETERS='OFF'
+BUILD_ONLY_SPECTRECOIN=false
 WITH_TOR=false
 
-while getopts a:c:fth? option; do
+while getopts a:c:fgsth? option; do
     case ${option} in
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        g) ENABLE_GUI=true\
+           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=/home/spectre/Android/Qt/lib/cmake";;
+        s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
@@ -725,6 +733,12 @@ if ${FULLBUILD} ; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
+    info " -> Done"
+elif ${BUILD_ONLY_SPECTRECOIN} ; then
+    info ""
+    info "Cleanup spectrecoin folder from previous build run"
+    rm -rf ./spectrecoin
+    info " -> Done"
 fi
 
 checkNDKArchive
