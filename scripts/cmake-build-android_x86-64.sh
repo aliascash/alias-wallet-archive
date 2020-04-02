@@ -28,6 +28,8 @@ ANDROID_API=28
 
 ##### ### # Android Qt # ### ################################################
 ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
+ANDROID_QT_INSTALLATION_DIR=${ANDROID_QT_ROOT_DIR}/qt_${QT_VERSION}_android_${ANDROID_ARCH}
+ANDROID_QT_LIBRARYDIR=${ANDROID_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
@@ -41,7 +43,7 @@ BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread r
 ##### ### # Qt # ### ########################################################
 # Location of Qt will be resolved by trying to find required Qt libs
 QT_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Qt
-QT_REQUIRED_LIBS='foo bar'
+QT_REQUIRED_LIBS='Core Widgets WebView WebChannel WebSockets QuickWidgets Quick Gui Qml Network'
 
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
@@ -318,9 +320,10 @@ checkQt(){
     info ""
     info "Searching required Qt libs"
     buildQt=false
-    if [[ -d ${QT_LIBRARYDIR} ]] ; then
+    if [[ -d ${ANDROID_QT_LIBRARYDIR} ]] ; then
+        # libQt5Quick.so
         for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${QT_LIBRARYDIR}/ -name "libqt5${currentQtDependency}*") ]] ; then
+            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
                 info " -> ${currentQtDependency}: OK"
             else
                 warning " -> ${currentQtDependency}: Not found!"
@@ -328,7 +331,7 @@ checkQt(){
             fi
         done
     else
-        info " -> Qt library directory ${QT_LIBRARYDIR} not found"
+        info " -> Qt library directory ${ANDROID_QT_LIBRARYDIR} not found"
         buildQt=true
     fi
     if ${buildQt} ; then
@@ -356,16 +359,19 @@ checkQt(){
         tar xf qt-everywhere-src-${QT_VERSION}.tar.xz
         info " -> Configuring Qt build"
         cd qt-everywhere-src-${QT_VERSION}
-        echo "y" | ./configure \
+        ./configure \
             -xplatform android-clang \
             --disable-rpath \
             -nomake tests \
             -nomake examples \
             -android-ndk ${ANDROID_NDK_ROOT} \
             -android-sdk ${ANDROID_SDK_ROOT} \
+            -android-arch ${ANDROID_ABI} \
             -no-warnings-are-errors \
             -opensource \
-            -prefix $(pwd)/../qt_${QT_VERSION}_android_${ANDROID_ARCH} || die 23 "Error during Qt configure step"
+            -confirm-license \
+            -silent \
+            -prefix ${ANDROID_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
         info " -> Building Qt"
         make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
         info " -> Installing Qt"
@@ -780,7 +786,7 @@ while getopts a:c:fgsth? option; do
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true\
-           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=/home/spectre/Android/Qt/lib/cmake";;
+           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_INSTALLATION_DIR}/lib/cmake";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
@@ -823,9 +829,7 @@ if ${WITH_TOR} ; then
     checkTor
 fi
 if ${ENABLE_GUI} ; then
-    # Qt build actually not supported
-    #checkQt
-    ENABLE_GUI_PARAMETERS="OFF"
+    checkQt
 fi
 
 mkdir -p ${BUILD_DIR}/spectrecoin
