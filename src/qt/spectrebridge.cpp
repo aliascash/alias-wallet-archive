@@ -50,6 +50,7 @@
 #include <QVariantMap>
 #include <QDir>
 #include <QtGui/qtextdocument.h>
+#include <QDebug>
 #include <list>
 #define ROWS_TO_REFRESH 500
 
