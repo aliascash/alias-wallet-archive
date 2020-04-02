@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian-buster:1.6
+FROM spectreproject/spectre-builder-debian-buster:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters

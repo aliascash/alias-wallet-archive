@@ -28,6 +28,7 @@ for currentChecksumfile in \
     Checksum-Spectrecoin-RaspberryPi-Stretch.txt \
     Checksum-Spectrecoin-Ubuntu-18-04.txt \
     Checksum-Spectrecoin-Ubuntu-19-04.txt \
+    Checksum-Spectrecoin-Ubuntu-19-10.txt \
     Checksum-Spectrecoin-Win64.txt \
     Checksum-Spectrecoin-Win64-OBFS4.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6.txt \
