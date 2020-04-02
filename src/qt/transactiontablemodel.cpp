@@ -127,6 +127,11 @@ public:
                             LogPrintf("Warning: updateWallet: Got CT_NEW, but transaction is not in wallet\n");
                             break;
                         }
+
+                        // Check if spend state of incoming staking rewards cant be determined
+                        if (wallet->IsLocked() && wallet->IsForeignAnonCoinStake(mi->second))
+                           QMetaObject::invokeMethod(parent->walletModel, "requestUnlockRescan", Qt::QueuedConnection);
+
                         // Added -- insert at the right position
                         toInsert = TransactionRecord::decomposeTransaction(wallet, mi->second);
 

@@ -25,7 +25,7 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0),
     fForceCheckBalanceChanged(false),
-    fRequestingUnlock(false)
+    fUnlockRescanRequested(false)
 {
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
@@ -169,18 +169,6 @@ void WalletModel::updateTransaction(const QString &hash, int status)
 {
     // Balance and number of transactions might have changed
     fForceCheckBalanceChanged = true;
-
-    // Check if wallet unlock is needed to determine current balance
-   if (status == CT_NEW && !fRequestingUnlock && wallet->IsLocked() && wallet->CountLockedAnonOutputs() > cachedLockedAnonOutputs)
-   {
-       fRequestingUnlock = true;
-       WalletModel::UnlockContext unlockContext = requestUnlock(WalletModel::UnlockMode::rescan);
-       if (unlockContext.isValid())
-           cachedLockedAnonOutputs = 0;
-       else
-           cachedLockedAnonOutputs = wallet->CountLockedAnonOutputs();
-       fRequestingUnlock = false;
-   }
 }
 
 void WalletModel::updateAddressBook(const QString &address, const QString &label, bool isMine, int status, bool fManual)
@@ -866,6 +854,23 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
     bool valid = getEncryptionStatus() != Locked;
 
     return UnlockContext(this, valid, was_locked && !fWalletUnlockStakingOnly);
+}
+
+void WalletModel::requestUnlockRescan()
+{
+    if(!fUnlockRescanRequested && getEncryptionStatus() == Locked)
+    {
+        fUnlockRescanRequested = true;
+        // Request UI to unlock wallet
+        emit requireUnlock(rescan);
+        if (getEncryptionStatus() != Locked)
+        {
+            fForceCheckBalanceChanged = true;
+            if (!fWalletUnlockStakingOnly)
+                setWalletLocked(true);
+        }
+        fUnlockRescanRequested = false;
+    }
 }
 
 WalletModel::UnlockContext::UnlockContext(WalletModel *wallet, bool valid, bool relock):

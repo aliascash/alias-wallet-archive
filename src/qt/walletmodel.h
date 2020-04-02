@@ -157,6 +157,7 @@ public:
 
     enum UnlockMode { standard, rescan };
     UnlockContext requestUnlock(UnlockMode unlockMode = standard);
+    int fUnlockRescanRequested;
 
     bool getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const;
     void getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs);
@@ -196,9 +197,7 @@ private:
     qint64 cachedNumTransactions;
     EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
-    int cachedLockedAnonOutputs;
     bool fForceCheckBalanceChanged;
-    bool fRequestingUnlock;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
@@ -212,6 +211,8 @@ public slots:
     void updateAddressBook(const QString &address, const QString &label, bool isMine, int status, bool fManual);
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
     void pollBalanceChanged();
+    /* Request to unlock for AXTO spent state determination, this slot should be called queued */
+    void requestUnlockRescan();
 
 signals:
     // Signal that balance in wallet changed

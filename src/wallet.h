@@ -406,6 +406,21 @@ public:
         return nDebit;
     }
 
+    bool IsForeignAnonCoinStake(const CTransaction& tx) const
+    {
+        bool fNeedsWalletUnlock = false;
+        int64_t nSPEC = 0, nSpectre = 0;
+        if (tx.IsAnonCoinStake() && GetCredit(tx, nSPEC, nSpectre) && nSpectre > 0)
+        {
+            BOOST_FOREACH(const CTxIn& txin, tx.vin)
+            {
+                if (GetSpectreDebit(txin) == 0)
+                    return true;
+            }
+        }
+        return fNeedsWalletUnlock;
+    }
+
     int64_t GetCredit(const CTransaction& tx) const
     {
         int64_t nCredit = 0;
