@@ -99,6 +99,7 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -g  Build UI (Qt) components.
     -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
