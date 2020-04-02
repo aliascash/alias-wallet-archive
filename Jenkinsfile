@@ -96,26 +96,6 @@ pipeline {
                         }
                     }
                 }
-                /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi Buster') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-                                    dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
                 stage('Fedora') {
                     agent {
                         label "docker"
