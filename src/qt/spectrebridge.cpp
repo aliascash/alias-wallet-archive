@@ -46,6 +46,7 @@
 #include <QSortFilterProxyModel>
 #include <QJsonObject>
 
+#include <QDateTime>
 #include <QVariantList>
 #include <QVariantMap>
 #include <QDir>
