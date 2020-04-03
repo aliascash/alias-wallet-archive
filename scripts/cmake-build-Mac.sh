@@ -288,14 +288,16 @@ checkQt(){
     buildQt=false
     if [[ -d ${MAC_QT_LIBRARYDIR} ]] ; then
         # libQt5Quick.so
-        for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${MAC_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
-                info " -> ${currentQtDependency}: OK"
-            else
-                warning " -> ${currentQtDependency}: Not found!"
-                buildQt=true
-            fi
-        done
+#        for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
+#            if [[ -n $(find ${MAC_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
+#                info " -> ${currentQtDependency}: OK"
+#            else
+#                warning " -> ${currentQtDependency}: Not found!"
+#                buildQt=true
+#            fi
+#        done
+        info " -> Found Qt library directory ${MAC_QT_LIBRARYDIR}"
+        info "    Detailed check for required libs needs to be implemented"
     else
         info " -> Qt library directory ${MAC_QT_LIBRARYDIR} not found"
         buildQt=true
