@@ -301,6 +301,8 @@ if (ENABLE_GUI)
             PUBLIC
             ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.mm
+            ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.mm
             )
     endif()
 endif ()
