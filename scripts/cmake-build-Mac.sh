@@ -326,7 +326,6 @@ checkQt(){
         info " -> Configuring Qt build"
         cd qt-everywhere-src-${QT_VERSION} || die 22 "Extracted Qt directory not found"
         ./configure \
-            -xplatform android-clang \
             --disable-rpath \
             -nomake tests \
             -nomake examples \
