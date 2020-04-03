@@ -18,6 +18,11 @@ _init
 . ./include/handle_buildconfig.sh
 
 ##### ### # Global definitions # ### ########################################
+##### ### # Mac Qt # ### ####################################################
+MAC_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
+MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}/qt_${QT_VERSION}_mac
+MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
+
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
@@ -281,10 +286,10 @@ checkQt(){
     info ""
     info "Searching required Qt libs"
     buildQt=false
-    if [[ -d ${ANDROID_QT_LIBRARYDIR} ]] ; then
+    if [[ -d ${MAC_QT_LIBRARYDIR} ]] ; then
         # libQt5Quick.so
         for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
+            if [[ -n $(find ${MAC_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
                 info " -> ${currentQtDependency}: OK"
             else
                 warning " -> ${currentQtDependency}: Not found!"
@@ -292,7 +297,7 @@ checkQt(){
             fi
         done
     else
-        info " -> Qt library directory ${ANDROID_QT_LIBRARYDIR} not found"
+        info " -> Qt library directory ${MAC_QT_LIBRARYDIR} not found"
         buildQt=true
     fi
     if ${buildQt} ; then
@@ -305,7 +310,7 @@ checkQt(){
             info " -> Downloading Qt archive"
             wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
             info " -> Verifying downloaded archive"
-            determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
+            determinedMD5Sum=$(md5 qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d " " -f 4)
             if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
                 warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
             else
@@ -325,14 +330,11 @@ checkQt(){
             --disable-rpath \
             -nomake tests \
             -nomake examples \
-            -android-ndk ${ANDROID_NDK_ROOT} \
-            -android-sdk ${ANDROID_SDK_ROOT} \
-            -android-arch ${ANDROID_ABI} \
             -no-warnings-are-errors \
             -opensource \
             -confirm-license \
             -silent \
-            -prefix ${ANDROID_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
+            -prefix ${MAC_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
         info " -> Building Qt"
         make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
         info " -> Installing Qt"
@@ -682,7 +684,7 @@ while getopts c:fgsth? option; do
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
-           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_INSTALLATION_DIR}/lib/cmake";;
+           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_INSTALLATION_DIR}/lib/cmake";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
