@@ -657,7 +657,7 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DENABLE_GUI=ON \
+    -DENABLE_GUI=OFF \
     \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
@@ -666,7 +666,7 @@ cmake \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/local/lib;${BUILD_DIR}/local/include
 EOM
 if ${WITH_TOR} ; then
     read -r -d '' cmd << EOM
