@@ -42,11 +42,12 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->warningLabel->setText(tr("Enter the new passphrase to the wallet.<br/>Please use a passphrase of <b>10 or more random characters</b>, or <b>eight or more words</b>."));
             setWindowTitle(tr("Encrypt wallet"));
             break;
+        case UnlockRescan:
+            ui->stakingCheckBox->setText(tr("Keep wallet unlocked."));
         case UnlockStaking:
-            ui->stakingCheckBox->setChecked(true);
+            ui->stakingCheckBox->setChecked(mode == UnlockStaking);
             ui->stakingCheckBox->show();
             // fallthru
-        case UnlockRescan:
         case Unlock:
             ui->passLabel2->hide();
             ui->passEdit2->hide();
@@ -164,7 +165,7 @@ void AskPassphraseDialog::accept()
         }
         else
         {
-            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked() || UnlockRescan == mode;
+            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked();
             QDialog::accept(); // Success
         }
         break;
