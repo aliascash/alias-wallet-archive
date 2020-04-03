@@ -85,6 +85,7 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -g  Build UI (Qt) components.
     -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
@@ -272,6 +273,74 @@ checkBoost(){
     fi
 }
 # ===== End of boost functions ===============================================
+
+# ============================================================================
+
+# ===== Start of Qt functions ================================================
+checkQt(){
+    info ""
+    info "Searching required Qt libs"
+    buildQt=false
+    if [[ -d ${ANDROID_QT_LIBRARYDIR} ]] ; then
+        # libQt5Quick.so
+        for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
+            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
+                info " -> ${currentQtDependency}: OK"
+            else
+                warning " -> ${currentQtDependency}: Not found!"
+                buildQt=true
+            fi
+        done
+    else
+        info " -> Qt library directory ${ANDROID_QT_LIBRARYDIR} not found"
+        buildQt=true
+    fi
+    if ${buildQt} ; then
+        local currentDir=$(pwd)
+        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${QT_ARCHIVE_LOCATION}
+        fi
+        cd ${QT_ARCHIVE_LOCATION}
+        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
+            info " -> Downloading Qt archive"
+            wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
+            info " -> Verifying downloaded archive"
+            determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
+            if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
+                warn " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
+            else
+                info " -> Archive checksum ok"
+            fi
+        else
+            info " -> Using existing Qt archive"
+        fi
+        info " -> Cleanup before extraction"
+        rm -rf qt-everywhere-src-${QT_VERSION}
+        info " -> Extracting Qt archive"
+        tar xf qt-everywhere-src-${QT_VERSION}.tar.xz
+        info " -> Configuring Qt build"
+        cd qt-everywhere-src-${QT_VERSION} || die 22 "Extracted Qt directory not found"
+        ./configure \
+            -xplatform android-clang \
+            --disable-rpath \
+            -nomake tests \
+            -nomake examples \
+            -android-ndk ${ANDROID_NDK_ROOT} \
+            -android-sdk ${ANDROID_SDK_ROOT} \
+            -android-arch ${ANDROID_ABI} \
+            -no-warnings-are-errors \
+            -opensource \
+            -confirm-license \
+            -silent \
+            -prefix ${ANDROID_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
+        info " -> Building Qt"
+        make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
+        info " -> Installing Qt"
+        make install || die 25 "Error during Qt install step"
+        cd "${currentDir}"
+    fi
+}
+# ===== End of Qt functions ==================================================
 
 # ============================================================================
 
@@ -603,13 +672,17 @@ else
 fi
 
 FULLBUILD=false
+ENABLE_GUI=false
+ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_SPECTRECOIN=false
 WITH_TOR=false
 
-while getopts c:fsth? option; do
+while getopts c:fgsth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        g) ENABLE_GUI=true
+           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_INSTALLATION_DIR}/lib/cmake";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
@@ -664,7 +737,7 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DENABLE_GUI=OFF \
+    -DENABLE_GUI=${ENABLE_GUI_PARAMETERS} \
     \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
