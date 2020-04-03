@@ -269,8 +269,10 @@ checkBoost(){
         rm -rf boost_${BOOST_VERSION//./_}
         info "Extracting Boost archive"
         tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        info "Building Boost"
         cd boost_${BOOST_VERSION//./_}
+        info "Patching Boost"
+        patch -p1 -r - < ${ownLocation}/patches/mac-boost-process.patch
+        info "Building Boost"
         ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
 #        ./bootstrap.sh
         ./b2 -j"${CORES_TO_USE}"
