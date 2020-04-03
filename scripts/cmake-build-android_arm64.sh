@@ -347,7 +347,7 @@ checkQt(){
             info " -> Verifying downloaded archive"
             determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
             if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
-                warn " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
+                warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
             else
                 info " -> Archive checksum ok"
             fi
