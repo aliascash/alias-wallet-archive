@@ -26,6 +26,11 @@ BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
+##### ### # Qt # ### ########################################################
+# Location of Qt will be resolved by trying to find required Qt libs
+QT_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Qt
+QT_REQUIRED_LIBS='Core Widgets WebView WebChannel WebSockets QuickWidgets Quick Gui Qml Network'
+
 ##### ### # BerkeleyDB # ### ################################################
 # Location of archive will be resolved like this:
 # ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
@@ -57,7 +62,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # ${LIBXZ_ARCHIVE_LOCATION}/tor-${LIBXZ_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
-BUILD_DIR=cmake-build-cmdline
+BUILD_DIR=cmake-build-mac-cmdline
 
 helpMe() {
     echo "
@@ -510,7 +515,6 @@ checkXZLib(){
 
 # ===== Start of tor functions ===============================================
 checkTorArchive(){
-    info ""
     if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz" ]] ; then
         info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
     else
@@ -645,6 +649,9 @@ if ${WITH_TOR} ; then
     checkXZLib
     checkZStdLib
     checkTor
+fi
+if ${ENABLE_GUI} ; then
+    checkQt
 fi
 
 mkdir -p ${BUILD_DIR}/spectrecoin

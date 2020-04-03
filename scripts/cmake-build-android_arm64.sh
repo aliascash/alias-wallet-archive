@@ -786,7 +786,7 @@ while getopts a:c:fgsth? option; do
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
-        g) ENABLE_GUI=true\
+        g) ENABLE_GUI=true
            ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_INSTALLATION_DIR}/lib/cmake";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
