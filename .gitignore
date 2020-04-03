@@ -117,3 +117,4 @@ Checksum-Spectrecoin-*
 
 # Mac
 *.dmg
+.qmake.stash

@@ -291,6 +291,7 @@ int main(int argc, char *argv[])
         boost::thread_group threadGroup;
 
         SpectreGUI window(&webChannel);
+        window.setSplashScreen(&splash);
         guiref = &window;
 
         QTimer* pollShutdownTimer = new QTimer(guiref);
@@ -302,42 +303,54 @@ int main(int argc, char *argv[])
             {
                 // Put this in a block, so that the Model objects are cleaned up before
                 // calling Shutdown().
-
                 paymentServer->setOptionsModel(&optionsModel);
-
-                if (splashref)
-                    splash.finish(&window);
 
                 ClientModel clientModel(&optionsModel);
                 WalletModel walletModel(pwalletMain, &optionsModel);
-
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
-                window.loadIndex();
-                window.readyGUI();
 
-                // If -min option passed, start window minimized.
-                if(GetBoolArg("-min"))
                 {
-                    window.showMinimized();
-                } else
-                {
-                    window.show();
+                    InitMessage("Update balance...");
+                    // Get locks upfront
+                    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+                     // Manually create a blockChangedEvent to set initial values for the UI
+                    BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
+                                                           pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
+                                                           pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME};
+                    uiInterface.NotifyBlocksChanged(blockChangedEvent);
+
+                    // Check if wallet unlock is needed to determine current balance
+                    if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                    {
+                        WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
+                        if (!unlockContext.isValid())
+                        {
+                            InitMessage("Shutdown...");
+                            StartShutdown();
+                        }
+                    }
                 }
 
-                // Now that initialization/startup is done, process any command-line
-                // spectre: URIs
-                QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
-                QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
+                if (!ShutdownRequested())
+                {
+                    InitMessage("...Start UI...");
+                    window.loadIndex();
 
-                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
-                    emit walletModel.requireUnlock(WalletModel::UnlockMode::rescan);
+                    // Now that initialization/startup is done, process any command-line
+                    // spectre: URIs
+                    QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
+                    QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
 
-#if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-                WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
-#endif
+                    #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
+                        WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+                    #endif
 
-                app.exec();
+                    app.exec();
+                }
+                else
+                    QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 
                 window.hide();
                 window.setClientModel(0);

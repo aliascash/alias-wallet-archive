@@ -1254,7 +1254,7 @@ void static InvalidHeaderChainFound(CBlockThinIndex* pindexNew)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
         //CTxDB().WriteBestInvalidTrust(CBigNum(nBestInvalidTrust));
-        uiInterface.NotifyBlocksChanged();
+        // uiInterface.NotifyBlocksChanged();
     };
 
     uint256 nBestInvalidBlockTrust = pindexNew->nChainTrust - pindexNew->pprev->nChainTrust;
@@ -1537,8 +1537,8 @@ bool CBlockThin::AddToBlockThinIndex(unsigned int nFile, unsigned int nBlockPos,
         };
     };
 
-
-    uiInterface.NotifyBlocksChanged();
+    BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), pindexBestHeader->GetBlockTime()};
+    uiInterface.NotifyBlocksChanged(blockChangedEvent);
     return true;
 }
 
@@ -2066,7 +2066,7 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
         CTxDB().WriteBestInvalidTrust(CBigNum(nBestInvalidTrust));
-        uiInterface.NotifyBlocksChanged();
+        // uiInterface.NotifyBlocksChanged();
     };
 
     uint256 nBestInvalidBlockTrust = pindexNew->nChainTrust - pindexNew->pprev->nChainTrust;
@@ -3576,7 +3576,8 @@ bool CBlock::AddToBlockIndex(unsigned int nFile, unsigned int nBlockPos, const u
         hashPrevBestCoinBase = vtx[0].GetHash();
     }
 
-    uiInterface.NotifyBlocksChanged();
+    BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), pindexBest->GetBlockTime()};
+    uiInterface.NotifyBlocksChanged(blockChangedEvent);
     return true;
 }
 

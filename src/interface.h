@@ -28,6 +28,13 @@ enum ChangeType
     CT_DELETED
 };
 
+struct BlockChangedEvent {
+    int numBlocks;
+    int numBlocksOfPeers;
+    bool isInitialBlockDownload;
+    int64_t lastBlockTime;
+};
+
 /** Signals for UI communication. */
 class CClientUIInterface
 {
@@ -89,7 +96,7 @@ public:
     boost::signals2::signal<std::string (const char* psz)> Translate;
 
     /** Block chain changed. */
-    boost::signals2::signal<void ()> NotifyBlocksChanged;
+    boost::signals2::signal<void (const BlockChangedEvent &event)>NotifyBlocksChanged;
 
     /** Number of network connections changed. */
     boost::signals2::signal<void (int newNumConnections)> NotifyNumConnectionsChanged;

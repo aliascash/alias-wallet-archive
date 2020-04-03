@@ -50,6 +50,7 @@
 #include <QVariantMap>
 #include <QDir>
 #include <QtGui/qtextdocument.h>
+#include <QDebug>
 #include <list>
 #define ROWS_TO_REFRESH 500
 
@@ -282,15 +283,6 @@ void SpectreBridge::setWalletModel() {
 
 void SpectreBridge::jsReady() {
     window->pageLoaded(true);
-    window->walletModel->getOptionsModel()->emitDisplayUnitChanged(window->walletModel->getOptionsModel()->getDisplayUnit());
-    window->walletModel->getOptionsModel()->emitReserveBalanceChanged(window->walletModel->getOptionsModel()->getReserveBalance());
-    window->walletModel->getOptionsModel()->emitRowsPerPageChanged(window->walletModel->getOptionsModel()->getRowsPerPage());
-    window->setNumConnections(window->clientModel->getNumConnections());
-    window->setNumBlocks(window->clientModel->getNumBlocks(), window->clientModel->getNumBlocksOfPeers());
-    window->setEncryptionStatus(window->walletModel->getEncryptionStatus());
-    window->walletModel->emitEncryptionStatusChanged(window->walletModel->getEncryptionStatus());
-    populateTransactionTable();
-    populateAddressTable();
 }
 
 void SpectreBridge::copy(QString text)

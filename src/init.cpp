@@ -900,7 +900,9 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     pwalletMain = new CWallet(strWalletFileName);
     int oltWalletVersion = 0;
-    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion);
+    DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion, [] (const uint32_t& nBlock) -> void {
+        uiInterface.InitMessage(strprintf("Loading wallet items... (%d)", nBlock));
+    });
 
     if (nLoadWalletRet != DB_LOAD_OK)
     {
@@ -1061,7 +1063,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (nNodeMode != NT_FULL)
         pwalletMain->InitBloomFilter();
 
-    uiInterface.InitMessage(_("Done loading"));
+    uiInterface.InitMessage(_("Core started!"));
     LogPrintf("Done loading.\n");
 
     if (!strErrors.str().empty())
