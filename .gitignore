@@ -111,3 +111,4 @@ releaseNotesToDeploy.txt
 Checksum-Spectrecoin-*
 
 *.dmg
+.qmake.stash
