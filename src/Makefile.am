@@ -18,7 +18,7 @@ AM_CPPFLAGS = -pthread -fPIC -fstack-protector -O2 \
 	      -Wformat -Wformat-security -Wno-unused-parameter
 
 if OS_MACOS
-AM_CPPFLAGS += -std=c++17 -mmacosx-version-min=10.10
+AM_CPPFLAGS += -std=c++1z -mmacosx-version-min=10.10
 endif
 
 common_SOURCES = anonymize.cpp \
