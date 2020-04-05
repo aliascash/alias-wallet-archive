@@ -657,6 +657,10 @@ cd ${BUILD_DIR}/spectrecoin
 
 info ""
 info "Generating build configuration"
+
+# FindBerkeleyDB.cmake requires this
+export BERKELEYDB_ROOT=${BUILD_DIR}/libdb/libdb-install
+
 read -r -d '' cmd << EOM
 cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
