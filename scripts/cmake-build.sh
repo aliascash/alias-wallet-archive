@@ -80,6 +80,7 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
+    -g  Build UI (Qt) components.
     -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
@@ -599,13 +600,17 @@ else
 fi
 
 FULLBUILD=false
+ENABLE_GUI=false
+ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_SPECTRECOIN=false
 WITH_TOR=false
 
-while getopts c:fsth? option; do
+while getopts c:fgsth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
+        g) ENABLE_GUI=true
+           ENABLE_GUI_PARAMETERS="ON";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
@@ -657,7 +662,7 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DENABLE_GUI=ON \
+    -DENABLE_GUI=${ENABLE_GUI_PARAMETERS} \
     \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
