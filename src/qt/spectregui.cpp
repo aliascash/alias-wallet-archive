@@ -50,7 +50,6 @@
 #include <QTextDocument>
 #include <QDesktopWidget>
 #include <QtWebView>
-#include <QQmlContext>
 #include <QQuickWidget>
 #include <QQuickItem>
 #include <iostream>
@@ -471,7 +470,7 @@ void SpectreGUI::createTrayIcon()
     notificator = new Notificator(qApp->applicationName(), trayIcon, this);
 }
 
-#ifndef Q_OS_MAC
+//#ifndef Q_OS_MAC // commented because with QT 5.9.9 moc processor did not consider ifndef
 void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::Trigger)
@@ -480,7 +479,7 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
         toggleHideAction->trigger();
     }
 }
-#endif
+//#endif
 
 void SpectreGUI::aboutClicked()
 {

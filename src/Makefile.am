@@ -241,6 +241,8 @@ spectre_SOURCES = $(common_SOURCES) \
 		  qt/moc_monitoreddatamapper.cpp \
 		  qt/moc_bitcoinamountfield.cpp \
 		  qt/moc_setupwalletwizard.cpp \
+                  qt/moc_websocketclientwrapper.cpp \
+                  qt/moc_websockettransport.cpp \
 		  qt/transactiontablemodel.cpp \
 		  qt/coincontroldialog.cpp \
 		  qt/coincontroltreewidget.cpp \

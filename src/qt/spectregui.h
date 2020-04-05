@@ -167,10 +167,10 @@ private slots:
     void askFee(qint64 nFeeRequired, bool *payFee);
     void handleURI(QString strURI);
 
-#ifndef Q_OS_MAC
+//#ifndef Q_OS_MAC // commented because with QT 5.9.9 moc processor did not consider ifndef
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-#endif
+//#endif
     /** Show incoming transaction notification for new transactions.
 
         The new items are those between start and end inclusive, under the given parent item.
