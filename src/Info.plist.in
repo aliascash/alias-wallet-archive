@@ -11,7 +11,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>Spectre</string>
+	<string>Spectrecoin</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.spectreproject.Spectre</string>
 </dict>

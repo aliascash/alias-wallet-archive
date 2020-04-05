@@ -301,9 +301,14 @@ if (ENABLE_GUI)
             PUBLIC
             ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.h
+            PRIVATE
             ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.mm
             ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.mm
             )
+        set_target_properties(Spectrecoin PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in
+            )
+        target_link_libraries(Spectrecoin "-framework AppKit")
     endif()
 endif ()
 
