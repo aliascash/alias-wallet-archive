@@ -50,7 +50,6 @@
 #include <QTextDocument>
 #include <QDesktopWidget>
 #include <QtWebView>
-#include <QQmlContext>
 #include <QQuickWidget>
 #include <QQuickItem>
 #include <iostream>
