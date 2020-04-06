@@ -783,14 +783,9 @@ pipeline {
                                             filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
                                             checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
                                     )
-                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
+                                    sh "rm -f Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip Spectrecoin-*-Win64-Qt5.9.6.zip Checksum-Spectrecoin-Win64-Qt5.9.6.txt Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
                                 }
                             }
-//                            post {
-//                                always {
-//                                    sh "docker system prune --all --force"
-//                                }
-//                            }
                         }
                     }
                 }
@@ -869,16 +864,9 @@ pipeline {
                                             filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
                                             checksumfile: "Checksum-Spectrecoin-Win64-OBFS4.txt"
                                     )
-                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
+                                    sh "rm -f Spectrecoin-*-Win64-OBFS4.zip Spectrecoin-*-Win64.zip Checksum-Spectrecoin-Win64.txt Checksum-Spectrecoin-Win64-OBFS4.txt"
                                 }
                             }
-                            /*
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                            */
                         }
                     }
                 }
