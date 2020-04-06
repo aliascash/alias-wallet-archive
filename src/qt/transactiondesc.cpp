@@ -21,6 +21,19 @@ void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>
 
 static QString explorer;
 
+bool addressLink(CWallet *wallet, const CTxDestination& destination, QString& strHTML)
+{
+    CBitcoinAddress address(destination);
+    if (!address.IsValid())
+        return false;
+
+    strHTML += "<a href='javascript:void(0);' onclick='bridge.urlClicked(\""+ explorer+"address.dws?"+ GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString()) + "\");'>" +
+            ((wallet->mapAddressBook.count(destination) && !wallet->mapAddressBook[destination].empty()) ?
+                 GUIUtil::HtmlEscape(wallet->mapAddressBook[destination]) : GUIUtil::HtmlEscape(address.ToString())) +
+            "</a>";
+    return true;
+}
+
 QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 {
     AssertLockHeld(cs_main);
@@ -61,7 +74,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     int64_t nNet = nCredit - nDebit;
 
     QString txid(wtx.GetHash().ToString().c_str());
-    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='"+explorer+"tx.dws?" + txid + "' target='_blank'>" + txid + "</a><br>";
+    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"tx.dws?" + txid +"\");'>" + txid + "</a><br>";
 
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx);
     int nRequests = wtx.GetRequestCount();
@@ -240,12 +253,8 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
                     const CTxOut &vout = prev.vout[prevout.n];
                     CTxDestination address;
                     if (ExtractDestination(vout.scriptPubKey, address))
-                    {
-                        strHTML +="<a href='"+explorer+"address.dws?"+QString::fromStdString(CBitcoinAddress(address).ToString())+"' target='_blank'>";
-                        if (wallet->mapAddressBook.count(address) && !wallet->mapAddressBook[address].empty())
-                            strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[address]) + " ";
-                        strHTML += QString::fromStdString(CBitcoinAddress(address).ToString()) + "</a>";
-                    }
+                        addressLink(wallet, address, strHTML);
+
                     strHTML = strHTML + " " + tr("Amount") + "=" + BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, vout.nValue);
                     strHTML = strHTML + " IsMine=" + (wallet->IsMine(vout) ? tr("true") : tr("false")) + "</li>";
                 }
@@ -318,14 +327,9 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
             strHTML += "<dt><b>" + TransactionDesc::tr("Narration") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
     }
     else {
-        CBitcoinAddress btcAddress(destination);
-        if (btcAddress.IsValid()) {
-            strHTML += "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"' target='_blank'>";
-            if (wallet->mapAddressBook.count(destination) && !wallet->mapAddressBook[destination].empty())
-                 strHTML += GUIUtil::HtmlEscape(wallet->mapAddressBook[destination]) + "<br>";
-            strHTML += GUIUtil::HtmlEscape(btcAddress.ToString());
-            strHTML += "</a></dd>";
-
+        if (addressLink(wallet, destination, strHTML))
+        {
+            strHTML += "</dd>";
             narrationHandled = true;
             if (!narration.empty())
                 strHTML += "<dt><b>" + TransactionDesc::tr("Narration") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
@@ -333,18 +337,18 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
         else
             strHTML += TransactionDesc::tr("unknown") + "</dd>";
     }
-
 }
 
 void toHTML(CWallet *wallet, QString& strHTML, const std::vector<CTxDestination>& destSubs)
 {
     for (const auto& destination : destSubs) {
-        CBitcoinAddress btcAddress(destination);
-        if (btcAddress.IsValid()) {
+        QString strAddress;
+        if (addressLink(wallet, destination, strAddress))
+        {
             strHTML += "<dt>-</dt>";
-            strHTML += TransactionDesc::tr("<dd>") + "<a href='"+explorer+"address.dws?" + GUIUtil::HtmlEscape(btcAddress.ToString())+"' target='_blank'>";
-            strHTML += GUIUtil::HtmlEscape(btcAddress.ToString());
-            strHTML += "</a></dd>";
+            strHTML += TransactionDesc::tr("<dd>");
+            strHTML += strAddress;
+            strHTML += "</dd>";
         }
     }
 

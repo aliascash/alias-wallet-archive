@@ -296,6 +296,11 @@ void SpectreBridge::paste()
     emitPaste(QApplication::clipboard()->text());
 }
 
+void SpectreBridge::urlClicked(const QString link)
+{
+    emit window->urlClicked(QUrl(link));
+}
+
 // Options
 void SpectreBridge::populateOptions()
 {
