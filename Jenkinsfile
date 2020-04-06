@@ -205,7 +205,6 @@ pipeline {
                         }
                     }
                 }
-                /*
                 stage('Windows-Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
@@ -252,7 +251,6 @@ pipeline {
                         }
                     }
                 }
-                */
                 stage('Windows-Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
@@ -706,7 +704,6 @@ pipeline {
                         }
                     }
                 }
-                /*
                 stage('Windows-Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
@@ -793,7 +790,6 @@ pipeline {
                         }
                     }
                 }
-                */
                 stage('Windows-Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
