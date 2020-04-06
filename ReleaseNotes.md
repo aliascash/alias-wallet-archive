@@ -22,6 +22,7 @@ We have implemented a check for DCBs and we have implemented a replay protection
 - Improve staking indicator tooltip:
   - 'Not staking, staking is disabled' was never shown.
   - 'Initializing staking...' is now shown instead 'Not staking because you don't have mature coins' during staker thread initialization
+- Improve synchronization tooltip: blockchain synchronization state is now updated every 500ms. (Tooltips in general are now updated when open and underlying data changes)
 - Improve splash screen with progress messages to reduce UI freezes during startup.
 - [#183](https://github.com/spectrecoin/spectre/issues/183) Reduce UI freezes during blockchain sync.
 
