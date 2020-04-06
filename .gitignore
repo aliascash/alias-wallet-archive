@@ -109,3 +109,5 @@ moc_predefs.h
 # Temp build files
 releaseNotesToDeploy.txt
 Checksum-Spectrecoin-*
+
+*.dmg

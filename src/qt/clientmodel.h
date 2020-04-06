@@ -33,6 +33,14 @@ class QDateTime;
 class QTimer;
 QT_END_NAMESPACE
 
+struct CoreInfoModel {
+    int numBlocks;
+    int numBlocksOfPeers;
+    bool isInitialBlockDownload;
+    int64_t lastBlockTime;
+};
+Q_DECLARE_METATYPE(CoreInfoModel);
+
 /** Model for Bitcoin network client. */
 class ClientModel : public QObject
 {
@@ -47,13 +55,11 @@ public:
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
     int getNumBlocks() const;
-    int getNumBlocksAtStartup();
 
     quint64 getTotalBytesRecv() const;
     quint64 getTotalBytesSent() const;
 
     QDateTime getLastBlockDate() const;
-    QDateTime getLastBlockThinDate() const;
 
     //! Return true if client connected to testnet
     bool isTestNet() const;
@@ -79,15 +85,14 @@ private:
     OptionsModel *optionsModel;
     PeerTableModel *peerTableModel;
 
-    int cachedNumBlocks;
-    int cachedNumBlocksOfPeers;
-
-    int numBlocksAtStartup;
+    CoreInfoModel coreInfo;
+    CoreInfoModel lastPublishedCoreInfo;
 
     QTimer *pollTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
+
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count, int countOfPeers);
@@ -98,6 +103,7 @@ signals:
 
 public slots:
     void updateTimer();
+    void updateFromCore(const CoreInfoModel &coreInfo);
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
 };

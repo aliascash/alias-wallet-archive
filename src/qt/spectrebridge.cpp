@@ -118,18 +118,23 @@ void TransactionModel::populateRows(int start, int end, int max)
         return;
 
     QVariantList transactions;
-    QDateTime lastBlockDate = nNodeMode == NT_FULL ? clientModel->getLastBlockDate() : clientModel->getLastBlockThinDate();
+    QDateTime lastBlockDate = clientModel->getLastBlockDate();
+    uint skipped = 0;
     for (int row = start; row <= end && (max == 0 || transactions.size() < max); row++)
     {
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString())) {
             // don't populate transaction which have been created AFTER the current block (state will be unchanged)
-            if (max != 0 && lastBlockDate < ttm->index(row, TransactionTableModel::Date).data(TransactionTableModel::DateRole).toDateTime())
+            if (max != 0 && max < (end - start) + 1 && lastBlockDate < ttm->index(row, TransactionTableModel::Date).data(TransactionTableModel::DateRole).toDateTime())
+            {
+                skipped++;
                 continue;
-            if (transactions.empty() && start != row)
-                qDebug() << "populateRows skipped=" << row;
+            }
             transactions.append(addTransaction(row));
         }
     }
+
+    if (skipped > 0)
+        qDebug() << "populateRows skipped=" << skipped;
 
     if(!transactions.isEmpty()) {
         emitTransactions(transactions);
@@ -276,15 +281,7 @@ void SpectreBridge::setWalletModel() {
 }
 
 void SpectreBridge::jsReady() {
-    window->walletModel->getOptionsModel()->emitDisplayUnitChanged(window->walletModel->getOptionsModel()->getDisplayUnit());
-    window->walletModel->getOptionsModel()->emitReserveBalanceChanged(window->walletModel->getOptionsModel()->getReserveBalance());
-    window->walletModel->getOptionsModel()->emitRowsPerPageChanged(window->walletModel->getOptionsModel()->getRowsPerPage());
-    window->setNumConnections(window->clientModel->getNumConnections());
-    window->setNumBlocks(window->clientModel->getNumBlocks(), window->clientModel->getNumBlocksOfPeers());
-    window->setEncryptionStatus(window->walletModel->getEncryptionStatus());
-    window->walletModel->emitEncryptionStatusChanged(window->walletModel->getEncryptionStatus());
-    populateTransactionTable();
-    populateAddressTable();
+    window->pageLoaded(true);
 }
 
 void SpectreBridge::copy(QString text)

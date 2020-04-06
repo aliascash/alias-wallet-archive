@@ -50,5 +50,5 @@ cd ../../leveldb/
 cd ../
 
 info "Starting qmake:"
-qmake src/src.pro -spec macx-clang CONFIG+=x86_64
+${QT_PATH}/bin/qmake src/src.pro -spec macx-clang CONFIG+=x86_64
 make -j2

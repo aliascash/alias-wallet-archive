@@ -214,19 +214,22 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
 
-
-    //connect(webView->page()->action(QWebPage::Reload), SIGNAL(triggered()), SLOT(pageLoaded(bool)));
-
-    connect(webEngineView, SIGNAL(loadFinished(bool)),                    SLOT(pageLoaded(bool)));
     connect(webEngineView, SIGNAL(urlChanged(const QUrl&)),                SLOT(urlClicked(const QUrl&)));
 
     //https://stackoverflow.com/questions/39649807/how-to-setup-qwebchannel-js-api-for-use-in-a-qwebengineview
     addJavascriptObjects();
+
+    // This timer will be fired repeatedly to update the balance
+    pollTimer = new QTimer(this);
 }
 
-void SpectreGUI::readyGUI() {
-    // Create the tray icon (or setup the dock icon)
-    createTrayIcon();
+void initMessage(QSplashScreen *splashScreen, const std::string &message)
+{
+    if(splashScreen)
+    {
+        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        QApplication::instance()->processEvents();
+    }
 }
 
 unsigned short const onion_port = 9089;
@@ -270,17 +273,47 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded(bool ok)
 {
-    if (GetBoolArg("-staking", true))
+    initMessage(splashScreen, "..Start UI..");
+
+    // Create the tray icon (or setup the dock icon)
+    if (!initialized) createTrayIcon();
+
+    // Populate data
+    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+    setNumConnections(clientModel->getNumConnections());
+    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
+    setEncryptionStatus(walletModel->getEncryptionStatus());
+    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
+
+    bridge->populateTransactionTable();
+    bridge->populateAddressTable();
+
+    initMessage(splashScreen, ".Start UI.");
     {
-        QTimer *timerStakingIcon = new QTimer(this);
-        connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-        timerStakingIcon->start(15 * 1000);
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+        walletModel->checkBalanceChanged(true);
         updateStakingIcon();
+        if (GetBoolArg("-staking", true) && !initialized)
+        {
+            QTimer *timerStakingIcon = new QTimer(this);
+            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
+            timerStakingIcon->start(5 * 1000);
+        }
     }
 
-    if (walletModel != NULL) {
-        walletModel->checkBalanceChanged(true);
-    }
+    initMessage(splashScreen, "Ready!");
+    if (splashScreen) splashScreen->finish(this);
+    initialized = true;
+
+    // If -min option passed, start window minimized.
+    if(GetBoolArg("-min"))
+        showMinimized();
+    else
+        show();
+
+    pollTimer->start(MODEL_UPDATE_DELAY);
 }
 
 void SpectreGUI::addJavascriptObjects()
@@ -344,6 +377,7 @@ void SpectreGUI::createActions()
     openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug window"), this);
     openRPCConsoleAction->setToolTip(tr("Open debugging and diagnostic console"));
 
+    connect(quitAction, SIGNAL(triggered()), SLOT(requestShutdown()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -455,7 +489,14 @@ void SpectreGUI::setWalletModel(WalletModel *walletModel)
         connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
 
         bridge->setWalletModel();
+
+        connect(pollTimer, SIGNAL(timeout()), walletModel, SLOT(pollBalanceChanged()));
     }
+}
+
+void SpectreGUI::setSplashScreen(QSplashScreen * splashScreen)
+{
+    this->splashScreen = splashScreen;
 }
 
 void SpectreGUI::createTrayIcon()
@@ -609,12 +650,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     if (!strStatusBarWarnings.isEmpty())
         bridge->networkAlert(strStatusBarWarnings);
 
-    QDateTime lastBlockDate;
-    if (nNodeMode == NT_FULL)
-        lastBlockDate = clientModel->getLastBlockDate();
-    else
-        lastBlockDate = clientModel->getLastBlockThinDate();
-
+    QDateTime lastBlockDate = clientModel->getLastBlockDate();
     int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
     QString text;
 
@@ -1093,7 +1129,7 @@ void SpectreGUI::updateStakingIcon()
         stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
-        stakingIcon.   addClass("not-staking");
+        stakingIcon.addClass("not-staking");
         stakingIcon.removeClass("staking");
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
@@ -1101,10 +1137,16 @@ void SpectreGUI::updateStakingIcon()
                                                (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
                                                (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                                (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-                                               (IsInitialBlockDownload())               ? tr("Not staking because wallet is syncing") : \
+                                               (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
+                                               (!fIsStaking)                            ? tr("Initializing staking...") : \
                                                (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
                                                                                           tr("Not staking"));
     }
+}
+
+void SpectreGUI::requestShutdown()
+{
+    StartShutdown();
 }
 
 void SpectreGUI::detectShutdown()

@@ -12,6 +12,7 @@
 #include <QSystemTrayIcon>
 #include <QLabel>
 #include <QModelIndex>
+#include <QSplashScreen>
 
 #include "spectrebridge.h"
 #include "walletmodel.h"
@@ -95,10 +96,9 @@ public:
     */
     void setMessageModel(MessageModel *messageModel);
 
-    void loadIndex();
+    void setSplashScreen(QSplashScreen* splash);
 
-    /** Indicate that SpectreGUI is fully initialized and can be shown */
-    void readyGUI();
+    void loadIndex();
 
 protected:
     void changeEvent(QEvent *e);
@@ -119,6 +119,8 @@ private:
 
     QMenuBar *appMenuBar;
 
+    QSplashScreen *splashScreen;
+
     QAction *quitAction;
     QAction *aboutAction;
     QAction *optionsAction;
@@ -135,6 +137,7 @@ private:
     QSystemTrayIcon *trayIcon;
     Notificator *notificator;
     RPCConsole *rpcConsole;
+    QTimer *pollTimer;
 
     uint64_t nWeight;
 
@@ -142,15 +145,16 @@ private:
     void createActions();
     /** Create the menu bar and sub-menus. */
     void createMenuBar();
-
     /** Create system tray (notification) icon */
     void createTrayIcon();
+
+    /** Page finished loading and connection to core established */
+    void pageLoaded(bool ok);
+    bool initialized = false;
 
     friend class SpectreBridge;
 
 private slots:
-    /** Page finished loading */
-    void pageLoaded(bool ok);
     /** Add JavaScript objects to page */
     void addJavascriptObjects();
     /** Handle external URLs **/
@@ -217,6 +221,7 @@ private slots:
 
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();
+    void requestShutdown();
 };
 
 #endif
