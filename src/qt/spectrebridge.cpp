@@ -723,36 +723,40 @@ QVariantMap SpectreBridge::listAnonOutputs()
     outputCount mOwnedOutputCounts;
     outputCount mMatureOutputCounts;
 
-    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
-     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
-        LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
-        emit listAnonOutputsResult(anonOutputs);
-        return anonOutputs;
-    };
+        LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
-    {
-        CAnonOutputCount* aoc = &mi->second;
-        QVariantMap anonOutput;
+        if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
+                || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
+        {
+            LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
+            emit listAnonOutputsResult(anonOutputs);
+            return anonOutputs;
+        }
 
-        anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
-        anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
-        anonOutput.insert("system_mature",  aoc->nMature);
-        anonOutput.insert("system_compromised",  aoc->nCompromised);
-        anonOutput.insert("system_outputs", aoc->nExists);
-        anonOutput.insert("system_spends",  aoc->nSpends);
-        anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
-        anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
-        anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
-        anonOutput.insert("system_mixins_mature",  aoc->nMixins);
-        anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
+        for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
+        {
+            CAnonOutputCount* aoc = &mi->second;
+            QVariantMap anonOutput;
 
-        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
-        anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+            anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
+            anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
+            anonOutput.insert("system_mature",  aoc->nMature);
+            anonOutput.insert("system_compromised",  aoc->nCompromised);
+            anonOutput.insert("system_outputs", aoc->nExists);
+            anonOutput.insert("system_spends",  aoc->nSpends);
+            anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
+            anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
+            anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
+            anonOutput.insert("system_mixins_mature",  aoc->nMixins);
+            anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
 
-        anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
-    };
+            anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
+            anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+
+            anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
+        }
+    }
 
     emit listAnonOutputsResult(anonOutputs);
     return anonOutputs;
