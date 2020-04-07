@@ -16,11 +16,13 @@ We have implemented a check for DCBs and we have implemented a replay protection
 
 ### Changelog
 ## 4.2.0 (released 2020-04-??)
+- Replace QtWebEngine with QtWebView to support mobile platforms.
 - Open 'Unlock Wallet' Dialog on incoming anon staking reward with unknown sender.
 - Allow to select parts of the transaction detail dialog text.
 - Improve staking indicator tooltip:
   - 'Not staking, staking is disabled' was never shown.
   - 'Initializing staking...' is now shown instead 'Not staking because you don't have mature coins' during staker thread initialization
+- Improve synchronization tooltip: blockchain synchronization state is now updated every 500ms. (Tooltips in general are now updated when open and underlying data changes)
 - Improve splash screen with progress messages to reduce UI freezes during startup.
 - [#183](https://github.com/spectrecoin/spectre/issues/183) Reduce UI freezes during blockchain sync.
 

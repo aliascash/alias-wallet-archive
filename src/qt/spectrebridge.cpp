@@ -46,10 +46,12 @@
 #include <QSortFilterProxyModel>
 #include <QJsonObject>
 
+#include <QDateTime>
 #include <QVariantList>
 #include <QVariantMap>
 #include <QDir>
 #include <QtGui/qtextdocument.h>
+#include <QDebug>
 #include <list>
 #define ROWS_TO_REFRESH 500
 
@@ -113,14 +115,16 @@ QVariantMap TransactionModel::addTransaction(int row)
 
 void TransactionModel::populateRows(int start, int end, int max)
 {
-    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
+    bool flush = ttm->sourceModel()->rowCount() == (end - start) + 1;
+    if (flush) max += transactionsBuffer.size();
+    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max << " flush=" << flush << " running=" << running;
     if(!prepare())
         return;
 
-    QVariantList transactions;
     QDateTime lastBlockDate = clientModel->getLastBlockDate();
     uint skipped = 0;
-    for (int row = start; row <= end && (max == 0 || transactions.size() < max); row++)
+    int added = 0;
+    for (int row = start; row <= end && (max == 0 || added < max); row++)
     {
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString())) {
             // don't populate transaction which have been created AFTER the current block (state will be unchanged)
@@ -129,16 +133,22 @@ void TransactionModel::populateRows(int start, int end, int max)
                 skipped++;
                 continue;
             }
-            transactions.append(addTransaction(row));
+            added++;
+            QVariantMap trx = addTransaction(row);
+            //qDebug() << "populateRows row=" << row << " hash=" << trx.value("id") << " d_s=" << trx.value("d_s") ;
+            transactionsBuffer.insert(trx.value("id").toString(), trx);
         }
     }
 
     if (skipped > 0)
-        qDebug() << "populateRows skipped=" << skipped;
+        qDebug() << "populateRows skipped=" << skipped << " added=" << added;
 
-    if(!transactions.isEmpty()) {
-        emitTransactions(transactions);
-    }
+    if (flush && transactionsBuffer.size() > 0)
+    {
+        qDebug() << "emitTransactions " << transactionsBuffer.size();
+        emitTransactions(transactionsBuffer.values());
+        transactionsBuffer.clear();
+    }        
 
     running = false;
 }
@@ -292,6 +302,11 @@ void SpectreBridge::copy(QString text)
 void SpectreBridge::paste()
 {
     emitPaste(QApplication::clipboard()->text());
+}
+
+void SpectreBridge::urlClicked(const QString link)
+{
+    emit window->urlClicked(QUrl(link));
 }
 
 // Options
@@ -708,36 +723,40 @@ QVariantMap SpectreBridge::listAnonOutputs()
     outputCount mOwnedOutputCounts;
     outputCount mMatureOutputCounts;
 
-    if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
-     || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
     {
-        LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
-        emit listAnonOutputsResult(anonOutputs);
-        return anonOutputs;
-    };
+        LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
-    {
-        CAnonOutputCount* aoc = &mi->second;
-        QVariantMap anonOutput;
+        if (pwalletMain->CountOwnedAnonOutputs(mOwnedOutputCounts,  CWallet::MaturityFilter::NONE) != 0
+                || pwalletMain->CountOwnedAnonOutputs(mMatureOutputCounts, CWallet::MaturityFilter::FOR_SPENDING)  != 0)
+        {
+            LogPrintf("Error: CountOwnedAnonOutputs failed.\n");
+            emit listAnonOutputsResult(anonOutputs);
+            return anonOutputs;
+        }
 
-        anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
-        anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
-        anonOutput.insert("system_mature",  aoc->nMature);
-        anonOutput.insert("system_compromised",  aoc->nCompromised);
-        anonOutput.insert("system_outputs", aoc->nExists);
-        anonOutput.insert("system_spends",  aoc->nSpends);
-        anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
-        anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
-        anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
-        anonOutput.insert("system_mixins_mature",  aoc->nMixins);
-        anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
+        for (std::map<int64_t, CAnonOutputCount>::iterator mi(mapAnonOutputStats.begin()); mi != mapAnonOutputStats.end(); mi++)
+        {
+            CAnonOutputCount* aoc = &mi->second;
+            QVariantMap anonOutput;
 
-        anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
-        anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+            anonOutput.insert("owned_mature",   mMatureOutputCounts[aoc->nValue]);
+            anonOutput.insert("owned_outputs",  mOwnedOutputCounts [aoc->nValue]);
+            anonOutput.insert("system_mature",  aoc->nMature);
+            anonOutput.insert("system_compromised",  aoc->nCompromised);
+            anonOutput.insert("system_outputs", aoc->nExists);
+            anonOutput.insert("system_spends",  aoc->nSpends);
+            anonOutput.insert("system_unspent",  aoc->nExists - aoc->nSpends);
+            anonOutput.insert("system_unspent_mature",  aoc->numOfMatureUnspends());
+            anonOutput.insert("system_mixins",  aoc->nExists - aoc->nCompromised);
+            anonOutput.insert("system_mixins_mature",  aoc->nMixins);
+            anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
 
-        anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
-    };
+            anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
+            anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+
+            anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
+        }
+    }
 
     emit listAnonOutputsResult(anonOutputs);
     return anonOutputs;
@@ -758,10 +777,8 @@ void SpectreBridge::populateTransactionTable()
 void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRight)
 {
     // Updated transactions...
-    if(topLeft.column() == TransactionTableModel::Status) {
-        qDebug() << "updateTransactions";
+    if(topLeft.column() == TransactionTableModel::Status)
         transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
-    }
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)
@@ -932,8 +949,6 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         window->changePassphrase();
     if(key == "toggleLock")
         window->toggleLock();
-    if(key == "developerConsole")
-        window->webEngineView->page()->triggerAction(QWebEnginePage::InspectElement);
     if(key == "aboutClicked")
         window->aboutClicked();
     if(key == "aboutQtClicked")
@@ -994,7 +1009,6 @@ void SpectreBridge::listLatestBlocks()
 
     for (int x = 0; x < 5 && recentBlock; x++)
     {
-
         block.ReadFromDisk(recentBlock, true);
 
         if (block.IsNull() || block.vtx.size() < 1)

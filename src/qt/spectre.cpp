@@ -13,6 +13,9 @@
 #include "winshutdownmonitor.h"
 #include "setupwalletwizard.h"
 
+#include "websocketclientwrapper.h"
+#include "websockettransport.h"
+
 #include "init.h"
 #include "ui_interface.h"
 
@@ -24,7 +27,11 @@
 #include <QSplashScreen>
 #include <QLibraryInfo>
 #include <QTimer>
-#include <QWebEngineSettings>
+
+#include <QWebChannel>
+#include <QWebSocketServer>
+
+
 
 #ifndef WIN32
 #include <signal.h>
@@ -145,6 +152,7 @@ int main(int argc, char *argv[])
     }
 
     QApplication app(argc, argv);
+    QtWebView::initialize();
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
     // ... but do it after creating app, so QCoreApplication::arguments is initialized:
@@ -210,10 +218,6 @@ int main(int argc, char *argv[])
     if (translator.load(lang_territory, ":/translations/"))
         app.installTranslator(&translator);
 
-
-    // Under no circumstances should any browser plugins be loaded.
-    QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, false);
-
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
     uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
@@ -259,6 +263,25 @@ int main(int argc, char *argv[])
 
     app.setQuitOnLastWindowClosed(false);
 
+    //---- Create webSocket server for JavaScript client
+    QWebSocketServer server(
+                QStringLiteral("Spectrecoin Websocket Server"),
+                QWebSocketServer::NonSecureMode
+                );
+    if (!server.listen(QHostAddress::LocalHost, 52471)) {
+        qFatal("QWebSocketServer failed to listen on port 52471");
+        return 1;
+    }
+    qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+
+    // wrap WebSocket clients in QWebChannelAbstractTransport objects
+    WebSocketClientWrapper clientWrapper(&server);
+
+    // setup the channel
+    QWebChannel webChannel;
+    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
+                     &webChannel, &QWebChannel::connectTo);
+
     try
     {
         // Regenerate startup link, to fix links to old versions
@@ -267,7 +290,7 @@ int main(int argc, char *argv[])
 
         boost::thread_group threadGroup;
 
-        SpectreGUI window;
+        SpectreGUI window(&webChannel);
         window.setSplashScreen(&splash);
         guiref = &window;
 
