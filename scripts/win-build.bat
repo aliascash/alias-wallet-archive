@@ -32,7 +32,7 @@ nmake || goto :ERROR
 
 popd
 
-%QTDIR%\bin\windeployqt --force -qmldir %SRC_DIR%\qt\res "%OUT_DIR%\Spectrecoin.exe" || goto :ERROR
+%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res "%OUT_DIR%\Spectrecoin.exe" || goto :ERROR
 
 ::ren "%OUT_DIR%" Spectrecoin
 ::echo "The prepared package is in: %SRC_DIR%\Spectrecoin"
