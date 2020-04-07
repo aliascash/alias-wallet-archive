@@ -58,7 +58,6 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
-                /*
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
@@ -77,7 +76,6 @@ pipeline {
                         }
                     }
                 }
-                */
                 stage('Debian Buster') {
                     agent {
                         label "docker"
@@ -433,7 +431,6 @@ pipeline {
                         }
                     }
                 }
-                /*
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
@@ -463,7 +460,6 @@ pipeline {
                         }
                     }
                 }
-                */
                 stage('Debian Buster') {
                     agent {
                         label "docker"
