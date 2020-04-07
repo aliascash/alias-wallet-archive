@@ -115,14 +115,16 @@ QVariantMap TransactionModel::addTransaction(int row)
 
 void TransactionModel::populateRows(int start, int end, int max)
 {
-    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max;
+    bool flush = ttm->sourceModel()->rowCount() == (end - start) + 1;
+    if (flush) max += transactionsBuffer.size();
+    qDebug() << "populateRows start=" << start << " end=" << end << " max=" << max << " flush=" << flush << " running=" << running;
     if(!prepare())
         return;
 
-    QVariantList transactions;
     QDateTime lastBlockDate = clientModel->getLastBlockDate();
     uint skipped = 0;
-    for (int row = start; row <= end && (max == 0 || transactions.size() < max); row++)
+    int added = 0;
+    for (int row = start; row <= end && (max == 0 || added < max); row++)
     {
         if(visibleTransactions.first() == "*"||visibleTransactions.contains(ttm->index(row, TransactionTableModel::Type).data().toString())) {
             // don't populate transaction which have been created AFTER the current block (state will be unchanged)
@@ -131,16 +133,22 @@ void TransactionModel::populateRows(int start, int end, int max)
                 skipped++;
                 continue;
             }
-            transactions.append(addTransaction(row));
+            added++;
+            QVariantMap trx = addTransaction(row);
+            //qDebug() << "populateRows row=" << row << " hash=" << trx.value("id") << " d_s=" << trx.value("d_s") ;
+            transactionsBuffer.insert(trx.value("id").toString(), trx);
         }
     }
 
     if (skipped > 0)
-        qDebug() << "populateRows skipped=" << skipped;
+        qDebug() << "populateRows skipped=" << skipped << " added=" << added;
 
-    if(!transactions.isEmpty()) {
-        emitTransactions(transactions);
-    }
+    if (flush && transactionsBuffer.size() > 0)
+    {
+        qDebug() << "emitTransactions " << transactionsBuffer.size();
+        emitTransactions(transactionsBuffer.values());
+        transactionsBuffer.clear();
+    }        
 
     running = false;
 }
@@ -765,10 +773,8 @@ void SpectreBridge::populateTransactionTable()
 void SpectreBridge::updateTransactions(QModelIndex topLeft, QModelIndex bottomRight)
 {
     // Updated transactions...
-    if(topLeft.column() == TransactionTableModel::Status) {
-        qDebug() << "updateTransactions";
+    if(topLeft.column() == TransactionTableModel::Status)
         transactionModel->populateRows(topLeft.row(), bottomRight.row(), ROWS_TO_REFRESH);
-    }
 }
 
 void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, int end)

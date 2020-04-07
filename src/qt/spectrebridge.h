@@ -48,6 +48,7 @@ private:
     ClientModel *clientModel;
     QSortFilterProxyModel *ttm;
     QStringList visibleTransactions;
+    QVariantMap transactionsBuffer;
     int numRows;
     int rowsPerPage;
     bool running;
