@@ -8,9 +8,6 @@
 # nmake
 # nmake install
 CONFIG += static
-
-QT += webengine
-
 QMAKE_LFLAGS += -static
 QMAKE_CXXFLAGS += /MT
 QMAKE_CFLAGS += -O2 -MT
