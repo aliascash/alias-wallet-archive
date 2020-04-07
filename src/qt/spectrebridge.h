@@ -48,6 +48,7 @@ private:
     ClientModel *clientModel;
     QSortFilterProxyModel *ttm;
     QStringList visibleTransactions;
+    QVariantMap transactionsBuffer;
     int numRows;
     int rowsPerPage;
     bool running;
@@ -96,6 +97,7 @@ public slots:
 
     Q_INVOKABLE void copy(QString text);
     Q_INVOKABLE void paste();
+    Q_INVOKABLE void urlClicked(const QString link);
 
     /** Get the label belonging to an address */
     Q_INVOKABLE QString getAddressLabel(QString address);

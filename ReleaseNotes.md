@@ -15,6 +15,18 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
+## 4.2.0 (released 2020-04-??)
+- Replace QtWebEngine with QtWebView to support mobile platforms.
+- Open 'Unlock Wallet' Dialog on incoming anon staking reward with unknown sender.
+- Allow to select parts of the transaction detail dialog text.
+- Improve staking indicator tooltip:
+  - 'Not staking, staking is disabled' was never shown.
+  - 'Initializing staking...' is now shown instead 'Not staking because you don't have mature coins' during staker thread initialization
+- Improve synchronization tooltip: blockchain synchronization state is now updated every 500ms. (Tooltips in general are now updated when open and underlying data changes)
+- Improve splash screen with progress messages to reduce UI freezes during startup.
+- [#183](https://github.com/spectrecoin/spectre/issues/183) Reduce UI freezes during blockchain sync.
+
+### Changelog
 ## 4.1.0 (released 2019-10-13)
 - [#82](https://github.com/spectrecoin/spectre/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
