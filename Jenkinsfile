@@ -833,7 +833,7 @@ pipeline {
                         stage('Trigger installer build') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin/installer',
+                                        job: 'Spectrecoin/installer/master',
                                         parameters: [
                                                 string(
                                                         name: 'ARCHIVE_LOCATION',
