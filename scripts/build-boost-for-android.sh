@@ -87,10 +87,21 @@ info "Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
 ./bootstrap.sh #--with-libraries=${BOOST_LIBS_TO_BUILD}
 
-echo "Building Boost with the following cmd:"
-read -r -d '' cmd << EOM
+info "Building boost with './b2 -d+2 \
+    -j 15 \
+    --reconfigure \
+    target-os=android \
+    toolset=clang-${jamEntry1} \
+    link=static \
+    variant=release \
+    threading=multi \
+    cxxflags="-std=c++14 -fPIC" \
+    --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
+    --user-config=${ANDROID_ARCH}-config.jam \
+    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
+    install'"
 ./b2 -d+2 \
-    -j ${CORES_TO_USE} \
+    -j 15 \
     --reconfigure \
     target-os=android \
     toolset=clang-${jamEntry1} \
@@ -102,10 +113,5 @@ read -r -d '' cmd << EOM
     --user-config=${ANDROID_ARCH}-config.jam \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install
-EOM
-
-echo "${cmd}"
-#read a
-${cmd}
 info "Done!"
 #read a
