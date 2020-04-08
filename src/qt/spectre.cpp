@@ -265,9 +265,9 @@ int main(int argc, char *argv[])
 
     //---- Create webSocket server for JavaScript client
     QWebSocketServer server(
-                QStringLiteral("Spectrecoin Websocket Server"),
-                QWebSocketServer::NonSecureMode
-                );
+        QStringLiteral("Spectrecoin Websocket Server"),
+        QWebSocketServer::NonSecureMode
+    );
     if (!server.listen(QHostAddress::LocalHost, 52471)) {
         qFatal("QWebSocketServer failed to listen on port 52471");
         return 1;
@@ -294,15 +294,22 @@ int main(int argc, char *argv[])
         window.setSplashScreen(&splash);
         guiref = &window;
 
+        // Periodically check if shutdown was requested to properly quit the Qt application
+        #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
+            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+        #endif
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
 
         if (AppInit2(threadGroup))
         {
+            // Put this in a block, so that the Model objects are cleaned up before calling Shutdown().
             {
-                // Put this in a block, so that the Model objects are cleaned up before
-                // calling Shutdown().
+                // Get locks upfront, to make sure we can completly setup our client before core sends notifications
+                ENTER_CRITICAL_SECTION(cs_main); // no RAII
+                ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
+                
                 paymentServer->setOptionsModel(&optionsModel);
 
                 ClientModel clientModel(&optionsModel);
@@ -310,26 +317,22 @@ int main(int argc, char *argv[])
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
 
+                InitMessage("Update balance...");
+
+                // Manually create a blockChangedEvent to set initial values for the UI
+                BlockChangedEvent blockChangedEvent = { nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
+                                                        pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
+                                                        pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
+                uiInterface.NotifyBlocksChanged(blockChangedEvent);
+
+                // Check if wallet unlock is needed to determine current balance
+                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
                 {
-                    InitMessage("Update balance...");
-                    // Get locks upfront
-                    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-                     // Manually create a blockChangedEvent to set initial values for the UI
-                    BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
-                                                           pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
-                                                           pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME};
-                    uiInterface.NotifyBlocksChanged(blockChangedEvent);
-
-                    // Check if wallet unlock is needed to determine current balance
-                    if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
+                    if (!unlockContext.isValid())
                     {
-                        WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
-                        if (!unlockContext.isValid())
-                        {
-                            InitMessage("Shutdown...");
-                            StartShutdown();
-                        }
+                        InitMessage("Shutdown...");
+                        StartShutdown();
                     }
                 }
 
@@ -342,13 +345,14 @@ int main(int argc, char *argv[])
                     // spectre: URIs
                     QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                     QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
-
-                    #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-                        WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
-                    #endif
-
-                    app.exec();
                 }
+ 
+               // Release lock before starting event processing, otherwise lock would never be released
+               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+               LEAVE_CRITICAL_SECTION(cs_main);
+
+                if (!ShutdownRequested())
+                    app.exec();
                 else
                     QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 

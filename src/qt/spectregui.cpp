@@ -123,7 +123,8 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     trayIcon(0),
     notificator(0),
     rpcConsole(0),
-    nWeight(0)
+    nWeight(0),
+    uiReady(false)
 {
     // Make bridge available for JS client
     this->webChannel = webChannel;
