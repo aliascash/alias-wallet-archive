@@ -205,7 +205,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.9.6') {
+                stage('Windows Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -229,7 +229,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.9.6') {
                             agent {
                                 label "windows"
                             }
@@ -251,7 +251,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.12.x') {
+                stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -275,7 +275,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.12.x') {
                             agent {
                                 label "windows2"
                             }
@@ -389,7 +389,7 @@ pipeline {
                         label "raspi-builder"
                     }
                     stages {
-                        stage('Binary build') {
+                        stage('Raspberry Pi Buster') {
                             steps {
                                 script {
                                     buildBranch(
@@ -436,7 +436,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Debian Stretch') {
                             steps {
                                 script {
                                     buildBranch(
@@ -465,7 +465,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Debian Buster') {
                             steps {
                                 script {
                                     buildBranch(
@@ -519,7 +519,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Ubuntu 18.04') {
                             steps {
                                 script {
                                     buildBranch(
@@ -561,12 +561,12 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu-19-04') {
+                stage('Ubuntu 19.04') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Ubuntu 19.04') {
                             steps {
                                 script {
                                     buildBranch(
@@ -590,12 +590,12 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu-19-10') {
+                stage('Ubuntu 19.10') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Ubuntu 19.10') {
                             steps {
                                 script {
                                     buildBranch(
@@ -704,7 +704,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.9.6') {
+                stage('Windows Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -728,7 +728,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows Build') {
+                        stage('Win + Qt5.9.6') {
                             agent {
                                 label "windows"
                             }
@@ -785,7 +785,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.12.x') {
+                stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -809,7 +809,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.12.x') {
                             agent {
                                 label "windows2"
                             }
