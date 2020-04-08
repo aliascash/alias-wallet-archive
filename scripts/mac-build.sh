@@ -17,17 +17,24 @@ cd ${ownLocation}
 # Go to Spectrecoin repository root directory
 cd ..
 
-if [ -z "${QT_PATH}" ] ; then
+if [[ -z "${QT_PATH}" ]] ; then
     QT_PATH=~/Qt/5.9.6/clang_64
     warning "QT_PATH not set, using '${QT_PATH}'"
 else
     info "QT_PATH: ${QT_PATH}"
 fi
-if [ -z "${OPENSSL_PATH}" ] ; then
-    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1
+if [[ -z "${OPENSSL_PATH}" ]] ; then
+    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1d
     warning "OPENSSL_PATH not set, using '${OPENSSL_PATH}'"
 else
     info "OPENSSL_PATH: ${OPENSSL_PATH}"
+fi
+
+if [[ -z "${BOOST_PATH}" ]] ; then
+    BOOST_PATH=/usr/local/Cellar/boost/1.68.0_1
+    warning "BOOST_PATH not set, using '${BOOST_PATH}'"
+else
+    info "BOOST_PATH: ${BOOST_PATH}"
 fi
 
 info "Calling autogen.sh"
@@ -43,5 +50,5 @@ cd ../../leveldb/
 cd ../
 
 info "Starting qmake:"
-qmake src/src.pro -spec macx-clang CONFIG+=x86_64
+${QT_PATH}/bin/qmake src/src.pro -spec macx-clang CONFIG+=x86_64
 make -j2

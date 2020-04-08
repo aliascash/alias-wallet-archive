@@ -14,6 +14,19 @@ class TransactionTablePriv;
 class TransactionRecord;
 class WalletModel;
 
+// Class for queueing notifications to show a non freezing progress dialog e.g. for rescan
+struct TransactionNotification
+{
+public:
+    TransactionNotification() {}
+    TransactionNotification(QString hash, int status, bool showTransaction):
+        hash(hash), status(status), showTransaction(showTransaction) {}
+
+    QString hash;
+    int status;
+    bool showTransaction;
+};
+
 /** UI model for the transaction table of a wallet.
  */
 class TransactionTableModel : public QAbstractTableModel
@@ -74,6 +87,8 @@ private:
     WalletModel *walletModel;
     QStringList columns;
     TransactionTablePriv *priv;
+    std::vector<TransactionNotification> vQueueNotifications;
+    bool fProcessTransactionNotifications = false;
 
     QString lookupAddress(const std::string &address, bool tooltip) const;
     QVariant addressColor(const TransactionRecord *wtx) const;

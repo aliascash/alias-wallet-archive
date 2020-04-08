@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-fedora:1.5 as build
+FROM spectreproject/spectre-builder-fedora:1.7 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -17,7 +17,9 @@ RUN cd /spectre \
  && ./configure \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /spectre/src/spectrecoind \
+ && strip /spectre/src/spectre
 
 ### Now upload binaries to GitHub ###
 FROM spectreproject/github-uploader:latest

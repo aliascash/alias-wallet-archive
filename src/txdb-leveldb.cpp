@@ -465,7 +465,7 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
     // Now read each entry.
     while (iterator->Valid())
     {
-        if (funcProgress && count % 10000 == 0) funcProgress(count);
+        if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(count);
         count++;
         boost::this_thread::interruption_point();
         // Unpack keys and values.
@@ -527,6 +527,7 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
         iterator->Next();
     }
     delete iterator;
+    if (funcProgress) funcProgress(count);
 
     boost::this_thread::interruption_point();
 

@@ -1,12 +1,12 @@
 TEMPLATE = app
 TARGET = Spectrecoin
-CONFIG += c++17
+CONFIG += c++1z
 
 DEFINES += DEBUGGER_CONNECTED
 DEFINES += HAVE_BUILD_INFO
 #DEFINES += TEST_TOR
 
-QT += testlib webenginewidgets webchannel
+QT += testlib widgets quick quickwidgets webview webchannel websockets
 
 RC_FILE = src.rc
 
@@ -71,6 +71,8 @@ HEADERS += \
     $$PWD/qt/walletmodel.h \
     $$PWD/qt/winshutdownmonitor.h \
     $$PWD/qt/setupwalletwizard.h \
+    $$PWD/qt/websockettransport.h \
+    $$PWD/qt/websocketclientwrapper.h \
     $$PWD/wordlists/chinese_simplified.h \
     $$PWD/wordlists/chinese_traditional.h \
     $$PWD/wordlists/english.h \
@@ -172,6 +174,8 @@ SOURCES += \
     $$PWD/qt/walletmodel.cpp \
     $$PWD/qt/winshutdownmonitor.cpp \
     $$PWD/qt/setupwalletwizard.cpp \
+    $$PWD/qt/websockettransport.cpp \
+    $$PWD/qt/websocketclientwrapper.cpp \
 #    $$PWD/test/other/DoS_tests.cpp \
 #    $$PWD/test/other/miner_tests.cpp \
 #    $$PWD/test/other/transaction_tests.cpp \

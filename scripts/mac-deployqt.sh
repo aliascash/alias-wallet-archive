@@ -24,10 +24,17 @@ else
     info "QT_PATH: ${QT_PATH}"
 fi
 if [ -z "${OPENSSL_PATH}" ] ; then
-    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1
+    OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1d
     warning "OPENSSL_PATH not set, using '${OPENSSL_PATH}'"
 else
     info "OPENSSL_PATH: ${OPENSSL_PATH}"
+fi
+
+if [[ -z "${BOOST_PATH}" ]] ; then
+    BOOST_PATH=/usr/local/Cellar/boost/1.68.0_1
+    warning "BOOST_PATH not set, using '${BOOST_PATH}'"
+else
+    info "BOOST_PATH: ${BOOST_PATH}"
 fi
 
 info "Cleanup previous build artifacts"

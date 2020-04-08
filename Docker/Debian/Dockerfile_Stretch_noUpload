@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian-stretch:1.6
+FROM spectreproject/spectre-builder-debian-stretch:1.7
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -15,4 +15,6 @@ RUN cd /spectre \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /spectre/src/spectrecoind \
+ && strip /spectre/src/spectre

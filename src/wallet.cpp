@@ -7181,12 +7181,12 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
 
 
 
-DBErrors CWallet::LoadWallet(int& oltWalletVersion)
+DBErrors CWallet::LoadWallet(int& oltWalletVersion, std::function<void (const uint32_t&)> funcProgress)
 {
     if (!fFileBacked)
         return DB_LOAD_OK;
 
-    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this, oltWalletVersion);
+    DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this, oltWalletVersion, funcProgress);
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {
         if (CDB::Rewrite(strWalletFile, "\x04pool"))

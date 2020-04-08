@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian-buster:1.6 as build
+FROM spectreproject/spectre-builder-debian-buster:1.7 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -15,7 +15,9 @@ RUN cd /spectre \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /spectre/src/spectrecoind \
+ && strip /spectre/src/spectre
 
 ### Now upload binaries to GitHub ###
 FROM spectreproject/github-uploader:latest
