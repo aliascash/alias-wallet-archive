@@ -61,7 +61,7 @@ while getopts a:l:n:v:h? option; do
     esac
 done
 
-info "Building boost $BOOST_VERSION..."
+info " -> Boost $BOOST_VERSION..."
 cd ${callDir}
 
 case ${ANDROID_ARCH} in
@@ -76,19 +76,19 @@ case ${ANDROID_ARCH} in
 esac
 
 set -eu
-info "Generating config..."
+info " -> Generating config..."
 echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > ${ANDROID_ARCH}-config.jam
 echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
 
-info "Patching..."
+info " -> Patching..."
 patch -p1 < ${ownLocation}/boost_1_69_0_android.patch
 
-info "Bootstrapping..."
+info " -> Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
 ./bootstrap.sh #--with-libraries=${BOOST_LIBS_TO_BUILD}
 
-info "Building boost with './b2 -d+2 \
-    -j 15 \
+info " -> Building boost with './b2 -d+2 \
+    -j ${CORES_TO_USE} \
     --reconfigure \
     target-os=android \
     toolset=clang-${jamEntry1} \
@@ -101,7 +101,7 @@ info "Building boost with './b2 -d+2 \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install'"
 ./b2 -d+2 \
-    -j 15 \
+    -j ${CORES_TO_USE} \
     --reconfigure \
     target-os=android \
     toolset=clang-${jamEntry1} \
@@ -113,5 +113,5 @@ info "Building boost with './b2 -d+2 \
     --user-config=${ANDROID_ARCH}-config.jam \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install
-info "Done!"
+info " -> Done!"
 #read a
