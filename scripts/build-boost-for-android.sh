@@ -35,9 +35,24 @@ helpMe() {
     "
 }
 
+HOST_SYSTEM='linux'
+
+# Determine system
+# Determine amount of cores:
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    CORES_TO_USE=$(grep -c ^processor /proc/cpuinfo)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    CORES_TO_USE=$(system_profiler SPHardwareDataType | grep "Total Number of Cores" | tr -s " " | cut -d " " -f 6)
+    HOST_SYSTEM='darwin'
+else
+    CORES_TO_USE=1
+fi
+
 while getopts a:l:n:v:h? option; do
     case ${option} in
         a) ANDROID_ARCH="${OPTARG}";;
+        c) CORES_TO_USE="${OPTARG}";;
         l) BOOST_LIBS_TO_BUILD="${OPTARG}";;
         n) ANDROID_NDK_ROOT="${OPTARG}";;
         v) BOOST_VERSION="${OPTARG}";;
@@ -63,7 +78,7 @@ esac
 set -eu
 info "Generating config..."
 echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > ${ANDROID_ARCH}-config.jam
-echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/linux-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
+echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
 
 info "Patching..."
 patch -p1 < ${ownLocation}/boost_1_69_0_android.patch
@@ -72,21 +87,10 @@ info "Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
 ./bootstrap.sh #--with-libraries=${BOOST_LIBS_TO_BUILD}
 
-info "Building boost with './b2 -d+2 \
-    -j 15 \
-    --reconfigure \
-    target-os=android \
-    toolset=clang-${jamEntry1} \
-    link=static \
-    variant=release \
-    threading=multi \
-    cxxflags="-std=c++14 -fPIC" \
-    --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
-    --user-config=${ANDROID_ARCH}-config.jam \
-    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
-    install'"
+echo "Building Boost with the following cmd:"
+read -r -d '' cmd << EOM
 ./b2 -d+2 \
-    -j 15 \
+    -j ${CORES_TO_USE} \
     --reconfigure \
     target-os=android \
     toolset=clang-${jamEntry1} \
@@ -98,5 +102,10 @@ info "Building boost with './b2 -d+2 \
     --user-config=${ANDROID_ARCH}-config.jam \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
     install
+EOM
+
+echo "${cmd}"
+#read a
+${cmd}
 info "Done!"
 #read a
