@@ -827,33 +827,29 @@ pipeline {
                                             suffix: ""
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    build(
+                                            job: 'Spectrecoin/installer/master',
+                                            parameters: [
+                                                    string(
+                                                            name: 'ARCHIVE_LOCATION',
+                                                            value: "${WORKSPACE}"
+                                                    ),
+                                                    string(
+                                                            name: 'ARCHIVE_NAME',
+                                                            value: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_TAG_TO_USE',
+                                                            value: "${GIT_TAG_TO_USE}"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_COMMIT_SHORT',
+                                                            value: "${GIT_COMMIT_SHORT}"
+                                                    )
+                                            ],
+                                            wait: false
+                                    )
                                 }
-                            }
-                        }
-                        stage('Trigger installer build') {
-                            steps {
-                                build(
-                                        job: 'Spectrecoin/installer/master',
-                                        parameters: [
-                                                string(
-                                                        name: 'ARCHIVE_LOCATION',
-                                                        value: "${WORKSPACE}"
-                                                ),
-                                                string(
-                                                        name: 'ARCHIVE_NAME',
-                                                        value: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
-                                                ),
-                                                string(
-                                                        name: 'GIT_TAG_TO_USE',
-                                                        value: "${GIT_TAG_TO_USE}"
-                                                ),
-                                                string(
-                                                        name: 'GIT_COMMIT_SHORT',
-                                                        value: "${GIT_COMMIT_SHORT}"
-                                                )
-                                        ],
-                                        wait: false
-                                )
                             }
                         }
                         stage('Upload deliveries') {
