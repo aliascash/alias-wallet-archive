@@ -109,7 +109,7 @@ checkOpenSSLArchive(){
 # with some slight modifications for Spectrecoin
 checkOpenSSLClone(){
     local currentDir=$(pwd)
-    cd ${ownLocation}/../openssl-cmake
+    cd ${ownLocation}/../external
     if [[ -d openssl-cmake ]] ; then
         info " -> Updating openssl-cmake clone"
         cd openssl-cmake
