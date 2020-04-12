@@ -36,6 +36,10 @@ BERKELEYDB_ARCHIVE_HASH=e0491a07cdb21fb9aa82773bbbedaeb7639cbd0e7f96147ab46141e0
 #BERKELEYDB_BUILD_VERSION=6.2.38
 #BERKELEYDB_ARCHIVE_HASH=...
 
+##### ### # LevelDB # ### ###################################################
+LEVELDB_VERSION=1.22
+LEVELDB_VERSION_TAG=78b39d68
+
 ##### ### # OpenSSL # ### ###################################################
 OPENSSL_BUILD_VERSION=1.1.0l
 OPENSSL_ARCHIVE_HASH=74a2f756c64fd7386a29184dc0344f4831192d61dc2481a93a4c5dd727f41148

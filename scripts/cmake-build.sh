@@ -358,6 +358,77 @@ checkEventLib(){
 
 # ============================================================================
 
+# ===== Start of leveldb functions ===========================================
+checkLevelDBClone(){
+    local currentDir=$(pwd)
+    cd ${ownLocation}/../external
+    if [[ -d leveldb ]] ; then
+        info " -> Updating LevelDB clone"
+        cd leveldb
+        git pull --prune
+    else
+        info " -> Cloning LevelDB"
+        git clone https://github.com/google/leveldb.git leveldb
+    fi
+    cd leveldb
+    info " -> Checkout release ${LEVELDB_VERSION}"
+    git checkout ${LEVELDB_VERSION_TAG}
+    cd "${currentDir}"
+}
+
+checkLevelDBBuild(){
+    mkdir -p ${BUILD_DIR}/leveldb
+    cd ${BUILD_DIR}/leveldb
+
+    info " -> Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    ${BUILD_DIR}/../external/leveldb
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+    read a
+    ${cmd}
+    read a
+
+    info ""
+    info " -> Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info " -> Finished libevent build, installing..."
+        make install || error "Error during installation of libevent"
+    else
+        error " => Finished libevent with return code ${rtc}"
+    fi
+    read a
+    cd - >/dev/null
+}
+
+checkLevelDB(){
+    info ""
+    info "LevelDB:"
+    if [[ -f ${BUILD_DIR}/foobar/libfoo.a ]] ; then
+        info " -> Found ${BUILD_DIR}/foobar/libfoo.a, skip build"
+    else
+        checkLevelDBClone
+        checkLevelDBBuild
+    fi
+}
+
+# ===== End of leveldb functions =============================================
+
+# ============================================================================
+
 # ===== Start of libzstd functions ===========================================
 checkZStdLibArchive(){
     if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
@@ -644,6 +715,7 @@ fi
 
 checkBoost
 checkBerkeleyDB
+checkLevelDB
 checkOpenSSL
 if ${WITH_TOR} ; then
     checkEventLib
