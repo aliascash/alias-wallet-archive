@@ -114,6 +114,23 @@ checkOpenSSLArchive(){
         cd - >/dev/null
     fi
 }
+
+# For OpenSSL we're using a fork of https://github.com/viaduck/openssl-cmake
+# with some slight modifications for Spectrecoin
+checkOpenSSLClone(){
+    local currentDir=$(pwd)
+    cd ${ownLocation}/../openssl-cmake
+    if [[ -d openssl-cmake ]] ; then
+        info " -> Updating openssl-cmake clone"
+        cd openssl-cmake
+        git pull --prune
+    else
+        info " -> Cloning openssl-cmake"
+        git clone --branch spectrecoin https://github.com/spectrecoin/openssl-cmake.git openssl-cmake
+    fi
+    cd "${currentDir}"
+}
+
 checkOpenSSLBuild(){
     mkdir -p ${BUILD_DIR}/openssl
     cd ${BUILD_DIR}/openssl
@@ -162,6 +179,7 @@ checkOpenSSL(){
         info " -> Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
+        checkOpenSSLClone
         checkOpenSSLBuild
     fi
 }
