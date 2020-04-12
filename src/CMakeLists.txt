@@ -24,7 +24,7 @@ add_library(spectrecoin_lib ${DUMMY_SOURCE})
 
 target_link_libraries(spectrecoin_lib
         Oracle::BerkeleyDB
-        leveldb
+        leveldb::leveldb
         OpenSSL::SSL
         OpenSSL::Crypto
         Boost::atomic
@@ -182,10 +182,10 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 # ============================================================================================
 #if (WITH_TOR)
 #    target_link_libraries(Spectrecoind
-#            ssl
-#            crypto
-#            bdb
-#            leveldb
+#            OpenSSL::SSL
+#            OpenSSL::Crypto
+#            Oracle::BerkeleyDB
+#            leveldb::leveldb
 #            spectrecoin_lib
 #            libevent
 #            libzstd
@@ -198,7 +198,7 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
             OpenSSL::SSL
             OpenSSL::Crypto
             Oracle::BerkeleyDB
-            leveldb
+            leveldb::leveldb
             spectrecoin_lib
             -static
             )
@@ -214,7 +214,7 @@ if (ENABLE_GUI)
             OpenSSL::SSL
             OpenSSL::Crypto
             Oracle::BerkeleyDB
-            leveldb
+            leveldb::leveldb
             spectrecoin_lib
             Qt5::Core
             Qt5::Widgets

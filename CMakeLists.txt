@@ -200,13 +200,14 @@ message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 message(STATUS "OPENSSL_VERSION: ${OPENSSL_VERSION}")
 
-## ============================================================================================
+# ============================================================================================
 message(STATUS "=== Berkeley DB ============================================================")
 find_package(BerkeleyDB)
 
 # ============================================================================================
 message(STATUS "=== LevelDB ================================================================")
-add_subdirectory(external/leveldb)
+set(leveldb_DIR "${PROJECT_BINARY_DIR}/../usr/local/lib/cmake/leveldb")
+find_package(leveldb)
 
 # ============================================================================================
 if (WITH_TOR)
