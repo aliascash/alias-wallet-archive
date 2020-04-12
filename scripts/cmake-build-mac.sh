@@ -64,7 +64,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 
 ##### ### # Tor # ### #######################################################
 # Location of archive will be resolved like this:
-# ${LIBXZ_ARCHIVE_LOCATION}/tor-${LIBXZ_BUILD_VERSION}.tar.gz
+# ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
 BUILD_DIR=cmake-build-mac-cmdline
@@ -102,10 +102,10 @@ helpMe() {
 # ===== Start of berkeleydb functions ========================================
 checkOpenSSLArchive(){
     if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
+        info " -> Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
     else
         OPENSSL_ARCHIVE_URL=https://mirror.viaduck.org/openssl/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
-        info "Downloading OpenSSL archive ${OPENSSL_ARCHIVE_URL}"
+        info " -> Downloading OpenSSL archive ${OPENSSL_ARCHIVE_URL}"
         if [[ ! -e ${OPENSSL_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${OPENSSL_ARCHIVE_LOCATION}
         fi
@@ -118,7 +118,7 @@ checkOpenSSLBuild(){
     mkdir -p ${BUILD_DIR}/openssl
     cd ${BUILD_DIR}/openssl
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DBUILD_OPENSSL=ON \
@@ -138,7 +138,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -147,9 +147,9 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished openssl build and install"
+        info " -> Finished openssl build and install"
     else
-        error "Finished openssl with return code ${rtc}"
+        error " => Finished openssl with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -172,10 +172,10 @@ checkOpenSSL(){
 # ===== Start of berkeleydb functions ========================================
 checkBerkeleyDBArchive(){
     if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
+        info " -> Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
     else
         BERKELEYDB_ARCHIVE_URL=https://download.oracle.com/berkeley-db/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
-        info "Downloading BerkeleyDB archive ${BERKELEYDB_ARCHIVE_URL}"
+        info " -> Downloading BerkeleyDB archive ${BERKELEYDB_ARCHIVE_URL}"
         if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
         fi
@@ -189,7 +189,7 @@ checkBerkeleyDBBuild(){
     mkdir -p ${BUILD_DIR}/libdb
     cd ${BUILD_DIR}/libdb
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
@@ -209,7 +209,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -218,9 +218,9 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished libdb build and install"
+        info " -> Finished libdb build and install"
     else
-        error "Finished libdb with return code ${rtc}"
+        error " => Finished libdb with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -243,13 +243,14 @@ checkBerkeleyDB(){
 # ===== Start of boost functions =============================================
 checkBoost(){
     info ""
-    info "Searching required static Boost libs"
+    info "Boost:"
+    info " -> Searching required static Boost libs"
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
         if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
-            info "${currentBoostDependency}: OK"
+            info " -> ${currentBoostDependency}: OK"
         else
-            warning "${currentBoostDependency}: Not found!"
+            warning " => ${currentBoostDependency}: Not found!"
             buildBoost=true
         fi
     done
@@ -260,19 +261,19 @@ checkBoost(){
         fi
         cd ${BOOST_ARCHIVE_LOCATION}
         if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info "Downloading Boost archive"
+            info " -> Downloading Boost archive"
             wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
         else
-            info "Using existing Boost archive"
+            info " -> Using existing Boost archive"
         fi
-        info "Cleanup before extraction"
+        info " -> Cleanup before extraction"
         rm -rf boost_${BOOST_VERSION//./_}
-        info "Extracting Boost archive"
+        info " -> Extracting Boost archive"
         tar xzf boost_${BOOST_VERSION//./_}.tar.gz
         cd boost_${BOOST_VERSION//./_}
-        info "Patching Boost"
+        info " -> Patching Boost"
         patch -p1 -r - < ${ownLocation}/patches/mac-boost-process.patch
-        info "Building Boost"
+        info " -> Building Boost"
         ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
 #        ./bootstrap.sh
         ./b2 -j"${CORES_TO_USE}"
@@ -352,10 +353,10 @@ checkQt(){
 # ===== Start of libevent functions ==========================================
 checkEventLibArchive(){
     if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
-        info "Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
+        info " -> Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
     else
         LIBEVENT_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_BUILD_VERSION}-stable/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
-        info "Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
+        info " -> Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
         if [[ ! -e ${LIBEVENT_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBEVENT_ARCHIVE_LOCATION}
         fi
@@ -369,13 +370,11 @@ checkEventLibClone(){
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
     if [[ -d libevent ]] ; then
-        info "Updating libevent clone"
+        info " -> Updating libevent clone"
         cd libevent
         git pull --prune
     else
-        info "Cloning libevent"
-#        git clone git@github.com:azat/libevent.git libevent
-#        git clone https://github.com/azat/libevent.git libevent
+        info " -> Cloning libevent"
         git clone https://github.com/libevent/libevent.git libevent
     fi
     cd "${currentDir}"
@@ -385,7 +384,7 @@ checkEventLibBuild(){
     mkdir -p ${BUILD_DIR}/libevent
     cd ${BUILD_DIR}/libevent
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
@@ -403,7 +402,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -412,10 +411,10 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished libevent build, installing..."
+        info " -> Finished libevent build, installing..."
         make install || error "Error during installation of libevent"
     else
-        error "Finished libevent with return code ${rtc}"
+        error " => Finished libevent with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -425,7 +424,7 @@ checkEventLib(){
     info ""
     info "EventLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
         checkEventLibBuild
@@ -436,13 +435,84 @@ checkEventLib(){
 
 # ============================================================================
 
+# ===== Start of leveldb functions ===========================================
+checkLevelDBClone(){
+    local currentDir=$(pwd)
+    cd ${ownLocation}/../external
+    if [[ -d leveldb ]] ; then
+        info " -> Updating LevelDB clone"
+        cd leveldb
+        git pull --prune
+    else
+        info " -> Cloning LevelDB"
+        git clone https://github.com/google/leveldb.git leveldb
+        cd leveldb
+    fi
+    info " -> Checkout release ${LEVELDB_VERSION}"
+    git checkout ${LEVELDB_VERSION_TAG}
+    cd "${currentDir}"
+}
+
+checkLevelDBBuild(){
+    mkdir -p ${BUILD_DIR}/libleveldb
+    cd ${BUILD_DIR}/libleveldb
+
+    info " -> Generating build configuration"
+    read -r -d '' cmd << EOM
+cmake \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    ${BUILD_DIR}/../external/leveldb
+EOM
+
+    echo "=============================================================================="
+    echo "Executing the following CMake cmd:"
+    echo "${cmd}"
+    echo "=============================================================================="
+#    read a
+    ${cmd}
+#    read a
+
+    info ""
+    info " -> Building with ${CORES_TO_USE} cores:"
+    CORES_TO_USE=${CORES_TO_USE} cmake \
+        --build . \
+        -- \
+        -j "${CORES_TO_USE}"
+
+    rtc=$?
+    info ""
+    if [[ ${rtc} = 0 ]] ; then
+        info " -> Finished libevent build, installing..."
+        make install || error "Error during installation of libevent"
+    else
+        error " => Finished libevent with return code ${rtc}"
+    fi
+#    read a
+    cd - >/dev/null
+}
+
+checkLevelDB(){
+    info ""
+    info "LevelDB:"
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]] ; then
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
+    else
+        checkLevelDBClone
+        checkLevelDBBuild
+    fi
+}
+
+# ===== End of leveldb functions =============================================
+
+# ============================================================================
+
 # ===== Start of libzstd functions ===========================================
 checkZStdLibArchive(){
     if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
+        info " -> Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
     else
         LIBZ_ARCHIVE_URL=https://github.com/facebook/zstd/releases/download/v${LIBZ_BUILD_VERSION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
-        info "Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
+        info " -> Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBZ_ARCHIVE_LOCATION}
         fi
@@ -452,9 +522,9 @@ checkZStdLibArchive(){
     fi
     cd ${ownLocation}/../external
     if [[ -d libzstd ]] ; then
-        info "Directory external/libzstd already existing. Remove it to extract it again"
+        info " -> Directory external/libzstd already existing. Remove it to extract it again"
     else
-        info "Extracting zstd-${LIBZ_BUILD_VERSION}.tar.gz..."
+        info " -> Extracting zstd-${LIBZ_BUILD_VERSION}.tar.gz..."
         tar xzf ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
         mv zstd-${LIBZ_BUILD_VERSION} libzstd
     fi
@@ -465,7 +535,7 @@ checkZStdLibBuild(){
     mkdir -p ${BUILD_DIR}/libzstd
     cd ${BUILD_DIR}/libzstd
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DLIBZ_ARCHIVE_LOCATION=${LIBZ_ARCHIVE_LOCATION} \
@@ -485,7 +555,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -494,10 +564,10 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished libzstd build, installing..."
+        info " -> Finished libzstd build, installing..."
         make install || error "Error during installation of libzstd"
     else
-        error "Finished libzstd with return code ${rtc}"
+        error " => Finished libzstd with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -507,7 +577,7 @@ checkZStdLib(){
     info ""
     info "ZStdLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
         checkZStdLibArchive
         checkZStdLibBuild
@@ -520,10 +590,10 @@ checkZStdLib(){
 # ===== Start of libxz functions =============================================
 checkXZLibArchive(){
     if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using XZLib archive ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz"
+        info " -> Using XZLib archive ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz"
     else
         LIBXZ_ARCHIVE_URL=https://tukaani.org/xz/xz-${LIBXZ_BUILD_VERSION}.tar.gz
-        info "Downloading XZLib archive ${LIBZ_ARCHIVE_URL}"
+        info " -> Downloading XZLib archive ${LIBZ_ARCHIVE_URL}"
         if [[ ! -e ${LIBXZ_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBXZ_ARCHIVE_LOCATION}
         fi
@@ -537,7 +607,7 @@ checkXZLibBuild(){
     mkdir -p ${BUILD_DIR}/libxz
     cd ${BUILD_DIR}/libxz
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DLIBXZ_ARCHIVE_LOCATION=${LIBXZ_ARCHIVE_LOCATION} \
@@ -556,7 +626,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -565,9 +635,9 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished libxz build and install"
+        info " -> Finished libxz build and install"
     else
-        error "Finished libxz with return code ${rtc}"
+        error " => Finished libxz with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -577,7 +647,7 @@ checkXZLib(){
     info ""
     info "XZLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
         checkXZLibArchive
         checkXZLibBuild
@@ -590,10 +660,10 @@ checkXZLib(){
 # ===== Start of tor functions ===============================================
 checkTorArchive(){
     if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz" ]] ; then
-        info "Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
+        info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz"
     else
         TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
-        info "Downloading Tor archive ${LIBZ_ARCHIVE_URL}"
+        info " -> Downloading Tor archive ${TOR_ARCHIVE_URL}"
         if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
         fi
@@ -607,7 +677,7 @@ checkTorBuild(){
     mkdir -p ${BUILD_DIR}/tor
     cd ${BUILD_DIR}/tor
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DTOR_ARCHIVE_LOCATION=${TOR_ARCHIVE_LOCATION} \
@@ -626,7 +696,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -635,9 +705,9 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished tor build and install"
+        info " -> Finished tor build and install"
     else
-        error "Finished tor with return code ${rtc}"
+        error " => Finished tor with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -647,7 +717,7 @@ checkTor(){
     info ""
     info "Tor:"
     if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
         checkTorArchive
         checkTorBuild
@@ -702,6 +772,7 @@ if [[ ! -d ${BUILD_DIR} ]] ; then
     info ""
     info "Creating build directory ${BUILD_DIR}"
     mkdir ${BUILD_DIR}
+    info " -> Done"
 fi
 
 cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
@@ -721,6 +792,7 @@ fi
 
 checkBoost
 checkBerkeleyDB
+checkLevelDB
 checkOpenSSL
 if ${WITH_TOR} ; then
     checkEventLib
@@ -736,7 +808,7 @@ mkdir -p ${BUILD_DIR}/spectrecoin
 cd ${BUILD_DIR}/spectrecoin
 
 info ""
-info "Generating build configuration"
+info "Generating Spectrecoin build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
@@ -784,8 +856,8 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info "Finished"
+    info " -> Finished"
 else
-    error "Finished with return code ${rtc}"
+    error " => Finished with return code ${rtc}"
 fi
 cd "${callDir}" || die 1 "Unable to cd back to where we came from (${callDir})"
