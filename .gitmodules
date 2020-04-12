@@ -2,11 +2,3 @@
 	path = external/openssl-cmake
 	url = https://github.com/spectrecoin/openssl-cmake.git
 	branch = spectrecoin_openssl_1.1.0l
-[submodule "external/libevent"]
-	path = external/libevent
-	url = https://github.com/libevent/libevent.git
-	branch = master
-[submodule "external/leveldb"]
-	path = external/leveldb
-	url = https://github.com/google/leveldb.git
-	branch = master
