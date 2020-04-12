@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-[[ -d .git ]] && [[ -d external/leveldb ]] && [[ -d external/openssl-cmake ]] || \
+[[ -d .git ]] && [[ -d external/openssl-cmake ]] || \
   { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
 
 git submodule init
