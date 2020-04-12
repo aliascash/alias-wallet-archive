@@ -237,9 +237,9 @@ checkBoost(){
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
         if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
-            info "${currentBoostDependency}: OK"
+            info " -> ${currentBoostDependency}: OK"
         else
-            warning "${currentBoostDependency}: Not found!"
+            warning " => ${currentBoostDependency}: Not found!"
             buildBoost=true
         fi
     done
@@ -250,16 +250,16 @@ checkBoost(){
         fi
         cd ${BOOST_ARCHIVE_LOCATION}
         if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info "Downloading Boost archive"
+            info " -> Downloading Boost archive"
             wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
         else
-            info "Using existing Boost archive"
+            info " -> Using existing Boost archive"
         fi
-        info "Cleanup before extraction"
+        info " -> Cleanup before extraction"
         rm -rf boost_${BOOST_VERSION//./_}
-        info "Extracting Boost archive"
+        info " -> Extracting Boost archive"
         tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        info "Building Boost"
+        info " -> Building Boost"
         cd boost_${BOOST_VERSION//./_}
         ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
 #        ./bootstrap.sh
@@ -274,10 +274,10 @@ checkBoost(){
 # ===== Start of libevent functions ==========================================
 checkEventLibArchive(){
     if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
-        info "Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
+        info " -> Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
     else
         LIBEVENT_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_BUILD_VERSION}-stable/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
-        info "Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
+        info " -> Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
         if [[ ! -e ${LIBEVENT_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${LIBEVENT_ARCHIVE_LOCATION}
         fi
@@ -291,11 +291,11 @@ checkEventLibClone(){
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
     if [[ -d libevent ]] ; then
-        info "Updating libevent clone"
+        info " -> Updating libevent clone"
         cd libevent
         git pull --prune
     else
-        info "Cloning libevent"
+        info " -> Cloning libevent"
         git clone https://github.com/libevent/libevent.git libevent
     fi
     cd "${currentDir}"
@@ -305,7 +305,7 @@ checkEventLibBuild(){
     mkdir -p ${BUILD_DIR}/libevent
     cd ${BUILD_DIR}/libevent
 
-    info "Generating build configuration"
+    info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
@@ -323,7 +323,7 @@ EOM
 #    read a
 
     info ""
-    info "Building with ${CORES_TO_USE} cores:"
+    info " -> Building with ${CORES_TO_USE} cores:"
     CORES_TO_USE=${CORES_TO_USE} cmake \
         --build . \
         -- \
@@ -332,10 +332,10 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info "Finished libevent build, installing..."
+        info " -> Finished libevent build, installing..."
         make install || error "Error during installation of libevent"
     else
-        error "Finished libevent with return code ${rtc}"
+        error " => Finished libevent with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -345,7 +345,7 @@ checkEventLib(){
     info ""
     info "EventLib:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]] ; then
-        info "Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
         checkEventLibBuild
@@ -389,9 +389,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-    read a
+#    read a
     ${cmd}
-    read a
+#    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -408,15 +408,15 @@ EOM
     else
         error " => Finished libevent with return code ${rtc}"
     fi
-    read a
+#    read a
     cd - >/dev/null
 }
 
 checkLevelDB(){
     info ""
     info "LevelDB:"
-    if [[ -f ${BUILD_DIR}/foobar/libfoo.a ]] ; then
-        info " -> Found ${BUILD_DIR}/foobar/libfoo.a, skip build"
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]] ; then
+        info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
         checkLevelDBBuild
