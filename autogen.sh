@@ -1,11 +1,14 @@
 #!/bin/bash -e
 
-[[ -d .git ]] && [[ -d external/openssl-cmake ]] || \
-  { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
+ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${ownLocation}"
 
-git submodule init
-git submodule sync --recursive
-git submodule update --recursive --force --remote
-
-echo "Preparation finished."
-echo "To build, just run one of the ./scripts/cmake-build*.sh scripts"
+echo
+echo "Nothing to prepare at this stage."
+echo
+echo "To build, just run one of the cmake-build* scripts on the scripts folder:"
+echo
+ls -1 scripts/cmake-build*
+echo
+echo "Use option -h to see their possibilities"
+echo
