@@ -376,8 +376,8 @@ checkLevelDBClone(){
 }
 
 checkLevelDBBuild(){
-    mkdir -p ${BUILD_DIR}/leveldb
-    cd ${BUILD_DIR}/leveldb
+    mkdir -p ${BUILD_DIR}/libleveldb
+    cd ${BUILD_DIR}/libleveldb
 
     info " -> Generating build configuration"
     read -r -d '' cmd << EOM
