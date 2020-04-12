@@ -1,3 +1,4 @@
 leveldb/
 libevent/
 libzstd/
+openssl-cmake/
