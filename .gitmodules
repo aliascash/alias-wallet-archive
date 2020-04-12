@@ -1,4 +1,4 @@
 [submodule "external/openssl-cmake"]
 	path = external/openssl-cmake
 	url = https://github.com/spectrecoin/openssl-cmake.git
-	branch = spectrecoin_openssl_1.1.0l
+	branch = spectrecoin
