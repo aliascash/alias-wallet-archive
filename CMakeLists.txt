@@ -189,6 +189,8 @@ endif ()
 
 
 # ============================================================================================
+# Requires lib and include dir at once, separated by ";":
+#     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 message(STATUS "=== OpenSSL ================================================================")
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL)
@@ -201,10 +203,15 @@ message(STATUS "OPENSSL_LIBRARIES: ${OPENSSL_LIBRARIES}")
 message(STATUS "OPENSSL_VERSION: ${OPENSSL_VERSION}")
 
 # ============================================================================================
+# Requires:
+#     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install
+#     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include
 message(STATUS "=== Berkeley DB ============================================================")
 find_package(BerkeleyDB)
 
 # ============================================================================================
+# Requires:
+#     -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb
 message(STATUS "=== LevelDB ================================================================")
 find_package(leveldb)
 
