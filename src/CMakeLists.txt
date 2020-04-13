@@ -194,6 +194,16 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 #            -static
 #            )
 #else()
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    # On Mac without "-static"
+    target_link_libraries(Spectrecoind
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            Oracle::BerkeleyDB
+            leveldb::leveldb
+            spectrecoin_lib
+            )
+else()
     target_link_libraries(Spectrecoind
             OpenSSL::SSL
             OpenSSL::Crypto
@@ -202,6 +212,7 @@ add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
             spectrecoin_lib
             -static
             )
+endif()
 #endif()
 
 if (ENABLE_GUI)
