@@ -956,8 +956,6 @@ cmake \
     -DBOOST_ROOT=${BOOST_ROOT} \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
-    -DBoost_INCLUDE_DIR=${BOOST_INCLUDEDIR} \
-    -DBoost_LIBRARY_DIR=${BOOST_LIBRARYDIR} \
     \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
