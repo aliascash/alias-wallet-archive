@@ -24,7 +24,7 @@ ANDROID_NDK_ROOT=${ANDROID_NDK_ARCHIVE_LOCATION}/android-ndk-${ANDROID_NDK_VERSI
 ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
 ANDROID_ARCH=x86_64
 ANDROID_ABI=x86_64
-ANDROID_API=28
+ANDROID_API=22
 
 ##### ### # Android Qt # ### ################################################
 ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
@@ -76,7 +76,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
-BUILD_DIR=cmake-build-android-cmdline_${ANDROID_ARCH}
+BUILD_DIR=cmake-build-cmdline-android${ANDROID_API}_${ANDROID_ARCH}
 
 helpMe() {
     echo "
