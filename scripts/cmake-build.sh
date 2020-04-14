@@ -767,18 +767,21 @@ cmake \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
-if ${WITH_TOR} ; then
-    read -r -d '' cmd << EOM
+
+# Insert additional parameters
+# Not used for now
+#if ${WITH_TOR} ; then
+#    read -r -d '' cmd << EOM
+#${cmd} \
+#    -DWITH_TOR=ON
+#EOM
+#fi
+
+# Finalize build cmd
+read -r -d '' cmd << EOM
 ${cmd} \
-    -DWITH_TOR=ON \
     ${BUILD_DIR}/..
 EOM
-else
-    read -r -d '' cmd << EOM
-${cmd} \
-    ${BUILD_DIR}/..
-EOM
-fi
 
 echo "=============================================================================="
 echo "Executing the following CMake cmd:"

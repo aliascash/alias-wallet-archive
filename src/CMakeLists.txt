@@ -178,22 +178,6 @@ endif ()
 # The daemon
 add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
-# Link the daemon as static binary
-# ============================================================================================
-#if (WITH_TOR)
-#    target_link_libraries(Spectrecoind
-#            OpenSSL::SSL
-#            OpenSSL::Crypto
-#            Oracle::BerkeleyDB
-#            leveldb::leveldb
-#            spectrecoin_lib
-#            libevent
-#            libzstd
-#            libxz
-#            libtor
-#            -static
-#            )
-#else()
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # On Mac without "-static"
     target_link_libraries(Spectrecoind
@@ -204,6 +188,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             spectrecoin_lib
             )
 else()
+    # Link the daemon as static binary
     target_link_libraries(Spectrecoind
             OpenSSL::SSL
             OpenSSL::Crypto
@@ -213,7 +198,6 @@ else()
             -static
             )
 endif()
-#endif()
 
 if (ENABLE_GUI)
     # The UI wallet
