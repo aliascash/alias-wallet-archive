@@ -452,8 +452,8 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
-    \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
     -DEVENT__DISABLE_TESTS=ON
 EOM
 
@@ -469,8 +469,7 @@ fi
 # Finalize build cmd
 read -r -d '' cmd << EOM
 ${cmd} \
-    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
 EOM
 
