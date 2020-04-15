@@ -166,7 +166,7 @@ EOM
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished openssl build and install"
     else
-        error " => Finished openssl with return code ${rtc}"
+        die ${rtc} " => OpenSSL build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -236,9 +236,9 @@ EOM
     rtc=$?
     info ""
     if [[ ${rtc} = 0 ]] ; then
-        info " -> Finished libdb build and install"
+        info " -> Finished BerkeleyDB (libdb) build and install"
     else
-        error " => Finished libdb with return code ${rtc}"
+        die ${rtc} " => BerkeleyDB (libdb) build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -430,9 +430,9 @@ EOM
     info ""
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished libevent build, installing..."
-        make install || error "Error during installation of libevent"
+        make install || die $? " => Error during installation of libevent"
     else
-        error " => Finished libevent with return code ${rtc}"
+        die ${rtc} " => libevent build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -501,9 +501,9 @@ EOM
     info ""
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished libevent build, installing..."
-        make install || error "Error during installation of libevent"
+        make install || die $? "Error during installation of libleveldb"
     else
-        error " => Finished libevent with return code ${rtc}"
+        die ${rtc} " => libleveldb build failed with return code ${rtc}"
     fi
 #    read a
     cd - >/dev/null
@@ -583,9 +583,9 @@ EOM
     info ""
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished libzstd build, installing..."
-        make install || error "Error during installation of libzstd"
+        make install || die $? "Error during installation of libzstd"
     else
-        error " => Finished libzstd with return code ${rtc}"
+        die ${rtc} " => libzstd build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -655,7 +655,7 @@ EOM
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished libxz build and install"
     else
-        error " => Finished libxz with return code ${rtc}"
+        die ${rtc} " => libxz build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
@@ -725,7 +725,7 @@ EOM
     if [[ ${rtc} = 0 ]] ; then
         info " -> Finished tor build and install"
     else
-        error " => Finished tor with return code ${rtc}"
+        die ${rtc} " => Tor build failed with return code ${rtc}"
     fi
 
     cd - >/dev/null
