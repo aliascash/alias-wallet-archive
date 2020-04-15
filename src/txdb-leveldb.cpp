@@ -13,7 +13,6 @@
 #include <leveldb/env.h>
 #include <leveldb/cache.h>
 #include <leveldb/filter_policy.h>
-#include <memenv/memenv.h>
 
 #include "kernel.h"
 #include "checkpoints.h"
