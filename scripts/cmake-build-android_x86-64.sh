@@ -27,14 +27,14 @@ ANDROID_ABI=x86_64
 ANDROID_API=22
 
 ##### ### # Android Qt # ### ################################################
-ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
-ANDROID_QT_INSTALLATION_DIR=${ANDROID_QT_ROOT_DIR}/qt_${QT_VERSION}_android_${ANDROID_ARCH}
+ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt
+ANDROID_QT_INSTALLATION_DIR=${ANDROID_QT_ROOT_DIR}/qt_${QT_VERSION}_android${ANDROID_API}_${ANDROID_ARCH}
 ANDROID_QT_LIBRARYDIR=${ANDROID_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_ROOT=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+BOOST_ROOT=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH}
 BOOST_INCLUDEDIR=${BOOST_ROOT}/include
 BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
@@ -317,9 +317,9 @@ checkBoost(){
             info " -> Using existing Boost archive"
         fi
         info " -> Cleanup before extraction"
-        rm -rf boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
-        mkdir boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
-        cd boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH}
+        rm -rf ${BOOST_ROOT}
+        mkdir ${BOOST_ROOT}
+        cd ${BOOST_ROOT}
         info " -> Extracting Boost archive"
         tar xzf ../boost_${BOOST_VERSION//./_}.tar.gz
         cd boost_${BOOST_VERSION//./_}
@@ -327,7 +327,7 @@ checkBoost(){
         cd - >/dev/null
         rm -rf boost_${BOOST_VERSION//./_}
         info " -> Building Boost"
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
+        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -p ${ANDROID_API} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
         cd "${currentDir}"
     fi
 }
@@ -388,6 +388,7 @@ checkQt(){
             -android-ndk ${ANDROID_NDK_ROOT} \
             -android-sdk ${ANDROID_SDK_ROOT} \
             -android-arch ${ANDROID_ABI} \
+            -android-ndk-platform android-${ANDROID_API} \
             -no-warnings-are-errors \
             -opensource \
             -confirm-license \
