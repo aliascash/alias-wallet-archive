@@ -13,6 +13,7 @@ _init
 ANDROID_NDK_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Android
 ANDROID_NDK_ROOT=${ANDROID_NDK_ARCHIVE_LOCATION}/android-ndk-${ANDROID_NDK_VERSION}
 ANDROID_ARCH=arm64
+ANDROID_API=22
 BOOST_LIBS_TO_BUILD=chrono
 
 helpMe() {
@@ -28,6 +29,7 @@ helpMe() {
     -l <list-of-libs-to-builc>
     -n <path>
         Path to ndk directory.
+    -p <android-API-level>
     -v <version>
         Boost version to build. Default: ${BOOST_VERSION}
     -h  Show this help
@@ -49,12 +51,13 @@ else
     CORES_TO_USE=1
 fi
 
-while getopts a:l:n:v:h? option; do
+while getopts a:l:n:p:v:h? option; do
     case ${option} in
         a) ANDROID_ARCH="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
         l) BOOST_LIBS_TO_BUILD="${OPTARG}";;
         n) ANDROID_NDK_ROOT="${OPTARG}";;
+        p) ANDROID_API="${OPTARG}";;
         v) BOOST_VERSION="${OPTARG}";;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
@@ -98,7 +101,7 @@ info " -> Building boost with './b2 -d+2 \
     cxxflags="-std=c++14 -fPIC" \
     --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
     --user-config=${ANDROID_ARCH}-config.jam \
-    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
+    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH} \
     install'"
 ./b2 -d+2 \
     -j ${CORES_TO_USE} \
@@ -111,7 +114,7 @@ info " -> Building boost with './b2 -d+2 \
     cxxflags="-std=c++14 -fPIC" \
     --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
     --user-config=${ANDROID_ARCH}-config.jam \
-    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android_${ANDROID_ARCH} \
+    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH} \
     install
 info " -> Done!"
 #read a
