@@ -454,9 +454,23 @@ cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    -DCMAKE_CXX_STANDARD=14 \
-    -DCMAKE_CXX_STANDARD_REQUIRED=ON \
-    -DCMAKE_CXX_EXTENSIONS=OFF \
+    -DEVENT__DISABLE_TESTS=ON
+EOM
+
+# Disable Thread support if Android API is lower than 28
+# See https://github.com/libevent/libevent/issues/949
+if [[ ${ANDROID_API} -lt 28 ]] ; then
+    read -r -d '' cmd << EOM
+${cmd} \
+    -DEVENT__DISABLE_THREAD_SUPPORT=ON
+EOM
+fi
+
+# Finalize build cmd
+read -r -d '' cmd << EOM
+${cmd} \
+    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
     ${BUILD_DIR}/../external/libevent
 EOM
 
@@ -929,9 +943,9 @@ checkBerkeleyDB
 checkLevelDB
 checkOpenSSL
 if ${WITH_TOR} ; then
-    checkEventLib
     checkXZLib
     checkZStdLib
+    checkEventLib
     checkTor
 fi
 if ${ENABLE_GUI} ; then

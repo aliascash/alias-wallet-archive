@@ -345,6 +345,9 @@ cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    -DEVENT__DISABLE_TESTS=ON
+    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
     ${BUILD_DIR}/../external/libevent
 EOM
 
@@ -770,9 +773,9 @@ checkBerkeleyDB
 checkLevelDB
 checkOpenSSL
 if ${WITH_TOR} ; then
-    checkEventLib
     checkXZLib
     checkZStdLib
+    checkEventLib
     checkTor
 fi
 
