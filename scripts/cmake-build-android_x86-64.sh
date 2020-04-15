@@ -364,15 +364,15 @@ checkQt(){
         if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
             info " -> Downloading Qt archive"
             wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
-            info " -> Verifying downloaded archive"
-            determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
-            if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
-                warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
-            else
-                info " -> Archive checksum ok"
-            fi
         else
             info " -> Using existing Qt archive"
+        fi
+        info " -> Verifying archive checksum"
+        determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
+        if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
+            warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
+        else
+            info " -> Archive checksum ok"
         fi
         info " -> Cleanup before extraction"
         rm -rf qt-everywhere-src-${QT_VERSION}
