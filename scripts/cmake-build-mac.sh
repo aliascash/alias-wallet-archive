@@ -480,7 +480,7 @@ checkLevelDBBuild(){
     info " -> Generating build configuration"
     read -r -d '' cmd << EOM
 cmake \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
+    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/local \
     ${BUILD_DIR}/../external/leveldb
 EOM
 
@@ -842,7 +842,8 @@ cmake \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
     \
-    -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb \
+    -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
+    -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/local/lib;${BUILD_DIR}/local/include
 EOM
