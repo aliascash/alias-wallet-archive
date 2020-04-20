@@ -164,6 +164,10 @@ if (ENABLE_GUI)
     message(STATUS "Qt5Core version: ${Qt5Core_VERSION}")
     get_target_property(QtCore_location Qt5::Core LOCATION)
 
+    find_package(Qt5Gui)
+    message(STATUS "Qt5Gui version: ${Qt5Gui_VERSION}")
+    get_target_property(QtGui_location Qt5::Gui LOCATION)
+
     find_package(Qt5Widgets)
     message(STATUS "Qt5Widgets version: ${Qt5Widgets_VERSION}")
     get_target_property(QtWidgets_location Qt5::Widgets LOCATION)
