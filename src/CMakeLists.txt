@@ -399,6 +399,15 @@ if (ENABLE_GUI)
                 )
             target_link_libraries(Spectrecoin "-framework AppKit")
         endif()
+        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            target_sources(Spectrecoin
+                PUBLIC
+                ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.h
+                PRIVATE
+                ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.cpp
+                )
+            target_link_libraries(Spectrecoin "Shlwapi")
+        endif()
     endif()
 endif ()
 
