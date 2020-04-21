@@ -34,7 +34,6 @@ endif ()
 
 if (ANDROID)
     if(DEFINED ENV{BOOST_ROOT})
-        message(STATUS "BOOST_ROOT $ENV{BOOST_ROOT}")
         message(STATUS "Getting settings from environment")
         set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
         set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
