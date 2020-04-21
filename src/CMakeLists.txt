@@ -196,19 +196,23 @@ endif()
 if (ENABLE_GUI)
     if (ANDROID)
         # Create a shared library 'libspectrecoin_<arch>.so'
-        add_library(spectrecoin
+        add_library(Spectrecoin
                 SHARED
                 ../spectre.qrc
                 ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
                 )
-        set_target_properties(spectrecoin
-                PROPERTIES
-                OUTPUT_NAME "spectrecoin_${CMAKE_ANDROID_ARCH}"
-                )
+#        set_target_properties(Spectrecoin
+#                PROPERTIES
+#                OUTPUT_NAME "Spectrecoin_${CMAKE_ANDROID_ARCH}"
+#                )
+        install(TARGETS Spectrecoin
+            LIBRARY DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
+            ARCHIVE DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
+            )
 
         # Link the UI wallet
         # QtWebEngine not static available, so no static binary here :-(
-        target_link_libraries(spectrecoin
+        target_link_libraries(Spectrecoin
                 OpenSSL::SSL
                 OpenSSL::Crypto
                 Oracle::BerkeleyDB
@@ -223,7 +227,7 @@ if (ENABLE_GUI)
                 Qt5::QuickWidgets
                 )
 
-        target_sources(spectrecoin
+        target_sources(Spectrecoin
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
