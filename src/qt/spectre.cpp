@@ -236,6 +236,7 @@ int main(int argc, char *argv[])
     }
 
     // Start SetupWalletWizard if no wallet.dat exists
+#ifndef ANDROID // temporarly remove setupwizard until fixed for android
     if (!mapArgs.count("-bip44key") && !mapArgs.count("-wallet") && !mapArgs.count("-salvagewallet") && !fs::exists(GetDataDir() / "wallet.dat"))
     {
         SetupWalletWizard wizard;
@@ -250,6 +251,7 @@ int main(int argc, char *argv[])
         else if (wizard.hasVisitedPage(SetupWalletWizard::Page_NewMnemonic_Verification))
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
+#endif
 
     QSplashScreen splash(QPixmap(":/images/splash"), 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
