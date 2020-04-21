@@ -149,6 +149,7 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     // Create application menu bar
     createMenuBar();
 
+#ifndef ANDROID // chrash in setupUi(QDialog *RPCConsole)
     rpcConsole = new RPCConsole(this);
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
@@ -156,6 +157,7 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
 
     // prevents an oben debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, SIGNAL(triggered()), rpcConsole, SLOT(hide()));
+#endif
 
     // This timer will be fired repeatedly to update the balance
     pollTimer = new QTimer(this);
