@@ -195,7 +195,7 @@ endif()
 
 if (ENABLE_GUI)
     if (ANDROID)
-        # Create a shared library 'libspectrecoin_<arch>.so'
+        # Create a shared library 'libSpectrecoin_<arch>.so'
         add_library(Spectrecoin
                 SHARED
                 ../spectre.qrc
