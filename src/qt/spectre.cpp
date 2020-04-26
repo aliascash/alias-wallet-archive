@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
         QStringLiteral("Spectrecoin Websocket Server"),
         QWebSocketServer::NonSecureMode
     );
-    if (!server.listen(QHostAddress::LocalHost, 52471)) {
+    if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
         qFatal("QWebSocketServer failed to listen on port 52471");
         return 1;
     }

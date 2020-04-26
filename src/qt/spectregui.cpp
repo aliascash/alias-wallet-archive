@@ -192,7 +192,7 @@ void SpectreGUI::loadIndex() {
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);    
     view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
-    QUrl url(html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html");
+    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
     qmlWebView->setProperty("url", url);
 
     setCentralWidget(view);

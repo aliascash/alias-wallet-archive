@@ -34,6 +34,9 @@ class QToolBar;
 class QUrl;
 QT_END_NAMESPACE
 
+static const int WEBSOCKETPORT = 52471;
+static const int WEBSOCKETPORT_TESTNET = 52472;
+
 /**
   Spectre GUI main class. This class represents the main window of the Spectre UI. It communicates with both the client and
   wallet models to give the user an up-to-date view of the current core state.
