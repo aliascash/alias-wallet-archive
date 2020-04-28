@@ -96,6 +96,8 @@ static CSemaphore *semOutbound = NULL;
 NodeId nLastNodeId = 0;
 CCriticalSection cs_nLastNodeId;
 
+std::string torPath = "tor";
+
 void AddOneShot(string strDest)
 {
     LOCK(cs_vOneShots);
@@ -1836,7 +1838,7 @@ static void run_tor() {
         std::transform(argv.begin(), argv.end(), std::back_inserter(argv_c), convert_str);
         argv_c.push_back(nullptr);
 
-        if (execvp("tor", &argv_c[0]) < 0) {
+        if (execvp(torPath.c_str(), &argv_c[0]) < 0) {
             perror("execvp(\"tor\", ...) failed");
             _exit(127);
         }

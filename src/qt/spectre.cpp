@@ -18,6 +18,7 @@
 
 #include "init.h"
 #include "interface.h"
+#include "net.h" // TODO for torPath variable, extract functionality for tor in separate header
 
 #include <QApplication>
 #include <QMessageBox>
@@ -31,7 +32,9 @@
 #include <QWebChannel>
 #include <QWebSocketServer>
 
-
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
 
 #ifndef WIN32
 #include <signal.h>
@@ -303,6 +306,12 @@ int main(int argc, char *argv[])
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
+
+#ifdef ANDROID
+        // Android: detect location of tor binary
+        QString nativeLibraryDir = QAndroidJniObject::getStaticObjectField<jstring>("org/spectrecoin/wallet/SpectrecoinActivity","nativeLibraryDir").toString();
+        torPath = nativeLibraryDir.toStdString() + "/libtor.so";
+#endif
 
         if (AppInit2(threadGroup))
         {
