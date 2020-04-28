@@ -404,8 +404,9 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
         // Report errors from network/worker thread
         connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
+#ifndef ANDROID
         rpcConsole->setClientModel(clientModel);
-
+#endif
         bridge->setClientModel();
     }
 }
