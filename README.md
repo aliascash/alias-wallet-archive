@@ -64,19 +64,17 @@ The following files where maintained on the separate Git repository
 
 To build the Spectrecoin wallet from source, you will need the following dependencies:
 
- * OpenSSL 1.1
- * libevent
- * libseccomp
- * libcap
- * boost
- * tor & obfs4proxy (since 2.1.0 tor is run as separate process and thus tor is only a
+* OpenSSL 1.1
+* BerkeleyDB 4.8
+* LevelDB
+* libevent
+* Boost
+* Tor & obfs4proxy (since 2.1.0 Tor is run as separate process and thus Tor is only a
  runtime dependency)
- * Qt 5 with Qt Webengine if you want to build the GUI wallet. Qt is not needed for the
- console wallet.
+* Qt 5 if you want to build the GUI wallet. At runtime Qt Webengine is required but not at built time. Qt is not needed for the console wallet.
 
-Additionally, you'll need the native C/C++ compiler for your platform, CMake at least in 
-version 3.14 and the basic dependencies needed for any kind of development. Because of 
-Qt Webengine cross compiling is currently not possible.
+Additionally, you'll need the native C/C++ compiler for your platform and the basic
+dependencies needed for any kind of development. After the wipe out of Qt Webengine as a compile time dependency, we're working on cross compiling. But at the moment it is not possible.
 
  * macOS - Xcode with Command Line Tools and clang, QTs QMAKE
  * Windows - [vcpkg](https://github.com/Microsoft/vcpkg) and MSVC, QTs QMAKE
@@ -84,8 +82,7 @@ Qt Webengine cross compiling is currently not possible.
 
 ### Windows
 
-The Windows wallet is build with QTs **QMAKE**. Instructions are found in separate doc
-at https://github.com/spectrecoin/spectre/blob/master/doc/Windows-build-instructions-README.md
+The Windows wallet is build with QTs **QMAKE**. See the [instructions for Windows on our Wiki](https://github.com/spectrecoin/documentation/wiki/Build-Windows).
 
 ### macOS
 
@@ -102,58 +99,4 @@ https://github.com/spectrecoin/spectre/blob/develop/src/osx.pri for instructions
 
 ### Linux
 
-#### Preconditions, Dependencies
-
-Check the dockerfile of your corresponding platform to get the list of packages which
-must be installed on your system. You can find them here:
-
-To _build_ Spectrecoin (build time dependencies):
- * Debian Stretch - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile_Stretch
- * Debian Buster - https://github.com/spectrecoin/spectre-builder/blob/develop/Debian/Dockerfile_Buster
- * Fedora - https://github.com/spectrecoin/spectre-builder/blob/develop/Fedora/Dockerfile
- * RasperryPi Stretch - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile_Stretch
- * RasperryPi Buster - https://github.com/spectrecoin/spectre-builder/blob/develop/RaspberryPi/Dockerfile_Buster
- * Ubuntu 18.04 - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile_18_04
- * Ubuntu 19.04 - https://github.com/spectrecoin/spectre-builder/blob/develop/Ubuntu/Dockerfile_19_04
-
-To _run_ Spectrecoin (run time dependencies):
- * Debian Stretch - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile_Stretch
- * Debian Buster - https://github.com/spectrecoin/spectre-base/blob/develop/Debian/Dockerfile_Buster
- * Fedora - https://github.com/spectrecoin/spectre-base/blob/develop/Fedora/Dockerfile
- * RasperryPi Stretch - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile_Stretch
- * RasperryPi Buster - https://github.com/spectrecoin/spectre-base/blob/develop/RaspberryPi/Dockerfile_Buster
- * Ubuntu 18.04 - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile_18_04
- * Ubuntu 19.04 - https://github.com/spectrecoin/spectre-base/blob/develop/Ubuntu/Dockerfile_19_04
-
-#### Building
-
-To fetch the source code and build the wallet run the following commands:
-
-```
-git clone --recursive https://github.com/spectrecoin/spectre
-cd spectre
-./autogen.sh
-./scripts/cmake-build.sh
-```
-
-The resulting binaries will be in the `src` directory and called `Spectrecoin` for the GUI
-wallet and `Spectrecoind` for the console wallet.
-
-Distribution specfic instructions are found in the corresponding dockerfile. See
-https://github.com/spectrecoin/spectre/tree/develop/Docker
-
-## Docker
-### Using Docker to _run_ spectrecoind
-
-We provide a ready to run Docker image, which is mainly build out of another Git
-repository. For details see [docker-spectrecoind](https://github.com/spectrecoin/docker-spectrecoind)
-
-### Using Docker to _build_ spectrecoind
-
-As long as cross compiling is not possible (due to [QtWebEngine](https://wiki.qt.io/QtWebEngine))
-we build the binaries for different Linux distributions using different Docker images.
-
-Actually it is not possible to use this mechanism locally out of the box, as the binaries
-stay inside the created image.
-
-More documentation regarding how to use will be on our [Wiki](https://github.com/spectrecoin/documentation/wiki).
+Check out the documents for different Linux distributions on our [Wiki](https://github.com/spectrecoin/documentation/wiki).
