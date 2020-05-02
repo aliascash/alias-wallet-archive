@@ -20,7 +20,6 @@ pipeline {
                 script: "printf \$(grep CLIENT_VERSION_MAJOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION src/clientversion.h | tr -s ' ' | cut -d ' ' -f3 | tr -d '\\n' | tr -d '\\r')",
                 returnStdout: true
         )
-        BLOCKCHAIN_ARCHIVE_VERSION = "2019-10-02"
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
@@ -95,64 +94,6 @@ pipeline {
                         }
                     }
                 }
-                /* Raspi build disabled on all branches different than develop and master to increase build speed
-                stage('Raspberry Pi Stretch') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Raspberry Pi Buster') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-                                    dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
-                /* CentOS build disabled, not working at the moment
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
                 stage('Fedora') {
                     agent {
                         label "docker"
@@ -207,13 +148,32 @@ pipeline {
                         }
                     }
                 }
+                stage('Ubuntu 19.10') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
+                                    dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Mac') {
                     agent {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
@@ -245,7 +205,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.9.6') {
+                stage('Windows Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -269,7 +229,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.9.6') {
                             agent {
                                 label "windows"
                             }
@@ -291,7 +251,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.12.0') {
+                stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -315,7 +275,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.12.x') {
                             agent {
                                 label "windows2"
                             }
@@ -429,7 +389,7 @@ pipeline {
                         label "raspi-builder"
                     }
                     stages {
-                        stage('Binary build') {
+                        stage('Raspberry Pi Buster') {
                             steps {
                                 script {
                                     buildBranch(
@@ -463,43 +423,10 @@ pipeline {
                                                 string(
                                                         name: 'GIT_COMMIT_SHORT',
                                                         value: "${GIT_COMMIT_SHORT}"
-                                                ),
-                                                string(
-                                                        name: 'BLOCKCHAIN_ARCHIVE_VERSION',
-                                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                                 )
                                         ],
                                         wait: false
                                 )
-                            }
-                        }
-                    }
-                }
-                stage('Raspberry Pi Stretch') {
-                    agent {
-                        label "raspi-builder"
-                    }
-                    stages {
-                        stage('Binary build') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/RaspberryPi/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
                             }
                         }
                     }
@@ -509,7 +436,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Debian Stretch') {
                             steps {
                                 script {
                                     buildBranch(
@@ -538,7 +465,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Debian Buster') {
                             steps {
                                 script {
                                     buildBranch(
@@ -560,53 +487,8 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Blockchain upload') {
-                            steps {
-                                build(
-                                        job: 'Spectrecoin-Blockchain-v3',
-                                        parameters: [
-                                                string(
-                                                        name: 'SPECTRECOIN_RELEASE',
-                                                        value: "${GIT_TAG_TO_USE}"
-                                                ),
-                                                string(
-                                                        name: 'SPECTRECOIN_REPOSITORY',
-                                                        value: "spectre"
-                                                )
-                                        ],
-                                        wait: false
-                                )
-                            }
-                        }
                     }
                 }
-                /* CentOS build disabled, not working at the moment
-                stage('CentOS') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildBranch(
-                                    dockerfile: 'Docker/CentOS/Dockerfile',
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
-                                    gitTag: "${GIT_TAG_TO_USE}",
-                                    gitCommit: "${GIT_COMMIT_SHORT}"
-                            )
-                            getChecksumfileFromImage(
-                                    dockerTag: "spectreproject/spectre-centos:${GIT_TAG_TO_USE}",
-                                    checksumfile: "Checksum-Spectrecoin-CentOS.txt"
-                            )
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-CentOS.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                */
                 stage('Fedora') {
                     agent {
                         label "docker"
@@ -637,7 +519,7 @@ pipeline {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Ubuntu 18.04') {
                             steps {
                                 script {
                                     buildBranch(
@@ -679,12 +561,12 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu-19-04') {
+                stage('Ubuntu 19.04') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Build binaries') {
+                        stage('Ubuntu 19.04') {
                             steps {
                                 script {
                                     buildBranch(
@@ -708,13 +590,43 @@ pipeline {
                         }
                     }
                 }
+                stage('Ubuntu 19.10') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Ubuntu 19.10') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
+                    }
+                }
                 stage('Mac') {
                     agent {
                         label "mac"
                     }
                     environment {
-                        QT_PATH = "${QT_DIR_MAC}"
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.10
                     }
@@ -792,7 +704,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows-Qt5.9.6') {
+                stage('Windows Qt5.9.6') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -816,7 +728,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows Build') {
+                        stage('Win + Qt5.9.6') {
                             agent {
                                 label "windows"
                             }
@@ -867,20 +779,13 @@ pipeline {
                                             filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
                                             checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
                                     )
-                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
+                                    sh "rm -f Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip Spectrecoin-*-Win64-Qt5.9.6.zip Checksum-Spectrecoin-Win64-Qt5.9.6.txt Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
                                 }
                             }
-                            /*
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                            */
                         }
                     }
                 }
-                stage('Windows-Qt5.12.0') {
+                stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
                             steps {
@@ -904,7 +809,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Windows build') {
+                        stage('Win + Qt5.12.x') {
                             agent {
                                 label "windows2"
                             }
@@ -922,6 +827,28 @@ pipeline {
                                             suffix: ""
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    build(
+                                            job: 'Spectrecoin/installer/master',
+                                            parameters: [
+                                                    string(
+                                                            name: 'ARCHIVE_LOCATION',
+                                                            value: "${WORKSPACE}"
+                                                    ),
+                                                    string(
+                                                            name: 'ARCHIVE_NAME',
+                                                            value: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_TAG_TO_USE',
+                                                            value: "${GIT_TAG_TO_USE}"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_COMMIT_SHORT',
+                                                            value: "${GIT_COMMIT_SHORT}"
+                                                    )
+                                            ],
+                                            wait: false
+                                    )
                                 }
                             }
                         }
@@ -955,16 +882,9 @@ pipeline {
                                             filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
                                             checksumfile: "Checksum-Spectrecoin-Win64-OBFS4.txt"
                                     )
-                                    sh "rm -f Spectrecoin*.zip* Checksum-Spectrecoin*"
+                                    sh "rm -f Spectrecoin-*-Win64-OBFS4.zip Spectrecoin-*-Win64.zip Checksum-Spectrecoin-Win64.txt Checksum-Spectrecoin-Win64-OBFS4.txt"
                                 }
                             }
-                            /*
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                            */
                         }
                     }
                 }
@@ -1015,10 +935,6 @@ pipeline {
                                 string(
                                         name: 'GIT_COMMIT_SHORT',
                                         value: "${GIT_COMMIT_SHORT}"
-                                ),
-                                string(
-                                        name: 'BOOTSTRAP_DATE',
-                                        value: "${BLOCKCHAIN_ARCHIVE_VERSION}"
                                 )
                         ],
                         wait: false

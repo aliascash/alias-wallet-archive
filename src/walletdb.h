@@ -524,7 +524,7 @@ public:
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
 
     DBErrors ReorderTransactions(CWallet*);
-    DBErrors LoadWallet(CWallet* pwallet, int& oltWalletVersion);
+    DBErrors LoadWallet(CWallet* pwallet, int& oltWalletVersion, std::function<void (const uint32_t&)> funcProgress);
     static bool Recover(CDBEnv& dbenv, std::string filename, bool fOnlyKeys);
     static bool Recover(CDBEnv& dbenv, std::string filename);
 };

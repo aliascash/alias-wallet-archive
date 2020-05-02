@@ -1,5 +1,5 @@
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-fedora:1.5
+FROM spectreproject/spectre-builder-fedora:1.7
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -17,4 +17,6 @@ RUN cd /spectre \
  && ./configure \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /spectre/src/spectrecoind \
+ && strip /spectre/src/spectre

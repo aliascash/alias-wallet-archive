@@ -562,7 +562,7 @@ static bool IsKeyType(string strType)
             strType == "mkey" || strType == "ckey");
 }
 
-DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion)
+DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion, std::function<void (const uint32_t&)> funcProgress)
 {
     pwallet->vchDefaultKey = CPubKey();
     CWalletScanState wss;
@@ -587,8 +587,12 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion)
             return DB_CORRUPT;
         };
 
+        uint32_t count = 0;
         while (true)
         {
+            if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(count);
+            count++;
+
             // Read next record
             CDataStream ssKey(SER_DISK, CLIENT_VERSION);
             CDataStream ssValue(SER_DISK, CLIENT_VERSION);
@@ -625,6 +629,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion)
                 LogPrintf("%s\n", strErr.c_str());
         };
         pcursor->close();
+        if (funcProgress) funcProgress(count);
     } catch (...)
     {
         result = DB_CORRUPT;

@@ -24,15 +24,11 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedNumTransactions(0),
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0),
-    fForceCheckBalanceChanged(false)
+    fForceCheckBalanceChanged(false),
+    fUnlockRescanRequested(false)
 {
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
-
-    // This timer will be fired repeatedly to update the balance
-    pollTimer = new QTimer(this);
-    connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollBalanceChanged()));
-    pollTimer->start(MODEL_UPDATE_DELAY);
 
     subscribeToCoreSignals();
 }
@@ -858,6 +854,23 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
     bool valid = getEncryptionStatus() != Locked;
 
     return UnlockContext(this, valid, was_locked && !fWalletUnlockStakingOnly);
+}
+
+void WalletModel::requestUnlockRescan()
+{
+    if(!fUnlockRescanRequested && getEncryptionStatus() == Locked)
+    {
+        fUnlockRescanRequested = true;
+        // Request UI to unlock wallet
+        emit requireUnlock(rescan);
+        if (getEncryptionStatus() != Locked)
+        {
+            fForceCheckBalanceChanged = true;
+            if (!fWalletUnlockStakingOnly)
+                setWalletLocked(true);
+        }
+        fUnlockRescanRequested = false;
+    }
 }
 
 WalletModel::UnlockContext::UnlockContext(WalletModel *wallet, bool valid, bool relock):
