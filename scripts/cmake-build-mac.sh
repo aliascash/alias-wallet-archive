@@ -840,7 +840,7 @@ fi
 
 info ""
 info "Executing MacDeployQT (preparation):"
-read -r -d '' cmd < EOM
+read -r -d '' cmd << EOM
 ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
     src/Spectrecoin.app/ \
     -qmldir=${ownLocation}/../src/qt/res \
@@ -848,14 +848,13 @@ ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
     -verbose=2
 EOM
 echo "${cmd}"
-echo "=============================================================================="
 #read a
 ${cmd}
 #read a
 
 info ""
 info 'Executing MacDeployQT (create *.dmg):'
-read -r -d '' cmd < EOM
+read -r -d '' cmd << EOM
 ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
     src/Spectrecoin.app/ \
     -dmg \
@@ -863,7 +862,6 @@ ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
     -verbose=2
 EOM
 echo "${cmd}"
-echo "=============================================================================="
 #read a
 ${cmd}
 #read a
