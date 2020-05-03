@@ -833,8 +833,47 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished"
+    info " -> Spectrecoin binaries built"
 else
-    error " => Finished with return code ${rtc}"
+    die 50 " => Binary build finished with return code ${rtc}"
 fi
+
+info ""
+info "Executing MacDeployQT (preparation):"
+read -r -d '' cmd < EOM
+${MAC_QT_ROOT_DIR}/bin/macdeployqt \
+    src/Spectrecoin.app/ \
+    -qmldir=${ownLocation}/../src/qt/res \
+    -always-overwrite \
+    -verbose=2
+EOM
+echo "${cmd}"
+echo "=============================================================================="
+#read a
+${cmd}
+#read a
+
+info ""
+info 'Executing MacDeployQT (create *.dmg):'
+read -r -d '' cmd < EOM
+${MAC_QT_ROOT_DIR}/bin/macdeployqt \
+    src/Spectrecoin.app/ \
+    -dmg \
+    -always-overwrite \
+    -verbose=2
+EOM
+echo "${cmd}"
+echo "=============================================================================="
+#read a
+${cmd}
+#read a
+rtc=$?
+
+info ""
+if [[ ${rtc} = 0 ]] ; then
+    info " -> Finished: ${BUILD_DIR}/spectrecoin/Spectrecoin.dmg"
+else
+    die 50 " => Creation of Spectrecoin.dmg failed with return code ${rtc}"
+fi
+
 cd "${callDir}" || die 1 "Unable to cd back to where we came from (${callDir})"
