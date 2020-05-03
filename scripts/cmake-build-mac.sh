@@ -24,10 +24,10 @@ MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}/qt_${QT_VERSION}_mac
 MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
-# Location of Boost will be resolved by trying to find required Boost libs
-BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
+# Trying to find required Homebrew Boost libs
+BOOST_VERSION_MAC=1.68.0_1
+BOOST_INCLUDEDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/include
+BOOST_LIBRARYDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
@@ -273,29 +273,15 @@ checkBoost(){
         fi
     done
     if ${buildBoost} ; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${BOOST_ARCHIVE_LOCATION}
-        fi
-        cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info " -> Downloading Boost archive"
-            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
-        else
-            info " -> Using existing Boost archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf boost_${BOOST_VERSION//./_}
-        info " -> Extracting Boost archive"
-        tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        cd boost_${BOOST_VERSION//./_}
-        info " -> Patching Boost"
-        patch -p1 -r - < ${ownLocation}/patches/mac-boost-process.patch
-        info " -> Building Boost"
-        ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
-#        ./bootstrap.sh
-        ./b2 -j"${CORES_TO_USE}"
-        cd "${currentDir}"
+        error " -> Required Boost dependencies not found!"
+        error "    You need to install homebrew and switch to"
+        error "    version ${BOOST_VERSION_MAC} with the following cmds:"
+        error "    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/80584e1ba06664c2610707dc71c308f82b13895a/Formula/boost.rb"
+        error "    brew switch boost 1.68.0_1"
+        error "    brew link --overwrite --dry-run boost"
+        error "    brew link --overwrite boost"
+        error ""
+        die 42 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of boost functions ===============================================
