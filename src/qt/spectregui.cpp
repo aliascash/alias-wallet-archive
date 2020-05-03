@@ -332,7 +332,7 @@ void SpectreGUI::createMenuBar()
 #ifdef ANDROID
     // no menubar for android
     return;
-#elif Q_OS_MAC
+#elif defined(Q_OS_MAC)
     // Create a decoupled menu bar on Mac which stays even if the window is closed
     appMenuBar = new QMenuBar();
 #else
