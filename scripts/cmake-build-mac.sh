@@ -19,8 +19,8 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
-MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}/qt_${QT_VERSION}_mac
+MAC_QT_ROOT_DIR=/Applications/Qt/${QT_VERSION}/clang_64
+MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
 MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
@@ -310,44 +310,10 @@ checkQt(){
         buildQt=true
     fi
     if ${buildQt} ; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${QT_ARCHIVE_LOCATION}
-        fi
-        cd ${QT_ARCHIVE_LOCATION}
-        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
-            info " -> Downloading Qt archive"
-            wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
-            info " -> Verifying downloaded archive"
-            determinedMD5Sum=$(md5 qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d " " -f 4)
-            if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
-                warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
-            else
-                info " -> Archive checksum ok"
-            fi
-        else
-            info " -> Using existing Qt archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf qt-everywhere-src-${QT_VERSION}
-        info " -> Extracting Qt archive"
-        tar xf qt-everywhere-src-${QT_VERSION}.tar.xz
-        info " -> Configuring Qt build"
-        cd qt-everywhere-src-${QT_VERSION} || die 22 "Extracted Qt directory not found"
-        ./configure \
-            --disable-rpath \
-            -nomake tests \
-            -nomake examples \
-            -no-warnings-are-errors \
-            -opensource \
-            -confirm-license \
-            -silent \
-            -prefix ${MAC_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
-        info " -> Building Qt"
-        make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
-        info " -> Installing Qt"
-        make install || die 25 "Error during Qt install step"
-        cd "${currentDir}"
+        error " -> Qt ${QT_VERSION} not found!"
+        error "    You need to install Qt ${QT_VERSION}"
+        error ""
+        die 43 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of Qt functions ==================================================
