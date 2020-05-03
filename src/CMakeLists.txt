@@ -299,7 +299,11 @@ if (ENABLE_GUI)
                 )
     else()
         # The UI wallet
-        add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+            add_executable(Spectrecoin MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        else()
+            add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        endif()
 
         # Link the UI wallet
         # QtWebEngine not static available, so no static binary here :-(
