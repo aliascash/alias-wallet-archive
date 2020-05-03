@@ -175,24 +175,30 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
-#ifdef Q_OS_WIN
+    QQuickWidget *view = new QQuickWidget(this);
+    view->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
+    qmlWebView = view->rootObject()->findChild<QObject*>("webView");
+
+#ifdef ANDROID
+    // On Android webview can't load resources via qrc, we have to provide and load the resources from the apps assets folder
+    QUrl url("file:///android_asset/index.html" + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+#else
+  #ifdef Q_OS_WIN
     QFile html("C:/spectrecoin-ui/index.html");
     QFileInfo webchannelJS("C:/spectrecoin-ui/qtwebchannel/qwebchannel.js");
-#else
+  #else
     QFile html("/opt/spectrecoin-ui/index.html");
     QFileInfo webchannelJS("/opt/spectrecoin-ui/qtwebchannel/qwebchannel.js");
-#endif
+  #endif
     // Check if external qwebchannel exists and if not, create it! (this is how you get the right qwebchannel.js)
     if (html.exists() && !webchannelJS.exists()) {
         qDebug() << "Copy qwebchannel.js to" << webchannelJS.absoluteFilePath();
         QFile::copy(":/qtwebchannel/qwebchannel.js",webchannelJS.absoluteFilePath());
     }
 
-    QQuickWidget *view = new QQuickWidget(this);
-    view->setResizeMode(QQuickWidget::SizeRootObjectToView);    
-    view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
-    qmlWebView = view->rootObject()->findChild<QObject*>("webView");
     QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+#endif
     qmlWebView->setProperty("url", url);
 
     setCentralWidget(view);
