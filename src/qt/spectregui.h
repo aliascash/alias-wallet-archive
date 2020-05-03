@@ -170,7 +170,7 @@ private slots:
     void askFee(qint64 nFeeRequired, bool *payFee);
     void handleURI(QString strURI);
 
-//#ifndef Q_OS_MAC // commented because with QT 5.9.9 moc processor did not consider ifndef
+//#ifndef Q_OS_MACOS // commented because with QT 5.9.9 moc processor did not consider ifndef
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 //#endif
