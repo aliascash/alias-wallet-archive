@@ -265,7 +265,7 @@ checkBoost(){
     info " -> Searching required static Boost libs"
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}*.dylib ]] ; then
+        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt.dylib ]] ; then
             info " -> ${currentBoostDependency}: OK"
         else
             warning " => ${currentBoostDependency}: Not found!"
