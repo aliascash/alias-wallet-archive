@@ -863,7 +863,7 @@ info "Extracting Tor resource archive:"
 mkdir -p ${BUILD_DIR}/spectrecoin/tor-resources
 cd ${BUILD_DIR}/spectrecoin/tor-resources
 unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
-mv src/bin/spectrecoin.app/* ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/
+rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app
 cd - >/dev/null
 rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
 
