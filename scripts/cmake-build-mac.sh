@@ -19,7 +19,7 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=/Applications/Qt/${QT_VERSION}/clang_64
+MAC_QT_ROOT_DIR=/Applications/Qt/${QT_VERSION_MAC}/clang_64
 MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
 MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
@@ -310,8 +310,8 @@ checkQt(){
         buildQt=true
     fi
     if ${buildQt} ; then
-        error " -> Qt ${QT_VERSION} not found!"
-        error "    You need to install Qt ${QT_VERSION}"
+        error " -> Qt ${QT_VERSION_MAC} not found!"
+        error "    You need to install Qt ${QT_VERSION_MAC}"
         error ""
         die 43 "Stopping build because of missing Boost"
     fi
