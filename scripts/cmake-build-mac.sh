@@ -817,7 +817,7 @@ cmake \
     -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
     -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/local/lib;${BUILD_DIR}/local/include
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
 
 # Insert additional parameters
