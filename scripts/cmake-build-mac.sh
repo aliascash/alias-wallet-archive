@@ -66,6 +66,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # Location of archive will be resolved like this:
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
+TOR_RESOURCE_ARCHIVE=Spectrecoin.Tor.libraries.macOS.zip
 
 BUILD_DIR=cmake-build-mac-cmdline
 
@@ -695,7 +696,22 @@ checkTor(){
         checkTorBuild
     fi
 }
-# ===== End of libxz functions ===============================================
+
+checkTorMacArchive(){
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}" ]] ; then
+        info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}"
+    else
+        TOR_ARCHIVE_URL=https://github.com/spectrecoin/resources/blob/master/resources/${TOR_RESOURCE_ARCHIVE}
+        info " -> Downloading Tor archive ${TOR_RESOURCE_ARCHIVE}"
+        if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${TOR_ARCHIVE_LOCATION}
+        fi
+        cd ${TOR_ARCHIVE_LOCATION}
+        wget ${TOR_ARCHIVE_URL}
+        cd - >/dev/null
+    fi
+}
+# ===== End of tor functions =================================================
 
 # ============================================================================
 
@@ -771,6 +787,8 @@ if ${WITH_TOR} ; then
     checkZStdLib
     checkEventLib
     checkTor
+else
+    checkTorMacArchive
 fi
 if ${ENABLE_GUI} ; then
     checkQt
@@ -837,6 +855,15 @@ if [[ ${rtc} = 0 ]] ; then
 else
     die 50 " => Binary build finished with return code ${rtc}"
 fi
+
+info ""
+info "Extracting Tor resource archive:"
+mkdir -p ${BUILD_DIR}/spectrecoin/tor-resources
+cd ${BUILD_DIR}/spectrecoin/tor-resources
+unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
+mv src/bin/spectrecoin.app/* ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/
+cd - >/dev/null
+rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
 
 info ""
 info "Executing MacDeployQT (preparation):"
