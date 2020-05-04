@@ -898,7 +898,7 @@ rtc=$?
 
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished: ${BUILD_DIR}/spectrecoin/Spectrecoin.dmg"
+    info " -> Finished: ${BUILD_DIR}/spectrecoin/src/Spectrecoin.dmg"
 else
     die 50 " => Creation of Spectrecoin.dmg failed with return code ${rtc}"
 fi
