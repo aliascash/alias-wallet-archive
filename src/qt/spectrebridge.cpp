@@ -955,9 +955,11 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         window->aboutQtAction->trigger();
     if(key == "debugClicked")
     {
+#ifndef ANDROID
         window->rpcConsole->show();
         window->rpcConsole->activateWindow();
         window->rpcConsole->raise();
+#endif
     }
     if(key == "clearRecipients")
         clearRecipients();
