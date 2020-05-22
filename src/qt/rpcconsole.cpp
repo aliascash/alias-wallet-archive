@@ -192,7 +192,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     ui->setupUi(this);
     //GUIUtil::restoreWindowGeometry("nRPCConsoleWindow", this->size(), this);
 
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
     ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
     ui->showCLOptionsButton->setIcon(QIcon(":/icons/options"));
 #endif
