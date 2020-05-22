@@ -608,6 +608,7 @@ void StartRPCThreads()
                 GetConfigFile().string(),
                 EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32)),
                 "", CClientUIInterface::MSG_ERROR);
+        LogPrintf("StartShutdown in StartRPCThreads.\n");
         StartShutdown();
         return;
     }
