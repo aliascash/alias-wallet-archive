@@ -45,23 +45,23 @@ class SpectreGUI : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit SpectreGUI(QWebChannel *webChannel, QWidget *parent = 0);
+    explicit SpectreGUI(QWidget *parent = 0);
     ~SpectreGUI();
 
-    /** Set the client model.
-        The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
-    */
-    void setClientModel(ClientModel *clientModel);
-    /** Set the wallet model.
-        The wallet model represents a bitcoin wallet, and offers access to the list of transactions, address book and sending
-        functionality.
-    */
-    void setWalletModel(WalletModel *walletModel);
-    /** Set the message model.
-        The message model represents encryption message database, and offers access to the list of messages, address book and sending
-        functionality.
-    */
-    void setMessageModel(MessageModel *messageModel);
+//    /** Set the client model.
+//        The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
+//    */
+//    void setClientModel(ClientModel *clientModel);
+//    /** Set the wallet model.
+//        The wallet model represents a bitcoin wallet, and offers access to the list of transactions, address book and sending
+//        functionality.
+//    */
+//    void setWalletModel(WalletModel *walletModel);
+//    /** Set the message model.
+//        The message model represents encryption message database, and offers access to the list of messages, address book and sending
+//        functionality.
+//    */
+//    void setMessageModel(MessageModel *messageModel);
 
     void setSplashScreen(QSplashScreen* splash);
 
@@ -77,14 +77,14 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
-    SpectreBridge *bridge;
-    QWebChannel * webChannel;
+//    SpectreBridge *bridge;
+//    QWebChannel * webChannel;
     QObject* qmlWebView;
     bool uiReady;
 
-    ClientModel *clientModel;
-    WalletModel *walletModel;
-    MessageModel *messageModel;
+//    ClientModel *clientModel;
+//    WalletModel *walletModel;
+//    MessageModel *messageModel;
 
     QMenuBar *appMenuBar;
 
@@ -142,8 +142,6 @@ private:
 
 
 private slots:
-    /** Add JavaScript objects to page */
-    void addJavascriptObjects(const QString &id, QObject *object);
     /** Handle external URLs **/
     void urlClicked(const QUrl & link);
 

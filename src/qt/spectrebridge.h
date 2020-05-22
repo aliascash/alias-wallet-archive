@@ -6,7 +6,6 @@
 #ifndef SPECTREBRIDGE_H
 #define SPECTREBRIDGE_H
 
-class SpectreGUI;
 class ClientModel;
 class TransactionTableModel;
 class AddressTableModel;
@@ -84,11 +83,11 @@ class SpectreBridge : public QObject
     /** Information about the client */
     Q_PROPERTY(QVariantMap info READ getInfo NOTIFY infoChanged)
 public:
-    explicit SpectreBridge(SpectreGUI *window, QObject *parent = 0);
+    explicit SpectreBridge(QObject *parent = 0);
     ~SpectreBridge();
 
-    void setClientModel();
-    void setWalletModel();
+    void setClientModel(ClientModel *clientModel);
+    void setWalletModel(WalletModel *walletModel);
     void setTransactionModel();
     void setAddressModel();
 
@@ -166,7 +165,7 @@ signals:
 
     void validateAddressResult(bool result);
     void addRecipientResult(bool result);
-    void sendCoinsResult(bool result);
+    void sendCoinsResult(bool result, QString message);
 
     void transactionDetailsResult(QString result);
 
@@ -197,7 +196,8 @@ signals:
     void listAnonOutputsResult(QVariantMap result);
 
 private:
-    SpectreGUI *window;
+    ClientModel *clientModel;
+    WalletModel *walletModel;
     TransactionModel *transactionModel;
     AddressModel *addressModel;
     QList<SendCoinsRecipient> recipients;

@@ -252,9 +252,8 @@ bool AddressModel::isRunning() {
     return running;
 }
 
-SpectreBridge::SpectreBridge(SpectreGUI *window, QObject *parent) :
+SpectreBridge::SpectreBridge(QObject *parent) :
     QObject         (parent),
-    window          (window),
     transactionModel(new TransactionModel()),
     addressModel    (new AddressModel()),
     info            (new QVariantMap()),
@@ -274,24 +273,70 @@ SpectreBridge::~SpectreBridge()
 }
 
 // This is just a hook, we won't really be setting the model...
-void SpectreBridge::setClientModel()
+void SpectreBridge::setClientModel(ClientModel *clientModel)
 {
+    this->clientModel = clientModel;
+
     info->insert("version", CLIENT_VERSION);
-    info->insert("build",   window->clientModel->formatFullVersion());
-    info->insert("date",    window->clientModel->formatBuildDate());
-    info->insert("name",    window->clientModel->clientName());
+    info->insert("build",   clientModel->formatFullVersion());
+    info->insert("date",    clientModel->formatBuildDate());
+    info->insert("name",    clientModel->clientName());
 
     populateOptions();
 
     emit infoChanged();
 }
 
-void SpectreBridge::setWalletModel() {
-    connect(window->clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
+void SpectreBridge::setWalletModel(WalletModel *walletModel) {
+    this->walletModel = walletModel;
+    connect(clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
 }
 
 void SpectreBridge::jsReady() {
-    window->pageLoaded(true);
+//    uiReady = true;
+//    initMessage(splashScreen, "..Start UI..");
+
+//    // Create the tray icon (or setup the dock icon)
+//    if (!initialized) createTrayIcon();
+
+    // Populate data
+    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+//    setNumConnections(clientModel->getNumConnections());
+//    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
+//    setEncryptionStatus(walletModel->getEncryptionStatus());
+    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
+
+    populateTransactionTable();
+    populateAddressTable();
+
+//    initMessage(/*splashScreen, ".Start UI.");
+    {
+        LOCK2(cs_main, pwalletMain->cs_wallet);
+        walletModel->checkBalanceChanged(true);
+//        updateStakingIcon();
+//        if (GetBoolArg("-staking", true) && !initialized)
+//        {
+//            QTimer *timerStakingIcon = new QTimer(this);
+//            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
+//            timerStakingIcon->start(5 * 1000);
+//        }
+    }
+
+//    initMessage(splashScreen, "Ready!");
+//    if (splashScreen) splashScreen->finish(this);
+//    initialized = true;
+
+//    // If -min option passed, start window minimized.
+//    if(GetBoolArg("-min"))
+//        showMinimized();
+//    else
+//        show();
+
+//    pollTimer->start(MODEL_UPDATE_DELAY);
+
+//    window->pageLoaded(true);
 }
 
 void SpectreBridge::copy(QString text)
@@ -306,13 +351,13 @@ void SpectreBridge::paste()
 
 void SpectreBridge::urlClicked(const QString link)
 {
-    emit window->urlClicked(QUrl(link));
+//    emit window->urlClicked(QUrl(link));
 }
 
 // Options
 void SpectreBridge::populateOptions()
 {
-    OptionsModel *optionsModel(window->clientModel->getOptionsModel());
+    OptionsModel *optionsModel(clientModel->getOptionsModel());
 
     int option = 0;
 
@@ -381,7 +426,7 @@ void SpectreBridge::populateOptions()
 // Transactions
 void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
 {
-    if (!window->walletModel->validateAddress(address)) {
+    if (!walletModel->validateAddress(address)) {
         emit addRecipientResult(false);
         return;
     }
@@ -452,9 +497,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 inputType = 1;
                 break;
             default:
-                QMessageBox::critical(window, tr("Error:"), tr("Unknown txn type detected %1.").arg(rcp.txnTypeInd),
-                              QMessageBox::Abort, QMessageBox::Abort);
-                emit sendCoinsResult(false);
+                emit sendCoinsResult(false, tr("Unknown txn type detected %1.").arg(rcp.txnTypeInd));
                 return;
         }
 
@@ -463,9 +506,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         else
         if (inputTypes != inputType)
         {
-            QMessageBox::critical(window, tr("Error:"), tr("Input types must match for all recipients."),
-                          QMessageBox::Abort, QMessageBox::Abort);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Input types must match for all recipients."));
             return;
         };
 
@@ -476,10 +517,8 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             else
             if (ringSizes != rcp.nRingSize)
             {
-                QMessageBox::critical(window, tr("Error:"), tr("Ring sizes must match for all recipients."),
-                              QMessageBox::Abort, QMessageBox::Abort);
-                emit sendCoinsResult(false);
-            return;
+                emit sendCoinsResult(false, tr("Ring sizes must match for all recipients."));
+                return;
             };
 
             auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
@@ -487,33 +526,23 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             {
                 QString message = nMinRingSize == nMaxRingSize ? tr("Ring size must be %1.").arg(nMinRingSize) :
                                                                  tr("Ring size outside range [%1, %2].").arg(nMinRingSize).arg(nMaxRingSize);
-                QMessageBox::critical(window, tr("Error:"), message, QMessageBox::Abort, QMessageBox::Abort);
-                emit sendCoinsResult(false);
-            return;
-            };
-
-            if (ringSizes == 1)
-            {
-                QMessageBox::StandardButton retval = QMessageBox::question(window,
-                    tr("Confirm send coins"), tr("Are you sure you want to send?\nRing size of one is not anonymous.").arg(formatted.join(tr(" and "))),
-                    QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
-                if (retval != QMessageBox::Yes)
-                    emit sendCoinsResult(false);
-            return;
+                emit sendCoinsResult(false, message);
+                return;
             };
         };
     };
 
-    bool conversionTx = recipients.size() == 1 && (recipients[0].txnTypeInd == TXT_SPEC_TO_ANON || recipients[0].txnTypeInd == TXT_ANON_TO_SPEC);
-    QMessageBox::StandardButton retval = QMessageBox::question(window, tr("Confirm send coins"),
-       (conversionTx ? tr("Are you sure you want to convert %1?") : tr("Are you sure you want to send %1?"))
-       .arg(formatted.join(tr(" and "))),
-       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
+// TODO Confirmation Question
+//    bool conversionTx = recipients.size() == 1 && (recipients[0].txnTypeInd == TXT_SPEC_TO_ANON || recipients[0].txnTypeInd == TXT_ANON_TO_SPEC);
+//    QMessageBox::StandardButton retval = QMessageBox::question(window, tr("Confirm send coins"),
+//       (conversionTx ? tr("Are you sure you want to convert %1?") : tr("Are you sure you want to send %1?"))
+//       .arg(formatted.join(tr(" and "))),
+//       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
 
-    if(retval != QMessageBox::Yes) {
-        emit sendCoinsResult(false);
-        return;
-    }
+//    if(retval != QMessageBox::Yes) {
+//        emit sendCoinsResult(false);
+//        return;
+//    }
 
     WalletModel::SendCoinsReturn sendstatus;
 
@@ -524,190 +553,124 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CBitcoinAddress addrChange = CBitcoinAddress(sChangeAddr.toStdString());
             if (!addrChange.IsValid())
             {
-                QMessageBox::warning(window, tr("Send Coins"),
-                    tr("The change address is not valid, please recheck."),
-                    QMessageBox::Ok, QMessageBox::Ok);
-                emit sendCoinsResult(false);
-            return;
+               emit sendCoinsResult(false, tr("The change address is not valid, please recheck."));
+               return;
             };
-
             CoinControlDialog::coinControl->destChange = addrChange.Get();
         } else
             CoinControlDialog::coinControl->destChange = CNoDestination();
     };
 
-    WalletModel::UnlockContext ctx(window->walletModel->requestUnlock());
+    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
 
     // Unlock wallet was cancelled
     if(!ctx.isValid()) {
-        emit sendCoinsResult(false);
-            return;
+        emit sendCoinsResult(false, tr("Payment not send because wallet is locked."));
+        return;
     }
 
     if (inputTypes == 1 || nAnonOutputs > 0)
-        sendstatus = window->walletModel->sendCoinsAnon(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
+        sendstatus = walletModel->sendCoinsAnon(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
     else
-        sendstatus = window->walletModel->sendCoins    (recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
+        sendstatus = walletModel->sendCoins(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
 
     switch(sendstatus.status)
     {
         case WalletModel::InvalidAddress:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("The recipient address is not valid, please recheck."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The recipient address is not valid, please recheck."));
             return;
         case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Only SPECTRE from your Private balance can be send to a stealth address."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Only SPECTRE from your Private balance can be send to a stealth address."));
             return;
         case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
             return;
         case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
             return;
         case WalletModel::InvalidAmount:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("The amount to pay must be larger than 0."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The amount to pay must be larger than 0."));
             return;
         case WalletModel::AmountExceedsBalance:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("The amount exceeds your balance."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The amount exceeds your balance."));
             return;
         case WalletModel::AmountWithFeeExceedsBalance:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your balance when the %1 transaction fee is included.").
-                arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The total exceeds your balance when the %1 transaction fee is included."));
             return;
         case WalletModel::DuplicateAddress:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Duplicate address found, can only send to each address once per send operation."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Duplicate address found, can only send to each address once per send operation."));
             return;
         case WalletModel::TransactionCreationFailed:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Transaction creation failed."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Transaction creation failed."));
             return;
         case WalletModel::TransactionCommitFailed:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."));
             return;
         case WalletModel::NarrationTooLong:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Narration is too long."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Narration is too long."));
             return;
         case WalletModel::RingSizeError:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Ring Size Error."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Ring Size Error."));
             return;
         case WalletModel::InputTypeError:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Input Type Error."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Input Type Error."));
             return;
         case WalletModel::SCR_NeedFullMode:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Must be in full mode to send anon."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Must be in full mode to send anon."));
             return;
         case WalletModel::SCR_StealthAddressFail:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Invalid Stealth Address."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Invalid Stealth Address."));
             return;
         case WalletModel::SCR_StealthAddressFailAnonToSpec:
-            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
-                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
             return;
 		case WalletModel::SCR_AmountExceedsBalance:
-			QMessageBox::warning(window, tr("Send Coins"),
-				tr("The amount exceeds your SPECTRE balance."),
-				QMessageBox::Ok, QMessageBox::Ok);
-			emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The amount exceeds your SPECTRE balance."));
 			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)));
             return;
         case WalletModel::SCR_Error:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error generating transaction."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error generating transaction."));
             return;
         case WalletModel::SCR_ErrorWithMsg:
-            QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error generating transaction: %1").arg(sendstatus.hex),
-                QMessageBox::Ok, QMessageBox::Ok);
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, tr("Error generating transaction: %1").arg(sendstatus.hex));
             return;
 
         case WalletModel::Aborted: // User aborted, nothing to do
-            emit sendCoinsResult(false);
+            emit sendCoinsResult(false, "");
             return;
         case WalletModel::OK:
             //accept();
             CoinControlDialog::coinControl->UnSelectAll();
             CoinControlDialog::payAmounts.clear();
-            CoinControlDialog::updateLabels(window->walletModel, 0, this);
+            CoinControlDialog::updateLabels(walletModel, 0, this);
             recipients.clear();
-            QMessageBox::information(window, tr("Send Coins"),
-                tr("Transaction successfully created."));
             break;
     }
 
-    emit sendCoinsResult(true);
+    emit sendCoinsResult(true, tr("Transaction successfully created."));
             return;
 }
 
 void SpectreBridge::openCoinControl()
 {
-    if (!window || !window->walletModel)
-        return;
+// TODO emit signal to openCoinControl dialog
+//    if (!window || !walletModel)
+//        return;
 
-    CoinControlDialog dlg;
-    dlg.setModel(window->walletModel);
-    dlg.exec();
+//    CoinControlDialog dlg;
+//    dlg.setModel(walletModel);
+//    dlg.exec();
 
-    CoinControlDialog::updateLabels(window->walletModel, 0, this);
+//    CoinControlDialog::updateLabels(walletModel, 0, this);
 }
 
 void SpectreBridge::updateCoinControlAmount(qint64 amount)
 {
     CoinControlDialog::payAmounts.clear();
     CoinControlDialog::payAmounts.append(amount);
-    CoinControlDialog::updateLabels(window->walletModel, 0, this);
+    CoinControlDialog::updateLabels(walletModel, 0, this);
 }
 
 void SpectreBridge::updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change)
@@ -752,7 +715,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
             anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
 
             anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
-            anonOutput.insert("value_s",        BitcoinUnits::format(window->clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+            anonOutput.insert("value_s",        BitcoinUnits::format(clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
 
             anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
         }
@@ -766,7 +729,7 @@ void SpectreBridge::populateTransactionTable()
 {
     if(transactionModel->thread() == thread())
     {
-        transactionModel->init(window->clientModel, window->walletModel->getTransactionTableModel());
+        transactionModel->init(clientModel, walletModel->getTransactionTableModel());
         connect(transactionModel, SIGNAL(emitTransactions(QVariantList, bool)), SIGNAL(emitTransactions(QVariantList, bool)), Qt::QueuedConnection);
         transactionModel->moveToThread(async);
     }
@@ -790,7 +753,7 @@ void SpectreBridge::insertTransactions(const QModelIndex & parent, int start, in
 
 void SpectreBridge::transactionDetails(QString txid)
 {
-    QString txDetails = window->walletModel->getTransactionTableModel()->index(window->walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
+    QString txDetails = walletModel->getTransactionTableModel()->index(walletModel->getTransactionTableModel()->lookupTransaction(txid), 0).data(TransactionTableModel::LongDescriptionRole).toString();
     qDebug() << "Emit transaction details " << txDetails;
     emit transactionDetailsResult(txDetails);
 }
@@ -801,7 +764,7 @@ void SpectreBridge::populateAddressTable()
 {
     if(addressModel->thread() == thread())
     {
-        addressModel->atm = window->walletModel->getAddressTableModel();
+        addressModel->atm = walletModel->getAddressTableModel();
         connect(addressModel->atm,            SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateAddresses(QModelIndex,QModelIndex)));
         connect(addressModel->atm,            SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertAddresses(QModelIndex,int,int)));
         connect(addressModel, SIGNAL(emitAddresses(QVariantList)), SIGNAL(emitAddresses(QVariantList)), Qt::QueuedConnection);
@@ -821,7 +784,7 @@ void SpectreBridge::insertAddresses(const QModelIndex & parent, int start, int e
     // NOTE: Check inInitialBlockDownload here as many stealth addresses uncovered can slow wallet
     //       fPassGuiAddresses allows addresses added manually to still reflect
     if (!fPassGuiAddresses
-        && (window->clientModel->inInitialBlockDownload() || addressModel->isRunning()))
+        && (clientModel->inInitialBlockDownload() || addressModel->isRunning()))
         return;
 
     addressModel->poplateRows(start, end);
@@ -898,7 +861,7 @@ void SpectreBridge::updateAddressLabel(QString address, QString label)
 
 void SpectreBridge::validateAddress(QString address)
 {
-    bool result = window->walletModel->validateAddress(address);
+    bool result = walletModel->validateAddress(address);
     emit validateAddressResult(result);
 }
 
@@ -938,7 +901,7 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
     if (key == "") {
         key = action.toObject().keys().at(0);
     }
-
+#ifndef ANDROID // TODO emit signals to QT UI
     if(key == "backupWallet")
         window->backupWallet();
     if(key == "close")
@@ -955,18 +918,17 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         window->aboutQtAction->trigger();
     if(key == "debugClicked")
     {
-#ifndef ANDROID
         window->rpcConsole->show();
         window->rpcConsole->activateWindow();
         window->rpcConsole->raise();
-#endif
     }
+#endif
     if(key == "clearRecipients")
         clearRecipients();
 
     if(key == "optionsChanged")
     {
-        OptionsModel * optionsModel(window->clientModel->getOptionsModel());
+        OptionsModel * optionsModel(clientModel->getOptionsModel());
 
         QJsonObject object = action.toObject().value("optionsChanged").toObject();
 
@@ -1392,7 +1354,7 @@ QVariantMap SpectreBridge::signMessage(QString address, QString message)
         return result;
     }
 
-    WalletModel::UnlockContext ctx(window->walletModel->requestUnlock());
+    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
     if (!ctx.isValid())
     {
         result.insert("error_msg", "Wallet unlock was cancelled.");

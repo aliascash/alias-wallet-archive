@@ -4,23 +4,23 @@
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spectregui.h"
-#include "transactiontablemodel.h"
-#include "transactionrecord.h"
+//#include "transactiontablemodel.h"
+//#include "transactionrecord.h"
 
 #include "aboutdialog.h"
-#include "clientmodel.h"
-#include "walletmodel.h"
-#include "optionsmodel.h"
-#include "addresstablemodel.h"
+//#include "clientmodel.h"
+//#include "walletmodel.h"
+//#include "optionsmodel.h"
+//#include "addresstablemodel.h"
 #include "bitcoinunits.h"
 #include "guiconstants.h"
 #include "askpassphrasedialog.h"
 #include "notificator.h"
 #include "guiutil.h"
-#include "wallet.h"
-#include "util.h"
-#include "init.h"
-#include "version.h"
+//#include "wallet.h"
+//#include "util.h"
+//#include "init.h"
+//#include "version.h"
 
 #ifdef Q_OS_MAC
 #include "macdockiconhandler.h"
@@ -55,7 +55,7 @@
 #include <iostream>
 #include <QNetworkProxy>
 
-extern CWallet* pwalletMain;
+//extern CWallet* pwalletMain;
 double GetPoSKernelPS();
 double GetPoSKernelPSRecent();
 
@@ -109,12 +109,12 @@ void SpectreGUI::WebElement::removeClass(QString className)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
-SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
+SpectreGUI::SpectreGUI(QWidget *parent):
     QMainWindow(parent),
-    bridge(new SpectreBridge(this)),
-    clientModel(0),
-    walletModel(0),
-    messageModel(0),
+//    bridge(new SpectreBridge(this)),
+//    clientModel(0),
+//    walletModel(0),
+//    messageModel(0),
     encryptWalletAction(0),
     changePassphraseAction(0),
     unlockWalletAction(0),
@@ -126,9 +126,6 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     nWeight(0),
     uiReady(false)
 {
-    // Make bridge available for JS client
-    this->webChannel = webChannel;
-    addJavascriptObjects(QStringLiteral("bridge"), bridge);
 
     resize(1280, 720);
     setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
@@ -203,6 +200,7 @@ void SpectreGUI::loadIndex() {
 
     setCentralWidget(view);
     view->show();
+    pageLoaded(true);
 
 //#ifdef TEST_TOR
 //    QNetworkProxy proxy;
@@ -228,36 +226,36 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded(bool ok)
 {
-    uiReady = true;
-    initMessage(splashScreen, "..Start UI..");
+//    uiReady = true;
+//    initMessage(splashScreen, "..Start UI..");
 
-    // Create the tray icon (or setup the dock icon)
-    if (!initialized) createTrayIcon();
+//    // Create the tray icon (or setup the dock icon)
+//    if (!initialized) createTrayIcon();
 
-    // Populate data
-    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
-    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-    setNumConnections(clientModel->getNumConnections());
-    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
-    setEncryptionStatus(walletModel->getEncryptionStatus());
-    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
+//    // Populate data
+//    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
+//    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
+//    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+//    setNumConnections(clientModel->getNumConnections());
+//    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
+//    setEncryptionStatus(walletModel->getEncryptionStatus());
+//    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
 
-    bridge->populateTransactionTable();
-    bridge->populateAddressTable();
+//    bridge->populateTransactionTable();
+//    bridge->populateAddressTable();
 
-    initMessage(splashScreen, ".Start UI.");
-    {
-        LOCK2(cs_main, pwalletMain->cs_wallet);
-        walletModel->checkBalanceChanged(true);
-        updateStakingIcon();
-        if (GetBoolArg("-staking", true) && !initialized)
-        {
-            QTimer *timerStakingIcon = new QTimer(this);
-            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-            timerStakingIcon->start(5 * 1000);
-        }
-    }
+//    initMessage(splashScreen, ".Start UI.");
+//    {
+//        LOCK2(cs_main, pwalletMain->cs_wallet);
+//        walletModel->checkBalanceChanged(true);
+//        updateStakingIcon();
+//        if (GetBoolArg("-staking", true) && !initialized)
+//        {
+//            QTimer *timerStakingIcon = new QTimer(this);
+//            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
+//            timerStakingIcon->start(5 * 1000);
+//        }
+//    }
 
     initMessage(splashScreen, "Ready!");
     if (splashScreen) splashScreen->finish(this);
@@ -270,12 +268,6 @@ void SpectreGUI::pageLoaded(bool ok)
         show();
 
     pollTimer->start(MODEL_UPDATE_DELAY);
-}
-
-void SpectreGUI::addJavascriptObjects(const QString &id, QObject *object)
-{
-    //register a QObject to be exposed to JavaScript
-    webChannel->registerObject(id, object);
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -369,81 +361,81 @@ void SpectreGUI::createMenuBar()
     help->addAction(aboutQtAction);
 }
 
-void SpectreGUI::setClientModel(ClientModel *clientModel)
-{
-    this->clientModel = clientModel;
-    if (clientModel)
-    {
-        int mode = clientModel->getClientMode();
-        if (mode != NT_FULL)
-        {
-            QString sMode = QString::fromLocal8Bit(GetNodeModeName(mode));
-            if (sMode.length() > 0)
-                sMode[0] = sMode[0].toUpper();
+//void SpectreGUI::setClientModel(ClientModel *clientModel)
+//{
+//    this->clientModel = clientModel;
+//    if (clientModel)
+//    {
+//        int mode = clientModel->getClientMode();
+//        if (mode != NT_FULL)
+//        {
+//            QString sMode = QString::fromLocal8Bit(GetNodeModeName(mode));
+//            if (sMode.length() > 0)
+//                sMode[0] = sMode[0].toUpper();
 
-            setWindowTitle(tr("Spectrecoin") + " - " + tr("Wallet") + ", " + sMode);
-        };
+//            setWindowTitle(tr("Spectrecoin") + " - " + tr("Wallet") + ", " + sMode);
+//        };
 
-        // Replace some strings and icons, when using the testnet
-        if (clientModel->isTestNet())
-        {
-            setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
-#ifndef Q_OS_MAC
-            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
-            setWindowIcon(QIcon(":icons/spectre_testnet"));
-#else
-            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
-#endif
-            if(trayIcon)
-            {
-                trayIcon->setToolTip(tr("Spectrecoin client") + QString(" ") + tr("[testnet]"));
-                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
-                toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
-            }
+//        // Replace some strings and icons, when using the testnet
+//        if (clientModel->isTestNet())
+//        {
+//            setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
+//#ifndef Q_OS_MAC
+//            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
+//            setWindowIcon(QIcon(":icons/spectre_testnet"));
+//#else
+//            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
+//#endif
+//            if(trayIcon)
+//            {
+//                trayIcon->setToolTip(tr("Spectrecoin client") + QString(" ") + tr("[testnet]"));
+//                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
+//                toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
+//            }
 
-            aboutAction->setIcon(QIcon(":/icons/toolbar_testnet"));
-        }
+//            aboutAction->setIcon(QIcon(":/icons/toolbar_testnet"));
+//        }
 
-        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-        connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
+//        connect(clientModel, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+//        connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
-        // Report errors from network/worker thread
-        connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
+//        // Report errors from network/worker thread
+//        connect(clientModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
-#ifndef ANDROID
-        rpcConsole->setClientModel(clientModel);
-#endif
-        bridge->setClientModel();
-    }
-}
+//#ifndef ANDROID
+//        rpcConsole->setClientModel(clientModel);
+//#endif
+//        bridge->setClientModel();
+//    }
+//}
 
-void SpectreGUI::setWalletModel(WalletModel *walletModel)
-{
-    this->walletModel = walletModel;
-    if(walletModel)
-    {
-        // Report errors from wallet thread
-        connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
+//void SpectreGUI::setWalletModel(WalletModel *walletModel)
+//{
+//    this->walletModel = walletModel;
+//    if(walletModel)
+//    {
+//        // Report errors from wallet thread
+//        connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
 
-        connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
+//        connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
-        // Balloon pop-up for new transaction
-        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
+//        // Balloon pop-up for new transaction
+//        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));
 
-        // Ask for passphrase if needed
-        connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
+//        // Ask for passphrase if needed
+//        connect(walletModel, SIGNAL(requireUnlock(WalletModel::UnlockMode)), this, SLOT(unlockWallet(WalletModel::UnlockMode)));
 
-        connect(pollTimer, SIGNAL(timeout()), walletModel, SLOT(pollBalanceChanged()));
+//        connect(pollTimer, SIGNAL(timeout()), walletModel, SLOT(pollBalanceChanged()));
 
-        bridge->setWalletModel();
+//        bridge->setWalletModel();
 
-        //register a QObject to be exposed to JavaScript
-        addJavascriptObjects(QStringLiteral("walletModel"), walletModel);
-        if (walletModel->getOptionsModel() != NULL)
-            //register a QObject to be exposed to JavaScript
-            addJavascriptObjects(QStringLiteral("optionsModel"), walletModel->getOptionsModel());
-    }
-}
+//        //register a QObject to be exposed to JavaScript
+//        addJavascriptObjects(QStringLiteral("walletModel"), walletModel);
+//        if (walletModel->getOptionsModel() != NULL)
+//            //register a QObject to be exposed to JavaScript
+//            addJavascriptObjects(QStringLiteral("optionsModel"), walletModel->getOptionsModel());
+//    }
+//}
 
 void SpectreGUI::setSplashScreen(QSplashScreen * splashScreen)
 {
@@ -497,7 +489,7 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void SpectreGUI::aboutClicked()
 {
     AboutDialog dlg;
-    dlg.setModel(clientModel);
+    // TODO dlg.setModel(clientModel);
     dlg.exec();
 }
 
@@ -529,149 +521,149 @@ void SpectreGUI::setNumConnections(int count)
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-    WebElement blocksIcon = WebElement(this, "blocksIcon");
-    WebElement syncingIcon = WebElement(this, "syncingIcon");
-    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
+//    WebElement blocksIcon = WebElement(this, "blocksIcon");
+//    WebElement syncingIcon = WebElement(this, "syncingIcon");
+//    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
 
-    // don't show / hide progress bar and its label if we have no connection to the network
-    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
-    {
-        syncProgressBar.setAttribute("style", "display:none;");
-        return;
-    }
+//    // don't show / hide progress bar and its label if we have no connection to the network
+//    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
+//    {
+//        syncProgressBar.setAttribute("style", "display:none;");
+//        return;
+//    }
 
-    // -- translation (tr()) makes it difficult to neatly pick block/header
-    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
-    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
+//    // -- translation (tr()) makes it difficult to neatly pick block/header
+//    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
+//    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
 
-    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
-    QString tooltip;
+//    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
+//    QString tooltip;
 
-    if (nNodeMode != NT_FULL
-        && nNodeState == NS_GET_FILTERED_BLOCKS)
-    {
-        tooltip = tr("Synchronizing with network...");
-                + "<br>"
-                + tr("Downloading filtered blocks...");
+//    if (nNodeMode != NT_FULL
+//        && nNodeState == NS_GET_FILTERED_BLOCKS)
+//    {
+//        tooltip = tr("Synchronizing with network...");
+//                + "<br>"
+//                + tr("Downloading filtered blocks...");
 
-        int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
-        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
+//        int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
+//        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
 
-        tooltip += "<br>"
-                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
+//        tooltip += "<br>"
+//                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
-        count = pwalletMain->nLastFilteredHeight;
-        syncProgressBar.removeAttribute("style");
-    } else
-    if (count < nTotalBlocks)
-    {
-        int nRemainingBlocks = nTotalBlocks - count;
-        float nPercentageDone = count / (nTotalBlocks * 0.01f);
-        syncProgressBar.removeAttribute("style");
+//        count = pwalletMain->nLastFilteredHeight;
+//        syncProgressBar.removeAttribute("style");
+//    } else
+//    if (count < nTotalBlocks)
+//    {
+//        int nRemainingBlocks = nTotalBlocks - count;
+//        float nPercentageDone = count / (nTotalBlocks * 0.01f);
+//        syncProgressBar.removeAttribute("style");
 
-        if (strStatusBarWarnings.isEmpty())
-        {
-            bridge->networkAlert("");
-            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
+//        if (strStatusBarWarnings.isEmpty())
+//        {
+//            bridge->networkAlert("");
+//            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
 
-            if (nNodeMode == NT_FULL)
-            {
-                tooltip += "<br>"
-                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
-            } else
-            {
-                char temp[128];
-                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
+//            if (nNodeMode == NT_FULL)
+//            {
+//                tooltip += "<br>"
+//                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
+//            } else
+//            {
+//                char temp[128];
+//                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
 
-                tooltip += "<br>"
-                         + tr(temp, "", nRemainingBlocks);
+//                tooltip += "<br>"
+//                         + tr(temp, "", nRemainingBlocks);
 
-            };
-        }
+//            };
+//        }
 
-        tooltip += (tooltip.isEmpty()? "" : "<br>")
-         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
-    } else
-    {
-        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
-    }
+//        tooltip += (tooltip.isEmpty()? "" : "<br>")
+//         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
+//                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+//    } else
+//    {
+//        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+//    }
 
-    // Override progressBarLabel text when we have warnings to display
-    if (!strStatusBarWarnings.isEmpty())
-        bridge->networkAlert(strStatusBarWarnings);
+//    // Override progressBarLabel text when we have warnings to display
+//    if (!strStatusBarWarnings.isEmpty())
+//        bridge->networkAlert(strStatusBarWarnings);
 
-    QDateTime lastBlockDate = clientModel->getLastBlockDate();
-    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
-    QString text;
+//    QDateTime lastBlockDate = clientModel->getLastBlockDate();
+//    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
+//    QString text;
 
-    // Represent time from last generated block in human readable text
-    if (secs <= 0)
-    {
-        // Fully up to date. Leave text empty.
-    } else
-    if (secs < 60)
-    {
-        text = tr("%n second(s) ago","",secs);
-    } else
-    if (secs < 60*60)
-    {
-        text = tr("%n minute(s) ago","",secs/60);
-    } else
-    if (secs < 24*60*60)
-    {
-        text = tr("%n hour(s) ago","",secs/(60*60));
-    } else
-    {
-        text = tr("%n day(s) ago","",secs/(60*60*24));
-    }
+//    // Represent time from last generated block in human readable text
+//    if (secs <= 0)
+//    {
+//        // Fully up to date. Leave text empty.
+//    } else
+//    if (secs < 60)
+//    {
+//        text = tr("%n second(s) ago","",secs);
+//    } else
+//    if (secs < 60*60)
+//    {
+//        text = tr("%n minute(s) ago","",secs/60);
+//    } else
+//    if (secs < 24*60*60)
+//    {
+//        text = tr("%n hour(s) ago","",secs/(60*60));
+//    } else
+//    {
+//        text = tr("%n day(s) ago","",secs/(60*60*24));
+//    }
 
-    // Set icon state: spinning if catching up, tick otherwise
-    if (secs < 90*60 && count >= nTotalBlocks
-        && nNodeState != NS_GET_FILTERED_BLOCKS)
-    {
-        tooltip = tr("Up to date") + "<br>" + tooltip;
-        blocksIcon.removeClass("none");
-        syncingIcon.addClass("none");
+//    // Set icon state: spinning if catching up, tick otherwise
+//    if (secs < 90*60 && count >= nTotalBlocks
+//        && nNodeState != NS_GET_FILTERED_BLOCKS)
+//    {
+//        tooltip = tr("Up to date") + "<br>" + tooltip;
+//        blocksIcon.removeClass("none");
+//        syncingIcon.addClass("none");
 
-        //a js script to change the style property display to none for all outofsync elements
-        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
-                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
-                javascript+= "     divsToHide[i].style.display = 'none';";
-                javascript+= "}";
+//        //a js script to change the style property display to none for all outofsync elements
+//        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+//                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+//                javascript+= "     divsToHide[i].style.display = 'none';";
+//                javascript+= "}";
 
-        runJavaScript(javascript);
+//        runJavaScript(javascript);
 
-        syncProgressBar.setAttribute("style", "display:none;");
-    } else
-    {
-        tooltip = tr("Catching up...") + "<br>" + tooltip;
+//        syncProgressBar.setAttribute("style", "display:none;");
+//    } else
+//    {
+//        tooltip = tr("Catching up...") + "<br>" + tooltip;
 
-        blocksIcon.addClass("none");
-        syncingIcon.removeClass("none");
+//        blocksIcon.addClass("none");
+//        syncingIcon.removeClass("none");
 
-        //a js script to change the style property display to inline for all outofsync elements
-        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
-                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
-                javascript+= "     divsToHide[i].style.display = 'inline';";
-                javascript+= "}";
+//        //a js script to change the style property display to inline for all outofsync elements
+//        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+//                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+//                javascript+= "     divsToHide[i].style.display = 'inline';";
+//                javascript+= "}";
 
-        runJavaScript(javascript);
+//        runJavaScript(javascript);
 
-        syncProgressBar.removeAttribute("style");
-    }
+//        syncProgressBar.removeAttribute("style");
+//    }
 
-    if (!text.isEmpty())
-    {
-        tooltip += "<br>";
-        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
-    };
+//    if (!text.isEmpty())
+//    {
+//        tooltip += "<br>";
+//        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
+//    };
 
-    blocksIcon.setAttribute("data-title", tooltip);
-    syncingIcon.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("value", QString::number(count));
-    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
+//    blocksIcon.setAttribute("data-title", tooltip);
+//    syncingIcon.setAttribute("data-title", tooltip);
+//    syncProgressBar.setAttribute("data-title", tooltip);
+//    syncProgressBar.setAttribute("value", QString::number(count));
+//    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
@@ -692,31 +684,31 @@ void SpectreGUI::changeEvent(QEvent *e)
 #ifndef Q_OS_MAC // Ignored on Mac
     if(e->type() == QEvent::WindowStateChange)
     {
-        if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
-        {
-            QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
-            if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
-            {
-                QTimer::singleShot(0, this, SLOT(hide()));
-                e->ignore();
-            }
-        }
+// TODO       if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())
+//        {
+//            QWindowStateChangeEvent *wsevt = static_cast<QWindowStateChangeEvent*>(e);
+//            if(!(wsevt->oldState() & Qt::WindowMinimized) && isMinimized())
+//            {
+//                QTimer::singleShot(0, this, SLOT(hide()));
+//                e->ignore();
+//            }
+//        }
     }
 #endif
 }
 
 void SpectreGUI::closeEvent(QCloseEvent *event)
 {
-    if(clientModel)
-    {
-#ifndef Q_OS_MAC // Ignored on Mac
-        if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
-           !clientModel->getOptionsModel()->getMinimizeOnClose())
-        {
+// TODO   if(clientModel)
+//    {
+//#ifndef Q_OS_MAC // Ignored on Mac
+//        if(!clientModel->getOptionsModel()->getMinimizeToTray() &&
+//           !clientModel->getOptionsModel()->getMinimizeOnClose())
+//        {
             qApp->quit();
-        }
-#endif
-    }
+//        }
+//#endif
+//    }
     QMainWindow::closeEvent(event);
 }
 
@@ -734,40 +726,41 @@ void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
 
 void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int end)
 {
-    qDebug() << "SpectreGUI::incomingTransaction";
-    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || (nNodeMode != NT_FULL && nNodeState != NS_READY))
-        return;
+// TODO
+//    qDebug() << "SpectreGUI::incomingTransaction";
+//    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || (nNodeMode != NT_FULL && nNodeState != NS_READY))
+//        return;
 
-    TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+//    TransactionTableModel *ttm = walletModel->getTransactionTableModel();
 
-    QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
+//    QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
 
-    // Ignore staking transactions... We should create an Option, and allow people to select/deselect what
-    // type of transactions they want to see
-    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-    && ! clientModel->getOptionsModel()->getNotifications().contains(type))
-        return;
+//    // Ignore staking transactions... We should create an Option, and allow people to select/deselect what
+//    // type of transactions they want to see
+//    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
+//    && ! clientModel->getOptionsModel()->getNotifications().contains(type))
+//        return;
 
-    // On new transaction, make an info balloon
-    // Unless the initial block download is in progress, to prevent balloon-spam
-    QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
-    QString narration    = ttm->index(start, TransactionTableModel::Narration, parent).data().toString();
-    QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
-    qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
-    QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
+//    // On new transaction, make an info balloon
+//    // Unless the initial block download is in progress, to prevent balloon-spam
+//    QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
+//    QString narration    = ttm->index(start, TransactionTableModel::Narration, parent).data().toString();
+//    QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
+//    qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
+//    QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
 
-    notificator->notify(Notificator::Information,
-                        tr("%1 %2")
-                        .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
-                        .arg(type),
-                        narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
-                                               tr("Address: %1\n").arg(address),
-                        icon);
+//    notificator->notify(Notificator::Information,
+//                        tr("%1 %2")
+//                        .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
+//                        .arg(type),
+//                        narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
+//                                               tr("Address: %1\n").arg(address),
+//                        icon);
 }
 
 void SpectreGUI::optionsClicked()
 {
-    bridge->triggerElement("#navitems a[href=#options]", "click");
+    // TODO bridge->triggerElement("#navitems a[href=#options]", "click");
     showNormalIfMinimized();
 }
 
@@ -796,9 +789,9 @@ void SpectreGUI::dropEvent(QDropEvent *event)
         }
 
         // if valid URIs were found
-        if (nValidUrisFound)
-            bridge->triggerElement("#navitems a[href=#send]", "click");
-        else
+// TODO       if (nValidUrisFound)
+//            bridge->triggerElement("#navitems a[href=#send]", "click");
+//        else
             notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
     }
 
@@ -812,11 +805,11 @@ void SpectreGUI::handleURI(QString strURI)
     // URI has to be valid
     if(GUIUtil::parseBitcoinURI(strURI, &rv))
     {
-        CBitcoinAddress address(rv.address.toStdString());
-        if (!address.IsValid())
-            return;
+// TODO        CBitcoinAddress address(rv.address.toStdString());
+//        if (!address.IsValid())
+//            return;
 
-        bridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
+//        bridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
 
         showNormalIfMinimized();
     }
@@ -858,16 +851,16 @@ void SpectreGUI::setEncryptionStatus(int status)
         toggleLockIcon.   addClass("fa-lock");
         encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
-        if (fWalletUnlockStakingOnly)
-        {
-            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
-            encryptionIcon.removeClass("red");
-            encryptionIcon.addClass("orange");
-            encryptionIcon.addClass("encryption-stake");
+// TODO       if (fWalletUnlockStakingOnly)
+//        {
+//            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
+//            encryptionIcon.removeClass("red");
+//            encryptionIcon.addClass("orange");
+//            encryptionIcon.addClass("encryption-stake");
 
-            toggleLockIcon  .removeClass("red");
-            toggleLockIcon     .addClass("orange");
-        } else
+//            toggleLockIcon  .removeClass("red");
+//            toggleLockIcon     .addClass("orange");
+//        } else
         {
             encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
             encryptionIcon.addClass("red");
@@ -916,14 +909,14 @@ void SpectreGUI::setEncryptionStatus(int status)
 
 void SpectreGUI::encryptWallet(bool status)
 {
-    if(!walletModel)
+// TODO   if(!walletModel)
         return;
-    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
-                                     AskPassphraseDialog::Decrypt, this);
-    dlg.setModel(walletModel);
-    dlg.exec();
+//    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
+//                                     AskPassphraseDialog::Decrypt, this);
+//    dlg.setModel(walletModel);
+//    dlg.exec();
 
-    setEncryptionStatus(walletModel->getEncryptionStatus());
+//    setEncryptionStatus(walletModel->getEncryptionStatus());
 }
 
 void SpectreGUI::backupWallet()
@@ -935,67 +928,67 @@ void SpectreGUI::backupWallet()
     QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
     if(!filename.isEmpty())
     {
-        if(!walletModel->backupWallet(filename))
-        {
-            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
-        }
+// TODO       if(!walletModel->backupWallet(filename))
+//        {
+//            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
+//        }
     }
 }
 
 void SpectreGUI::changePassphrase()
 {
-    AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
-    dlg.setModel(walletModel);
-    dlg.exec();
+// TODO   AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
+//    dlg.setModel(walletModel);
+//    dlg.exec();
 }
 
 void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
 {
-    if(!walletModel)
+// TODO   if(!walletModel)
         return;
 
-    AskPassphraseDialog::Mode mode;
-    if (unlockMode == WalletModel::UnlockMode::rescan) {
-         mode = AskPassphraseDialog::UnlockRescan;
-    }
-    else {
-        mode = sender() == unlockWalletAction ?
-                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
-    }
+//    AskPassphraseDialog::Mode mode;
+//    if (unlockMode == WalletModel::UnlockMode::rescan) {
+//         mode = AskPassphraseDialog::UnlockRescan;
+//    }
+//    else {
+//        mode = sender() == unlockWalletAction ?
+//                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
+//    }
 
-    // Unlock wallet when requested by wallet model
-    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
-    {
-        AskPassphraseDialog dlg(mode, this);
-        dlg.setModel(walletModel);
-        dlg.exec();
-    }
+//    // Unlock wallet when requested by wallet model
+//    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
+//    {
+//        AskPassphraseDialog dlg(mode, this);
+//        dlg.setModel(walletModel);
+//        dlg.exec();
+//    }
 }
 
 void SpectreGUI::lockWallet()
 {
-    if(!walletModel)
-        return;
+// TODO   if(!walletModel)
+//        return;
 
-    walletModel->setWalletLocked(true);
+//    walletModel->setWalletLocked(true);
 }
 
 void SpectreGUI::toggleLock()
 {
-    if(!walletModel)
-        return;
-    WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
+// TODO   if(!walletModel)
+//        return;
+//    WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
 
-    switch(status)
-    {
-        case WalletModel::Locked:       unlockWalletAction->trigger(); break;
-        case WalletModel::Unlocked:     lockWalletAction->trigger();   break;
-        default: // unencrypted wallet
-            QMessageBox::warning(this, tr("Lock Wallet"),
-                tr("Error: Wallet must first be encrypted to be locked."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            break;
-    };
+//    switch(status)
+//    {
+//        case WalletModel::Locked:       unlockWalletAction->trigger(); break;
+//        case WalletModel::Unlocked:     lockWalletAction->trigger();   break;
+//        default: // unencrypted wallet
+//            QMessageBox::warning(this, tr("Lock Wallet"),
+//                tr("Error: Wallet must first be encrypted to be locked."),
+//                QMessageBox::Ok, QMessageBox::Ok);
+//            break;
+//    };
 }
 
 void SpectreGUI::showNormalIfMinimized(bool fToggleHidden)
@@ -1027,18 +1020,18 @@ void SpectreGUI::toggleHidden()
 
 void SpectreGUI::updateWeight()
 {
-    if (!pwalletMain)
-        return;
+//    if (!pwalletMain)
+//        return;
 
-    TRY_LOCK(cs_main, lockMain);
-    if (!lockMain)
-        return;
+//    TRY_LOCK(cs_main, lockMain);
+//    if (!lockMain)
+//        return;
 
-    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-    if (!lockWallet)
-        return;
+//    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
+//    if (!lockWallet)
+//        return;
 
-    nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
+//    nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
 }
 
 void SpectreGUI::updateStakingIcon()
@@ -1084,24 +1077,24 @@ void SpectreGUI::updateStakingIcon()
         stakingIcon.removeClass("staking");
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
-        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
-                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
-                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-                                               (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
-                                               (!fIsStaking)                            ? tr("Initializing staking...") : \
-                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
-                                                                                          tr("Not staking"));
+// TODO       stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
+//                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
+//                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
+//                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
+//                                               (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
+//                                               (!fIsStaking)                            ? tr("Initializing staking...") : \
+//                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
+//                                                                                          tr("Not staking"));
     }
 }
 
 void SpectreGUI::requestShutdown()
 {
-    StartShutdown();
+    // TODO StartShutdown();
 }
 
 void SpectreGUI::detectShutdown()
 {
-    if (ShutdownRequested())
-        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+// TODO  if (ShutdownRequested())
+//        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 }
