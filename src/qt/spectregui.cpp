@@ -22,7 +22,7 @@
 //#include "init.h"
 //#include "version.h"
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 #include "macdockiconhandler.h"
 #endif
 
@@ -129,7 +129,7 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     resize(1280, 720);
     setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
     qApp->setWindowIcon(QIcon(":icons/spectre"));
     setWindowIcon(QIcon(":icons/spectre"));
 #else
@@ -219,7 +219,7 @@ SpectreGUI::~SpectreGUI()
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
         trayIcon->hide();
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
     delete appMenuBar;
 #endif
 }
@@ -330,7 +330,7 @@ void SpectreGUI::createMenuBar()
 #ifdef ANDROID
     // no menubar for android
     return;
-#elif Q_OS_MAC
+#elif defined(Q_OS_MACOS)
     // Create a decoupled menu bar on Mac which stays even if the window is closed
     appMenuBar = new QMenuBar();
 #else
@@ -445,7 +445,7 @@ void SpectreGUI::setSplashScreen(QSplashScreen * splashScreen)
 void SpectreGUI::createTrayIcon()
 {
     QMenu *trayIconMenu;
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
@@ -467,7 +467,7 @@ void SpectreGUI::createTrayIcon()
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
-#ifndef Q_OS_MAC // This is built-in on Mac
+#ifndef Q_OS_MACOS // This is built-in on Mac
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(quitAction);
 #endif
@@ -475,7 +475,7 @@ void SpectreGUI::createTrayIcon()
     notificator = new Notificator(qApp->applicationName(), trayIcon, this);
 }
 
-//#ifndef Q_OS_MAC // commented because with QT 5.9.9 moc processor did not consider ifndef
+//#ifndef Q_OS_MACOS // commented because with QT 5.9.9 moc processor did not consider ifndef
 void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::Trigger)
@@ -681,7 +681,7 @@ void SpectreGUI::error(const QString &title, const QString &message, bool modal)
 void SpectreGUI::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
-#ifndef Q_OS_MAC // Ignored on Mac
+#ifndef Q_OS_MACOS // Ignored on Mac
     if(e->type() == QEvent::WindowStateChange)
     {
 // TODO       if(clientModel && clientModel->getOptionsModel()->getMinimizeToTray())

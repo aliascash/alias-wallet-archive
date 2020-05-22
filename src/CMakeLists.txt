@@ -303,7 +303,11 @@ if (ENABLE_GUI)
                 )
     else()
         # The UI wallet
-        add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+            add_executable(Spectrecoin MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        else()
+            add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        endif()
 
         # Link the UI wallet
         # QtWebEngine not static available, so no static binary here :-(
@@ -403,6 +407,13 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.mm
                 )
             set_target_properties(Spectrecoin PROPERTIES
+                MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}${DBG_EXTENSION} Version ${VERSION_STRING}, © 2016 The Spectrecoin (XSPEC) developers."
+                MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}${DBG_EXTENSION}"
+                MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME}${DBG_EXTENSION} Version ${VERSION_STRING}"
+                MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}${DBG_EXTENSION}
+                MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION_STRING}
+                MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_STRING}
+                MACOSX_BUNDLE_COPYRIGHT " © 2016 The Spectrecoin (XSPEC) developers"
                 MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in
                 )
             target_link_libraries(Spectrecoin "-framework AppKit")

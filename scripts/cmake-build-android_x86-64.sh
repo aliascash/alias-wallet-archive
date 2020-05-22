@@ -27,10 +27,8 @@ ANDROID_ABI=x86_64
 ANDROID_API=22
 
 ##### ### # Android Qt # ### ################################################
-ANDROID_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt
-#ANDROID_QT_INSTALLATION_DIR=${ANDROID_QT_ROOT_DIR}/${QT_VERSION}/android_${ANDROID_ABI%%_*}
-ANDROID_QT_INSTALLATION_DIR=${ANDROID_QT_ROOT_DIR}/qt_${QT_VERSION}_android${ANDROID_API}_${ANDROID_ARCH}
-ANDROID_QT_LIBRARYDIR=${ANDROID_QT_INSTALLATION_DIR}/lib
+ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION}/android
+ANDROID_QT_LIBRARYDIR=${ANDROID_QT_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
@@ -345,7 +343,7 @@ checkQt(){
     if [[ -d ${ANDROID_QT_LIBRARYDIR} ]] ; then
         # libQt5Quick.so
         for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}*") ]] ; then
+            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}_${ANDROID_ABI}.so") ]] ; then
                 info " -> ${currentQtDependency}: OK"
             else
                 warning " -> ${currentQtDependency}: Not found!"
@@ -357,6 +355,12 @@ checkQt(){
         buildQt=true
     fi
     if ${buildQt} ; then
+        error " -> Qt ${QT_VERSION} not found!"
+        error "    You need to install Qt ${QT_VERSION}"
+        error ""
+        die 43 "Stopping build because of missing Boost"
+
+        # Maybe used later: Build Qt ourself
         local currentDir=$(pwd)
         if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
             mkdir -p ${QT_ARCHIVE_LOCATION}
@@ -904,7 +908,7 @@ while getopts a:c:fgsth? option; do
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
-           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_INSTALLATION_DIR}/lib/cmake";;
+           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake";;
         s) BUILD_ONLY_SPECTRECOIN=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;

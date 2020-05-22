@@ -19,15 +19,15 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=${ARCHIVES_ROOT_DIR}/Qt/
-MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}/qt_${QT_VERSION}_mac
+MAC_QT_ROOT_DIR=/Applications/Qt/${QT_VERSION_MAC}/clang_64
+MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
 MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
-# Location of Boost will be resolved by trying to find required Boost libs
-BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
+# Trying to find required Homebrew Boost libs
+BOOST_VERSION_MAC=1.68.0_1
+BOOST_INCLUDEDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/include
+BOOST_LIBRARYDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
@@ -66,6 +66,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # Location of archive will be resolved like this:
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
+TOR_RESOURCE_ARCHIVE=Spectrecoin.Tor.libraries.macOS.zip
 
 BUILD_DIR=cmake-build-mac-cmdline
 
@@ -265,7 +266,7 @@ checkBoost(){
     info " -> Searching required static Boost libs"
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]] ; then
+        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt.dylib ]] ; then
             info " -> ${currentBoostDependency}: OK"
         else
             warning " => ${currentBoostDependency}: Not found!"
@@ -273,29 +274,15 @@ checkBoost(){
         fi
     done
     if ${buildBoost} ; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${BOOST_ARCHIVE_LOCATION}
-        fi
-        cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
-            info " -> Downloading Boost archive"
-            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
-        else
-            info " -> Using existing Boost archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf boost_${BOOST_VERSION//./_}
-        info " -> Extracting Boost archive"
-        tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        cd boost_${BOOST_VERSION//./_}
-        info " -> Patching Boost"
-        patch -p1 -r - < ${ownLocation}/patches/mac-boost-process.patch
-        info " -> Building Boost"
-        ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
-#        ./bootstrap.sh
-        ./b2 -j"${CORES_TO_USE}"
-        cd "${currentDir}"
+        error " -> Required Boost dependencies not found!"
+        error "    You need to install homebrew and switch to"
+        error "    version ${BOOST_VERSION_MAC} with the following cmds:"
+        error "    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/80584e1ba06664c2610707dc71c308f82b13895a/Formula/boost.rb"
+        error "    brew switch boost 1.68.0_1"
+        error "    brew link --overwrite --dry-run boost"
+        error "    brew link --overwrite boost"
+        error ""
+        die 42 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of boost functions ===============================================
@@ -324,44 +311,10 @@ checkQt(){
         buildQt=true
     fi
     if ${buildQt} ; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
-            mkdir -p ${QT_ARCHIVE_LOCATION}
-        fi
-        cd ${QT_ARCHIVE_LOCATION}
-        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
-            info " -> Downloading Qt archive"
-            wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
-            info " -> Verifying downloaded archive"
-            determinedMD5Sum=$(md5 qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d " " -f 4)
-            if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
-                warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
-            else
-                info " -> Archive checksum ok"
-            fi
-        else
-            info " -> Using existing Qt archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf qt-everywhere-src-${QT_VERSION}
-        info " -> Extracting Qt archive"
-        tar xf qt-everywhere-src-${QT_VERSION}.tar.xz
-        info " -> Configuring Qt build"
-        cd qt-everywhere-src-${QT_VERSION} || die 22 "Extracted Qt directory not found"
-        ./configure \
-            --disable-rpath \
-            -nomake tests \
-            -nomake examples \
-            -no-warnings-are-errors \
-            -opensource \
-            -confirm-license \
-            -silent \
-            -prefix ${MAC_QT_INSTALLATION_DIR} || die 23 "Error during Qt configure step"
-        info " -> Building Qt"
-        make -j"${CORES_TO_USE}" || die 24 "Error during Qt build step"
-        info " -> Installing Qt"
-        make install || die 25 "Error during Qt install step"
-        cd "${currentDir}"
+        error " -> Qt ${QT_VERSION_MAC} not found!"
+        error "    You need to install Qt ${QT_VERSION_MAC}"
+        error ""
+        die 43 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of Qt functions ==================================================
@@ -743,7 +696,24 @@ checkTor(){
         checkTorBuild
     fi
 }
-# ===== End of libxz functions ===============================================
+
+checkTorMacArchive(){
+    info ""
+    info "Tor:"
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}" ]] ; then
+        info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}"
+    else
+        TOR_ARCHIVE_URL=https://github.com/spectrecoin/resources/raw/master/resources/${TOR_RESOURCE_ARCHIVE}
+        info " -> Downloading Tor archive ${TOR_RESOURCE_ARCHIVE}"
+        if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
+            mkdir -p ${TOR_ARCHIVE_LOCATION}
+        fi
+        cd ${TOR_ARCHIVE_LOCATION}
+        wget ${TOR_ARCHIVE_URL}
+        cd - >/dev/null
+    fi
+}
+# ===== End of tor functions =================================================
 
 # ============================================================================
 
@@ -819,6 +789,8 @@ if ${WITH_TOR} ; then
     checkZStdLib
     checkEventLib
     checkTor
+else
+    checkTorMacArchive
 fi
 if ${ENABLE_GUI} ; then
     checkQt
@@ -845,7 +817,7 @@ cmake \
     -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
     -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/local/lib;${BUILD_DIR}/local/include
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
 
 # Insert additional parameters
@@ -881,8 +853,54 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished"
+    info " -> Spectrecoin binaries built"
 else
-    error " => Finished with return code ${rtc}"
+    die 50 " => Binary build finished with return code ${rtc}"
 fi
+
+info ""
+info "Extracting Tor resource archive:"
+mkdir -p ${BUILD_DIR}/spectrecoin/tor-resources
+cd ${BUILD_DIR}/spectrecoin/tor-resources
+unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
+rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app
+cd - >/dev/null
+rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
+
+info ""
+info "Executing MacDeployQT (preparation):"
+read -r -d '' cmd << EOM
+${MAC_QT_ROOT_DIR}/bin/macdeployqt \
+    src/Spectrecoin.app/ \
+    -qmldir=${ownLocation}/../src/qt/res \
+    -always-overwrite \
+    -verbose=2
+EOM
+echo "${cmd}"
+#read a
+${cmd}
+#read a
+
+info ""
+info 'Executing MacDeployQT (create *.dmg):'
+read -r -d '' cmd << EOM
+${MAC_QT_ROOT_DIR}/bin/macdeployqt \
+    src/Spectrecoin.app/ \
+    -dmg \
+    -always-overwrite \
+    -verbose=2
+EOM
+echo "${cmd}"
+#read a
+${cmd}
+#read a
+rtc=$?
+
+info ""
+if [[ ${rtc} = 0 ]] ; then
+    info " -> Finished: ${BUILD_DIR}/spectrecoin/src/Spectrecoin.dmg"
+else
+    die 50 " => Creation of Spectrecoin.dmg failed with return code ${rtc}"
+fi
+
 cd "${callDir}" || die 1 "Unable to cd back to where we came from (${callDir})"
