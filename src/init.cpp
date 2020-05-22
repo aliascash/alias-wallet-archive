@@ -145,6 +145,7 @@ void Shutdown()
 // Note: this also handles SIGINT
 void HandleSIGTERM()
 {
+    LogPrintf("SIGTERM.\n");
     StartShutdown();
 }
 
@@ -1041,8 +1042,10 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     StartNode(threadGroup);
 
+#ifndef ANDROID
     if (fServer)
         StartRPCThreads();
+#endif
 
     // ********************************************************* Step 12: finished
 

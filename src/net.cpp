@@ -1811,7 +1811,7 @@ static void run_tor() {
 
     std::string strCommandLine;
     for (auto const& s : argv) { strCommandLine += s + " "; }
-    LogPrintf("Start tor as separate process (fork,execvp) with: %s\n", strCommandLine);
+    LogPrintf("Start tor (path: %s) as separate process (fork,execvp) with: %s\n", torPath, strCommandLine);
 
     std::string torResult;
     pid_t ppid_before_fork = getpid();

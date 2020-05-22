@@ -101,6 +101,12 @@ static void InitMessage(const std::string &message)
     }
 }
 
+static void InitMessageAndroid(const std::string &message)
+{
+    LogPrintf("%s\n", message);
+    QApplication::instance()->processEvents();
+}
+
 /*
    Translate string to current locale using Qt.
  */
@@ -118,6 +124,101 @@ static void handleRunawayException(std::exception *e)
     exit(1);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//
+// Start
+//
+bool AndroidAppInit(int argc, char* argv[])
+{
+    QAndroidService app(argc, argv);
+    qInfo() << "Android service starting...";
+
+    uiInterface.InitMessage.connect(InitMessageAndroid);
+
+    boost::thread_group threadGroup;
+
+    // Android: detect location of tor binary
+    QString nativeLibraryDir = QAndroidJniObject::getStaticObjectField<jstring>("org/spectrecoin/wallet/SpectrecoinService","nativeLibraryDir").toString();
+    torPath = nativeLibraryDir.toStdString() + "/libtor.so";
+
+    bool fRet = false;
+    try
+    {
+        //
+        // Parameters
+        //
+        ParseParameters(argc, argv);
+        ReadConfigFile(mapArgs, mapMultiArgs);
+        SoftSetBoolArg("-debug", true);
+
+        //---- Create webSocket server for JavaScript client
+        QWebSocketServer server(
+                    QStringLiteral("Spectrecoin Websocket Server"),
+                    QWebSocketServer::NonSecureMode
+                    );
+        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
+            qFatal("QWebSocketServer failed to listen on port 52471");
+            return false;
+        }
+        qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+        // wrap WebSocket clients in QWebChannelAbstractTransport objects
+        WebSocketClientWrapper clientWrapper(&server);
+        // setup the channel
+        QWebChannel webChannel;
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
+                         &webChannel, &QWebChannel::connectTo);
+
+        fRet = AppInit2(threadGroup);
+
+        if (fRet)
+        {
+            // Get locks upfront, to make sure we can completly setup our client before core sends notifications
+            ENTER_CRITICAL_SECTION(cs_main); // no RAII
+            ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
+
+            // create models
+            OptionsModel optionsModel;
+            ClientModel clientModel(&optionsModel);
+            WalletModel walletModel(pwalletMain, &optionsModel);
+            SpectreBridge bridge;
+            bridge.setClientModel(&clientModel);
+            bridge.setWalletModel(&walletModel);
+
+            //register models to be exposed to JavaScript
+            webChannel.registerObject(QStringLiteral("bridge"), &bridge);
+            webChannel.registerObject(QStringLiteral("walletModel"), &walletModel);
+            webChannel.registerObject(QStringLiteral("optionsModel"), &optionsModel);
+
+            // Release lock before starting event processing, otherwise lock would never be released
+            LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+            LEAVE_CRITICAL_SECTION(cs_main);
+
+            app.exec();
+
+            LogPrintf("SpectreCoin shutdown.\n\n");
+            threadGroup.interrupt_all();
+            threadGroup.join_all();
+        }
+        else
+        {
+            LogPrintf("Init not successfull: SpectreCoin shutdown.\n\n");
+            threadGroup.interrupt_all();
+            // threadGroup.join_all(); was left out intentionally here, because we didn't re-test all of
+            // the startup-failure cases to make sure they don't result in a hang due to some
+            // thread-blocking-waiting-for-another-thread-during-startup case
+        }
+        Shutdown();
+    } catch (std::exception& e) {
+        PrintException(&e, "AndroidService");
+    } catch (...) {
+        PrintException(NULL, "AndroidService");
+    };
+
+    qInfo() << "Android service stopped.";
+    return fRet;
+}
+
+
 #ifndef SPECTRE_QT_TEST
 int main(int argc, char *argv[])
 {
@@ -131,6 +232,15 @@ int main(int argc, char *argv[])
     FreeConsole();
 #endif
 
+    // Command-line options take precedence:
+    ParseParameters(argc, argv);
+
+    if (GetBoolArg("-service", false))
+    {
+        bool fRet = AndroidAppInit(argc, argv);
+        return (fRet ? 0 : 1);
+    }
+
     fHaveGUI = true;
 
 #if QT_VERSION < 0x050000
@@ -142,9 +252,6 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-
-    // Command-line options take precedence:
-    ParseParameters(argc, argv);
 
     // Make sure TESTNET flag and specific chainparams are set (Init in AppInit2 is to late)
     fTestNet = GetBoolArg("-testnet", false);
