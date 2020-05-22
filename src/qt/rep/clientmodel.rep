@@ -1,4 +1,0 @@
-class ClientModelRemote
-{
-    SLOT(int getNumConnections());
-};

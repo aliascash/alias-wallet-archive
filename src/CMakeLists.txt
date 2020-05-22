@@ -195,18 +195,24 @@ endif()
 
 if (ENABLE_GUI)
     if (ANDROID)
-        qt5_generate_repc(Spectrecoin ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodel.rep SOURCE)
+        set(SPECTRECOIN_SRCS
+                ../spectre.qrc
+                ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+        )
+
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep SOURCE)
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep REPLICA)
 
         # Create a shared library 'libSpectrecoin_<arch>.so'
         add_library(Spectrecoin
                 SHARED
-                ../spectre.qrc
-                ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                ${SPECTRECOIN_SRCS}
                 )
 #        set_target_properties(Spectrecoin
 #                PROPERTIES
 #                OUTPUT_NAME "Spectrecoin_${CMAKE_ANDROID_ARCH}"
 #                )
+
         install(TARGETS Spectrecoin
             LIBRARY DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
             ARCHIVE DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
