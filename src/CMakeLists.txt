@@ -195,6 +195,8 @@ endif()
 
 if (ENABLE_GUI)
     if (ANDROID)
+        qt5_generate_repc(Spectrecoin ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodel.rep SOURCE)
+
         # Create a shared library 'libSpectrecoin_<arch>.so'
         add_library(Spectrecoin
                 SHARED
@@ -226,6 +228,7 @@ if (ENABLE_GUI)
                 Qt5::Quick
                 Qt5::QuickWidgets
                 Qt5::AndroidExtras
+                Qt5::RemoteObjects
                 )
 
         target_sources(Spectrecoin

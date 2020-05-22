@@ -128,6 +128,7 @@ if (ENABLE_GUI)
         set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
         set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
         set(Qt5AndroidExtras_DIR "${QT_CMAKE_MODULE_PATH}/Qt5AndroidExtras")
+        set(Qt5RemoteObjects_DIR "${QT_CMAKE_MODULE_PATH}/Qt5RemoteObjects")
 
         # Additional entries:
         set(Qt5_DIR "${QT_CMAKE_MODULE_PATH}/Qt5")
@@ -213,6 +214,10 @@ if (ENABLE_GUI)
         find_package(Qt5AndroidExtras)
         message(STATUS "Qt5AndroidExtras version: ${Qt5AndroidExtras_VERSION}")
         get_target_property(QtAndroidExtras_location Qt5::AndroidExtras LOCATION)
+
+        find_package(Qt5RemoteObjects)
+        message(STATUS "Qt5RemoteObjects version: ${Qt5RemoteObjects_VERSION}")
+        get_target_property(QtRemoteObjects_location Qt5::RemoteObjects LOCATION)
     endif()
 else()
     message(STATUS "Building without UI, skipping Qt detection")
