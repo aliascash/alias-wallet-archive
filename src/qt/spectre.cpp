@@ -151,47 +151,47 @@ bool AndroidAppInit(int argc, char* argv[])
         ReadConfigFile(mapArgs, mapMultiArgs);
         SoftSetBoolArg("-debug", true);
 
-//        //---- Create webSocket server for JavaScript client
-//        QWebSocketServer server(
-//                    QStringLiteral("Spectrecoin Websocket Server"),
-//                    QWebSocketServer::NonSecureMode
-//                    );
-//        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
-//            qFatal("QWebSocketServer failed to listen on port 52471");
-//            return false;
-//        }
-//        qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
-//        // wrap WebSocket clients in QWebChannelAbstractTransport objects
-//        WebSocketClientWrapper clientWrapper(&server);
-//        // setup the channel
-//        QWebChannel webChannel;
-//        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
-//                         &webChannel, &QWebChannel::connectTo);
+        //---- Create webSocket server for JavaScript client
+        QWebSocketServer server(
+                    QStringLiteral("Spectrecoin Websocket Server"),
+                    QWebSocketServer::NonSecureMode
+                    );
+        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
+            qFatal("QWebSocketServer failed to listen on port 52471");
+            return false;
+        }
+        qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+        // wrap WebSocket clients in QWebChannelAbstractTransport objects
+        WebSocketClientWrapper clientWrapper(&server);
+        // setup the channel
+        QWebChannel webChannel;
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
+                         &webChannel, &QWebChannel::connectTo);
 
         fRet = AppInit2(threadGroup);
 
         if (fRet)
         {
-//            // Get locks upfront, to make sure we can completly setup our client before core sends notifications
-//            ENTER_CRITICAL_SECTION(cs_main); // no RAII
-//            ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
+            // Get locks upfront, to make sure we can completly setup our client before core sends notifications
+            ENTER_CRITICAL_SECTION(cs_main); // no RAII
+            ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
-//            // create models
-//            OptionsModel optionsModel;
-//            ClientModel clientModel(&optionsModel);
-//            WalletModel walletModel(pwalletMain, &optionsModel);
-//            SpectreBridge bridge;
-//            bridge.setClientModel(&clientModel);
-//            bridge.setWalletModel(&walletModel);
+            // create models
+            OptionsModel optionsModel;
+            ClientModel clientModel(&optionsModel);
+            WalletModel walletModel(pwalletMain, &optionsModel);
+            SpectreBridge bridge;
+            bridge.setClientModel(&clientModel);
+            bridge.setWalletModel(&walletModel);
 
-//            //register models to be exposed to JavaScript
-//            webChannel.registerObject(QStringLiteral("bridge"), &bridge);
-//            webChannel.registerObject(QStringLiteral("walletModel"), &walletModel);
-//            webChannel.registerObject(QStringLiteral("optionsModel"), &optionsModel);
+            //register models to be exposed to JavaScript
+            webChannel.registerObject(QStringLiteral("bridge"), &bridge);
+            webChannel.registerObject(QStringLiteral("walletModel"), &walletModel);
+            webChannel.registerObject(QStringLiteral("optionsModel"), &optionsModel);
 
-//            // Release lock before starting event processing, otherwise lock would never be released
-//            LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
-//            LEAVE_CRITICAL_SECTION(cs_main);
+            // Release lock before starting event processing, otherwise lock would never be released
+            LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+            LEAVE_CRITICAL_SECTION(cs_main);
 
             app.exec();
 
