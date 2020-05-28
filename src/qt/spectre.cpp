@@ -92,21 +92,24 @@ static void ThreadSafeHandleURI(const std::string& strURI)
                                Q_ARG(QString, QString::fromStdString(strURI)));
 }
 
-static void InitMessage(const QString &message)
+static void InitMessage(const std::string &message)
+{
+    LogPrintf("%s\n", message);
+    if (applicationModelRef)
+        applicationModelRef->setCoreMessage(QString::fromStdString(message));
+    if(splashref)
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
+    if (splashref || applicationModelRef)
+        QApplication::instance()->processEvents();
+}
+
+static void InitQMessage(const QString &message)
 {
     if(splashref)
     {
         splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message, Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
     }
-}
-
-static void InitMessageAndroid(const std::string &message)
-{
-    LogPrintf("%s\n", message);
-    if (applicationModelRef)
-        applicationModelRef->setCoreMessage(QString::fromStdString(message));
-    QApplication::instance()->processEvents();
 }
 
 /*
@@ -135,7 +138,7 @@ bool AndroidAppInit(int argc, char* argv[])
     QAndroidService app(argc, argv);
     qInfo() << "Android service starting...";
 
-    uiInterface.InitMessage.connect(InitMessageAndroid);
+    uiInterface.InitMessage.connect(InitMessage);
 
     boost::thread_group threadGroup;
 
@@ -199,7 +202,7 @@ bool AndroidAppInit(int argc, char* argv[])
             BlockChangedEvent blockChangedEvent = { nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
                                                     pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
                                                     pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
-            uiInterface.NotifyBlocksChanged(blockChangedEvent);
+            clientModel.updateNumBlocks(blockChangedEvent);
 
             // Register remote objects
             srcNode.enableRemoting(&clientModel); // enable remoting
@@ -421,7 +424,7 @@ int main(int argc, char *argv[])
 
         boost::thread_group threadGroup;
 
-        InitMessage(QString("Initialize connection to Spectrecoin core..."));
+        InitMessage("Initialize connection to Spectrecoin core...");
 
         // Accuire remote objects replicas
         QRemoteObjectNode repNode;
@@ -432,7 +435,7 @@ int main(int argc, char *argv[])
         applicationModelPtr.reset(repNode.acquire<ApplicationModelRemoteReplica>()); // acquire replica of source from host node
         if (!applicationModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
-        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitMessage);
+        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);
 
         clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
         if (!clientModelPtr->waitForSource(-1))

@@ -1,0 +1,2 @@
+#include <QDateTime>
+POD BlockInfoModel(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, int nLastFilteredHeight)

@@ -58,7 +58,7 @@ int ClientModel::getNumConnections(unsigned int flags)
 
 int ClientModel::getNumBlocks() const
 {
-    return coreInfo.numBlocks;
+    return blockChangedEvent.numBlocks;
 }
 
 quint64 ClientModel::getTotalBytesRecv() const
@@ -73,20 +73,28 @@ quint64 ClientModel::getTotalBytesSent() const
 
 QDateTime ClientModel::getLastBlockDate() const
 {
-    return QDateTime::fromTime_t(coreInfo.lastBlockTime);
+    return QDateTime::fromTime_t(blockChangedEvent.lastBlockTime);
 }
 
-void ClientModel::updateFromCore(const CoreInfoModel &coreInfo) {
-    this->coreInfo = coreInfo;
+void ClientModel::updateNumBlocks(const BlockChangedEvent &blockChangedEvent)
+{
+    this->blockChangedEvent = blockChangedEvent;
+    if (blockInfo().numBlocks() == 0)
+        updateTimer();
 }
 
 void ClientModel::updateTimer() {
-    if (coreInfo.numBlocks != lastPublishedCoreInfo.numBlocks
-        || coreInfo.numBlocksOfPeers != lastPublishedCoreInfo.numBlocksOfPeers
+    // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
+    // Periodically check and update with a timer.
+
+    if (blockChangedEvent.numBlocks != blockInfo().numBlocks()
+        || blockChangedEvent.numBlocksOfPeers != blockInfo().numBlocksOfPeers()
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        lastPublishedCoreInfo = coreInfo;
-        emit numBlocksChanged(coreInfo.numBlocks, coreInfo.numBlocksOfPeers);
+        setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
+                                    blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
+                                    blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
+                                    0 /**TODO pwalletMain->nLastFilteredHeight**/));
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -130,12 +138,12 @@ int ClientModel::getClientMode() const
 
 bool ClientModel::inInitialBlockDownload() const
 {
-    return coreInfo.isInitialBlockDownload;
+    return blockChangedEvent.isInitialBlockDownload;
 }
 
 int ClientModel::getNumBlocksOfPeers() const
 {
-    return coreInfo.numBlocksOfPeers;
+    return blockChangedEvent.numBlocksOfPeers;
 }
 bool ClientModel::isImporting() const
 {
@@ -180,8 +188,7 @@ QString ClientModel::formatClientStartupTime() const
 // Handlers for core signals
 static void NotifyBlocksChanged(ClientModel *clientmodel, const BlockChangedEvent &blockChangedEvent)
 {
-   CoreInfoModel coreInfoModel = {blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers, blockChangedEvent.isInitialBlockDownload, blockChangedEvent.lastBlockTime};
-   QMetaObject::invokeMethod(clientmodel, "updateFromCore", Qt::QueuedConnection, Q_ARG(CoreInfoModel, coreInfoModel));
+   QMetaObject::invokeMethod(clientmodel, "updateNumBlocks", Qt::QueuedConnection, Q_ARG(BlockChangedEvent, blockChangedEvent));
 }
 
 static void NotifyNumConnectionsChanged(ClientModel *clientmodel, int newNumConnections)

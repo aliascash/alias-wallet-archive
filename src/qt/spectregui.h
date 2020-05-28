@@ -48,7 +48,7 @@ class SpectreGUI : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,  QSharedPointer<ClientModelRemoteReplica> clientModelPtr, QWidget *parent = 0);
+    explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModel,  QSharedPointer<ClientModelRemoteReplica> clientModel, QWidget *parent = 0);
     ~SpectreGUI();
 
 //    /** Set the client model.
@@ -85,8 +85,8 @@ private:
     QObject* qmlWebView;
     bool uiReady;
 
-    QSharedPointer<ClientModelRemoteReplica> clientModelPtr; // holds reference to clientmodel replica
-    QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr; // holds reference to applicationmodel replica
+    QSharedPointer<ClientModelRemoteReplica> clientModel; // holds reference to clientmodel replica
+    QSharedPointer<ApplicationModelRemoteReplica> applicationModel; // holds reference to applicationmodel replica
 //    ClientModel *clientModel;
 //    WalletModel *walletModel;
 //    MessageModel *messageModel;
@@ -160,7 +160,7 @@ private slots:
     void urlClicked(const QUrl & link);
 
     /** Set number of blocks shown in the UI */
-    void setNumBlocks(int count, int nTotalBlocks);
+    void setNumBlocks(const BlockInfoModel& blockInfo);
     /** Set the encryption status as shown in the UI.
        @param[in] status            current encryption status
        @see WalletModel::EncryptionStatus

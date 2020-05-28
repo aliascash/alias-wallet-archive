@@ -200,6 +200,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
         )
 
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/modelremote.rep SOURCE)
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep SOURCE)
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep REPLICA)
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/applicationmodelremote.rep SOURCE)

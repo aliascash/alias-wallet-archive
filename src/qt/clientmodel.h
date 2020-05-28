@@ -6,8 +6,11 @@
 #ifndef CLIENTMODEL_H
 #define CLIENTMODEL_H
 
+#include "interface.h"
 #include <QObject>
 #include <rep_clientmodelremote_source.h>
+
+Q_DECLARE_METATYPE(BlockChangedEvent);
 
 enum BlockSource {
     BLOCK_SOURCE_NONE,
@@ -33,14 +36,6 @@ QT_BEGIN_NAMESPACE
 class QDateTime;
 class QTimer;
 QT_END_NAMESPACE
-
-struct CoreInfoModel {
-    int numBlocks;
-    int numBlocksOfPeers;
-    bool isInitialBlockDownload;
-    int64_t lastBlockTime;
-};
-Q_DECLARE_METATYPE(CoreInfoModel);
 
 /** Model for Bitcoin network client. */
 class ClientModel : public ClientModelRemoteSimpleSource
@@ -86,8 +81,7 @@ private:
     OptionsModel *optionsModel;
     PeerTableModel *peerTableModel;
 
-    CoreInfoModel coreInfo;
-    CoreInfoModel lastPublishedCoreInfo;
+    BlockChangedEvent blockChangedEvent;
 
     QTimer *pollTimer;
 
@@ -103,7 +97,7 @@ signals:
 
 public slots:
     void updateTimer();
-    void updateFromCore(const CoreInfoModel &coreInfo);
+    void updateNumBlocks(const BlockChangedEvent &blockChangedEvent);
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
 };

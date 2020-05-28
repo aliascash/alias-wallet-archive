@@ -1,5 +1,10 @@
+#include "rep_modelremote_source.h"
 class ClientModelRemote
 {
     PROP(int numConnections=0 SOURCEONLYSETTER);
+    PROP(bool isImporting=false SOURCEONLYSETTER);
+    PROP(QString statusBarWarnings="" SOURCEONLYSETTER);
+    PROP(BlockInfoModel blockInfo SOURCEONLYSETTER);
+
     SLOT(int getNumConnections(unsigned flags));
 };

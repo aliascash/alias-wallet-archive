@@ -125,8 +125,8 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
     rpcConsole(0),
     nWeight(0),
     uiReady(false),
-    applicationModelPtr(applicationModelPtr),
-    clientModelPtr(clientModelPtr)
+    applicationModel(applicationModelPtr),
+    clientModel(clientModelPtr)
 {
 
     resize(1280, 720);
@@ -196,8 +196,6 @@ void SpectreGUI::coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus sta
 unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
-    uiReady = true;
-
     initMessage(splashScreen, "...Start UI...");
 
     QQuickWidget *view = new QQuickWidget(this);
@@ -229,8 +227,8 @@ void SpectreGUI::loadIndex() {
     setCentralWidget(view);
     view->show();
 
-    connect(clientModelPtr.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-    //connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
+    connect(clientModel.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+    connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfoModel)), this, SLOT(setNumBlocks(BlockInfoModel)));
     //connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
 //#ifdef TEST_TOR
@@ -257,6 +255,7 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded()
 {
+    uiReady = true;
     initMessage(splashScreen, ".Start UI.");
 
 //    // Create the tray icon (or setup the dock icon)
@@ -265,6 +264,9 @@ void SpectreGUI::pageLoaded()
 //      QRemoteObjectPendingReply<int> numConnectionsAllResult = clientModelPtr->getNumConnections((1U << 0) | (1U << 1));
 //      if (numConnectionsAllResult.waitForFinished())
 //        setNumConnections(numConnectionsAllResult.returnValue());
+
+    setNumConnections(clientModel->numConnections());
+    setNumBlocks(clientModel->blockInfo());
 
 //    initMessage(splashScreen, ".Start UI.");
 //    {
@@ -539,151 +541,157 @@ void SpectreGUI::setNumConnections(int count)
     connectionIcon.setAttribute("data-title", dataTitle);
 }
 
-void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
+void SpectreGUI::setNumBlocks(const BlockInfoModel& blockInfo)
 {
-//    WebElement blocksIcon = WebElement(this, "blocksIcon");
-//    WebElement syncingIcon = WebElement(this, "syncingIcon");
-//    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
+    WebElement blocksIcon = WebElement(this, "blocksIcon");
+    WebElement syncingIcon = WebElement(this, "syncingIcon");
+    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
 
-//    // don't show / hide progress bar and its label if we have no connection to the network
-//    if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
-//    {
-//        syncProgressBar.setAttribute("style", "display:none;");
-//        return;
-//    }
+    // don't show / hide progress bar and its label if we have no connection to the network
+    if (!clientModel || (clientModel->numConnections() == 0 && !clientModel->isImporting()))
+    {
+        syncProgressBar.setAttribute("style", "display:none;");
+        return;
+    }
 
-//    // -- translation (tr()) makes it difficult to neatly pick block/header
-//    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
-//    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
+    int nNodeMode = blockInfo.nNodeMode();
+    int nNodeState = blockInfo.nNodeState();
 
-//    QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
-//    QString tooltip;
+    // -- translation (tr()) makes it difficult to neatly pick block/header
+    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
+    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
 
-//    if (nNodeMode != NT_FULL
-//        && nNodeState == NS_GET_FILTERED_BLOCKS)
-//    {
-//        tooltip = tr("Synchronizing with network...");
-//                + "<br>"
-//                + tr("Downloading filtered blocks...");
+    QString strStatusBarWarnings = clientModel->statusBarWarnings();
+    QString tooltip;
 
-//        int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
-//        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
+    int count = blockInfo.numBlocks();
+    int nTotalBlocks = blockInfo.numBlocksOfPeers();
 
-//        tooltip += "<br>"
-//                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
+    if (nNodeMode != NT_FULL
+        && nNodeState == NS_GET_FILTERED_BLOCKS)
+    {
+        tooltip = tr("Synchronizing with network...");
+                + "<br>"
+                + tr("Downloading filtered blocks...");
 
-//        count = pwalletMain->nLastFilteredHeight;
-//        syncProgressBar.removeAttribute("style");
-//    } else
-//    if (count < nTotalBlocks)
-//    {
-//        int nRemainingBlocks = nTotalBlocks - count;
-//        float nPercentageDone = count / (nTotalBlocks * 0.01f);
-//        syncProgressBar.removeAttribute("style");
+        int nRemainingBlocks = blockInfo.numBlocksOfPeers() - blockInfo.nLastFilteredHeight();
+        float nPercentageDone = blockInfo.nLastFilteredHeight() / (blockInfo.numBlocksOfPeers() * 0.01f);
 
-//        if (strStatusBarWarnings.isEmpty())
-//        {
-//            bridge->networkAlert("");
-//            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
+        tooltip += "<br>"
+                 + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
-//            if (nNodeMode == NT_FULL)
-//            {
-//                tooltip += "<br>"
-//                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
-//            } else
-//            {
-//                char temp[128];
-//                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
+        count = blockInfo.nLastFilteredHeight();
+        syncProgressBar.removeAttribute("style");
+    } else
+    if (count < nTotalBlocks)
+    {
+        int nRemainingBlocks = nTotalBlocks - count;
+        float nPercentageDone = count / (nTotalBlocks * 0.01f);
+        syncProgressBar.removeAttribute("style");
 
-//                tooltip += "<br>"
-//                         + tr(temp, "", nRemainingBlocks);
+        if (strStatusBarWarnings.isEmpty())
+        {
+            // TODO bridge->networkAlert("");
+            tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
 
-//            };
-//        }
+            if (nNodeMode == NT_FULL)
+            {
+                tooltip += "<br>"
+                         + tr("~%n block(s) remaining", "", nRemainingBlocks);
+            } else
+            {
+                char temp[128];
+                snprintf(temp, sizeof(temp), "~%%n %s remaining", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
 
-//        tooltip += (tooltip.isEmpty()? "" : "<br>")
-//         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-//                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
-//    } else
-//    {
-//        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
-//    }
+                tooltip += "<br>"
+                         + tr(temp, "", nRemainingBlocks);
 
-//    // Override progressBarLabel text when we have warnings to display
-//    if (!strStatusBarWarnings.isEmpty())
+            };
+        }
+
+        tooltip += (tooltip.isEmpty()? "" : "<br>")
+         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
+                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+    } else
+    {
+        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+    }
+
+    // Override progressBarLabel text when we have warnings to display
+// TODO   if (!strStatusBarWarnings.isEmpty())
 //        bridge->networkAlert(strStatusBarWarnings);
 
-//    QDateTime lastBlockDate = clientModel->getLastBlockDate();
-//    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
-//    QString text;
+    QDateTime lastBlockDate = clientModel->blockInfo().lastBlockTime();
+    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
+    QString text;
 
-//    // Represent time from last generated block in human readable text
-//    if (secs <= 0)
-//    {
-//        // Fully up to date. Leave text empty.
-//    } else
-//    if (secs < 60)
-//    {
-//        text = tr("%n second(s) ago","",secs);
-//    } else
-//    if (secs < 60*60)
-//    {
-//        text = tr("%n minute(s) ago","",secs/60);
-//    } else
-//    if (secs < 24*60*60)
-//    {
-//        text = tr("%n hour(s) ago","",secs/(60*60));
-//    } else
-//    {
-//        text = tr("%n day(s) ago","",secs/(60*60*24));
-//    }
+    // Represent time from last generated block in human readable text
+    if (secs <= 0)
+    {
+        // Fully up to date. Leave text empty.
+    } else
+    if (secs < 60)
+    {
+        text = tr("%n second(s) ago","",secs);
+    } else
+    if (secs < 60*60)
+    {
+        text = tr("%n minute(s) ago","",secs/60);
+    } else
+    if (secs < 24*60*60)
+    {
+        text = tr("%n hour(s) ago","",secs/(60*60));
+    } else
+    {
+        text = tr("%n day(s) ago","",secs/(60*60*24));
+    }
 
-//    // Set icon state: spinning if catching up, tick otherwise
-//    if (secs < 90*60 && count >= nTotalBlocks
-//        && nNodeState != NS_GET_FILTERED_BLOCKS)
-//    {
-//        tooltip = tr("Up to date") + "<br>" + tooltip;
-//        blocksIcon.removeClass("none");
-//        syncingIcon.addClass("none");
+    // Set icon state: spinning if catching up, tick otherwise
+    if (secs < 90*60 && count >= nTotalBlocks
+        && nNodeState != NS_GET_FILTERED_BLOCKS)
+    {
+        tooltip = tr("Up to date") + "<br>" + tooltip;
+        blocksIcon.removeClass("none");
+        syncingIcon.addClass("none");
 
-//        //a js script to change the style property display to none for all outofsync elements
-//        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
-//                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
-//                javascript+= "     divsToHide[i].style.display = 'none';";
-//                javascript+= "}";
+        //a js script to change the style property display to none for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'none';";
+                javascript+= "}";
 
-//        runJavaScript(javascript);
+        runJavaScript(javascript);
 
-//        syncProgressBar.setAttribute("style", "display:none;");
-//    } else
-//    {
-//        tooltip = tr("Catching up...") + "<br>" + tooltip;
+        syncProgressBar.setAttribute("style", "display:none;");
+    } else
+    {
+        tooltip = tr("Catching up...") + "<br>" + tooltip;
 
-//        blocksIcon.addClass("none");
-//        syncingIcon.removeClass("none");
+        blocksIcon.addClass("none");
+        syncingIcon.removeClass("none");
 
-//        //a js script to change the style property display to inline for all outofsync elements
-//        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
-//                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
-//                javascript+= "     divsToHide[i].style.display = 'inline';";
-//                javascript+= "}";
+        //a js script to change the style property display to inline for all outofsync elements
+        QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
+                javascript+= "for(var i = 0; i < divsToHide.length; i++) {";
+                javascript+= "     divsToHide[i].style.display = 'inline';";
+                javascript+= "}";
 
-//        runJavaScript(javascript);
+        runJavaScript(javascript);
 
-//        syncProgressBar.removeAttribute("style");
-//    }
+        syncProgressBar.removeAttribute("style");
+    }
 
-//    if (!text.isEmpty())
-//    {
-//        tooltip += "<br>";
-//        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
-//    };
+    if (!text.isEmpty())
+    {
+        tooltip += "<br>";
+        tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
+    };
 
-//    blocksIcon.setAttribute("data-title", tooltip);
-//    syncingIcon.setAttribute("data-title", tooltip);
-//    syncProgressBar.setAttribute("data-title", tooltip);
-//    syncProgressBar.setAttribute("value", QString::number(count));
-//    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
+    blocksIcon.setAttribute("data-title", tooltip);
+    syncingIcon.setAttribute("data-title", tooltip);
+    syncProgressBar.setAttribute("data-title", tooltip);
+    syncProgressBar.setAttribute("value", QString::number(count));
+    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
