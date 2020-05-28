@@ -193,6 +193,14 @@ bool AndroidAppInit(int argc, char* argv[])
             bridge.setWalletModel(&walletModel);
             bridge.setApplicationModel(&applicationModel);
 
+            InitMessage("Update balance...");
+
+            // Manually create a blockChangedEvent to set initial values for the UI
+            BlockChangedEvent blockChangedEvent = { nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
+                                                    pindexBest ? pindexBest->GetBlockTime() : GENESIS_BLOCK_TIME :
+                                                    pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
+            uiInterface.NotifyBlocksChanged(blockChangedEvent);
+
             // Register remote objects
             srcNode.enableRemoting(&clientModel); // enable remoting
 
@@ -503,7 +511,7 @@ int main(int argc, char *argv[])
                 else
                     QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 
-//                window.hide();
+                window.hide();
 //                window.setClientModel(0);
 //                window.setWalletModel(0);
                 guiref = 0;
