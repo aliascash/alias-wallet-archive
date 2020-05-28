@@ -1,5 +1,5 @@
 class ClientModelRemote
 {
+    PROP(int numConnections=0 SOURCEONLYSETTER);
     SLOT(int getNumConnections(unsigned flags));
-    SIGNAL(numConnectionsChanged(int numConnections));
 };

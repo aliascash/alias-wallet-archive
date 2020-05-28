@@ -230,6 +230,8 @@ void SpectreGUI::loadIndex() {
     view->show();
 
     connect(clientModelPtr.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+    //connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
+    //connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
 //#ifdef TEST_TOR
 //    QNetworkProxy proxy;
@@ -260,25 +262,9 @@ void SpectreGUI::pageLoaded()
 //    // Create the tray icon (or setup the dock icon)
 //    if (!initialized) createTrayIcon();
 
-//    // Populate data
-//    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
-//    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-//    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-
 //      QRemoteObjectPendingReply<int> numConnectionsAllResult = clientModelPtr->getNumConnections((1U << 0) | (1U << 1));
 //      if (numConnectionsAllResult.waitForFinished())
 //        setNumConnections(numConnectionsAllResult.returnValue());
-
-      //connect(clientModelPtr.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-      //connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
-
-
-//    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
-//    setEncryptionStatus(walletModel->getEncryptionStatus());
-//    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
-
-//    bridge->populateTransactionTable();
-//    bridge->populateAddressTable();
 
 //    initMessage(splashScreen, ".Start UI.");
 //    {
@@ -452,8 +438,6 @@ void SpectreGUI::createMenuBar()
 //    {
 //        // Report errors from wallet thread
 //        connect(walletModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
-
-//        connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
 
 //        // Balloon pop-up for new transaction
 //        connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(incomingTransaction(QModelIndex,int,int)));

@@ -43,7 +43,7 @@ struct CoreInfoModel {
 Q_DECLARE_METATYPE(CoreInfoModel);
 
 /** Model for Bitcoin network client. */
-class ClientModel : public ClientModelRemoteSource
+class ClientModel : public ClientModelRemoteSimpleSource
 {
     Q_OBJECT
 public:

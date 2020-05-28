@@ -20,7 +20,7 @@
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    ClientModelRemoteSource(parent), optionsModel(optionsModel), pollTimer(0)
+    ClientModelRemoteSimpleSource(parent), optionsModel(optionsModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
 
@@ -95,7 +95,8 @@ void ClientModel::updateTimer() {
 void ClientModel::updateNumConnections(int numConnections)
 {
     LogPrintf("emit numConnectionsChanged(%i)\n", numConnections);
-    emit numConnectionsChanged(numConnections);
+    setNumConnections(numConnections);
+    // emit numConnectionsChanged(numConnections); QT remoteobjects impl of setNumConnections() emit signal
 }
 
 void ClientModel::updateAlert(const QString &hash, int status)
