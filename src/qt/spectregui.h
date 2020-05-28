@@ -21,6 +21,9 @@
 
 #include <stdint.h>
 
+#include <rep_clientmodelremote_replica.h>
+#include <rep_applicationmodelremote_replica.h>
+
 class TransactionTableModel;
 class ClientModel;
 class WalletModel;
@@ -45,7 +48,7 @@ class SpectreGUI : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit SpectreGUI(QWidget *parent = 0);
+    explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,  QSharedPointer<ClientModelRemoteReplica> clientModelPtr, QWidget *parent = 0);
     ~SpectreGUI();
 
 //    /** Set the client model.
@@ -82,6 +85,8 @@ private:
     QObject* qmlWebView;
     bool uiReady;
 
+    QSharedPointer<ClientModelRemoteReplica> clientModelPtr; // holds reference to clientmodel replica
+    QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr; // holds reference to applicationmodel replica
 //    ClientModel *clientModel;
 //    WalletModel *walletModel;
 //    MessageModel *messageModel;
@@ -117,8 +122,6 @@ private:
     /** Create system tray (notification) icon */
     void createTrayIcon();
 
-    /** Page finished loading and connection to core established */
-    void pageLoaded(bool ok);
     bool initialized = false;
 
     friend class SpectreBridge;
@@ -140,13 +143,22 @@ private:
         QString getElementJS;
     };
 
-
-private slots:
-    /** Handle external URLs **/
-    void urlClicked(const QUrl & link);
+public slots:
+    /** Page finished loading and connection to core established */
+    void pageLoaded();
 
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
+
+private slots:
+    /** Core sends message **/
+    void updateCoreMessage(QString message);
+
+    void coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus status);
+
+    /** Handle external URLs **/
+    void urlClicked(const QUrl & link);
+
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count, int nTotalBlocks);
     /** Set the encryption status as shown in the UI.

@@ -109,7 +109,7 @@ void SpectreGUI::WebElement::removeClass(QString className)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
-SpectreGUI::SpectreGUI(QWidget *parent):
+SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,  QSharedPointer<ClientModelRemoteReplica> clientModelPtr, QWidget *parent):
     QMainWindow(parent),
 //    bridge(new SpectreBridge(this)),
 //    clientModel(0),
@@ -124,7 +124,9 @@ SpectreGUI::SpectreGUI(QWidget *parent):
     notificator(0),
     rpcConsole(0),
     nWeight(0),
-    uiReady(false)
+    uiReady(false),
+    applicationModelPtr(applicationModelPtr),
+    clientModelPtr(clientModelPtr)
 {
 
     resize(1280, 720);
@@ -158,20 +160,46 @@ SpectreGUI::SpectreGUI(QWidget *parent):
 
     // This timer will be fired repeatedly to update the balance
     pollTimer = new QTimer(this);
+
+    connect(applicationModelPtr.data(), SIGNAL(coreMessageChanged(QString)), this, SLOT(updateCoreMessage(QString)));
+    connect(applicationModelPtr.data(), SIGNAL(uiReady()), this, SLOT(pageLoaded()));
+    connect(applicationModelPtr.data(), SIGNAL(coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus)), this, SLOT(coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus)));
 }
+
 
 void initMessage(QSplashScreen *splashScreen, const std::string &message)
 {
     if(splashScreen)
     {
-        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
+    }
+}
+
+void SpectreGUI::updateCoreMessage(QString message)
+{
+    //initMessage(splashScreen, message.toStdString());
+}
+
+void SpectreGUI::coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus status)
+{
+    switch(status)
+    {
+    case ApplicationModelRemoteReplica::CoreStatus::STOPPED:
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+        break;
+    default:
+        break;
     }
 }
 
 unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
+    uiReady = true;
+
+    initMessage(splashScreen, "...Start UI...");
+
     QQuickWidget *view = new QQuickWidget(this);
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
     view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
@@ -200,7 +228,8 @@ void SpectreGUI::loadIndex() {
 
     setCentralWidget(view);
     view->show();
-    pageLoaded(true);
+
+    connect(clientModelPtr.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
 //#ifdef TEST_TOR
 //    QNetworkProxy proxy;
@@ -224,10 +253,9 @@ SpectreGUI::~SpectreGUI()
 #endif
 }
 
-void SpectreGUI::pageLoaded(bool ok)
+void SpectreGUI::pageLoaded()
 {
-//    uiReady = true;
-//    initMessage(splashScreen, "..Start UI..");
+    initMessage(splashScreen, ".Start UI.");
 
 //    // Create the tray icon (or setup the dock icon)
 //    if (!initialized) createTrayIcon();
@@ -236,7 +264,15 @@ void SpectreGUI::pageLoaded(bool ok)
 //    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
 //    walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
 //    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-//    setNumConnections(clientModel->getNumConnections());
+
+//      QRemoteObjectPendingReply<int> numConnectionsAllResult = clientModelPtr->getNumConnections((1U << 0) | (1U << 1));
+//      if (numConnectionsAllResult.waitForFinished())
+//        setNumConnections(numConnectionsAllResult.returnValue());
+
+      //connect(clientModelPtr.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
+      //connect(clientModel, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
+
+
 //    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
 //    setEncryptionStatus(walletModel->getEncryptionStatus());
 //    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());

@@ -17,14 +17,21 @@ class AddressModel;
 class MessageModel;
 class MessageThread;
 class SendCoinsRecipient;
+class ApplicationModelRemoteSource;
 
 #include <stdint.h>
+#include <util.h>
 #include <QObject>
 #include <QModelIndex>
 #include <QThread>
 #include <QStringList>
 #include <QJsonValue>
 #include <QJsonArray>
+
+#include <QWebChannel>
+#include "websocketclientwrapper.h"
+#include "websockettransport.h"
+#include <QWebSocketServer>
 
 class TransactionModel : public QObject
 {
@@ -83,11 +90,12 @@ class SpectreBridge : public QObject
     /** Information about the client */
     Q_PROPERTY(QVariantMap info READ getInfo NOTIFY infoChanged)
 public:
-    explicit SpectreBridge(QObject *parent = 0);
+    explicit SpectreBridge(QWebChannel *webChannel, QObject *parent = 0);
     ~SpectreBridge();
 
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
+    void setApplicationModel(ApplicationModelRemoteSource *applicationModel);
     void setTransactionModel();
     void setAddressModel();
 
@@ -200,9 +208,11 @@ private:
     WalletModel *walletModel;
     TransactionModel *transactionModel;
     AddressModel *addressModel;
+    ApplicationModelRemoteSource * applicationModel;
     QList<SendCoinsRecipient> recipients;
     QVariantMap *info;
     QThread *async;
+    QWebChannel *webChannel;
 
     friend class SpectreGUI;
 

@@ -7,6 +7,7 @@
 #define CLIENTMODEL_H
 
 #include <QObject>
+#include <rep_clientmodelremote_source.h>
 
 enum BlockSource {
     BLOCK_SOURCE_NONE,
@@ -42,7 +43,7 @@ struct CoreInfoModel {
 Q_DECLARE_METATYPE(CoreInfoModel);
 
 /** Model for Bitcoin network client. */
-class ClientModel : public QObject
+class ClientModel : public ClientModelRemoteSource
 {
     Q_OBJECT
 public:
@@ -53,7 +54,7 @@ public:
     PeerTableModel *getPeerTableModel();
 
     //! Return number of connections, default is in- and outbound (total)
-    int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
+    int getNumConnections(unsigned int flags = CONNECTIONS_ALL);
     int getNumBlocks() const;
 
     quint64 getTotalBytesRecv() const;
@@ -94,7 +95,6 @@ private:
     void unsubscribeFromCoreSignals();
 
 signals:
-    void numConnectionsChanged(int count);
     void numBlocksChanged(int count, int countOfPeers);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
 

@@ -23,6 +23,8 @@
 #include "walletmodel.h"
 #include "optionsmodel.h"
 
+#include "rep_applicationmodelremote_source.h"
+
 #include "bitcoinunits.h"
 #include "coincontrol.h"
 #include "coincontroldialog.h"
@@ -53,6 +55,7 @@
 #include <QtGui/qtextdocument.h>
 #include <QDebug>
 #include <list>
+
 #define ROWS_TO_REFRESH 500
 
 extern CWallet* pwalletMain;
@@ -252,16 +255,20 @@ bool AddressModel::isRunning() {
     return running;
 }
 
-SpectreBridge::SpectreBridge(QObject *parent) :
+SpectreBridge::SpectreBridge(QWebChannel *webChannel, QObject *parent) :
     QObject         (parent),
     transactionModel(new TransactionModel()),
     addressModel    (new AddressModel()),
     info            (new QVariantMap()),
-    async           (new QThread())
+    async           (new QThread()),
+    webChannel      (webChannel)
 {
     async->start();
     connect(transactionModel->getModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateTransactions(QModelIndex,QModelIndex)));
     connect(transactionModel->getModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertTransactions(QModelIndex,int,int)));
+
+    //register models to be exposed to JavaScript
+    webChannel->registerObject(QStringLiteral("bridge"), this);
 }
 
 SpectreBridge::~SpectreBridge()
@@ -284,26 +291,33 @@ void SpectreBridge::setClientModel(ClientModel *clientModel)
 
     populateOptions();
 
+    webChannel->registerObject(QStringLiteral("clientModel"), this->clientModel);
+
     emit infoChanged();
 }
 
 void SpectreBridge::setWalletModel(WalletModel *walletModel) {
     this->walletModel = walletModel;
     connect(clientModel->getOptionsModel(), SIGNAL(visibleTransactionsChanged(QStringList)), SLOT(populateTransactionTable()));
+
+    webChannel->registerObject(QStringLiteral("walletModel"), this->walletModel);
+    webChannel->registerObject(QStringLiteral("optionsModel"), this->walletModel->getOptionsModel());
+}
+
+void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicationModel)
+{
+    this->applicationModel = applicationModel;
 }
 
 void SpectreBridge::jsReady() {
-//    uiReady = true;
-//    initMessage(splashScreen, "..Start UI..");
-
-//    // Create the tray icon (or setup the dock icon)
-//    if (!initialized) createTrayIcon();
+    this->applicationModel->setCoreMessage("..Start UI..");
+    //initMessage(splashScreen, "..Start UI..");
 
     // Populate data
     walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
     walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
     walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
-//    setNumConnections(clientModel->getNumConnections());
+    clientModel->updateNumConnections(clientModel->getNumConnections());
 //    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
 //    setEncryptionStatus(walletModel->getEncryptionStatus());
     walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
@@ -323,6 +337,8 @@ void SpectreBridge::jsReady() {
 //            timerStakingIcon->start(5 * 1000);
 //        }
     }
+
+     emit applicationModel->uiReady();
 
 //    initMessage(splashScreen, "Ready!");
 //    if (splashScreen) splashScreen->finish(this);

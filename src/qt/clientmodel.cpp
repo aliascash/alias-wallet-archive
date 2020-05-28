@@ -20,7 +20,7 @@
 static const int64_t nClientStartupTime = GetTime();
 
 ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    QObject(parent), optionsModel(optionsModel), pollTimer(0)
+    ClientModelRemoteSource(parent), optionsModel(optionsModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
 
@@ -39,17 +39,20 @@ ClientModel::~ClientModel()
     unsubscribeFromCoreSignals();
 }
 
-int ClientModel::getNumConnections(unsigned int flags) const
+int ClientModel::getNumConnections(unsigned int flags)
 {
     LOCK(cs_vNodes);
-    if (flags == CONNECTIONS_ALL) // Shortcut if we want total
+    if (flags == CONNECTIONS_ALL) {// Shortcut if we want total
+        LogPrintf("getNumConnections(CONNECTIONS_ALL): %i\n", vNodes.size());
         return vNodes.size();
+    }
 
     int nNum = 0;
     BOOST_FOREACH(CNode* pnode, vNodes)
     if (flags & (pnode->fInbound ? CONNECTIONS_IN : CONNECTIONS_OUT))
         nNum++;
 
+    LogPrintf("getNumConnections(%s): %i\n", flags & CONNECTIONS_IN ? "CONNECTIONS_IN ": "CONNECTIONS_OUT", nNum);
     return nNum;
 }
 
@@ -91,6 +94,7 @@ void ClientModel::updateTimer() {
 
 void ClientModel::updateNumConnections(int numConnections)
 {
+    LogPrintf("emit numConnectionsChanged(%i)\n", numConnections);
     emit numConnectionsChanged(numConnections);
 }
 

@@ -273,7 +273,7 @@ void RPCConsole::setClientModel(ClientModel *model)
     if(model)
     {
         // Keep up to date with client
-        setNumConnections(model->getNumConnections());
+        setNumConnections(model->getNumConnections(NumConnections::CONNECTIONS_ALL));
         connect(model, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
 
         setNumBlocks(model->getNumBlocks(), model->getNumBlocksOfPeers());

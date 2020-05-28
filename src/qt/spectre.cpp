@@ -13,8 +13,7 @@
 #include "winshutdownmonitor.h"
 #include "setupwalletwizard.h"
 
-#include "websocketclientwrapper.h"
-#include "websockettransport.h"
+#include "rep_applicationmodelremote_source.h"
 
 #include "init.h"
 #include "interface.h"
@@ -45,6 +44,7 @@ namespace fs = boost::filesystem;
 // Need a global reference for the notifications to find the GUI
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
+static ApplicationModelRemoteSimpleSource *applicationModelRef;
 
 static void ThreadSafeMessageBox(const std::string& message, const std::string& caption, int style)
 {
@@ -92,11 +92,11 @@ static void ThreadSafeHandleURI(const std::string& strURI)
                                Q_ARG(QString, QString::fromStdString(strURI)));
 }
 
-static void InitMessage(const std::string &message)
+static void InitMessage(const QString &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message, Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
     }
 }
@@ -104,6 +104,8 @@ static void InitMessage(const std::string &message)
 static void InitMessageAndroid(const std::string &message)
 {
     LogPrintf("%s\n", message);
+    if (applicationModelRef)
+        applicationModelRef->setCoreMessage(QString::fromStdString(message));
     QApplication::instance()->processEvents();
 }
 
@@ -151,23 +153,29 @@ bool AndroidAppInit(int argc, char* argv[])
         ReadConfigFile(mapArgs, mapMultiArgs);
         SoftSetBoolArg("-debug", true);
 
+        //---- Setup remote objects host
+        QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
+        ApplicationModelRemoteSimpleSource applicationModel;
+        applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::INIT);
+        srcNode.enableRemoting(&applicationModel); // enable remoting
+        applicationModelRef = &applicationModel;
+
         //---- Create webSocket server for JavaScript client
         QWebSocketServer server(
                     QStringLiteral("Spectrecoin Websocket Server"),
                     QWebSocketServer::NonSecureMode
                     );
         if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
-            qFatal("QWebSocketServer failed to listen on port 52471");
-            return false;
+            throw std::runtime_error(strprintf("QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
         }
         qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
         // wrap WebSocket clients in QWebChannelAbstractTransport objects
         WebSocketClientWrapper clientWrapper(&server);
         // setup the channel
         QWebChannel webChannel;
-        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
-                         &webChannel, &QWebChannel::connectTo);
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
 
+        // Initialize Core
         fRet = AppInit2(threadGroup);
 
         if (fRet)
@@ -180,18 +188,19 @@ bool AndroidAppInit(int argc, char* argv[])
             OptionsModel optionsModel;
             ClientModel clientModel(&optionsModel);
             WalletModel walletModel(pwalletMain, &optionsModel);
-            SpectreBridge bridge;
+            SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
+            bridge.setApplicationModel(&applicationModel);
 
-            //register models to be exposed to JavaScript
-            webChannel.registerObject(QStringLiteral("bridge"), &bridge);
-            webChannel.registerObject(QStringLiteral("walletModel"), &walletModel);
-            webChannel.registerObject(QStringLiteral("optionsModel"), &optionsModel);
+            // Register remote objects
+            srcNode.enableRemoting(&clientModel); // enable remoting
 
             // Release lock before starting event processing, otherwise lock would never be released
             LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
             LEAVE_CRITICAL_SECTION(cs_main);
+
+            applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::RUNNING);
 
             app.exec();
 
@@ -207,6 +216,8 @@ bool AndroidAppInit(int argc, char* argv[])
             // the startup-failure cases to make sure they don't result in a hang due to some
             // thread-blocking-waiting-for-another-thread-during-startup case
         }
+        applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::STOPPED);
+        applicationModelRef = 0;
         Shutdown();
     } catch (std::exception& e) {
         PrintException(&e, "AndroidService");
@@ -332,7 +343,7 @@ int main(int argc, char *argv[])
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
     uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
     uiInterface.ThreadSafeHandleURI.connect(ThreadSafeHandleURI);
-    uiInterface.InitMessage.connect(InitMessage);
+    //TODO obsolete uiInterface.InitMessage.connect(InitMessage);
     //uiInterface.QueueShutdown.connect(QueueShutdown);
     uiInterface.Translate.connect(Translate);
 
@@ -402,7 +413,24 @@ int main(int argc, char *argv[])
 
         boost::thread_group threadGroup;
 
-        SpectreGUI window;
+        InitMessage(QString("Initialize connection to Spectrecoin core..."));
+
+        // Accuire remote objects replicas
+        QRemoteObjectNode repNode;
+        QSharedPointer<ClientModelRemoteReplica> clientModelPtr; // holds reference to clientmodel replica
+        QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr; // holds reference to applicationmodel replica
+        repNode.connectToNode(QUrl(QStringLiteral("local:spectrecoin"))); // connect with remote host node
+
+        applicationModelPtr.reset(repNode.acquire<ApplicationModelRemoteReplica>()); // acquire replica of source from host node
+        if (!applicationModelPtr->waitForSource())
+            throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
+        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitMessage);
+
+        clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
+        if (!clientModelPtr->waitForSource(-1))
+            throw std::runtime_error("SpectreGUI() : ClientModelRemoteReplica was not initialized!");
+
+        SpectreGUI window(applicationModelPtr, clientModelPtr);
         window.setSplashScreen(&splash);
         guiref = &window;
 
@@ -413,6 +441,7 @@ int main(int argc, char *argv[])
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
+
 
 #ifdef ANDROID
         // Android: detect location of tor binary
@@ -456,13 +485,13 @@ int main(int argc, char *argv[])
 
                 if (!ShutdownRequested())
                 {
-                    InitMessage("...Start UI...");
+//                    InitMessage("...Start UI...");
                     window.loadIndex();
 
-                    // Now that initialization/startup is done, process any command-line
-                    // spectre: URIs
-                    QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
-                    QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
+//                    // Now that initialization/startup is done, process any command-line
+//                    // spectre: URIs
+//                    QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
+//                    QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
                 }
  
 //               // Release lock before starting event processing, otherwise lock would never be released

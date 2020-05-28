@@ -1,4 +1,5 @@
 class ClientModelRemote
 {
-    SLOT(int getNumConnections(int flags));
+    SLOT(int getNumConnections(unsigned flags));
+    SIGNAL(numConnectionsChanged(int numConnections));
 };
