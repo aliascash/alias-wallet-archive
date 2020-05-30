@@ -94,6 +94,7 @@ void ClientModel::updateTimer() {
         setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
                                     blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
                                     blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
+                                    GetTimeOffset(),
                                     0 /**TODO pwalletMain->nLastFilteredHeight**/));
     }
 
@@ -126,6 +127,7 @@ void ClientModel::updateAlert(const QString &hash, int status)
     setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
                                 blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
                                 blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
+                                GetTimeOffset(),
                                 0 /**TODO pwalletMain->nLastFilteredHeight**/));
 }
 

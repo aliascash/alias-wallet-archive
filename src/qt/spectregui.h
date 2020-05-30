@@ -165,7 +165,7 @@ private slots:
     void urlClicked(const QUrl & link);
 
     /** Set number of blocks shown in the UI */
-    void setNumBlocks(const BlockInfoModel& blockInfo);
+    void setNumBlocks();
     /** Set the encryption status as shown in the UI.
        @param[in] status            current encryption status
        @see WalletModel::EncryptionStatus

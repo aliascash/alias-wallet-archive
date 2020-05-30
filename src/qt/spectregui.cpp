@@ -232,9 +232,10 @@ void SpectreGUI::loadIndex() {
     view->show();
 
     connect(clientModel.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-    connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfoModel)), this, SLOT(setNumBlocks(BlockInfoModel)));
+    connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfoModel)), this, SLOT(setNumBlocks()));
     connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfoModel)), SLOT(setEncryptionInfo(EncryptionInfoModel)));
     connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfoModel)), SLOT(updateStakingIcon(StakingInfoModel)));
+    connect(pollTimer, SIGNAL(timeout()), this, SLOT(setNumBlocks()));
 
 
 //#ifdef TEST_TOR
@@ -271,7 +272,7 @@ void SpectreGUI::pageLoaded()
 //        setNumConnections(numConnectionsAllResult.returnValue());
 
     setNumConnections(clientModel->numConnections());
-    setNumBlocks(clientModel->blockInfo());
+    setNumBlocks();
     setEncryptionInfo(walletModel->encryptionInfo());
     updateStakingIcon(walletModel->stakingInfo());
 
@@ -285,7 +286,7 @@ void SpectreGUI::pageLoaded()
     else
         show();
 
-    pollTimer->start(MODEL_UPDATE_DELAY);
+    pollTimer->start(1000);
 }
 
 void SpectreGUI::urlClicked(const QUrl & link)
@@ -533,10 +534,14 @@ void SpectreGUI::setNumConnections(int count)
 
     QString dataTitle = tr("%n active connection(s) to Spectrecoin network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
+
+    updateStakingIcon(walletModel->stakingInfo());
 }
 
-void SpectreGUI::setNumBlocks(const BlockInfoModel& blockInfo)
+void SpectreGUI::setNumBlocks()
 {
+    const BlockInfoModel& blockInfo = clientModel->blockInfo();
+
     WebElement blocksIcon = WebElement(this, "blocksIcon");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
     WebElement syncProgressBar = WebElement(this, "syncProgressBar");
@@ -616,7 +621,7 @@ void SpectreGUI::setNumBlocks(const BlockInfoModel& blockInfo)
 //        bridge->networkAlert(strStatusBarWarnings);
 
     QDateTime lastBlockDate = clientModel->blockInfo().lastBlockTime();
-    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
+    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime().addSecs(clientModel->blockInfo().nTimeOffset()));
     QString text;
 
     // Represent time from last generated block in human readable text
@@ -686,6 +691,8 @@ void SpectreGUI::setNumBlocks(const BlockInfoModel& blockInfo)
     syncProgressBar.setAttribute("data-title", tooltip);
     syncProgressBar.setAttribute("value", QString::number(count));
     syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
+
+    updateStakingIcon(walletModel->stakingInfo());
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
@@ -1059,7 +1066,7 @@ void SpectreGUI::updateWeight()
 void SpectreGUI::updateStakingIcon(StakingInfoModel stakingInfo)
 {
     WebElement stakingIcon = WebElement(this, "stakingIcon");
-    uint64_t nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();
+    quint64 nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();
     unsigned nEstimateTime = stakingInfo.nEstimateTime();
     bool fIsStaking = stakingInfo.fIsStaking();
 
@@ -1076,7 +1083,6 @@ void SpectreGUI::updateStakingIcon(StakingInfoModel stakingInfo)
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
-             uint64_t nWeight = stakingInfo.nWeight();
         nWeight        /= COIN;
         nNetworkWeight /= COIN;
         nNetworkWeightRecent /= COIN;
