@@ -550,6 +550,8 @@ void SpectreGUI::setNumBlocks()
     if (!clientModel || (clientModel->numConnections() == 0 && !clientModel->isImporting()))
     {
         syncProgressBar.setAttribute("style", "display:none;");
+        blocksIcon.addClass("none");
+        syncingIcon.addClass("none");
         return;
     }
 
