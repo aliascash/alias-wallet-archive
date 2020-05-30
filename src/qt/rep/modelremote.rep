@@ -1,2 +1,4 @@
 #include <QDateTime>
 POD BlockInfoModel(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, int nLastFilteredHeight)
+POD EncryptionInfoModel(int status, bool fWalletUnlockStakingOnly);
+POD StakingInfoModel(bool fIsStaking, double nWeight, unsigned nEstimateTime, double nNetworkWeight, double nNetworkWeightRecent);

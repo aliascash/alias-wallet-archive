@@ -109,12 +109,19 @@ void SpectreGUI::WebElement::removeClass(QString className)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
-SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,  QSharedPointer<ClientModelRemoteReplica> clientModelPtr, QWidget *parent):
+SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,
+                       QSharedPointer<ClientModelRemoteReplica> clientModelPtr,
+                       QSharedPointer<WalletModelRemoteReplica> walletModelPtr,
+                       QWidget *parent):
     QMainWindow(parent),
 //    bridge(new SpectreBridge(this)),
 //    clientModel(0),
 //    walletModel(0),
 //    messageModel(0),
+    uiReady(false),
+    applicationModel(applicationModelPtr),
+    clientModel(clientModelPtr),
+    walletModel(walletModelPtr),
     encryptWalletAction(0),
     changePassphraseAction(0),
     unlockWalletAction(0),
@@ -123,10 +130,7 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
     trayIcon(0),
     notificator(0),
     rpcConsole(0),
-    nWeight(0),
-    uiReady(false),
-    applicationModel(applicationModelPtr),
-    clientModel(clientModelPtr)
+    nWeight(0)
 {
 
     resize(1280, 720);
@@ -229,7 +233,9 @@ void SpectreGUI::loadIndex() {
 
     connect(clientModel.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
     connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfoModel)), this, SLOT(setNumBlocks(BlockInfoModel)));
-    //connect(walletModel, SIGNAL(encryptionStatusChanged(int)), SLOT(setEncryptionStatus(int)));
+    connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfoModel)), SLOT(setEncryptionInfo(EncryptionInfoModel)));
+    connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfoModel)), SLOT(updateStakingIcon(StakingInfoModel)));
+
 
 //#ifdef TEST_TOR
 //    QNetworkProxy proxy;
@@ -256,7 +262,6 @@ SpectreGUI::~SpectreGUI()
 void SpectreGUI::pageLoaded()
 {
     uiReady = true;
-    initMessage(splashScreen, ".Start UI.");
 
 //    // Create the tray icon (or setup the dock icon)
 //    if (!initialized) createTrayIcon();
@@ -267,19 +272,8 @@ void SpectreGUI::pageLoaded()
 
     setNumConnections(clientModel->numConnections());
     setNumBlocks(clientModel->blockInfo());
-
-//    initMessage(splashScreen, ".Start UI.");
-//    {
-//        LOCK2(cs_main, pwalletMain->cs_wallet);
-//        walletModel->checkBalanceChanged(true);
-//        updateStakingIcon();
-//        if (GetBoolArg("-staking", true) && !initialized)
-//        {
-//            QTimer *timerStakingIcon = new QTimer(this);
-//            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-//            timerStakingIcon->start(5 * 1000);
-//        }
-//    }
+    setEncryptionInfo(walletModel->encryptionInfo());
+    updateStakingIcon(walletModel->stakingInfo());
 
     initMessage(splashScreen, "Ready!");
     if (splashScreen) splashScreen->finish(this);
@@ -845,7 +839,7 @@ void SpectreGUI::handleURI(QString strURI)
         notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
 }
 
-void SpectreGUI::setEncryptionStatus(int status)
+void SpectreGUI::setEncryptionInfo(const EncryptionInfoModel& encryptionInfo)
 {
     WebElement encryptionIcon    = WebElement(this, "encryptionIcon");
     WebElement encryptButton     = WebElement(this, "encryptWallet");
@@ -853,7 +847,7 @@ void SpectreGUI::setEncryptionStatus(int status)
     WebElement changePassphrase  = WebElement(this, "changePassphrase");
     WebElement toggleLock        = WebElement(this, "toggleLock");
     WebElement toggleLockIcon    = WebElement(this, "toggleLock i");
-    switch(status)
+    switch(encryptionInfo.status())
     {
     case WalletModel::Unencrypted:
         encryptionIcon.setAttribute("style", "display:none;");
@@ -879,24 +873,24 @@ void SpectreGUI::setEncryptionStatus(int status)
         toggleLockIcon.   addClass("fa-lock");
         encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
-// TODO       if (fWalletUnlockStakingOnly)
-//        {
-//            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
-//            encryptionIcon.removeClass("red");
-//            encryptionIcon.addClass("orange");
-//            encryptionIcon.addClass("encryption-stake");
-
-//            toggleLockIcon  .removeClass("red");
-//            toggleLockIcon     .addClass("orange");
-//        } else
+        if (encryptionInfo.fWalletUnlockStakingOnly())
         {
-            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
-            encryptionIcon.addClass("red");
-            encryptionIcon.removeClass("orange");
-            encryptionIcon.removeClass("encryption-stake");
+            encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
+            encryptionIcon. removeClass("red");
+            encryptionIcon.    addClass("orange");
+            encryptionIcon.    addClass("encryption-stake");
 
-            toggleLockIcon  .removeClass("orange");
-            toggleLockIcon     .addClass("red");
+            toggleLockIcon.removeClass("red");
+            toggleLockIcon   .addClass("orange");
+        } else
+        {
+            encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
+            encryptionIcon.    addClass("red");
+            encryptionIcon. removeClass("orange");
+            encryptionIcon. removeClass("encryption-stake");
+
+            toggleLockIcon .removeClass("orange");
+            toggleLockIcon    .addClass("red");
         };
 
         encryptButton.addClass("none");
@@ -1062,24 +1056,15 @@ void SpectreGUI::updateWeight()
 //    nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
 }
 
-void SpectreGUI::updateStakingIcon()
+void SpectreGUI::updateStakingIcon(StakingInfoModel stakingInfo)
 {
     WebElement stakingIcon = WebElement(this, "stakingIcon");
-    uint64_t nNetworkWeight = 0, nNetworkWeightRecent;
+    uint64_t nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();
+    unsigned nEstimateTime = stakingInfo.nEstimateTime();
+    bool fIsStaking = stakingInfo.fIsStaking();
 
-    if(fIsStaking)
+    if (fIsStaking && nEstimateTime)
     {
-        updateWeight();
-        nNetworkWeight = GetPoSKernelPS();
-        nNetworkWeightRecent = GetPoSKernelPSRecent();
-    } else
-        nWeight = 0;
-
-    if (fIsStaking && nWeight)
-    {
-        uint64_t nWeight = this->nWeight;
-
-        unsigned nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
         QString text, textDebug;
 
         text = (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
@@ -1091,6 +1076,7 @@ void SpectreGUI::updateStakingIcon()
         stakingIcon.   addClass("staking");
         //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
+             uint64_t nWeight = stakingInfo.nWeight();
         nWeight        /= COIN;
         nNetworkWeight /= COIN;
         nNetworkWeightRecent /= COIN;
@@ -1105,14 +1091,18 @@ void SpectreGUI::updateStakingIcon()
         stakingIcon.removeClass("staking");
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
-// TODO       stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-//                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
-//                                               (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
-//                                               (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
-//                                               (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
-//                                               (!fIsStaking)                            ? tr("Initializing staking...") : \
-//                                               (!nWeight)                               ? tr("Not staking because you don't have mature coins") : \
-//                                                                                          tr("Not staking"));
+        int nNodeMode = clientModel->blockInfo().nNodeMode();
+        bool walletLocked = walletModel->encryptionInfo().status() == 1;
+        bool offline = clientModel->numConnections() == 0;
+        bool isInitialBlockDownload = clientModel->blockInfo().isInitialBlockDownload();
+        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)          ? tr("Not staking because wallet is in thin mode") : \
+                                               (!GetBoolArg("-staking", true)) ? tr("Not staking, staking is disabled")  : \
+                                               (walletLocked)                  ? tr("Not staking because wallet is locked")  : \
+                                               (offline)                       ? tr("Not staking because wallet is offline") : \
+                                               (isInitialBlockDownload)        ? tr("Not staking because wallet is syncing") : \
+                                               (!fIsStaking)                   ? tr("Initializing staking...") : \
+                                               (!nWeight)                      ? tr("Not staking because you don't have mature coins") : \
+                                                                                 tr("Not staking"));
     }
 }
 

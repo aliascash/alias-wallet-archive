@@ -1,0 +1,6 @@
+#include "rep_modelremote_source.h"
+class WalletModelRemote
+{
+    PROP(EncryptionInfoModel encryptionInfo SOURCEONLYSETTER);
+    PROP(StakingInfoModel stakingInfo SOURCEONLYSETTER);
+};

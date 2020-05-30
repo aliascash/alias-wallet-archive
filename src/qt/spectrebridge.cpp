@@ -311,48 +311,24 @@ void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicatio
 
 void SpectreBridge::jsReady() {
     this->applicationModel->setCoreMessage("..Start UI..");
-    //initMessage(splashScreen, "..Start UI..");
 
     // Populate data
     walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
     walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
     walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
     clientModel->updateNumConnections(clientModel->getNumConnections());
-//    setNumBlocks(clientModel->getNumBlocks(), clientModel->getNumBlocksOfPeers());
-//    setEncryptionStatus(walletModel->getEncryptionStatus());
-    walletModel->emitEncryptionStatusChanged(walletModel->getEncryptionStatus());
 
     populateTransactionTable();
     populateAddressTable();
 
-//    initMessage(/*splashScreen, ".Start UI.");
+    this->applicationModel->setCoreMessage(".Start UI.");
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
-//        updateStakingIcon();
-//        if (GetBoolArg("-staking", true) && !initialized)
-//        {
-//            QTimer *timerStakingIcon = new QTimer(this);
-//            connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
-//            timerStakingIcon->start(5 * 1000);
-//        }
+        walletModel->updateStakingInfo();
     }
 
      emit applicationModel->uiReady();
-
-//    initMessage(splashScreen, "Ready!");
-//    if (splashScreen) splashScreen->finish(this);
-//    initialized = true;
-
-//    // If -min option passed, start window minimized.
-//    if(GetBoolArg("-min"))
-//        showMinimized();
-//    else
-//        show();
-
-//    pollTimer->start(MODEL_UPDATE_DELAY);
-
-//    window->pageLoaded(true);
 }
 
 void SpectreBridge::copy(QString text)

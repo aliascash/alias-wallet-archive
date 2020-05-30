@@ -201,10 +201,12 @@ if (ENABLE_GUI)
         )
 
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/modelremote.rep SOURCE)
-        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep SOURCE)
-        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep REPLICA)
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/applicationmodelremote.rep SOURCE)
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/applicationmodelremote.rep REPLICA)
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/walletmodelremote.rep SOURCE)
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/walletmodelremote.rep REPLICA)
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep SOURCE)
+        qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/clientmodelremote.rep REPLICA)
 
         # Create a shared library 'libSpectrecoin_<arch>.so'
         add_library(Spectrecoin

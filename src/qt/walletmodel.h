@@ -12,6 +12,7 @@
 
 #include "allocators.h" /* for SecureString */
 #include "stealth.h"
+#include <rep_walletmodelremote_source.h>
 
 class OptionsModel;
 class AddressTableModel;
@@ -49,7 +50,7 @@ public:
 };
 
 /** Interface to Bitcoin wallet from Qt view code. */
-class WalletModel : public QObject
+class WalletModel : public WalletModelRemoteSimpleSource
 {
     Q_OBJECT
 
@@ -170,10 +171,11 @@ public:
 
     void emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature);
     void emitNumTransactionsChanged(int count);
-    void emitEncryptionStatusChanged(int status);
     void emitRequireUnlock(UnlockMode mode);
     void emitError(const QString &title, const QString &message, bool modal);
     void checkBalanceChanged(bool force = false);
+
+    void updateStakingInfo();
 
 private:
     CWallet *wallet;
@@ -184,6 +186,8 @@ private:
 
     AddressTableModel *addressTableModel;
     TransactionTableModel *transactionTableModel;
+
+    QTimer *pollTimer;
 
     // Cache some values to be able to detect changes
     qint64 cachedBalance;
@@ -220,9 +224,6 @@ signals:
 
     // Number of transactions in wallet changed
     void numTransactionsChanged(int count);
-
-    // Encryption status of wallet changed
-    void encryptionStatusChanged(int status);
 
     // Signal emitted when wallet needs to be unlocked
     // It is valid behaviour for listeners to keep the wallet locked after this signal;

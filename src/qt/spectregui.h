@@ -23,6 +23,7 @@
 
 #include <rep_clientmodelremote_replica.h>
 #include <rep_applicationmodelremote_replica.h>
+#include <rep_walletmodelremote_replica.h>
 
 class TransactionTableModel;
 class ClientModel;
@@ -48,7 +49,10 @@ class SpectreGUI : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModel,  QSharedPointer<ClientModelRemoteReplica> clientModel, QWidget *parent = 0);
+    explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModel,
+                        QSharedPointer<ClientModelRemoteReplica> clientModel,
+                        QSharedPointer<WalletModelRemoteReplica> walletModel,
+                        QWidget *parent = 0);
     ~SpectreGUI();
 
 //    /** Set the client model.
@@ -85,8 +89,9 @@ private:
     QObject* qmlWebView;
     bool uiReady;
 
-    QSharedPointer<ClientModelRemoteReplica> clientModel; // holds reference to clientmodel replica
     QSharedPointer<ApplicationModelRemoteReplica> applicationModel; // holds reference to applicationmodel replica
+    QSharedPointer<ClientModelRemoteReplica> clientModel; // holds reference to clientmodel replica
+    QSharedPointer<WalletModelRemoteReplica> walletModel; // holds reference to applicationmodel replica
 //    ClientModel *clientModel;
 //    WalletModel *walletModel;
 //    MessageModel *messageModel;
@@ -165,7 +170,7 @@ private slots:
        @param[in] status            current encryption status
        @see WalletModel::EncryptionStatus
     */
-    void setEncryptionStatus(int status);
+    void setEncryptionInfo(const EncryptionInfoModel& encryptionInfo);
 
     /** Notify the user of an error in the network or transaction handling code. */
     void error(const QString &title, const QString &message, bool modal);
@@ -214,7 +219,7 @@ private slots:
     void toggleHidden();
 
     void updateWeight();
-    void updateStakingIcon();
+    void updateStakingIcon(StakingInfoModel stakingInfo);
 
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();

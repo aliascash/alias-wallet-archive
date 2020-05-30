@@ -206,6 +206,7 @@ bool AndroidAppInit(int argc, char* argv[])
 
             // Register remote objects
             srcNode.enableRemoting(&clientModel); // enable remoting
+            srcNode.enableRemoting(&walletModel); // enable remoting
 
             // Release lock before starting event processing, otherwise lock would never be released
             LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
@@ -424,24 +425,29 @@ int main(int argc, char *argv[])
 
         boost::thread_group threadGroup;
 
-        InitMessage("Initialize connection to Spectrecoin core...");
+        InitMessage("Connect service...");
 
         // Accuire remote objects replicas
         QRemoteObjectNode repNode;
         QSharedPointer<ClientModelRemoteReplica> clientModelPtr; // holds reference to clientmodel replica
         QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr; // holds reference to applicationmodel replica
+        QSharedPointer<WalletModelRemoteReplica> walletModelPtr; // holds reference to walletmodel replica
         repNode.connectToNode(QUrl(QStringLiteral("local:spectrecoin"))); // connect with remote host node
 
         applicationModelPtr.reset(repNode.acquire<ApplicationModelRemoteReplica>()); // acquire replica of source from host node
+        clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
+        walletModelPtr.reset(repNode.acquire<WalletModelRemoteReplica>()); // acquire replica of source from host node
+
         if (!applicationModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
-        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);
+        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);      
 
-        clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
         if (!clientModelPtr->waitForSource(-1))
-            throw std::runtime_error("SpectreGUI() : ClientModelRemoteReplica was not initialized!");
+            throw std::runtime_error("SpectreGUI() : ClientModelRemoteReplica was not initialized!");   
+        if (!walletModelPtr->waitForSource())
+            throw std::runtime_error("SpectreGUI() : WalletModelRemoteReplica was not initialized!");
 
-        SpectreGUI window(applicationModelPtr, clientModelPtr);
+        SpectreGUI window(applicationModelPtr, clientModelPtr, walletModelPtr);
         window.setSplashScreen(&splash);
         guiref = &window;
 
@@ -496,7 +502,6 @@ int main(int argc, char *argv[])
 
                 if (!ShutdownRequested())
                 {
-//                    InitMessage("...Start UI...");
                     window.loadIndex();
 
 //                    // Now that initialization/startup is done, process any command-line

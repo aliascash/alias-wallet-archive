@@ -123,7 +123,10 @@ void ClientModel::updateAlert(const QString &hash, int status)
 
     // Emit a numBlocksChanged when the status message changes,
     // so that the view recomputes and updates the status bar.
-    emit numBlocksChanged(getNumBlocks(), getNumBlocksOfPeers());
+    setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
+                                blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
+                                blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
+                                0 /**TODO pwalletMain->nLastFilteredHeight**/));
 }
 
 bool ClientModel::isTestNet() const

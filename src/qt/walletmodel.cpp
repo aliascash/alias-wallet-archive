@@ -13,12 +13,13 @@
 #include "wallet.h"
 #include "walletdb.h" // for BackupWallet
 #include "base58.h"
+#include "rpcserver.h"
 
 #include <QSet>
 #include <QTimer>
 
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
-    QObject(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
+    WalletModelRemoteSimpleSource(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
     cachedBalance(0), cachedSpectreBal(0), cachedStake(0), cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
     cachedNumTransactions(0),
@@ -30,7 +31,14 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
 
+    setEncryptionInfo(EncryptionInfoModel(getEncryptionStatus(), fWalletUnlockStakingOnly));
+
     subscribeToCoreSignals();
+
+    // This timer will be fired repeatedly to update the balance
+    pollTimer = new QTimer(this);
+    connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollBalanceChanged()));
+    pollTimer->start(MODEL_UPDATE_DELAY);
 }
 
 WalletModel::~WalletModel()
@@ -93,7 +101,8 @@ void WalletModel::updateStatus()
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
 
     if(cachedEncryptionStatus != newEncryptionStatus)
-        emit encryptionStatusChanged(newEncryptionStatus);
+        setEncryptionInfo(EncryptionInfoModel(newEncryptionStatus, fWalletUnlockStakingOnly));
+        // emit encryptionStatusChanged(newEncryptionStatus);
 }
 
 void WalletModel::pollBalanceChanged()
@@ -107,6 +116,9 @@ void WalletModel::pollBalanceChanged()
     TRY_LOCK(wallet->cs_wallet, lockWallet);
     if(!lockWallet)
         return;
+
+    if(fForceCheckBalanceChanged || nBestHeight != cachedNumBlocks || fIsStaking != stakingInfo().fIsStaking())
+        updateStakingInfo();
 
     if(fForceCheckBalanceChanged || nBestHeight != cachedNumBlocks)
     {
@@ -122,10 +134,10 @@ void WalletModel::pollBalanceChanged()
         // Balance and number of transactions might have changed
         cachedNumBlocks = nBestHeight;
 
-        checkBalanceChanged();
-
         if(transactionTableModel)
             transactionTableModel->updateConfirmations();
+
+        updateStakingInfo();
     }
 }
 
@@ -162,6 +174,21 @@ void WalletModel::checkBalanceChanged(bool force)
         emit balanceChanged(newBalance, newSpectreBal, newStake, newSpectreStake, newUnconfirmedBalance, newUnconfirmedSpectreBalance, newImmatureBalance, cachedImmatureSpectreBalance);
     }
 }
+
+void WalletModel::updateStakingInfo()
+{
+    double nWeight = 0, nNetworkWeight = GetPoSKernelPS(), nNetworkWeightRecent = GetPoSKernelPSRecent();
+    unsigned nEstimateTime = 0;
+
+    if (fIsStaking)
+    {
+        nWeight = wallet->GetStakeWeight() + wallet->GetSpectreStakeWeight();
+        if (nWeight)
+            nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
+    }
+    setStakingInfo(StakingInfoModel(fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
+}
+
 
 
 
@@ -996,6 +1023,5 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
 void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature) {
     emit balanceChanged(balance, spectreBal, stake, spectreStake, unconfirmed, spectreUnconfirmed, immature, spectreImmature); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
-void WalletModel::emitEncryptionStatusChanged(int status) { emit encryptionStatusChanged(status); }
 void WalletModel::emitRequireUnlock(UnlockMode mode) { emit requireUnlock(mode); }
 void WalletModel::emitError(const QString &title, const QString &message, bool modal) { emit error(title, message, modal); }

@@ -89,7 +89,6 @@ private:
     void unsubscribeFromCoreSignals();
 
 signals:
-    void numBlocksChanged(int count, int countOfPeers);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
 
     //! Asynchronous error notification
