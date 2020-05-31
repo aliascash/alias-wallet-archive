@@ -12,6 +12,7 @@
 //#include "walletmodel.h"
 //#include "optionsmodel.h"
 //#include "addresstablemodel.h"
+#include "base58.h" // Need enum EAddressType
 #include "bitcoinunits.h"
 #include "guiconstants.h"
 #include "askpassphrasedialog.h"
@@ -820,9 +821,9 @@ void SpectreGUI::dropEvent(QDropEvent *event)
         }
 
         // if valid URIs were found
-// TODO       if (nValidUrisFound)
-//            bridge->triggerElement("#navitems a[href=#send]", "click");
-//        else
+       if (nValidUrisFound)
+            clientBridge->triggerElement("#navitems a[href=#send]", "click");
+       else
             notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
     }
 
@@ -836,11 +837,11 @@ void SpectreGUI::handleURI(QString strURI)
     // URI has to be valid
     if(GUIUtil::parseBitcoinURI(strURI, &rv))
     {
-// TODO        CBitcoinAddress address(rv.address.toStdString());
-//        if (!address.IsValid())
-//            return;
+        CBitcoinAddress address(rv.address.toStdString());
+        if (!address.IsValid())
+            return;
 
-//        bridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
+        clientBridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
 
         showNormalIfMinimized();
     }
