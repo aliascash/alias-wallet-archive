@@ -1049,22 +1049,6 @@ void SpectreGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
-void SpectreGUI::updateWeight()
-{
-//    if (!pwalletMain)
-//        return;
-
-//    TRY_LOCK(cs_main, lockMain);
-//    if (!lockMain)
-//        return;
-
-//    TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
-//    if (!lockWallet)
-//        return;
-
-//    nWeight = pwalletMain->GetStakeWeight() + pwalletMain->GetSpectreStakeWeight();
-}
-
 void SpectreGUI::updateStakingIcon(StakingInfoModel stakingInfo)
 {
     WebElement stakingIcon = WebElement(this, "stakingIcon");
