@@ -16,7 +16,6 @@ class BlockExplorerModel;
 class AddressModel;
 class MessageModel;
 class MessageThread;
-class SendCoinsRecipient;
 class ApplicationModelRemoteSource;
 
 #include <stdint.h>
@@ -102,10 +101,6 @@ public:
 public slots:
     Q_INVOKABLE void jsReady();
 
-    Q_INVOKABLE void copy(QString text);
-    Q_INVOKABLE void paste();
-    Q_INVOKABLE void urlClicked(const QString link);
-
     /** Get the label belonging to an address */
     Q_INVOKABLE QString getAddressLabel(QString address);
     Q_INVOKABLE void getAddressLabelAsync(QString address);
@@ -128,14 +123,6 @@ public slots:
     Q_INVOKABLE void updateAddressLabel(QString address, QString label);
     Q_INVOKABLE void validateAddress(QString own);
     Q_INVOKABLE bool deleteAddress(QString address);
-
-    Q_INVOKABLE void openCoinControl();
-
-    Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
-    Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
-
-    Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
-    Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change);
 
     Q_INVOKABLE QVariantMap listAnonOutputs();
 
@@ -161,10 +148,8 @@ public slots:
     Q_INVOKABLE void getOptions();
 
 signals:
-    void emitPaste(QString text);
     void emitTransactions(QVariantList transactions, bool reset);
     void emitAddresses(QVariantList addresses);
-    void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
     void emitAddressBookReturn(QString address, QString label);
     void emitReceipient(QString address, QString label, QString narration, qint64 amount);
     void triggerElement(QString element, QString trigger);
@@ -172,9 +157,6 @@ signals:
     void infoChanged();
 
     void validateAddressResult(bool result);
-    void addRecipientResult(bool result);
-    void sendCoinsResult(bool result, QString message);
-
     void transactionDetailsResult(QString result);
 
     void findBlockResult(QVariantMap result);
@@ -209,7 +191,6 @@ private:
     TransactionModel *transactionModel;
     AddressModel *addressModel;
     ApplicationModelRemoteSource * applicationModel;
-    QList<SendCoinsRecipient> recipients;
     QVariantMap *info;
     QThread *async;
     QWebChannel *webChannel;
@@ -221,7 +202,6 @@ private:
     void populateOptions();
     void populateAddressTable();
     void connectSignals();
-    void clearRecipients();
 
     void appendMessage(int row);
 

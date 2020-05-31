@@ -14,7 +14,7 @@
 #include <QModelIndex>
 #include <QSplashScreen>
 
-#include "spectrebridge.h"
+#include "spectreclientbridge.h"
 #include "walletmodel.h"
 #include "askpassphrasedialog.h"
 #include "rpcconsole.h"
@@ -39,7 +39,7 @@ class QUrl;
 QT_END_NAMESPACE
 
 static const int WEBSOCKETPORT = 52471;
-static const int WEBSOCKETPORT_TESTNET = 52472;
+static const int WEBSOCKETPORT_TESTNET = 52571;
 
 /**
   Spectre GUI main class. This class represents the main window of the Spectre UI. It communicates with both the client and
@@ -84,8 +84,7 @@ protected:
     void dropEvent(QDropEvent *event);
 
 private:
-//    SpectreBridge *bridge;
-//    QWebChannel * webChannel;
+    SpectreClientBridge *clientBridge;
     QObject* qmlWebView;
     bool uiReady;
 
@@ -129,7 +128,7 @@ private:
 
     bool initialized = false;
 
-    friend class SpectreBridge;
+    friend class SpectreClientBridge;
 
     /**
      * @brief The WebElement class is written to provide easy access for modifying HTML objects with Javascript

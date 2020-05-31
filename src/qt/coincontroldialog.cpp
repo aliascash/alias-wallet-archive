@@ -6,7 +6,7 @@
 #include "coincontroldialog.h"
 #include "ui_coincontroldialog.h"
 
-#include "spectrebridge.h"
+#include "spectreclientbridge.h"
 
 #include "init.h"
 #include "bitcoinunits.h"
@@ -417,7 +417,7 @@ QString CoinControlDialog::getPriorityLabel(double dPriority)
     else ui->labelLocked->setVisible(false);
 }*/
 
-void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, SpectreBridge *bridge)
+void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, SpectreClientBridge *bridge)
 {
     if (!model) return;
 

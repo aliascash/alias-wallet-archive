@@ -3,6 +3,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
+#include "spectrebridge.h"
 #include "spectregui.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
@@ -163,19 +164,13 @@ bool AndroidAppInit(int argc, char* argv[])
         srcNode.enableRemoting(&applicationModel); // enable remoting
         applicationModelRef = &applicationModel;
 
-        //---- Create webSocket server for JavaScript client
-        QWebSocketServer server(
-                    QStringLiteral("Spectrecoin Websocket Server"),
-                    QWebSocketServer::NonSecureMode
-                    );
-        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
-            throw std::runtime_error(strprintf("QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
-        }
-        qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
-        // wrap WebSocket clients in QWebChannelAbstractTransport objects
-        WebSocketClientWrapper clientWrapper(&server);
-        // setup the channel
-        QWebChannel webChannel;
+        //---- Create core webSocket server for JavaScript client
+        QWebSocketServer server(QStringLiteral("Spectrecoin Core Websocket Server"), QWebSocketServer::NonSecureMode);
+        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT))
+            throw std::runtime_error(strprintf("Spectrecoin Core QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
+        qDebug() << "Core QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+        WebSocketClientWrapper clientWrapper(&server);  // wrap WebSocket clients in QWebChannelAbstractTransport objects
+        QWebChannel webChannel;                         // setup the channel
         QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
 
         // Initialize Core
@@ -398,24 +393,18 @@ int main(int argc, char *argv[])
 
     app.setQuitOnLastWindowClosed(false);
 
-//    //---- Create webSocket server for JavaScript client
-//    QWebSocketServer server(
-//        QStringLiteral("Spectrecoin Websocket Server"),
-//        QWebSocketServer::NonSecureMode
-//    );
-//    if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
-//        qFatal("QWebSocketServer failed to listen on port 52471");
-//        return 1;
-//    }
-//    qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
-
-//    // wrap WebSocket clients in QWebChannelAbstractTransport objects
-//    WebSocketClientWrapper clientWrapper(&server);
-
-//    // setup the channel
-//    QWebChannel webChannel;
-//    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
-//                     &webChannel, &QWebChannel::connectTo);
+    //---- Create webSocket server for JavaScript client
+    QWebSocketServer server(QStringLiteral("Spectrecoin Client Websocket Server"), QWebSocketServer::NonSecureMode);
+    if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1 : WEBSOCKETPORT + 1)) {
+        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1)) {
+            qFatal("Spectrecoin Client QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1);
+            return 1;
+        }
+    }
+    qDebug() << "Client QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+    WebSocketClientWrapper clientWrapper(&server); // wrap WebSocket clients in QWebChannelAbstractTransport objects
+    QWebChannel webChannel;                        // setup the channel
+    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
 
     try
     {
@@ -450,6 +439,8 @@ int main(int argc, char *argv[])
         SpectreGUI window(applicationModelPtr, clientModelPtr, walletModelPtr);
         window.setSplashScreen(&splash);
         guiref = &window;
+
+        SpectreClientBridge clientBridge(&window, &webChannel);
 
         // Periodically check if shutdown was requested to properly quit the Qt application
         #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000

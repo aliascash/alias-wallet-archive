@@ -592,7 +592,7 @@ void SpectreGUI::setNumBlocks()
 
         if (strStatusBarWarnings.isEmpty())
         {
-            // TODO bridge->networkAlert("");
+            clientBridge->networkAlert("");
             tooltip = clientModel->isImporting() ? tr("Importing blocks...") : tr("Synchronizing with network...");
 
             if (nNodeMode == NT_FULL)
@@ -619,8 +619,8 @@ void SpectreGUI::setNumBlocks()
     }
 
     // Override progressBarLabel text when we have warnings to display
-// TODO   if (!strStatusBarWarnings.isEmpty())
-//        bridge->networkAlert(strStatusBarWarnings);
+   if (!strStatusBarWarnings.isEmpty())
+        clientBridge->networkAlert(strStatusBarWarnings);
 
     QDateTime lastBlockDate = clientModel->blockInfo().lastBlockTime();
     int secs = lastBlockDate.secsTo(QDateTime::currentDateTime().addSecs(clientModel->blockInfo().nTimeOffset()));
@@ -791,7 +791,7 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
 
 void SpectreGUI::optionsClicked()
 {
-    // TODO bridge->triggerElement("#navitems a[href=#options]", "click");
+    clientBridge->triggerElement("#navitems a[href=#options]", "click");
     showNormalIfMinimized();
 }
 
