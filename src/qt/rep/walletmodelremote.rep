@@ -1,6 +1,9 @@
 #include "rep_modelremote_source.h"
 class WalletModelRemote
 {
-    PROP(EncryptionInfoModel encryptionInfo SOURCEONLYSETTER);
-    PROP(StakingInfoModel stakingInfo SOURCEONLYSETTER);
+    PROP(EncryptionInfo encryptionInfo SOURCEONLYSETTER);
+    PROP(StakingInfo stakingInfo SOURCEONLYSETTER);
+    SLOT(bool validateAddress(const QString &address));
+    SLOT(SendCoinsReturn sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
+    SLOT(SendCoinsReturn sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
 };

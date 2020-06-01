@@ -91,7 +91,7 @@ void ClientModel::updateTimer() {
         || blockChangedEvent.numBlocksOfPeers != blockInfo().numBlocksOfPeers()
         || nNodeState == NS_GET_FILTERED_BLOCKS)
     {
-        setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
+        setBlockInfo(BlockInfo(nNodeMode, nNodeMode,
                                     blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
                                     blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
                                     GetTimeOffset(),
@@ -124,7 +124,7 @@ void ClientModel::updateAlert(const QString &hash, int status)
 
     // Emit a numBlocksChanged when the status message changes,
     // so that the view recomputes and updates the status bar.
-    setBlockInfo(BlockInfoModel(nNodeMode, nNodeMode,
+    setBlockInfo(BlockInfo(nNodeMode, nNodeMode,
                                 blockChangedEvent.numBlocks, blockChangedEvent.numBlocksOfPeers,
                                 blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
                                 GetTimeOffset(),

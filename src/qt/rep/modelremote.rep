@@ -1,4 +1,44 @@
 #include <QDateTime>
-POD BlockInfoModel(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, qint64 nTimeOffset, int nLastFilteredHeight)
-POD EncryptionInfoModel(int status, bool fWalletUnlockStakingOnly);
-POD StakingInfoModel(bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint64 nNetworkWeight, quint64 nNetworkWeightRecent);
+ENUM TxnType // Transaction type
+{
+    TXT_SPEC_TO_SPEC,
+    TXT_SPEC_TO_ANON,
+    TXT_ANON_TO_ANON,
+    TXT_ANON_TO_SPEC
+};
+ENUM SendCoinsStatus // Returned by sendCoins
+{
+    OK,
+    ApproveFee,
+    InvalidAmount,
+    InvalidAddress,
+    StealthAddressOnlyAllowedForSPECTRE,
+    RecipientAddressNotOwnedXSPECtoSPECTRE,
+    RecipientAddressNotOwnedSPECTREtoXSPEC,
+    AmountExceedsBalance,
+    AmountWithFeeExceedsBalance,
+    DuplicateAddress,
+    TransactionCreationFailed, // Error returned when wallet is still locked
+    TransactionCommitFailed,
+    NarrationTooLong,
+    RingSizeError,
+    InputTypeError,
+    SCR_NeedFullMode,
+    SCR_StealthAddressFail,
+    SCR_StealthAddressFailAnonToSpec,
+    SCR_AmountExceedsBalance,
+    SCR_AmountWithFeeExceedsSpectreBalance,
+    SCR_Error,
+    SCR_ErrorWithMsg,
+    Aborted
+};
+// Return status record for SendCoins, contains error id + information
+POD SendCoinsReturn(SendCoinsStatusEnum::SendCoinsStatus status,
+                         qint64 fee,   // is used in case status is "AmountWithFeeExceedsBalance"
+                         QString hex); // is filled with the transaction hash if status is "OK", error message otherwise
+POD BlockInfo(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, qint64 nTimeOffset, int nLastFilteredHeight)
+POD EncryptionInfo(int status, bool fWalletUnlockStakingOnly);
+POD StakingInfo(bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint64 nNetworkWeight, quint64 nNetworkWeightRecent);
+POD SendCoinsRecipient(QString address, QString label, QString narration, int addressTypeInd, qint64 amount, TxnTypeEnum::TxnType txnType, int nRingSize);
+POD OutPoint(QString hex, // transaction hash as hex
+                  unsigned n); // transaction output

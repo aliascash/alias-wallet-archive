@@ -169,7 +169,7 @@ private slots:
        @param[in] status            current encryption status
        @see WalletModel::EncryptionStatus
     */
-    void setEncryptionInfo(const EncryptionInfoModel& encryptionInfo);
+    void setEncryptionInfo(const EncryptionInfo& encryptionInfo);
 
     /** Notify the user of an error in the network or transaction handling code. */
     void error(const QString &title, const QString &message, bool modal);
@@ -217,7 +217,7 @@ private slots:
     /** simply calls showNormalIfMinimized(true) for use in SLOT() macro */
     void toggleHidden();
 
-    void updateStakingIcon(StakingInfoModel stakingInfo);
+    void updateStakingIcon(StakingInfo stakingInfo);
 
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();

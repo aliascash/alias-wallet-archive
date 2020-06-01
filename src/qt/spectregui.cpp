@@ -233,9 +233,9 @@ void SpectreGUI::loadIndex() {
     view->show();
 
     connect(clientModel.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-    connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfoModel)), this, SLOT(setNumBlocks()));
-    connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfoModel)), SLOT(setEncryptionInfo(EncryptionInfoModel)));
-    connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfoModel)), SLOT(updateStakingIcon(StakingInfoModel)));
+    connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfo)), this, SLOT(setNumBlocks()));
+    connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfo)), SLOT(setEncryptionInfo(EncryptionInfo)));
+    connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfo)), SLOT(updateStakingIcon(StakingInfo)));
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(setNumBlocks()));
 
 
@@ -541,7 +541,7 @@ void SpectreGUI::setNumConnections(int count)
 
 void SpectreGUI::setNumBlocks()
 {
-    const BlockInfoModel& blockInfo = clientModel->blockInfo();
+    const BlockInfo& blockInfo = clientModel->blockInfo();
 
     WebElement blocksIcon = WebElement(this, "blocksIcon");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
@@ -837,11 +837,11 @@ void SpectreGUI::handleURI(QString strURI)
     // URI has to be valid
     if(GUIUtil::parseBitcoinURI(strURI, &rv))
     {
-        CBitcoinAddress address(rv.address.toStdString());
+        CBitcoinAddress address(rv.address().toStdString());
         if (!address.IsValid())
             return;
 
-        clientBridge->emitReceipient(rv.address, rv.label, rv.narration, rv.amount);
+        clientBridge->emitReceipient(rv.address(), rv.label(), rv.narration(), rv.amount());
 
         showNormalIfMinimized();
     }
@@ -849,7 +849,7 @@ void SpectreGUI::handleURI(QString strURI)
         notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
 }
 
-void SpectreGUI::setEncryptionInfo(const EncryptionInfoModel& encryptionInfo)
+void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
 {
     WebElement encryptionIcon    = WebElement(this, "encryptionIcon");
     WebElement encryptButton     = WebElement(this, "encryptWallet");
@@ -1050,7 +1050,7 @@ void SpectreGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
-void SpectreGUI::updateStakingIcon(StakingInfoModel stakingInfo)
+void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
 {
     WebElement stakingIcon = WebElement(this, "stakingIcon");
     quint64 nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();

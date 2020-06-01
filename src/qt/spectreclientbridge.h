@@ -60,7 +60,7 @@ signals:
     void networkAlert(QString alert);
 
     void addRecipientResult(bool result);
-    void sendCoinsResult(bool result, QString message);
+    void sendCoinsResult(bool result);
 private:
     SpectreGUI *window;
     QWebChannel *webChannel;
@@ -68,6 +68,7 @@ private:
 
     void connectSignals();
     void clearRecipients();
+    void abortSendCoins(QString message);
 };
 
 #endif // SPECTRECLIENTBRIDGE_H

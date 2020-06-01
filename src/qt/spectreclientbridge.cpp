@@ -76,23 +76,11 @@ void SpectreClientBridge::addRecipient(QString address, QString label, QString n
 //        return;
 //    }
 
-    SendCoinsRecipient rv;
-
-    rv.address = address;
-    rv.label = label;
-    rv.narration = narration;
-    rv.amount = amount;
-
     std::string sAddr = address.toStdString();
 
-    if (IsBIP32(sAddr.c_str()))
-        rv.typeInd = 3;
-    else
-        rv.typeInd = address.length() > 75 ? AT_Stealth : AT_Normal;
-
-    rv.txnTypeInd = txnType;
-    rv.nRingSize = nRingSize;
-
+    SendCoinsRecipient rv(address, label, narration,
+                               IsBIP32(sAddr.c_str()) ? 3 : address.length() > 75 ? AT_Stealth : AT_Normal,
+                               amount, TxnTypeEnum::TxnType(txnType), nRingSize);
     recipients.append(rv);
 
     emit addRecipientResult(true);
@@ -111,6 +99,14 @@ QString lineBreakAddress(QString address)
         return address;
 }
 
+void SpectreClientBridge::abortSendCoins(QString message)
+{
+    QMessageBox::warning(window, tr("Send Coins"), message,
+                  QMessageBox::Ok, QMessageBox::Ok);
+    emit sendCoinsResult(false);
+}
+
+
 void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 {
     int inputTypes = -1;
@@ -121,28 +117,28 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
         int inputType; // 0 XSPEC, 1 Spectre
-        switch(rcp.txnTypeInd)
+        switch(rcp.txnType())
         {
-            case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+            case TxnTypeEnum::TXT_SPEC_TO_SPEC:
+                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 0;
                 break;
-            case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+            case TxnTypeEnum::TXT_SPEC_TO_ANON:
+                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
-            case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+            case TxnTypeEnum::TXT_ANON_TO_ANON:
+                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
-            case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+            case TxnTypeEnum::TXT_ANON_TO_SPEC:
+                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 1;
                 break;
             default:
-                emit sendCoinsResult(false, tr("Unknown txn type detected %1.").arg(rcp.txnTypeInd));
+                abortSendCoins(tr("Unknown txn type detected %1.").arg(rcp.txnType()));
                 return;
         }
 
@@ -151,18 +147,18 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         else
         if (inputTypes != inputType)
         {
-            emit sendCoinsResult(false, tr("Input types must match for all recipients."));
+            abortSendCoins(tr("Input types must match for all recipients."));
             return;
         };
 
         if (inputTypes == 1)
         {
             if (ringSizes == -1)
-                ringSizes = rcp.nRingSize;
+                ringSizes = rcp.nRingSize();
             else
-            if (ringSizes != rcp.nRingSize)
+            if (ringSizes != rcp.nRingSize())
             {
-                emit sendCoinsResult(false, tr("Ring sizes must match for all recipients."));
+                abortSendCoins(tr("Ring sizes must match for all recipients."));
                 return;
             };
 
@@ -171,25 +167,25 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             {
                 QString message = nMinRingSize == nMaxRingSize ? tr("Ring size must be %1.").arg(nMinRingSize) :
                                                                  tr("Ring size outside range [%1, %2].").arg(nMinRingSize).arg(nMaxRingSize);
-                emit sendCoinsResult(false, message);
+                abortSendCoins(message);
                 return;
             };
         };
     };
 
 // Confirmation Question
-    bool conversionTx = recipients.size() == 1 && (recipients[0].txnTypeInd == TXT_SPEC_TO_ANON || recipients[0].txnTypeInd == TXT_ANON_TO_SPEC);
+    bool conversionTx = recipients.size() == 1 && (recipients[0].txnType() == TxnTypeEnum::TXT_SPEC_TO_ANON || recipients[0].txnType() == TxnTypeEnum::TXT_ANON_TO_SPEC);
     QMessageBox::StandardButton retval = QMessageBox::question(window, tr("Confirm send coins"),
        (conversionTx ? tr("Are you sure you want to convert %1?") : tr("Are you sure you want to send %1?"))
        .arg(formatted.join(tr(" and "))),
        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
 
     if(retval != QMessageBox::Yes) {
-        emit sendCoinsResult(false, "");
+        emit sendCoinsResult(false);
         return;
     }
 
-    WalletModel::SendCoinsReturn sendstatus;
+    SendCoinsReturn sendResult;
 
     if (fUseCoinControl)
     {
@@ -198,7 +194,7 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CBitcoinAddress addrChange = CBitcoinAddress(sChangeAddr.toStdString());
             if (!addrChange.IsValid())
             {
-               emit sendCoinsResult(false, tr("The change address is not valid, please recheck."));
+               abortSendCoins(tr("The change address is not valid, please recheck."));
                return;
             };
             CoinControlDialog::coinControl->destChange = addrChange.Get();
@@ -210,91 +206,117 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 
     // Unlock wallet was cancelled
 //    if(!ctx.isValid()) {
-//        emit sendCoinsResult(false, tr("Payment not send because wallet is locked."));
+//        abortSendCoins(tr("Payment not send because wallet is locked."));
 //        return;
 //    }
 
-//    if (inputTypes == 1 || nAnonOutputs > 0)
-//        sendstatus = walletModel->sendCoinsAnon(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
-//    else
-//        sendstatus = walletModel->sendCoins(recipients, fUseCoinControl ? CoinControlDialog::coinControl : NULL);
+    QList<OutPoint> coins; // TODO fUseCoinControl ? CoinControlDialog::coinControl
+    QRemoteObjectPendingReply<SendCoinsReturn> sendResultPendingReply;
+    if (inputTypes == 1 || nAnonOutputs > 0)
+        sendResultPendingReply = window->walletModel->sendCoinsAnon(0, recipients, coins);
+    else
+        sendResultPendingReply = window->walletModel->sendCoins(0, recipients, coins);
 
-    switch(sendstatus.status)
+    sendResultPendingReply.waitForFinished(-1);
+    sendResult = sendResultPendingReply.returnValue();
+    SendCoinsStatusEnum::SendCoinsStatus sendCoinsStatus = sendResult.status();
+
+    if (sendCoinsStatus == SendCoinsStatusEnum::ApproveFee)
     {
-        case WalletModel::InvalidAddress:
-            emit sendCoinsResult(false, tr("The recipient address is not valid, please recheck."));
+        bool payFee = false;;
+        window->askFee(sendResult.fee(), &payFee);
+        if (!payFee)
+           sendCoinsStatus = SendCoinsStatusEnum::Aborted;
+        else {
+            if (inputTypes == 1 || nAnonOutputs > 0)
+                sendResultPendingReply = window->walletModel->sendCoinsAnon(sendResult.fee(), recipients, coins);
+            else
+                sendResultPendingReply = window->walletModel->sendCoins(sendResult.fee(), recipients, coins);
+            sendResultPendingReply.waitForFinished(-1);
+            sendResult = sendResultPendingReply.returnValue();
+            sendCoinsStatus = sendResult.status();
+        }
+    }
+
+    switch(sendCoinsStatus)
+    {
+        case SendCoinsStatusEnum::InvalidAddress:
+            abortSendCoins(tr("The recipient address is not valid, please recheck."));
             return;
-        case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
-            emit sendCoinsResult(false, tr("Only SPECTRE from your Private balance can be send to a stealth address."));
+        case SendCoinsStatusEnum::StealthAddressOnlyAllowedForSPECTRE:
+            abortSendCoins(tr("Only SPECTRE from your Private balance can be send to a stealth address."));
             return;
-        case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
-            emit sendCoinsResult(false, tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
+        case SendCoinsStatusEnum::RecipientAddressNotOwnedXSPECtoSPECTRE:
+            abortSendCoins(tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
             return;
-        case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
-            emit sendCoinsResult(false, tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
+        case SendCoinsStatusEnum::RecipientAddressNotOwnedSPECTREtoXSPEC:
+            abortSendCoins(tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
             return;
-        case WalletModel::InvalidAmount:
-            emit sendCoinsResult(false, tr("The amount to pay must be larger than 0."));
+        case SendCoinsStatusEnum::InvalidAmount:
+            abortSendCoins(tr("The amount to pay must be larger than 0."));
             return;
-        case WalletModel::AmountExceedsBalance:
-            emit sendCoinsResult(false, tr("The amount exceeds your balance."));
+        case SendCoinsStatusEnum::AmountExceedsBalance:
+            abortSendCoins(tr("The amount exceeds your balance."));
             return;
-        case WalletModel::AmountWithFeeExceedsBalance:
-            emit sendCoinsResult(false, tr("The total exceeds your balance when the %1 transaction fee is included."));
+        case SendCoinsStatusEnum::AmountWithFeeExceedsBalance:
+            abortSendCoins(tr("The total exceeds your balance when the %1 transaction fee is included."));
             return;
-        case WalletModel::DuplicateAddress:
-            emit sendCoinsResult(false, tr("Duplicate address found, can only send to each address once per send operation."));
+        case SendCoinsStatusEnum::DuplicateAddress:
+            abortSendCoins(tr("Duplicate address found, can only send to each address once per send operation."));
             return;
-        case WalletModel::TransactionCreationFailed:
-            emit sendCoinsResult(false, tr("Error: Transaction creation failed."));
+        case SendCoinsStatusEnum::TransactionCreationFailed:
+            abortSendCoins(tr("Error: Transaction creation failed."));
             return;
-        case WalletModel::TransactionCommitFailed:
-            emit sendCoinsResult(false, tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."));
+        case SendCoinsStatusEnum::TransactionCommitFailed:
+            abortSendCoins(tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."));
             return;
-        case WalletModel::NarrationTooLong:
-            emit sendCoinsResult(false, tr("Error: Narration is too long."));
+        case SendCoinsStatusEnum::NarrationTooLong:
+            abortSendCoins(tr("Error: Narration is too long."));
             return;
-        case WalletModel::RingSizeError:
-            emit sendCoinsResult(false, tr("Error: Ring Size Error."));
+        case SendCoinsStatusEnum::RingSizeError:
+            abortSendCoins(tr("Error: Ring Size Error."));
             return;
-        case WalletModel::InputTypeError:
-            emit sendCoinsResult(false, tr("Error: Input Type Error."));
+        case SendCoinsStatusEnum::InputTypeError:
+            abortSendCoins(tr("Error: Input Type Error."));
             return;
-        case WalletModel::SCR_NeedFullMode:
-            emit sendCoinsResult(false, tr("Error: Must be in full mode to send anon."));
+        case SendCoinsStatusEnum::SCR_NeedFullMode:
+            abortSendCoins(tr("Error: Must be in full mode to send anon."));
             return;
-        case WalletModel::SCR_StealthAddressFail:
-            emit sendCoinsResult(false, tr("Error: Invalid Stealth Address."));
+        case SendCoinsStatusEnum::SCR_StealthAddressFail:
+            abortSendCoins(tr("Error: Invalid Stealth Address."));
             return;
-        case WalletModel::SCR_StealthAddressFailAnonToSpec:
-            emit sendCoinsResult(false, tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
+        case SendCoinsStatusEnum::SCR_StealthAddressFailAnonToSpec:
+            abortSendCoins(tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
             return;
-		case WalletModel::SCR_AmountExceedsBalance:
-            emit sendCoinsResult(false, tr("The amount exceeds your SPECTRE balance."));
+        case SendCoinsStatusEnum::SCR_AmountExceedsBalance:
+            abortSendCoins(tr("The amount exceeds your SPECTRE balance."));
 			return;
-        case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
-            emit sendCoinsResult(false, tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)));
+        case SendCoinsStatusEnum::SCR_AmountWithFeeExceedsSpectreBalance:
+            abortSendCoins(tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
             return;
-        case WalletModel::SCR_Error:
-            emit sendCoinsResult(false, tr("Error generating transaction."));
+        case SendCoinsStatusEnum::SCR_Error:
+            abortSendCoins(tr("Error generating transaction."));
             return;
-        case WalletModel::SCR_ErrorWithMsg:
-            emit sendCoinsResult(false, tr("Error generating transaction: %1").arg(sendstatus.hex));
+        case SendCoinsStatusEnum::SCR_ErrorWithMsg:
+            abortSendCoins(tr("Error generating transaction: %1").arg(sendResult.hex()));
             return;
 
-        case WalletModel::Aborted: // User aborted, nothing to do
-            emit sendCoinsResult(false, "");
+        case SendCoinsStatusEnum::ApproveFee:
+        case SendCoinsStatusEnum::Aborted: // User aborted, nothing to do
+            emit sendCoinsResult(false);
             return;
-        case WalletModel::OK:
+        case SendCoinsStatusEnum::OK:
             //accept();
             CoinControlDialog::coinControl->UnSelectAll();
             CoinControlDialog::payAmounts.clear();
             // TODO CoinControlDialog::updateLabels(walletModel, 0, this);
+            QMessageBox::information(window, tr("Send Coins"),
+                            tr("Transaction successfully created. Fee payed %1").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
             recipients.clear();
             break;
     }
 
-    emit sendCoinsResult(true, tr("Transaction successfully created."));
+    emit sendCoinsResult(true);
             return;
 }
 

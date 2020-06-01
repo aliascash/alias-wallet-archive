@@ -17,6 +17,8 @@
 
 #include <QSet>
 #include <QTimer>
+#include <QApplication>
+#include <QDebug>
 
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     WalletModelRemoteSimpleSource(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
@@ -25,13 +27,13 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedNumTransactions(0),
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0),
-    fForceCheckBalanceChanged(false),
-    fUnlockRescanRequested(false)
+    fUnlockRescanRequested(false),
+    fForceCheckBalanceChanged(false)
 {
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
 
-    setEncryptionInfo(EncryptionInfoModel(getEncryptionStatus(), fWalletUnlockStakingOnly));
+    setEncryptionInfo(EncryptionInfo(getEncryptionStatus(), fWalletUnlockStakingOnly));
 
     subscribeToCoreSignals();
 
@@ -101,7 +103,7 @@ void WalletModel::updateStatus()
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
 
     if(cachedEncryptionStatus != newEncryptionStatus)
-        setEncryptionInfo(EncryptionInfoModel(newEncryptionStatus, fWalletUnlockStakingOnly));
+        setEncryptionInfo(EncryptionInfo(newEncryptionStatus, fWalletUnlockStakingOnly));
         // emit encryptionStatusChanged(newEncryptionStatus);
 }
 
@@ -186,7 +188,7 @@ void WalletModel::updateStakingInfo()
         if (nWeight)
             nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
     }
-    setStakingInfo(StakingInfoModel(fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
+    setStakingInfo(StakingInfo(fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
 }
 
 
@@ -221,36 +223,42 @@ bool WalletModel::validateAddress(const QString &address)
     return addressParsed.IsValid();
 }
 
-WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
+SendCoinsReturn status(SendCoinsStatusEnum::SendCoinsStatus status)
 {
+    return SendCoinsReturn(status, 0, QString());
+}
+
+SendCoinsReturn WalletModel::sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins)
+{
+    const CCoinControl *coinControl = nullptr;
     qint64 total = 0;
     QSet<QString> setAddress;
     QString hex;
 
     if(recipients.empty())
-        return OK;
+        return status(SendCoinsStatusEnum::OK);
 
     // Pre-check input data for validity
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
-        if(!validateAddress(rcp.address))
-            return InvalidAddress;
+        if(!validateAddress(rcp.address()))
+            return status(SendCoinsStatusEnum::InvalidAddress);
 
-        if(IsStealthAddress(rcp.address.toStdString()))
-            return StealthAddressOnlyAllowedForSPECTRE;
+        if(IsStealthAddress(rcp.address().toStdString()))
+            return status(SendCoinsStatusEnum::StealthAddressOnlyAllowedForSPECTRE);
 
-        setAddress.insert(rcp.address);
+        setAddress.insert(rcp.address());
 
-        if(rcp.amount <= 0)
-            return InvalidAmount;
+        if(rcp.amount() <= 0)
+            return status(SendCoinsStatusEnum::InvalidAmount);
 
-        total += rcp.amount;
+        total += rcp.amount();
     }
 
     if (recipients.size() > setAddress.size())
         foreach(QString rcpAddr, setAddress)
             if(!IsStealthAddress(rcpAddr.toStdString()))
-                return DuplicateAddress;
+                return status(SendCoinsStatusEnum::DuplicateAddress);
 
     int64_t nBalance = 0;
     std::vector<COutput> vCoins;
@@ -260,7 +268,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         nBalance += out.tx->vout[out.i].nValue;
 
     if(total > nBalance)
-        return AmountExceedsBalance;
+        return status(SendCoinsStatusEnum::AmountExceedsBalance);
 
     std::map<int, std::string> mapStealthNarr;
 
@@ -274,9 +282,9 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         std::vector<std::pair<CScript, int64_t> > vecSend;
         foreach(const SendCoinsRecipient &rcp, recipients)
         {
-            std::string sAddr = rcp.address.toStdString();
+            std::string sAddr = rcp.address().toStdString();
 
-            if (rcp.typeInd == AT_Stealth)
+            if (rcp.addressTypeInd() == AT_Stealth)
             {
                 CStealthAddress sxAddr;
                 if (sxAddr.SetEncoded(sAddr))
@@ -290,20 +298,20 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                     if (GenerateRandomSecret(ephem_secret) != 0)
                     {
                         LogPrintf("GenerateRandomSecret failed.\n");
-                        return Aborted;
+                        return status(SendCoinsStatusEnum::Aborted);
                     };
 
                     if (StealthSecret(ephem_secret, sxAddr.scan_pubkey, sxAddr.spend_pubkey, secretShared, pkSendTo) != 0)
                     {
                         LogPrintf("Could not generate receiving public key.\n");
-                        return Aborted;
+                        return status(SendCoinsStatusEnum::Aborted);
                     };
 
                     CPubKey cpkTo(pkSendTo);
                     if (!cpkTo.IsValid())
                     {
                         LogPrintf("Invalid public key generated.\n");
-                        return Aborted;
+                        return status(SendCoinsStatusEnum::Aborted);
                     };
 
                     CBitcoinAddress addrTo(cpkTo.GetID());
@@ -311,7 +319,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                     if (SecretToPublicKey(ephem_secret, ephem_pubkey) != 0)
                     {
                         LogPrintf("Could not generate ephem public key.\n");
-                        return Aborted;
+                        return status(SendCoinsStatusEnum::Aborted);
                     };
 
                     if (fDebug)
@@ -324,18 +332,18 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                     CScript scriptPubKey;
                     scriptPubKey.SetDestination(addrTo.Get());
 
-                    vecSend.push_back(make_pair(scriptPubKey, rcp.amount));
+                    vecSend.push_back(make_pair(scriptPubKey, rcp.amount()));
 
                     CScript scriptP = CScript() << OP_RETURN << ephem_pubkey;
 
-                    if (rcp.narration.length() > 0)
+                    if (rcp.narration().length() > 0)
                     {
-                        std::string sNarr = rcp.narration.toStdString();
+                        std::string sNarr = rcp.narration().toStdString();
 
                         if (sNarr.length() > 24)
                         {
                             LogPrintf("Narration is too long.\n");
-                            return NarrationTooLong;
+                            return status(SendCoinsStatusEnum::NarrationTooLong);
                         };
 
                         std::vector<unsigned char> vchNarr;
@@ -346,13 +354,13 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                         if (!crypter.Encrypt((uint8_t*)&sNarr[0], sNarr.length(), vchNarr))
                         {
                             LogPrintf("Narration encryption failed.\n");
-                            return Aborted;
+                            return status(SendCoinsStatusEnum::Aborted);
                         };
 
                         if (vchNarr.size() > 48)
                         {
                             LogPrintf("Encrypted narration is too long.\n");
-                            return Aborted;
+                            return status(SendCoinsStatusEnum::Aborted);
                         };
 
                         if (vchNarr.size() > 0)
@@ -370,14 +378,14 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
             // TODO: why the drop through for stealth?!
             CScript scriptPubKey;
 
-            if (rcp.typeInd == AT_BIP32)
+            if (rcp.addressTypeInd() == AT_BIP32)
             {
                 CBitcoinAddress address(sAddr);
                 CTxDestination dest = address.Get();
                 if (dest.type() != typeid(CExtKeyPair))
                 {
                     LogPrintf("Error: Address is not an extended address.\n");
-                    return Aborted;
+                    return status(SendCoinsStatusEnum::Aborted);
                 };
 
                 CExtKeyPair ek = boost::get<CExtKeyPair>(dest);
@@ -385,7 +393,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                 ek58.SetKeyP(ek);
                 uint32_t nChildKey;
                 if (0 != wallet->ExtKeyGetDestination(ek, scriptPubKey, nChildKey))
-                    return InvalidAddress;
+                    return status(SendCoinsStatusEnum::InvalidAddress);
 
                 vecUpdate.push_back(std::make_pair(ek, nChildKey));
             } else
@@ -393,16 +401,16 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
                 scriptPubKey.SetDestination(CBitcoinAddress(sAddr).Get());
             };
 
-            vecSend.push_back(make_pair(scriptPubKey, rcp.amount));
+            vecSend.push_back(make_pair(scriptPubKey, rcp.amount()));
 
-            if (rcp.narration.length() > 0)
+            if (rcp.narration().length() > 0)
             {
-                std::string sNarr = rcp.narration.toStdString();
+                std::string sNarr = rcp.narration().toStdString();
 
                 if (sNarr.length() > 24)
                 {
                     LogPrintf("Narration is too long.\n");
-                    return NarrationTooLong;
+                    return status(SendCoinsStatusEnum::NarrationTooLong);
                 };
 
                 std::vector<uint8_t> vNarr(sNarr.c_str(), sNarr.c_str() + sNarr.length());
@@ -442,16 +450,18 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         if (!fCreated)
         {
             if ((total + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
-                return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
+                return SendCoinsReturn(SendCoinsStatusEnum::AmountWithFeeExceedsBalance, nFeeRequired, QString());
 
-            return TransactionCreationFailed;
+            return status(SendCoinsStatusEnum::TransactionCreationFailed);
         }
-        if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
-            return Aborted;
+//        if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
+//            return status(SendCoinsStatusEnum::Aborted);
+//        if (feeApproval != nFeeRequired)
+//            return SendCoinsReturn(SendCoinsStatusEnum::ApproveFee, nFeeRequired, QString());
 
         std::map<CKeyID, CStealthAddress> mapPubStealth;
         if (!wallet->CommitTransaction(wtx, &mapPubStealth))
-            return TransactionCommitFailed;
+            return status(SendCoinsStatusEnum::TransactionCommitFailed);
 
         hex = QString::fromStdString(wtx.GetHash().GetHex());
 
@@ -465,16 +475,16 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
-        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+        if(rcp.label().isEmpty()) // Don't add addresses without labels...
             continue;
 
-        std::string strAddress = rcp.address.toStdString();
-        std::string strLabel = rcp.label.toStdString();
+        std::string strAddress = rcp.address().toStdString();
+        std::string strLabel = rcp.label().toStdString();
 
         {
             LOCK(wallet->cs_wallet);
 
-            if (rcp.typeInd == AT_Stealth)
+            if (rcp.addressTypeInd() == AT_Stealth)
             {
                 wallet->UpdateStealthAddress(strAddress, strLabel, true);
             } else
@@ -489,29 +499,32 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         } // wallet->cs_wallet
     };
 
-    return SendCoinsReturn(OK, 0, hex);
+    return SendCoinsReturn(SendCoinsStatusEnum::OK, 0, hex);
 }
 
-WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
+SendCoinsReturn WalletModel::sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins)
 {
+    const CCoinControl *coinControl = nullptr;
+
     if (fDebugRingSig)
         LogPrintf("sendCoinsAnon()\n");
 
     int64_t nTotalOut = 0;
     int64_t nBalance = 0;
+    int64_t nFeeRequired = 0;
     QString hex;
 
     if (recipients.empty())
-        return OK;
+        return status(SendCoinsStatusEnum::OK);
 
     if (nNodeMode != NT_FULL)
-        return SCR_NeedFullMode;
+        return status(SendCoinsStatusEnum::SCR_NeedFullMode);
 
     if (nBestHeight < GetNumBlocksOfPeers()-1)
-        return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString("Block chain must be fully synced first."));
+        return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString("Block chain must be fully synced first."));
 
     if (vNodes.empty())
-        return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString("Spectrecoin is not connected!"));
+        return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString("Spectrecoin is not connected!"));
 
 
     // -- verify input type and ringsize
@@ -520,39 +533,39 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
         int inputType = 0;
-        switch(rcp.txnTypeInd)
+        switch(rcp.txnType())
         {
-            case TXT_SPEC_TO_SPEC:
-            case TXT_SPEC_TO_ANON:
+            case TxnTypeEnum::TXT_SPEC_TO_SPEC:
+            case TxnTypeEnum::TXT_SPEC_TO_ANON:
                 inputType = 0;
                 break;
-            case TXT_ANON_TO_ANON:
-            case TXT_ANON_TO_SPEC:
+            case TxnTypeEnum::TXT_ANON_TO_ANON:
+            case TxnTypeEnum::TXT_ANON_TO_SPEC:
                 inputType = 1;
                 break;
             default:
-                return InputTypeError;
+                return status(SendCoinsStatusEnum::InputTypeError);
         };
 
         if (inputTypes == -1)
             inputTypes = inputType;
         else
         if (inputTypes != inputType)
-            return InputTypeError;
+            return status(SendCoinsStatusEnum::InputTypeError);
 
         if (inputTypes == 1)
         {
             if (nRingSize == -1)
-                nRingSize = rcp.nRingSize;
+                nRingSize = rcp.nRingSize();
             else
-            if (nRingSize != rcp.nRingSize)
-                return RingSizeError;
+            if (nRingSize != rcp.nRingSize())
+                return status(SendCoinsStatusEnum::RingSizeError);
         };
 
-        if (rcp.amount <= 0)
-            return InvalidAmount;
+        if (rcp.amount() <= 0)
+            return status(SendCoinsStatusEnum::InvalidAmount);
 
-        nTotalOut += rcp.amount;
+        nTotalOut += rcp.amount();
     };
 
     // -- first balance check
@@ -560,12 +573,12 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
     {
         nBalance = wallet->GetBalance();
         if (nTotalOut > nBalance)
-            return SendCoinsReturn(AmountExceedsBalance);
+            return status(SendCoinsStatusEnum::AmountExceedsBalance);
     } else
     {
         nBalance = wallet->GetSpectreBalance();
         if (nTotalOut > nBalance)
-            return SendCoinsReturn(SCR_AmountExceedsBalance);
+            return status(SendCoinsStatusEnum::SCR_AmountExceedsBalance);
     };
 
     {
@@ -583,23 +596,23 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         foreach(const SendCoinsRecipient &rcp, recipients)
         {
             CStealthAddress sxAddrTo;
-            std::string sAddr = rcp.address.toStdString();
+            std::string sAddr = rcp.address().toStdString();
             if (!sxAddrTo.SetEncoded(sAddr))
-                return rcp.txnTypeInd == TXT_ANON_TO_SPEC ? SCR_StealthAddressFailAnonToSpec :
-                    SCR_StealthAddressFail;
+                return status(rcp.txnType() == TxnTypeEnum::TXT_ANON_TO_SPEC ? SendCoinsStatusEnum::SCR_StealthAddressFailAnonToSpec :
+                    SendCoinsStatusEnum::SCR_StealthAddressFail);
 
-            int64_t nValue = rcp.amount;
-            std::string sNarr = rcp.narration.toStdString();
+            int64_t nValue = rcp.amount();
+            std::string sNarr = rcp.narration().toStdString();
             CScript scriptNarration; // needed to match output id of narr
 
-            if (rcp.txnTypeInd == TXT_SPEC_TO_SPEC
-                || rcp.txnTypeInd == TXT_ANON_TO_SPEC)
+            if (rcp.txnType() == TxnTypeEnum::TXT_SPEC_TO_SPEC
+                || rcp.txnType() == TxnTypeEnum::TXT_ANON_TO_SPEC)
             {
                 // -- out spec
                 if (inputTypes == 1) {
                     // -- Check that we own the recipient address (SPECTRE to XSPEC only allowed for transformation)
                     if (!wallet->IsMine(sxAddrTo)) {
-                        return SendCoinsReturn(RecipientAddressNotOwnedSPECTREtoXSPEC);
+                        return status(SendCoinsStatusEnum::RecipientAddressNotOwnedSPECTREtoXSPEC);
                     }
                 }
 
@@ -608,7 +621,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 if (!wallet->CreateStealthOutput(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration, sError))
                 {
                     LogPrintf("SendCoinsAnon() CreateStealthOutput failed %s.\n", sError.c_str());
-                    return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
+                    return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
                 };
 
             } else
@@ -617,14 +630,14 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
                 if (inputTypes == 0) {
                     // -- Check that we own the recipient address (XSPEC to SPECTRE only allowed for transformation)
                     if (!wallet->IsMine(sxAddrTo)) {
-                        return SendCoinsReturn(RecipientAddressNotOwnedXSPECtoSPECTRE);
+                        return status(SendCoinsStatusEnum::RecipientAddressNotOwnedXSPECtoSPECTRE);
                     }
                 }
 
                 if (!wallet->CreateAnonOutputs(&sxAddrTo, nValue, sNarr, vecSend, scriptNarration, &mapPubStealth))
                 {
                     LogPrintf("SendCoinsAnon() CreateAnonOutputs failed.\n");
-                    return SCR_Error;
+                    return status(SendCoinsStatusEnum::SCR_Error);
                 };
             };
             if (scriptNarration.size() > 0)
@@ -633,8 +646,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
 
 
         // -- add inputs
-
-        int64_t nFeeRequired = 0;
 
         if (inputTypes == 0)
         {
@@ -648,8 +659,8 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             if (!wallet->CreateTransaction(vecSend, wtxNew, nFeeRequired, nChangePos, coinControl))
             {
                 if ((nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
-                    return SendCoinsReturn(AmountWithFeeExceedsBalance, nFeeRequired);
-                return TransactionCreationFailed;
+                    return SendCoinsReturn(SendCoinsStatusEnum::AmountWithFeeExceedsBalance, nFeeRequired, QString());
+                return status(SendCoinsStatusEnum::TransactionCreationFailed);
             };
         }
         else
@@ -660,10 +671,10 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             if (!wallet->AddAnonInputs(nRingSize == 1 ? RING_SIG_1 : RING_SIG_2, nTotalOut, nRingSize, vecSend, vecChange, wtxNew, nFeeRequired, false, sError))
             {
                 if (nFeeRequired != MAX_MONEY && (nTotalOut + nFeeRequired) > nBalance) // FIXME: could cause collisions in the future
-                    return SendCoinsReturn(SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired);
+                    return SendCoinsReturn(SendCoinsStatusEnum::SCR_AmountWithFeeExceedsSpectreBalance, nFeeRequired, QString());
 
                 LogPrintf("SendCoinsAnon() AddAnonInputs failed %s.\n", sError.c_str());
-                return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
+                return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString(sError));
             };
         };
 
@@ -673,12 +684,14 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
             if (!wallet->SaveNarrationOutput(wtxNew, scriptNarration, sNarr, sError))
             {
                 LogPrintf("SendCoinsAnon(): %s\n",  sError.c_str());
-                return SendCoinsReturn(SCR_Error, 0, QString::fromStdString(sError));
+                return SendCoinsReturn(SendCoinsStatusEnum::SCR_Error, 0, QString::fromStdString(sError));
             }
         }
 
-        if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
-            return Aborted;
+//        if (!uiInterface.ThreadSafeAskFee(nFeeRequired, tr("Sending...").toStdString()))
+//            return status(SendCoinsStatusEnum::Aborted);
+//        if (feeApproval != nFeeRequired)
+//            return SendCoinsReturn(SendCoinsStatusEnum::ApproveFee, nFeeRequired, QString());
 
         //return SendCoinsReturn(SCR_ErrorWithMsg, 0, QString::fromStdString(std::string("Testing error")));
 
@@ -686,7 +699,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         {
             LogPrintf("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.\n");
             wallet->UndoAnonTransaction(wtxNew, &mapPubStealth);
-            return TransactionCommitFailed;
+            return status(SendCoinsStatusEnum::TransactionCommitFailed);
 
         };
 
@@ -697,16 +710,16 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
     // Add addresses / update labels that we've sent to to the address book
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
-        if(rcp.label.isEmpty()) // Don't add addresses without labels...
+        if(rcp.label().isEmpty()) // Don't add addresses without labels...
             continue;
 
-        std::string strAddress = rcp.address.toStdString();
-        std::string strLabel = rcp.label.toStdString();
+        std::string strAddress = rcp.address().toStdString();
+        std::string strLabel = rcp.label().toStdString();
 
         {
             LOCK(wallet->cs_wallet);
 
-            if (rcp.typeInd == AT_Stealth)
+            if (rcp.addressTypeInd() == AT_Stealth)
             {
                 wallet->UpdateStealthAddress(strAddress, strLabel, true);
             } else
@@ -723,7 +736,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRec
         }
     };
 
-    return SendCoinsReturn(OK, 0, hex);
+    return SendCoinsReturn(SendCoinsStatusEnum::OK, nFeeRequired, hex);
 }
 
 OptionsModel *WalletModel::getOptionsModel()

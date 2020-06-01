@@ -29,26 +29,6 @@ QT_BEGIN_NAMESPACE
 class QTimer;
 QT_END_NAMESPACE
 
-enum eTxnTypeInd
-{
-    TXT_SPEC_TO_SPEC = 0,
-    TXT_SPEC_TO_ANON,
-    TXT_ANON_TO_ANON,
-    TXT_ANON_TO_SPEC,
-};
-
-class SendCoinsRecipient
-{
-public:
-    QString address;
-    QString label;
-    QString narration;
-    int typeInd;
-    qint64 amount;
-    int txnTypeInd;
-    int nRingSize;
-};
-
 /** Interface to Bitcoin wallet from Qt view code. */
 class WalletModel : public WalletModelRemoteSimpleSource
 {
@@ -57,32 +37,6 @@ class WalletModel : public WalletModelRemoteSimpleSource
 public:
     explicit WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent = 0);
     ~WalletModel();
-
-    enum StatusCode // Returned by sendCoins
-    {
-        OK,
-        InvalidAmount,
-        InvalidAddress,
-        StealthAddressOnlyAllowedForSPECTRE,
-        RecipientAddressNotOwnedXSPECtoSPECTRE,
-        RecipientAddressNotOwnedSPECTREtoXSPEC,
-        AmountExceedsBalance,
-        AmountWithFeeExceedsBalance,
-        DuplicateAddress,
-        TransactionCreationFailed, // Error returned when wallet is still locked
-        TransactionCommitFailed,
-        NarrationTooLong,
-        RingSizeError,
-        InputTypeError,
-        SCR_NeedFullMode,
-        SCR_StealthAddressFail,
-        SCR_StealthAddressFailAnonToSpec,
-		SCR_AmountExceedsBalance,
-        SCR_AmountWithFeeExceedsSpectreBalance,
-        SCR_Error,
-        SCR_ErrorWithMsg,
-        Aborted
-    };
 
     enum EncryptionStatus
     {
@@ -109,24 +63,9 @@ public:
     // Check address for validity
     bool validateAddress(const QString &address);
 
-    // Return status record for SendCoins, contains error id + information
-    struct SendCoinsReturn
-    {
-        SendCoinsReturn(StatusCode status=Aborted,
-                         qint64 fee=0,
-                         QString hex=QString()):
-            status(status), fee(fee), hex(hex) {}
-        StatusCode status;
-
-
-        qint64 fee; // is used in case status is "AmountWithFeeExceedsBalance"
-        QString hex; // is filled with the transaction hash if status is "OK", error message otherwise
-    };
-
     // Send coins to a list of recipients
-    SendCoinsReturn sendCoins(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL);
-    SendCoinsReturn sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl=NULL);
-
+    SendCoinsReturn sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins);
+    SendCoinsReturn sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins);
 
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);

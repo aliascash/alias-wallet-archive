@@ -169,8 +169,8 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
         return false;
 
     SendCoinsRecipient rv;
-    rv.address = uri.path();
-    rv.amount = 0;
+    rv.setAddress(uri.path());
+    rv.setAmount(0);
     QUrlQuery urlQuery;
     urlQuery.setQuery(uri.query());
 
@@ -186,17 +186,18 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 
         if (i->first == "label")
         {
-            rv.label = i->second;
+            rv.setLabel(i->second);
             fShouldReturnFalse = false;
         }
         else if (i->first == "amount")
         {
             if(!i->second.isEmpty())
             {
-                if(!BitcoinUnits::parse(BitcoinUnits::XSPEC, i->second, &rv.amount))
-                {
+                qint64 amount;
+                if(!BitcoinUnits::parse(BitcoinUnits::XSPEC, i->second, &amount))
                     return false;
-                }
+                else
+                    rv.setAmount(amount);
             }
             fShouldReturnFalse = false;
         }

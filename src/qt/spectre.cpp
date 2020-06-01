@@ -46,6 +46,7 @@ namespace fs = boost::filesystem;
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
 static ApplicationModelRemoteSimpleSource *applicationModelRef;
+static WalletModel *walletModelRef;
 
 static void ThreadSafeMessageBox(const std::string& message, const std::string& caption, int style)
 {
@@ -80,7 +81,6 @@ static bool ThreadSafeAskFee(int64_t nFeeRequired, const std::string& strCaption
     QMetaObject::invokeMethod(guiref, "askFee", GUIUtil::blockingGUIThreadConnection(),
                                Q_ARG(qint64, nFeeRequired),
                                Q_ARG(bool*, &payFee));
-
     return payFee;
 }
 
@@ -186,6 +186,7 @@ bool AndroidAppInit(int argc, char* argv[])
             OptionsModel optionsModel;
             ClientModel clientModel(&optionsModel);
             WalletModel walletModel(pwalletMain, &optionsModel);
+            walletModelRef = &walletModel;
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
@@ -348,7 +349,7 @@ int main(int argc, char *argv[])
 
     // Subscribe to global signals from core
     uiInterface.ThreadSafeMessageBox.connect(ThreadSafeMessageBox);
-    uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
+    //uiInterface.ThreadSafeAskFee.connect(ThreadSafeAskFee);
     uiInterface.ThreadSafeHandleURI.connect(ThreadSafeHandleURI);
     //TODO obsolete uiInterface.InitMessage.connect(InitMessage);
     //uiInterface.QueueShutdown.connect(QueueShutdown);
