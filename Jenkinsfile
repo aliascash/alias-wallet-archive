@@ -205,52 +205,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.9.6') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
@@ -277,10 +231,56 @@ pipeline {
                         }
                         stage('Win + Qt5.12.x') {
                             agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN_512}"
+                            }
+                            steps {
+                                script {
+                                    prepareWindowsBuild()
+                                    bat 'scripts\\win-genbuild.bat'
+                                    bat 'scripts\\win-build.bat'
+//                                    bat 'scripts\\win-installer.bat'
+                                    createWindowsDelivery(
+                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+                                            suffix: "-Qt5.9.6"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Windows Qt5.15.x') {
+                    stages {
+                        stage('Start Windows slave') {
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
+                                    )
+                                }
+                            }
+                        }
+                        stage('Win + Qt5.15.x') {
+                            agent {
                                 label "windows2"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {
@@ -733,7 +733,7 @@ pipeline {
                                 label "windows"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN_512}"
                             }
                             steps {
                                 script {
@@ -814,7 +814,7 @@ pipeline {
                                 label "windows2"
                             }
                             environment {
-                                QTDIR = "${QT515_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN}"
                             }
                             steps {
                                 script {
