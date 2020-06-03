@@ -29,6 +29,8 @@ QT_BEGIN_NAMESPACE
 class QTimer;
 QT_END_NAMESPACE
 
+using EncryptionStatus = EncryptionStatusEnum::EncryptionStatus;
+
 /** Interface to Bitcoin wallet from Qt view code. */
 class WalletModel : public WalletModelRemoteSimpleSource
 {
@@ -37,13 +39,6 @@ class WalletModel : public WalletModelRemoteSimpleSource
 public:
     explicit WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent = 0);
     ~WalletModel();
-
-    enum EncryptionStatus
-    {
-        Unencrypted,  // !wallet->IsCrypted()
-        Locked,       // wallet->IsCrypted() && wallet->IsLocked()
-        Unlocked      // wallet->IsCrypted() && !wallet->IsLocked()
-    };
 
     OptionsModel *getOptionsModel();
     AddressTableModel *getAddressTableModel();
@@ -68,10 +63,10 @@ public:
     SendCoinsReturn sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins);
 
     // Wallet encryption
-    bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
-    // Passphrase only needed when unlocking
-    bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString());
-    bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
+    bool setWalletEncrypted(bool encrypted, const QString &passphrase);
+    bool lockWallet();
+    bool unlockWallet(const QString &passPhrase, const bool fStakingOnly);
+    bool changePassphrase(const QString &oldPass, const QString &newPass);
     // Wallet backup
     bool backupWallet(const QString &filename);
 

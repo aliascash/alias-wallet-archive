@@ -25,7 +25,7 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     transactionTableModel(0),
     cachedBalance(0), cachedSpectreBal(0), cachedStake(0), cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
     cachedNumTransactions(0),
-    cachedEncryptionStatus(Unencrypted),
+    cachedEncryptionStatus(EncryptionStatus::Unencrypted),
     cachedNumBlocks(0),
     fUnlockRescanRequested(false),
     fForceCheckBalanceChanged(false)
@@ -754,28 +754,31 @@ TransactionTableModel *WalletModel::getTransactionTableModel()
     return transactionTableModel;
 }
 
-WalletModel::EncryptionStatus WalletModel::getEncryptionStatus() const
+EncryptionStatus WalletModel::getEncryptionStatus() const
 {
     if(!wallet->IsCrypted())
     {
-        return Unencrypted;
+        return EncryptionStatus::Unencrypted;
     }
     else if(wallet->IsLocked())
     {
-        return Locked;
+        return EncryptionStatus::Locked;
     }
     else
     {
-        return Unlocked;
+        return EncryptionStatus::Unlocked;
     }
 }
 
-bool WalletModel::setWalletEncrypted(bool encrypted, const SecureString &passphrase)
+bool WalletModel::setWalletEncrypted(bool encrypted, const QString &passphrase)
 {
     if(encrypted)
     {
         // Encrypt
-        return wallet->EncryptWallet(passphrase);
+        SecureString secPassphrase;
+        secPassphrase.reserve(MAX_PASSPHRASE_SIZE);
+        secPassphrase.assign(passphrase.toStdString().c_str());
+        return wallet->EncryptWallet(secPassphrase);
     }
     else
     {
@@ -784,27 +787,35 @@ bool WalletModel::setWalletEncrypted(bool encrypted, const SecureString &passphr
     }
 }
 
-bool WalletModel::setWalletLocked(bool locked, const SecureString &passPhrase)
+bool WalletModel::lockWallet()
 {
-    if(locked)
-    {
-        // Lock
-        return wallet->Lock();
-    }
-    else
-    {
-        // Unlock
-        return wallet->Unlock(passPhrase);
-    }
+    // Lock
+    return wallet->Lock();
 }
 
-bool WalletModel::changePassphrase(const SecureString &oldPass, const SecureString &newPass)
+bool WalletModel::unlockWallet(const QString &passPhrase, const bool fStakingOnly)
+{
+    // Unlock
+    SecureString securePassPhrase;
+    securePassPhrase.assign(passPhrase.toStdString());
+    bool unlocked =  wallet->Unlock(securePassPhrase);
+    if (unlocked)
+        fWalletUnlockStakingOnly = fStakingOnly;
+    return unlocked;
+}
+
+bool WalletModel::changePassphrase(const QString &oldPass, const QString &newPass)
 {
     bool retval;
     {
         LOCK(wallet->cs_wallet);
         wallet->Lock(); // Make sure wallet is locked before attempting pass change
-        retval = wallet->ChangeWalletPassphrase(oldPass, newPass);
+        SecureString secOldPass, secNewPass;
+        secOldPass.reserve(MAX_PASSPHRASE_SIZE);
+        secNewPass.reserve(MAX_PASSPHRASE_SIZE);
+        secOldPass.assign(oldPass.toStdString().c_str());
+        secNewPass.assign(newPass.toStdString().c_str());
+        retval = wallet->ChangeWalletPassphrase(secOldPass, secNewPass);
     }
     return retval;
 }
@@ -877,12 +888,12 @@ void WalletModel::unsubscribeFromCoreSignals()
 // WalletModel::UnlockContext implementation
 WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mode)
 {
-    bool was_locked = getEncryptionStatus() == Locked;
+    bool was_locked = getEncryptionStatus() == EncryptionStatus::Locked;
 
     if ((!was_locked) && fWalletUnlockStakingOnly)
     {
-       setWalletLocked(true);
-       was_locked = getEncryptionStatus() == Locked;
+       lockWallet();
+       was_locked = getEncryptionStatus() == EncryptionStatus::Locked;
 
     }
     if(was_locked)
@@ -891,23 +902,23 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
         emit requireUnlock(mode);
     }
     // If wallet is still locked, unlock was failed or cancelled, mark context as invalid
-    bool valid = getEncryptionStatus() != Locked;
+    bool valid = getEncryptionStatus() != EncryptionStatus::Locked;
 
     return UnlockContext(this, valid, was_locked && !fWalletUnlockStakingOnly);
 }
 
 void WalletModel::requestUnlockRescan()
 {
-    if(!fUnlockRescanRequested && getEncryptionStatus() == Locked)
+    if(!fUnlockRescanRequested && getEncryptionStatus() == EncryptionStatus::Locked)
     {
         fUnlockRescanRequested = true;
         // Request UI to unlock wallet
         emit requireUnlock(rescan);
-        if (getEncryptionStatus() != Locked)
+        if (getEncryptionStatus() != EncryptionStatus::Locked)
         {
             fForceCheckBalanceChanged = true;
             if (!fWalletUnlockStakingOnly)
-                setWalletLocked(true);
+                lockWallet();
         }
         fUnlockRescanRequested = false;
     }
@@ -924,7 +935,7 @@ WalletModel::UnlockContext::~UnlockContext()
 {
     if(valid && relock)
     {
-        wallet->setWalletLocked(true);
+        wallet->lockWallet();
     }
 }
 

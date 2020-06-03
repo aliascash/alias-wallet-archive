@@ -345,13 +345,12 @@ void SpectreClientBridge::updateCoinControlLabels(unsigned int &quantity, qint64
     emitCoinControlUpdate(quantity, amount, fee, afterfee, bytes, priority, low, change);
 }
 
-QJsonValue SpectreClientBridge::userAction(QJsonValue action)
+void SpectreClientBridge::userAction(QJsonValue action)
 {
     QString key = action.toArray().at(0).toString();
     if (key == "") {
         key = action.toObject().keys().at(0);
     }
-#ifndef ANDROID // TODO emit signals to QT UI
     if(key == "backupWallet")
         window->backupWallet();
     if(key == "close")
@@ -372,9 +371,6 @@ QJsonValue SpectreClientBridge::userAction(QJsonValue action)
         window->rpcConsole->activateWindow();
         window->rpcConsole->raise();
     }
-#endif
     if(key == "clearRecipients")
         clearRecipients();
-
-    return QJsonValue();
 }

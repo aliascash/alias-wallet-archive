@@ -60,6 +60,8 @@
 double GetPoSKernelPS();
 double GetPoSKernelPSRecent();
 
+using EncryptionStatus = EncryptionStatusEnum::EncryptionStatus;
+
 void SpectreGUI::runJavaScript(QString javascriptCode)
 {
     if (uiReady)
@@ -859,7 +861,7 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
     WebElement toggleLockIcon    = WebElement(this, "toggleLock i");
     switch(encryptionInfo.status())
     {
-    case WalletModel::Unencrypted:
+    case EncryptionStatus::Unencrypted:
         encryptionIcon.setAttribute("style", "display:none;");
         changePassphrase.addClass("none");
         toggleLock.addClass("none");
@@ -870,7 +872,7 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
         lockWalletAction->setVisible(false);
         encryptWalletAction->setEnabled(true);
         break;
-    case WalletModel::Unlocked:
+    case EncryptionStatus::Unlocked:
         encryptMenuItem  .addClass("none");
         encryptionIcon.removeAttribute("style");
         encryptionIcon.removeClass("fa-lock");
@@ -912,7 +914,7 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
         lockWalletAction->setVisible(true);
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
         break;
-    case WalletModel::Locked:
+    case EncryptionStatus::Locked:
         encryptionIcon.removeAttribute("style");
         encryptionIcon.removeClass("fa-unlock");
         encryptionIcon.removeClass("no-encryption");
@@ -941,14 +943,15 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
 
 void SpectreGUI::encryptWallet(bool status)
 {
-// TODO   if(!walletModel)
+    if(!walletModel)
         return;
-//    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
-//                                     AskPassphraseDialog::Decrypt, this);
-//    dlg.setModel(walletModel);
-//    dlg.exec();
 
-//    setEncryptionStatus(walletModel->getEncryptionStatus());
+    AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
+                                     AskPassphraseDialog::Decrypt, this);
+    dlg.setModel(walletModel);
+    dlg.exec();
+
+    // set via Notification setEncryptionStatus(walletModel->getEncryptionStatus());
 }
 
 void SpectreGUI::backupWallet()
@@ -969,58 +972,57 @@ void SpectreGUI::backupWallet()
 
 void SpectreGUI::changePassphrase()
 {
-// TODO   AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
-//    dlg.setModel(walletModel);
-//    dlg.exec();
+    AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
+    dlg.setModel(walletModel);
+    dlg.exec();
 }
 
 void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
 {
-// TODO   if(!walletModel)
-        return;
+    if(!walletModel->isInitialized() || !walletModel->isReplicaValid())
+         return;
 
-//    AskPassphraseDialog::Mode mode;
-//    if (unlockMode == WalletModel::UnlockMode::rescan) {
-//         mode = AskPassphraseDialog::UnlockRescan;
-//    }
-//    else {
-//        mode = sender() == unlockWalletAction ?
-//                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
-//    }
+    AskPassphraseDialog::Mode mode;
+    if (unlockMode == WalletModel::UnlockMode::rescan) {
+        mode = AskPassphraseDialog::UnlockRescan;
+    }
+    else {
+        mode = sender() == unlockWalletAction ?
+                    AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
+    }
 
-//    // Unlock wallet when requested by wallet model
-//    if(walletModel->getEncryptionStatus() == WalletModel::Locked)
-//    {
-//        AskPassphraseDialog dlg(mode, this);
-//        dlg.setModel(walletModel);
-//        dlg.exec();
-//    }
+    // Unlock wallet when requested by wallet model
+    if(walletModel->encryptionInfo().status() == EncryptionStatus::Locked)
+    {
+        AskPassphraseDialog dlg(mode, this);
+        dlg.setModel(walletModel);
+        dlg.exec();
+    }
 }
 
 void SpectreGUI::lockWallet()
 {
-// TODO   if(!walletModel)
-//        return;
-
-//    walletModel->setWalletLocked(true);
+    if(!walletModel->isInitialized() || !walletModel->isReplicaValid())
+         return;
+    walletModel->lockWallet();
 }
 
 void SpectreGUI::toggleLock()
 {
-// TODO   if(!walletModel)
-//        return;
-//    WalletModel::EncryptionStatus status = walletModel->getEncryptionStatus();
+    if(!walletModel->isInitialized() || !walletModel->isReplicaValid())
+         return;
+    EncryptionStatus status = walletModel->encryptionInfo().status();
 
-//    switch(status)
-//    {
-//        case WalletModel::Locked:       unlockWalletAction->trigger(); break;
-//        case WalletModel::Unlocked:     lockWalletAction->trigger();   break;
-//        default: // unencrypted wallet
-//            QMessageBox::warning(this, tr("Lock Wallet"),
-//                tr("Error: Wallet must first be encrypted to be locked."),
-//                QMessageBox::Ok, QMessageBox::Ok);
-//            break;
-//    };
+    switch(status)
+    {
+        case EncryptionStatus::Locked:       unlockWalletAction->trigger(); break;
+        case EncryptionStatus::Unlocked:     lockWalletAction->trigger();   break;
+        default: // unencrypted wallet
+            QMessageBox::warning(this, tr("Lock Wallet"),
+                tr("Error: Wallet must first be encrypted to be locked."),
+                QMessageBox::Ok, QMessageBox::Ok);
+            break;
+    };
 }
 
 void SpectreGUI::showNormalIfMinimized(bool fToggleHidden)

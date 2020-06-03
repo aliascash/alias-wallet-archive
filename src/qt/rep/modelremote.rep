@@ -32,12 +32,18 @@ ENUM SendCoinsStatus // Returned by sendCoins
     SCR_ErrorWithMsg,
     Aborted
 };
+ENUM EncryptionStatus // Wallet encryption status
+{
+    Unencrypted,  // !wallet->IsCrypted()
+    Locked,       // wallet->IsCrypted() && wallet->IsLocked()
+    Unlocked      // wallet->IsCrypted() && !wallet->IsLocked()
+};
 // Return status record for SendCoins, contains error id + information
 POD SendCoinsReturn(SendCoinsStatusEnum::SendCoinsStatus status,
                          qint64 fee,   // is used in case status is "AmountWithFeeExceedsBalance"
                          QString hex); // is filled with the transaction hash if status is "OK", error message otherwise
 POD BlockInfo(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, qint64 nTimeOffset, int nLastFilteredHeight)
-POD EncryptionInfo(int status, bool fWalletUnlockStakingOnly);
+POD EncryptionInfo(EncryptionStatusEnum::EncryptionStatus status, bool fWalletUnlockStakingOnly);
 POD StakingInfo(bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint64 nNetworkWeight, quint64 nNetworkWeightRecent);
 POD SendCoinsRecipient(QString address, QString label, QString narration, int addressTypeInd, qint64 amount, TxnTypeEnum::TxnType txnType, int nRingSize);
 POD OutPoint(QString hex, // transaction hash as hex

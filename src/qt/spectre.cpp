@@ -452,11 +452,6 @@ int main(int argc, char *argv[])
         pollShutdownTimer->start(200);
 
 
-#ifdef ANDROID
-        // Android: detect location of tor binary
-        QString nativeLibraryDir = QAndroidJniObject::getStaticObjectField<jstring>("org/spectrecoin/wallet/SpectrecoinActivity","nativeLibraryDir").toString();
-        torPath = nativeLibraryDir.toStdString() + "/libtor.so";
-#endif
 
         if (true) // AppInit2(threadGroup))
         {

@@ -7,12 +7,11 @@
 #define ASKPASSPHRASEDIALOG_H
 
 #include <QDialog>
+#include <rep_walletmodelremote_replica.h>
 
 namespace Ui {
     class AskPassphraseDialog;
 }
-
-class WalletModel;
 
 /** Multifunctional dialog to ask for passphrases. Used for encryption, unlocking, and changing the passphrase.
  */
@@ -35,12 +34,12 @@ public:
 
     void accept();
 
-    void setModel(WalletModel *model);
+    void setModel(QSharedPointer<WalletModelRemoteReplica> model);
 
 private:
     Ui::AskPassphraseDialog *ui;
     Mode mode;
-    WalletModel *model;
+    QSharedPointer<WalletModelRemoteReplica> model;
     bool fCapsLock;
 
 private slots:

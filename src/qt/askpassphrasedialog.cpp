@@ -7,13 +7,11 @@
 #include "ui_askpassphrasedialog.h"
 
 #include "guiconstants.h"
-#include "walletmodel.h"
+#include "allocators.h"
 
 #include <QMessageBox>
 #include <QPushButton>
 #include <QKeyEvent>
-
-extern bool fWalletUnlockStakingOnly;
 
 AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     QDialog(parent),
@@ -31,8 +29,6 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     ui->passEdit1->installEventFilter(this);
     ui->passEdit2->installEventFilter(this);
     ui->passEdit3->installEventFilter(this);
-
-    ui->stakingCheckBox->setChecked(fWalletUnlockStakingOnly);
 
     switch(mode)
     {
@@ -85,31 +81,33 @@ AskPassphraseDialog::~AskPassphraseDialog()
     delete ui;
 }
 
-void AskPassphraseDialog::setModel(WalletModel *model)
+void AskPassphraseDialog::setModel(QSharedPointer<WalletModelRemoteReplica> model)
 {
     this->model = model;
+    ui->stakingCheckBox->setChecked(model->encryptionInfo().fWalletUnlockStakingOnly());
 }
+
+bool evaluate(QRemoteObjectPendingReply<bool> reply)
+{
+    return reply.waitForFinished() && reply.returnValue();
+}
+
 
 void AskPassphraseDialog::accept()
 {
-    SecureString oldpass, newpass1, newpass2;
-    if(!model)
+    if(!model || !model->isInitialized() || !model->isReplicaValid())
         return;
-    oldpass.reserve(MAX_PASSPHRASE_SIZE);
-    newpass1.reserve(MAX_PASSPHRASE_SIZE);
-    newpass2.reserve(MAX_PASSPHRASE_SIZE);
-    // TODO: get rid of this .c_str() by implementing SecureString::operator=(std::string)
-    // Alternately, find a way to make this input mlock()'d to begin with.
-    oldpass.assign(ui->passEdit1->text().toStdString().c_str());
-    newpass1.assign(ui->passEdit2->text().toStdString().c_str());
-    newpass2.assign(ui->passEdit3->text().toStdString().c_str());
+
+    QString oldpass = ui->passEdit1->text();
+    QString newpass1 = ui->passEdit2->text();
+    QString newpass2 = ui->passEdit3->text();
 
     secureClearPassFields();
 
     switch(mode)
     {
     case Encrypt: {
-        if(newpass1.empty() || newpass2.empty())
+        if(newpass1.isEmpty() || newpass2.isEmpty())
         {
             // Cannot encrypt with empty passphrase
             break;
@@ -122,7 +120,7 @@ void AskPassphraseDialog::accept()
         {
             if(newpass1 == newpass2)
             {
-                if(model->setWalletEncrypted(true, newpass1))
+                if(evaluate(model->setWalletEncrypted(true, newpass1)))
                 {
                     QMessageBox::warning(this, tr("Wallet encrypted"),
                                          "<qt>" +
@@ -136,6 +134,7 @@ void AskPassphraseDialog::accept()
                                          "will become useless as soon as you start using the new, encrypted wallet.") +
                                          "</b></qt>");
                     QApplication::quit();
+                    // TODO shutdown service
                 }
                 else
                 {
@@ -158,19 +157,18 @@ void AskPassphraseDialog::accept()
     case UnlockRescan:
     case UnlockStaking:
     case Unlock:
-        if(!model->setWalletLocked(false, oldpass))
+        if(!evaluate(model->unlockWallet(oldpass, ui->stakingCheckBox->isChecked())))
         {
             QMessageBox::critical(this, tr("Wallet unlock failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
         }
         else
         {
-            fWalletUnlockStakingOnly = ui->stakingCheckBox->isChecked();
             QDialog::accept(); // Success
         }
         break;
     case Decrypt:
-        if(!model->setWalletEncrypted(false, oldpass))
+        if(!evaluate(model->setWalletEncrypted(false, oldpass)))
         {
             QMessageBox::critical(this, tr("Wallet decryption failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
@@ -183,7 +181,7 @@ void AskPassphraseDialog::accept()
     case ChangePass:
         if(newpass1 == newpass2)
         {
-            if(model->changePassphrase(oldpass, newpass1))
+            if(!evaluate(model->changePassphrase(oldpass, newpass1)))
             {
                 QMessageBox::information(this, tr("Wallet encrypted"),
                                      tr("Wallet passphrase was successfully changed."));

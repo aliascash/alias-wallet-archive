@@ -41,7 +41,7 @@ public slots:
     Q_INVOKABLE void urlClicked(const QString link);
 
     /** Show debug dialog */
-    Q_INVOKABLE QJsonValue userAction(QJsonValue action);
+    Q_INVOKABLE void userAction(QJsonValue action);
 
     Q_INVOKABLE void openCoinControl();
 

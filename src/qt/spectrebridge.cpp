@@ -30,8 +30,6 @@
 #include "coincontroldialog.h"
 #include "ringsig.h"
 
-#include "askpassphrasedialog.h"
-
 #include "txdb.h"
 #include "state.h"
 
@@ -623,29 +621,6 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
     if (key == "") {
         key = action.toObject().keys().at(0);
     }
-#ifndef ANDROID // TODO emit signals to QT UI
-    if(key == "backupWallet")
-        window->backupWallet();
-    if(key == "close")
-        window->close();
-    if(key == "encryptWallet")
-        window->encryptWallet(true);
-    if(key == "changePassphrase")
-        window->changePassphrase();
-    if(key == "toggleLock")
-        window->toggleLock();
-    if(key == "aboutClicked")
-        window->aboutClicked();
-    if(key == "aboutQtClicked")
-        window->aboutQtAction->trigger();
-    if(key == "debugClicked")
-    {
-        window->rpcConsole->show();
-        window->rpcConsole->activateWindow();
-        window->rpcConsole->raise();
-    }
-#endif
-
     if(key == "optionsChanged")
     {
         OptionsModel * optionsModel(clientModel->getOptionsModel());
