@@ -7,6 +7,7 @@
 #define ABOUTDIALOG_H
 
 #include <QDialog>
+#include <rep_clientmodelremote_replica.h>
 
 namespace Ui {
     class AboutDialog;
@@ -22,7 +23,7 @@ public:
     explicit AboutDialog(QWidget *parent = 0);
     ~AboutDialog();
 
-    void setModel(ClientModel *model);
+    void setModel(QSharedPointer<ClientModelRemoteReplica> model);
 private:
     Ui::AboutDialog *ui;
 

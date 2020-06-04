@@ -16,11 +16,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->setupUi(this);
 }
 
-void AboutDialog::setModel(ClientModel *model)
+void AboutDialog::setModel(QSharedPointer<ClientModelRemoteReplica> model)
 {
     if(model)
     {
-        ui->versionLabel->setText(model->formatFullVersion());
+        // TODO ui->versionLabel->setText(model->formatFullVersion());
     }
 }
 

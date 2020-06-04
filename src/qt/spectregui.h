@@ -126,6 +126,8 @@ private:
     /** Create system tray (notification) icon */
     void createTrayIcon();
 
+    void execDialog(QDialog*const dialog);
+
     bool initialized = false;
 
     friend class SpectreClientBridge;

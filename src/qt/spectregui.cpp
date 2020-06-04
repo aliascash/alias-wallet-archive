@@ -253,6 +253,17 @@ void SpectreGUI::loadIndex() {
 //#endif
 }
 
+void SpectreGUI::execDialog(QDialog*const dialog)
+{
+#ifdef ANDROID
+    qmlWebView->setProperty("visible", false);
+#endif
+    dialog->exec();
+#ifdef ANDROID
+    qmlWebView->setProperty("visible", true);
+#endif
+}
+
 SpectreGUI::~SpectreGUI()
 {
     if(trayIcon) // Hide tray icon, as deleting will let it linger until quit (on Ubuntu)
@@ -509,8 +520,8 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void SpectreGUI::aboutClicked()
 {
     AboutDialog dlg;
-    // TODO dlg.setModel(clientModel);
-    dlg.exec();
+    dlg.setModel(clientModel);
+    execDialog(&dlg);
 }
 
 void SpectreGUI::setNumConnections(int count)
@@ -949,7 +960,7 @@ void SpectreGUI::encryptWallet(bool status)
     AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
                                      AskPassphraseDialog::Decrypt, this);
     dlg.setModel(walletModel);
-    dlg.exec();
+    execDialog(&dlg);
 
     // set via Notification setEncryptionStatus(walletModel->getEncryptionStatus());
 }
@@ -974,7 +985,7 @@ void SpectreGUI::changePassphrase()
 {
     AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
     dlg.setModel(walletModel);
-    dlg.exec();
+    execDialog(&dlg);
 }
 
 void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
@@ -996,7 +1007,7 @@ void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
     {
         AskPassphraseDialog dlg(mode, this);
         dlg.setModel(walletModel);
-        dlg.exec();
+        execDialog(&dlg);
     }
 }
 
