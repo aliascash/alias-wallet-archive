@@ -235,6 +235,7 @@ pipeline {
                             }
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
@@ -281,6 +282,7 @@ pipeline {
                             }
                             environment {
                                 QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
                             }
                             steps {
                                 script {
@@ -734,6 +736,7 @@ pipeline {
                             }
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
@@ -815,6 +818,7 @@ pipeline {
                             }
                             environment {
                                 QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
                             }
                             steps {
                                 script {
