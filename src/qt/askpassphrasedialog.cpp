@@ -95,7 +95,7 @@ bool AskPassphraseDialog::evaluate(QRemoteObjectPendingReply<bool> reply)
     ui->progressBar->setVisible(true);
     bool result = reply.waitForFinished() && reply.returnValue();
     ui->progressBar->setVisible(false);
-    setEnabled(true);
+    setEnabled(!result);
     return result;
 }
 
