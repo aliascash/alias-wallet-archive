@@ -22,6 +22,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     fCapsLock(false)
 {
     ui->setupUi(this);
+    ui->progressBar->setVisible(false);
     ui->passEdit1->setMaxLength(MAX_PASSPHRASE_SIZE);
     ui->passEdit2->setMaxLength(MAX_PASSPHRASE_SIZE);
     ui->passEdit3->setMaxLength(MAX_PASSPHRASE_SIZE);
@@ -88,9 +89,14 @@ void AskPassphraseDialog::setModel(QSharedPointer<WalletModelRemoteReplica> mode
     ui->stakingCheckBox->setChecked(model->encryptionInfo().fWalletUnlockStakingOnly());
 }
 
-bool evaluate(QRemoteObjectPendingReply<bool> reply)
+bool AskPassphraseDialog::evaluate(QRemoteObjectPendingReply<bool> reply)
 {
-    return reply.waitForFinished() && reply.returnValue();
+    setEnabled(false);
+    ui->progressBar->setVisible(true);
+    bool result = reply.waitForFinished() && reply.returnValue();
+    ui->progressBar->setVisible(false);
+    setEnabled(true);
+    return result;
 }
 
 
@@ -182,7 +188,7 @@ void AskPassphraseDialog::accept()
     case ChangePass:
         if(newpass1 == newpass2)
         {
-            if(!evaluate(model->changePassphrase(oldpass, newpass1)))
+            if(evaluate(model->changePassphrase(oldpass, newpass1)))
             {
                 QMessageBox::information(this, tr("Wallet encrypted"),
                                      tr("Wallet passphrase was successfully changed."));

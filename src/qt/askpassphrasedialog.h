@@ -40,6 +40,8 @@ protected:
     void showEvent(QShowEvent *);
 
 private:
+    bool evaluate(QRemoteObjectPendingReply<bool> reply);
+
     Ui::AskPassphraseDialog *ui;
     Mode mode;
     QSharedPointer<WalletModelRemoteReplica> model;
