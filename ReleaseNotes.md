@@ -15,6 +15,9 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
 ### Changelog
+## 4.x.y (released 2020-??-??)
+- Update to Qt 5.15.0 (Windows / Mac)
+
 ## 4.2.0 (released 2020-05-02)
 - Update to Qt 5.12.8
 - Replace QtWebEngine with QtWebView to support mobile platforms.
