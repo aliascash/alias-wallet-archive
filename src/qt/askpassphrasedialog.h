@@ -36,6 +36,9 @@ public:
 
     void setModel(QSharedPointer<WalletModelRemoteReplica> model);
 
+protected:
+    void showEvent(QShowEvent *);
+
 private:
     Ui::AskPassphraseDialog *ui;
     Mode mode;

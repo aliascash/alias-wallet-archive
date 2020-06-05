@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QKeyEvent>
+#include <QScreen>
 
 AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     QDialog(parent),
@@ -277,4 +278,13 @@ void AskPassphraseDialog::secureClearPassFields()
     ui->passEdit1->clear();
     ui->passEdit2->clear();
     ui->passEdit3->clear();
+}
+
+void AskPassphraseDialog::showEvent(QShowEvent *e)
+{
+#ifdef ANDROID
+    QScreen *screen = QGuiApplication::primaryScreen();
+    resize(screen->availableSize());
+#endif
+    QDialog::showEvent(e);
 }
