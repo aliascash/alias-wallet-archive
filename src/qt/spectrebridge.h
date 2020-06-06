@@ -132,7 +132,6 @@ public slots:
     Q_INVOKABLE void listTransactionsForBlock(QString blkid);
     Q_INVOKABLE void txnDetails(QString blkHash, QString txnHash);
 
-    Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
     Q_INVOKABLE QVariantMap verifyMessage(QString address, QString message, QString signature);
 
     Q_INVOKABLE void importFromMnemonic(QString inMnemonic, QString inPassword, QString inLabel, bool fBip44 = false, quint64 nCreateTime = 0);

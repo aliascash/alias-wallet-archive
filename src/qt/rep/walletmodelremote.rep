@@ -9,6 +9,7 @@ class WalletModelRemote
     SLOT(bool lockWallet());
     SLOT(bool unlockWallet(const QString &passPhrase, const bool fStakingOnly));
     SLOT(bool validateAddress(const QString &address));
+    SLOT(QVariantMap signMessage(const QString &address, const QString &message));
     SLOT(SendCoinsReturn sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
     SLOT(SendCoinsReturn sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
 };

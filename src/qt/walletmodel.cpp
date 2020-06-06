@@ -890,6 +890,10 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
 {
     bool was_locked = getEncryptionStatus() == EncryptionStatus::Locked;
 
+#ifdef ANDROID
+    return UnlockContext(this, !was_locked, false); // For Unlock/Relock via qt remoteobjects
+#endif
+
     if ((!was_locked) && fWalletUnlockStakingOnly)
     {
        lockWallet();
@@ -994,6 +998,53 @@ void WalletModel::listCoins(std::map<QString, std::vector<std::pair<COutput,bool
 
         mapCoins[CBitcoinAddress(address).ToString().c_str()].push_back({out, isChangeOutput});
     }
+}
+
+QVariantMap WalletModel::signMessage(const QString &address, const QString &message)
+{
+    QVariantMap result;
+
+    CBitcoinAddress addr(address.toStdString());
+    if (!addr.IsValid())
+    {
+        result.insert("error_msg", "The entered address is invalid. Please check the address and try again.");
+        return result;
+    }
+    CKeyID keyID;
+    if (!addr.GetKeyID(keyID))
+    {
+        result.insert("error_msg", "The entered address does not refer to a key. Please check the address and try again.");
+        return result;
+    }
+
+    WalletModel::UnlockContext ctx(requestUnlock());
+    if (!ctx.isValid())
+    {
+        result.insert("error_msg", "Wallet unlock was cancelled.");
+        return result;
+    }
+
+    CKey key;
+    if (!wallet->GetKey(keyID, key))
+    {
+        result.insert("error_msg", "Private key for the entered address is not available.");
+        return result;
+    }
+
+    CDataStream ss(SER_GETHASH, 0);
+    ss << strMessageMagic;
+    ss << message.toStdString();
+
+    std::vector<unsigned char> vchSig;
+    if (!key.SignCompact(Hash(ss.begin(), ss.end()), vchSig))
+    {
+        result.insert("error_msg" , "Message signing failed.");
+        return result;
+    }
+    result.insert("signed_signature", QString::fromStdString(EncodeBase64(&vchSig[0], vchSig.size())));
+    result.insert("error_msg", "");
+
+    return result;
 }
 
 /* Look up stealth address for address in wallet

@@ -57,6 +57,8 @@ public:
 
     // Check address for validity
     bool validateAddress(const QString &address);
+    // Sign Message with owned address
+    QVariantMap signMessage(const QString &address, const QString &message);
 
     // Send coins to a list of recipients
     SendCoinsReturn sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins);

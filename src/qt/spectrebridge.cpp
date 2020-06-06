@@ -1032,53 +1032,6 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
     return;
 }
 
-QVariantMap SpectreBridge::signMessage(QString address, QString message)
-{
-    QVariantMap result;
-
-    CBitcoinAddress addr(address.toStdString());
-    if (!addr.IsValid())
-    {
-        result.insert("error_msg", "The entered address is invalid. Please check the address and try again.");
-        return result;
-    }
-    CKeyID keyID;
-    if (!addr.GetKeyID(keyID))
-    {
-        result.insert("error_msg", "The entered address does not refer to a key. Please check the address and try again.");
-        return result;
-    }
-
-    WalletModel::UnlockContext ctx(walletModel->requestUnlock());
-    if (!ctx.isValid())
-    {
-        result.insert("error_msg", "Wallet unlock was cancelled.");
-        return result;
-    }
-
-    CKey key;
-    if (!pwalletMain->GetKey(keyID, key))
-    {
-        result.insert("error_msg", "Private key for the entered address is not available.");
-        return result;
-    }
-
-    CDataStream ss(SER_GETHASH, 0);
-    ss << strMessageMagic;
-    ss << message.toStdString();
-
-    std::vector<unsigned char> vchSig;
-    if (!key.SignCompact(Hash(ss.begin(), ss.end()), vchSig))
-    {
-        result.insert("error_msg" , "Message signing failed.");
-        return result;
-    }
-    result.insert("signed_signature", QString::fromStdString(EncodeBase64(&vchSig[0], vchSig.size())));
-    result.insert("error_msg", "");
-
-    return result;
-}
-
 QVariantMap SpectreBridge::verifyMessage(QString address, QString message, QString signature)
 {
     QVariantMap result;

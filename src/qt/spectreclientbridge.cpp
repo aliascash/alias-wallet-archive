@@ -353,3 +353,22 @@ void SpectreClientBridge::userAction(QJsonValue action)
     if(key == "clearRecipients")
         clearRecipients();
 }
+
+QVariantMap SpectreClientBridge::signMessage(QString address, QString message)
+{
+    QVariantMap result;
+    SpectreGUI::UnlockContext ctx(window->requestUnlock());
+    if (!ctx.isValid())
+    {
+        result.insert("error_msg", "Wallet unlock was cancelled.");
+        return result;
+    }
+
+    QRemoteObjectPendingReply<QVariantMap> reply = window->walletModel->signMessage(address, message);
+    if (reply.waitForFinished())
+        result = reply.returnValue();
+    else {
+        result.insert("error_msg", "Core not responding.");
+    }
+    return result;
+}

@@ -51,6 +51,8 @@ public slots:
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
     Q_INVOKABLE void updateCoinControlLabels(unsigned int &quantity, qint64 &amount, qint64 &fee, qint64 &afterfee, unsigned int &bytes, QString &priority, QString low, qint64 &change);
 
+    Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
+
 signals:
     void emitPaste(QString text);
     void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
