@@ -34,12 +34,14 @@ QT_INSTALLATION_PATH=${HOME}/Qt
 #QT_ARCHIVE_HASH=ce2c5661c028b9de6183245982d7c120
 #QT_VERSION=5.12.8
 #QT_ARCHIVE_HASH=8ec2a0458f3b8e9c995b03df05e006e4
-QT_VERSION=5.14.2
-QT_ARCHIVE_HASH=b3d2b6d00e6ca8a8ede6d1c9bdc74daf
+#QT_VERSION=5.14.2
+#QT_ARCHIVE_HASH=b3d2b6d00e6ca8a8ede6d1c9bdc74daf
+QT_VERSION=5.15.0
+QT_ARCHIVE_HASH=610a228dba6ef469d14d145b71ab3b88
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
-QT_VERSION_MAC=5.12.8
+QT_VERSION_MAC=5.15.0
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30
