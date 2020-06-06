@@ -139,18 +139,14 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 inputType = 1;
                 break;
             default:
-                abortSendCoins(tr("Unknown txn type detected %1.").arg(rcp.txnType()));
-                return;
+                return abortSendCoins(tr("Unknown txn type detected %1.").arg(rcp.txnType()));
         }
 
         if (inputTypes == -1)
             inputTypes = inputType;
         else
         if (inputTypes != inputType)
-        {
-            abortSendCoins(tr("Input types must match for all recipients."));
-            return;
-        };
+            return abortSendCoins(tr("Input types must match for all recipients."));
 
         if (inputTypes == 1)
         {
@@ -158,18 +154,14 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 ringSizes = rcp.nRingSize();
             else
             if (ringSizes != rcp.nRingSize())
-            {
-                abortSendCoins(tr("Ring sizes must match for all recipients."));
-                return;
-            };
+                return abortSendCoins(tr("Ring sizes must match for all recipients."));
 
             auto [nMinRingSize, nMaxRingSize] = GetRingSizeMinMax();
             if (ringSizes < (int)nMinRingSize || ringSizes > (int)nMaxRingSize)
             {
                 QString message = nMinRingSize == nMaxRingSize ? tr("Ring size must be %1.").arg(nMinRingSize) :
                                                                  tr("Ring size outside range [%1, %2].").arg(nMinRingSize).arg(nMaxRingSize);
-                abortSendCoins(message);
-                return;
+                return abortSendCoins(message);
             };
         };
     };
@@ -207,8 +199,7 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     SpectreGUI::UnlockContext ctx(window->requestUnlock());
     // Unlock wallet was cancelled
     if(!ctx.isValid()) {
-        abortSendCoins(tr("Payment not send because wallet is locked."));
-        return;
+        return abortSendCoins(tr("Payment not send because wallet is locked."));
     }
 
     QProgressDialog* pProgressDlg = window->showProgressDlg("Creating transaction...");
@@ -220,7 +211,9 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     else
         sendResultPendingReply = window->walletModel->sendCoins(0, recipients, coins);
 
-    sendResultPendingReply.waitForFinished(-1);
+    if (!sendResultPendingReply.waitForFinished())
+         return abortSendCoins(tr("Core not responding."));
+
     sendResult = sendResultPendingReply.returnValue();
     SendCoinsStatusEnum::SendCoinsStatus sendCoinsStatus = sendResult.status();
 
@@ -237,7 +230,8 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
                 sendResultPendingReply = window->walletModel->sendCoinsAnon(sendResult.fee(), recipients, coins);
             else
                 sendResultPendingReply = window->walletModel->sendCoins(sendResult.fee(), recipients, coins);
-            sendResultPendingReply.waitForFinished(-1);
+            if (!sendResultPendingReply.waitForFinished())
+                return abortSendCoins(tr("Core not responding."));
             sendResult = sendResultPendingReply.returnValue();
             sendCoinsStatus = sendResult.status();
         }
@@ -246,66 +240,45 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     switch(sendCoinsStatus)
     {
         case SendCoinsStatusEnum::InvalidAddress:
-            abortSendCoins(tr("The recipient address is not valid, please recheck."));
-            return;
+            return abortSendCoins(tr("The recipient address is not valid, please recheck."));
         case SendCoinsStatusEnum::StealthAddressOnlyAllowedForSPECTRE:
-            abortSendCoins(tr("Only SPECTRE from your Private balance can be send to a stealth address."));
-            return;
+            return abortSendCoins(tr("Only SPECTRE from your Private balance can be send to a stealth address."));
         case SendCoinsStatusEnum::RecipientAddressNotOwnedXSPECtoSPECTRE:
-            abortSendCoins(tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
-            return;
+            return abortSendCoins(tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
         case SendCoinsStatusEnum::RecipientAddressNotOwnedSPECTREtoXSPEC:
-            abortSendCoins(tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
-            return;
+            return abortSendCoins(tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
         case SendCoinsStatusEnum::InvalidAmount:
-            abortSendCoins(tr("The amount to pay must be larger than 0."));
-            return;
+            return abortSendCoins(tr("The amount to pay must be larger than 0."));
         case SendCoinsStatusEnum::AmountExceedsBalance:
-            abortSendCoins(tr("The amount exceeds your balance."));
-            return;
+            return abortSendCoins(tr("The amount exceeds your balance."));
         case SendCoinsStatusEnum::AmountWithFeeExceedsBalance:
-            abortSendCoins(tr("The total exceeds your balance when the %1 transaction fee is included."));
-            return;
+            return abortSendCoins(tr("The total exceeds your balance when the %1 transaction fee is included."));
         case SendCoinsStatusEnum::DuplicateAddress:
-            abortSendCoins(tr("Duplicate address found, can only send to each address once per send operation."));
-            return;
+            return abortSendCoins(tr("Duplicate address found, can only send to each address once per send operation."));
         case SendCoinsStatusEnum::TransactionCreationFailed:
-            abortSendCoins(tr("Error: Transaction creation failed."));
-            return;
+            return abortSendCoins(tr("Error: Transaction creation failed."));
         case SendCoinsStatusEnum::TransactionCommitFailed:
-            abortSendCoins(tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."));
-            return;
+            return abortSendCoins(tr("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."));
         case SendCoinsStatusEnum::NarrationTooLong:
-            abortSendCoins(tr("Error: Narration is too long."));
-            return;
+            return abortSendCoins(tr("Error: Narration is too long."));
         case SendCoinsStatusEnum::RingSizeError:
-            abortSendCoins(tr("Error: Ring Size Error."));
-            return;
+            return abortSendCoins(tr("Error: Ring Size Error."));
         case SendCoinsStatusEnum::InputTypeError:
-            abortSendCoins(tr("Error: Input Type Error."));
-            return;
+            return abortSendCoins(tr("Error: Input Type Error."));
         case SendCoinsStatusEnum::SCR_NeedFullMode:
-            abortSendCoins(tr("Error: Must be in full mode to send anon."));
-            return;
+            return abortSendCoins(tr("Error: Must be in full mode to send anon."));
         case SendCoinsStatusEnum::SCR_StealthAddressFail:
-            abortSendCoins(tr("Error: Invalid Stealth Address."));
-            return;
+            return abortSendCoins(tr("Error: Invalid Stealth Address."));
         case SendCoinsStatusEnum::SCR_StealthAddressFailAnonToSpec:
-            abortSendCoins(tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
-            return;
+            return abortSendCoins(tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
         case SendCoinsStatusEnum::SCR_AmountExceedsBalance:
-            abortSendCoins(tr("The amount exceeds your SPECTRE balance."));
-			return;
+            return abortSendCoins(tr("The amount exceeds your SPECTRE balance."));
         case SendCoinsStatusEnum::SCR_AmountWithFeeExceedsSpectreBalance:
-            abortSendCoins(tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
-            return;
+            return abortSendCoins(tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
         case SendCoinsStatusEnum::SCR_Error:
-            abortSendCoins(tr("Error generating transaction."));
-            return;
+            return abortSendCoins(tr("Error generating transaction."));
         case SendCoinsStatusEnum::SCR_ErrorWithMsg:
-            abortSendCoins(tr("Error generating transaction: %1").arg(sendResult.hex()));
-            return;
-
+            return abortSendCoins(tr("Error generating transaction: %1").arg(sendResult.hex()));
         case SendCoinsStatusEnum::ApproveFee:
         case SendCoinsStatusEnum::Aborted: // User aborted, nothing to do
             emit sendCoinsResult(false);
