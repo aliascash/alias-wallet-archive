@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <list>
 #include <QProgressDialog>
+#include <QMessageBox>
 
 
 SpectreClientBridge::SpectreClientBridge(SpectreGUI *window, QWebChannel *webChannel, QObject *parent) :
