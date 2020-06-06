@@ -36,6 +36,7 @@ class QLabel;
 class QMenuBar;
 class QToolBar;
 class QUrl;
+class QProgressDialog;
 QT_END_NAMESPACE
 
 static const int WEBSOCKETPORT = 52471;
@@ -75,6 +76,30 @@ public:
     void loadIndex();
 
     void runJavaScript(QString javascriptCode);
+
+    // RAI object for unlocking wallet, returned by requestUnlock()
+    class UnlockContext
+    {
+    public:
+        UnlockContext(SpectreGUI *window, bool valid, bool relock);
+        ~UnlockContext();
+
+        bool isValid() const { return valid; }
+
+        // Copy operator and constructor transfer the context
+        UnlockContext(const UnlockContext& obj) { CopyFrom(obj); }
+        UnlockContext& operator=(const UnlockContext& rhs) { CopyFrom(rhs); return *this; }
+    private:
+        SpectreGUI *window;
+        bool valid;
+        mutable bool relock; // mutable, as it can be set to false by copying
+
+        void CopyFrom(const UnlockContext& rhs);
+    };
+
+    enum UnlockMode { standard, rescan };
+    UnlockContext requestUnlock(UnlockMode unlockMode = standard);
+    bool fUnlockRescanRequested;
 
 protected:
     void changeEvent(QEvent *e);
@@ -127,6 +152,8 @@ private:
     void createTrayIcon();
 
     void execDialog(QDialog*const dialog);
+    QProgressDialog* showProgressDlg(const QString &labelText);
+    void closeProgressDlg(QProgressDialog *pDlg);
 
     bool initialized = false;
 
@@ -201,8 +228,10 @@ private slots:
     /** Show about dialog */
     void aboutClicked();
 
+    /* Request to unlock for AXTO spent state determination, this slot should be called queued */
+    void requestUnlockRescan();
     /** Unlock wallet */
-    void unlockWallet(WalletModel::UnlockMode unlockMode=WalletModel::UnlockMode::standard);
+    bool unlockWallet(UnlockMode unlockMode=UnlockMode::standard);
     /** Lock wallet */
     void lockWallet();
     /** Toggle whether wallet is locked or not */

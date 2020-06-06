@@ -50,6 +50,7 @@
 #include <QTextStream>
 #include <QTextDocument>
 #include <QDesktopWidget>
+#include <QProgressDialog>
 #include <QtWebView>
 #include <QQuickWidget>
 #include <QQuickItem>
@@ -262,6 +263,25 @@ void SpectreGUI::execDialog(QDialog*const dialog)
 #ifdef ANDROID
     qmlWebView->setProperty("visible", true);
 #endif
+}
+
+QProgressDialog* SpectreGUI::showProgressDlg(const QString &labelText)
+{
+    QProgressDialog* progress = new QProgressDialog(labelText, "", 0, 0, this);
+    progress->setAttribute (Qt::WA_DeleteOnClose);
+    progress->setWindowFlags(progress->windowFlags() & ~Qt::WindowCloseButtonHint);
+    progress->setAutoClose(false);
+    progress->setAutoReset(false);
+    progress->setCancelButton(nullptr);
+    qmlWebView->setProperty("visible", false);
+    progress->open();
+    return progress;
+}
+
+void SpectreGUI::closeProgressDlg(QProgressDialog *pDlg)
+{
+    pDlg->close();
+    qmlWebView->setProperty("visible", true);
 }
 
 SpectreGUI::~SpectreGUI()
@@ -988,13 +1008,13 @@ void SpectreGUI::changePassphrase()
     execDialog(&dlg);
 }
 
-void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
+bool SpectreGUI::unlockWallet(UnlockMode unlockMode)
 {
     if(!walletModel->isInitialized() || !walletModel->isReplicaValid())
-         return;
+         return false;
 
     AskPassphraseDialog::Mode mode;
-    if (unlockMode == WalletModel::UnlockMode::rescan) {
+    if (unlockMode == UnlockMode::rescan) {
         mode = AskPassphraseDialog::UnlockRescan;
     }
     else {
@@ -1003,12 +1023,10 @@ void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
     }
 
     // Unlock wallet when requested by wallet model
-    if(walletModel->encryptionInfo().status() == EncryptionStatus::Locked)
-    {
-        AskPassphraseDialog dlg(mode, this);
-        dlg.setModel(walletModel);
-        execDialog(&dlg);
-    }
+    AskPassphraseDialog dlg(mode, this);
+    dlg.setModel(walletModel);
+    execDialog(&dlg);
+    return dlg.result() == AskPassphraseDialog::Accepted;
 }
 
 void SpectreGUI::lockWallet()
@@ -1112,6 +1130,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
     }
 }
 
+
 void SpectreGUI::requestShutdown()
 {
     // TODO StartShutdown();
@@ -1121,4 +1140,62 @@ void SpectreGUI::detectShutdown()
 {
 // TODO  if (ShutdownRequested())
 //        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+}
+
+
+// ----- WalletModel::UnlockContext implementation
+SpectreGUI::UnlockContext SpectreGUI::requestUnlock(UnlockMode mode)
+{
+    bool was_locked = walletModel->encryptionInfo().status() == EncryptionStatus::Locked;
+
+    if ((!was_locked) && walletModel->encryptionInfo().fWalletUnlockStakingOnly())
+    {
+       QRemoteObjectPendingReply<bool> reply = walletModel->lockWallet();
+       if (!reply.waitForFinished())
+           return UnlockContext(this, false, false);
+       was_locked = true;
+
+    }
+    bool valid = !was_locked;
+    if(was_locked)
+        // Request UI to unlock wallet, mark context as invalid if unlocked failed
+        valid = unlockWallet(mode);
+
+    return UnlockContext(this, valid, was_locked && !walletModel->encryptionInfo().fWalletUnlockStakingOnly());
+}
+
+void SpectreGUI::requestUnlockRescan()
+{
+    if(!fUnlockRescanRequested && walletModel->encryptionInfo().status() == EncryptionStatus::Locked)
+    {
+        fUnlockRescanRequested = true;
+        // Request UI to unlock wallet
+        bool unlocked = unlockWallet(UnlockMode::rescan);
+        if (unlocked)
+            if (!walletModel->encryptionInfo().fWalletUnlockStakingOnly())
+                lockWallet();
+        fUnlockRescanRequested = false;
+    }
+}
+
+SpectreGUI::UnlockContext::UnlockContext(SpectreGUI *window, bool valid, bool relock):
+        window(window),
+        valid(valid),
+        relock(relock)
+{
+}
+
+SpectreGUI::UnlockContext::~UnlockContext()
+{
+    if(valid && relock)
+    {
+        window->walletModel->lockWallet();
+    }
+}
+
+void SpectreGUI::UnlockContext::CopyFrom(const UnlockContext& rhs)
+{
+    // Transfer context; old object no longer relocks wallet
+    *this = rhs;
+    rhs.relock = false;
 }

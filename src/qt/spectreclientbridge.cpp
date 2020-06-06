@@ -37,6 +37,7 @@
 #include <QtGui/qtextdocument.h>
 #include <QDebug>
 #include <list>
+#include <QProgressDialog>
 
 
 SpectreClientBridge::SpectreClientBridge(SpectreGUI *window, QWebChannel *webChannel, QObject *parent) :
@@ -202,13 +203,15 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CoinControlDialog::coinControl->destChange = CNoDestination();
     };
 
-    // TODO WalletModel::UnlockContext ctx(walletModel->requestUnlock());
-
+    // Unlock wallet
+    SpectreGUI::UnlockContext ctx(window->requestUnlock());
     // Unlock wallet was cancelled
-//    if(!ctx.isValid()) {
-//        abortSendCoins(tr("Payment not send because wallet is locked."));
-//        return;
-//    }
+    if(!ctx.isValid()) {
+        abortSendCoins(tr("Payment not send because wallet is locked."));
+        return;
+    }
+
+    QProgressDialog* pProgressDlg = window->showProgressDlg("Creating transaction...");
 
     QList<OutPoint> coins; // TODO fUseCoinControl ? CoinControlDialog::coinControl
     QRemoteObjectPendingReply<SendCoinsReturn> sendResultPendingReply;
@@ -220,6 +223,8 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
     sendResultPendingReply.waitForFinished(-1);
     sendResult = sendResultPendingReply.returnValue();
     SendCoinsStatusEnum::SendCoinsStatus sendCoinsStatus = sendResult.status();
+
+    window->closeProgressDlg(pProgressDlg);
 
     if (sendCoinsStatus == SendCoinsStatusEnum::ApproveFee)
     {
