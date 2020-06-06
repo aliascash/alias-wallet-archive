@@ -40,7 +40,7 @@ protected:
     void showEvent(QShowEvent *);
 
 private:
-    bool evaluate(QRemoteObjectPendingReply<bool> reply);
+    bool evaluate(QRemoteObjectPendingReply<bool> reply, bool showBusyIndicator = true);
 
     Ui::AskPassphraseDialog *ui;
     Mode mode;

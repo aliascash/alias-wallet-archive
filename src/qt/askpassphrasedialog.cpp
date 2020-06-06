@@ -89,12 +89,12 @@ void AskPassphraseDialog::setModel(QSharedPointer<WalletModelRemoteReplica> mode
     ui->stakingCheckBox->setChecked(model->encryptionInfo().fWalletUnlockStakingOnly());
 }
 
-bool AskPassphraseDialog::evaluate(QRemoteObjectPendingReply<bool> reply)
+bool AskPassphraseDialog::evaluate(QRemoteObjectPendingReply<bool> reply, bool showBusyIndicator)
 {
     setEnabled(false);
-    ui->progressBar->setVisible(true);
+    if (showBusyIndicator) ui->progressBar->setVisible(true);
     bool result = reply.waitForFinished() && reply.returnValue();
-    ui->progressBar->setVisible(false);
+    if (showBusyIndicator) ui->progressBar->setVisible(false);
     setEnabled(!result);
     return result;
 }
@@ -164,7 +164,7 @@ void AskPassphraseDialog::accept()
     case UnlockRescan:
     case UnlockStaking:
     case Unlock:
-        if(!evaluate(model->unlockWallet(oldpass, ui->stakingCheckBox->isChecked())))
+        if(!evaluate(model->unlockWallet(oldpass, ui->stakingCheckBox->isChecked()), false))
         {
             QMessageBox::critical(this, tr("Wallet unlock failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
