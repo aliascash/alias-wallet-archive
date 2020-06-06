@@ -237,8 +237,9 @@ void SpectreGUI::loadIndex() {
 
     connect(clientModel.data(), SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
     connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfo)), this, SLOT(setNumBlocks()));
-    connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfo)), SLOT(setEncryptionInfo(EncryptionInfo)));
-    connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfo)), SLOT(updateStakingIcon(StakingInfo)));
+    connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfo)), this, SLOT(setEncryptionInfo(EncryptionInfo)));
+    connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfo)), this, SLOT(updateStakingIcon(StakingInfo)));
+    connect(walletModel.data(), SIGNAL(requestUnlockRescan()), this, SLOT(requestUnlockRescan));
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(setNumBlocks()));
 
 
@@ -1054,6 +1055,19 @@ void SpectreGUI::toggleLock()
     };
 }
 
+void SpectreGUI::requestUnlockRescan()
+{
+    if(!fUnlockRescanRequested && walletModel->encryptionInfo().status() == EncryptionStatus::Locked)
+    {
+        fUnlockRescanRequested = true;
+        // Request UI to unlock wallet
+        bool unlocked = unlockWallet(UnlockMode::rescan);
+        if (unlocked && !walletModel->encryptionInfo().fWalletUnlockStakingOnly())
+            lockWallet();
+        fUnlockRescanRequested = false;
+    }
+}
+
 void SpectreGUI::showNormalIfMinimized(bool fToggleHidden)
 {
     // activateWindow() (sometimes) helps with keyboard focus on Windows
@@ -1162,20 +1176,6 @@ SpectreGUI::UnlockContext SpectreGUI::requestUnlock(UnlockMode mode)
         valid = unlockWallet(mode);
 
     return UnlockContext(this, valid, was_locked && !walletModel->encryptionInfo().fWalletUnlockStakingOnly());
-}
-
-void SpectreGUI::requestUnlockRescan()
-{
-    if(!fUnlockRescanRequested && walletModel->encryptionInfo().status() == EncryptionStatus::Locked)
-    {
-        fUnlockRescanRequested = true;
-        // Request UI to unlock wallet
-        bool unlocked = unlockWallet(UnlockMode::rescan);
-        if (unlocked)
-            if (!walletModel->encryptionInfo().fWalletUnlockStakingOnly())
-                lockWallet();
-        fUnlockRescanRequested = false;
-    }
 }
 
 SpectreGUI::UnlockContext::UnlockContext(SpectreGUI *window, bool valid, bool relock):

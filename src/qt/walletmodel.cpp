@@ -907,23 +907,6 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
     return UnlockContext(this, valid, was_locked && !fWalletUnlockStakingOnly);
 }
 
-void WalletModel::requestUnlockRescan()
-{
-    if(!fUnlockRescanRequested && getEncryptionStatus() == EncryptionStatus::Locked)
-    {
-        fUnlockRescanRequested = true;
-        // Request UI to unlock wallet
-        emit requireUnlock(rescan);
-        if (getEncryptionStatus() != EncryptionStatus::Locked)
-        {
-            fForceCheckBalanceChanged = true;
-            if (!fWalletUnlockStakingOnly)
-                lockWallet();
-        }
-        fUnlockRescanRequested = false;
-    }
-}
-
 WalletModel::UnlockContext::UnlockContext(WalletModel *wallet, bool valid, bool relock):
         wallet(wallet),
         valid(valid),

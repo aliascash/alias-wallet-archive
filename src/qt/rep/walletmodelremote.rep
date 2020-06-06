@@ -3,6 +3,7 @@ class WalletModelRemote
 {
     PROP(EncryptionInfo encryptionInfo SOURCEONLYSETTER);
     PROP(StakingInfo stakingInfo SOURCEONLYSETTER);
+    SIGNAL(requestUnlockRescan());
     SLOT(bool setWalletEncrypted(bool encrypted, const QString &passphrase));
     SLOT(bool changePassphrase(const QString &oldPass, const QString &newPass));
     SLOT(bool lockWallet());

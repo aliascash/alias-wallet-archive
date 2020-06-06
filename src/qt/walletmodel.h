@@ -149,8 +149,6 @@ public slots:
     void updateAddressBook(const QString &address, const QString &label, bool isMine, int status, bool fManual);
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
     void pollBalanceChanged();
-    /* Request to unlock for AXTO spent state determination, this slot should be called queued */
-    void requestUnlockRescan();
 
 signals:
     // Signal that balance in wallet changed
