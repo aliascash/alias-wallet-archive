@@ -31,6 +31,8 @@ for currentChecksumfile in \
     Checksum-Spectrecoin-Ubuntu-19-10.txt \
     Checksum-Spectrecoin-Win64.txt \
     Checksum-Spectrecoin-Win64-OBFS4.txt \
+    Checksum-Spectrecoin-Win64-Qt5.12.txt \
+    Checksum-Spectrecoin-Win64-Qt5.12-OBFS4.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6.txt \
     Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt ; do
 #    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
