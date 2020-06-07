@@ -116,6 +116,7 @@ void SpectreGUI::WebElement::removeClass(QString className)
 SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,
                        QSharedPointer<ClientModelRemoteReplica> clientModelPtr,
                        QSharedPointer<WalletModelRemoteReplica> walletModelPtr,
+                       QSharedPointer<AddressModelRemoteReplica> addressModelPtr,
                        QWidget *parent):
     QMainWindow(parent),
 //    bridge(new SpectreBridge(this)),
@@ -126,6 +127,7 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
     applicationModel(applicationModelPtr),
     clientModel(clientModelPtr),
     walletModel(walletModelPtr),
+    addressModel(addressModelPtr),
     encryptWalletAction(0),
     changePassphraseAction(0),
     unlockWalletAction(0),

@@ -48,3 +48,4 @@ POD StakingInfo(bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint6
 POD SendCoinsRecipient(QString address, QString label, QString narration, int addressTypeInd, qint64 amount, TxnTypeEnum::TxnType txnType, int nRingSize);
 POD OutPoint(QString hex, // transaction hash as hex
                   unsigned n); // transaction output
+POD NewAddressResult(bool success, QString errorMsg, QString address);

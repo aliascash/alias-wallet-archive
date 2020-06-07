@@ -198,7 +198,6 @@ bool TransactionModel::prepare()
     return true;
 }
 
-
 QVariantMap AddressModel::addAddress(int row)
 {
     QVariantMap address;
@@ -252,6 +251,53 @@ void AddressModel::populateAddressTable()
 bool AddressModel::isRunning() {
     return running;
 }
+
+NewAddressResult AddressModel::newSendAddress(int addressType, const QString & label, const QString & address)
+{
+    // Generate a new address to associate with given label
+    // NOTE: unlock happens in addRow
+    QString rv = atm->addRow(AddressTableModel::Send, label, address, addressType);
+    populateAddressTable();
+    return fromAddRow(rv);
+}
+
+NewAddressResult AddressModel::newReceiveAddress(int addressType, const QString & label)
+{
+    // Generate a new address to associate with given label
+    // NOTE: unlock happens in addRow
+    QString rv = atm->addRow(AddressTableModel::Receive, label, "", addressType);
+    populateAddressTable();
+    return fromAddRow(rv);
+}
+
+NewAddressResult AddressModel::fromAddRow(const QString &addRowReturn)
+{
+    QString sError;
+    AddressTableModel::EditStatus status = atm->getEditStatus();
+
+    switch(status)
+    {
+        case AddressTableModel::OK:
+        case AddressTableModel::NO_CHANGES: // error?
+            break;
+        case AddressTableModel::INVALID_ADDRESS:
+            sError = "Invalid Address.";
+            break;
+        case AddressTableModel::DUPLICATE_ADDRESS:
+            sError = "Duplicate Address.";
+            break;
+        case AddressTableModel::WALLET_UNLOCK_FAILURE:
+            sError = "Unlock Failed.";
+            break;
+        case AddressTableModel::KEY_GENERATION_FAILURE:
+        default:
+            sError = "Unspecified error.";
+            break;
+    };
+
+    return NewAddressResult(status == AddressTableModel::OK, sError, addRowReturn);
+}
+
 
 SpectreBridge::SpectreBridge(QWebChannel *webChannel, QObject *parent) :
     QObject         (parent),
@@ -508,52 +554,6 @@ void SpectreBridge::insertAddresses(const QModelIndex & parent, int start, int e
         return;
 
     addressModel->poplateRows(start, end);
-}
-
-void SpectreBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
-{
-    // Generate a new address to associate with given label
-    // NOTE: unlock happens in addRow
-    QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
-    addressModel->populateAddressTable();
-}
-
-//replica  of the above method for Javascript to diffrentiate when call backs are needed
-void SpectreBridge::newAddressAsync(QString addressLabel, int addressType, QString address, bool send)
-{
-    // Generate a new address to associate with given label
-    // NOTE: unlock happens in addRow
-    QString rv = addressModel->atm->addRow(send ? AddressTableModel::Send : AddressTableModel::Receive, addressLabel, address, addressType);
-    addressModel->populateAddressTable();
-    emit newAddressResult(rv);
-}
-
-void SpectreBridge::lastAddressError()
-{
-    QString sError;
-    AddressTableModel::EditStatus status = addressModel->atm->getEditStatus();
-
-    switch(status)
-    {
-        case AddressTableModel::OK:
-        case AddressTableModel::NO_CHANGES: // error?
-            break;
-        case AddressTableModel::INVALID_ADDRESS:
-            sError = "Invalid Address.";
-            break;
-        case AddressTableModel::DUPLICATE_ADDRESS:
-            sError = "Duplicate Address.";
-            break;
-        case AddressTableModel::WALLET_UNLOCK_FAILURE:
-            sError = "Unlock Failed.";
-            break;
-        case AddressTableModel::KEY_GENERATION_FAILURE:
-        default:
-            sError = "Unspecified error.";
-            break;
-    };
-
-    emit lastAddressErrorResult(sError);
 }
 
 QString SpectreBridge::getAddressLabel(QString address)
@@ -1574,8 +1574,8 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, qu
 
     extKeySetDefault(QString::fromStdString(sea->GetIDString58()));
 
-    newAddress(inLabel + (inLabel.isEmpty() ? "" : " ") + "default",         AT_Normal,  "", false);
-    newAddress(inLabel + (inLabel.isEmpty() ? "" : " ") + "default Stealth", AT_Stealth, "", false);
+    addressModel->newReceiveAddress(AT_Normal, inLabel + (inLabel.isEmpty() ? "" : " ") + "default");
+    addressModel->newReceiveAddress(AT_Stealth, inLabel + (inLabel.isEmpty() ? "" : " ") + "default Stealth");
 
     // If we get here all went well and the message is valid
     result.insert("error_msg", "");

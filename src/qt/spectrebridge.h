@@ -32,6 +32,8 @@ class ApplicationModelRemoteSource;
 #include "websockettransport.h"
 #include <QWebSocketServer>
 
+#include <rep_addressmodelremote_source.h>
+
 class TransactionModel : public QObject
 {
     Q_OBJECT
@@ -62,7 +64,7 @@ private:
 };
 
 
-class AddressModel : public QObject
+class AddressModel : public AddressModelRemoteSimpleSource
 {
     Q_OBJECT
 
@@ -74,10 +76,15 @@ public:
     void populateAddressTable();
     bool isRunning();
 
+    NewAddressResult newSendAddress(int addressType, const QString & label, const QString & address);
+    NewAddressResult newReceiveAddress(int addressType, const QString & label);
+
 signals:
     void emitAddresses(const QVariantList & addresses, bool reset = false);
 
 private:
+    NewAddressResult fromAddRow(const QString &addRowReturn);
+
     bool running;
 };
 
@@ -96,7 +103,7 @@ public:
     void setWalletModel(WalletModel *walletModel);
     void setApplicationModel(ApplicationModelRemoteSource *applicationModel);
     void setTransactionModel();
-    void setAddressModel();
+    AddressModel* getAddressModel() const { return addressModel; }
 
 public slots:
     Q_INVOKABLE void jsReady();
@@ -106,10 +113,6 @@ public slots:
     Q_INVOKABLE void getAddressLabelAsync(QString address);
     Q_INVOKABLE void getAddressLabelForSelectorAsync(QString address, QString selector, QString fallback = "");
 
-    /** Create a new address or add an existing address to your Address book */
-    Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
-    Q_INVOKABLE void newAddressAsync(QString addressLabel, int addressType, QString address = "", bool send = false);
-    Q_INVOKABLE void lastAddressError();
     /** Get the full transaction details */
     Q_INVOKABLE void transactionDetails(QString txid);
     /** Get the pubkey for an address */
@@ -163,9 +166,6 @@ signals:
     void blockDetailsResult(QVariantMap result);
     void listTransactionsForBlockResult(QString blkHash, QVariantMap result);
     void txnDetailsResult(QVariantMap result);
-
-    void newAddressResult(QString result);
-    void lastAddressErrorResult(QString result);
 
     void importFromMnemonicResult(QVariantMap result);
     void getNewMnemonicResult(QVariantMap result);

@@ -372,3 +372,30 @@ QVariantMap SpectreClientBridge::signMessage(QString address, QString message)
     }
     return result;
 }
+
+void SpectreClientBridge::newAddress(QString addressLabel, int addressType, QString address, bool send)
+{
+    if (!send)
+    {
+        // Unlock wallet
+        SpectreGUI::UnlockContext ctx(window->requestUnlock());
+        // Unlock wallet was cancelled
+        if(!ctx.isValid()) {
+            emit newAddressResult(false, tr("Wallet locked."), "", send);
+        }
+        // Generate a new address to associate with given label
+        QRemoteObjectPendingReply<NewAddressResult> reply = window->addressModel->newReceiveAddress(addressType, addressLabel);
+        if (reply.waitForFinished())
+            emit newAddressResult(reply.returnValue().success(), reply.returnValue().errorMsg(), reply.returnValue().address(), send);
+        else
+            emit newAddressResult(false, tr("Core not responding."), "", send);
+    }
+    else {
+        // Generate a new address to associate with given label
+        QRemoteObjectPendingReply<NewAddressResult> reply = window->addressModel->newSendAddress(addressType, addressLabel, address);
+        if (reply.waitForFinished())
+            emit newAddressResult(reply.returnValue().success(), reply.returnValue().errorMsg(), reply.returnValue().address(), send);
+        else
+            emit newAddressResult(false, tr("Core not responding."), "", send);
+    }
+}

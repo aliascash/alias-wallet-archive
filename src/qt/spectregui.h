@@ -24,6 +24,7 @@
 #include <rep_clientmodelremote_replica.h>
 #include <rep_applicationmodelremote_replica.h>
 #include <rep_walletmodelremote_replica.h>
+#include <rep_addressmodelremote_replica.h>
 
 class TransactionTableModel;
 class ClientModel;
@@ -53,6 +54,7 @@ public:
     explicit SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModel,
                         QSharedPointer<ClientModelRemoteReplica> clientModel,
                         QSharedPointer<WalletModelRemoteReplica> walletModel,
+                        QSharedPointer<AddressModelRemoteReplica> addressModel,
                         QWidget *parent = 0);
     ~SpectreGUI();
 
@@ -116,6 +118,7 @@ private:
     QSharedPointer<ApplicationModelRemoteReplica> applicationModel; // holds reference to applicationmodel replica
     QSharedPointer<ClientModelRemoteReplica> clientModel; // holds reference to clientmodel replica
     QSharedPointer<WalletModelRemoteReplica> walletModel; // holds reference to applicationmodel replica
+    QSharedPointer<AddressModelRemoteReplica> addressModel; // holds reference to addressmodel replica
 //    ClientModel *clientModel;
 //    WalletModel *walletModel;
 //    MessageModel *messageModel;

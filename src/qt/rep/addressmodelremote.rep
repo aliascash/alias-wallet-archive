@@ -1,0 +1,6 @@
+#include "rep_modelremote_source.h"
+class AddressModelRemote
+{
+   SLOT(NewAddressResult newSendAddress(int addressType, const QString &label, const QString &address));
+   SLOT(NewAddressResult newReceiveAddress(int addressType, const QString &label));
+};

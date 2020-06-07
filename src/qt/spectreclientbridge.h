@@ -53,6 +53,9 @@ public slots:
 
     Q_INVOKABLE QVariantMap signMessage(QString address, QString message);
 
+    /** Create a new address or add an existing address to your Address book */
+    Q_INVOKABLE void newAddress(QString addressLabel, int addressType, QString address = "", bool send = false);
+
 signals:
     void emitPaste(QString text);
     void emitCoinControlUpdate(unsigned int quantity, qint64 amount, qint64 fee, qint64 afterfee, unsigned int bytes, QString priority, QString low, qint64 change);
@@ -63,6 +66,8 @@ signals:
 
     void addRecipientResult(bool result);
     void sendCoinsResult(bool result);
+
+    void newAddressResult(bool success, QString errorMsg, QString address, bool send);
 private:
     SpectreGUI *window;
     QWebChannel *webChannel;
