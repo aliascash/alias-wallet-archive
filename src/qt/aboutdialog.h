@@ -23,7 +23,9 @@ public:
     explicit AboutDialog(QWidget *parent = 0);
     ~AboutDialog();
 
-    void setModel(QSharedPointer<ClientModelRemoteReplica> model);
+protected:
+    void showEvent(QShowEvent *);
+
 private:
     Ui::AboutDialog *ui;
 
