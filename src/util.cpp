@@ -1400,6 +1400,11 @@ string FormatFullVersion()
     return CLIENT_BUILD;
 }
 
+string FormatShortVersion()
+{
+    return CLIENT_PLAIN_VERSION;
+}
+
 // Format the subversion field according to BIP 14 spec (https://en.bitcoin.it/wiki/BIP_0014)
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)
 {

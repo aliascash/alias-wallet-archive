@@ -543,7 +543,6 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void SpectreGUI::aboutClicked()
 {
     AboutDialog dlg;
-    dlg.setModel(clientModel);
     execDialog(&dlg);
 }
 

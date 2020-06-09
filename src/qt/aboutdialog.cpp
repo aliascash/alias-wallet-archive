@@ -8,20 +8,15 @@
 #include "clientmodel.h"
 
 #include "version.h"
+#include "util.h"
+#include <QScreen>
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
-}
-
-void AboutDialog::setModel(QSharedPointer<ClientModelRemoteReplica> model)
-{
-    if(model)
-    {
-        // TODO ui->versionLabel->setText(model->formatFullVersion());
-    }
+    ui->versionLabel->setText(QString::fromStdString(FormatShortVersion()));
 }
 
 AboutDialog::~AboutDialog()
@@ -32,4 +27,13 @@ AboutDialog::~AboutDialog()
 void AboutDialog::on_buttonBox_accepted()
 {
     close();
+}
+
+void AboutDialog::showEvent(QShowEvent *e)
+{
+#ifdef ANDROID
+    QScreen *screen = QGuiApplication::primaryScreen();
+    resize(screen->availableSize());
+#endif
+    QDialog::showEvent(e);
 }
