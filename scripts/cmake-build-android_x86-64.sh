@@ -358,7 +358,7 @@ checkQt(){
         error " -> Qt ${QT_VERSION} not found!"
         error "    You need to install Qt ${QT_VERSION}"
         error ""
-        die 43 "Stopping build because of missing Boost"
+        die 43 "Stopping build because of missing Qt"
 
         # Maybe used later: Build Qt ourself
         local currentDir=$(pwd)
