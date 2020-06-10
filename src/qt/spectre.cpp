@@ -431,10 +431,10 @@ int main(int argc, char *argv[])
         walletModelPtr.reset(repNode.acquire<WalletModelRemoteReplica>()); // acquire replica of source from host node
         addressModelPtr.reset(repNode.acquire<AddressModelRemoteReplica>()); // acquire replica of source from host node
 
-        if (!applicationModelPtr->waitForSource())
-            throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
         QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);
 
+        if (!applicationModelPtr->waitForSource())
+            throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
         if (!clientModelPtr->waitForSource(-1))
             throw std::runtime_error("SpectreGUI() : ClientModelRemoteReplica was not initialized!");
         if (!walletModelPtr->waitForSource())
