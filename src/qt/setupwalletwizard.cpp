@@ -325,7 +325,7 @@ NewMnemonicResultPage::NewMnemonicResultPage(QWidget *parent)
     setSubTitle(tr("Step 2/3: Write down your mnemonic recovery seed words."));
 
     mnemonicLabel = new QLabel(tr("Mnemonic Recovery Seed Words:"));
-    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe. You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly."));
+    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe."));
     noticeLabel->setWordWrap(true);
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
