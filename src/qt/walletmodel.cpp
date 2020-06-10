@@ -25,7 +25,6 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     transactionTableModel(0),
     cachedBalance(0), cachedSpectreBal(0), cachedStake(0), cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
     cachedNumTransactions(0),
-    cachedEncryptionStatus(EncryptionStatus::Unencrypted),
     cachedNumBlocks(0),
     fUnlockRescanRequested(false),
     fForceCheckBalanceChanged(false)
@@ -33,7 +32,7 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
 
-    setEncryptionInfo(EncryptionInfo(getEncryptionStatus(), fWalletUnlockStakingOnly));
+    updateStatus(true);
 
     subscribeToCoreSignals();
 
@@ -98,13 +97,15 @@ int WalletModel::getNumTransactions() const
     return numTransactions;
 }
 
-void WalletModel::updateStatus()
+void WalletModel::updateStatus(bool force)
 {
     EncryptionStatus newEncryptionStatus = getEncryptionStatus();
 
-    if(cachedEncryptionStatus != newEncryptionStatus)
+    if(force || encryptionInfo().status() != newEncryptionStatus || encryptionInfo().fWalletUnlockStakingOnly() != fWalletUnlockStakingOnly)
+    {
         setEncryptionInfo(EncryptionInfo(newEncryptionStatus, fWalletUnlockStakingOnly));
-        // emit encryptionStatusChanged(newEncryptionStatus);
+        emit encryptionStatusChanged(newEncryptionStatus);
+    }
 }
 
 void WalletModel::pollBalanceChanged()

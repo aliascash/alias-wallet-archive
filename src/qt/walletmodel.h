@@ -135,7 +135,6 @@ private:
     qint64 cachedImmatureBalance;
     qint64 cachedImmatureSpectreBalance;
     qint64 cachedNumTransactions;
-    EncryptionStatus cachedEncryptionStatus;
     int cachedNumBlocks;
     bool fForceCheckBalanceChanged;
 
@@ -144,7 +143,7 @@ private:
 
 public slots:
     /* Wallet status might have changed */
-    void updateStatus();
+    void updateStatus(bool force = false);
     /* New transaction, or transaction changed status */
     void updateTransaction(const QString &hash, int status);
     /* New, updated or removed address book entry */
@@ -158,6 +157,9 @@ signals:
 
     // Number of transactions in wallet changed
     void numTransactionsChanged(int count);
+
+    // Encryption status of wallet changed
+    void encryptionStatusChanged(int status);
 
     // Signal emitted when wallet needs to be unlocked
     // It is valid behaviour for listeners to keep the wallet locked after this signal;
