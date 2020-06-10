@@ -12,4 +12,5 @@ class WalletModelRemote
     SLOT(QVariantMap signMessage(const QString &address, const QString &message));
     SLOT(SendCoinsReturn sendCoins(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
     SLOT(SendCoinsReturn sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins));
+    SLOT(bool backupWallet(const QString &filename));
 };

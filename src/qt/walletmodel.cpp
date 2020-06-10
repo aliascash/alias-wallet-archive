@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QApplication>
 #include <QDebug>
+#include <QFile>
 
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     WalletModelRemoteSimpleSource(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
@@ -823,8 +824,28 @@ bool WalletModel::changePassphrase(const QString &oldPass, const QString &newPas
 
 bool WalletModel::backupWallet(const QString &filename)
 {
+#ifndef ANDROID
     return BackupWallet(*wallet, filename.toLocal8Bit().data());
+#else
+    return ProcessWalletFile(*wallet, [filename] (const std::string& walletPath) -> bool {
+        qDebug() << "backupWallet: from " << QString::fromStdString(walletPath) << " to " << filename;
+        QFile walletFile = (QString::fromStdString(walletPath));
+        QFile targetFile = (filename);
+        if (!walletFile.open(QIODevice::ReadOnly)) {
+                qDebug() << "backupWallet: Could not open wallefile";
+                return false;
+        }
+        if (!targetFile.open(QIODevice::WriteOnly)) {
+                qDebug() << "backupWallet: Could not open targetFile";
+                return false;
+        }
+        qint64 size = targetFile.write(walletFile.readAll());
+        qDebug() << "backupWallet: written bytes " << size;
+        return size > -1;
+    });
+#endif
 }
+
 
 // Handlers for core signals
 static void NotifyKeyStoreStatusChanged(WalletModel *walletModel, CCryptoKeyStore *wallet)

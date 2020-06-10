@@ -993,13 +993,18 @@ void SpectreGUI::backupWallet()
         qFatal("QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).count() == 0");
     }
     QString saveDir = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
+#ifdef ANDROID
+    QString filename = QFileDialog::getSaveFileName(this, tr("wallet.dat"), saveDir, tr("Wallet Data (*.dat)"));
+#else
     QString filename = QFileDialog::getSaveFileName(this, tr("Backup Wallet"), saveDir, tr("Wallet Data (*.dat)"));
+#endif
     if(!filename.isEmpty())
     {
-// TODO       if(!walletModel->backupWallet(filename))
-//        {
-//            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
-//        }
+        QRemoteObjectPendingReply<bool> reply = walletModel->backupWallet(filename);
+        if(!reply.waitForFinished() || !reply.returnValue())
+            QMessageBox::warning(this, tr("Backup Failed"), tr("There was an error trying to save the wallet data to the new location."));
+        else
+            QMessageBox::information(this, tr("Backup Completed"), tr("Wallet data successfully saved to new location."));
     }
 }
 
