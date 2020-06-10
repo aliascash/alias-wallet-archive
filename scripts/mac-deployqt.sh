@@ -17,13 +17,13 @@ cd ${ownLocation}
 # Go to Spectrecoin repository root directory
 cd ..
 
-if [ -z "${QT_PATH}" ] ; then
+if [[ -z "${QT_PATH}" ]] ; then
     QT_PATH=~/Qt/5.9.6/clang_64
     warning "QT_PATH not set, using '${QT_PATH}'"
 else
     info "QT_PATH: ${QT_PATH}"
 fi
-if [ -z "${OPENSSL_PATH}" ] ; then
+if [[ -z "${OPENSSL_PATH}" ]] ; then
     OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1d
     warning "OPENSSL_PATH not set, using '${OPENSSL_PATH}'"
 else
@@ -38,15 +38,19 @@ else
 fi
 
 info "Cleanup previous build artifacts"
-if [ -e Spectrecoin.dmg ] ; then
+if [[ -e Spectrecoin.dmg ]] ; then
     rm -f Spectrecoin.dmg
 fi
-if [ -e src/bin/spectrecoin.dmg ] ; then
+if [[ -e src/bin/spectrecoin.dmg ]] ; then
     rm -f src/bin/spectrecoin.dmg
 fi
 
 info "Call macdeployqt:"
-${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -qmldir=src/qt/res -always-overwrite -verbose 2
+${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -qmldir=src/qt/res -always-overwrite -verbose=2
+rtc=$?
+if [[ ${rtc} != 0 ]] ; then
+    die ${rtc} "Error during macdeployqt!"
+fi
 
 info "Remove openssl 1.0.0 libs:"
 rm -v src/bin/spectrecoin.app/Contents/Frameworks/libssl.1.0.0.dylib
@@ -71,5 +75,9 @@ done
 
 
 info "Create dmg package:"
-${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg -always-overwrite -verbose 2
+${QT_PATH}/bin/macdeployqt src/bin/Spectrecoin.app -dmg -always-overwrite -verbose=2
+rtc=$?
+if [[ ${rtc} != 0 ]] ; then
+    die ${rtc} "Error during macdeployqt!"
+fi
 mv src/bin/Spectrecoin.dmg Spectrecoin.dmg
