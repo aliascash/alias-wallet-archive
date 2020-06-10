@@ -188,14 +188,11 @@ bool ImportWalletDatPage::isComplete() const
 
 bool ImportWalletDatPage::validatePage()
 {
-    try {
-        fs::copy_file(fs::path(fileName.toStdWString()), GetDataDir() / "wallet.dat");
-        return true;
-    }
-    catch (const boost::filesystem::filesystem_error& e) {
-        QMessageBox::critical(this, tr("Error"), tr("Failed to copy wallet.dat: %1").arg(e.what()));
-    }
-    return false;
+    QFile walletFile(fileName);
+    bool result = walletFile.copy(QString::fromStdString(GetDataDir().native() + "/wallet.dat"));
+    if (!result)
+        QMessageBox::critical(this, tr("Error"), tr("Failed to copy wallet.dat: %1").arg(walletFile.errorString()));
+    return result;
 }
 
 NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
