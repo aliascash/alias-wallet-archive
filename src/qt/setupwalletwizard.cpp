@@ -189,9 +189,18 @@ bool ImportWalletDatPage::isComplete() const
 bool ImportWalletDatPage::validatePage()
 {
     QFile walletFile(fileName);
-    bool result = walletFile.copy(QString::fromStdString(GetDataDir().native() + "/wallet.dat"));
+    QString targetPath = QString::fromStdString(GetDataDir().native() + "/wallet.dat");
+    bool result = walletFile.copy(targetPath);
     if (!result)
         QMessageBox::critical(this, tr("Error"), tr("Failed to copy wallet.dat: %1").arg(walletFile.errorString()));
+    else {
+        QFile targetFile = QFile(targetPath);
+        if (!targetFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner))
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Failed to set permissions to copied wallet.dat: %1").arg(targetFile.errorString()));
+            result = false;
+        }
+    }
     return result;
 }
 
