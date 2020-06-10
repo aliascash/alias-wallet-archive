@@ -10,13 +10,10 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        nativeLibraryDir = getApplicationInfo().nativeLibraryDir;
-
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
-
     }
 
     public void startCore() {
