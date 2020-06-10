@@ -585,3 +585,11 @@ bool RecoverFromMnemonicPage::validatePage()
 
     return true;
 }
+
+void SetupWalletWizard::showEvent(QShowEvent *e)
+{
+#ifdef ANDROID
+    resize(QGuiApplication::primaryScreen()->availableSize());
+#endif
+    QDialog::showEvent(e);
+}
