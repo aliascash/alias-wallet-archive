@@ -29,6 +29,7 @@ extern unsigned int nWalletDBUpdated;
 
 void ThreadFlushWalletDB(const std::string& strFile);
 bool BackupWallet(const CWallet& wallet, const std::string& strDest);
+bool ProcessWalletFile(const CWallet& wallet, std::function<bool (const std::string&)> funcProcess);
 
 
 class CDBEnv

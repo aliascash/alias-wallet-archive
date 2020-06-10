@@ -775,6 +775,32 @@ bool BackupWallet(const CWallet& wallet, const string& strDest)
     return false;
 }
 
+bool ProcessWalletFile(const CWallet& wallet, std::function<bool (const std::string&)> funcProcess)
+{
+    if (!wallet.fFileBacked)
+        return false;
+    for (;;)
+    {
+        boost::this_thread::interruption_point();
+        {
+            LOCK(bitdb.cs_db);
+            if (!bitdb.mapFileUseCount.count(wallet.strWalletFile) || bitdb.mapFileUseCount[wallet.strWalletFile] == 0)
+            {
+                // Flush log data to the dat file
+                bitdb.CloseDb(wallet.strWalletFile);
+                bitdb.CheckpointLSN(wallet.strWalletFile);
+                bitdb.mapFileUseCount.erase(wallet.strWalletFile);
+
+                // Prepare wallet.dat path
+                fs::path pathSrc = GetDataDir() / wallet.strWalletFile;
+                return funcProcess(pathSrc.native());
+            };
+        }
+        MilliSleep(100);
+    };
+    return false;
+}
+
 //
 // Try to (very carefully!) recover wallet.dat if there is a problem.
 //
