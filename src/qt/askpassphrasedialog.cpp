@@ -22,6 +22,9 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     fCapsLock(false)
 {
     ui->setupUi(this);
+#ifdef ANDROID
+    setFixedSize(QGuiApplication::primaryScreen()->availableSize());
+#endif
     ui->progressBar->setVisible(false);
     ui->passEdit1->setMaxLength(MAX_PASSPHRASE_SIZE);
     ui->passEdit2->setMaxLength(MAX_PASSPHRASE_SIZE);
@@ -289,8 +292,7 @@ void AskPassphraseDialog::secureClearPassFields()
 void AskPassphraseDialog::showEvent(QShowEvent *e)
 {
 #ifdef ANDROID
-    QScreen *screen = QGuiApplication::primaryScreen();
-    resize(screen->availableSize());
+    resize(QGuiApplication::primaryScreen()->availableSize());
 #endif
     QDialog::showEvent(e);
 }

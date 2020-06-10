@@ -16,6 +16,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+#ifdef ANDROID
+    setFixedSize(QGuiApplication::primaryScreen()->availableSize());
+#endif
     ui->versionLabel->setText(QString::fromStdString(FormatShortVersion()));
 }
 
@@ -32,8 +35,7 @@ void AboutDialog::on_buttonBox_accepted()
 void AboutDialog::showEvent(QShowEvent *e)
 {
 #ifdef ANDROID
-    QScreen *screen = QGuiApplication::primaryScreen();
-    resize(screen->availableSize());
+    resize(QGuiApplication::primaryScreen()->availableSize());
 #endif
     QDialog::showEvent(e);
 }
