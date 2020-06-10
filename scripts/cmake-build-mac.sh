@@ -868,6 +868,11 @@ cd - >/dev/null
 rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
 
 info ""
+info "Put icon file to proper location:"
+mkdir -p ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
+cp ${BUILD_DIR}/../src/qt/res/assets/icons/spectre.icns ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
+
+info ""
 info "Executing MacDeployQT (preparation):"
 read -r -d '' cmd << EOM
 ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
