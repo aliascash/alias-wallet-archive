@@ -27,8 +27,17 @@ public:
 
     SetupWalletWizard(QWidget *parent = 0);
 
+    void showSideWidget();
+
+protected:
+    void showEvent(QShowEvent *);
+
 private slots:
     void showHelp();
+    void pageChanged(int id);
+
+private:
+
 };
 
 class IntroPage : public QWizardPage

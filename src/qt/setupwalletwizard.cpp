@@ -8,12 +8,16 @@
 #include "base58.h"
 
 #include <QtWidgets>
+#include <QScreen>
 
 namespace fs = boost::filesystem;
 
 SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     : QWizard(parent)
 {
+#ifdef ANDROID
+    setFixedSize(QGuiApplication::primaryScreen()->availableSize());
+#endif
     setPage(Page_Intro, new IntroPage);
     setPage(Page_ImportWalletDat, new ImportWalletDatPage);
     setPage(Page_NewMnemonic_Settings, new NewMnemonicSettingsPage);
@@ -30,9 +34,35 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
+    connect(this, &QWizard::currentIdChanged, this, &SetupWalletWizard::pageChanged);
 
     setWindowTitle(tr("Spectrecoin Wallet Setup"));
     setWindowIcon(QIcon(":icons/spectre"));
+
+    showSideWidget();
+}
+
+void SetupWalletWizard::pageChanged(int id)
+{
+   if (id == 0)
+       showSideWidget();
+   else
+       setSideWidget(nullptr);
+}
+
+void SetupWalletWizard::showSideWidget()
+{
+    QLabel * label = new QLabel(this);
+    label->setAutoFillBackground(true);
+    QPalette palette;
+    QBrush brush1(QColor(29, 29, 29, 255));
+    brush1.setStyle(Qt::SolidPattern);
+    palette.setBrush(QPalette::All, QPalette::Window, brush1);
+    palette.setBrush(QPalette::All, QPalette::Base, brush1);
+    label->setPalette(palette);
+    label->setPixmap(QPixmap(":/images/watermark"));
+    label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
+    setSideWidget(label);
 }
 
 void SetupWalletWizard::showHelp()
@@ -76,15 +106,13 @@ void SetupWalletWizard::showHelp()
 IntroPage::IntroPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Set Up Your Wallet"));
-
-    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark"));
+    setTitle("<span style='font-size:20pt; font-weight:bold;'>"+tr("Set Up Your Wallet") +"</span>");
 
     topLabel = new QLabel(tr("The application has detected that you don't have a wallet.dat file, which holds your private keys. Please choose how you want to create or restore your private keys."));
     topLabel->setWordWrap(true);
 
-    newMnemonicRadioButton = new QRadioButton(tr("&Create new mnemonic recovery seed words"));
-    recoverFromMnemonicRadioButton = new QRadioButton(tr("&Recover from your existing mnemonic seed words"));
+    newMnemonicRadioButton = new QRadioButton(tr("&Create new wallet"));
+    recoverFromMnemonicRadioButton = new QRadioButton(tr("&Recover wallet"));
     importWalletRadioButton = new QRadioButton(tr("&Import wallet.dat file"));
     newMnemonicRadioButton->setChecked(true);
 
@@ -173,8 +201,8 @@ bool ImportWalletDatPage::validatePage()
 NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
-    setSubTitle(tr("Step 1/3: Please define language to use and optional password to protect your seed."));
+    setTitle(tr("Create New Wallet"));
+    setSubTitle(tr("Step 1/3: Define language and optional password for your seed."));
 
     noteLabel = new QLabel(tr("Creating mnemonic seed words is a three step procedure:"
                              "<ol><li>Define language and optional password for your seed.</li>"
@@ -293,25 +321,37 @@ bool NewMnemonicSettingsPage::validatePage()
 NewMnemonicResultPage::NewMnemonicResultPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
+    setTitle(tr("Create New Wallet"));
     setSubTitle(tr("Step 2/3: Write down your mnemonic recovery seed words."));
 
     mnemonicLabel = new QLabel(tr("Mnemonic Recovery Seed Words:"));
-    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.<br>You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly."));
+    noticeLabel = new QLabel(tr("You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe. You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly."));
     noticeLabel->setWordWrap(true);
 
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(mnemonicLabel, 0, 0, 1, 4);
+    QVBoxLayout* verticalLayout = new QVBoxLayout(this);
+    verticalLayout->addWidget(mnemonicLabel);
 
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    scrollArea->setWidgetResizable(true);
+    QWidget *scrollAreaWidgetContents = new QWidget(scrollArea);
+    scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    QGridLayout *gridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicResultLabel.reserve(24);
     for (int i = 0; i < 24; i++)
     {
-        vMnemonicResultLabel.push_back(new QLabel);
-        layout->addWidget(vMnemonicResultLabel[i], i / 4 + 1,  i % 4);
+        vMnemonicResultLabel.push_back(new QLabel(scrollAreaWidgetContents));
+        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+            gridLayout->addWidget(vMnemonicResultLabel[i], i / 4 + 1,  i % 4);
+        else
+            gridLayout->addWidget(vMnemonicResultLabel[i], i / 2 + 1,  i % 2);
     }
+    scrollArea->setWidget(scrollAreaWidgetContents);
+    verticalLayout->addWidget(scrollArea);
 
-    layout->addWidget(noticeLabel, 8, 0, 4, 4, Qt::AlignBottom);
-    setLayout(layout);
+    verticalLayout->addWidget(noticeLabel, Qt::AlignBottom);
+
+    setLayout(verticalLayout);
 }
 
 int NewMnemonicResultPage::nextId() const
@@ -380,8 +420,8 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
 NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
-    setSubTitle(tr("Step 3/3: Verify you have the correct words and (optional) password noted."));
+    setTitle(tr("Create New Wallet"));
+    setSubTitle(tr("Step 3/3: Verify you noted correctly words and (optional) password."));
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
@@ -392,11 +432,20 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
     mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
 
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(passwordLabel, 0, 0);
-    layout->addWidget(passwordEdit, 0, 1, 1, 3);
-    layout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 
+    QGridLayout *gridLayout = new QGridLayout;
+    gridLayout->addWidget(passwordLabel, 0, 0);
+    gridLayout->addWidget(passwordEdit, 0, 1, 1, 3);
+    gridLayout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    verticalLayout->addLayout(gridLayout);
+
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    scrollArea->setWidgetResizable(true);
+    QWidget *scrollAreaWidgetContents = new QWidget(scrollArea);
+    scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
     for (int i = 0; i < 24; i++)
     {
@@ -407,10 +456,15 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
         QFormLayout *formLayout = new QFormLayout;
         formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
-        layout->addLayout(formLayout, i / 4 + 2,  i % 4);
+        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+            fieldGridLayout->addLayout(formLayout, i / 4 + 2,  i % 4);
+        else
+            fieldGridLayout->addLayout(formLayout, i / 2 + 2,  i % 2);
     }
+    scrollArea->setWidget(scrollAreaWidgetContents);
+    verticalLayout->addWidget(scrollArea);
 
-    setLayout(layout);
+    setLayout(verticalLayout);
 }
 
 int NewMnemonicVerificationPage::nextId() const
@@ -438,8 +492,8 @@ bool NewMnemonicVerificationPage::isComplete() const
 RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     : QWizardPage(parent)
 {
-    setTitle(tr("Recover private keys from Mnemonic Seed Words"));
-    setSubTitle(tr("Please enter (optional) password and your mnemonic seed words to recover private keys."));
+    setTitle(tr("Recover Wallet"));
+    setSubTitle(tr("Enter (optional) password and your mnemonic seed words."));
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
@@ -448,11 +502,20 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
     mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
 
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(passwordLabel, 0, 0);
-    layout->addWidget(passwordEdit, 0, 1, 1, 3);
-    layout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 
+    QGridLayout *gridLayout = new QGridLayout(this);
+    gridLayout->addWidget(passwordLabel, 0, 0);
+    gridLayout->addWidget(passwordEdit, 0, 1, 1, 3);
+    gridLayout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    verticalLayout->addLayout(gridLayout);
+
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    scrollArea->setWidgetResizable(true);
+    QWidget *scrollAreaWidgetContents = new QWidget(scrollArea);
+    scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+    QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
     for (int i = 0; i < 24; i++)
     {
@@ -461,10 +524,15 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
         QFormLayout *formLayout = new QFormLayout;
         formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
-        layout->addLayout(formLayout, i / 4 + 2,  i % 4);
+        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+            fieldGridLayout->addLayout(formLayout, i / 4 + 2,  i % 4);
+        else
+            fieldGridLayout->addLayout(formLayout, i / 2 + 2,  i % 2);
     }
+    scrollArea->setWidget(scrollAreaWidgetContents);
+    verticalLayout->addWidget(scrollArea);
 
-    setLayout(layout);
+    setLayout(verticalLayout);
 }
 
 int RecoverFromMnemonicPage::nextId() const

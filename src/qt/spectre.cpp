@@ -366,7 +366,6 @@ int main(int argc, char *argv[])
     }
 
     // Start SetupWalletWizard if no wallet.dat exists
-#ifndef ANDROID // temporarly remove setupwizard until fixed for android
     if (!mapArgs.count("-bip44key") && !mapArgs.count("-wallet") && !mapArgs.count("-salvagewallet") && !fs::exists(GetDataDir() / "wallet.dat"))
     {
         SetupWalletWizard wizard;
