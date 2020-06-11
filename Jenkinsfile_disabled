@@ -205,52 +205,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.9.6') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
@@ -277,21 +231,55 @@ pipeline {
                         }
                         stage('Win + Qt5.12.x') {
                             agent {
-                                label "windows2"
+                                label "windows"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: ""
+                                    buildWindows("-Qt5.12")
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Windows Qt5.15.x') {
+                    stages {
+                        stage('Start Windows slave') {
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
                                     )
+                                }
+                            }
+                        }
+                        stage('Win + Qt5.15.x') {
+                            agent {
+                                label "windows2"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
+                            }
+                            steps {
+                                script {
+                                    buildWindows("")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                 }
                             }
@@ -704,87 +692,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Windows Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.9.6') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                }
-                            }
-                        }
-                        stage('Upload deliveries') {
-                            steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Spectrecoin-*-Win64-Qt5.9.6.zip Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip Spectrecoin-*-Win64-Qt5.9.6.zip Checksum-Spectrecoin-Win64-Qt5.9.6.txt Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Windows Qt5.12.x') {
                     stages {
                         stage('Start Windows slave') {
@@ -811,21 +718,61 @@ pipeline {
                         }
                         stage('Win + Qt5.12.x') {
                             agent {
-                                label "windows2"
+                                label "windows"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: ""
+                                    buildWindows("-Qt5.12")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                }
+                            }
+                        }
+                        stage('Upload deliveries') {
+                            steps {
+                                uploadDeliveries("-Qt5.12")
+                            }
+                        }
+                    }
+                }
+                stage('Windows Qt5.15.x') {
+                    stages {
+                        stage('Start Windows slave') {
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
                                     )
+                                }
+                            }
+                        }
+                        stage('Win + Qt5.15.x') {
+                            agent {
+                                label "windows2"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
+                            }
+                            steps {
+                                script {
+                                    buildWindows("")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                     build(
                                             job: 'Spectrecoin/installer/master',
@@ -854,36 +801,7 @@ pipeline {
                         }
                         stage('Upload deliveries') {
                             steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Spectrecoin-*-Win64.zip Spectrecoin-*-Win64-OBFS4.zip
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin-*-Win64-OBFS4.zip Spectrecoin-*-Win64.zip Checksum-Spectrecoin-Win64.txt Checksum-Spectrecoin-Win64-OBFS4.txt"
-                                }
+                                uploadDeliveries("")
                             }
                         }
                     }
@@ -1014,5 +932,48 @@ pipeline {
                     webhookURL: "${DISCORD_WEBHOOK}"
             )
         }
+    }
+}
+
+def buildWindows(def suffix) {
+    prepareWindowsBuild()
+    bat 'scripts\\win-genbuild.bat'
+    bat 'scripts\\win-build.bat'
+    createWindowsDelivery(
+            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+            suffix: "${suffix}"
+    )
+}
+
+def uploadDeliveries(def suffix) {
+    script {
+        sh(
+                script: """
+                    rm -f Spectrecoin-*-Win64${suffix}.zip Spectrecoin-*-Win64${suffix}-OBFS4.zip
+                    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                """
+        )
+        uploadArtifactToGitHub(
+                user: 'spectrecoin',
+                repository: 'spectre',
+                tag: "${GIT_TAG_TO_USE}",
+                artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+        )
+        sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
+        uploadArtifactToGitHub(
+                user: 'spectrecoin',
+                repository: 'spectre',
+                tag: "${GIT_TAG_TO_USE}",
+                artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+        )
+        createAndArchiveChecksumFile(
+                filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+                checksumfile: "Checksum-Spectrecoin-Win64${suffix}.txt"
+        )
+        createAndArchiveChecksumFile(
+                filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+                checksumfile: "Checksum-Spectrecoin-Win64${suffix}-OBFS4.txt"
+        )
+        sh "rm -f Spectrecoin-*-Win64${suffix}-OBFS4.zip Spectrecoin-*-Win64${suffix}.zip Checksum-Spectrecoin-Win64${suffix}.txt Checksum-Spectrecoin-Win64${suffix}-OBFS4.txt"
     }
 }
