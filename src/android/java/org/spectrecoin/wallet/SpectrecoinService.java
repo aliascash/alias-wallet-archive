@@ -6,10 +6,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
+import android.os.Bundle;
+import android.util.Log;
 
 import org.qtproject.qt5.android.bindings.QtService;
 
 public class SpectrecoinService extends QtService {
+
+    private static final String TAG = "SpectrecoinService";
 
     public static String nativeLibraryDir;
 
@@ -17,6 +21,10 @@ public class SpectrecoinService extends QtService {
     private static int NOTIFICATION_ID = 100;
 
     public static final String ACTION_STOP = "ACTION_STOP";
+
+    public boolean init = false;
+    public boolean rescan = false;
+    public String bip44key = "";
 
     @Override
     public void onCreate() {
@@ -68,6 +76,12 @@ public class SpectrecoinService extends QtService {
                         return START_NOT_STICKY;
                 }
         }
+        Bundle bundle = intent.getExtras();
+        rescan = bundle.getBoolean("rescan", false);
+        Log.d(TAG, "onStartCommand rescan=" + rescan);
+        bip44key = bundle.getString("bip44key", "");
+        //Log.d(TAG, "onStartCommand bip44key=" + bip44key);
+        init = true;
         return super.onStartCommand(intent, flags, startId);
     }
 }

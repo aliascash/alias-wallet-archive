@@ -157,6 +157,18 @@ bool AndroidAppInit(int argc, char* argv[])
         ReadConfigFile(mapArgs, mapMultiArgs);
         SoftSetBoolArg("-debug", true);
 
+        bool rescan = false;
+        bool init = QtAndroid::androidService().getField<jboolean>("init");
+        while(!init)
+        {   // Wait for intent extras set
+            QApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
+            init = QtAndroid::androidService().getField<jboolean>("init");
+        }
+        rescan = QtAndroid::androidService().getField<jboolean>("rescan");
+        if (rescan) SoftSetBoolArg("-rescan", true);
+        QString bip44key = QtAndroid::androidService().getObjectField<jstring>("bip44key").toString();
+        if (!bip44key.isEmpty()) SoftSetArg("-bip44key", bip44key.toStdString());
+
         //---- Setup remote objects host
         QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
         ApplicationModelRemoteSimpleSource applicationModel;
@@ -178,6 +190,11 @@ bool AndroidAppInit(int argc, char* argv[])
 
         if (fRet)
         {
+            if (rescan)                 // reset rescan flag
+                QtAndroid::androidService().setField<jboolean>("rescan", false);
+            if (!bip44key.isEmpty())    // reset bip44key
+                QtAndroid::androidService().setField<jstring>("bip44key", jstring(""));
+
             // Get locks upfront, to make sure we can completly setup our client before core sends notifications
             ENTER_CRITICAL_SECTION(cs_main); // no RAII
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
@@ -382,9 +399,9 @@ int main(int argc, char *argv[])
     }
 
 #ifdef ANDROID
-    QtAndroid::androidActivity().callMethod<void>("startCore");
+    std::string bip44key = GetArg("-bip44key", "");
+    QtAndroid::androidActivity().callMethod<void>("startCore", "(ZLjava/lang/String;)V", GetBoolArg("-rescan"), QAndroidJniObject::fromString(QString::fromStdString(bip44key)).object<jstring>());
 #endif
-
 
     QSplashScreen splash(QPixmap(":/images/splash"), 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))

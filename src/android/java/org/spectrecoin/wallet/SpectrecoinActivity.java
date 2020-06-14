@@ -3,9 +3,14 @@ package org.spectrecoin.wallet;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 
+import java.util.Map;
+
 public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+
+    private static final String TAG = "SpectrecoinService";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -16,8 +21,15 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
         }
     }
 
-    public void startCore() {
+    public void startCore(boolean rescan, String bip44key) {
         Intent intent = new Intent(getApplicationContext(), SpectrecoinService.class);
+        Bundle bundle = intent.getExtras();
+        if (rescan) {
+            intent.putExtra("rescan", true);
+        }
+        if (bip44key != null && !bip44key.isEmpty()) {
+            intent.putExtra("bip44key", bip44key);
+        }
         getApplicationContext().startForegroundService(intent);
     }
 }
