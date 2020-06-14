@@ -190,10 +190,9 @@ bool AndroidAppInit(int argc, char* argv[])
 
         if (fRet)
         {
-            if (rescan)                 // reset rescan flag
-                QtAndroid::androidService().setField<jboolean>("rescan", false);
-            if (!bip44key.isEmpty())    // reset bip44key
-                QtAndroid::androidService().setField<jstring>("bip44key", jstring(""));
+            // reset androidservice startup flags
+            QtAndroid::androidService().setField<jboolean>("rescan", false);
+            QtAndroid::androidService().setField<jstring>("bip44key", QAndroidJniObject::fromString("").object<jstring>());
 
             // Get locks upfront, to make sure we can completly setup our client before core sends notifications
             ENTER_CRITICAL_SECTION(cs_main); // no RAII
