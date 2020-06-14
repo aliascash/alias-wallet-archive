@@ -75,12 +75,15 @@ public class SpectrecoinService extends QtService {
                         this.stopService(new Intent(this, SpectrecoinService.class));
                         return START_NOT_STICKY;
                 }
+
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                rescan = bundle.getBoolean("rescan", false);
+                Log.d(TAG, "onStartCommand rescan=" + rescan);
+                bip44key = bundle.getString("bip44key", "");
+                //Log.d(TAG, "onStartCommand bip44key=" + bip44key);
+            }
         }
-        Bundle bundle = intent.getExtras();
-        rescan = bundle.getBoolean("rescan", false);
-        Log.d(TAG, "onStartCommand rescan=" + rescan);
-        bip44key = bundle.getString("bip44key", "");
-        //Log.d(TAG, "onStartCommand bip44key=" + bip44key);
         init = true;
         return super.onStartCommand(intent, flags, startId);
     }
