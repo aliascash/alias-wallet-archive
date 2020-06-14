@@ -97,7 +97,12 @@ static void InitMessage(const std::string &message)
 {
     LogPrintf("%s\n", message);
     if (applicationModelRef)
+    {
         applicationModelRef->setCoreMessage(QString::fromStdString(message));
+#ifdef ANDROID
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
+#endif
+    }
     if(splashref)
         splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
     if (splashref || applicationModelRef)
@@ -200,8 +205,8 @@ bool AndroidAppInit(int argc, char* argv[])
 
             // create models
             OptionsModel optionsModel;
-            ClientModel clientModel(&optionsModel);
             WalletModel walletModel(pwalletMain, &optionsModel);
+            ClientModel clientModel(&optionsModel, &walletModel);
             walletModelRef = &walletModel;
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);

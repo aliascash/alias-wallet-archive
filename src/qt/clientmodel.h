@@ -27,6 +27,7 @@ enum NumConnections {
 };
 
 class OptionsModel;
+class WalletModel;
 class PeerTableModel;
 class AddressTableModel;
 class TransactionTableModel;
@@ -42,7 +43,7 @@ class ClientModel : public ClientModelRemoteSimpleSource
 {
     Q_OBJECT
 public:
-    explicit ClientModel(OptionsModel *optionsModel, QObject *parent = 0);
+    explicit ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent = 0);
     ~ClientModel();
 
     OptionsModel *getOptionsModel();
@@ -79,6 +80,7 @@ public:
 
 private:
     OptionsModel *optionsModel;
+    WalletModel *walletModel;
     PeerTableModel *peerTableModel;
 
     BlockChangedEvent blockChangedEvent;
@@ -99,6 +101,7 @@ public slots:
     void updateNumBlocks(const BlockChangedEvent &blockChangedEvent);
     void updateNumConnections(int numConnections);
     void updateAlert(const QString &hash, int status);
+    void updateServiceStatus();
 };
 
 #endif // CLIENTMODEL_H

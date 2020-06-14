@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "clientmodel.h"
+#include "walletmodel.h"
 #include "guiconstants.h"
 #include "optionsmodel.h"
 #include "peertablemodel.h"
@@ -17,10 +18,14 @@
 #include <QDateTime>
 #include <QTimer>
 
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
+
 static const int64_t nClientStartupTime = GetTime();
 
-ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
-    ClientModelRemoteSimpleSource(parent), optionsModel(optionsModel), pollTimer(0)
+ClientModel::ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent) :
+    ClientModelRemoteSimpleSource(parent), optionsModel(optionsModel), walletModel(walletModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
 
@@ -83,6 +88,86 @@ void ClientModel::updateNumBlocks(const BlockChangedEvent &blockChangedEvent)
         updateTimer();
 }
 
+void ClientModel::updateServiceStatus()
+{
+    const BlockInfo& blockInfo = ClientModelRemoteSimpleSource::blockInfo();
+
+    if (numConnections() == 0)
+    {
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString("Disconnected!").object<jstring>());
+        return;
+    }
+    if (isImporting())
+    {
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString("Importing!").object<jstring>());
+        return;
+    }
+
+    int nNodeMode = blockInfo.nNodeMode();
+    int nNodeState = blockInfo.nNodeState();
+
+    // -- translation (tr()) makes it difficult to neatly pick block/header
+    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
+    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
+
+    int count = blockInfo.numBlocks();
+    int nTotalBlocks = blockInfo.numBlocksOfPeers();
+    QDateTime lastBlockDate = blockInfo.lastBlockTime();
+
+    QString statusMsg;
+    if (nNodeMode != NT_FULL
+        && nNodeState == NS_GET_FILTERED_BLOCKS)
+    {
+        float nPercentageDone = blockInfo.nLastFilteredHeight() / (blockInfo.numBlocksOfPeers() * 0.01f);
+        statusMsg += tr("(%2% done).").arg(nPercentageDone);
+        count = blockInfo.nLastFilteredHeight();
+    }
+    else
+    {
+        if (count < nTotalBlocks)
+        {
+            int nRemainingBlocks = nTotalBlocks - count;
+            float nPercentageDone = count / (nTotalBlocks * 0.01f);
+            statusMsg += tr("(%1%)").arg(nPercentageDone, 0, 'f', 3);
+
+            if (nNodeMode == NT_FULL)
+            {
+                statusMsg += tr(" ~%n block(s) remaining.", "", nRemainingBlocks);
+            } else
+            {
+                char temp[128];
+                snprintf(temp, sizeof(temp), " ~%%n %s remaining.", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
+                statusMsg += tr(temp, "", nRemainingBlocks);
+            }
+        }
+        else
+        {
+            statusMsg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().time().toString(Qt::DefaultLocaleShortDate));
+        }
+    }
+
+    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime().addSecs(blockInfo.nTimeOffset()));
+    if (secs < 90*60 && count >= nTotalBlocks && nNodeState != NS_GET_FILTERED_BLOCKS)
+    {
+        quint64 nWeight = walletModel->stakingInfo().nWeight(), nNetworkWeight = walletModel->stakingInfo().nNetworkWeight(), nNetworkWeightRecent = walletModel->stakingInfo().nNetworkWeightRecent();
+        unsigned nEstimateTime = walletModel->stakingInfo().nEstimateTime();
+        if (walletModel->stakingInfo().fIsStaking() && nEstimateTime)
+        {
+            statusMsg = tr("Staking... / Expected time ");
+            statusMsg += (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
+                         (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
+                         (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
+                                                          tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
+        }
+        else
+            statusMsg = tr("Up to date") + " / " + statusMsg;
+    }
+    else
+        statusMsg = tr("Synchronizing...") + " " + statusMsg;
+
+    QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(statusMsg).object<jstring>());
+}
+
 void ClientModel::updateTimer() {
     // Some quantities (such as number of blocks) change so fast that we don't want to be notified for each change.
     // Periodically check and update with a timer.
@@ -96,6 +181,8 @@ void ClientModel::updateTimer() {
                                     blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
                                     GetTimeOffset(),
                                     0 /**TODO pwalletMain->nLastFilteredHeight**/));
+
+        updateServiceStatus();
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -105,6 +192,7 @@ void ClientModel::updateNumConnections(int numConnections)
 {
     LogPrintf("emit numConnectionsChanged(%i)\n", numConnections);
     setNumConnections(numConnections);
+    updateServiceStatus();
     // emit numConnectionsChanged(numConnections); QT remoteobjects impl of setNumConnections() emit signal
 }
 

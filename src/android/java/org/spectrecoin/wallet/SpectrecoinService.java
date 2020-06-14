@@ -26,6 +26,8 @@ public class SpectrecoinService extends QtService {
     public boolean rescan = false;
     public String bip44key = "";
 
+    private Notification.Builder notificationBuilder;
+
     @Override
     public void onCreate() {
         nativeLibraryDir = getApplicationInfo().nativeLibraryDir;
@@ -49,16 +51,15 @@ public class SpectrecoinService extends QtService {
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
         Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Shutdown", stopPendingIntent).build();
 
-        Notification notification =
-                new Notification.Builder(this, CHANNEL_ID)
+        notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
                         .setContentTitle("Spectrecoin")//getText(R.string.notification_title))
-                        .setContentText("Syncing...")//getText(R.string.notification_message))
+                        .setContentText("Running")//getText(R.string.notification_message))
+                        .setOnlyAlertOnce(true)
                         .setSmallIcon(R.drawable.icon)
                         .setContentIntent(pendingIntent)
-                        .addAction(stopAction)
-                        //.setTicker(getText(R.string.ticker_text))
-                        .build();
-
+                        .addAction(stopAction);
+                        //.setTicker(getText(R.string.ticker_text));
+        Notification notification = notificationBuilder.build();
         notificationManager.notify(NOTIFICATION_ID, notification);
         startForeground(NOTIFICATION_ID, notification);
 
@@ -86,5 +87,11 @@ public class SpectrecoinService extends QtService {
         }
         init = true;
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void updateNotification(String message) {
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationBuilder.setContentText(message);
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 }
