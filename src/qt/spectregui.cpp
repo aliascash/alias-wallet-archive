@@ -648,7 +648,7 @@ void SpectreGUI::setNumBlocks()
 
         tooltip += (tooltip.isEmpty()? "" : "<br>")
          + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3);
     } else
     {
         tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
