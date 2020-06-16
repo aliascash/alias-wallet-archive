@@ -37,6 +37,12 @@ ClientModel::ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, Q
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
 
     subscribeToCoreSignals();
+
+    // TODO updateServiceStatus should be in a separate class, walletModel dependency removed from clientModel
+    connect(this, SIGNAL(numConnectionsChanged(int)), this, SLOT(updateServiceStatus()));
+    connect(this, SIGNAL(blockInfoChanged(BlockInfo)), this, SLOT(updateServiceStatus()));
+    connect(walletModel, SIGNAL(encryptionStatusChanged(int)), this, SLOT(updateServiceStatus()));
+    connect(walletModel, SIGNAL(stakingInfoChanged(StakingInfo)), this, SLOT(updateServiceStatus()));
 }
 
 ClientModel::~ClientModel()
@@ -94,12 +100,16 @@ void ClientModel::updateServiceStatus()
 
     if (numConnections() == 0)
     {
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString("Disconnected!").object<jstring>());
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                     QAndroidJniObject::fromString("No network connection").object<jstring>(),
+                                                     QAndroidJniObject::fromString("Spectrecoin is not connected to any node.").object<jstring>());
         return;
     }
     if (isImporting())
     {
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString("Importing!").object<jstring>());
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                     QAndroidJniObject::fromString("Importing!").object<jstring>(),
+                                                     QAndroidJniObject::fromString("...").object<jstring>());
         return;
     }
 
@@ -114,12 +124,13 @@ void ClientModel::updateServiceStatus()
     int nTotalBlocks = blockInfo.numBlocksOfPeers();
     QDateTime lastBlockDate = blockInfo.lastBlockTime();
 
-    QString statusMsg;
+    QString title, msg, connection;
+    connection = tr("%1 nodes connected").arg(numConnections());
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
         float nPercentageDone = blockInfo.nLastFilteredHeight() / (blockInfo.numBlocksOfPeers() * 0.01f);
-        statusMsg += tr("(%2% done).").arg(nPercentageDone);
+        msg += tr("%1% done.").arg(nPercentageDone);
         count = blockInfo.nLastFilteredHeight();
     }
     else
@@ -128,44 +139,49 @@ void ClientModel::updateServiceStatus()
         {
             int nRemainingBlocks = nTotalBlocks - count;
             float nPercentageDone = count / (nTotalBlocks * 0.01f);
-            statusMsg += tr("(%1%)").arg(nPercentageDone, 0, 'f', 3);
+            msg += tr("%1%").arg(nPercentageDone, 0, 'f', 3);
 
             if (nNodeMode == NT_FULL)
             {
-                statusMsg += tr(" ~%n block(s) remaining.", "", nRemainingBlocks);
+                msg += tr(" ~%1 block(s) remaining.").arg(nRemainingBlocks);
             } else
             {
                 char temp[128];
                 snprintf(temp, sizeof(temp), " ~%%n %s remaining.", nRemainingBlocks == 1 ? qPrintable(sBlockType) : qPrintable(sBlockTypeMulti));
-                statusMsg += tr(temp, "", nRemainingBlocks);
+                msg += tr(temp, "", nRemainingBlocks);
             }
         }
         else
         {
-            statusMsg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().time().toString(Qt::DefaultLocaleShortDate));
+            msg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().toString(Qt::DefaultLocaleShortDate));
         }
     }
 
     int secs = lastBlockDate.secsTo(QDateTime::currentDateTime().addSecs(blockInfo.nTimeOffset()));
-    if (secs < 90*60 && count >= nTotalBlocks && nNodeState != NS_GET_FILTERED_BLOCKS)
+    if (secs < 30*60 && count >= nTotalBlocks && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
         quint64 nWeight = walletModel->stakingInfo().nWeight(), nNetworkWeight = walletModel->stakingInfo().nNetworkWeight(), nNetworkWeightRecent = walletModel->stakingInfo().nNetworkWeightRecent();
         unsigned nEstimateTime = walletModel->stakingInfo().nEstimateTime();
         if (walletModel->stakingInfo().fIsStaking() && nEstimateTime)
         {
-            statusMsg = tr("Staking... / Expected time ");
-            statusMsg += (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
-                         (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
-                         (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
-                                                          tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
+            title = tr("Staking") + " / " + connection;
+            msg = tr("Expected time for reward ");
+            msg += (nEstimateTime < 60)           ? tr("%1 second(s)").arg(nEstimateTime) : \
+                   (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
+                   (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
+                                                    tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
         }
         else
-            statusMsg = tr("Up to date") + " / " + statusMsg;
+        {
+            title = tr("Up to date") + " / " + connection;
+        }
     }
     else
-        statusMsg = tr("Synchronizing...") + " " + statusMsg;
+        title = tr("Synchronizing") + " / " + connection;
 
-    QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(statusMsg).object<jstring>());
+    QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                 QAndroidJniObject::fromString(title).object<jstring>(),
+                                                 QAndroidJniObject::fromString(msg).object<jstring>());
 }
 
 void ClientModel::updateTimer() {
@@ -181,8 +197,6 @@ void ClientModel::updateTimer() {
                                     blockChangedEvent.isInitialBlockDownload, QDateTime::fromTime_t(blockChangedEvent.lastBlockTime),
                                     GetTimeOffset(),
                                     0 /**TODO pwalletMain->nLastFilteredHeight**/));
-
-        updateServiceStatus();
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
@@ -192,7 +206,6 @@ void ClientModel::updateNumConnections(int numConnections)
 {
     LogPrintf("emit numConnectionsChanged(%i)\n", numConnections);
     setNumConnections(numConnections);
-    updateServiceStatus();
     // emit numConnectionsChanged(numConnections); QT remoteobjects impl of setNumConnections() emit signal
 }
 

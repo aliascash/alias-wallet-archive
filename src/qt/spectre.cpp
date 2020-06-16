@@ -100,7 +100,9 @@ static void InitMessage(const std::string &message)
     {
         applicationModelRef->setCoreMessage(QString::fromStdString(message));
 #ifdef ANDROID
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;)V", QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                     QAndroidJniObject::fromString(QObject::tr("Initializing")).object<jstring>(),
+                                                     QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
 #endif
     }
     if(splashref)
