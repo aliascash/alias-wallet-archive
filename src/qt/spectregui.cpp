@@ -637,7 +637,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     }
 
     // Set icon state: spinning if catching up, tick otherwise
-    if (secs < 90*60 && count >= nTotalBlocks
+    if (secs < 30*60 && count >= nTotalBlocks
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Up to date") + "<br>" + tooltip;
