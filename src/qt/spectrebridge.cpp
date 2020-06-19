@@ -308,6 +308,11 @@ SpectreBridge::SpectreBridge(QWebChannel *webChannel, QObject *parent) :
     webChannel      (webChannel)
 {
     async->start();
+    connect(this, SIGNAL (destroyed()), transactionModel, SLOT (deleteLater()));
+    connect(this, SIGNAL (destroyed()), addressModel, SLOT (deleteLater()));
+    connect(this, SIGNAL (destroyed()), async, SLOT (quit()));
+    connect(async, SIGNAL (finished()), async, SLOT (deleteLater()));
+
     connect(transactionModel->getModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), SLOT(updateTransactions(QModelIndex,QModelIndex)));
     connect(transactionModel->getModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),    SLOT(insertTransactions(QModelIndex,int,int)));
 
@@ -317,9 +322,6 @@ SpectreBridge::SpectreBridge(QWebChannel *webChannel, QObject *parent) :
 
 SpectreBridge::~SpectreBridge()
 {
-    delete transactionModel;
-    delete addressModel;
-    delete async;
     delete info;
 }
 

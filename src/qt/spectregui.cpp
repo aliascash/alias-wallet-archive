@@ -173,7 +173,6 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
 
     connect(applicationModelPtr.data(), SIGNAL(coreMessageChanged(QString)), this, SLOT(updateCoreMessage(QString)));
     connect(applicationModelPtr.data(), SIGNAL(uiReady()), this, SLOT(pageLoaded()));
-    connect(applicationModelPtr.data(), SIGNAL(coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus)), this, SLOT(coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus)));
 }
 
 
@@ -189,18 +188,6 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 void SpectreGUI::updateCoreMessage(QString message)
 {
     //initMessage(splashScreen, message.toStdString());
-}
-
-void SpectreGUI::coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus status)
-{
-    switch(status)
-    {
-    case ApplicationModelRemoteReplica::CoreStatus::STOPPED:
-        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
-        break;
-    default:
-        break;
-    }
 }
 
 unsigned short const onion_port = 9089;

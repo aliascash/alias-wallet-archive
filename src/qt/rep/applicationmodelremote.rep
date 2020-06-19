@@ -1,7 +1,5 @@
 class ApplicationModelRemote
 {
-    ENUM CoreStatus {INIT, RUNNING, STOPPED}
-    PROP(CoreStatus coreStatus SOURCEONLYSETTER);
     PROP(QString coreMessage SOURCEONLYSETTER);
 
     SIGNAL(uiReady());

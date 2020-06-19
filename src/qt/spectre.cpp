@@ -46,7 +46,6 @@ namespace fs = boost::filesystem;
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
 static ApplicationModelRemoteSimpleSource *applicationModelRef;
-static WalletModel *walletModelRef;
 
 static void ThreadSafeMessageBox(const std::string& message, const std::string& caption, int style)
 {
@@ -179,7 +178,6 @@ bool AndroidAppInit(int argc, char* argv[])
         //---- Setup remote objects host
         QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
         ApplicationModelRemoteSimpleSource applicationModel;
-        applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::INIT);
         srcNode.enableRemoting(&applicationModel); // enable remoting
         applicationModelRef = &applicationModel;
 
@@ -209,7 +207,6 @@ bool AndroidAppInit(int argc, char* argv[])
             OptionsModel optionsModel;
             WalletModel walletModel(pwalletMain, &optionsModel);
             ClientModel clientModel(&optionsModel, &walletModel);
-            walletModelRef = &walletModel;
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
@@ -224,19 +221,18 @@ bool AndroidAppInit(int argc, char* argv[])
             clientModel.updateNumBlocks(blockChangedEvent);
 
             // Register remote objects
-            srcNode.enableRemoting(&clientModel); // enable remoting
-            srcNode.enableRemoting(&walletModel); // enable remoting
-            srcNode.enableRemoting(bridge.getAddressModel()); // enable remoting
+            srcNode.enableRemoting(&clientModel);
+            srcNode.enableRemoting(&walletModel);
+            srcNode.enableRemoting(bridge.getAddressModel());
 
             // Release lock before starting event processing, otherwise lock would never be released
             LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
             LEAVE_CRITICAL_SECTION(cs_main);
 
-            applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::RUNNING);
-
             app.exec();
 
             LogPrintf("SpectreCoin shutdown.\n\n");
+            srcNode.disableRemoting(&applicationModel);
             threadGroup.interrupt_all();
             threadGroup.join_all();
         }
@@ -248,17 +244,30 @@ bool AndroidAppInit(int argc, char* argv[])
             // the startup-failure cases to make sure they don't result in a hang due to some
             // thread-blocking-waiting-for-another-thread-during-startup case
         }
-        applicationModel.setCoreStatus(ApplicationModelRemoteSource::CoreStatus::STOPPED);
         applicationModelRef = 0;
         Shutdown();
     } catch (std::exception& e) {
         PrintException(&e, "AndroidService");
+        fRet = false;
     } catch (...) {
         PrintException(NULL, "AndroidService");
+        fRet = false;
     };
 
     qInfo() << "Android service stopped.";
     return fRet;
+}
+
+static void RemoteModelStateChanged(QRemoteObjectReplica::State state, QRemoteObjectReplica::State oldState)
+{
+    switch(state)
+    {
+    case QRemoteObjectReplica::Suspect:
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+        break;
+    default:
+        break;
+    }
 }
 
 
@@ -458,6 +467,7 @@ int main(int argc, char *argv[])
         addressModelPtr.reset(repNode.acquire<AddressModelRemoteReplica>()); // acquire replica of source from host node
 
         QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);
+        QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::stateChanged, RemoteModelStateChanged);
 
         if (!applicationModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");

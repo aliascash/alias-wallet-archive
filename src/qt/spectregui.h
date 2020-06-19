@@ -190,8 +190,6 @@ private slots:
     /** Core sends message **/
     void updateCoreMessage(QString message);
 
-    void coreStatusChanged(ApplicationModelRemoteReplica::CoreStatus status);
-
     /** Handle external URLs **/
     void urlClicked(const QUrl & link);
 
