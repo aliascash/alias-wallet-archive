@@ -52,8 +52,8 @@ public class SpectrecoinService extends QtService {
         Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Shutdown", stopPendingIntent).build();
 
         notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
-                        .setContentTitle("Spectrecoin")//getText(R.string.notification_title))
-                        .setContentText("Running")//getText(R.string.notification_message))
+                        .setContentTitle("Core Service")//getText(R.string.notification_title))
+                        .setContentText("Running...")//getText(R.string.notification_message))
                         .setOnlyAlertOnce(true)
                         .setSmallIcon(R.drawable.icon)
                         .setContentIntent(pendingIntent)
@@ -89,9 +89,10 @@ public class SpectrecoinService extends QtService {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void updateNotification(String message) {
+    public void updateNotification(String title, String text) {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationBuilder.setContentText(message);
+        notificationBuilder.setContentTitle(title);
+        notificationBuilder.setContentText(text);
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 }
