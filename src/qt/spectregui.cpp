@@ -291,10 +291,6 @@ void SpectreGUI::pageLoaded()
 //    // Create the tray icon (or setup the dock icon)
 //    if (!initialized) createTrayIcon();
 
-//      QRemoteObjectPendingReply<int> numConnectionsAllResult = clientModelPtr->getNumConnections((1U << 0) | (1U << 1));
-//      if (numConnectionsAllResult.waitForFinished())
-//        setNumConnections(numConnectionsAllResult.returnValue());
-
     setNumConnections(clientModel->numConnections());
     setNumBlocks();
     setEncryptionInfo(walletModel->encryptionInfo());
@@ -308,7 +304,7 @@ void SpectreGUI::pageLoaded()
     if(GetBoolArg("-min"))
         showMinimized();
     else
-        show();
+        QTimer::singleShot(0, this, &SpectreGUI::show);
 
     pollTimer->start(1000);
 }
