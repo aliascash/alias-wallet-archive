@@ -263,7 +263,7 @@ static void RemoteModelStateChanged(QRemoteObjectReplica::State state, QRemoteOb
     switch(state)
     {
     case QRemoteObjectReplica::Suspect:
-        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+        QtAndroid::androidActivity().callMethod<void>("finishAndRemoveTask");
         break;
     default:
         break;
