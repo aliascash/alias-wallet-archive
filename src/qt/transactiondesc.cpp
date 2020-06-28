@@ -303,8 +303,7 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
         CStealthAddress stealthAddress = boost::get<CStealthAddress>(destination);
         if (!stealthAddress.label.empty())
             strHTML += GUIUtil::HtmlEscape(stealthAddress.label) + "<br>";
-        strHTML += "(" + GUIUtil::HtmlEscape(stealthAddress.Encoded().substr(0, 51)) + "<br>";
-        strHTML += GUIUtil::HtmlEscape(stealthAddress.Encoded().substr(51)) + ")</dd>";
+        strHTML += GUIUtil::HtmlEscape(stealthAddress.Encoded()) + "<br>";
         toHTML(wallet, strHTML, destSubs);
 
         narrationHandled = true;
