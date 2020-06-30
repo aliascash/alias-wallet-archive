@@ -17,8 +17,10 @@ public class SpectrecoinService extends QtService {
 
     public static String nativeLibraryDir;
 
-    private static String CHANNEL_ID = "SPECTRECOIN_SERVICE";
-    private static int NOTIFICATION_ID = 100;
+    private static String CHANNEL_ID_SERVICE = "SPECTRECOIN_SERVICE";
+    private static String CHANNEL_ID_WALLET = "SPECTRECOIN_WALLET";
+    private static int NOTIFICATION_ID_SERVICE = 100;
+    private static int NOTIFICATION_ID_WALLET = 1000;
 
     public static final String ACTION_STOP = "ACTION_STOP";
 
@@ -32,16 +34,21 @@ public class SpectrecoinService extends QtService {
     public void onCreate() {
         nativeLibraryDir = getApplicationInfo().nativeLibraryDir;
 
-        // Create the NotificationChannel
-        CharSequence name = "Service"; //getString(R.string.channel_name);
-        String description = "Spectrecoin Background Service"; //getString(R.string.channel_description);
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-        channel.setDescription(description);
-        // Register the channel with the system; you can't change the importance
-        // or other notification behaviors after this
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
-        notificationManager.createNotificationChannel(channel);
+
+        // Create the NotificationChannel for the permanent notification
+        CharSequence serviceNotificationName = "Background Service"; //getString(R.string.channel_name);
+        String serviceNotificationDescription = "The permanent notification which shows you the state of the Spectrecoin service."; //getString(R.string.channel_description);
+        NotificationChannel channelSevice = new NotificationChannel(CHANNEL_ID_SERVICE, serviceNotificationName, NotificationManager.IMPORTANCE_DEFAULT);
+        channelSevice.setDescription(serviceNotificationDescription);
+        notificationManager.createNotificationChannel(channelSevice);
+
+        // Create the NotificationChannel for notifications
+        CharSequence walletNotificationName = "Wallet Notifications"; //getString(R.string.channel_name);
+        String walletNotificationDescription = "Shows notifications regarding your wallet like incoming transactions."; //getString(R.string.channel_description);
+        NotificationChannel channelWallet = new NotificationChannel(CHANNEL_ID_WALLET, walletNotificationName, NotificationManager.IMPORTANCE_DEFAULT);
+        channelWallet.setDescription(walletNotificationDescription);
+        notificationManager.createNotificationChannel(channelWallet);
 
         Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -51,7 +58,7 @@ public class SpectrecoinService extends QtService {
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
         Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Shutdown", stopPendingIntent).build();
 
-        notificationBuilder = new Notification.Builder(this, CHANNEL_ID)
+        notificationBuilder = new Notification.Builder(this, CHANNEL_ID_SERVICE)
                         .setContentTitle("Core Service")//getText(R.string.notification_title))
                         .setContentText("Running...")//getText(R.string.notification_message))
                         .setOnlyAlertOnce(true)
@@ -60,8 +67,8 @@ public class SpectrecoinService extends QtService {
                         .addAction(stopAction);
                         //.setTicker(getText(R.string.ticker_text));
         Notification notification = notificationBuilder.build();
-        notificationManager.notify(NOTIFICATION_ID, notification);
-        startForeground(NOTIFICATION_ID, notification);
+        notificationManager.notify(NOTIFICATION_ID_SERVICE, notification);
+        startForeground(NOTIFICATION_ID_SERVICE, notification);
 
         super.onCreate();
     }
@@ -93,6 +100,21 @@ public class SpectrecoinService extends QtService {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(text);
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID_SERVICE, notificationBuilder.build());
+    }
+
+    public void createNotification(String title, String text) {
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+        Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
+        PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID_WALLET)
+                .setContentTitle(title)//getText(R.string.notification_title))
+                .setContentText(text)//getText(R.string.notification_message))
+                .setSmallIcon(R.drawable.icon)
+                .setContentIntent(pendingIntent);
+        //.setTicker(getText(R.string.ticker_text));
+        notificationManager.notify(NOTIFICATION_ID_WALLET, notificationBuilder.build());
     }
 }

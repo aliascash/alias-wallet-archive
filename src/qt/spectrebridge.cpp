@@ -54,6 +54,10 @@
 #include <QDebug>
 #include <list>
 
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
+
 #define ROWS_TO_REFRESH 500
 
 extern CWallet* pwalletMain;
@@ -348,6 +352,11 @@ void SpectreBridge::setWalletModel(WalletModel *walletModel) {
 
     webChannel->registerObject(QStringLiteral("walletModel"), this->walletModel);
     webChannel->registerObject(QStringLiteral("optionsModel"), this->walletModel->getOptionsModel());
+
+#ifdef ANDROID
+    // Balloon pop-up for new transaction
+    connect(walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(incomingTransaction(QModelIndex,int,int)));
+#endif
 }
 
 void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicationModel)
@@ -1849,3 +1858,39 @@ void SpectreBridge::extKeySetActive(QString extKeyID, QString isActive)
     emit extKeySetActiveResult(result);
     return;
 }
+
+// TODO Android move to separate class (Code is copied from spectregui.cpp)
+void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, int end)
+{
+    qDebug() << "SpectreBridge::incomingTransaction";
+    if(!walletModel || !clientModel || clientModel->inInitialBlockDownload() || (nNodeMode != NT_FULL && nNodeState != NS_READY))
+        return;
+
+    TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+
+    QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
+
+    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
+            && ! clientModel->getOptionsModel()->getNotifications().contains(type))
+        return;
+
+    // On new transaction, make an info balloon
+    // Unless the initial block download is in progress, to prevent balloon-spam
+    QString date    = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
+    QString narration    = ttm->index(start, TransactionTableModel::Narration, parent).data().toString();
+    QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
+    qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
+    QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
+
+    QString title = tr("%1 %2")
+            .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
+            .arg(type);
+    QString message = narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
+                                             tr("Address: %1\n").arg(address);
+#ifdef ANDROID
+    QtAndroid::androidService().callMethod<void>("createNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                 QAndroidJniObject::fromString(title).object<jstring>(),
+                                                 QAndroidJniObject::fromString(message).object<jstring>());
+#endif
+}
+

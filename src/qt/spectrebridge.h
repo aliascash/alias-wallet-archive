@@ -209,6 +209,9 @@ private slots:
     void updateAddresses(QModelIndex topLeft, QModelIndex bottomRight);
     void insertTransactions(const QModelIndex &parent, int start, int end);
     void insertAddresses(const QModelIndex &parent, int start, int end);
+
+    // TODO Android move to separate class
+    void incomingTransaction(const QModelIndex & parent, int start, int end);
 };
 
 #endif // SPECTREBRIDGE_H
