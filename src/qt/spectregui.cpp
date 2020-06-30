@@ -228,7 +228,7 @@ void SpectreGUI::loadIndex() {
     connect(clientModel.data(), SIGNAL(blockInfoChanged(BlockInfo)), this, SLOT(setNumBlocks()));
     connect(walletModel.data(), SIGNAL(encryptionInfoChanged(EncryptionInfo)), this, SLOT(setEncryptionInfo(EncryptionInfo)));
     connect(walletModel.data(), SIGNAL(stakingInfoChanged(StakingInfo)), this, SLOT(updateStakingIcon(StakingInfo)));
-    connect(walletModel.data(), SIGNAL(requestUnlockRescan()), this, SLOT(requestUnlockRescan()));
+    connect(walletModel.data(), SIGNAL(requestUnlockRescan()), this, SLOT(requestUnlockRescan()), Qt::QueuedConnection);
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(setNumBlocks()));
 
 
