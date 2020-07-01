@@ -7,9 +7,12 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import org.qtproject.qt5.android.bindings.QtService;
+
+import java.util.Objects;
 
 public class SpectrecoinService extends QtService {
 
@@ -27,6 +30,10 @@ public class SpectrecoinService extends QtService {
     public boolean init = false;
     public boolean rescan = false;
     public String bip44key = "";
+
+    private String lastWalletNotificationTitle;
+    private String lastWalletNotificationText;
+    private int sameNotificationCounter;
 
     private Notification.Builder notificationBuilder;
 
@@ -109,12 +116,28 @@ public class SpectrecoinService extends QtService {
         Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
+        boolean sameNotification = false;
+        if (Objects.equals(title, lastWalletNotificationTitle) && Objects.equals(text, lastWalletNotificationText)) {
+            StatusBarNotification[] notifications = notificationManager.getActiveNotifications();
+            for (StatusBarNotification notification : notifications) {
+                if (notification.getId() == NOTIFICATION_ID_WALLET) {
+                    sameNotification = true;
+                    break;
+                }
+            }
+        }
+        sameNotificationCounter = sameNotification ? ++sameNotificationCounter : 0;
+        String titleForNotification = sameNotificationCounter > 0 ? title + " [" + (sameNotificationCounter + 1) + "]" : title;
+
         Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNEL_ID_WALLET)
-                .setContentTitle(title)//getText(R.string.notification_title))
+                .setContentTitle(titleForNotification)//getText(R.string.notification_title))
                 .setContentText(text)//getText(R.string.notification_message))
                 .setSmallIcon(R.drawable.icon)
                 .setContentIntent(pendingIntent);
         //.setTicker(getText(R.string.ticker_text));
         notificationManager.notify(NOTIFICATION_ID_WALLET, notificationBuilder.build());
+
+        lastWalletNotificationTitle = title;
+        lastWalletNotificationText = text;
     }
 }

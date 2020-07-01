@@ -1885,8 +1885,8 @@ void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, i
     QString title = tr("%1 %2")
             .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
             .arg(type);
-    QString message = narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
-                                             tr("Address: %1\n").arg(address);
+    QString message = narration.size() > 0 ? tr("%1 | %2").arg(address).arg(narration) :
+                                             tr("%1").arg(address);
 #ifdef ANDROID
     QtAndroid::androidService().callMethod<void>("createNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
                                                  QAndroidJniObject::fromString(title).object<jstring>(),
