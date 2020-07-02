@@ -391,8 +391,11 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
         {
 
             QString sPassword = field("newmnemonic.password").toString();
-            if (sPassword != passwordEdit->text())
+            if (sPassword != passwordEdit->text()) {
                 passwordEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                passwordEdit->setFocus();
+                return true;
+            }
             else {
                 passwordEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                 passwordEdit->setReadOnly(true);
@@ -409,7 +412,11 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
                 if (pLineEdit->text().size() == 0)
                     pLineEdit->setStyleSheet("");
                 else if (mnemonicPage->mnemonicList[i].compare(pLineEdit->text().normalized(QString::NormalizationForm_KD), Qt::CaseInsensitive) != 0)
+                {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                    pLineEdit->setFocus();
+                    return true;
+                }
                 else {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                     pLineEdit->setReadOnly(true);
