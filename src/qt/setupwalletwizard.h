@@ -145,6 +145,7 @@ public:
 
     int nextId() const override;
     bool validatePage() override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
     std::string sKey;
 

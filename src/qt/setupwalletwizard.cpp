@@ -9,6 +9,7 @@
 
 #include <QtWidgets>
 #include <QScreen>
+#include <QInputMethod>
 
 namespace fs = boost::filesystem;
 
@@ -385,7 +386,21 @@ void NewMnemonicVerificationPage::initializePage()
 
 bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::FocusOut)
+    if (event->type() == QEvent::FocusIn) {
+        if (obj != passwordEdit)
+            QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+    }
+    else if (event->type()==QEvent::KeyPress)
+    {
+        if (obj != vMnemonicEdit.back())
+        {
+            QKeyEvent* key = static_cast<QKeyEvent*>(event);
+            if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+                this->focusNextChild();
+            }
+        }
+    }
+    else if (event->type() == QEvent::FocusOut)
     {
         if (obj == passwordEdit)
         {
@@ -510,6 +525,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
+    passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("recover.password", passwordEdit);
 
@@ -532,7 +548,9 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     vMnemonicEdit.reserve(24);
     for (int i = 0; i < 24; i++)
     {
-        vMnemonicEdit.push_back(new QLineEdit);
+        QLineEdit *qLineEdit = new QLineEdit;
+        qLineEdit->installEventFilter(this);
+        vMnemonicEdit.push_back(qLineEdit);
         registerField(QString("recover.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
 
         QFormLayout *formLayout = new QFormLayout;
@@ -597,6 +615,27 @@ bool RecoverFromMnemonicPage::validatePage()
     }
 
     return true;
+}
+
+bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::FocusIn) {
+        if (obj != passwordEdit)
+            QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+    }
+    else if (event->type()==QEvent::KeyPress)
+    {
+        if (obj != vMnemonicEdit.back())
+        {
+            QKeyEvent* key = static_cast<QKeyEvent*>(event);
+            if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+                this->focusNextChild();
+            }
+        }
+    }
+
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
 void SetupWalletWizard::showEvent(QShowEvent *e)
