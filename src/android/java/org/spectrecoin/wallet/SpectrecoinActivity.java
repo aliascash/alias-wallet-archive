@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 import android.webkit.WebView;
 
 import java.util.Map;
@@ -31,5 +32,20 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
             intent.putExtra("bip44key", bip44key);
         }
         getApplicationContext().startForegroundService(intent);
+    }
+
+    public void setSoftInputModeAdjustResize() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            }
+        });
+    }
+    public void setSoftInputModeAdjustPan() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+        });
     }
 }
