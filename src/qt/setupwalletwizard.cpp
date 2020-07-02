@@ -408,7 +408,7 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
                 NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
                 if (pLineEdit->text().size() == 0)
                     pLineEdit->setStyleSheet("");
-                else if (mnemonicPage->mnemonicList[i] != pLineEdit->text().normalized(QString::NormalizationForm_KD))
+                else if (mnemonicPage->mnemonicList[i].compare(pLineEdit->text().normalized(QString::NormalizationForm_KD), Qt::CaseInsensitive) != 0)
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
                 else {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
