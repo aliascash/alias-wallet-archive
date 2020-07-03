@@ -13,6 +13,8 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
 
     private static final String TAG = "SpectrecoinService";
 
+    private int softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -20,6 +22,12 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setSoftInputMode(softInputMode);
     }
 
     public void startCore(boolean rescan, String bip44key) {
@@ -37,6 +45,7 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     public void setSoftInputModeAdjustResize() {
         runOnUiThread(new Runnable() {
             public void run() {
+                softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             }
         });
@@ -44,6 +53,7 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     public void setSoftInputModeAdjustPan() {
         runOnUiThread(new Runnable() {
             public void run() {
+                softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
                 getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             }
         });
