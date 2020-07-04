@@ -189,6 +189,11 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
             rv.setLabel(i->second);
             fShouldReturnFalse = false;
         }
+        else if (i->first == "narration")
+        {
+            rv.setNarration(i->second);
+            fShouldReturnFalse = false;
+        }
         else if (i->first == "amount")
         {
             if(!i->second.isEmpty())

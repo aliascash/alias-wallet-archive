@@ -22,6 +22,7 @@
 //#include "util.h"
 //#include "init.h"
 //#include "version.h"
+#include "stealth.h"
 
 #ifdef Q_OS_MACOS
 #include "macdockiconhandler.h"
@@ -856,7 +857,7 @@ void SpectreGUI::handleURI(QString strURI)
     if(GUIUtil::parseBitcoinURI(strURI, &rv))
     {
         CBitcoinAddress address(rv.address().toStdString());
-        if (!address.IsValid())
+        if (!address.IsValid() && !IsStealthAddress(rv.address().toStdString()))
             return;
 
         clientBridge->emitReceipient(rv.address(), rv.label(), rv.narration(), rv.amount());
