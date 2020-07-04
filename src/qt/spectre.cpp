@@ -577,4 +577,28 @@ int main(int argc, char *argv[])
     }
     return 0;
 }
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+JNIEXPORT void JNICALL
+Java_org_spectrecoin_wallet_SpectrecoinActivity_receiveURI(JNIEnv *env, jobject obj, jstring url)
+{
+    const char *urlStr = env->GetStringUTFChars(url, NULL);
+    Q_UNUSED (obj)
+    if (paymentServiceRef)
+        QMetaObject::invokeMethod(paymentServiceRef, "serveURI", Qt::QueuedConnection,
+                                  Q_ARG(QString, urlStr));
+    else {
+        qDebug() << "Payment URI could not be processed because paymentServer is not ready";
+    }
+    env->ReleaseStringUTFChars(url, urlStr);
+    return;
+}
+#ifdef __cplusplus
+}
+#endif
+
+
 #endif // SPECTRE_QT_TEST

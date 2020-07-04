@@ -128,6 +128,19 @@ bool PaymentServer::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
+bool PaymentServer::serveURI(QString uri)
+{
+    if (!uri.isEmpty())
+    {
+        if (saveURIs) // Before main window is ready:
+            savedPaymentRequests.append(uri);
+        else
+            emit receivedURI(uri);
+        return true;
+    }
+    return false;
+}
+
 void PaymentServer::uiReady()
 {
     saveURIs = false;

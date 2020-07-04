@@ -68,6 +68,8 @@ public slots:
     // Signal this when the main window's UI is ready
     // to display payment requests to the user
     void uiReady();
+    // Takes a payment URI and signals it with receivedURI when core/ui is ready (same as eventFiler)
+    bool serveURI(QString uri);
 
 private slots:
     void handleURIConnection();
