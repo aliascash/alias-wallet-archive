@@ -46,6 +46,7 @@ namespace fs = boost::filesystem;
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
 static ApplicationModelRemoteSimpleSource *applicationModelRef;
+static PaymentServer *paymentServiceRef;
 
 static void ThreadSafeMessageBox(const std::string& message, const std::string& caption, int style)
 {
@@ -321,6 +322,7 @@ int main(int argc, char *argv[])
     if (PaymentServer::ipcSendCommandLine())
         exit(0);
     PaymentServer* paymentServer = new PaymentServer(&app);
+    paymentServiceRef = paymentServer;
 
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
@@ -495,7 +497,9 @@ int main(int argc, char *argv[])
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
 
-
+        // Connect paymentserver that after core and UI are ready, to process any spectrecoin URIs
+        QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
+        QObject::connect(applicationModelPtr.data(), SIGNAL(uiReady()), paymentServer, SLOT(uiReady()));
 
         if (true) // AppInit2(threadGroup))
         {
@@ -534,11 +538,6 @@ int main(int argc, char *argv[])
                 if (!ShutdownRequested())
                 {
                     window.loadIndex();
-
-//                    // Now that initialization/startup is done, process any command-line
-//                    // spectre: URIs
-//                    QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
-//                    QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
                 }
  
 //               // Release lock before starting event processing, otherwise lock would never be released
@@ -570,6 +569,7 @@ int main(int argc, char *argv[])
 //            Shutdown();
             return 1;
         };
+        paymentServiceRef = 0;
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
