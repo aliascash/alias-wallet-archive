@@ -511,7 +511,7 @@ bool NewMnemonicVerificationPage::isComplete() const
     for (int i = 0; i < 24; i++)
     {
         QString sVerificationMnemonic = field(QString("verification.mnemonic.%1").arg(i)).toString().normalized(QString::NormalizationForm_KD);
-        if (mnemonicPage->mnemonicList[i] != sVerificationMnemonic)
+        if (mnemonicPage->mnemonicList[i].compare(sVerificationMnemonic, Qt::CaseInsensitive) != 0)
             return false;
     }
     return true;
