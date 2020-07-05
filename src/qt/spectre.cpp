@@ -48,6 +48,14 @@ static QSplashScreen *splashref;
 static ApplicationModelRemoteSimpleSource *applicationModelRef;
 static PaymentServer *paymentServiceRef;
 
+static int evaluate(QRemoteObjectPendingReply<int> pendingReply) {
+    if (pendingReply.waitForFinished())
+        return pendingReply.returnValue();
+    else {
+        return 0;
+    }
+}
+
 static void ThreadSafeMessageBox(const std::string& message, const std::string& caption, int style)
 {
     // Message from network thread
@@ -522,16 +530,16 @@ int main(int argc, char *argv[])
 //                                                        pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
 //                uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
-//                // Check if wallet unlock is needed to determine current balance
-//                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
-//                {
-//                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
-//                    if (!unlockContext.isValid())
-//                    {
-//                        InitMessage("Shutdown...");
-//                        StartShutdown();
-//                    }
-//                }
+                // Check if wallet unlock is needed to determine current balance
+                if (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked && evaluate(walletModelPtr->countLockedAnonOutputs()) > 0)
+                {
+                    SpectreGUI::UnlockContext unlockContext = window.requestUnlock(SpectreGUI::UnlockMode::rescan);
+                    if (!unlockContext.isValid())
+                    {
+                        InitMessage("Shutdown...");
+                        StartShutdown();
+                    }
+                }
 
                 if (!ShutdownRequested())
                 {

@@ -1100,6 +1100,11 @@ void WalletModel::listLockedCoins(std::vector<COutPoint>& vOutpts)
     return;
 }
 
+int WalletModel::countLockedAnonOutputs() {
+    LOCK2(cs_main, wallet->cs_wallet);
+    return wallet->CountLockedAnonOutputs();
+}
+
 void WalletModel::emitBalanceChanged(qint64 balance, qint64 spectreBal, qint64 stake, qint64 spectreStake, qint64 unconfirmed, qint64 spectreUnconfirmed, qint64 immature, qint64 spectreImmature) {
     emit balanceChanged(balance, spectreBal, stake, spectreStake, unconfirmed, spectreUnconfirmed, immature, spectreImmature); }
 void WalletModel::emitNumTransactionsChanged(int count) { emit numTransactionsChanged(count); }
