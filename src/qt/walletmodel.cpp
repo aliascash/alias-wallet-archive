@@ -104,6 +104,7 @@ void WalletModel::updateStatus(bool force)
 
     if(force || encryptionInfo().status() != newEncryptionStatus || encryptionInfo().fWalletUnlockStakingOnly() != fWalletUnlockStakingOnly)
     {
+        fForceCheckBalanceChanged = true;
         setEncryptionInfo(EncryptionInfo(newEncryptionStatus, fWalletUnlockStakingOnly));
         emit encryptionStatusChanged(newEncryptionStatus);
     }
