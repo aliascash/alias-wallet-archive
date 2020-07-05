@@ -508,8 +508,6 @@ int main(int argc, char *argv[])
 //                // Get locks upfront, to make sure we can completly setup our client before core sends notifications
 //                ENTER_CRITICAL_SECTION(cs_main); // no RAII
 //                ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
-                
-//                paymentServer->setOptionsModel(&optionsModel);
 
 //                ClientModel clientModel(&optionsModel);
 //                WalletModel walletModel(pwalletMain, &optionsModel);
