@@ -348,9 +348,10 @@ void SpectreClientBridge::userAction(QJsonValue action)
         window->aboutQtAction->trigger();
     if(key == "debugClicked")
     {
-        window->rpcConsole->show();
-        window->rpcConsole->activateWindow();
-        window->rpcConsole->raise();
+//  TODO
+//        window->rpcConsole->show();
+//        window->rpcConsole->activateWindow();
+//        window->rpcConsole->raise();
     }
     if(key == "clearRecipients")
         clearRecipients();
