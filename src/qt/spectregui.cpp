@@ -124,6 +124,7 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
 //    clientModel(0),
 //    walletModel(0),
 //    messageModel(0),
+    qmlWebView(nullptr),
     uiReady(false),
     applicationModel(applicationModelPtr),
     clientModel(clientModelPtr),
@@ -248,11 +249,11 @@ void SpectreGUI::loadIndex() {
 void SpectreGUI::execDialog(QDialog*const dialog)
 {
 #ifdef ANDROID
-    qmlWebView->setProperty("visible", false);
+    if (qmlWebView != nullptr) qmlWebView->setProperty("visible", false);
 #endif
     dialog->exec();
 #ifdef ANDROID
-    qmlWebView->setProperty("visible", true);
+    if (qmlWebView != nullptr) qmlWebView->setProperty("visible", true);
 #endif
 }
 
