@@ -252,6 +252,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
@@ -289,6 +290,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp
@@ -349,6 +351,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
@@ -385,6 +388,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp

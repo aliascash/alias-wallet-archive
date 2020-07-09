@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ public class SpectrecoinService extends QtService {
 
     public static String nativeLibraryDir;
 
-    private static String CHANNEL_ID_SERVICE = "SPECTRECOIN_SERVICE";
+    public static String CHANNEL_ID_SERVICE = "SPECTRECOIN_SERVICE";
     private static String CHANNEL_ID_WALLET = "SPECTRECOIN_WALLET";
     private static int NOTIFICATION_ID_SERVICE = 100;
     private static int NOTIFICATION_ID_WALLET = 1000;
@@ -37,11 +38,8 @@ public class SpectrecoinService extends QtService {
 
     private Notification.Builder notificationBuilder;
 
-    @Override
-    public void onCreate() {
-        nativeLibraryDir = getApplicationInfo().nativeLibraryDir;
-
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+    public static void createServiceNotificationChannel(Service service) {
+        NotificationManager notificationManager = service.getSystemService(NotificationManager.class);
 
         // Create the NotificationChannel for the permanent notification
         CharSequence serviceNotificationName = "Background Service"; //getString(R.string.channel_name);
@@ -49,6 +47,16 @@ public class SpectrecoinService extends QtService {
         NotificationChannel channelSevice = new NotificationChannel(CHANNEL_ID_SERVICE, serviceNotificationName, NotificationManager.IMPORTANCE_DEFAULT);
         channelSevice.setDescription(serviceNotificationDescription);
         notificationManager.createNotificationChannel(channelSevice);
+    }
+
+    @Override
+    public void onCreate() {
+        nativeLibraryDir = getApplicationInfo().nativeLibraryDir;
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+        // Create the NotificationChannel for the permanent notification
+        createServiceNotificationChannel(this);
 
         // Create the NotificationChannel for notifications
         CharSequence walletNotificationName = "Wallet Notifications"; //getString(R.string.channel_name);

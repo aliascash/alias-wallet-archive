@@ -135,6 +135,11 @@
       <!-- Background running -->
     </service>
 
+    <service android:process=":BootstrapService" android:name=".BootstrapService" android:exported="false">
+        <!-- Background running -->
+        <meta-data android:name="android.app.background_running" android:value="true"/>
+        <!-- Background running -->
+    </service>
     </application>
 
 <uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES"/>

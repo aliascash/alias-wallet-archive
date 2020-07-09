@@ -13,6 +13,7 @@
 #include "paymentserver.h"
 #include "winshutdownmonitor.h"
 #include "setupwalletwizard.h"
+#include "bootstrapwizard.h"
 
 #include "rep_applicationmodelremote_source.h"
 
@@ -47,6 +48,7 @@ static SpectreGUI *guiref;
 static QSplashScreen *splashref;
 static ApplicationModelRemoteSimpleSource *applicationModelRef;
 static PaymentServer *paymentServiceRef;
+static BootstrapWizard *bootstrapWizard;
 
 static int evaluate(QRemoteObjectPendingReply<int> pendingReply) {
     if (pendingReply.waitForFinished())
@@ -407,6 +409,18 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+#ifdef ANDROID
+    if (!fs::exists(GetDataDir() / "blk0001.dat") || !fs::exists(GetDataDir() / "txleveldb"))
+    {
+        BootstrapWizard wizard;
+        bootstrapWizard = &wizard;
+        wizard.show();
+        if (!wizard.exec())
+            return 0;
+    }
+    bootstrapWizard = nullptr;
+#endif
+
     // Start SetupWalletWizard if no wallet.dat exists
     if (!mapArgs.count("-bip44key") && !mapArgs.count("-wallet") && !mapArgs.count("-salvagewallet") && !fs::exists(GetDataDir() / "wallet.dat"))
     {
@@ -585,9 +599,11 @@ int main(int argc, char *argv[])
 }
 
 
+#ifdef ANDROID
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 JNIEXPORT void JNICALL
 Java_org_spectrecoin_wallet_SpectrecoinActivity_receiveURI(JNIEnv *env, jobject obj, jstring url)
 {
@@ -602,8 +618,24 @@ Java_org_spectrecoin_wallet_SpectrecoinActivity_receiveURI(JNIEnv *env, jobject 
     env->ReleaseStringUTFChars(url, urlStr);
     return;
 }
+
+JNIEXPORT void JNICALL
+Java_org_spectrecoin_wallet_SpectrecoinActivity_updateBootstrapState(JNIEnv *env, jobject obj, jint state, jint progress, jboolean indeterminate)
+{
+    //qDebug() << "JNI updateBootstrapState: state=" << state << " progress="<< progress << " indeterminate=" << indeterminate;
+    Q_UNUSED (obj)
+    if (bootstrapWizard)
+        QMetaObject::invokeMethod(bootstrapWizard->page(BootstrapWizard::Page_Download), "updateBootstrapState", Qt::QueuedConnection,
+                                  Q_ARG(int, state),  Q_ARG(int, progress),  Q_ARG(bool, indeterminate));
+    else {
+        qDebug() << "Could not update Boostrap state because bootstrapWizard is not set";
+    }
+    return;
+}
+
 #ifdef __cplusplus
 }
+#endif
 #endif
 
 
