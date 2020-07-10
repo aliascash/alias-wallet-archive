@@ -32,6 +32,9 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setWizardStyle(ModernStyle);
 //#endif
     setOption(HaveHelpButton, true);
+    setOption(NoCancelButton, true);
+    setOption(NoBackButtonOnStartPage, true);
+
     setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
