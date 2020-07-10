@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -34,6 +36,9 @@ public class BootstrapService extends Service {
 
     public static final String BOOTSTRAP_BROADCAST_ACTION = "org.spectrecoin.wallet.boostrap";
 
+    public static final String ACTION_STOP = "ACTION_STOP";
+
+    public static final int STATE_CANCEL = -2;
     public static final int STATE_ERROR = -1;
     public static final int STATE_DOWNLOAD = 1;
     public static final int STATE_EXTRACTION = 2;
@@ -43,6 +48,7 @@ public class BootstrapService extends Service {
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
 
     private Notification.Builder notificationBuilder;
+    private BootstrapTask bootstrapTask;
 
 
     @Nullable
@@ -60,13 +66,19 @@ public class BootstrapService extends Service {
         Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
+        Intent stopIntent = new Intent(this, BootstrapService.class);
+        stopIntent.setAction(ACTION_STOP);
+        PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
+        Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Abort", stopPendingIntent).build();
+
         notificationBuilder = new Notification.Builder(this, SpectrecoinService.CHANNEL_ID_SERVICE)
                 .setContentTitle("Blockchain Bootstrap")//getText(R.string.notification_title))
                 .setContentText("Downloading...")//getText(R.string.notification_message))
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.icon)
                 .setContentIntent(pendingIntent)
-                .setProgress(100, 0, false);
+                .setProgress(100, 0, false)
+                .addAction(stopAction);
         //.setTicker(getText(R.string.ticker_text));
         Notification notification = notificationBuilder.build();
 
@@ -76,8 +88,24 @@ public class BootstrapService extends Service {
         startForeground(NOTIFICATION_ID_SERVICE_PROGRESS, notification);
 
         // Start bootstrap process in separate thread
-        new BootstrapTask().execute();
+        bootstrapTask = new BootstrapTask();
+        bootstrapTask.execute();
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action != null)
+                switch (action) {
+                    case ACTION_STOP:
+                        bootstrapTask.cancel(false);
+                        return START_NOT_STICKY;
+                }
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
 
     private class BootstrapTask extends AsyncTask<Void, Void, Void> {
 
@@ -105,7 +133,7 @@ public class BootstrapService extends Service {
                 //
                 downloadBootstrap(notificationManager, bootstrapURL, bootstrapPath);
                 if (isCancelled()) {
-                    updateProgress(notificationManager, STATE_ERROR, 0, false, "Canceled...");
+                    updateProgress(notificationManager, STATE_CANCEL, 0, false, "Canceled...");
                     return null;
                 }
 
@@ -144,6 +172,12 @@ public class BootstrapService extends Service {
             stopSelf();
         }
 
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            stopSelf();
+        }
+
         private void downloadBootstrap(NotificationManager notificationManager, URL bootstrapURL, Path bootstrapFile) {
             InputStream input = null;
             OutputStream output = null;
@@ -154,6 +188,7 @@ public class BootstrapService extends Service {
                 Files.createDirectories(bootstrapFile.getParent());
 
                 URLConnection connection = bootstrapURL.openConnection();
+                connection.setConnectTimeout(10000);
                 connection.connect();
                 // this will be useful so that you can show a typical 0-100% progress bar
                 int fileLength = connection.getContentLength();
@@ -223,11 +258,13 @@ public class BootstrapService extends Service {
 
     protected void updateProgress(NotificationManager notificationManager, int state, int progress, boolean indeterminate, String text) {
         int max = state == STATE_DOWNLOAD ? 100 : 0;
-        notificationBuilder.setProgress(max, progress, indeterminate);
-        notificationBuilder.setContentText(text);
-        // Final notification is shown with separate Id that its not closed when service is stopped.
-        int notificationId = (state == STATE_ERROR || state == STATE_FINISHED) ? NOTIFICATION_ID_SERVICE_RESULT : NOTIFICATION_ID_SERVICE_PROGRESS;
-        notificationManager.notify(notificationId, notificationBuilder.build());
+        if (state != STATE_CANCEL) {
+            notificationBuilder.setProgress(max, progress, indeterminate);
+            notificationBuilder.setContentText(text);
+            // Final notification is shown with separate Id that its not closed when service is stopped.
+            int notificationId = (state == STATE_ERROR || state == STATE_FINISHED) ? NOTIFICATION_ID_SERVICE_RESULT : NOTIFICATION_ID_SERVICE_PROGRESS;
+            notificationManager.notify(notificationId, notificationBuilder.build());
+        }
         sendBootstrapProgressBroadcast(state, progress, indeterminate);
     }
 

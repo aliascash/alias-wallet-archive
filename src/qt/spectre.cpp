@@ -410,9 +410,14 @@ int main(int argc, char *argv[])
     }
 
 #ifdef ANDROID
-    if (!fs::exists(GetDataDir() / "blk0001.dat") || !fs::exists(GetDataDir() / "txleveldb"))
+    bool blkDatExists = fs::exists(GetDataDir() / "blk0001.dat");
+    bool txleveldbExists = fs::exists(GetDataDir() / "txleveldb");
+    // Show bootstrap wizard if blockchain was not updated since 14 days.
+    double blkDataOldSeconds = 14 * 24 * 60 * 60;
+    bool blockchainStale = blkDatExists && std::difftime(std::time(0), fs::last_write_time(GetDataDir() / "blk0001.dat")) > blkDataOldSeconds;
+    if (!blkDatExists || !txleveldbExists || blockchainStale)
     {
-        BootstrapWizard wizard;
+        BootstrapWizard wizard(blockchainStale ? 14 : 0);
         bootstrapWizard = &wizard;
         wizard.show();
         if (!wizard.exec())

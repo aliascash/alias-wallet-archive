@@ -21,9 +21,10 @@ class BootstrapWizard : public QWizard
 public:
     enum { Page_Intro,
            Page_Download,
-           Page_Sync };
+           Page_Download_Success,
+           Page_Sync, };
 
-    BootstrapWizard(QWidget *parent = 0);
+    BootstrapWizard(int daysSinceBlockchainUpdate = 0, QWidget *parent = 0);
 
     void showSideWidget();
 
@@ -43,14 +44,19 @@ class BootstrapIntroPage : public QWizardPage
     Q_OBJECT
 
 public:
-    BootstrapIntroPage(QWidget *parent = 0);
+    BootstrapIntroPage(int daysSinceBlockchainUpdate = 0, QWidget *parent = 0);
 
     int nextId() const override;
 
 private:
+    int daysSinceBlockchainUpdate;
+
     QLabel *topLabel;
     QRadioButton *rbBoostrap;
     QRadioButton *rbSync;
+
+private slots:
+    void radioToggled(bool checked);
 };
 
 class DownloadPage : public QWizardPage
@@ -78,6 +84,19 @@ private:
    bool indeterminate;
 };
 
+class DownloadSuccessPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    DownloadSuccessPage(QWidget *parent = 0);
+
+    int nextId() const override;
+
+private:
+    QLabel *noteLabel;
+};
+
 class BootstrapSyncPage : public QWizardPage
 {
     Q_OBJECT
@@ -90,6 +109,5 @@ public:
 private:
     QLabel *noteLabel;
 };
-
 
 #endif // BOOTSTRAPWIZARD_H
