@@ -1153,12 +1153,20 @@ void SpectreGUI::detectShutdown()
 
 void SpectreGUI::resetBlockchain()
 {
-    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Reset blockchain data"),
-       tr("Are you sure you want to reset the blockchain data?<br><br>This action will stop the application and delete the blockchain data. Your <strong>private keys</strong> in the wallet.dat will be <strong>untouched</strong>."),
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Reset Blockchain Data"),
+       tr("Are you sure you want to reset the blockchain data?<br><br>"
+          "- Application will stop<br>"
+          "- Blockchain data deleted<br>"
+          "- wallet.dat remains untouched<br>"),
        QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
 
     if (retval == QMessageBox::Yes) {
         applicationModel->requestShutdownCore(RESET_BLOCKCHAIN);
+        // Show progress dialog until application gets terminated
+        QProgressDialog* dialog = showProgressDlg("Shutdown...");
+        dialog->exec();
+        // TODO: handle android back button, it should not be possible to quit the dialog.
+        StartShutdown();
     }
 }
 
