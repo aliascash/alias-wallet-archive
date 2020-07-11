@@ -1864,10 +1864,6 @@ static void run_tor() {
         } else {
             torResult = "Terminating - Error: waitpid() for tor failed\n";
         }
-
-        // If tor could not be started or exits for any reason, shutdown the application
-        LogPrintf(torResult.c_str());
-        kill(getpid(), SIGTERM);
     }
 
 #else
@@ -1897,6 +1893,9 @@ void StartTor(void *nothing)
     catch (std::exception& e) {
       PrintException(&e, "StartTor()");
     }
+
+    // If tor could not be started or exits for any reason, shutdown the application
+    StartShutdown();
 
     LogPrintf("Onion thread exited.\n");
 }
