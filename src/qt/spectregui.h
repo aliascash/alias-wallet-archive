@@ -254,6 +254,9 @@ private slots:
     /** called by a timer to check if fRequestShutdown has been set **/
     void detectShutdown();
     void requestShutdown();
+
+    /** Stop application and delete all blockchain data. **/
+    void resetBlockchain();
 };
 
 #endif

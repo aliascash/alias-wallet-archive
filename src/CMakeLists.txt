@@ -249,6 +249,8 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
@@ -286,6 +288,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
@@ -348,6 +351,8 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
@@ -384,6 +389,7 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
+                ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp

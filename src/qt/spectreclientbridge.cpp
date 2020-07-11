@@ -346,6 +346,8 @@ void SpectreClientBridge::userAction(QJsonValue action)
         window->aboutClicked();
     if(key == "aboutQtClicked")
         window->aboutQtAction->trigger();
+    if(key == "resetBlockainClicked")
+        window->resetBlockchain();
     if(key == "debugClicked")
     {
 //  TODO

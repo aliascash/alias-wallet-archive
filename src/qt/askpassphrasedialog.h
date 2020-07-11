@@ -7,7 +7,11 @@
 #define ASKPASSPHRASEDIALOG_H
 
 #include <QDialog>
+
+#ifdef ANDROID
 #include <rep_walletmodelremote_replica.h>
+#include <rep_applicationmodelremote_replica.h>
+#endif
 
 namespace Ui {
     class AskPassphraseDialog;
@@ -34,7 +38,8 @@ public:
 
     void accept();
 
-    void setModel(QSharedPointer<WalletModelRemoteReplica> model);
+    void setWalletModel(QSharedPointer<WalletModelRemoteReplica> walletModel);
+    void setApplicationModel(QSharedPointer<ApplicationModelRemoteReplica> walletModel);
 
 protected:
     void showEvent(QShowEvent *);
@@ -44,7 +49,8 @@ private:
 
     Ui::AskPassphraseDialog *ui;
     Mode mode;
-    QSharedPointer<WalletModelRemoteReplica> model;
+    QSharedPointer<WalletModelRemoteReplica> walletModel;
+    QSharedPointer<ApplicationModelRemoteReplica> applicationModel;
     bool fCapsLock;
 
 private slots:

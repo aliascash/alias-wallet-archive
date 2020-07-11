@@ -3,6 +3,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
+#include "applicationmodel.h"
 #include "spectrebridge.h"
 #include "spectregui.h"
 #include "clientmodel.h"
@@ -14,8 +15,6 @@
 #include "winshutdownmonitor.h"
 #include "setupwalletwizard.h"
 #include "bootstrapwizard.h"
-
-#include "rep_applicationmodelremote_source.h"
 
 #include "init.h"
 #include "interface.h"
@@ -46,7 +45,7 @@ namespace fs = boost::filesystem;
 // Need a global reference for the notifications to find the GUI
 static SpectreGUI *guiref;
 static QSplashScreen *splashref;
-static ApplicationModelRemoteSimpleSource *applicationModelRef;
+static ApplicationModel *applicationModelRef;
 static PaymentServer *paymentServiceRef;
 static BootstrapWizard *bootstrapWizard;
 
@@ -188,7 +187,7 @@ bool AndroidAppInit(int argc, char* argv[])
 
         //---- Setup remote objects host
         QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
-        ApplicationModelRemoteSimpleSource applicationModel;
+        ApplicationModel applicationModel;
         srcNode.enableRemoting(&applicationModel); // enable remoting
         applicationModelRef = &applicationModel;
 
@@ -199,7 +198,7 @@ bool AndroidAppInit(int argc, char* argv[])
         qDebug() << "Core QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
         WebSocketClientWrapper clientWrapper(&server);  // wrap WebSocket clients in QWebChannelAbstractTransport objects
         QWebChannel webChannel;                         // setup the channel
-        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo); 
 
         // Initialize Core
         fRet = AppInit2(threadGroup);
@@ -242,21 +241,22 @@ bool AndroidAppInit(int argc, char* argv[])
 
             app.exec();
 
-            LogPrintf("SpectreCoin shutdown.\n\n");
+            LogPrintf("Core shutdown.\n\n");
             srcNode.disableRemoting(&applicationModel);
             threadGroup.interrupt_all();
             threadGroup.join_all();
         }
         else
         {
-            LogPrintf("Init not successfull: SpectreCoin shutdown.\n\n");
+            LogPrintf("Init not successfull: Core shutdown.\n\n");
             threadGroup.interrupt_all();
             // threadGroup.join_all(); was left out intentionally here, because we didn't re-test all of
             // the startup-failure cases to make sure they don't result in a hang due to some
             // thread-blocking-waiting-for-another-thread-during-startup case
         }
-        applicationModelRef = 0;
         Shutdown();
+        applicationModelRef->AfterShutdown();
+        applicationModelRef = 0;
     } catch (std::exception& e) {
         PrintException(&e, "AndroidService");
         fRet = false;
@@ -481,8 +481,9 @@ int main(int argc, char *argv[])
         if (GUIUtil::GetStartOnSystemStartup())
             GUIUtil::SetStartOnSystemStartup(true);
 
+#ifndef ANDROID
         boost::thread_group threadGroup;
-
+#endif
         InitMessage("Connect service...");
 
         // Accuire remote objects replicas
@@ -561,9 +562,7 @@ int main(int argc, char *argv[])
                 }
 
                 if (!ShutdownRequested())
-                {
                     window.loadIndex();
-                }
  
 //               // Release lock before starting event processing, otherwise lock would never be released
 //               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
@@ -571,27 +570,29 @@ int main(int argc, char *argv[])
 
                 if (!ShutdownRequested())
                     app.exec();
-                else
-                    QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
 
                 window.hide();
 //                window.setClientModel(0);
 //                window.setWalletModel(0);
                 guiref = 0;
             }
+            LogPrintf("QT shutdown.\n\n");
+#ifndef ANDROID
             // Shutdown the core and its threads, but don't exit Qt here
-            LogPrintf("Spectrecoin QT shutdown.\n\n");
             std::cout << "interrupt_all\n";
             threadGroup.interrupt_all();
             std::cout << "join_all\n";
             threadGroup.join_all();
             std::cout << "Shutdown\n";
-//            Shutdown();
+            Shutdown();
+#endif
         } else
         {
+#ifndef ANDROID
             threadGroup.interrupt_all();
             threadGroup.join_all();
-//            Shutdown();
+            Shutdown();
+#endif
             return 1;
         };
         paymentServiceRef = 0;

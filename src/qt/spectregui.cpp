@@ -18,6 +18,7 @@
 #include "askpassphrasedialog.h"
 #include "notificator.h"
 #include "guiutil.h"
+#include "shutdown.h"
 //#include "wallet.h"
 //#include "util.h"
 //#include "init.h"
@@ -966,7 +967,8 @@ void SpectreGUI::encryptWallet(bool status)
 
     AskPassphraseDialog dlg(status ? AskPassphraseDialog::Encrypt:
                                      AskPassphraseDialog::Decrypt, this);
-    dlg.setModel(walletModel);
+    dlg.setWalletModel(walletModel);
+    dlg.setApplicationModel(applicationModel);
     execDialog(&dlg);
 
     // set via Notification setEncryptionStatus(walletModel->getEncryptionStatus());
@@ -996,7 +998,8 @@ void SpectreGUI::backupWallet()
 void SpectreGUI::changePassphrase()
 {
     AskPassphraseDialog dlg(AskPassphraseDialog::ChangePass, this);
-    dlg.setModel(walletModel);
+    dlg.setWalletModel(walletModel);
+    dlg.setApplicationModel(applicationModel);
     execDialog(&dlg);
 }
 
@@ -1016,7 +1019,8 @@ bool SpectreGUI::unlockWallet(UnlockMode unlockMode)
 
     // Unlock wallet when requested by wallet model
     AskPassphraseDialog dlg(mode, this);
-    dlg.setModel(walletModel);
+    dlg.setWalletModel(walletModel);
+    dlg.setApplicationModel(applicationModel);
     execDialog(&dlg);
     return dlg.result() == AskPassphraseDialog::Accepted;
 }
@@ -1138,13 +1142,24 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
 
 void SpectreGUI::requestShutdown()
 {
-    // TODO StartShutdown();
+    applicationModel->requestShutdownCore(NORMAL);
 }
 
 void SpectreGUI::detectShutdown()
 {
-// TODO  if (ShutdownRequested())
-//        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+    if (ShutdownRequested())
+        QMetaObject::invokeMethod(QCoreApplication::instance(), "quit", Qt::QueuedConnection);
+}
+
+void SpectreGUI::resetBlockchain()
+{
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Reset blockchain data"),
+       tr("Are you sure you want to reset the blockchain data?<br><br>This action will stop the application and delete the blockchain data. Your <strong>private keys</strong> in the wallet.dat will be <strong>untouched</strong>."),
+       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
+
+    if (retval == QMessageBox::Yes) {
+        applicationModel->requestShutdownCore(RESET_BLOCKCHAIN);
+    }
 }
 
 

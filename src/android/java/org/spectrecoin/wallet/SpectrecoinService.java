@@ -111,6 +111,12 @@ public class SpectrecoinService extends QtService {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    public void stopCore() {
+        Intent intent = new Intent(getApplicationContext(), SpectrecoinService.class);
+        intent.setAction(SpectrecoinService.ACTION_STOP);
+        getApplicationContext().startForegroundService(intent);
+    }
+
     public void updateNotification(String title, String text) {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationBuilder.setContentTitle(title);
