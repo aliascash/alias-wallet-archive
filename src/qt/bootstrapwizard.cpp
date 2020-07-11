@@ -109,7 +109,7 @@ BootstrapIntroPage::BootstrapIntroPage(int daysSinceBlockchainUpdate, QWidget *p
     QWizardPage(parent),
     daysSinceBlockchainUpdate(daysSinceBlockchainUpdate)
 {
-    setTitle("<span style='font-size:20pt; font-weight:bold;'>"+tr("Set Up Blockchain Data") +"</span>");
+    setTitle("<span style='font-size:20pt; font-weight:bold;'>"+tr(daysSinceBlockchainUpdate > 0 ? "Update Blockchain Data" : "Set Up Blockchain Data") +"</span>");
 
     if (daysSinceBlockchainUpdate > 0)
         topLabel = new QLabel(tr("The application has detected that the blockchain data files have not been updated since %1 days.<br><br>"
@@ -229,7 +229,8 @@ void DownloadPage::updateBootstrapState(int state, int progress, bool indetermin
         wizard()->button(QWizard::BackButton)->show();
         break;
     case -1:
-        progressLabel->setText(tr("Bootstrap download failed, please try again. Make sure you have a good internet connection."));
+        progressLabel->setText(tr("Bootstrap download failed, please try again.<br><br>"
+                                  "Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi."));
         downloadButton->setVisible(true);
         downloadButton->setEnabled(true);
         progressBar->setVisible(false);
