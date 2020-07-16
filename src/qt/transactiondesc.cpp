@@ -27,7 +27,7 @@ bool addressLink(CWallet *wallet, const CTxDestination& destination, QString& st
     if (!address.IsValid())
         return false;
 
-    strHTML += "<a href='javascript:void(0);' onclick='bridge.urlClicked(\""+ explorer+"address.dws?"+ GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString()) + "\");'>" +
+    strHTML += "<a href='javascript:void(0);' onclick='clientBridge.urlClicked(\""+ explorer+"address.dws?"+ GUIUtil::HtmlEscape(CBitcoinAddress(address).ToString()) + "\");'>" +
             ((wallet->mapAddressBook.count(destination) && !wallet->mapAddressBook[destination].empty()) ?
                  GUIUtil::HtmlEscape(wallet->mapAddressBook[destination]) : GUIUtil::HtmlEscape(address.ToString())) +
             "</a>";
@@ -74,7 +74,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     int64_t nNet = nCredit - nDebit;
 
     QString txid(wtx.GetHash().ToString().c_str());
-    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"tx.dws?" + txid +"\");'>" + txid + "</a><br>";
+    strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='javascript:void(0);' onclick='clientBridge.urlClicked(\""+explorer+"tx.dws?" + txid +"\");'>" + txid + "</a><br>";
 
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx);
     int nRequests = wtx.GetRequestCount();
