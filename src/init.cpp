@@ -840,7 +840,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                            if (mode == 0)
                                 uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
                            else if (mode == 1)
-                                uiInterface.InitMessage(strprintf("Calculating chain trust.. (%d)", nBlock));
+                                uiInterface.InitMessage(strprintf("Calculating chain trust... (%d)", nBlock));
                            else
                                 uiInterface.InitMessage(strprintf("Validating last %d block...", nBlock));
                        }))
