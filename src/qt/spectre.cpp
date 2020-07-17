@@ -213,6 +213,8 @@ bool AndroidAppInit(int argc, char* argv[])
             ENTER_CRITICAL_SECTION(cs_main); // no RAII
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
+            InitMessage("Init client models...");
+
             // create models
             OptionsModel optionsModel;
             WalletModel walletModel(pwalletMain, &optionsModel);
