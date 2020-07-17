@@ -4282,7 +4282,7 @@ FILE* AppendBlockFile(bool fHeaderFile, unsigned int& nFileRet, const char* fmod
 }
 
 
-int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcProgress)
+int LoadBlockIndex(bool fAllowNew, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     LOCK(cs_main);
 

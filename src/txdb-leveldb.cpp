@@ -438,7 +438,7 @@ static CBlockIndex *InsertBlockIndex(uint256 hash)
     return pindexNew;
 }
 
-bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate, std::function<void (const uint32_t&)> funcProgress)
+bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     if (nNodeMode != NT_FULL)
         return 0;
@@ -464,7 +464,7 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
     // Now read each entry.
     while (iterator->Valid())
     {
-        if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(count);
+        if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(0, count);
         count++;
         boost::this_thread::interruption_point();
         // Unpack keys and values.
@@ -526,7 +526,7 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
         iterator->Next();
     }
     delete iterator;
-    if (funcProgress) funcProgress(count);
+    if (funcProgress) funcProgress(0, count);
 
     boost::this_thread::interruption_point();
 
@@ -553,8 +553,13 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
         vSortedByHeight.push_back(make_pair(pindex->nHeight, pindex));
     }
     sort(vSortedByHeight.begin(), vSortedByHeight.end());
+
+    count = 0;
     BOOST_FOREACH(const PAIRTYPE(int, CBlockIndex*)& item, vSortedByHeight)
     {
+        if (funcProgress && count != 0 && count % 100000 == 0) funcProgress(1, count);
+        count++;
+
         CBlockIndex* pindex = item.second;
 
         uint256 blockhash = pindex->GetBlockHash();
@@ -574,6 +579,7 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
 
         pindex->nChainTrust = (pindex->pprev ? pindex->pprev->nChainTrust : 0) + pindex->GetBlockTrust();
     }
+    if (funcProgress) funcProgress(1, count);
 
     nBestChainTrust = pindexBest->nChainTrust;
 
@@ -596,11 +602,14 @@ bool CTxDB::LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcVa
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
     CBlockIndex* pindexFork = NULL;
     map<pair<unsigned int, unsigned int>, CBlockIndex*> mapBlockPos;
+
+    if (funcProgress) funcProgress(2, nCheckDepth);
     for (CBlockIndex* pindex = pindexBest; pindex && pindex->pprev; pindex = pindex->pprev)
     {
         boost::this_thread::interruption_point();
         if (pindex->nHeight < nBestHeight-nCheckDepth)
             break;
+
         CBlock block;
         if (!block.ReadFromDisk(pindex))
             return error("LoadBlockIndex() : block.ReadFromDisk failed");

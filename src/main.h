@@ -153,7 +153,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash);
 bool CheckDiskSpace(uint64_t nAdditionalBytes=0);
 FILE* OpenBlockFile(bool fHeaderFile, unsigned int nFile, unsigned int nBlockPos, const char* pszMode="rb");
 FILE* AppendBlockFile(bool fHeaderFile, unsigned int& nFileRet, const char* fmode = "ab");
-int LoadBlockIndex(bool fAllowNew=true, std::function<void (const uint32_t&)> funcProgress = nullptr);
+int LoadBlockIndex(bool fAllowNew=true, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
 void PrintBlockTree();
 CBlockIndex* FindBlockByHeight(int nHeight);
 CBlockThinIndex* FindBlockThinByHeight(int nHeight);
