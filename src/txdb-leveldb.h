@@ -278,7 +278,7 @@ public:
     bool WriteSyncCheckpoint(uint256 hashCheckpoint);
     bool ReadCheckpointPubKey(std::string& strPubKey);
     bool WriteCheckpointPubKey(const std::string& strPubKey);
-    bool LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate = nullptr, std::function<void (const uint32_t&)> funcProgress = nullptr);
+    bool LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate = nullptr, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     bool LoadBlockThinIndex();
 private:
     bool LoadBlockIndexGuts();
