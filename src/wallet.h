@@ -323,13 +323,13 @@ public:
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const;
     bool ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount = MAX_MONEY) const;
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFilter nFilter) const;
-    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight);
+    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, MaturityFilter nFilter);
     int CountLockedAnonOutputs();
 
     uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
 
-    bool CacheAnonStats(int nBlockHeight);
+    bool CacheAnonStats(int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     bool UpdateAnonStats(CTxDB& txdb, int nBlockHeight);
     bool RemoveAnonStats(CTxDB& txdb, int nBlockHeight);
     void AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, int nBlockHeight);

@@ -5711,7 +5711,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
     return 0;
 };
 
-int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight)
+int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     auto start = std::chrono::high_resolution_clock::now();
     int64_t nTotalAoRead = 0;
@@ -5744,8 +5744,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
     ssStartKey << make_pair(string("ao"), pkZero);
     iterator->Seek(ssStartKey.str());
 
+    uint32_t count = 0;
     while (iterator->Valid())
     {   
+         if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(0, count);
+         count++;
+
         // Unpack keys and values.
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
@@ -5834,6 +5838,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
 
         iterator->Next();
     };
+    if (funcProgress) funcProgress(0, count);
 
     delete iterator;
 
@@ -5845,8 +5850,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
     ssStartKey << make_pair(string("ki"), pkZero);
     iterator->Seek(ssStartKey.str());
 
+    count = 0;
     while (iterator->Valid())
     {   
+        if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(1, count);
+        count++;
+
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
@@ -5881,6 +5890,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
 
         iterator->Next();
     };
+    if (funcProgress) funcProgress(1, count);
 
     delete iterator;
 
@@ -6276,7 +6286,7 @@ bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
     return true;
 }
 
-bool CWallet::CacheAnonStats(int nBlockHeight)
+bool CWallet::CacheAnonStats(int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     if (fDebugRingSig)
         LogPrintf("CacheAnonStats(%d)\n", nBlockHeight);
@@ -6284,7 +6294,7 @@ bool CWallet::CacheAnonStats(int nBlockHeight)
     AssertLockHeld(cs_main);
 
     std::list<CAnonOutputCount> lOutputCounts;
-    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
+    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight, funcProgress) != 0)
     {
         LogPrintf("Error: CountAllAnonOutputs() failed.\n");
         return false;
