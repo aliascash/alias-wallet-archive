@@ -213,18 +213,15 @@ bool AndroidAppInit(int argc, char* argv[])
             ENTER_CRITICAL_SECTION(cs_main); // no RAII
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
-            InitMessage("Init client models...");
-
             // create models
             OptionsModel optionsModel;
             WalletModel walletModel(pwalletMain, &optionsModel);
+            InitMessage("Init client models...");
             ClientModel clientModel(&optionsModel, &walletModel);
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
             bridge.setApplicationModel(&applicationModel);
-
-            InitMessage("Update balance...");
 
             // Manually create a blockChangedEvent to set initial values for the UI
             BlockChangedEvent blockChangedEvent = { nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
