@@ -877,7 +877,7 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
     WebElement encryptMenuItem   = WebElement(this, "encryptWallet", WebElement::SelectorType::CLASS);
     WebElement changePassphrase  = WebElement(this, "changePassphrase");
     WebElement toggleLock        = WebElement(this, "toggleLock");
-    WebElement toggleLockIcon    = WebElement(this, "toggleLock i");
+    WebElement toggleLockIcon    = WebElement(this, "toggleLockIcon");
     switch(encryptionInfo.status())
     {
     case EncryptionStatus::Unencrypted:
