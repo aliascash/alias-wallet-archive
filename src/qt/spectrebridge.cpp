@@ -366,6 +366,7 @@ void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicatio
 
 void SpectreBridge::jsReady() {
     this->applicationModel->setCoreMessage("..Start UI..");
+    QApplication::instance()->processEvents();
 
     // Populate data
     walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
@@ -378,6 +379,7 @@ void SpectreBridge::jsReady() {
 
     this->applicationModel->setCoreMessage(".Start UI.");
     {
+        QApplication::instance()->processEvents();
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
         walletModel->updateStakingInfo();
