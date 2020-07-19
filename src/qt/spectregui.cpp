@@ -119,6 +119,7 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
                        QSharedPointer<ClientModelRemoteReplica> clientModelPtr,
                        QSharedPointer<WalletModelRemoteReplica> walletModelPtr,
                        QSharedPointer<AddressModelRemoteReplica> addressModelPtr,
+                       QSharedPointer<OptionsModelRemoteReplica> optionsModelPtr,
                        QWidget *parent):
     QMainWindow(parent),
 //    bridge(new SpectreBridge(this)),
@@ -131,6 +132,7 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
     clientModel(clientModelPtr),
     walletModel(walletModelPtr),
     addressModel(addressModelPtr),
+    optionsModel(optionsModelPtr),
     encryptWalletAction(0),
     changePassphraseAction(0),
     unlockWalletAction(0),
@@ -1129,7 +1131,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
         bool offline = clientModel->numConnections() == 0;
         bool isInitialBlockDownload = clientModel->blockInfo().isInitialBlockDownload();
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)          ? tr("Not staking because wallet is in thin mode") : \
-                                               (!GetBoolArg("-staking", true)) ? tr("Not staking, staking is disabled")  : \
+                                               (!optionsModel->staking())      ? tr("Not staking, staking is disabled")  : \
                                                (walletLocked)                  ? tr("Not staking because wallet is locked")  : \
                                                (offline)                       ? tr("Not staking because wallet is offline") : \
                                                (isInitialBlockDownload)        ? tr("Not staking because wallet is syncing") : \

@@ -194,8 +194,8 @@ bool TransactionModel::prepare()
 
     numRows = ttm->rowCount();
     ttm->sort(TransactionTableModel::Status, Qt::DescendingOrder);
-    rowsPerPage = clientModel->getOptionsModel()->getRowsPerPage();
-    visibleTransactions = clientModel->getOptionsModel()->getVisibleTransactions();
+    rowsPerPage = clientModel->getOptionsModel()->rowsPerPage();
+    visibleTransactions = clientModel->getOptionsModel()->visibleTransactions();
 
     this->running = true;
 
@@ -398,7 +398,7 @@ void SpectreBridge::populateOptions()
     QVariantMap options;
 
     for(option=0;option < optionsModel->rowCount(); option++)
-        options.insert(optionsModel->optionIDName(option), optionsModel->index(option).data(Qt::EditRole));
+        options.insert(optionsModel->optionIDName(option), optionsModel->data(option));
 
     option = 0;
 
@@ -494,7 +494,7 @@ QVariantMap SpectreBridge::listAnonOutputs()
             anonOutput.insert("system_mixins_staking",  aoc->nMixinsStaking);
 
             anonOutput.insert("least_depth",    aoc->nLastHeight == 0 ? '-' : nBestHeight - aoc->nLastHeight + 1);
-            anonOutput.insert("value_s",        BitcoinUnits::format(clientModel->getOptionsModel()->getDisplayUnit(), aoc->nValue));
+            anonOutput.insert("value_s",        BitcoinUnits::format(clientModel->getOptionsModel()->displayUnit(), aoc->nValue));
 
             anonOutputs.insert(QString::number(aoc->nValue), anonOutput);
         }
@@ -648,16 +648,16 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
                     QString feeAsString = object.value(optionsModel->optionIDName(option)).toString();
                     QVariant longFee;
                     longFee.setValue((qlonglong)(feeAsString.toDouble() * COIN));
-                    optionsModel->setData(optionsModel->index(option), longFee);
+                    optionsModel->setData(option, longFee);
                 } else if (optionsModel->optionIDName(option) == "ReserveBalance") {
                     //smallest number is 0.00000001
                     //convert to long before saving it
                     QString reserveBalanceAsString = object.value(optionsModel->optionIDName(option)).toString();
                     QVariant longReserveBalance;
                     longReserveBalance.setValue((qlonglong)(reserveBalanceAsString.toDouble() * COIN));
-                    optionsModel->setData(optionsModel->index(option), longReserveBalance);
+                    optionsModel->setData(option, longReserveBalance);
                 } else {
-                    optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
+                    optionsModel->setData(option, object.value(optionsModel->optionIDName(option)).toVariant());
                 }
             }
         }
@@ -1872,8 +1872,8 @@ void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, i
 
     QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
 
-    if(!(clientModel->getOptionsModel()->getNotifications().first() == "*")
-            && ! clientModel->getOptionsModel()->getNotifications().contains(type))
+    if(!(clientModel->getOptionsModel()->notifications().first() == "*")
+            && ! clientModel->getOptionsModel()->notifications().contains(type))
         return;
 
     // On new transaction, make an info balloon
@@ -1885,7 +1885,7 @@ void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, i
     QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
 
     QString title = tr("%1 %2")
-            .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
+            .arg(BitcoinUnits::format(walletModel->getOptionsModel()->displayUnit(), amount, true))
             .arg(type);
     QString message = narration.size() > 0 ? tr("%1 | %2").arg(address).arg(narration) :
                                              tr("%1").arg(address);

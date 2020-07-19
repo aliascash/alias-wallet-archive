@@ -385,7 +385,7 @@ QString TransactionTableModel::lookupAddress(const std::string &address, bool to
     if(hasLabel)
         description += label + QString(" ");
 
-    if(!hasLabel || walletModel->getOptionsModel()->getDisplayAddresses() || tooltip)
+    if(!hasLabel || walletModel->getOptionsModel()->displayAddresses() || tooltip)
     {
         if (hasLabel)
             description += QString("(");
@@ -473,7 +473,7 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
 
 QString TransactionTableModel::formatTxAmount(const TransactionRecord *wtx, bool showUnconfirmed) const
 {
-    QString str = BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), wtx->credit + wtx->debit);
+    QString str = BitcoinUnits::format(walletModel->getOptionsModel()->displayUnit(), wtx->credit + wtx->debit);
     if(showUnconfirmed)
     {
         if(!wtx->status.countsForBalance)

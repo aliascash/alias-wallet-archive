@@ -536,7 +536,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, Spectr
         // actually update labels
         int nDisplayUnit = BitcoinUnits::XSPEC;
         if (model && model->getOptionsModel())
-            nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
+            nDisplayUnit = model->getOptionsModel()->displayUnit();
 
         QLabel *l1 = dialog->findChild<QLabel *>("labelCoinControlQuantity");
         QLabel *l2 = dialog->findChild<QLabel *>("labelCoinControlAmount");
@@ -600,7 +600,7 @@ void CoinControlDialog::updateView()
 
     int nDisplayUnit = BitcoinUnits::XSPEC;
     if (model && model->getOptionsModel())
-        nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
+        nDisplayUnit = model->getOptionsModel()->displayUnit();
 
     map<QString, vector<std::pair<COutput,bool>> > mapCoins;
     model->listCoins(mapCoins);

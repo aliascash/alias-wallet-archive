@@ -193,6 +193,7 @@ bool AndroidAppInit(int argc, char* argv[])
         ApplicationModel applicationModel;
         srcNode.enableRemoting(&applicationModel); // enable remoting
         applicationModelRef = &applicationModel;
+        srcNode.enableRemoting(&optionsModel); // enable remoting
 
         //---- Create core webSocket server for JavaScript client
         QWebSocketServer server(QStringLiteral("Spectrecoin Core Websocket Server"), QWebSocketServer::NonSecureMode);
@@ -493,18 +494,22 @@ int main(int argc, char *argv[])
         QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr; // holds reference to applicationmodel replica
         QSharedPointer<WalletModelRemoteReplica> walletModelPtr; // holds reference to walletmodel replica
         QSharedPointer<AddressModelRemoteReplica> addressModelPtr; // holds reference to walletmodel replica
+        QSharedPointer<OptionsModelRemoteReplica> optionsModelPtr; // holds reference to optionsmodel replica
         repNode.connectToNode(QUrl(QStringLiteral("local:spectrecoin"))); // connect with remote host node
 
         applicationModelPtr.reset(repNode.acquire<ApplicationModelRemoteReplica>()); // acquire replica of source from host node
         clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
         walletModelPtr.reset(repNode.acquire<WalletModelRemoteReplica>()); // acquire replica of source from host node
-        addressModelPtr.reset(repNode.acquire<AddressModelRemoteReplica>()); // acquire replica of source from host node
+        addressModelPtr.reset(repNode.acquire<AddressModelRemoteReplica>());
+        optionsModelPtr.reset(repNode.acquire<OptionsModelRemoteReplica>()); // acquire replica of source from host node
 
         QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::coreMessageChanged, InitQMessage);
         QObject::connect(applicationModelPtr.data(), &ApplicationModelRemoteReplica::stateChanged, RemoteModelStateChanged);
 
         if (!applicationModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : ApplicationModelRemoteReplica was not initialized!");
+        if (!optionsModelPtr->waitForSource())
+            throw std::runtime_error("SpectreGUI() : OptionsModelRemoteReplica was not initialized!");
         if (!clientModelPtr->waitForSource(-1))
             throw std::runtime_error("SpectreGUI() : ClientModelRemoteReplica was not initialized!");
         if (!walletModelPtr->waitForSource())
@@ -512,7 +517,7 @@ int main(int argc, char *argv[])
         if (!addressModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : AddressModelRemoteReplica was not initialized!");
 
-        SpectreGUI window(applicationModelPtr, clientModelPtr, walletModelPtr, addressModelPtr);
+        SpectreGUI window(applicationModelPtr, clientModelPtr, walletModelPtr, addressModelPtr, optionsModelPtr);
         window.setSplashScreen(&splash);
         guiref = &window;
 

@@ -1,0 +1,17 @@
+class OptionsModelRemote
+{
+    PROP(int displayUnit);
+    PROP(int rowsPerPage);
+    PROP(int minRingSize);
+    PROP(int maxRingSize);
+    PROP(int stakingDonation);
+    PROP(bool staking);
+    PROP(bool displayAddresses);
+    PROP(bool minimizeToTray);
+    PROP(bool minimizeOnClose);
+    PROP(bool autoRingSize);
+    PROP(bool autoRedeemSpectre);
+    PROP(QString language);
+    PROP(QStringList notifications);
+    PROP(QStringList visibleTransactions);
+};

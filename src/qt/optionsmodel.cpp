@@ -13,7 +13,7 @@
 #include "ringsig.h"
 
 OptionsModel::OptionsModel(QObject *parent) :
-    QAbstractListModel(parent)
+    OptionsModelRemoteSimpleSource(parent)
 {
     Init();
 }
@@ -23,29 +23,33 @@ void OptionsModel::Init()
     QSettings settings;
 
     // These are Qt-only settings:
-    nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt();
-    bDisplayAddresses = settings.value("bDisplayAddresses", false).toBool();
-    fMinimizeToTray = settings.value("fMinimizeToTray", false).toBool();
-    fMinimizeOnClose = settings.value("fMinimizeOnClose", false).toBool();
+    setDisplayUnit(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
+    setDisplayAddresses(settings.value("bDisplayAddresses", false).toBool());
+    setMinimizeToTray(settings.value("fMinimizeToTray", false).toBool());
+    setMinimizeOnClose(settings.value("fMinimizeOnClose", false).toBool());
     nTransactionFee = settings.value("nTransactionFee").toLongLong();
     nReserveBalance = settings.value("nReserveBalance").toLongLong();
-    language = settings.value("language", "").toString();
-    nRowsPerPage = settings.value("nRowsPerPage", 20).toInt();
-    notifications = settings.value("notifications", "*").toStringList();
-    visibleTransactions = settings.value("visibleTransactions", "*").toStringList();
-    fAutoRingSize = settings.value("fAutoRingSize", false).toBool();
-    fAutoRedeemSpectre = settings.value("fAutoRedeemSpectre", false).toBool();
-    nMinRingSize = settings.value("nMinRingSize", MIN_RING_SIZE).toInt();
-    nMaxRingSize = settings.value("nMaxRingSize", MIN_RING_SIZE).toInt();
+    setLanguage(settings.value("language", "").toString());
+    setRowsPerPage(settings.value("nRowsPerPage", 20).toInt());
+    setNotifications(settings.value("notifications", "*").toStringList());
+    setVisibleTransactions(settings.value("visibleTransactions", "*").toStringList());
+    setAutoRingSize(settings.value("fAutoRingSize", false).toBool());
+    setAutoRedeemSpectre(settings.value("fAutoRedeemSpectre", false).toBool());
+    setMinRingSize(settings.value("nMinRingSize", MIN_RING_SIZE).toInt());
+    setMaxRingSize(settings.value("nMaxRingSize", MIN_RING_SIZE).toInt());
 
     // These are shared with core Bitcoin; we want
     // command-line options to override the GUI settings:
     if (settings.contains("detachDB"))
         SoftSetBoolArg("-detachdb", settings.value("detachDB").toBool());
-    if (!language.isEmpty())
-        SoftSetArg("-lang", language.toStdString());
+    if (!language().isEmpty())
+        SoftSetArg("-lang", language().toStdString());
     if (settings.contains("fStaking"))
-        SoftSetBoolArg("-staking", settings.value("fStaking").toBool());
+    {
+        setStaking(settings.value("fStaking").toBool());
+        SoftSetBoolArg("-staking", staking());
+        fIsStakingEnabled = staking();
+    }
     if (settings.contains("nMinStakeInterval"))
         SoftSetArg("-minstakeinterval", settings.value("nMinStakeInterval").toString().toStdString());
     if (settings.contains("nStakingDonation"))
@@ -58,68 +62,64 @@ void OptionsModel::Init()
         SoftSetArg("-thinindexmax", settings.value("nThinIndexWindow").toString().toStdString());
 }
 
-int OptionsModel::rowCount(const QModelIndex & parent) const
+int OptionsModel::rowCount() const
 {
     return OptionIDRowCount;
 }
 
-QVariant OptionsModel::data(const QModelIndex & index, int role) const
+QVariant OptionsModel::data(const int row) const
 {
-    if(role == Qt::EditRole)
+    QSettings settings;
+    switch(row)
     {
-        QSettings settings;
-        switch(index.row())
-        {
-        case StartAtStartup:
-            return GUIUtil::GetStartOnSystemStartup();
-        case MinimizeToTray:
-            return fMinimizeToTray;
-        case MinimizeOnClose:
-            return fMinimizeOnClose;
-        case Fee:
-            return (qint64) nTransactionFee;
-        case ReserveBalance:
-            return (qint64) nReserveBalance;
-        case DisplayUnit:
-            return nDisplayUnit;
-        case DisplayAddresses:
-            return bDisplayAddresses;
-        case DetachDatabases:
-            return bitdb.GetDetach();
-        case Language:
-            return settings.value("language", "");
-        case RowsPerPage:
-            return nRowsPerPage;
-        case AutoRingSize:
-            return fAutoRingSize;
-        case AutoRedeemSpectre:
-            return fAutoRedeemSpectre;
-        case MinRingSize:
-            return nMinRingSize;
-        case MaxRingSize:
-            return nMaxRingSize;
-        case Staking:
-            return settings.value("fStaking", GetBoolArg("-staking", true)).toBool();
-        case StakingDonation:
-            if (nStakingDonation < 0) {
-                nStakingDonation = 0;
-            }
-            return nStakingDonation;
-        case MinStakeInterval:
-            return nMinStakeInterval;
-          case ThinMode:
-            return settings.value("fThinMode",      GetBoolArg("-thinmode",      false)).toBool();
-        case ThinFullIndex:
-            return settings.value("fThinFullIndex", GetBoolArg("-thinfullindex", false)).toBool();
-        case ThinIndexWindow:
-            return settings.value("ThinIndexWindow", (qint64) GetArg("-thinindexwindow", 4096)).toInt();
-        case Notifications:
-            return notifications;
-        case VisibleTransactions:
-            return visibleTransactions;
+    case StartAtStartup:
+        return GUIUtil::GetStartOnSystemStartup();
+    case MinimizeToTray:
+        return minimizeToTray();
+    case MinimizeOnClose:
+        return minimizeOnClose();
+    case Fee:
+        return (qint64) nTransactionFee;
+    case ReserveBalance:
+        return (qint64) nReserveBalance;
+    case DisplayUnit:
+        return displayUnit();
+    case DisplayAddresses:
+        return displayAddresses();
+    case DetachDatabases:
+        return bitdb.GetDetach();
+    case Language:
+        return settings.value("language", "");
+    case RowsPerPage:
+        return rowsPerPage();
+    case AutoRingSize:
+        return autoRingSize();
+    case AutoRedeemSpectre:
+        return autoRedeemSpectre();
+    case MinRingSize:
+        return minRingSize();
+    case MaxRingSize:
+        return maxRingSize();
+    case Staking:
+        return settings.value("fStaking", GetBoolArg("-staking", true)).toBool();
+    case StakingDonation:
+        if (nStakingDonation < 0) {
+            nStakingDonation = 0;
         }
+        return nStakingDonation;
+    case MinStakeInterval:
+        return nMinStakeInterval;
+      case ThinMode:
+        return settings.value("fThinMode",      GetBoolArg("-thinmode",      false)).toBool();
+    case ThinFullIndex:
+        return settings.value("fThinFullIndex", GetBoolArg("-thinfullindex", false)).toBool();
+    case ThinIndexWindow:
+        return settings.value("ThinIndexWindow", (qint64) GetArg("-thinindexwindow", 4096)).toInt();
+    case Notifications:
+        return notifications();
+    case VisibleTransactions:
+        return visibleTransactions();
     }
-
     return QVariant();
 }
 
@@ -163,120 +163,115 @@ int OptionsModel::optionNameID(QString name)
     return -1;
 }
 
-bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, int role)
+bool OptionsModel::setData(const int row, const QVariant & value)
 {
     bool successful = true; /* set to false on parse error */
-    if(role == Qt::EditRole)
+    QSettings settings;
+    switch(row)
     {
-        QSettings settings;
-        switch(index.row())
-        {
-        case StartAtStartup:
-            successful = GUIUtil::SetStartOnSystemStartup(value.toBool());
-            break;
-        case MinimizeToTray:
-            fMinimizeToTray = value.toBool();
-            settings.setValue("fMinimizeToTray", fMinimizeToTray);
-            break;
-        case MinimizeOnClose:
-            fMinimizeOnClose = value.toBool();
-            settings.setValue("fMinimizeOnClose", fMinimizeOnClose);
-            break;
-        case Fee:
-            nTransactionFee = value.toLongLong();
-            settings.setValue("nTransactionFee", (qint64) nTransactionFee);
-            emit transactionFeeChanged(nTransactionFee);
-            break;
-        case ReserveBalance:
-            nReserveBalance = value.toLongLong();
-            settings.setValue("nReserveBalance", (qint64) nReserveBalance);
-            emit reserveBalanceChanged(nReserveBalance);
-            break;
-        case DisplayUnit:
-            nDisplayUnit = value.toInt();
-            settings.setValue("nDisplayUnit", nDisplayUnit);
-            emit displayUnitChanged(nDisplayUnit);
-            break;
-        case DisplayAddresses:
-            bDisplayAddresses = value.toBool();
-            settings.setValue("bDisplayAddresses", bDisplayAddresses);
-            emit displayUnitChanged(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
-            break;
-        case DetachDatabases: {
-            bool fDetachDB = value.toBool();
-            bitdb.SetDetach(fDetachDB);
-            settings.setValue("detachDB", fDetachDB);
-            }
-            break;
-        case Language:
-            settings.setValue("language", value);
-            break;
-        case RowsPerPage: {
-            nRowsPerPage = value.toInt();
-            settings.setValue("nRowsPerPage", nRowsPerPage);
-            emit rowsPerPageChanged(nRowsPerPage);
-            }
-            break;
-        case Notifications: {
-            notifications = value.toStringList();
-            settings.setValue("notifications", notifications);
-            }
-            break;
-        case VisibleTransactions: {
-            visibleTransactions = value.toStringList();
-            settings.setValue("visibleTransactions", visibleTransactions);
-            emit visibleTransactionsChanged(visibleTransactions);
-            }
-            break;
-        case AutoRingSize: {
-            fAutoRingSize = value.toBool();
-            settings.setValue("fAutoRingSize", fAutoRingSize);
-            }
-            break;
-        case AutoRedeemSpectre: {
-            fAutoRedeemSpectre = value.toBool();
-            settings.setValue("fAutoRedeemSpectre", fAutoRedeemSpectre);
-            }
-            break;
-        case MinRingSize: {
-            nMinRingSize = value.toInt();
-            settings.setValue("nMinRingSize", nMinRingSize);
-            }
-            break;
-        case MaxRingSize: {
-            nMaxRingSize = value.toInt();
-            settings.setValue("nMaxRingSize", nMaxRingSize);
-            }
-            break;
-        case Staking:
-            settings.setValue("fStaking", value.toBool());
-            break;
-        case StakingDonation:
-            nStakingDonation = value.toInt();
-            if (nStakingDonation < 0) {
-                nStakingDonation = 0;
-            }
-            settings.setValue("nStakingDonation", nStakingDonation);
-            break;
-        case MinStakeInterval:
-            nMinStakeInterval = value.toInt();
-            settings.setValue("nMinStakeInterval", nMinStakeInterval);
-            break;
-        case ThinMode:
-            settings.setValue("fThinMode", value.toBool());
-            break;
-        case ThinFullIndex:
-            settings.setValue("fThinFullIndex", value.toBool());
-            break;
-        case ThinIndexWindow:
-            settings.setValue("fThinIndexWindow", value.toInt());
-            break;
-        default:
-            break;
+    case StartAtStartup:
+        successful = GUIUtil::SetStartOnSystemStartup(value.toBool());
+        break;
+    case MinimizeToTray:
+        setMinimizeToTray(value.toBool());
+        settings.setValue("fMinimizeToTray", minimizeToTray());
+        break;
+    case MinimizeOnClose:
+        setMinimizeOnClose(value.toBool());
+        settings.setValue("fMinimizeOnClose", minimizeOnClose());
+        break;
+    case Fee:
+        nTransactionFee = value.toLongLong();
+        settings.setValue("nTransactionFee", (qint64) nTransactionFee);
+        emit transactionFeeChanged(nTransactionFee);
+        break;
+    case ReserveBalance:
+        nReserveBalance = value.toLongLong();
+        settings.setValue("nReserveBalance", (qint64) nReserveBalance);
+        emit reserveBalanceChanged(nReserveBalance);
+        break;
+    case DisplayUnit:
+        setDisplayUnit(value.toInt());
+        settings.setValue("nDisplayUnit", displayUnit());
+        break;
+    case DisplayAddresses:
+        setDisplayAddresses(value.toBool());
+        settings.setValue("bDisplayAddresses", displayAddresses());
+        Q_EMIT displayUnitChanged(displayUnit());
+        break;
+    case DetachDatabases: {
+        bool fDetachDB = value.toBool();
+        bitdb.SetDetach(fDetachDB);
+        settings.setValue("detachDB", fDetachDB);
         }
+        break;
+    case Language:
+        settings.setValue("language", value);
+        break;
+    case RowsPerPage: {
+        setRowsPerPage(value.toInt());
+        settings.setValue("nRowsPerPage", rowsPerPage());
+        }
+        break;
+    case Notifications: {
+        setNotifications(value.toStringList());
+        settings.setValue("notifications", notifications());
+        }
+        break;
+    case VisibleTransactions: {
+        setVisibleTransactions(value.toStringList());
+        settings.setValue("visibleTransactions", visibleTransactions());
+        }
+        break;
+    case AutoRingSize: {
+        setAutoRingSize(value.toBool());
+        settings.setValue("fAutoRingSize", autoRingSize());
+        }
+        break;
+    case AutoRedeemSpectre: {
+        setAutoRedeemSpectre(value.toBool());
+        settings.setValue("fAutoRedeemSpectre", autoRedeemSpectre());
+        }
+        break;
+    case MinRingSize: {
+        setMinRingSize(value.toInt());
+        settings.setValue("nMinRingSize", minRingSize());
+        }
+        break;
+    case MaxRingSize: {
+        setMaxRingSize(value.toInt());
+        settings.setValue("nMaxRingSize", maxRingSize());
+        }
+        break;
+    case Staking:
+        setStaking(value.toBool());
+        settings.setValue("fStaking", staking());
+        SoftSetBoolArg("-staking", staking());
+        fIsStakingEnabled = staking();
+        break;
+    case StakingDonation:
+        nStakingDonation = value.toInt();
+        if (nStakingDonation < 0) {
+            nStakingDonation = 0;
+        }
+        settings.setValue("nStakingDonation", nStakingDonation);
+        break;
+    case MinStakeInterval:
+        nMinStakeInterval = value.toInt();
+        settings.setValue("nMinStakeInterval", nMinStakeInterval);
+        break;
+    case ThinMode:
+        settings.setValue("fThinMode", value.toBool());
+        break;
+    case ThinFullIndex:
+        settings.setValue("fThinFullIndex", value.toBool());
+        break;
+    case ThinIndexWindow:
+        settings.setValue("fThinIndexWindow", value.toInt());
+        break;
+    default:
+        break;
     }
-    emit dataChanged(index, index);
-
     return successful;
 }
 
@@ -290,36 +285,5 @@ qint64 OptionsModel::getReserveBalance()
     return nReserveBalance;
 }
 
-bool OptionsModel::getMinimizeToTray()
-{
-    return fMinimizeToTray;
-}
-
-bool OptionsModel::getMinimizeOnClose()
-{
-    return fMinimizeOnClose;
-}
-
-int OptionsModel::getDisplayUnit()
-{
-    return nDisplayUnit;
-}
-
-bool OptionsModel::getDisplayAddresses()
-{
-    return bDisplayAddresses;
-}
-
-int OptionsModel::getRowsPerPage() { return nRowsPerPage; }
-QStringList OptionsModel::getNotifications() { return notifications; }
-QStringList OptionsModel::getVisibleTransactions() { return visibleTransactions; }
-bool OptionsModel::getAutoRingSize() { return fAutoRingSize; }
-bool OptionsModel::getAutoRedeemSpectre() { return fAutoRedeemSpectre; }
-int OptionsModel::getMinRingSize() { return nMinRingSize; }
-int OptionsModel::getMaxRingSize() { return nMaxRingSize; }
-
-void OptionsModel::emitDisplayUnitChanged(int unit) { emit displayUnitChanged(unit); }
 void OptionsModel::emitTransactionFeeChanged(qint64 fee) { emit transactionFeeChanged(fee); }
 void OptionsModel::emitReserveBalanceChanged(qint64 bal) { emit reserveBalanceChanged(bal); }
-void OptionsModel::emitRowsPerPageChanged(int rows) { emit rowsPerPageChanged(rows); }
-void OptionsModel::emitVisibleTransactionsChanged(QStringList txns) { emit visibleTransactionsChanged(txns); }

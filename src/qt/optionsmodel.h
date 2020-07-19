@@ -9,13 +9,15 @@
 #include <QAbstractListModel>
 #include <QStringList>
 
+#include <rep_optionsmodelremote_source.h>
+
 /** Interface from Qt to configuration data structure for Bitcoin client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently
    complex.
  */
-class OptionsModel : public QAbstractListModel
+class OptionsModel : public OptionsModelRemoteSimpleSource
 {
     Q_OBJECT
 
@@ -63,54 +65,20 @@ public:
 
     void Init();
 
-    int rowCount(const QModelIndex & parent = QModelIndex()) const;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+    int rowCount() const;
+    QVariant data(const int row) const;
+    bool setData(const int row, const QVariant & value);
 
     /* Explicit getters */
     qint64 getTransactionFee();
     qint64 getReserveBalance();
-    bool getMinimizeToTray();
-    bool getMinimizeOnClose();
-    bool getDisplayAddresses();
-    bool getAutoRingSize();
-    bool getAutoRedeemSpectre();
-    int getDisplayUnit();
-    int getRowsPerPage();
-    int getMinRingSize();
-    int getMaxRingSize();
-    int getStakingDonation();
-    QStringList getNotifications();
-    QStringList getVisibleTransactions();
-    QString getLanguage() { return language; }
 
-    void emitDisplayUnitChanged(int unit);
     void emitTransactionFeeChanged(qint64);
     void emitReserveBalanceChanged(qint64);
-    void emitRowsPerPageChanged(int);
-    void emitVisibleTransactionsChanged(QStringList);
-
-private:
-    int nDisplayUnit;
-    int nRowsPerPage;
-    int nMinRingSize;
-    int nMaxRingSize;
-    int fStakingDonation;
-    bool bDisplayAddresses;
-    bool fMinimizeToTray;
-    bool fMinimizeOnClose;
-    bool fAutoRingSize;
-    bool fAutoRedeemSpectre;
-    QString language;
-    QStringList notifications;
-    QStringList visibleTransactions;
 
 signals:
-    void displayUnitChanged(int unit);
     void transactionFeeChanged(qint64);
     void reserveBalanceChanged(qint64);
-    void rowsPerPageChanged(int);
-    void visibleTransactionsChanged(QStringList);
 };
 
 #endif // OPTIONSMODEL_H
