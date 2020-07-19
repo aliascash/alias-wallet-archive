@@ -369,9 +369,9 @@ void SpectreBridge::jsReady() {
     QApplication::instance()->processEvents();
 
     // Populate data
-    walletModel->getOptionsModel()->emitDisplayUnitChanged(walletModel->getOptionsModel()->getDisplayUnit());
     walletModel->getOptionsModel()->emitReserveBalanceChanged(walletModel->getOptionsModel()->getReserveBalance());
-    walletModel->getOptionsModel()->emitRowsPerPageChanged(walletModel->getOptionsModel()->getRowsPerPage());
+    emit walletModel->getOptionsModel()->displayUnitChanged(walletModel->getOptionsModel()->displayUnit());
+    emit walletModel->getOptionsModel()->rowsPerPageChanged(walletModel->getOptionsModel()->rowsPerPage());
     clientModel->updateNumConnections(clientModel->getNumConnections());
 
     populateTransactionTable();
