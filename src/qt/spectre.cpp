@@ -173,6 +173,9 @@ bool AndroidAppInit(int argc, char* argv[])
         ReadConfigFile(mapArgs, mapMultiArgs);
         SoftSetBoolArg("-debug", true);
 
+        // ... then GUI settings:
+        OptionsModel optionsModel;
+
         bool rescan = false;
         bool init = QtAndroid::androidService().getField<jboolean>("init");
         while(!init)
@@ -214,7 +217,6 @@ bool AndroidAppInit(int argc, char* argv[])
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
             // create models
-            OptionsModel optionsModel;
             WalletModel walletModel(pwalletMain, &optionsModel);
             InitMessage("Init client models...");
             ClientModel clientModel(&optionsModel, &walletModel);
