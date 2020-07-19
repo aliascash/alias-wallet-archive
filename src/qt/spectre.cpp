@@ -296,6 +296,8 @@ int main(int argc, char *argv[])
     FreeConsole();
 #endif
 
+    fHaveGUI = true;
+
     // Command-line options take precedence:
     ParseParameters(argc, argv);
 
@@ -304,8 +306,6 @@ int main(int argc, char *argv[])
         bool fRet = AndroidAppInit(argc, argv);
         return (fRet ? 0 : 1);
     }
-
-    fHaveGUI = true;
 
 #if QT_VERSION < 0x050000
     // Internal string conversion is all UTF-8

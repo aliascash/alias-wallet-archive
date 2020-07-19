@@ -591,7 +591,7 @@ void ThreadStakeMiner(CWallet *pwallet)
     {
         boost::this_thread::interruption_point();
 
-        while (pwallet->IsLocked())
+        while (pwallet->IsLocked() || !fIsStakingEnabled)
         {
             fIsStaking = false;
             MilliSleep(2000);
