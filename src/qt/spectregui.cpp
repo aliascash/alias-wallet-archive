@@ -252,6 +252,13 @@ void SpectreGUI::pageLoaded(bool ok)
         }
     }
 
+    // Customize UI
+    if (!fDebug)
+        runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-debug { display: none !important }'; document.body.appendChild(sheet);"));
+#ifdef ANDROID
+    runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
+#endif
+
     initMessage(splashScreen, "Ready!");
     if (splashScreen) splashScreen->finish(this);
     initialized = true;
