@@ -449,8 +449,8 @@ void SpectreBridge::populateOptions()
     }
 
     options.insert("optLanguage", languages);
-    options.insert("Fee", ((double)options.value("Fee").toLongLong()) / COIN );
-    options.insert("ReserveBalance", ((double)options.value("ReserveBalance").toLongLong()) / COIN );
+    options.insert("Fee", options.value("Fee").toLongLong());
+    options.insert("ReserveBalance", options.value("ReserveBalance").toLongLong() );
 
     info->insert("options", options);
 }
@@ -640,23 +640,7 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
 
         for(int option = 0;option < optionsModel->rowCount(); option++) {
             if(object.contains(optionsModel->optionIDName(option))) {
-                if (optionsModel->optionIDName(option) == "Fee") {
-                    //smallest number is 0.00000001
-                    //convert to long before saving it
-                    QString feeAsString = object.value(optionsModel->optionIDName(option)).toString();
-                    QVariant longFee;
-                    longFee.setValue((qlonglong)(feeAsString.toDouble() * COIN));
-                    optionsModel->setData(option, longFee);
-                } else if (optionsModel->optionIDName(option) == "ReserveBalance") {
-                    //smallest number is 0.00000001
-                    //convert to long before saving it
-                    QString reserveBalanceAsString = object.value(optionsModel->optionIDName(option)).toString();
-                    QVariant longReserveBalance;
-                    longReserveBalance.setValue((qlonglong)(reserveBalanceAsString.toDouble() * COIN));
-                    optionsModel->setData(option, longReserveBalance);
-                } else {
-                    optionsModel->setData(option, object.value(optionsModel->optionIDName(option)).toVariant());
-                }
+                optionsModel->setData(option, object.value(optionsModel->optionIDName(option)).toVariant());
             }
         }
 

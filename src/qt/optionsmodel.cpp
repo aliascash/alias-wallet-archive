@@ -23,11 +23,12 @@ void OptionsModel::Init()
     QSettings settings;
 
     // These are Qt-only settings:
-    setDisplayUnit(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
+    //setDisplayUnit(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
+    setDisplayUnit(BitcoinUnits::XSPEC);
     setDisplayAddresses(settings.value("bDisplayAddresses", false).toBool());
     setMinimizeToTray(settings.value("fMinimizeToTray", false).toBool());
     setMinimizeOnClose(settings.value("fMinimizeOnClose", false).toBool());
-    nTransactionFee = settings.value("nTransactionFee").toLongLong();
+    nTransactionFee = settings.value("nTransactionFee").toLongLong() >= nMinTxFee ? settings.value("nTransactionFee").toLongLong() : nMinTxFee;
     nReserveBalance = settings.value("nReserveBalance").toLongLong();
     setLanguage(settings.value("language", "").toString());
     setRowsPerPage(settings.value("nRowsPerPage", 20).toInt());
@@ -180,8 +181,8 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         setMinimizeOnClose(value.toBool());
         settings.setValue("fMinimizeOnClose", minimizeOnClose());
         break;
-    case Fee:
-        nTransactionFee = value.toLongLong();
+    case Fee:  
+        nTransactionFee = value.toLongLong() < nMinTxFee ? nMinTxFee : value.toLongLong();
         settings.setValue("nTransactionFee", (qint64) nTransactionFee);
         emit transactionFeeChanged(nTransactionFee);
         break;
@@ -191,8 +192,8 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         emit reserveBalanceChanged(nReserveBalance);
         break;
     case DisplayUnit:
-        setDisplayUnit(value.toInt());
-        settings.setValue("nDisplayUnit", displayUnit());
+        //setDisplayUnit(value.toInt());
+        //settings.setValue("nDisplayUnit", displayUnit());
         break;
     case DisplayAddresses:
         setDisplayAddresses(value.toBool());
