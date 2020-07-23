@@ -444,15 +444,20 @@ int main(int argc, char *argv[])
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
+    QPixmap splashPixmap(":/images/splash");
 #ifdef ANDROID
+    // For Android, adjust width of splash screen to fill width.
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect  screenGeometry = screen->availableGeometry();
+    splashPixmap.setDevicePixelRatio((screenGeometry.width() * screen->devicePixelRatio()) / splashPixmap.width());
+
     // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
     QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
     // Start core service (if service is allready running, this has not effect.)
     std::string bip44key = GetArg("-bip44key", "");
     QtAndroid::androidActivity().callMethod<void>("startCore", "(ZLjava/lang/String;)V", GetBoolArg("-rescan"), QAndroidJniObject::fromString(QString::fromStdString(bip44key)).object<jstring>());
 #endif
-
-    QSplashScreen splash(QPixmap(":/images/splash"), 0);
+    QSplashScreen splash(splashPixmap, 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);
