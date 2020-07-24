@@ -1,8 +1,8 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+// SPDX-FileCopyrightText: © 2009 Satoshi Nakamoto
+//
+// SPDX-License-Identifier: MIT
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
@@ -2061,7 +2061,7 @@ bool IsInitialBlockDownload()
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
-{ 
+{
     if (pindexNew->nChainTrust > nBestInvalidTrust)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
@@ -2626,7 +2626,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 }
 
 bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
-{    
+{
     // Disconnect in reverse order
     for (int i = vtx.size()-1; i >= 0; i--)
         if (!vtx[i].DisconnectInputs(txdb))
@@ -3928,7 +3928,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                 pfrom->Misbehaving(1);
                 return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
             }
-            else {         
+            else {
                 // Ask this guy to fill in what we're missing
                 pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
                 // ppcoin: getblocks may not obtain the ancestor block rejected
