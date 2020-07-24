@@ -1,6 +1,7 @@
-// Copyright (c) 2014-2018 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef BITCOIN_QT_WINSHUTDOWNMONITOR_H
 #define BITCOIN_QT_WINSHUTDOWNMONITOR_H
