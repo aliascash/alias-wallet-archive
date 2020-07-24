@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
+
 #ifndef CLIENTVERSION_H
 #define CLIENTVERSION_H
 
