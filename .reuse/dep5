@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Alias
+Upstream-Contact: Alias Developers <info@alias.cash>
+Source: https://github.com/aliascash/alias
+
+Files: src/qt/locale/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/assets/icons/* src/qt/res/assets/img/*
+Copyright: 2020 Alias Developers
+License: MIT
+
+Files: src/qt/res/assets/plugins/jquery*
+Copyright: 2014 jQuery Foundation and other contributors
+License: MIT
+
+Files: src/qt/res/assets/plugins/footable/*
+Copyright: 2014 Steven Usher & Brad Vincent
+License: MIT
