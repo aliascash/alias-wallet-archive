@@ -1,7 +1,7 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectregui.h"
 #include "clientmodel.h"
@@ -309,7 +309,7 @@ int main(int argc, char *argv[])
                 // Get locks upfront, to make sure we can completly setup our client before core sends notifications
                 ENTER_CRITICAL_SECTION(cs_main); // no RAII
                 ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
-                
+
                 paymentServer->setOptionsModel(&optionsModel);
 
                 ClientModel clientModel(&optionsModel);
@@ -346,7 +346,7 @@ int main(int argc, char *argv[])
                     QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                     QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
                 }
- 
+
                // Release lock before starting event processing, otherwise lock would never be released
                LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
                LEAVE_CRITICAL_SECTION(cs_main);

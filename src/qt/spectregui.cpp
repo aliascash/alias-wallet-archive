@@ -1,7 +1,7 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectregui.h"
 #include "transactiontablemodel.h"
@@ -187,7 +187,7 @@ void SpectreGUI::loadIndex() {
     }
 
     QQuickWidget *view = new QQuickWidget(this);
-    view->setResizeMode(QQuickWidget::SizeRootObjectToView);    
+    view->setResizeMode(QQuickWidget::SizeRootObjectToView);
     view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
     QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
