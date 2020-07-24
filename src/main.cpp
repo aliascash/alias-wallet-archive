@@ -87,7 +87,7 @@ std::vector<CMerkleBlockIncoming> vIncomingMerkleBlocks; // blocks with txns att
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "Spectrecoin Signed Message:\n";
+const string strMessageMagic = "Alias Signed Message:\n";
 
 // Settings
 int64_t nTransactionFee = nMinTxFee;
@@ -4225,7 +4225,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low!");
         strMiscWarning = strMessage;
         LogPrintf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "Spectrecoin", CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "Alias", CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }

@@ -4987,7 +4987,7 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -5090,7 +5090,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -5180,7 +5180,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -8660,7 +8660,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
             if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
             {
                 pwdb->TxnAbort();
-                return errorN(1, "-bip44key defines invalid key. Key must begin with Spectrecoin prefix.");
+                return errorN(1, "-bip44key defines invalid key. Key must begin with Alias prefix.");
             }
             ekBip44 = eKey58.GetKey().GetExtKey();
             LogPrintf("Using given -bip44key for initial master key.\n");
