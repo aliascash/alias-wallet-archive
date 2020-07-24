@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2010 Satoshi Nakamoto
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
 //
-// Alert system
-//
+// SPDX-License-Identifier: MIT
 
 #include <algorithm>
 #include <boost/algorithm/string/classification.hpp>
