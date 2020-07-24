@@ -1,7 +1,7 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef OPTIONSMODEL_H
 #define OPTIONSMODEL_H
