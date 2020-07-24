@@ -5,6 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +29,8 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     private static final String TAG = "SpectrecoinActivity";
 
     private int softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
+    private int screenOrientationMode = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+    private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
 
     // native method to handle 'spectrecoin:' URIs
     public static native void receiveURI(String url);
@@ -52,6 +57,9 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BootstrapService.BOOTSTRAP_BROADCAST_ACTION);
         registerReceiver(mBoostrapBroadcastReceiver, intentFilter);
+
+        screenOrientation = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ?
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     }
 
     @Override
@@ -64,6 +72,10 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     protected void onResume() {
         super.onResume();
         getWindow().setSoftInputMode(softInputMode);
+        if (screenOrientationMode == ActivityInfo.SCREEN_ORIENTATION_LOCKED) {
+            setRequestedOrientation(screenOrientation);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+        }
     }
 
     @Override
@@ -109,20 +121,23 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     }
 
     public void setSoftInputModeAdjustResize() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-            }
+        runOnUiThread(() -> {
+            softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         });
     }
 
     public void setSoftInputModeAdjustPan() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            }
+        runOnUiThread(() -> {
+            softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        });
+    }
+
+    public void setRequestedOrientationUnspecified() {
+        runOnUiThread(() -> {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            screenOrientationMode = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         });
     }
 

@@ -59,6 +59,10 @@
 #include <iostream>
 #include <QNetworkProxy>
 
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
+
 //extern CWallet* pwalletMain;
 double GetPoSKernelPS();
 double GetPoSKernelPSRecent();
@@ -317,6 +321,10 @@ void SpectreGUI::pageLoaded()
         showMinimized();
     else
         QTimer::singleShot(0, this, &SpectreGUI::show);
+
+#ifdef ANDROID
+    QtAndroid::androidActivity().callMethod<void>("setRequestedOrientationUnspecified", "()V");
+#endif
 
     pollTimer->start(1000);
 }
