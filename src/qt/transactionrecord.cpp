@@ -1,7 +1,7 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "transactionrecord.h"
 
@@ -73,7 +73,7 @@ QString TransactionRecord::getTypeShort(const int &type)
         return "donated";
     case TransactionRecord::GeneratedContribution:
     case TransactionRecord::GeneratedSPECTREContribution:
-		return "contributed";      
+		return "contributed";
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -118,7 +118,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
         if (wtx.IsAnonCoinStake() && !listReceived.empty())
-        {      
+        {
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
             int64_t stakingReward = allFee < 0 ? -allFee : rAmount;
             TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
@@ -191,7 +191,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             if (wallet->IsMine(txout))
             {
                 TransactionRecord sub(hash, nTime);
-                sub.idx = parts.size(); // sequence number         
+                sub.idx = parts.size(); // sequence number
 
                 CTxDestination address;
 
