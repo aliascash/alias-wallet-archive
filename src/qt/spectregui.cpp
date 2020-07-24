@@ -185,7 +185,7 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 {
     if(splashScreen)
     {
-        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
+        splashScreen->showMessage(QString::fromStdString(message + "\n\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
     }
 }

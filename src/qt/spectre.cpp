@@ -114,8 +114,9 @@ static void InitMessage(const std::string &message)
                                                      QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
 #endif
     }
-    if(splashref)
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
+    if(splashref) {
+        splashref->showMessage(QString::fromStdString(message + "\n\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+    }
     if (splashref || applicationModelRef)
         QApplication::instance()->processEvents();
 }
@@ -124,7 +125,7 @@ static void InitQMessage(const QString &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message, Qt::AlignVCenter|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(message + "\n\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
         QApplication::instance()->processEvents();
     }
 }
@@ -444,24 +445,46 @@ int main(int argc, char *argv[])
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
-    QPixmap splashPixmap(":/images/splash");
 #ifdef ANDROID
     // For Android, adjust width of splash screen to fill width.
+    QPixmap splashSourcePixmap(":/images/splash");
     QScreen *screen = QGuiApplication::primaryScreen();
-    QRect  screenGeometry = screen->availableGeometry();
-    splashPixmap.setDevicePixelRatio((screenGeometry.width() * screen->devicePixelRatio()) / splashPixmap.width());
+    QRect  screenGeometry = screen->geometry();
+    double splashPixelRatio = (screenGeometry.width() * screen->devicePixelRatio()) / splashSourcePixmap.width();
+
+    QPixmap splashPixmap((screenGeometry.width() * screen->devicePixelRatio()),
+                         (screenGeometry.height() * screen->devicePixelRatio()));
+    splashPixmap.fill(QColor(22, 21, 28));
+
+    QPainter p;
+    p.begin(&splashPixmap);
+    QRect targetRect((splashPixmap.width() - (splashSourcePixmap.width()*splashPixelRatio))/2,
+                     (splashPixmap.height() - (splashSourcePixmap.height()*splashPixelRatio))/2,
+                     splashSourcePixmap.width()*splashPixelRatio, splashSourcePixmap.height()*splashPixelRatio);
+    p.drawPixmap(targetRect, splashSourcePixmap);
+    // draw version text on splash screen
+    QFont font = p.font();
+    font.setPixelSize(font.pixelSize() * screen->devicePixelRatio());
+    p.setFont(font);
+    p.setPen(QColor(235,149,50));
+    p.drawText(QRect(0, 0, splashPixmap.width(), splashPixmap.height()), Qt::AlignHCenter | Qt::AlignTop, QString::fromStdString("\nv"+FormatClientVersion()));
+    p.end();
+
+    splashPixmap.setDevicePixelRatio(screen->devicePixelRatio());
 
     // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
     QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
     // Start core service (if service is allready running, this has not effect.)
     std::string bip44key = GetArg("-bip44key", "");
     QtAndroid::androidActivity().callMethod<void>("startCore", "(ZLjava/lang/String;)V", GetBoolArg("-rescan"), QAndroidJniObject::fromString(QString::fromStdString(bip44key)).object<jstring>());
+#else
+    QPixmap splashPixmap(":/images/splash");
 #endif
     QSplashScreen splash(splashPixmap, 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);
-        splash.show();
+        splash.showFullScreen();
         splashref = &splash;
     }
 
