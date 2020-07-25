@@ -3,10 +3,15 @@ Upstream-Name: Alias
 Upstream-Contact: Alias Developers <info@alias.cash>
 Source: https://github.com/aliascash/alias
 
-Files: doc/* src/qt/forms/* src/qt/locale/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/assets/icons/* src/qt/res/assets/img/*
+Files: doc/* src/qt/forms/* src/qt/locale/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/*
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
+
+Files: src/qt/res/assets/fonts/FontAwesome/* src/qt/res/assets/fonts/Montserrat/*
+Copyright: Dave Gandy - http://fontawesome.io
+Copyright: Google, Inc.
+License: OFL-1.1
 
 Files: src/qt/res/assets/plugins/jquery*
 Copyright: 2014 jQuery Foundation and other contributors
