@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+#
+# SPDX-License-Identifier: MIT
+
 AC_INIT([spectrecoind], [1.4.1])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
