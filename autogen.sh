@@ -1,4 +1,11 @@
 #!/bin/bash -e
+# ===========================================================================
+#
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
+# ===========================================================================
 
 [ -d .git ] && [ -d leveldb ] && [ -d db4.8 ] || \
   { echo "Please run this command from the root of the Spectrecoin repository." && exit 1; }
@@ -14,4 +21,4 @@ autoreconf --no-recursive --install
 #popd
 
 # Create build.h
-./share/genbuild.sh src/build.h
+./scripts/genbuild.sh src/build.h
