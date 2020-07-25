@@ -23,3 +23,7 @@ Files: src/test/data/*
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
+
+Files: src/lz4/*
+Copyright: 2011 Yann Collet
+License: BSD-2-Clause
