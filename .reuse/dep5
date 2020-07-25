@@ -18,3 +18,8 @@ License: CC-BY-4.0
 Files: src/qt/res/assets/plugins/footable/*
 Copyright: 2014 Steven Usher & Brad Vincent
 License: MIT
+
+Files: src/test/data/*
+Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
+License: MIT
