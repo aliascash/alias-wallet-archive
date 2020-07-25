@@ -1,6 +1,10 @@
 #!/bin/bash
 # ===========================================================================
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # This script uses macdeployqt to add the required libs to spectrecoin package.
 # - Fixes non @executable openssl references.
 # - Replaces openssl 1.0.0 references with 1.1

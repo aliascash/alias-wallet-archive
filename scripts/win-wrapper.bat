@@ -1,3 +1,8 @@
+:: SPDX-FileCopyrightText: © 2020 Alias Developers
+:: SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+::
+:: SPDX-License-Identifier: MIT
+::
 :: Wrapper script to define all requirements
 
 set SPECTRECOIN_VERSION=2.2.0
