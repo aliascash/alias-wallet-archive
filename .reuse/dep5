@@ -3,8 +3,9 @@ Upstream-Name: Alias
 Upstream-Contact: Alias Developers <info@alias.cash>
 Source: https://github.com/aliascash/alias
 
-Files: src/qt/locale/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/assets/icons/* src/qt/res/assets/img/*
+Files: doc/* src/qt/forms/* src/qt/locale/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/assets/icons/* src/qt/res/assets/img/*
 Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
 License: MIT
 
 Files: src/qt/res/assets/plugins/jquery*
