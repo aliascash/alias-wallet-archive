@@ -14,6 +14,17 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 ### Replay Protection
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 21/08/2018 @ 2200 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V2 network.
 
+### Licensing
+
+- SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+- SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+- SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+- SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+- SPDX-FileCopyrightText: © 2011 PPCoin Developers
+- SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+
+SPDX-License-Identifier: MIT
+
 ### Changelog
 ## 2.2.2
 - New: Added cmdline option `-version` to show wallet version as usual

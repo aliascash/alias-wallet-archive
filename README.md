@@ -8,6 +8,18 @@ Spectrecoin utilizes a range of proven cryptographic techniques to achieve un-li
 un-traceable and anonymous transactions on its underlaying blockchain and also protects
 the users identity by running all the network nodes as Tor hidden services.
 
+# Licensing
+
+- SPDX-FileCopyrightText: © 2020 Alias Developers
+- SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+- SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+- SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+- SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+- SPDX-FileCopyrightText: © 2011 PPCoin Developers
+- SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+
+SPDX-License-Identifier: MIT
+
 # Social
 - Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC)
 - Please join us on our [Discord](https://discord.gg/ckkrb8m) server
