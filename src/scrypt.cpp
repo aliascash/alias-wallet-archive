@@ -1,3 +1,10 @@
+// SPDX-FileCopyrightText: © 2013 Balthazar
+// SPDX-FileCopyrightText: © 2011 pooler
+// SPDX-FileCopyrightText: © 2011 ArtForz
+// SPDX-FileCopyrightText: © 2009 Colin Percival
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 /*-
  * Copyright 2009 Colin Percival, 2011 ArtForz, 2011 pooler, 2013 Balthazar
  * All rights reserved.
