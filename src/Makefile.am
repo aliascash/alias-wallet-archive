@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+#
+# SPDX-License-Identifier: MIT
+
 AM_LDFLAGS = -fstack-protector
 
 if OS_LINUX
