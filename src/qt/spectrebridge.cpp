@@ -434,21 +434,21 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnTypeInd)
         {
             case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 break;
             default:
@@ -590,7 +590,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         case WalletModel::AmountWithFeeExceedsBalance:
             QMessageBox::warning(window, tr("Send Coins"),
                 tr("The total exceeds your balance when the %1 transaction fee is included.").
-                arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -656,7 +656,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
 			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;

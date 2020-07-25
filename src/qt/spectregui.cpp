@@ -131,7 +131,7 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     addJavascriptObjects(QStringLiteral("bridge"), bridge);
 
     resize(1280, 720);
-    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
+    setWindowTitle(tr("Alias") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
 #ifndef Q_OS_MAC
     qApp->setWindowIcon(QIcon(":icons/spectre"));
     setWindowIcon(QIcon(":icons/spectre"));
@@ -713,7 +713,7 @@ void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
     QString strMessage =
         tr("To process this transaction, a fee of %1 will be charged to support the network. "
            "Do you want to submit the transaction?").arg(
-                BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nFeeRequired));
+                BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, nFeeRequired));
     QMessageBox::StandardButton retval = QMessageBox::question(
           this, tr("Confirm transaction fee"), strMessage,
           QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Yes);

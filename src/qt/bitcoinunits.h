@@ -22,10 +22,10 @@ public:
      */
     enum Unit
     {
-        XSPEC,
-        mXSPEC,
-        uXSPEC,
-        sXSPEC
+        ALIAS,
+        mALIAS,
+        uALIAS,
+        satALIAS
     };
 
     //! @name Static API

@@ -23,7 +23,7 @@ void OptionsModel::Init()
     QSettings settings;
 
     // These are Qt-only settings:
-    nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt();
+    nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt();
     bDisplayAddresses = settings.value("bDisplayAddresses", false).toBool();
     fMinimizeToTray = settings.value("fMinimizeToTray", false).toBool();
     fMinimizeOnClose = settings.value("fMinimizeOnClose", false).toBool();
@@ -200,7 +200,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         case DisplayAddresses:
             bDisplayAddresses = value.toBool();
             settings.setValue("bDisplayAddresses", bDisplayAddresses);
-            emit displayUnitChanged(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
+            emit displayUnitChanged(settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt());
             break;
         case DetachDatabases: {
             bool fDetachDB = value.toBool();

@@ -669,7 +669,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet, int& oldWalletVersion, std::fun
     }
 
     // Add Development Contribution Address to address book
-    pwallet->mapAddressBook[CBitcoinAddress(Params().GetDevContributionAddress()).Get()] = "Spectrecoin Foundation";
+    pwallet->mapAddressBook[CBitcoinAddress(Params().GetDevContributionAddress()).Get()] = "Alias Foundation";
 
     if (wss.fAnyUnordered)
         result = ReorderTransactions(pwallet);
