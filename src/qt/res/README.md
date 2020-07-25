@@ -7,3 +7,8 @@ The following files where maintained on the separate Git repository
 * spectre.qrc
 
 **Do not modify them here!**
+
+# Licensing
+[]()
+- SPDX-FileCopyrightText: © 2020 Alias Developers
+- SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
