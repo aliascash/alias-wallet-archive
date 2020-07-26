@@ -3,18 +3,67 @@ Upstream-Name: Alias
 Upstream-Contact: Alias Developers <info@alias.cash>
 Source: https://github.com/aliascash/alias
 
-Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/src/* src/src.aps
+Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/* src/qt/res/assets/plugins/framework/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/src/* src/src.aps
+Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
+License: MIT
+
+Files: src/qt/res/bitcoin-qt.rc src/qt/res/index.html src/qt/res/main.qml
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
 Files: src/qt/res/assets/fonts/FontAwesome/* src/qt/res/assets/fonts/Montserrat/* src/qt/res/assets/fonts/*.otf
-Copyright: Dave Gandy - http://fontawesome.io
+Copyright: Dave Gandy http://fontawesome.io
 Copyright: Google, Inc.
 License: OFL-1.1
 
 Files: src/qt/res/assets/plugins/bootstrapv3/*
 Copyright: 2018 Twitter
+License: MIT
+
+Files: src/qt/res/assets/plugins/classie/*
+Copyright: 2016 https://github.com/desandro/classie
+License: MIT
+
+Files: src/qt/res/assets/plugins/contextMenu/*
+Copyright: 2013 Sudhanshu Yadav
+License: MIT
+
+Files: src/qt/res/assets/plugins/identicon/*
+Copyright: 2013 Stewart Lord
+License: BSD-2-Clause
+
+Files: src/qt/res/assets/plugins/iscroll/*
+Copyright: 2008 Matteo Spinelli http://cubiq.org
+License: MIT
+
+Files: src/qt/res/assets/plugins/jdenticon/*
+Copyright: 2014 Daniel Mester Pirttijärvi
+License: MIT
+
+Files: src/qt/res/assets/plugins/markdown/*
+Copyright: 2014 Simon Waldherr http://simon.waldherr.eu/
+License: MIT
+
+Files: src/qt/res/assets/plugins/md5/*
+Copyright: 2014 Yi-Cyuan Chen
+License: MIT
+
+Files: src/qt/res/assets/plugins/pace/*
+Copyright: 2016 https://github.com/HubSpot/pace
+License: MIT
+
+Files: src/qt/res/assets/plugins/pnglib/*
+Copyright: 2010 Robert Eisele
+License: BSD-2-Clause
+
+Files: src/qt/res/assets/plugins/qrcode/*
+Copyright: 2015 Twitter @davidshimjs
+License: MIT
+
+Files: src/qt/res/assets/plugins/modernizr*
+Copyright: 2016 https://modernizr.com/
 License: MIT
 
 Files: src/qt/res/assets/plugins/jquery*
@@ -28,6 +77,10 @@ License: CC-BY-4.0
 Files: src/qt/res/assets/plugins/footable/*
 Copyright: 2014 Steven Usher & Brad Vincent
 License: MIT
+
+Files: src/qt/res/assets/plugins/shajs/*
+Copyright: Brian Turek 2008-2016
+License: BSD-2-Clause
 
 Files: src/test/data/*
 Copyright: 2020 Alias Developers
