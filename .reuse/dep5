@@ -79,7 +79,7 @@ Copyright: 2014 Steven Usher & Brad Vincent
 License: MIT
 
 Files: src/qt/res/assets/plugins/shajs/*
-Copyright: Brian Turek 2008-2016
+Copyright: 2008 Brian Turek
 License: BSD-2-Clause
 
 Files: src/test/data/*
