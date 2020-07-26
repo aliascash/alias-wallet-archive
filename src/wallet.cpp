@@ -1200,17 +1200,17 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         nFee = nDebit - nValueOut;
     };
 
-    Currency currencyDestination = XSPEC;
-    Currency currencySource = XSPEC;
+    Currency currencyDestination = PUBLIC;
+    Currency currencySource = PUBLIC;
 
     if (IsAnonCoinStake())
-        currencySource = SPECTRE;
+        currencySource = PRIVATE;
     else
         for(const CTxIn& txin: vin)
         {
             if (txin.IsAnonInput())
             {
-                currencySource = SPECTRE;
+                currencySource = PRIVATE;
                 break;
             }
         }
@@ -1241,7 +1241,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         if (nVersion == ANON_TXN_VERSION
             && txout.IsAnonOutput())
         {
-            currencyDestination = SPECTRE;
+            currencyDestination = PRIVATE;
 
             CKeyID ckidD = txout.ExtractAnonPk().GetID();
 

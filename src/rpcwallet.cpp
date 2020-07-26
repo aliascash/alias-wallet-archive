@@ -1236,7 +1236,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
             entry.push_back(Pair("amount", ValueFromAmount(-amount)));
             if (!(wtx.IsCoinBase() || wtx.IsCoinStake()))
                 entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
-            entry.push_back(Pair("currency", currency == SPECTRE ? "SPECTRE" : "XSPEC"));
+            entry.push_back(Pair("currency", currency == PRIVATE ? "SPECTRE" : "XSPEC"));
             if (!narration.empty())
                 entry.push_back(Pair("narration", narration));
             if (fLong)
@@ -1288,7 +1288,7 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
                     entry.push_back(Pair("amount", ValueFromAmount(-nFee)));
                     stop = true; // only one coinstake output
                 };
-                entry.push_back(Pair("currency", (currency == SPECTRE ? "SPECTRE" : "XSPEC")));
+                entry.push_back(Pair("currency", (currency == PRIVATE ? "SPECTRE" : "XSPEC")));
                 if (!narration.empty())
                     entry.push_back(Pair("narration", narration));
                 if (fLong)

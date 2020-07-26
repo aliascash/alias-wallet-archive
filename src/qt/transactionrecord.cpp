@@ -24,36 +24,36 @@ QString TransactionRecord::getTypeLabel(const int &type)
     switch(type)
     {
     case RecvWithAddress:
-        return SpectreGUI::tr("XSPEC received with");
+        return SpectreGUI::tr("ALIAS (public) received with");
     case RecvFromOther:
-        return SpectreGUI::tr("XSPEC received from");
+        return SpectreGUI::tr("ALIAS (public) received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("XSPEC sent to");
+        return SpectreGUI::tr("ALIAS (public) sent to");
     case SendToSelf:
-        return SpectreGUI::tr("XSPEC sent to self");
+        return SpectreGUI::tr("ALIAS (public) sent to self");
     case SendToSelfSPECTRE:
-        return SpectreGUI::tr("SPECTRE sent to self");
+        return SpectreGUI::tr("ALIAS (private) sent to self");
     case Generated:
-        return SpectreGUI::tr("XSPEC Staked");
+        return SpectreGUI::tr("ALIAS (public) Staked");
     case GeneratedDonation:
-        return SpectreGUI::tr("XSPEC Donated");
+        return SpectreGUI::tr("ALIAS (public) Donated");
 	case GeneratedContribution:
-        return SpectreGUI::tr("XSPEC Contributed");
+        return SpectreGUI::tr("ALIAS (public) Contributed");
     case GeneratedSPECTRE:
-        return SpectreGUI::tr("SPECTRE Staked");
+        return SpectreGUI::tr("ALIAS (private) Staked");
     case GeneratedSPECTREDonation:
-        return SpectreGUI::tr("SPECTRE Donated");
+        return SpectreGUI::tr("ALIAS (private) Donated");
     case GeneratedSPECTREContribution:
-        return SpectreGUI::tr("SPECTRE Contributed");
+        return SpectreGUI::tr("ALIAS (private) Contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("SPECTRE received with");
+        return SpectreGUI::tr("ALIAS (private) received with");
     case SendSpectre:
-        return SpectreGUI::tr("SPECTRE sent to");
+        return SpectreGUI::tr("ALIAS (private) sent to");
     case ConvertSPECTREtoXSPEC:
-        return SpectreGUI::tr("SPECTRE to XSPEC");
+        return SpectreGUI::tr("Private to Public");
     case ConvertXSPECtoSPECTRE:
-        return SpectreGUI::tr("XSPEC to SPECTRE");
+        return SpectreGUI::tr("Public to Private");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -148,9 +148,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
 
-            if (sCurrency == XSPEC && rCurrency == SPECTRE)
+            if (sCurrency == PUBLIC && rCurrency == PRIVATE)
                 trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
-            else if (sCurrency == SPECTRE && rCurrency == XSPEC)
+            else if (sCurrency == PRIVATE && rCurrency == PUBLIC)
                 trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
             for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
@@ -295,7 +295,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             };
 
             parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "", narration,
-                            -(nDebit - nChange), nCredit - nChange, XSPEC));
+                            -(nDebit - nChange), nCredit - nChange, PUBLIC));
         } else
         if (fAllFromMe)
         {
@@ -359,7 +359,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Mixed debit transaction, can't break down payees
             //
-            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0, XSPEC);
+            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0, PUBLIC);
             /*
             for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
             {
@@ -459,7 +459,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.status = TransactionStatus::Offline;
         else if (status.depth == 0)
             status.status = TransactionStatus::Unconfirmed;
-        else if (status.depth < (currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
+        else if (status.depth < (currency == PRIVATE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
             status.status = TransactionStatus::Confirming;
         else
             status.status = TransactionStatus::Confirmed;

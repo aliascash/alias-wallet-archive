@@ -434,21 +434,21 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnTypeInd)
         {
             case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from your public balance to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from public to private, using address %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from your private balance, ring size %2, to %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from private to public, ring size %2, using address %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 break;
             default:

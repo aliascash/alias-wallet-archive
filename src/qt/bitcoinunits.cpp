@@ -41,22 +41,10 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
-    case ALIAS: return QString("XSPEC");
-    case mALIAS: return QString("mXSPEC");
-    case uALIAS: return QString::fromUtf8("μXSPEC");
-    case satALIAS: return QString::fromUtf8("spectoshi");
-    default: return QString("???");
-    }
-}
-
-QString BitcoinUnits::nameSpectre(int unit)
-{
-    switch(unit)
-    {
-    case ALIAS: return QString("SPECTRE");
-    case mALIAS: return QString("mSPECTRE");
-    case uALIAS: return QString::fromUtf8("μSPECTRE");
-    case satALIAS: return QString::fromUtf8("Spectoshi");
+    case ALIAS: return QString("ALIAS");
+    case mALIAS: return QString("mALIAS");
+    case uALIAS: return QString::fromUtf8("μALIAS");
+    case satALIAS: return QString::fromUtf8("satALIAS");
     default: return QString("???");
     }
 }
@@ -65,22 +53,10 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case ALIAS:  return QString("XSPEC");
-    case mALIAS: return QString("Milli-XSPEC (1 / 1,000)");
-    case uALIAS: return QString("Micro-XSPEC (1 / 1,000,000)");
-    case satALIAS: return QString("xSpectoshi (1 / 100,000,000)");
-    default:   return QString("???");
-    }
-}
-
-QString BitcoinUnits::descriptionSpectre(int unit)
-{
-    switch(unit)
-    {
-    case ALIAS:  return QString("SPECTRE");
-    case mALIAS: return QString("Milli-SPECTRE (1 / 1,000)");
-    case uALIAS: return QString("Micro-SPECTRE (1 / 1,000,000)");
-    case satALIAS: return QString("Spectoshi (1 / 100,000,000)");
+    case ALIAS:  return QString("ALIAS (public)");
+    case mALIAS: return QString("Milli-ALIAS (1 / 1,000)");
+    case uALIAS: return QString("Micro-ALIAS (1 / 1,000,000)");
+    case satALIAS: return QString("Satoshi-ALIAS (1 / 100,000,000)");
     default:   return QString("???");
     }
 }
@@ -151,9 +127,10 @@ QString BitcoinUnits::formatWithUnit(int unit, qint64 amount, bool plussign)
     return format(unit, amount, plussign) + QString(" ") + name(unit);
 }
 
-QString BitcoinUnits::formatWithUnitSpectre(int unit, qint64 amount, bool plussign)
+
+QString BitcoinUnits::formatWithUnitCurrency(int unit, qint64 amount, Currency currency, bool plussign)
 {
-    return format(unit, amount, plussign) + QString(" ") + nameSpectre(unit);
+    return formatWithUnit(unit, amount, plussign) + QString(" ") + (currency == PUBLIC ? "(public)" : "(private)");
 }
 
 bool BitcoinUnits::parse(int unit, const QString &value, qint64 *val_out)

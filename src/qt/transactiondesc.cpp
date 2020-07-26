@@ -106,10 +106,8 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
             strHTML += "<b>" + tr("Credit") + ":</b> ";
             if (wtx.IsInMainChain())
             {
-                if (wtx.IsAnonCoinStake())
-                    strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, nUnmatured);
-                else
-                    strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, nUnmatured);
+                strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, nUnmatured);
+                strHTML += wtx.IsAnonCoinStake() ? " (private)" : " (public)";
                 strHTML += " (" + tr("matures in %n more block(s)", "", wtx.GetBlocksToMaturity()) + ")";
             }
             else
@@ -127,13 +125,10 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 
     if (listSent.size() > 0 && allFee > 0) {
         const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
-        if (sCurrency == XSPEC)
-            strHTML += "<b>" + tr("Transaction fee") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, -allFee) + "<br>";
-        else
-            strHTML += "<b>" + tr("Transaction fee") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, -allFee) + "<br>";
+        strHTML += "<b>" + tr("Transaction fee") + ":</b> " + BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, -allFee, sCurrency) + "<br>";
     }
 
-    Currency netCurrency = XSPEC;
+    Currency netCurrency = PUBLIC;
     if (listSent.size() > 0)
         netCurrency = std::get<3>(listSent.front());
     else if (listReceived.size() > 0)
@@ -141,10 +136,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 
     if (wtx.GetBlocksToMaturity() == 0)
     {
-        if (netCurrency == SPECTRE)
-            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, nNet, true) + "<br>";
-        else
-            strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, nNet, true) + "<br>";
+        strHTML += "<b>" + tr("Net amount") + ":</b> " + BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, nNet, netCurrency, true) + "<br>";
     }
 
     if (!(wtx.IsCoinBase() || wtx.IsCoinStake()) &&  listReceived.size() > 0 && listSent.size() > 0)
@@ -273,13 +265,10 @@ void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const bool& debit
     strHTML += "<hr/><dl>";
     strHTML += "<dt><b>" + TransactionDesc::tr(debit ? !wtx.IsCoinStake() ? "Debit" : wtx.GetDepthAndHeightInMainChain().second % 6 == 0 ? "Contributed" : "Donated" :
                                                wtx.IsCoinBase() ? "Mined" : wtx.IsCoinStake() ? "Staked" : "Credit") + ":</b></dt><dd>";
-    if (currency == XSPEC)
-        strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, debit ? -amount : amount) + "</dd>";
-    else
-        strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, debit ? -amount : amount) + "</dd>";
+    strHTML += BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, debit ? -amount : amount, currency) + "</dd>";
     strHTML += "<dt><b>" + TransactionDesc::tr(debit ? "Sent to": "With") + ":</b></dt><dd>";
 
-    toHTML(wallet, strHTML, destination, currency == XSPEC ? destSubs : std::vector<CTxDestination>(), narration, narrationHandled);
+    toHTML(wallet, strHTML, destination, currency == PUBLIC ? destSubs : std::vector<CTxDestination>(), narration, narrationHandled);
 
     strHTML += "</dl>";
 }
@@ -289,25 +278,20 @@ void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const Currency& s
     strHTML += "<hr/><dl>";
     if (sCurrency == currency) {
         strHTML += "<dt><b>" + TransactionDesc::tr(wtx.IsCoinBase() ? "Mined" : wtx.IsCoinStake() ? "Staked" : "Sent to self") + ":</b></dt><dd>";
-        if (currency == SPECTRE)
-            strHTML += BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, amount) + "</dd>";
-        else
-            strHTML += BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, amount) + "</dd>";
+        strHTML += BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, amount, currency) + "</dd>";
     }
     else {
-        if (sCurrency == XSPEC && currency == SPECTRE)
+        if (sCurrency == PUBLIC && currency == PRIVATE)
             strHTML += "<dt><b>" + TransactionDesc::tr("Converted") + ":</b></dt><dd>"
-                    + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, amount) + TransactionDesc::tr(" to ")
-                    + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, amount) + "</dd>";
+                    + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, amount) + TransactionDesc::tr(" from public to private") + "</dd>";
         else
             strHTML += "<dt><b>" + TransactionDesc::tr("Converted") + ":</b></dt><dd>"
-                    + BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::ALIAS, amount) + TransactionDesc::tr(" to ")
-                    + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, amount) + "</dd>";
+                    + BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, amount) + TransactionDesc::tr(" from private to public") + "</dd>";
     }
 
     strHTML += "<dt><b>" + TransactionDesc::tr("Address") + ":</b></dt><dd>";
 
-    toHTML(wallet, strHTML, destination, currency == XSPEC ? destSubs : std::vector<CTxDestination>(), narration, narrationHandled);
+    toHTML(wallet, strHTML, destination, currency == PUBLIC ? destSubs : std::vector<CTxDestination>(), narration, narrationHandled);
 
     strHTML += "</dl>";
 }

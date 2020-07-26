@@ -336,7 +336,7 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Unconfirmed");
         break;
     case TransactionStatus::Confirming:
-        status = wtx->currency == SPECTRE ? tr("Confirming (%1 of %2 required confirmations)").
+        status = wtx->currency == PRIVATE ? tr("Confirming (%1 of %2 required confirmations)").
                                             arg(wtx->status.depth).arg(MIN_ANON_SPEND_DEPTH) :
                                             tr("Confirming (%1 of %2 recommended confirmations)").
                                             arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
@@ -353,11 +353,11 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         break;
     case TransactionStatus::MaturesWarning:
         status = tr("Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!").
-                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");;
+                arg(wtx->currency == PRIVATE ? "ALIAS (private)" : "ALIAS (public)");;
         break;
     case TransactionStatus::NotAccepted:
         status = tr("Orphan %1 stake, someone else submitted the block before you.").
-                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");
+                arg(wtx->currency == PRIVATE ? "ALIAS (private)" : "ALIAS (public)");
         break;
     }
 
@@ -499,7 +499,7 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
     case TransactionStatus::Immature:
     case TransactionStatus::Confirming:
         status_switch = (confirmations * 3) / (wtx->status.status == TransactionStatus::Confirming ?
-                    wtx->currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
+                    wtx->currency == PRIVATE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
                     Params().GetStakeMinConfirmations(wtx->time)) + 1;
         switch(status_switch)
         {
@@ -619,7 +619,7 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
     case AmountRole:
         return rec->credit + rec->debit;
     case CurrencyRole:
-        return rec->currency == SPECTRE ? "SPECTRE" : "XSPEC";
+        return rec->currency == PRIVATE ? "PRIVATE" : "PUBLIC";
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:

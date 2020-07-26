@@ -16,7 +16,7 @@
 #include <vector>
 #include <regex>
 
-
+#include "bitcoinunits.h"
 #include "main.h"
 #include "key.h"
 #include "extkey.h"
@@ -74,12 +74,6 @@ enum WalletFeature
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
     FEATURE_LATEST = 60000
-};
-
-enum Currency
-{
-    XSPEC,
-    SPECTRE
 };
 
 /** A key pool entry */

@@ -9,6 +9,12 @@
 #include <QString>
 #include <QAbstractListModel>
 
+enum Currency
+{
+    PUBLIC,
+    PRIVATE
+};
+
 /** Bitcoin unit definitions. Encapsulates parsing and formatting
    and serves as list model for drop-down selection boxes.
 */
@@ -38,10 +44,8 @@ public:
     static bool valid(int unit);
     //! Short name
     static QString name(int unit);
-    static QString nameSpectre(int unit);
     //! Longer description
     static QString description(int unit);
-    static QString descriptionSpectre(int unit);
     //! Number of Satoshis (1e-8) per unit
     static qint64 factor(int unit);
     //! Number of amount digits (to represent max number of coins)
@@ -52,7 +56,8 @@ public:
     static QString format(int unit, qint64 amount, bool plussign=false);
     //! Format as string (with unit)
     static QString formatWithUnit(int unit, qint64 amount, bool plussign=false);
-    static QString formatWithUnitSpectre(int unit, qint64 amount, bool plussign=false);
+    //! Format as string (with unit)
+    static QString formatWithUnitCurrency(int unit, qint64 amount, Currency currency, bool plussign=false);
     //! Parse string to coin amount
     static bool parse(int unit, const QString &value, qint64 *val_out);
     ///@}
