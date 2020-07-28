@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-centos:1.2 as build
+FROM aliascash/aliaswallet-builder-centos:1.2 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,9 +13,9 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /spectre
+COPY . /aliaswallet
 
-RUN cd /spectre \
+RUN cd /aliaswallet \
  && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \
@@ -25,31 +25,31 @@ RUN cd /spectre \
  && make -j${BUILD_THREADS}
 
 ### Now upload binaries to GitHub ###
-FROM spectreproject/github-uploader:latest
+FROM aliascash/github-uploader:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 ARG GITHUB_TOKEN=1234567
-ARG SPECTRECOIN_RELEASE=latest
-ARG SPECTRECOIN_REPOSITORY=spectre
+ARG ALIASWALLET_RELEASE=latest
+ARG ALIASWALLET_REPOSITORY=aliaswallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Spectrecoin-${SPECTRECOIN_RELEASE}-${GIT_COMMIT}-CentOS.tgz
-ENV CHKSUM_FILE=Checksum-Spectrecoin-CentOS.txt
+ENV ARCHIVE=Aliaswallet-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-CentOS.tgz
+ENV CHKSUM_FILE=Checksum-Aliaswallet-CentOS.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /spectre/src/spectrecoind /filesToUpload/usr/local/bin/
-COPY --from=build /spectre/src/spectre /filesToUpload/usr/local/bin/spectrecoin
-COPY --from=build /spectre/scripts/createChecksums.sh /tmp/
+COPY --from=build /aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/
+COPY --from=build /aliaswallet/src/aliaswalletd /filesToUpload/usr/local/bin/
+COPY --from=build /aliaswallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
  && github-release upload \
         --user spectrecoin \
         --security-token "${GITHUB_TOKEN}" \
-        --repo "${SPECTRECOIN_REPOSITORY}" \
-        --tag "${SPECTRECOIN_RELEASE}" \
+        --repo "${ALIASWALLET_REPOSITORY}" \
+        --tag "${ALIASWALLET_RELEASE}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
         ${REPLACE_EXISTING_ARCHIVE} \

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-centos:1.2
+FROM aliascash/aliaswallet-builder-centos:1.2
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,9 +13,9 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /spectre
+COPY . /aliaswallet
 
-RUN cd /spectre \
+RUN cd /aliaswallet \
  && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \

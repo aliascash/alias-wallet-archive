@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-debian-stretch:1.7
+FROM aliascash/aliaswallet-builder-debian-stretch:1.7
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,13 +13,13 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /spectre
+COPY . /aliaswallet
 
-RUN cd /spectre \
+RUN cd /aliaswallet \
  && mkdir db4.8 leveldb \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
  && make -j${BUILD_THREADS} \
- && strip /spectre/src/spectrecoind \
- && strip /spectre/src/spectre
+ && strip /aliaswallet/src/aliaswalletcoind \
+ && strip /aliaswallet/src/aliaswallet
