@@ -1,10 +1,10 @@
-# Spectrecoin
-[![GitHub version](https://badge.fury.io/gh/spectrecoin%2Fspectre.svg)](https://badge.fury.io/gh/spectrecoin%2Fspectre) [![HitCount](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre.svg)](http://hits.dwyl.io/spectrecoin/https://github.com/spectrecoin/spectre)
-[![Build Status](https://ci.spectreproject.io/buildStatus/icon?job=Spectrecoin/spectre/develop)](https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/develop/)
+# Alias
+[![GitHub version](https://badge.fury.io/gh/aliascash%2Fspectre.svg)](https://badge.fury.io/gh/aliascash%2Fspectre) [![HitCount](http://hits.dwyl.io/aliascash/https://github.com/aliascash/aliaswallet.svg)](http://hits.dwyl.io/aliascash/https://github.com/aliascash/aliaswallet)
+[![Build Status](https://ci.spectreproject.io/buildStatus/icon?job=Alias/spectre/develop)](https://ci.spectreproject.io/job/Alias/job/spectre/job/develop/)
 
-Spectrecoin is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
+Alias is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
 
-Spectrecoin utilizes a range of proven cryptographic techniques to achieve un-linkable,
+Alias utilizes a range of proven cryptographic techniques to achieve un-linkable,
 un-traceable and anonymous transactions on its underlaying blockchain and also protects
 the users identity by running all the network nodes as Tor hidden services.
 
@@ -21,22 +21,22 @@ the users identity by running all the network nodes as Tor hidden services.
 SPDX-License-Identifier: MIT
 
 # Social
-- Visit our website [Spectrecoin](https://spectreproject.io/) (XSPEC)
+- Visit our website [Alias](https://spectreproject.io/) (XSPEC)
 - Please join us on our [Discord](https://discord.gg/ckkrb8m) server
 - Read the latest [Newsletter](https://news.spectreproject.io/)
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
 ## Key Privacy Technology
 
-Anonymous token creation: Through the use of dual key stealth technology Spectrecoin provides
+Anonymous token creation: Through the use of dual key stealth technology Alias provides
 the ability to generate ‘anonymous tokens’ (SPECTRE) by consuming XSPEC. SPECTRE can then be
 sent anonymously through an implementation of ring signatures based on the Cryptonote protocol
 to eliminate any transaction history. The wallet offers the opportunity to transfer your
 balance between public coins, XSPEC, and ‘anonymous tokens’, SPECTRE. We are currently working
 on improving this technology to improve functionality and privacy.
 
-Built in Tor: The Spectrecoin software offers a full integration of Tor
-(https://www.torproject.org/) so that the Spectrecoin client runs exclusive as a Tor
+Built in Tor: The Alias software offers a full integration of Tor
+(https://www.torproject.org/) so that the Alias client runs exclusive as a Tor
 hidden service using a .onion address to connect to other clients in the network. Your
 real IP address is therefore protected at all times.
 
@@ -59,13 +59,13 @@ real IP address is therefore protected at all times.
 
 **NOTE** that these instructions are relevant for building from develop, which is the latest
 code in development. It is generally stable but can contain features that have had less
-testing than released versions. If you want to build a stable version of Spectrecoin, please
+testing than released versions. If you want to build a stable version of Alias, please
 check out the latest release tag before you start building.
 
 ### UI development
 
 The following files where maintained on the separate Git repository
-[spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui):
+[aliaswallet-ui](https://github.com/aliascash/aliaswallet-ui):
 * src/qt/res/assets/*
 * src/qt/res/index.html
 * spectre.qrc
@@ -74,7 +74,7 @@ The following files where maintained on the separate Git repository
 
 ### Dependencies
 
-To build the Spectrecoin wallet from source, you will need the following dependencies:
+To build the Alias wallet from source, you will need the following dependencies:
 
 * OpenSSL 1.1
 * BerkeleyDB 4.8
@@ -94,7 +94,7 @@ dependencies needed for any kind of development. After the wipe out of Qt Webeng
 
 ### Windows
 
-The Windows wallet is build with QTs **QMAKE**. See the [instructions for Windows on our Wiki](https://github.com/spectrecoin/documentation/wiki/Build-Windows).
+The Windows wallet is build with QTs **QMAKE**. See the [instructions for Windows on our Wiki](https://github.com/aliascash/documentation/wiki/Build-Windows).
 
 ### macOS
 
@@ -107,8 +107,8 @@ brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc
 ```
 
 The macOS wallet itself is build with QTs **QMAKE**. See
-https://github.com/spectrecoin/spectre/blob/develop/src/osx.pri for instructions.
+https://github.com/aliascash/aliaswallet/blob/develop/src/osx.pri for instructions.
 
 ### Linux
 
-Check out the documents for different Linux distributions on our [Wiki](https://github.com/spectrecoin/documentation/wiki).
+Check out the documents for different Linux distributions on our [Wiki](https://github.com/aliascash/documentation/wiki).

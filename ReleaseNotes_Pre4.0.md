@@ -39,14 +39,14 @@ SPDX-License-Identifier: MIT
 - Increase address lookahead from 10 to 100
 
 ## 3.0.11 (released 2019-06-30)
-- UI: [#185](https://github.com/spectrecoin/spectre/issues/185) Fix shown staking transaction reward after wallet unlock
+- UI: [#185](https://github.com/aliascash/aliaswallet/issues/185) Fix shown staking transaction reward after wallet unlock
 
 ## 3.0.10 (released 2019-06-10)
-- [#184](https://github.com/spectrecoin/spectre/issues/184) Fix fake stake block spam attack vector
-- [#173](https://github.com/spectrecoin/spectre/issues/173) Tor process is not cleanly shutting down
+- [#184](https://github.com/aliascash/aliaswallet/issues/184) Fix fake stake block spam attack vector
+- [#173](https://github.com/aliascash/aliaswallet/issues/173) Tor process is not cleanly shutting down
 
 ## 3.0.9 (released 2019-05-05)
-- UI: [#178](https://github.com/spectrecoin/spectre/issues/178) Tooltip for SPECTRE->XSPEC balance transfer
+- UI: [#178](https://github.com/aliascash/aliaswallet/issues/178) Tooltip for SPECTRE->XSPEC balance transfer
 - UI: Add grouping feature of transactions in TRANSACTION view
 - UI: Show immature instead mature coins in CHAIN DATA view
 - UI & RPC: Fix column least depth in CHAIN DATA view and RPC method anoninfo. (show depth consistently)
@@ -57,7 +57,7 @@ SPDX-License-Identifier: MIT
 - XSPEC staking reward lowered to fixed 2 XSPEC per block
 - Minimum ring size increased from 1 to fix 10
 - Minimum maturity for staking and for spending stakes is increased from 288 to 450 blocks (approximately 96 seconds * 450 = 12 hours)
-- 8 hours maturity rules for staking is removed (Fixes [#79](https://github.com/spectrecoin/spectre/issues/79))
+- 8 hours maturity rules for staking is removed (Fixes [#79](https://github.com/aliascash/aliaswallet/issues/79))
 - Base fee for spending SPECTRE is lowered from 0.01 to 0.0001
 - Support for SPECTRE staking (aka Stealth Staking, aka PoAS)
   - Staking reward per block fixed 3 SPECTRE
@@ -82,15 +82,15 @@ Immediate changes:
   - new compromisedanonheights map for detected All Spent
 - Anon cache is now updated each block with the new mature ATXOs and with the available mixins for spending and staking
 - Fix wallet.dat corruption problem on Windows (On Windows shutdown wallet is safely closed)
-- UI: [#149](https://github.com/spectrecoin/spectre/issues/149) Fixed notifications
+- UI: [#149](https://github.com/aliascash/aliaswallet/issues/149) Fixed notifications
 - UI: Contributions and donations are shown without separate stake entry; show in overview if stakes are contributed or staked
 - UI: Show generated but not accepted stakes as 'Orphan' in overview
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI: Change CHAIN DATA view columns to Unspent (Mature), Mixins (Mature), System (Compromised)
-- UI: Rebased all UI changes since initial commit back to separate UI repository [spectrecoin-ui](https://github.com/spectrecoin/spectrecoin-ui)
+- UI: Rebased all UI changes since initial commit back to separate UI repository [aliaswallet-ui](https://github.com/aliascash/aliaswallet-ui)
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
-- RPC: [#2](https://github.com/spectrecoin/spectre/issues/2) Integrate API method gettxout
+- RPC: [#2](https://github.com/aliascash/aliaswallet/issues/2) Integrate API method gettxout
 - RPC: method anoninfo shows new stats per denomination:
   - No.Mixins: the number of uncompromised ATXOs available as mixins for spending
   - No.MixinsStaking: the number of uncompromised ATXOs available as mixins for staking
