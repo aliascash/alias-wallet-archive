@@ -19,13 +19,13 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${ownLocation}
 . ./include/helpers_console.sh
 
-# Go to Spectrecoin repository root directory
+# Go to Aliaswallet repository root directory
 cd ..
 
 _init
 
 if [[ -z "$1" ]] ; then
-    downloadURL=https://ci.spectreproject.io/job/Spectrecoin/job/spectrecoin-ui/job/Spectrecoin-UI/lastSuccessfulBuild/artifact/spectrecoin-ui-assets.tgz
+    downloadURL=https://ci.alias.cash/job/Alias/job/aliaswallet-ui/job/Aliaswallet-UI/lastSuccessfulBuild/artifact/aliaswallet-ui-assets.tgz
 else
     downloadURL=$1
 fi

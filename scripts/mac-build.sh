@@ -18,7 +18,7 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${ownLocation}
 . ./include/helpers_console.sh
 
-# Go to Spectrecoin repository root directory
+# Go to Aliaswallet repository root directory
 cd ..
 
 if [[ -z "${QT_PATH}" ]] ; then

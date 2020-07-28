@@ -3,7 +3,7 @@
 ::
 :: SPDX-License-Identifier: MIT
 ::
-:: Helper script to build Spectrecoin on Windows using VS2017 and QT.
+:: Helper script to build Aliaswallet on Windows using VS2017 and QT.
 
 IF "%QTDIR%" == "" GOTO NOQT
 :YESQT
@@ -23,7 +23,7 @@ dir
 
 echo on
 
-del "%OUT_DIR%\Spectrecoin.exe" 2>nul
+del "%OUT_DIR%\Aliaswallet.exe" 2>nul
 rmdir /S /Q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 mkdir "%BUILD_DIR%"
@@ -40,10 +40,10 @@ nmake || goto :ERROR
 
 popd
 
-%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res --qml --quick --webengine "%OUT_DIR%\Spectrecoin.exe" || goto :ERROR
+%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res --qml --quick --webengine "%OUT_DIR%\Aliaswallet.exe" || goto :ERROR
 
-::ren "%OUT_DIR%" Spectrecoin
-::echo "The prepared package is in: %SRC_DIR%\Spectrecoin"
+::ren "%OUT_DIR%" Aliaswallet
+::echo "The prepared package is in: %SRC_DIR%\Aliaswallet"
 
 echo "Everything is OK"
 GOTO END
