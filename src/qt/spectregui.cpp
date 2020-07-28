@@ -174,11 +174,11 @@ unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex() {
 #ifdef Q_OS_WIN
-    QFile html("C:/spectrecoin-ui/index.html");
-    QFileInfo webchannelJS("C:/spectrecoin-ui/qtwebchannel/qwebchannel.js");
+    QFile html("C:/aliaswallet-ui/index.html");
+    QFileInfo webchannelJS("C:/aliaswallet-ui/qtwebchannel/qwebchannel.js");
 #else
-    QFile html("/opt/spectrecoin-ui/index.html");
-    QFileInfo webchannelJS("/opt/spectrecoin-ui/qtwebchannel/qwebchannel.js");
+    QFile html("/opt/aliaswallet-ui/index.html");
+    QFileInfo webchannelJS("/opt/aliaswallet-ui/qtwebchannel/qwebchannel.js");
 #endif
     // Check if external qwebchannel exists and if not, create it! (this is how you get the right qwebchannel.js)
     if (html.exists() && !webchannelJS.exists()) {
