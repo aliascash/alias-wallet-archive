@@ -70,7 +70,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -88,7 +88,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-                                    dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -106,7 +106,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -124,7 +124,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -142,7 +142,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -160,7 +160,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -187,23 +187,23 @@ pipeline {
                                     script: """
                                         pwd
                                         ./scripts/mac-build.sh
-                                        rm -f Spectrecoin*.dmg
+                                        rm -f Aliaswallet*.dmg
                                     """
                             )
                             prepareMacDelivery()
                             sh(
                                     script: """
                                         ./scripts/mac-deployqt.sh
-                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                        mv Aliaswallet.dmg Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                     """
                             )
                             // Archive step here only to be able to make feature branch builds available for download
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                             prepareMacOBFS4Delivery()
                             sh(
                                     script: """
                                         ./scripts/mac-deployqt.sh
-                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+                                        mv Aliaswallet.dmg Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
                                     """
                             )
                         }
@@ -284,7 +284,7 @@ pipeline {
                             steps {
                                 script {
                                     buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                 }
                             }
                         }
@@ -330,7 +330,7 @@ pipeline {
                         expression {
                             return isReleaseExisting(
                                     user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    repository: 'aliaswallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ true
                         }
@@ -339,7 +339,7 @@ pipeline {
                         script {
                             removeRelease(
                                     user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    repository: 'aliaswallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             )
                         }
@@ -350,7 +350,7 @@ pipeline {
                         expression {
                             return isReleaseExisting(
                                     user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    repository: 'aliaswallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ false
                         }
@@ -359,7 +359,7 @@ pipeline {
                         script {
                             createRelease(
                                     user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    repository: 'aliaswallet',
                                     tag: "${GIT_TAG_TO_USE}",
                                     name: "${RELEASE_NAME}",
                                     description: "${RELEASE_DESCRIPTION}",
@@ -386,15 +386,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
-                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                            dockerTag: "aliascash/aliaswallet-raspi-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-RaspberryPi-Buster.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-RaspberryPi-Buster.txt"
                                 }
                             }
                             post {
@@ -406,10 +406,10 @@ pipeline {
                         stage('Trigger image build') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin/pi-gen/spectrecoin',
+                                        job: 'Alias/pi-gen/aliaswallet',
                                         parameters: [
                                                 string(
-                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        name: 'ALIAS_RELEASE',
                                                         value: "${GIT_TAG_TO_USE}"
                                                 ),
                                                 string(
@@ -433,15 +433,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                            dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Debian-Stretch.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Debian-Stretch.txt"
                                 }
                             }
                             post {
@@ -462,15 +462,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Buster',
-                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Debian-Buster.txt"
+                                            dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Debian-Buster.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Buster.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Debian-Buster.txt"
                                 }
                             }
                             post {
@@ -489,15 +489,15 @@ pipeline {
                         script {
                             buildBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile',
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
+                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
                                     gitCommit: "${GIT_COMMIT_SHORT}"
                             )
                             getChecksumfileFromImage(
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
-                                    checksumfile: "Checksum-Spectrecoin-Fedora.txt"
+                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}",
+                                    checksumfile: "Checksum-Aliaswallet-Fedora.txt"
                             )
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Fedora.txt"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Fedora.txt"
                         }
                     }
                     post {
@@ -516,15 +516,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-18-04.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-18-04.txt"
                                 }
                             }
                             post {
@@ -536,10 +536,10 @@ pipeline {
                         stage('Trigger Docker image build') {
                             steps {
                                 build(
-                                        job: "Spectrecoin/docker-spectrecoind/${GIT_BRANCH}",
+                                        job: "Alias/docker-aliaswalletd/${GIT_BRANCH}",
                                         parameters: [
                                                 string(
-                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        name: 'ALIAS_RELEASE',
                                                         value: "${GIT_TAG_TO_USE}"
                                                 ),
                                                 string(
@@ -563,15 +563,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_19_04',
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
                                 }
                             }
                             post {
@@ -592,15 +592,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-19-10.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-10.txt"
                                 }
                             }
                             post {
@@ -630,25 +630,25 @@ pipeline {
                                             script: """
                                                 pwd
                                                 ./scripts/mac-build.sh
-                                                rm -f Spectrecoin*.dmg
+                                                rm -f Aliaswallet*.dmg
                                             """
                                     )
                                     prepareMacDelivery()
                                     sh(
                                             script: """
                                                 ./scripts/mac-deployqt.sh
-                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                                mv Aliaswallet.dmg Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
                                     prepareMacOBFS4Delivery()
                                     sh(
                                             script: """
                                                 ./scripts/mac-deployqt.sh
-                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+                                                mv Aliaswallet.dmg Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
                                             """
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                 }
                             }
                         }
@@ -660,32 +660,32 @@ pipeline {
                                 script {
                                     sh(
                                             script: """
-                                                rm -f Spectrecoin*.dmg*
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                                rm -f Aliaswallet*.dmg*
+                                                wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
-                                            repository: 'spectre',
+                                            repository: 'aliaswallet',
                                             tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+                                    sh "wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
-                                            repository: 'spectre',
+                                            repository: 'aliaswallet',
                                             tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
+                                            artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
                                     )
                                     createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                            checksumfile: "Checksum-Spectrecoin-Mac.txt"
+                                            filename: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            checksumfile: "Checksum-Aliaswallet-Mac.txt"
                                     )
                                     createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-                                            checksumfile: "Checksum-Spectrecoin-Mac-OBFS4.txt"
+                                            filename: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
+                                            checksumfile: "Checksum-Aliaswallet-Mac-OBFS4.txt"
                                     )
-                                    sh "rm -f Spectrecoin*.dmg* Checksum-Spectrecoin*"
+                                    sh "rm -f Aliaswallet*.dmg* Checksum-Aliaswallet*"
                                 }
                             }
                             post {
@@ -731,7 +731,7 @@ pipeline {
                             steps {
                                 script {
                                     buildWindows("-Qt5.12")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                 }
                             }
                         }
@@ -777,9 +777,9 @@ pipeline {
                             steps {
                                 script {
                                     buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                     build(
-                                            job: 'Spectrecoin/installer/master',
+                                            job: 'Alias/installer/master',
                                             parameters: [
                                                     string(
                                                             name: 'ARCHIVE_LOCATION',
@@ -787,7 +787,7 @@ pipeline {
                                                     ),
                                                     string(
                                                             name: 'ARCHIVE_NAME',
-                                                            value: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                                            value: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                                     ),
                                                     string(
                                                             name: 'GIT_TAG_TO_USE',
@@ -819,12 +819,12 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
                                 user: 'spectrecoin',
-                                repository: 'spectre',
+                                repository: 'aliaswallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 name: "${RELEASE_NAME}",
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
@@ -832,7 +832,7 @@ pipeline {
                         )
                         uploadArtifactToGitHub(
                                 user: 'spectrecoin',
-                                repository: 'spectre',
+                                repository: 'aliaswallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
@@ -953,31 +953,31 @@ def uploadDeliveries(def suffix) {
     script {
         sh(
                 script: """
-                    rm -f Spectrecoin-*-Win64${suffix}.zip Spectrecoin-*-Win64${suffix}-OBFS4.zip
-                    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    rm -f Aliaswallet-*-Win64${suffix}.zip Aliaswallet-*-Win64${suffix}-OBFS4.zip
+                    wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
         uploadArtifactToGitHub(
                 user: 'spectrecoin',
-                repository: 'spectre',
+                repository: 'aliaswallet',
                 tag: "${GIT_TAG_TO_USE}",
-                artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+                artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
         )
-        sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
+        sh "wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
         uploadArtifactToGitHub(
                 user: 'spectrecoin',
-                repository: 'spectre',
+                repository: 'aliaswallet',
                 tag: "${GIT_TAG_TO_USE}",
-                artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+                artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
         )
         createAndArchiveChecksumFile(
-                filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
-                checksumfile: "Checksum-Spectrecoin-Win64${suffix}.txt"
+                filename: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+                checksumfile: "Checksum-Aliaswallet-Win64${suffix}.txt"
         )
         createAndArchiveChecksumFile(
-                filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
-                checksumfile: "Checksum-Spectrecoin-Win64${suffix}-OBFS4.txt"
+                filename: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+                checksumfile: "Checksum-Aliaswallet-Win64${suffix}-OBFS4.txt"
         )
-        sh "rm -f Spectrecoin-*-Win64${suffix}-OBFS4.zip Spectrecoin-*-Win64${suffix}.zip Checksum-Spectrecoin-Win64${suffix}.txt Checksum-Spectrecoin-Win64${suffix}-OBFS4.txt"
+        sh "rm -f Aliaswallet-*-Win64${suffix}-OBFS4.zip Aliaswallet-*-Win64${suffix}.zip Checksum-Aliaswallet-Win64${suffix}.txt Checksum-Aliaswallet-Win64${suffix}-OBFS4.txt"
     }
 }
