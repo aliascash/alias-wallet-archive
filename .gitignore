@@ -6,6 +6,8 @@
 src/*.exe
 src/spectrecoin
 src/spectrecoind
+src/aliaswallet
+src/aliaswalletd
 src/test_spectre
 src/build.h
 src/.libs
@@ -19,9 +21,11 @@ src/.libs
 *.dat
 *.autosave
 .spectrecoin
+.aliaswallet
 #compilation and Qt preprocessor part
 *.qm
 spectre
+aliaswallet
 #resources cpp
 qrc_*.cpp
 #moc
@@ -113,7 +117,7 @@ moc_predefs.h
 
 # Temp build files
 releaseNotesToDeploy.txt
-Checksum-Spectrecoin-*
+Checksum-Aliaswallet-*
 
 *.dmg
 .qmake.stash
