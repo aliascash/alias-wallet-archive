@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-AC_INIT([spectrecoind], [1.4.1])
+AC_INIT([aliaswalletd], [1.4.1])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([foreign 1.13 subdir-objects -Wall -Werror -Wno-portability])
