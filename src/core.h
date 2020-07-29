@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 // SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
 //
 // SPDX-License-Identifier: MIT
