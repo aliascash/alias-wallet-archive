@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 TEMPLATE = app
-TARGET = Spectrecoin
+TARGET = Aliaswallet
 CONFIG += c++1z
 
 DEFINES += DEBUGGER_CONNECTED
