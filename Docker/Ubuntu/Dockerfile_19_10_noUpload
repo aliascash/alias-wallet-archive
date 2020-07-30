@@ -21,5 +21,5 @@ RUN cd /aliaswallet \
  && ./configure \
         --enable-gui \
  && make -j${BUILD_THREADS} \
- && strip /aliaswallet/src/aliaswalletcoind \
+ && strip /aliaswallet/src/aliaswalletd \
  && strip /aliaswallet/src/aliaswallet
