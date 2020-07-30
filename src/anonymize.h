@@ -1,3 +1,4 @@
+// SPDX-FileCopyrightText: © 2020 Alias Developers
 // SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 // SPDX-FileCopyrightText: © 2013 BritCoin Developers
 //
