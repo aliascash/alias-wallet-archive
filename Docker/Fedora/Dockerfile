@@ -23,7 +23,7 @@ RUN cd /aliaswallet \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
  && make -j${BUILD_THREADS} \
- && strip /aliaswallet/src/aliaswalletcoind \
+ && strip /aliaswallet/src/aliaswalletd \
  && strip /aliaswallet/src/aliaswallet
 
 ### Now upload binaries to GitHub ###
@@ -41,8 +41,8 @@ ENV CHKSUM_FILE=Checksum-Aliaswallet-Fedora.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /aliaswallet/src/aliaswalletcoind /filesToUpload/usr/local/bin/
-COPY --from=build /aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/aliaswalletcoin
+COPY --from=build /aliaswallet/src/aliaswalletd /filesToUpload/usr/local/bin/
+COPY --from=build /aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/
 COPY --from=build /aliaswallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
