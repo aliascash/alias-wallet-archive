@@ -99,6 +99,7 @@ HEADERS += \
     $$PWD/compat.h \
     $$PWD/core.h \
     $$PWD/crypter.h \
+    $$PWD/currency.h \
     $$PWD/db.h \
     $$PWD/eckey.h \
     $$PWD/extkey.h \
