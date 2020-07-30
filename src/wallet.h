@@ -16,7 +16,6 @@
 #include <vector>
 #include <regex>
 
-#include "bitcoinunits.h"
 #include "main.h"
 #include "key.h"
 #include "extkey.h"
@@ -28,6 +27,7 @@
 #include "walletdb.h"
 #include "stealth.h"
 #include "smessage.h"
+#include "currency.h"
 
 static const std::string sAnonPrefix = "ao ";
 static const std::string sStealthPrefix = "sa ";

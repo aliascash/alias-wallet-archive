@@ -6,14 +6,10 @@
 #ifndef BITCOINUNITS_H
 #define BITCOINUNITS_H
 
+#include "currency.h"
+
 #include <QString>
 #include <QAbstractListModel>
-
-enum Currency
-{
-    PUBLIC,
-    PRIVATE
-};
 
 /** Bitcoin unit definitions. Encapsulates parsing and formatting
    and serves as list model for drop-down selection boxes.
