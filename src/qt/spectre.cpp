@@ -28,6 +28,9 @@
 #include <QSplashScreen>
 #include <QLibraryInfo>
 #include <QTimer>
+#include <QSvgRenderer>
+#include <QPainter>
+#include <QImage>
 
 #include <QWebChannel>
 #include <QWebSocketServer>
@@ -94,7 +97,7 @@ static void InitMessage(const std::string &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message) + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(242,131,33));
         QApplication::instance()->processEvents();
     }
 }
@@ -252,7 +255,23 @@ int main(int argc, char *argv[])
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
-    QSplashScreen splash(QPixmap(":/images/splash"), 0);
+
+    // prepare splashscreen image from svg logo
+    QScreen *screen = QGuiApplication::primaryScreen();
+    double dPR = screen->devicePixelRatio();
+    QSvgRenderer renderer(QString(":/svg/Alias-Stacked-Reverse"));
+    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+
+    // Prepare a QImage with desired characteritisc
+    QImage image(600*dPR, 686*dPR, QImage::Format_ARGB32);
+    image.fill(QColor(40, 40, 41));  // partly transparent red-ish background
+
+    // Get QPainter that paints to the image
+    QPainter painter(&image);
+    renderer.render(&painter, QRectF(50*dPR, 75*dPR, 500*dPR, 500*dPR));
+    image.setDevicePixelRatio(dPR);
+
+    QSplashScreen splash(QPixmap::fromImage(image));
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);

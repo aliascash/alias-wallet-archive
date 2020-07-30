@@ -11,7 +11,7 @@ DEFINES += DEBUGGER_CONNECTED
 DEFINES += HAVE_BUILD_INFO
 #DEFINES += TEST_TOR
 
-QT += testlib widgets quick quickwidgets webview webchannel websockets
+QT += testlib widgets quick quickwidgets webview webchannel websockets svg
 
 RC_FILE = src.rc
 

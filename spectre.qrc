@@ -2110,4 +2110,7 @@
     <qresource prefix="/qml">
         <file alias="main">src/qt/res/qml/main.qml</file>
     </qresource>
+    <qresource prefix="/svg">
+        <file alias="Alias-Stacked-Reverse">src/qt/res/assets/svg/Alias-Stacked-Reverse.svg</file>
+    </qresource>
 </RCC>
