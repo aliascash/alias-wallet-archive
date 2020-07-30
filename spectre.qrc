@@ -2016,7 +2016,6 @@
         <file alias="assets/plugins/qrcode/qrcode.min.js">src/qt/res/assets/plugins/qrcode/qrcode.min.js</file>
         <file alias="assets/plugins/shajs/shajs.js">src/qt/res/assets/plugins/shajs/shajs.js</file>
         <file alias="src/qt/res/index.html">src/qt/res/index.html</file>
-        <file>src/qt/res/main.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="spectre">src/qt/res/assets/icons/spectrecoin.ico</file>
@@ -2107,5 +2106,8 @@
         <file alias="zh_CN">src/qt/locale/spectrecoin_zh_CN.qm</file>
         <file alias="zh_HK">src/qt/locale/spectrecoin_zh_HK.qm</file>
         <file alias="zh_TW">src/qt/locale/spectrecoin_zh_TW.qm</file>
+    </qresource>
+    <qresource prefix="/qml">
+        <file alias="main">src/qt/res/qml/main.qml</file>
     </qresource>
 </RCC>
