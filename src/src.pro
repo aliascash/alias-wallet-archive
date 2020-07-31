@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 TEMPLATE = app
-TARGET = Aliaswallet
+TARGET = Alias
 CONFIG += c++1z
 
 DEFINES += DEBUGGER_CONNECTED
