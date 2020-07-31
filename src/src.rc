@@ -49,7 +49,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "qt/res/assets/icons/spectrecoin.ico"
+IDI_ICON1               ICON                    "qt/res/Alias-Icon-Orange.ico"
 
 
 VS_VERSION_INFO VERSIONINFO
@@ -73,8 +73,8 @@ VS_VERSION_INFO VERSIONINFO
 				VALUE "FileDescription", "\0"
 				VALUE "FileVersion", "0.0.0.0\0"
 				VALUE "LegalCopyright", "\0"
-				VALUE "OriginalFilename", "spectre.exe\0"
-				VALUE "ProductName", "spectre\0"
+                                VALUE "OriginalFilename", "Aliaswallet.exe\0"
+                                VALUE "ProductName", "Alias\0"
 				VALUE "ProductVersion", "0.0.0.0\0"
 			END
 		END

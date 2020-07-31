@@ -13,7 +13,7 @@
 # https://stackoverflow.com/questions/48839127/qmake-derived-clang-in-osx-10-13-cannot-find-string-h
 # INCLUDEPATH += /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include
 
-ICON = $$PWD/qt/res/assets/icons/spectre.icns
+ICON = $$PWD/qt/res/Alias-Icon-Orange.icns
 
     # to build tor with autotools, call in subfolder tor:
     # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.1 --disable-asciidoc --disable-lzma
