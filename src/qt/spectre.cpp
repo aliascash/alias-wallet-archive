@@ -97,7 +97,7 @@ static void InitMessage(const std::string &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message) + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(242,131,33));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message) + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
         QApplication::instance()->processEvents();
     }
 }
@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
 
     // Get QPainter that paints to the image
     QPainter painter(&image);
-    renderer.render(&painter, QRectF(50*dPR, 75*dPR, 500*dPR, 500*dPR));
+    renderer.render(&painter, QRectF(62*dPR, 87*dPR, 476*dPR, 476*dPR));
     image.setDevicePixelRatio(dPR);
 
     QSplashScreen splash(QPixmap::fromImage(image));
