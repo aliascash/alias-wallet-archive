@@ -156,6 +156,14 @@ int main(int argc, char *argv[])
     }
 
     QApplication app(argc, argv);
+    app.setStyleSheet("a {color: #f28321; }");
+    QPalette newPal(app.palette());
+    newPal.setColor(QPalette::Link, QColor(242, 131, 33));
+    newPal.setColor(QPalette::LinkVisited, QColor(242, 131, 33));
+    newPal.setColor(QPalette::Button, QColor(242, 131, 33));
+    newPal.setColor(QPalette::ButtonText, Qt::white);
+    app.setPalette(newPal);
+
     QtWebView::initialize();
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
