@@ -2016,6 +2016,7 @@
         <file alias="assets/plugins/qrcode/qrcode.min.js">src/qt/res/assets/plugins/qrcode/qrcode.min.js</file>
         <file alias="assets/plugins/shajs/shajs.js">src/qt/res/assets/plugins/shajs/shajs.js</file>
         <file alias="src/qt/res/index.html">src/qt/res/index.html</file>
+        <file alias="assets/svg/Alias-Stacked-Reverse.svg">src/qt/res/assets/svg/Alias-Stacked-Reverse.svg</file>
     </qresource>
     <qresource prefix="/icons">
         <file alias="spectre">src/qt/res/assets/icons/spectrecoin.ico</file>
