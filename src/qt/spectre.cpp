@@ -153,7 +153,13 @@ int main(int argc, char *argv[])
     }
 
     QApplication app(argc, argv);
+
+    // Set global styles
     app.setStyleSheet("a {color: #f28321; }");
+    QPalette newPal(app.palette());
+    newPal.setColor(QPalette::Link, QColor(242, 131, 33));
+    newPal.setColor(QPalette::LinkVisited, QColor(242, 131, 33));
+    app.setPalette(newPal);
 
     QtWebView::initialize();
 
