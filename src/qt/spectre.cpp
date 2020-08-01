@@ -28,9 +28,6 @@
 #include <QSplashScreen>
 #include <QLibraryInfo>
 #include <QTimer>
-#include <QSvgRenderer>
-#include <QPainter>
-#include <QImage>
 
 #include <QWebChannel>
 #include <QWebSocketServer>
@@ -257,23 +254,7 @@ int main(int argc, char *argv[])
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
-
-    // prepare splashscreen image from svg logo
-    QScreen *screen = QGuiApplication::primaryScreen();
-    double dPR = screen->devicePixelRatio();
-    QSvgRenderer renderer(QString(":/svg/Alias-Stacked-Reverse"));
-    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
-
-    // Prepare a QImage with desired characteritisc
-    QImage image(600*dPR, 686*dPR, QImage::Format_ARGB32);
-    image.fill(QColor(40, 40, 41));  // partly transparent red-ish background
-
-    // Get QPainter that paints to the image
-    QPainter painter(&image);
-    renderer.render(&painter, QRectF(62*dPR, 87*dPR, 476*dPR, 476*dPR));
-    image.setDevicePixelRatio(dPR);
-
-    QSplashScreen splash(QPixmap::fromImage(image));
+    QSplashScreen splash(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/svg/Alias-Stacked-Reverse"), QRect(62, 87, 476, 476)));
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);
