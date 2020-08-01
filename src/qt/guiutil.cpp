@@ -27,6 +27,10 @@
 #include <QThread>
 #include <QSettings>
 #include <QUrlQuery>
+#include <QScreen>
+#include <QSvgRenderer>
+#include <QPainter>
+#include <QImage>
 
 #ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
@@ -573,6 +577,33 @@ void HelpMessageBox::showOrPrint()
         // On other operating systems, print help text to console
         printToConsole();
 #endif
+}
+
+QPixmap createPixmap(const QString& svgResource, int width, int height)
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    double dpr = screen->devicePixelRatio();
+    QSvgRenderer renderer(svgResource);
+    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
+    QPainter painter(&image);
+    renderer.render(&painter);
+    image.setDevicePixelRatio(dpr);
+    return QPixmap::fromImage(image);
+}
+
+QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString& svgResource, const QRect& bounds)
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    double dpr = screen->devicePixelRatio();
+    QSvgRenderer renderer(svgResource);
+    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
+    image.fill(bgColor);
+    QPainter painter(&image);
+    renderer.render(&painter, QRectF(bounds.left() * dpr, bounds.top() * dpr, bounds.width() * dpr, bounds.height() * dpr));
+    image.setDevicePixelRatio(dpr);
+    return QPixmap::fromImage(image);
 }
 
 } // namespace GUIUtil
