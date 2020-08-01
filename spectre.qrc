@@ -81,7 +81,6 @@
         <file alias="assets/icons/spectrecoin-48.png">src/qt/res/assets/icons/spectrecoin-48.png</file>
         <file alias="assets/icons/spectrecoin-64.png">src/qt/res/assets/icons/spectrecoin-64.png</file>
         <file alias="assets/icons/spectrecoin-80.png">src/qt/res/assets/icons/spectrecoin-80.png</file>
-        <file alias="assets/icons/spectrecoin.ico">src/qt/res/assets/icons/spectrecoin.ico</file>
         <file alias="assets/icons/spectrecoin_icon.png">src/qt/res/assets/icons/spectrecoin_icon.png</file>
         <file alias="assets/icons/spectre.icns">src/qt/res/assets/icons/spectre.icns</file>
         <file alias="assets/icons/staking_off.png">src/qt/res/assets/icons/staking_off.png</file>
@@ -2019,8 +2018,6 @@
         <file alias="assets/svg/Alias-Stacked-Reverse.svg">src/qt/res/assets/svg/Alias-Stacked-Reverse.svg</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="spectre">src/qt/res/assets/icons/spectrecoin.ico</file>
-        <file alias="spectre_testnet">src/qt/res/assets/icons/spectrecoin.ico</file>
         <file alias="export">src/qt/res/icons/export.png</file>
         <file alias="remove">src/qt/res/icons/remove.png</file>
         <file alias="tx_staked">src/qt/res/icons/tx_staked.png</file>
@@ -2033,6 +2030,8 @@
         <file alias="debugwindow">src/qt/res/icons/debugwindow.png</file>
         <file alias="qrcode">src/qt/res/icons/qrcode.png</file>
         <file alias="history">src/qt/res/icons/history.png</file>
+        <file alias="alias-app">src/qt/res/icons/alias-app.ico</file>
+        <file alias="alias-app_testnet">src/qt/res/icons/alias-app.ico</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">src/qt/res/images/about.png</file>
@@ -2113,5 +2112,6 @@
     </qresource>
     <qresource prefix="/svg">
         <file alias="Alias-Stacked-Reverse">src/qt/res/assets/svg/Alias-Stacked-Reverse.svg</file>
+        <file alias="alias-app">src/qt/res/assets/svg/Alias-app-button-whitebg-ring-34.svg</file>
     </qresource>
 </RCC>

@@ -134,8 +134,8 @@ SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     resize(1280, 720);
     setWindowTitle(tr("Alias") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
 #ifndef Q_OS_MAC
-    qApp->setWindowIcon(QIcon(":icons/spectre"));
-    setWindowIcon(QIcon(":icons/spectre"));
+    qApp->setWindowIcon(QIcon(":icons/alias-app"));
+    setWindowIcon(QIcon(":icons/alias-app"));
 #else
     setUnifiedTitleAndToolBarOnMac(true);
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
@@ -379,10 +379,10 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
         {
             setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
 #ifndef Q_OS_MAC
-            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
-            setWindowIcon(QIcon(":icons/spectre_testnet"));
+            qApp->setWindowIcon(QIcon(":icons/alias-app_testnet"));
+            setWindowIcon(QIcon(":icons/alias-app_testnet"));
 #else
-            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
+            MacDockIconHandler::instance()->setIcon(QIcon(":icons/alias-app_testnet"));
 #endif
             if(trayIcon)
             {
