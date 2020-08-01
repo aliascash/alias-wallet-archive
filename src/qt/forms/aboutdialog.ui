@@ -11,9 +11,24 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About Spectrecoin</string>
+   <string>About Alias</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="verticalWidget" native="true">
      <property name="autoFillBackground">
@@ -36,7 +51,7 @@
        <number>3</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>24</number>
       </property>
       <item>
        <widget class="QLabel" name="label_4">
@@ -70,6 +85,12 @@
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <property name="indent">
+         <number>0</number>
+        </property>
        </widget>
       </item>
      </layout>
@@ -77,19 +98,21 @@
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
+     <property name="spacing">
+      <number>16</number>
+     </property>
+     <property name="leftMargin">
+      <number>12</number>
+     </property>
+     <property name="topMargin">
+      <number>16</number>
+     </property>
+     <property name="rightMargin">
+      <number>16</number>
+     </property>
+     <property name="bottomMargin">
+      <number>16</number>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -144,8 +167,7 @@ Copyright © 2012-2014 The NovaCoin developers
 Copyright © 2014 The BlackCoin developers
 Copyright © 2014-2016 The ShadowCash developers
 Copyright © 2016-2019 The Spectrecoin developers 
-Copyright © 2020 The Alias developers
-         </string>
+Copyright © 2020 The Alias developers         </string>
        </property>
        <property name="textInteractionFlags">
         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -158,8 +180,7 @@ Copyright © 2020 The Alias developers
         <cursorShape>IBeamCursor</cursorShape>
        </property>
        <property name="text">
-        <string>
-This is experimental software.
+        <string>This is experimental software.
 
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
