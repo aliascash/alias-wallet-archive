@@ -1079,6 +1079,38 @@ boost::filesystem::path GetDefaultDataDir()
 
 }
 
+boost::filesystem::path GetOldDefaultDataDir()
+{
+    namespace fs = boost::filesystem;
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Spectrecoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Spectrecoin
+    // Mac: ~/Library/Application Support/Spectrecoin
+    // Unix: ~/.spectrecoin
+
+
+#ifdef WIN32
+    // Windows
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Spectrecoin";
+#else
+    fs::path pathRet;
+    char* pszHome = getenv("HOME");
+    if (pszHome == NULL || strlen(pszHome) == 0)
+        pathRet = fs::path("/");
+    else
+        pathRet = fs::path(pszHome);
+    #ifdef MAC_OSX
+        // Mac
+        pathRet /= "Library/Application Support";
+        fs::create_directory(pathRet);
+        return pathRet / "Spectrecoin";
+    #else
+        // Unix
+        return pathRet / ".spectrecoin";
+    #endif
+#endif
+
+}
+
 boost::filesystem::path GetTempPath()
 {
     return boost::filesystem::temp_directory_path();
@@ -1111,6 +1143,9 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
         }
     } else {
         path = GetDefaultDataDir();
+        fs::path oldpath = GetOldDefaultDataDir();
+        if (fs::exists(oldpath) && !fs::exists(path))
+            fs::rename(oldpath, path);
     }
     if (fNetSpecific)
         path /= Params().DataDir();
