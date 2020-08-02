@@ -8703,7 +8703,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
     }
 
     CEKAStealthKey aks;
-    string strLbl = "Default Stealth Address";
+    string strLbl = "Default Private Address";
     if (0 != NewStealthKeyFromAccount(pwdb, idDefaultAccount, strLbl, aks))
     {
         pwdb->TxnAbort();
@@ -8716,7 +8716,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
         return errorN(1, "TxnCommit failed.");
     };
 
-    SetAddressBookName(CBitcoinAddress(newKey.GetID()).Get(), "Default Address", NULL, true, true);
+    SetAddressBookName(CBitcoinAddress(newKey.GetID()).Get(), "Default Public Address", NULL, true, true);
 
     return 0;
 }
