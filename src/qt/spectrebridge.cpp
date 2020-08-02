@@ -560,19 +560,19 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
         case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Only SPECTRE from your Private balance can be send to a stealth address."),
+                tr("Only ALIAS from your Private balance can be send to a stealth address."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."),
+                tr("Transfer from Public to Private is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."),
+                tr("Transfer from Private to Public is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -644,20 +644,20 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             emit sendCoinsResult(false);
             return;
         case WalletModel::SCR_StealthAddressFailAnonToSpec:
-            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
-                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
+            QMessageBox::warning(window, tr("Convert Alias from Private to Public"),
+                tr("Error: Invalid Stealth Address. Private to public conversion requires a stealth address."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
 		case WalletModel::SCR_AmountExceedsBalance:
 			QMessageBox::warning(window, tr("Send Coins"),
-				tr("The amount exceeds your SPECTRE balance."),
+                tr("The amount exceeds your ALIAS balance."),
 				QMessageBox::Ok, QMessageBox::Ok);
 			emit sendCoinsResult(false);
 			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
+                tr("The total exceeds your private ALIAS balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -1286,7 +1286,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
             if (txn.nVersion == ANON_TXN_VERSION
                 && txin.IsAnonInput())
             {
-                sAddr = "SPECTRE";
+                sAddr = "ALIAS (private)";
                 std::vector<uint8_t> vchImage;
                 txin.ExtractKeyImage(vchImage);
 
@@ -1342,7 +1342,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 
              if( txn.nVersion == ANON_TXN_VERSION
                  && txout.IsAnonOutput() )
-                 sAddr = "SPECTRE";
+                 sAddr = "ALIAS (private)";
              else
              {
                  CTxDestination address;
@@ -1886,7 +1886,7 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, qu
         if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
          && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
-            result.insert("error_msg", "Import failed - Key must begin with Spectrecoin prefix.");
+            result.insert("error_msg", "Import failed - Key must begin with Alias prefix.");
             emit extKeyImportResult(result);
             return;
         }

@@ -755,7 +755,7 @@ Value rewindchain(const Array& params, bool fHelp)
 
     // -- need restart, setStakeSeen etc
     if (nRemoved > 0)
-        result.push_back(Pair("Please restart spectrecoin", ""));
+        result.push_back(Pair("Please restart Alias", ""));
 
     if (nRemoved == nNumber)
         result.push_back(Pair("result", "success"));

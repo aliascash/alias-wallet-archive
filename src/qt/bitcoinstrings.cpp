@@ -16,7 +16,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "%s, you must set a rpcpassword in the configuration file:\n"
 " %s\n"
 "It is recommended you use the following random password:\n"
-"rpcuser=spectrecoinrpc\n"
+"rpcuser=aliasrpc\n"
 "rpcpassword=%s\n"
 "(you do not need to remember this password)\n"
 "The username and password MUST NOT be the same.\n"
@@ -44,8 +44,8 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Get help for a command"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Alias"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Options:"),
 QT_TRANSLATE_NOOP("bitcoin-core", "This help message"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Specify configuration file (default: spectrecoin.conf)"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Specify pid file (default: spectrecoind.pid)"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Specify configuration file (default: alias.conf)"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Specify pid file (default: alias.pid)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Specify data directory"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Specify wallet file (within data directory)"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Set database cache size in megabytes (default: 25)"),

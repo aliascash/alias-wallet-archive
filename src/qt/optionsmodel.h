@@ -26,7 +26,7 @@ public:
     enum OptionID {
         /// Main Options
         Fee,                 /**< Transaction Fee. qint64 - Optional transaction fee per kB that helps make sure your transactions are processed quickly.
-                               *< Most transactions are 1 kB. Fee 0.01 recommended. 0.0001 XSPEC */
+                               *< Most transactions are 1 kB. Fee 0.01 recommended. 0.0001 ALIAS */
         ReserveBalance,      /**< Reserve Balance. qint64 - Reserved amount does not participate in staking and is therefore spendable at any time. */
         StartAtStartup,      /**< Default Transaction Fee. bool */
         DetachDatabases,     /**< Default Transaction Fee. bool */

@@ -112,7 +112,7 @@ static std::string Translate(const char* psz)
 static void handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Spectrecoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
+    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Alias can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
 }
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
     fTestNet = GetBoolArg("-testnet", false);
     if (!SelectParamsFromCommandLine())
     {
-        QMessageBox::critical(0, "Spectrecoin", QString("Error: Invalid combination of -testnet and -regtest."));
+        QMessageBox::critical(0, "Alias", QString("Error: Invalid combination of -testnet and -regtest."));
         return 1;
     }
 
@@ -177,12 +177,12 @@ int main(int argc, char *argv[])
         qApp->installNativeEventFilter(new WinShutdownMonitor());
     #endif
 
-    // ... then spectrecoin.conf:
+    // ... then alias.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
         // (which not yet possible because lang=XX can be overridden in bitcoin.conf in the data directory)
-        QMessageBox::critical(0, "Spectrecoin",
+        QMessageBox::critical(0, "Alias",
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
@@ -190,12 +190,12 @@ int main(int argc, char *argv[])
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
-    app.setOrganizationName("The Spectrecoin Project");
-    app.setOrganizationDomain("spectreproject.io");
+    app.setOrganizationName("The Alias Foundation");
+    app.setOrganizationDomain("alias.cash");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        app.setApplicationName("Spectrecoin-testnet");
+        app.setApplicationName("Alias-testnet");
     else
-        app.setApplicationName("Spectrecoin");
+        app.setApplicationName("Alias");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 
     //---- Create webSocket server for JavaScript client
     QWebSocketServer server(
-        QStringLiteral("Spectrecoin Websocket Server"),
+        QStringLiteral("Alias Websocket Server"),
         QWebSocketServer::NonSecureMode
     );
     if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
                 guiref = 0;
             }
             // Shutdown the core and its threads, but don't exit Qt here
-            LogPrintf("Spectrecoin shutdown.\n\n");
+            LogPrintf("Alias shutdown.\n\n");
             std::cout << "interrupt_all\n";
             threadGroup.interrupt_all();
             std::cout << "join_all\n";

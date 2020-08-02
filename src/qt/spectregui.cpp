@@ -286,16 +286,16 @@ void SpectreGUI::createActions()
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Spectrecoin"), this);
-    aboutAction->setToolTip(tr("Show information about Spectrecoin"));
+    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Alias"), this);
+    aboutAction->setToolTip(tr("Show information about Alias"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setToolTip(tr("Modify configuration options for Spectrecoin"));
+    optionsAction->setToolTip(tr("Modify configuration options for Alias"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/spectre"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/alias-app"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
     encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
     encryptWalletAction->setCheckable(true);
@@ -371,7 +371,7 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
             if (sMode.length() > 0)
                 sMode[0] = sMode[0].toUpper();
 
-            setWindowTitle(tr("Spectrecoin") + " - " + tr("Wallet") + ", " + sMode);
+            setWindowTitle(tr("Alias") + " - " + tr("Wallet") + ", " + sMode);
         };
 
         // Replace some strings and icons, when using the testnet
@@ -386,8 +386,8 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
 #endif
             if(trayIcon)
             {
-                trayIcon->setToolTip(tr("Spectrecoin client") + QString(" ") + tr("[testnet]"));
-                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
+                trayIcon->setToolTip(tr("Alias client") + QString(" ") + tr("[testnet]"));
+                trayIcon->setIcon(QIcon(":/icons/alias-app_testnet"));
                 toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
             }
 
@@ -446,8 +446,8 @@ void SpectreGUI::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip(tr("Spectrecoin client"));
-    trayIcon->setIcon(QIcon(":/icons/spectre"));
+    trayIcon->setToolTip(tr("Alias client"));
+    trayIcon->setIcon(QIcon(":/icons/alias-app"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     trayIcon->show();
@@ -512,7 +512,7 @@ void SpectreGUI::setNumConnections(int count)
     QString source = "qrc:///icons/" + className.replace("-", "_");
     connectionIcon.setAttribute("src", source);
 
-    QString dataTitle = tr("%n active connection(s) to Spectrecoin network", "", count);
+    QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
 }
 
@@ -788,7 +788,7 @@ void SpectreGUI::dropEvent(QDropEvent *event)
         if (nValidUrisFound)
             bridge->triggerElement("#navitems a[href=#send]", "click");
         else
-            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
+            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters."));
     }
 
     event->acceptProposedAction();
@@ -810,7 +810,7 @@ void SpectreGUI::handleURI(QString strURI)
         showNormalIfMinimized();
     }
     else
-        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
+        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters."));
 }
 
 void SpectreGUI::setEncryptionStatus(int status)

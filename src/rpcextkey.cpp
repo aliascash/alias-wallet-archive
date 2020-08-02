@@ -40,7 +40,7 @@ int ExtractBip32InfoV(std::vector<unsigned char> &vchKey, Object &keyInfo, std::
 
     CChainParams::Base58Type typePk = CChainParams::EXT_PUBLIC_KEY;
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0)
-        keyInfo.push_back(Pair("type", "Spectrecoin extended secret key"));
+        keyInfo.push_back(Pair("type", "Alias extended secret key"));
     else
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0)
     {
@@ -82,7 +82,7 @@ int ExtractBip32InfoP(std::vector<unsigned char> &vchKey, Object &keyInfo, std::
     CExtPubKey pk;
 
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY)[0], 4) == 0)
-        keyInfo.push_back(Pair("type", "Spectrecoin extended public key"));
+        keyInfo.push_back(Pair("type", "Alias extended public key"));
     else
     if (memcmp(&vchKey[0], &Params().Base58Prefix(CChainParams::EXT_SECRET_KEY_BTC)[0], 4) == 0)
         keyInfo.push_back(Pair("type", "Bitcoin extended public key"));
@@ -787,7 +787,7 @@ Value extkey(const Array &params, bool fHelp)
         {
             std::string sPassphrase = params[1].get_str();
             int32_t nHashes = 100;
-            std::string sSeed = "Spectre seed";
+            std::string sSeed = "Alias seed";
 
             // - generate from passphrase
             //   allow generator string and nhashes to be specified
@@ -879,7 +879,7 @@ Value extkey(const Array &params, bool fHelp)
             {
                 if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
                     && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
-                    throw std::runtime_error("Import failed - Key must begin with Spectrecoin prefix.");
+                    throw std::runtime_error("Import failed - Key must begin with Alias prefix.");
             };
 
             sek.kp = eKey58.GetKey();

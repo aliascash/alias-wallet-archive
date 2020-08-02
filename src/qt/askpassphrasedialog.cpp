@@ -55,7 +55,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->passLabel3->hide();
             ui->passEdit3->hide();
             if (mode==UnlockRescan)
-                ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>SPECTRE balance might be shown wrong</b>."));
+                ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>private ALIAS balance might be shown wrong</b>."));
             else
                 ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
             setWindowTitle(tr("Unlock wallet"));

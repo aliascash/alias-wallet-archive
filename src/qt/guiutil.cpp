@@ -170,7 +170,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
 bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
     // NovaCoin: check prefix
-    if(uri.scheme() != QString("spectrecoin"))
+    if(uri.scheme() != QString("alias"))
         return false;
 
     SendCoinsRecipient rv;
@@ -222,9 +222,9 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
     //
     //    Cannot handle this later, because bitcoin:// will cause Qt to see the part after // as host,
     //    which will lower-case it (and thus invalidate the address).
-    if(uri.startsWith("spectrecoin://"))
+    if(uri.startsWith("alias://"))
     {
-        uri.replace("spectrecoin://", "spectrecoin:");
+        uri.replace("alias://", "alias:");
     }
     QUrl uriInstance(uri);
     return parseBitcoinURI(uriInstance, out);
@@ -394,7 +394,7 @@ bool ToolTipToRichTextFilter::eventFilter(QObject *obj, QEvent *evt)
 #ifdef WIN32
 boost::filesystem::path static StartupShortcutPath()
 {
-    return GetSpecialFolderPath(CSIDL_STARTUP) / "Spectrecoin.lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / "Alias.lnk";
 }
 
 bool GetStartOnSystemStartup()
@@ -476,7 +476,7 @@ boost::filesystem::path static GetAutostartDir()
 
 boost::filesystem::path static GetAutostartFilePath()
 {
-    return GetAutostartDir() / "spectrecoin.desktop";
+    return GetAutostartDir() / "alias.desktop";
 }
 
 bool GetStartOnSystemStartup()
@@ -518,13 +518,13 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         optionFile << "[Desktop Entry]\n" \
                    << "Version=" << FormatFullVersion() << "\n" \
                    << "Type=Application\n" \
-                   << "Name=Spectrecoin\n" \
+                   << "Name=Alias\n" \
                    << "Exec=" << pszExePath << "%u -min\n" \
                    << "Icon=" <<  QFileInfo(":/icons/spectre").absoluteFilePath().toStdString() << "\n" \
                    << "Terminal=false\n" \
                    << "Hidden=false\n" \
                    << "Categories=Application;Network;\n" \
-                   << "MimeType=x-scheme-handler/spectrecoin;\n";
+                   << "MimeType=x-scheme-handler/alias;\n";
         optionFile.close();
     }
     return true;
@@ -542,10 +542,10 @@ bool SetStartOnSystemStartup(bool fAutoStart) { return false; }
 HelpMessageBox::HelpMessageBox(QWidget *parent) :
     QMessageBox(parent)
 {
-    header = tr("Spectrecoin") + " " + tr("version") + " " +
+    header = tr("Alias") + " " + tr("version") + " " +
         QString::fromStdString(FormatFullVersion()) + "\n\n" +
         tr("Usage:") + "\n" +
-        "  spectrecoin [" + tr("command-line options") + "]                     " + "\n";
+        "  aliaswallet [" + tr("command-line options") + "]                     " + "\n";
 
     coreOptions = QString::fromStdString(HelpMessage());
 
@@ -554,7 +554,7 @@ HelpMessageBox::HelpMessageBox(QWidget *parent) :
         "  -min                   " + tr("Start minimized") + "\n" +
         "  -splash                " + tr("Show splash screen on startup (default: 1)") + "\n";
 
-    setWindowTitle(tr("Spectrecoin"));
+    setWindowTitle(tr("Alias"));
     setTextFormat(Qt::PlainText);
     // setMinimumWidth is ignored for QMessageBox so put in non-breaking spaces to make it wider.
     setText(header + QString(QChar(0x2003)).repeated(50));
