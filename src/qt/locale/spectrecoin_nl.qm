@@ -2763,13 +2763,13 @@ Verwachten tijd tot beloning is %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>Selecteer configuratie bestand (standaard: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>Selecteer configuratie bestand (standaard: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>Selecteer pid bestand (standaard: aliaswallet.conf)</translation>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>Selecteer pid bestand (standaard: alias.conf)</translation>
     </message>
     <message>
         <location line="+2"/>

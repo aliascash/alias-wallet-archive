@@ -2750,13 +2750,13 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>指定配置文件(默认: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>指定配置文件(默认: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>指定pid文件(默认: aliaswalletd.pid)</translation>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>指定pid文件(默认: alias.pid)</translation>
     </message>
     <message>
         <location line="+2"/>

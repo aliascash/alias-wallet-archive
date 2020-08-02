@@ -2748,13 +2748,13 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>Konfigürasyon dosyasını belirt (varsayılan: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>Konfigürasyon dosyasını belirt (varsayılan: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>pid dosyasını belirt (varsayılan: aliaswalletd.pid)</translation>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>pid dosyasını belirt (varsayılan: alias.pid)</translation>
     </message>
     <message>
         <location line="+2"/>

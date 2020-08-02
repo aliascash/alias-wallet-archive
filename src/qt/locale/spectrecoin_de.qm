@@ -2760,13 +2760,13 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>Konfigurationsdatei angeben (Standard: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>Konfigurationsdatei angeben (Standard: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>PID Datei angeben (Standard: aliaswalletd.pid)</translation>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>PID Datei angeben (Standard: alias.pid)</translation>
     </message>
     <message>
         <location line="+2"/>

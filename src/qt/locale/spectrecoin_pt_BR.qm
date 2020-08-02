@@ -2734,12 +2734,12 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
+        <source>Specify configuration file (default: alias.conf)</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
+        <source>Specify pid file (default: alias.pid)</source>
         <translation type="unfinished"/>
     </message>
     <message>

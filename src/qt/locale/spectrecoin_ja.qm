@@ -2756,13 +2756,13 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>設定ファイルを特定する (デファルト: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>設定ファイルを特定する (デファルト: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>pid ファイルを特定する (デフォルト: aliaswalletd.pid)</translation>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>pid ファイルを特定する (デフォルト: alias.pid)</translation>
     </message>
     <message>
         <location line="+2"/>

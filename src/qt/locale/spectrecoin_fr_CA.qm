@@ -2750,13 +2750,13 @@ Expected time to earn reward is %3</source>
     </message>
     <message>
         <location line="+2"/>
-        <source>Specify configuration file (default: aliaswallet.conf)</source>
-        <translation>Spécifier le fichier de configuration (defaut: aliaswallet.conf)</translation>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation>Spécifier le fichier de configuration (defaut: alias.conf)</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Specify pid file (default: aliaswalletd.pid)</source>
-        <translation>Spécifier le fichier pid (defaut: aliaswalletd.pid)
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation>Spécifier le fichier pid (defaut: alias.pid)
 </translation>
     </message>
     <message>
