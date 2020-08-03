@@ -1164,15 +1164,16 @@ void ClearDatadirCache()
 boost::filesystem::path GetConfigFile()
 {
     namespace fs = boost::filesystem;
+    fs::path dataDir = GetDataDir(false);
 
     // Migrate spectrecoin.conf
-    fs::path oldConfigFile = GetDataDir(false) / "spectrecoin.conf";
-    fs::path newConfigFile = GetDataDir(false) / "alias.conf";
+    fs::path oldConfigFile = dataDir / "spectrecoin.conf";
+    fs::path newConfigFile = dataDir / "alias.conf";
     if (fs::exists(oldConfigFile) && !fs::exists(newConfigFile))
         fs::rename(oldConfigFile, newConfigFile);
 
     fs::path pathConfigFile(GetArg("-conf", "alias.conf"));
-    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+    if (!pathConfigFile.is_complete()) pathConfigFile = dataDir / pathConfigFile;
     return pathConfigFile;
 }
 
