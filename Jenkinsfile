@@ -330,7 +330,7 @@ pipeline {
                         expression {
                             return isReleaseExisting(
                                     user: 'spectrecoin',
-                                    repository: 'aliaswallet',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ true
                         }
@@ -339,7 +339,7 @@ pipeline {
                         script {
                             removeRelease(
                                     user: 'spectrecoin',
-                                    repository: 'aliaswallet',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             )
                         }
@@ -350,7 +350,7 @@ pipeline {
                         expression {
                             return isReleaseExisting(
                                     user: 'spectrecoin',
-                                    repository: 'aliaswallet',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ false
                         }
@@ -359,7 +359,7 @@ pipeline {
                         script {
                             createRelease(
                                     user: 'spectrecoin',
-                                    repository: 'aliaswallet',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}",
                                     name: "${RELEASE_NAME}",
                                     description: "${RELEASE_DESCRIPTION}",
@@ -661,19 +661,19 @@ pipeline {
                                     sh(
                                             script: """
                                                 rm -f Aliaswallet*.dmg*
-                                                wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
-                                            repository: 'aliaswallet',
+                                            repository: 'alias-wallet',
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-                                    sh "wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                     uploadArtifactToGitHub(
                                             user: 'spectrecoin',
-                                            repository: 'aliaswallet',
+                                            repository: 'alias-wallet',
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
                                     )
@@ -819,12 +819,12 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
                                 user: 'spectrecoin',
-                                repository: 'aliaswallet',
+                                repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 name: "${RELEASE_NAME}",
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
@@ -832,7 +832,7 @@ pipeline {
                         )
                         uploadArtifactToGitHub(
                                 user: 'spectrecoin',
-                                repository: 'aliaswallet',
+                                repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
@@ -954,19 +954,19 @@ def uploadDeliveries(def suffix) {
         sh(
                 script: """
                     rm -f Aliaswallet-*-Win64${suffix}.zip Aliaswallet-*-Win64${suffix}-OBFS4.zip
-                    wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
         uploadArtifactToGitHub(
                 user: 'spectrecoin',
-                repository: 'aliaswallet',
+                repository: 'alias-wallet',
                 tag: "${GIT_TAG_TO_USE}",
                 artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
         )
-        sh "wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
+        sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
         uploadArtifactToGitHub(
                 user: 'spectrecoin',
-                repository: 'aliaswallet',
+                repository: 'alias-wallet',
                 tag: "${GIT_TAG_TO_USE}",
                 artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
         )

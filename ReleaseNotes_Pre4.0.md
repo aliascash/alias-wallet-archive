@@ -88,7 +88,7 @@ Immediate changes:
 - UI: Change TransactionRecord sort order to consider nTime first (Fixes UI trx update when more than 200 unrecorded trx exist)
 - UI: Show different balance types for SPECTRE and XSPEC separately
 - UI: Change CHAIN DATA view columns to Unspent (Mature), Mixins (Mature), System (Compromised)
-- UI: Rebased all UI changes since initial commit back to separate UI repository [aliaswallet-ui](https://github.com/aliascash/alias-wallet-ui)
+- UI: Rebased all UI changes since initial commit back to separate UI repository [alias-wallet-ui](https://github.com/aliascash/alias-wallet-ui)
 - UI & RPC: Optimize getStakeWeight (remove obsolete code; make sure stake weight matches actual staked coins)
 - RPC: [#2](https://github.com/aliascash/alias-wallet/issues/2) Integrate API method gettxout
 - RPC: method anoninfo shows new stats per denomination:

@@ -39,7 +39,7 @@ for currentChecksumfile in \
     Checksum-Aliaswallet-Win64-Qt5.12-OBFS4.txt \
     Checksum-Aliaswallet-Win64-Qt5.9.6.txt \
     Checksum-Aliaswallet-Win64-Qt5.9.6-OBFS4.txt ; do
-#    wget https://ci.alias.cash/job/Alias/job/aliaswallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
+#    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
     wget ${jobURL}/artifact/${currentChecksumfile} || true
     if test -e "${currentChecksumfile}" ; then
         archiveFilename=$(cat ${currentChecksumfile} | cut -d ' ' -f1)

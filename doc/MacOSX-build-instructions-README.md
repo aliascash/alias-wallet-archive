@@ -6,7 +6,7 @@ At first you need to clone the Git repository. ;-)
 ### Install Qt SDK 5.12.2 (QtWebEngine)
 - Qt SDK: https://www.qt.io/download-qt-installer
 
-Now you can open `<path-to-your-aliaswallet-git-repo-clone>/src/src.pro` on Qt-Creator.
+Now you can open `<path-to-your-alias-wallet-git-repo-clone>/src/src.pro` on Qt-Creator.
 
 
 ## Build on cmdline
@@ -64,7 +64,7 @@ wget https://github.com/aliascash/resources/raw/master/resources/Aliaswallet.Tor
 ### Build using helper scripts
 
 ```
-cd <path-to-your-aliaswallet-git-repo-clone>
+cd <path-to-your-alias-wallet-git-repo-clone>
 ./scripts/mac-build.sh
 rm -f Aliaswallet*.dmg
 unzip ~/Tor/Tor.zip

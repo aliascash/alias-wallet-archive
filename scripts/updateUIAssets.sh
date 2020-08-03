@@ -25,7 +25,7 @@ cd ..
 _init
 
 if [[ -z "$1" ]] ; then
-    downloadURL=https://ci.alias.cash/job/Alias/job/aliaswallet-ui/job/Aliaswallet-UI/lastSuccessfulBuild/artifact/aliaswallet-ui-assets.tgz
+    downloadURL=https://ci.alias.cash/job/Alias/job/alias-wallet-ui/job/Aliaswallet-UI/lastSuccessfulBuild/artifact/alias-wallet-ui-assets.tgz
 else
     downloadURL=$1
 fi
