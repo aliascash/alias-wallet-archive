@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/aliaswallet-builder-fedora:1.7 as build
+FROM aliascash/alias-wallet-builder-fedora:1.7 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,9 +13,9 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /aliaswallet
+COPY . /alias-wallet
 
-RUN cd /aliaswallet \
+RUN cd /alias-wallet \
  && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \
@@ -23,8 +23,8 @@ RUN cd /aliaswallet \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
  && make -j${BUILD_THREADS} \
- && strip /aliaswallet/src/aliaswalletd \
- && strip /aliaswallet/src/aliaswallet
+ && strip /alias-wallet/src/aliaswalletd \
+ && strip /alias-wallet/src/aliaswallet
 
 ### Now upload binaries to GitHub ###
 FROM aliascash/github-uploader:latest
@@ -32,7 +32,7 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 ARG GITHUB_TOKEN=1234567
 ARG ALIASWALLET_RELEASE=latest
-ARG ALIASWALLET_REPOSITORY=aliaswallet
+ARG ALIASWALLET_REPOSITORY=alias-wallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -41,9 +41,9 @@ ENV CHKSUM_FILE=Checksum-Aliaswallet-Fedora.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /aliaswallet/src/aliaswalletd /filesToUpload/usr/local/bin/
-COPY --from=build /aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/
-COPY --from=build /aliaswallet/scripts/createChecksums.sh /tmp/
+COPY --from=build /alias-wallet/src/aliaswalletd /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/src/aliaswallet /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \

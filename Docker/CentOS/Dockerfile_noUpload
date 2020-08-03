@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/aliaswallet-builder-centos:1.2
+FROM aliascash/alias-wallet-builder-centos:1.2
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,9 +13,9 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /aliaswallet
+COPY . /alias-wallet
 
-RUN cd /aliaswallet \
+RUN cd /alias-wallet \
  && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \

@@ -40,30 +40,30 @@ SPDX-License-Identifier: MIT
   - 'Initializing staking...' is now shown instead 'Not staking because you don't have mature coins' during staker thread initialization
 - Improve synchronization tooltip: blockchain synchronization state is now updated every 500ms. (Tooltips in general are now updated when open and underlying data changes)
 - Improve splash screen with progress messages to reduce UI freezes during startup.
-- [#183](https://github.com/aliascash/aliaswallet/issues/183) Reduce UI freezes during blockchain sync.
+- [#183](https://github.com/aliascash/alias-wallet/issues/183) Reduce UI freezes during blockchain sync.
 
 ### Changelog
 ## 4.1.0 (released 2019-10-13)
-- [#82](https://github.com/aliascash/aliaswallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
+- [#82](https://github.com/aliascash/alias-wallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
   - Create new `wallet.dat` file based on mnemonic seed words.
   - Restore `wallet.dat` from mnemonic seed words.
   - Import existing `wallet.dat` file.
 
   For further details see [here](https://medium.com/coinmonks/mnemonic-generation-bip39-simply-explained-e9ac18db9477).
-  Duplicated by [#115](https://github.com/aliascash/aliaswallet/issues/115)
+  Duplicated by [#115](https://github.com/aliascash/alias-wallet/issues/115)
 
-- [#214](https://github.com/aliascash/aliaswallet/issues/214) Migrate Debian/Raspbian build to Buster.
+- [#214](https://github.com/aliascash/alias-wallet/issues/214) Migrate Debian/Raspbian build to Buster.
   Binaries for both Stretch and Buster will be provided.
 
-- [#216](https://github.com/aliascash/aliaswallet/issues/216) Tor Hidden Service v3 implementation + minor Tor improvements.
+- [#216](https://github.com/aliascash/alias-wallet/issues/216) Tor Hidden Service v3 implementation + minor Tor improvements.
   - Implementation of Tor Hidden Service v3.
   - Creation of launch argument `-onionv2`, allowing the usage of legacy v2 addresses.
   - Creation of an torrc-defaults file on Linux.
   - By default, Tor will now use hardware crypto acceleration if available, only connect to Hidden Services,
     and will write to disk less frequently, preserving the lifespan of SD cards on Raspbian.
 
-- [#218](https://github.com/aliascash/aliaswallet/issues/218) Provide binaries for Ubuntu 19.04.
+- [#218](https://github.com/aliascash/alias-wallet/issues/218) Provide binaries for Ubuntu 19.04.
   Binaries for both Ubuntu 18.04 and 19.04 will be provided.
 
 - Updated packaged Tor for MacOS and Windows to 0.4.1.5

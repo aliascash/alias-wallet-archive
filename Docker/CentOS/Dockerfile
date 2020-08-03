@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/aliaswallet-builder-centos:1.2 as build
+FROM aliascash/alias-wallet-builder-centos:1.2 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -13,9 +13,9 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /aliaswallet
+COPY . /alias-wallet
 
-RUN cd /aliaswallet \
+RUN cd /alias-wallet \
  && mkdir db4.8 leveldb \
  && patch < Docker/Fedora/QT5BinaryPath.patch \
  && ./autogen.sh \
@@ -30,7 +30,7 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 ARG GITHUB_TOKEN=1234567
 ARG ALIASWALLET_RELEASE=latest
-ARG ALIASWALLET_REPOSITORY=aliaswallet
+ARG ALIASWALLET_REPOSITORY=alias-wallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
@@ -39,9 +39,9 @@ ENV CHKSUM_FILE=Checksum-Aliaswallet-CentOS.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/
-COPY --from=build /aliaswallet/src/aliaswalletd /filesToUpload/usr/local/bin/
-COPY --from=build /aliaswallet/scripts/createChecksums.sh /tmp/
+COPY --from=build /alias-wallet/src/aliaswallet /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/src/aliaswalletd /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \

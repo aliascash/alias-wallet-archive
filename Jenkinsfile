@@ -70,7 +70,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -88,7 +88,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -106,7 +106,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -124,7 +124,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -142,7 +142,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -160,7 +160,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
-                                    dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -386,12 +386,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
-                                            dockerTag: "aliascash/aliaswallet-raspi-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-raspi-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-RaspberryPi-Buster.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-RaspberryPi-Buster.txt"
@@ -433,12 +433,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Stretch',
-                                            dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-debian-stretch:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-Debian-Stretch.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Debian-Stretch.txt"
@@ -462,12 +462,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Buster',
-                                            dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-debian-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-Debian-Buster.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Debian-Buster.txt"
@@ -489,12 +489,12 @@ pipeline {
                         script {
                             buildBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile',
-                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}",
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
                                     gitCommit: "${GIT_COMMIT_SHORT}"
                             )
                             getChecksumfileFromImage(
-                                    dockerTag: "aliascash/aliaswallet-fedora:${GIT_TAG_TO_USE}",
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
                                     checksumfile: "Checksum-Aliaswallet-Fedora.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Fedora.txt"
@@ -516,12 +516,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-Ubuntu-18-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-18-04.txt"
@@ -563,12 +563,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_19_04',
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
@@ -592,12 +592,12 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/aliaswallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
                                             checksumfile: "Checksum-Aliaswallet-Ubuntu-19-10.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-10.txt"

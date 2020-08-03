@@ -1,7 +1,7 @@
 # Attention
 
 The following files where maintained on the separate Git repository
-[aliaswallet-ui](https://github.com/aliascash/aliaswallet-ui):
+[aliaswallet-ui](https://github.com/aliascash/alias-wallet-ui):
 * src/qt/res/assets/*
 * src/qt/res/index.html
 * spectre.qrc

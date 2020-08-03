@@ -1,5 +1,5 @@
 # Alias
-[![GitHub version](https://badge.fury.io/gh/aliascash%2Fspectre.svg)](https://badge.fury.io/gh/aliascash%2Fspectre) [![HitCount](http://hits.dwyl.io/aliascash/https://github.com/aliascash/aliaswallet.svg)](http://hits.dwyl.io/aliascash/https://github.com/aliascash/aliaswallet)
+[![GitHub version](https://badge.fury.io/gh/aliascash%2Fspectre.svg)](https://badge.fury.io/gh/aliascash%2Fspectre) [![HitCount](http://hits.dwyl.io/aliascash/https://github.com/aliascash/alias-wallet.svg)](http://hits.dwyl.io/aliascash/https://github.com/aliascash/alias-wallet)
 [![Build Status](https://ci.spectreproject.io/buildStatus/icon?job=Alias/spectre/develop)](https://ci.spectreproject.io/job/Alias/job/spectre/job/develop/)
 
 Alias is a Secure Proof-of-Stake (PoSv3) Network with Anonymous Transaction Capability.
@@ -65,7 +65,7 @@ check out the latest release tag before you start building.
 ### UI development
 
 The following files where maintained on the separate Git repository
-[aliaswallet-ui](https://github.com/aliascash/aliaswallet-ui):
+[aliaswallet-ui](https://github.com/aliascash/alias-wallet-ui):
 * src/qt/res/assets/*
 * src/qt/res/index.html
 * spectre.qrc
@@ -107,7 +107,7 @@ brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc
 ```
 
 The macOS wallet itself is build with QTs **QMAKE**. See
-https://github.com/aliascash/aliaswallet/blob/develop/src/osx.pri for instructions.
+https://github.com/aliascash/alias-wallet/blob/develop/src/osx.pri for instructions.
 
 ### Linux
 
