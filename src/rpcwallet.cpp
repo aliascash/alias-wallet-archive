@@ -149,8 +149,8 @@ Value getinfo(const Array& params, bool fHelp)
     obj.push_back(Pair("balance",                  ValueFromAmount(pwalletMain->GetBalance())));
     obj.push_back(Pair("anonbalance",              ValueFromAmount(pwalletMain->GetSpectreBalance())));
     obj.push_back(Pair("newmint",                  ValueFromAmount(pwalletMain->GetNewMint())));
-    obj.push_back(Pair("stake_public",             ValueFromAmount(pwalletMain->GetStake())));
-    obj.push_back(Pair("stake_private",            ValueFromAmount(pwalletMain->GetSpectreStake())));
+    obj.push_back(Pair("stake",                    ValueFromAmount(pwalletMain->GetStake())));
+    obj.push_back(Pair("spectrestake",             ValueFromAmount(pwalletMain->GetSpectreStake())));
     obj.push_back(Pair("unconfirmedbalance",       ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
     obj.push_back(Pair("unconfirmedanonbalance",   ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
     obj.push_back(Pair("stakeweight",              ValueFromAmount(pwalletMain->GetStakeWeight())));
