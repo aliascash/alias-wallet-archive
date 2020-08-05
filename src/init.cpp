@@ -959,7 +959,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LOCK2(cs_main, pwalletMain->cs_wallet);
             pwalletMain->MarkDirty();
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
-                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
+                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d txns)", nCurrentHeight, nBestHeight, foundOwned));
                 return true;
             },100);
             pwalletMain->ReacceptWalletTransactions();
