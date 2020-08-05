@@ -195,12 +195,12 @@ string CRPCTable::help(string strCommand) const
 
         if (fAllAnon)
         {
-            if (strMethod != "sendspectoanon"
-                && strMethod != "sendanontoanon"
-                && strMethod != "sendanontospec"
-                && strMethod != "estimateanonfee"
-                && strMethod != "anonoutputs"
-                && strMethod != "anoninfo")
+            if (strMethod != "sendpublictoprivate"
+                && strMethod != "sendprivate"
+                && strMethod != "sendprivatetopublic"
+                && strMethod != "estimateprivatefee"
+                && strMethod != "privateoutputs"
+                && strMethod != "privateinfo")
             continue;
         } else
         if (strCommand != "" && strMethod != strCommand)
@@ -355,18 +355,18 @@ static const CRPCCommand vRPCCommands[] =
     { "sendalert",              &sendalert,              false,     false,     false },
     { "getnetworkinfo",         &getnetworkinfo,         false,     false,     false },
 
-    { "getnewstealthaddress",   &getnewstealthaddress,   false,     false,     false },
-    { "liststealthaddresses",   &liststealthaddresses,   false,     false,     false },
-    { "importstealthaddress",   &importstealthaddress,   false,     false,     false },
+    { "getnewprivateaddress",   &getnewprivateaddress,   false,     false,     false },
+    { "listprivateaddresses",   &listprivateaddresses,   false,     false,     false },
+    { "importprivateaddress",   &importprivateaddress,   false,     false,     false },
     { "clearwallettransactions",&clearwallettransactions,false,     false,     false },
     { "scanforalltxns",         &scanforalltxns,         false,     false,     false },
 
-    { "sendspectoanon",         &sendspectoanon,         false,     false,     false },
-    { "sendanontoanon",         &sendanontoanon,         false,     false,     false },
-    { "sendanontospec",         &sendanontospec,         false,     false,     false },
-    { "estimateanonfee",        &estimateanonfee,        false,     false,     false },
-    { "anonoutputs",            &anonoutputs,            false,     false,     false },
-    { "anoninfo",               &anoninfo,               false,     false,     false },
+    { "sendpublictoprivate",    &sendpublictoprivate,    false,     false,     false },
+    { "sendprivate",            &sendprivate,            false,     false,     false },
+    { "sendprivatetopublic",    &sendprivatetopublic,    false,     false,     false },
+    { "estimateprivatefee",     &estimateprivatefee,    false,     false,     false },
+    { "privateoutputs",         &privateoutputs,         false,     false,     false },
+    { "privateinfo",            &privateinfo,            false,     false,     false },
 
     { "txnreport",              &txnreport,              false,     false,     false },
 
