@@ -77,7 +77,7 @@
          <enum>QFrame::NoFrame</enum>
         </property>
         <property name="pixmap">
-         <pixmap resource="../../../spectre.qrc">:/svg/Alias-Stacked-Reverse</pixmap>
+         <pixmap resource="../../../spectre.qrc">:/assets/svg/Alias-Stacked-Reverse.svg</pixmap>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

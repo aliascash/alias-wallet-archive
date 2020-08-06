@@ -860,11 +860,11 @@ body .ui-tooltip {
 .ui-widget-content {
     border: 1px solid #ddd;
     background: #eee url(qrc:///assets/plugins/jquery-ui/images/images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x;
-    color: #333
+    color: #282829
 }
 
 .ui-widget-content a {
-    color: #333
+    color: #282829
 }
 
 .ui-widget-header {

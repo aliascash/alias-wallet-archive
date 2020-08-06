@@ -45,10 +45,10 @@ const struct {
     const char *url;
     const char *source;
 } ICON_MAPPING[] = {
-    {"cmd-request", ":/icons/tx_input"},
-    {"cmd-reply", ":/icons/tx_output"},
-    {"cmd-error", ":/icons/tx_output"},
-    {"misc", ":/icons/tx_inout"},
+    {"cmd-request", ":/icons/cmd_request"},
+    {"cmd-reply", ":/icons/cmd_reply"},
+    {"cmd-error", ":/icons/cmd_error"},
+    {"misc", ":/icons/cmd_misc"},
     {NULL, NULL}
 };
 
@@ -323,7 +323,7 @@ void RPCConsole::clear()
     ui->lineEdit->setFocus();
 
 
-    QColor colour(226, 29, 57);
+    QColor colour(242, 131, 33);
 
     // Add smoothly scaled icon images.
     // (when using width/height on an img, Qt uses nearest instead of linear interpolation)

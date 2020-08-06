@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
             SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 
-    QSplashScreen splash(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/svg/Alias-Stacked-Reverse"), QRect(62, 87, 476, 476)));
+    QSplashScreen splash(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(62, 87, 476, 476)));
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);

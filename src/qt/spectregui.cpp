@@ -494,23 +494,8 @@ void SpectreGUI::setNumConnections(int count)
 {
     WebElement connectionIcon = WebElement(this, "connectionsIcon");
 
-    QString className;
-
-    switch(count)
-    {
-    case 0:          className = "connect-0"; break;
-    case 1: case 2:  className = "connect-1"; break;
-    case 3: case 4:  className = "connect-2"; break;
-    case 5: case 6:  className = "connect-3"; break;
-    case 7: case 8:  className = "connect-4"; break;
-    case 9: case 10: className = "connect-5"; break;
-    default:         className = "connect-6"; break;
-    }
-
+    QString className = count < 12 ? (QString("connection-") + QString::number(count)) : "connection-12";
     connectionIcon.setAttribute("class", className);
-
-    QString source = "qrc:///icons/" + className.replace("-", "_");
-    connectionIcon.setAttribute("src", source);
 
     QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
@@ -824,7 +809,7 @@ void SpectreGUI::setEncryptionStatus(int status)
     switch(status)
     {
     case WalletModel::Unencrypted:
-        encryptionIcon.setAttribute("style", "display:none;");
+        encryptionIcon.addClass("none");
         changePassphrase.addClass("none");
         toggleLock.addClass("none");
         encryptMenuItem.removeClass("none");
@@ -836,32 +821,26 @@ void SpectreGUI::setEncryptionStatus(int status)
         break;
     case WalletModel::Unlocked:
         encryptMenuItem  .addClass("none");
-        encryptionIcon.removeAttribute("style");
-        encryptionIcon.removeClass("fa-lock");
+        encryptionIcon.removeClass("none");
         encryptionIcon.removeClass("encryption");
-        encryptionIcon.   addClass("fa-unlock");
-        encryptionIcon.   addClass("no-encryption");
         encryptMenuItem  .addClass("none");
         toggleLockIcon.removeClass("fa-unlock");
         toggleLockIcon.removeClass("fa-unlock-alt");
         toggleLockIcon.   addClass("fa-lock");
-        encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
         if (fWalletUnlockStakingOnly)
         {
-            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
-            encryptionIcon.removeClass("red");
-            encryptionIcon.addClass("orange");
-            encryptionIcon.addClass("encryption-stake");
+            encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
+            encryptionIcon. removeClass("no-encryption");
+            encryptionIcon.    addClass("encryption-stake");
 
             toggleLockIcon  .removeClass("red");
             toggleLockIcon     .addClass("orange");
         } else
         {
-            encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
-            encryptionIcon.addClass("red");
-            encryptionIcon.removeClass("orange");
-            encryptionIcon.removeClass("encryption-stake");
+            encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
+            encryptionIcon. removeClass("encryption-stake");
+            encryptionIcon.    addClass("no-encryption");
 
             toggleLockIcon  .removeClass("orange");
             toggleLockIcon     .addClass("red");
@@ -877,18 +856,14 @@ void SpectreGUI::setEncryptionStatus(int status)
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
         break;
     case WalletModel::Locked:
-        encryptionIcon.removeAttribute("style");
-        encryptionIcon.removeClass("fa-unlock");
+        encryptionIcon.removeClass("none");
         encryptionIcon.removeClass("no-encryption");
         encryptionIcon.removeClass("encryption-stake");
-        encryptionIcon.   addClass("fa-lock");
         encryptionIcon.   addClass("encryption");
         toggleLockIcon.removeClass("fa-lock");
         toggleLockIcon.   addClass("fa-unlock-alt");
         encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
 
-        encryptionIcon     .addClass("red");
-        encryptionIcon  .removeClass("orange");
         encryptButton      .addClass("none");
         encryptMenuItem    .addClass("none");
         changePassphrase.removeClass("none");
