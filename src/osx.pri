@@ -15,6 +15,8 @@
 
 ICON = $$PWD/qt/res/icons/alias-app.icns
 
+QMAKE_INFO_PLIST = $$PWD/osx/Info.plist
+
     # to build tor with autotools, call in subfolder tor:
     # ./autogen.sh && ./configure --with-ssl-dir=/usr/local/Cellar/openssl@1.1/1.1.1 --disable-asciidoc --disable-lzma
 #    LIBS += -L$$PWD/../tor/src/or -ltor \
