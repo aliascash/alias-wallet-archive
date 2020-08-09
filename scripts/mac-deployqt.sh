@@ -50,7 +50,7 @@ if [[ -e src/bin/alias.dmg ]] ; then
 fi
 
 info "Call macdeployqt:"
-${QT_PATH}/bin/macdeployqt src/bin/Alias.app -qmldir=src/qt/res -always-overwrite -verbose=2
+${QT_PATH}/bin/macdeployqt src/bin/Alias.app -qmldir=src/qt/res/qml -always-overwrite -verbose=2
 rtc=$?
 if [[ ${rtc} != 0 ]] ; then
     die ${rtc} "Error during macdeployqt!"
