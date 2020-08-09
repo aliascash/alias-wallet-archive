@@ -5,7 +5,7 @@
 # SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 # SPDX-License-Identifier: MIT
 #
-# This script uses macdeployqt to add the required libs to aliaswallet package.
+# This script uses macdeployqt to add the required libs to alias package.
 # - Fixes non @executable openssl references.
 # - Replaces openssl 1.0.0 references with 1.1
 #
@@ -18,7 +18,7 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${ownLocation}
 . ./include/helpers_console.sh
 
-# Go to Aliaswallet repository root directory
+# Go to Alias repository root directory
 cd ..
 
 if [[ -z "${QT_PATH}" ]] ; then
@@ -42,46 +42,46 @@ else
 fi
 
 info "Cleanup previous build artifacts"
-if [[ -e Aliaswallet.dmg ]] ; then
-    rm -f Aliaswallet.dmg
+if [[ -e Alias.dmg ]] ; then
+    rm -f Alias.dmg
 fi
-if [[ -e src/bin/aliaswallet.dmg ]] ; then
-    rm -f src/bin/aliaswallet.dmg
+if [[ -e src/bin/alias.dmg ]] ; then
+    rm -f src/bin/alias.dmg
 fi
 
 info "Call macdeployqt:"
-${QT_PATH}/bin/macdeployqt src/bin/Aliaswallet.app -qmldir=src/qt/res -always-overwrite -verbose=2
+${QT_PATH}/bin/macdeployqt src/bin/Alias.app -qmldir=src/qt/res -always-overwrite -verbose=2
 rtc=$?
 if [[ ${rtc} != 0 ]] ; then
     die ${rtc} "Error during macdeployqt!"
 fi
 
 info "Remove openssl 1.0.0 libs:"
-rm -v src/bin/aliaswallet.app/Contents/Frameworks/libssl.1.0.0.dylib
-rm -v src/bin/aliaswallet.app/Contents/Frameworks/libcrypto.1.0.0.dylib
+rm -v src/bin/alias.app/Contents/Frameworks/libssl.1.0.0.dylib
+rm -v src/bin/alias.app/Contents/Frameworks/libcrypto.1.0.0.dylib
 
 info "Replace openssl 1.0.0 lib references with 1.1:"
-for f in src/bin/aliaswallet.app/Contents/Frameworks/*.dylib ; do
+for f in src/bin/alias.app/Contents/Frameworks/*.dylib ; do
     install_name_tool -change @executable_path/../Frameworks/libssl.1.0.0.dylib @executable_path/../Frameworks/libssl.1.1.dylib ${f};
     install_name_tool -change @executable_path/../Frameworks/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ${f};
 done
 
 
-info "install_name_tool -change $OPENSSL_PATH/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib src/bin/aliaswallet.app/Contents/Frameworks/libssl.1.1.dylib ..."
-install_name_tool -change ${OPENSSL_PATH}/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib src/bin/aliaswallet.app/Contents/Frameworks/libssl.1.1.dylib
-otool -l src/bin/aliaswallet.app/Contents/Frameworks/libssl.1.1.dylib | grep dylib
+info "install_name_tool -change $OPENSSL_PATH/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib src/bin/alias.app/Contents/Frameworks/libssl.1.1.dylib ..."
+install_name_tool -change ${OPENSSL_PATH}/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib src/bin/alias.app/Contents/Frameworks/libssl.1.1.dylib
+otool -l src/bin/alias.app/Contents/Frameworks/libssl.1.1.dylib | grep dylib
 
 
 info "Please check for non included lib references:"
-for f in src/bin/aliaswallet.app/Contents/Frameworks/*.dylib ; do
+for f in src/bin/alias.app/Contents/Frameworks/*.dylib ; do
     otool -l ${f} | grep dylib | grep -v @
 done
 
 
 info "Create dmg package:"
-${QT_PATH}/bin/macdeployqt src/bin/Aliaswallet.app -dmg -always-overwrite -verbose=2
+${QT_PATH}/bin/macdeployqt src/bin/Alias.app -dmg -always-overwrite -verbose=2
 rtc=$?
 if [[ ${rtc} != 0 ]] ; then
     die ${rtc} "Error during macdeployqt!"
 fi
-mv src/bin/Aliaswallet.dmg Aliaswallet.dmg
+mv src/bin/Alias.dmg Alias.dmg
