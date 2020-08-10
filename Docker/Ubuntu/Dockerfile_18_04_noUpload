@@ -13,6 +13,10 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
+RUN apt-get update \
+ && apt-get install -y \
+    libqt5svg5-dev
+
 COPY . /alias-wallet
 
 RUN cd /alias-wallet \
