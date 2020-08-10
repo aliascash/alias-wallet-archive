@@ -833,17 +833,11 @@ void SpectreGUI::setEncryptionStatus(int status)
             encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
             encryptionIcon. removeClass("no-encryption");
             encryptionIcon.    addClass("encryption-stake");
-
-            toggleLockIcon  .removeClass("red");
-            toggleLockIcon     .addClass("orange");
         } else
         {
             encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
             encryptionIcon. removeClass("encryption-stake");
             encryptionIcon.    addClass("no-encryption");
-
-            toggleLockIcon  .removeClass("orange");
-            toggleLockIcon     .addClass("red");
         };
 
         encryptButton.addClass("none");
@@ -867,8 +861,6 @@ void SpectreGUI::setEncryptionStatus(int status)
         encryptButton      .addClass("none");
         encryptMenuItem    .addClass("none");
         changePassphrase.removeClass("none");
-        toggleLockIcon  .removeClass("orange");
-        toggleLockIcon     .addClass("red");
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         unlockWalletAction->setVisible(true);
