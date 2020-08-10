@@ -584,7 +584,7 @@ QPixmap createPixmap(const QString& svgResource, int width, int height)
     QScreen *screen = QGuiApplication::primaryScreen();
     double dpr = screen->devicePixelRatio();
     QSvgRenderer renderer(svgResource);
-    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    // QT 5.15 renderer.setAspectRatioMode(Qt::KeepAspectRatio);
     QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
     QPainter painter(&image);
     renderer.render(&painter);
@@ -597,7 +597,7 @@ QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString
     QScreen *screen = QGuiApplication::primaryScreen();
     double dpr = screen->devicePixelRatio();
     QSvgRenderer renderer(svgResource);
-    renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    // QT 5.15 renderer.setAspectRatioMode(Qt::KeepAspectRatio);
     QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
     image.fill(bgColor);
     QPainter painter(&image);
