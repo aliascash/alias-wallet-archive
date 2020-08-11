@@ -386,7 +386,7 @@ void SpectreGUI::setClientModel(ClientModel *clientModel)
 #endif
             if(trayIcon)
             {
-                trayIcon->setToolTip(tr("Alias client") + QString(" ") + tr("[testnet]"));
+                trayIcon->setToolTip(tr("Alias") + QString(" ") + tr("[testnet]"));
                 trayIcon->setIcon(QIcon(":/icons/alias-app_testnet"));
                 toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
             }
@@ -446,7 +446,7 @@ void SpectreGUI::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip(tr("Alias client"));
+    trayIcon->setToolTip(tr("Alias"));
     trayIcon->setIcon(QIcon(":/icons/alias-app"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
