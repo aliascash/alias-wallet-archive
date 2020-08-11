@@ -146,15 +146,23 @@ Value getinfo(const Array& params, bool fHelp)
 
     obj.push_back(Pair("protocolversion",          (int)PROTOCOL_VERSION));
     obj.push_back(Pair("walletversion",            pwalletMain->GetVersion()));
-    obj.push_back(Pair("balance",                  ValueFromAmount(pwalletMain->GetBalance())));
-    obj.push_back(Pair("anonbalance",              ValueFromAmount(pwalletMain->GetSpectreBalance())));
+    int64_t balancePublic = pwalletMain->GetBalance(), balancePrivate = pwalletMain->GetSpectreBalance();
+    obj.push_back(Pair("balance",                  ValueFromAmount(balancePublic + balancePrivate)));
+    obj.push_back(Pair("balance_public",           ValueFromAmount(balancePublic)));
+    obj.push_back(Pair("balance_private",          ValueFromAmount(balancePrivate)));
     obj.push_back(Pair("newmint",                  ValueFromAmount(pwalletMain->GetNewMint())));
-    obj.push_back(Pair("stake",                    ValueFromAmount(pwalletMain->GetStake())));
-    obj.push_back(Pair("spectrestake",             ValueFromAmount(pwalletMain->GetSpectreStake())));
-    obj.push_back(Pair("unconfirmedbalance",       ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
-    obj.push_back(Pair("unconfirmedanonbalance",   ValueFromAmount(pwalletMain->GetUnconfirmedSpectreBalance())));
-    obj.push_back(Pair("stakeweight",              ValueFromAmount(pwalletMain->GetStakeWeight())));
-    obj.push_back(Pair("spectrestakeweight",       ValueFromAmount(pwalletMain->GetSpectreStakeWeight())));
+    int64_t stakePublic = pwalletMain->GetStake(), stakePrivate = pwalletMain->GetSpectreStake();
+    obj.push_back(Pair("stake",                    ValueFromAmount(stakePublic + stakePrivate)));
+    obj.push_back(Pair("stake_public",             ValueFromAmount(stakePublic)));
+    obj.push_back(Pair("stake_private",            ValueFromAmount(stakePrivate)));
+    int64_t unconfirmedBalPublic = pwalletMain->GetUnconfirmedBalance(), unconfirmedBalPrivate = pwalletMain->GetUnconfirmedSpectreBalance();
+    obj.push_back(Pair("unconfirmedbalance",       ValueFromAmount(unconfirmedBalPublic + unconfirmedBalPrivate)));
+    obj.push_back(Pair("unconfirmedbalance_public", ValueFromAmount(unconfirmedBalPublic)));
+    obj.push_back(Pair("unconfirmedbalance_private",ValueFromAmount(unconfirmedBalPrivate)));
+    int64_t stakeweightPublic = pwalletMain->GetStakeWeight(), stakeweightPrivate = pwalletMain->GetSpectreStakeWeight();
+    obj.push_back(Pair("stakeweight",              ValueFromAmount(stakeweightPublic + stakeweightPrivate)));
+    obj.push_back(Pair("stakeweight_public",       ValueFromAmount(stakeweightPublic)));
+    obj.push_back(Pair("stakeweight_private",      ValueFromAmount(stakeweightPrivate)));
     obj.push_back(Pair("reserve",                  ValueFromAmount(nReserveBalance)));
 
     obj.push_back(Pair("blocks",        (int)nBestHeight));
@@ -165,8 +173,10 @@ Value getinfo(const Array& params, bool fHelp)
 
     if (nNodeMode == NT_FULL)
     {
-        obj.push_back(Pair("moneysupply",  ValueFromAmount(pindexBest->nMoneySupply)));
-        obj.push_back(Pair("anonsupply",   ValueFromAmount(pindexBest->nAnonSupply)));
+        int64_t moneysupply_total = pindexBest->nMoneySupply, moneysupply_private = pindexBest->nAnonSupply;
+        obj.push_back(Pair("moneysupply",  ValueFromAmount(moneysupply_total)));
+        obj.push_back(Pair("moneysupply_public",   ValueFromAmount(moneysupply_total - moneysupply_private)));
+        obj.push_back(Pair("moneysupply_private",   ValueFromAmount(moneysupply_private)));
     }
 
     obj.push_back(Pair("connections",   (int)vNodes.size()));
@@ -350,7 +360,7 @@ Value setaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw std::runtime_error(
-            "setaccount <aliasaddress> <account>\n"
+            "setaccount <public_address> <account>\n"
             "Sets the account associated with the given address.");
 
     CBitcoinAddress address(params[0].get_str());
@@ -380,7 +390,7 @@ Value getaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw std::runtime_error(
-            "getaccount <aliasaddress>\n"
+            "getaccount <public_address>\n"
             "Returns the account associated with the given address.");
 
     CBitcoinAddress address(params[0].get_str());
@@ -420,8 +430,8 @@ Value sendtoaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 5)
         throw std::runtime_error(
-            "sendtoaddress <aliasaddress> <amount> [comment] [comment-to] [narration]\n" // Exchanges use the comments internally...
-            "sendtoaddress <aliasaddress> <amount> [narration]\n"
+            "sendtoaddress <public_address> <amount> [comment] [comment-to] [narration]\n" // Exchanges use the comments internally...
+            "sendtoaddress <public_address> <amount> [narration]\n"
             "<amount> is a real and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
@@ -429,7 +439,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     if (params[0].get_str().length() > 75
         && IsStealthAddress(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Only private Alias can be send to a private address, use sendanontoanon instead");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Only private Alias can be send to a private address, use sendprivate instead");
 
     std::string sAddrIn = params[0].get_str();
     CBitcoinAddress address(sAddrIn);
@@ -495,7 +505,7 @@ Value signmessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw std::runtime_error(
-            "signmessage <aliasaddress> <message>\n"
+            "signmessage <public_address> <message>\n"
             "Sign a message with the private key of an address");
 
     EnsureWalletIsUnlocked();
@@ -530,7 +540,7 @@ Value verifymessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 3)
         throw std::runtime_error(
-            "verifymessage <aliasaddress> <signature> <message>\n"
+            "verifymessage <public_address> <signature> <message>\n"
             "Verify a signed message");
 
     std::string strAddress  = params[0].get_str();
@@ -567,8 +577,8 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw std::runtime_error(
-            "getreceivedbyaddress <aliasaddress> [minconf=1]\n"
-            "Returns the total amount received by <aliasaddress> in transactions with at least [minconf] confirmations.");
+            "getreceivedbyaddress <public_address> [minconf=1]\n"
+            "Returns the total amount received by <public_address> in transactions with at least [minconf] confirmations.");
 
     // Bitcoin address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
@@ -796,7 +806,7 @@ Value sendfrom(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 7)
         throw std::runtime_error(
-            "sendfrom <fromaccount> <toaliasaddress> <amount> [minconf=1] [comment] [comment-to] [narration] \n"
+            "sendfrom <fromaccount> <topublicaddress> <amount> [minconf=1] [comment] [comment-to] [narration] \n"
             "<amount> is a real and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
@@ -845,7 +855,7 @@ Value sendmany(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw std::runtime_error(
-            "sendmany <fromaccount> {address:amount,...} [minconf=1] [comment]\n"
+            "sendmany <fromaccount> {public_address:amount,...} [minconf=1] [comment]\n"
             "amounts are double-precision floating point numbers"
             + HelpRequiringPassphrase());
 
@@ -1817,7 +1827,7 @@ Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw std::runtime_error(
-            "validateaddress <aliasaddress>\n"
+            "validateaddress <public_address>\n"
             "Return information about <aliascoinaddress>.");
 
     CBitcoinAddress address(params[0].get_str());
@@ -1848,8 +1858,8 @@ Value validatepubkey(const Array& params, bool fHelp)
 {
     if (fHelp || !params.size() || params.size() > 2)
         throw std::runtime_error(
-            "validatepubkey <aliaspubkey>\n"
-            "Return information about <aliaspubkey>.");
+            "validatepubkey <publicaddress_pubkey>\n"
+            "Return information about <publicaddress_pubkey>.");
 
     std::vector<unsigned char> vchPubKey = ParseHex(params[0].get_str());
     CPubKey pubKey(vchPubKey);
@@ -2006,11 +2016,11 @@ Value makekeypair(const Array& params, bool fHelp)
 
 
 
-Value getnewstealthaddress(const Array& params, bool fHelp)
+Value getnewprivateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
-            "getnewstealthaddress [label]\n"
+            "getnewprivateaddress [label]\n"
             "Returns a new Alias private address for receiving payments anonymously."
             + HelpRequiringPassphrase());
 
@@ -2030,11 +2040,11 @@ Value getnewstealthaddress(const Array& params, bool fHelp)
     return akStealth.ToStealthAddress();
 }
 
-Value liststealthaddresses(const Array& params, bool fHelp)
+Value listprivateaddresses(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
-            "liststealthaddresses [show_secrets=0]\n"
+            "listprivateaddresses [show_secrets=0]\n"
             "List owned stealth addresses.");
 
     bool fShowSecrets = false;
@@ -2122,11 +2132,11 @@ Value liststealthaddresses(const Array& params, bool fHelp)
     return result;
 }
 
-Value importstealthaddress(const Array& params, bool fHelp)
+Value importprivateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2)
         throw std::runtime_error(
-            "importstealthaddress <scan_secret> <spend_secret> [label]\n"
+            "importprivateaddress <scan_secret> <spend_secret> [label]\n"
             "Import an owned stealth addresses."
             + HelpRequiringPassphrase());
 
@@ -2312,11 +2322,11 @@ Value scanforalltxns(const Array& params, bool fHelp)
     return result;
 }
 
-Value sendspectoanon(const Array& params, bool fHelp)
+Value sendpublictoprivate(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 5)
         throw std::runtime_error(
-            "sendspectoanon <stealth_address> <amount> [narration] [comment] [comment-to]\n"
+            "sendpublictoprivate <private_address> <amount> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001"
             + HelpRequiringPassphrase());
 
@@ -2359,11 +2369,11 @@ Value sendspectoanon(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
-Value sendanontoanon(const Array& params, bool fHelp)
+Value sendprivate(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw std::runtime_error(
-            "sendanontoanon <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
+            "sendprivate <private_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
             "  warning: using a ring_size other than 10 is not possible"
@@ -2424,11 +2434,11 @@ Value sendanontoanon(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
-Value sendanontospec(const Array& params, bool fHelp)
+Value sendprivatetopublic(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw std::runtime_error(
-            "sendanontospec <stealth_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
+            "sendprivatetopublic <private_address> <amount> <ring_size> [narration] [comment] [comment-to]\n"
             "<amount> is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature\n"
             "  warning: using a ring_size other than 10 is not possible"
@@ -2486,11 +2496,11 @@ Value sendanontospec(const Array& params, bool fHelp)
     return wtx.GetHash().GetHex();
 }
 
-Value estimateanonfee(const Array& params, bool fHelp)
+Value estimateprivatefee(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 3)
         throw std::runtime_error(
-            "estimateanonfee <amount> <ring_size> [narration]\n"
+            "estimateprivatefee <amount> <ring_size> [narration]\n"
             "<amount>is a real number and is rounded to the nearest 0.000001\n"
             "<ring_size> is a number of outputs of the same amount to include in the signature");
 
@@ -2539,11 +2549,11 @@ Value estimateanonfee(const Array& params, bool fHelp)
     return result;
 }
 
-Value anonoutputs(const Array& params, bool fHelp)
+Value privateoutputs(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2)
         throw std::runtime_error(
-            "anonoutputs [systemTotals] [show_immature_outputs]\n"
+            "privateoutputs [systemTotals] [show_immature_outputs]\n"
             "[systemTotals] if true displays the total no. of coins in the system.");
 
     if (nNodeMode != NT_FULL)
@@ -2642,11 +2652,11 @@ Value anonoutputs(const Array& params, bool fHelp)
     return result;
 }
 
-Value anoninfo(const Array& params, bool fHelp)
+Value privateinfo(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw std::runtime_error(
-            "anoninfo [recalculate]\n"
+            "privateinfo [recalculate]\n"
             "list outputs in system.");
 
     if (nNodeMode != NT_FULL)
