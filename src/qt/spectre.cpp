@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
 
         // Periodically check if shutdown was requested to properly quit the Qt application
         #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Alias Core did't yet exit safely..."), (HWND)window.winId());
         #endif
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
