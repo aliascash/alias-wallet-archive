@@ -214,18 +214,18 @@ extern json_spirit::Value getorphans(const json_spirit::Array& params, bool fHel
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value getnewstealthaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value liststealthaddresses(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importstealthaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnewprivateaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listprivateaddresses(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importprivateaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value clearwallettransactions(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value scanforalltxns(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value sendspectoanon(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendanontoanon(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendanontospec(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimateanonfee(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value anonoutputs(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value anoninfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendpublictoprivate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendprivate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendprivatetopublic(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value estimateprivatefee(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value privateoutputs(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value privateinfo(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value txnreport(const json_spirit::Array& params, bool fHelp);
 
