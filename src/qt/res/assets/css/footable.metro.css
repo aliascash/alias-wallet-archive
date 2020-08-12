@@ -73,9 +73,9 @@
 }
 .footable > tfoot .pagination ul {
   display: inline-block;
-  -webkit-box-spectre: none;
-  -moz-box-spectre: none;
-  box-spectre: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
   vertical-align: middle;
   margin: 0;
   padding: 0;

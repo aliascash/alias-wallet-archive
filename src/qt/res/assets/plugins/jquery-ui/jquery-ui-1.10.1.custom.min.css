@@ -835,8 +835,8 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
     position: absolute;
     z-index: 9999;
     max-width: 300px;
-    -webkit-box-spectre: 0 0 5px #aaa;
-    box-spectre: 0 0 5px #aaa
+    -webkit-box-shadow: 0 0 5px #aaa;
+    box-shadow: 0 0 5px #aaa
 }
 
 body .ui-tooltip {
