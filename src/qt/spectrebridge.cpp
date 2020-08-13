@@ -380,12 +380,14 @@ void SpectreBridge::populateOptions()
 }
 
 // Transactions
-void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
+void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType)
 {
-    if (!window->walletModel->validateAddress(address)) {
-        emit addRecipientResult(false);
-        return;
-    }
+    // TODO Don't validate address atm, because UI does not properly handle addRecipientResult(false), address will be validated in sendCoins
+    //    QRemoteObjectPendingReply<bool> validateAddressPendingReply = window->walletModel->validateAddress(address);
+    //    if (!validateAddressPendingReply.waitForFinished() || !validateAddressPendingReply.returnValue()) {
+    //        emit addRecipientResult(false);
+    //        return;
+    //    }
 
     SendCoinsRecipient rv;
 
@@ -402,7 +404,7 @@ void SpectreBridge::addRecipient(QString address, QString label, QString narrati
         rv.typeInd = address.length() > 75 ? AT_Stealth : AT_Normal;
 
     rv.txnTypeInd = txnType;
-    rv.nRingSize = nRingSize;
+    rv.nRingSize = GetRingSizeMinMax().first;
 
     recipients.append(rv);
 

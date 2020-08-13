@@ -125,7 +125,7 @@ public slots:
 
     Q_INVOKABLE void openCoinControl();
 
-    Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize);
+    Q_INVOKABLE void addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType);
     Q_INVOKABLE void sendCoins(bool fUseCoinControl, QString sChangeAddr);
 
     Q_INVOKABLE void updateCoinControlAmount(qint64 amount);
