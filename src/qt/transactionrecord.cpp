@@ -25,32 +25,32 @@ QString TransactionRecord::getTypeLabel(const int &type)
     switch(type)
     {
     case RecvWithAddress:
-        return SpectreGUI::tr("ALIAS (public) received with");
+        return SpectreGUI::tr("Public received with");
     case RecvFromOther:
-        return SpectreGUI::tr("ALIAS (public) received from");
+        return SpectreGUI::tr("Public received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("ALIAS (public) sent to");
+        return SpectreGUI::tr("Public sent to");
     case SendToSelf:
-        return SpectreGUI::tr("ALIAS (public) sent to self");
+        return SpectreGUI::tr("Public sent to self");
     case SendToSelfSPECTRE:
-        return SpectreGUI::tr("ALIAS (private) sent to self");
+        return SpectreGUI::tr("Private sent to self");
     case Generated:
-        return SpectreGUI::tr("ALIAS (public) Staked");
+        return SpectreGUI::tr("Public staked");
     case GeneratedDonation:
-        return SpectreGUI::tr("ALIAS (public) Donated");
-	case GeneratedContribution:
-        return SpectreGUI::tr("ALIAS (public) Contributed");
+        return SpectreGUI::tr("Public donated");
+    case GeneratedContribution:
+        return SpectreGUI::tr("Public contributed");
     case GeneratedSPECTRE:
-        return SpectreGUI::tr("ALIAS (private) Staked");
+        return SpectreGUI::tr("Private staked");
     case GeneratedSPECTREDonation:
-        return SpectreGUI::tr("ALIAS (private) Donated");
+        return SpectreGUI::tr("Private donated");
     case GeneratedSPECTREContribution:
-        return SpectreGUI::tr("ALIAS (private) Contributed");
+        return SpectreGUI::tr("Private ontributed");
     case RecvSpectre:
-        return SpectreGUI::tr("ALIAS (private) received with");
+        return SpectreGUI::tr("Private received with");
     case SendSpectre:
-        return SpectreGUI::tr("ALIAS (private) sent to");
+        return SpectreGUI::tr("Private sent to");
     case ConvertSPECTREtoXSPEC:
         return SpectreGUI::tr("Private to Public");
     case ConvertXSPECtoSPECTRE:
@@ -74,7 +74,7 @@ QString TransactionRecord::getTypeShort(const int &type)
         return "donated";
     case TransactionRecord::GeneratedContribution:
     case TransactionRecord::GeneratedSPECTREContribution:
-		return "contributed";
+        return "contributed";
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:

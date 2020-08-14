@@ -621,6 +621,8 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return rec->credit + rec->debit;
     case CurrencyRole:
         return rec->currency == PRIVATE ? "PRIVATE" : "PUBLIC";
+    case UnitRole:
+        return walletModel->getOptionsModel()->getDisplayUnit();
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:

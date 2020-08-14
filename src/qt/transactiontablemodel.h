@@ -62,8 +62,10 @@ public:
         LabelRole,
         /** Net amount of transaction */
         AmountRole,
-        /** Currency/Unit of amount received or sended */
+        /** Currency of amount received or sended */
         CurrencyRole,
+        /** Unit of amount received or sended */
+        UnitRole,
         /** Unique identifier */
         TxIDRole,
         /** Is transaction confirmed? */

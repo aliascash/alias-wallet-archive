@@ -110,6 +110,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toLongLong());
     transaction.insert("am_d", amount.data().toString());
     transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
+    transaction.insert("am_unit", amount.data(TransactionTableModel::UnitRole).toInt());
 
     return transaction;
 }
