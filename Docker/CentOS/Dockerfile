@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-centos:1.2 as build
+FROM aliascash/alias-wallet-builder-centos:1.8 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -22,7 +22,9 @@ RUN cd /alias-wallet \
  && ./configure \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /alias-wallet/src/aliaswalletd \
+ && strip /alias-wallet/src/aliaswallet
 
 ### Now upload binaries to GitHub ###
 FROM aliascash/github-uploader:latest
@@ -39,8 +41,8 @@ ENV CHKSUM_FILE=Checksum-Aliaswallet-CentOS.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /alias-wallet/src/aliaswallet /filesToUpload/usr/local/bin/
 COPY --from=build /alias-wallet/src/aliaswalletd /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/src/aliaswallet /filesToUpload/usr/local/bin/
 COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-centos:1.2
+FROM aliascash/alias-wallet-builder-centos:1.8
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -22,4 +22,6 @@ RUN cd /alias-wallet \
  && ./configure \
         --enable-gui \
         --with-qt5=/usr/include/qt5 \
- && make -j${BUILD_THREADS}
+ && make -j${BUILD_THREADS} \
+ && strip /alias-wallet/src/aliaswalletd \
+ && strip /alias-wallet/src/aliaswallet
