@@ -134,33 +134,15 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu 19.04') {
+                stage('Ubuntu 20.04') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
                             buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Ubuntu 19.10') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}"
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -553,54 +535,25 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu 19.04') {
+                stage('Ubuntu 20.04') {
                     agent {
                         label "docker"
                     }
                     stages {
-                        stage('Ubuntu 19.04') {
+                        stage('Ubuntu 20.04') {
                             steps {
                                 script {
                                     buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_04',
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_20_04',
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-20-04.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Ubuntu 19.10') {
-                    agent {
-                        label "docker"
-                    }
-                    stages {
-                        stage('Ubuntu 19.10') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-19-10:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Aliaswallet-Ubuntu-19-10.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-19-10.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-Ubuntu-20-04.txt"
                                 }
                             }
                             post {
