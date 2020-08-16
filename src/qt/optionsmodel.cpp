@@ -23,6 +23,12 @@ void OptionsModel::Init()
 {
     QSettings settings;
 
+    int nSettingsVersion = settings.value("nSettingsVersion", 0).toInt();
+    if (nSettingsVersion < 1) {
+        settings.clear();
+        settings.setValue("nSettingsVersion", 1);
+    }
+
     // These are Qt-only settings:
     //nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt();
     nDisplayUnit = BitcoinUnits::ALIAS;
