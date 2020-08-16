@@ -349,10 +349,6 @@ void SpectreBridge::populateOptions()
         visibleTransactions.append(txType);
     }
 
-    QVariantList messageTypes;
-
-    messageTypes.append(tr("Incoming Message"));
-    notifications.insert("messages", messageTypes);
     notifications.insert("transactions", visibleTransactions);
 
     options.insert("optVisibleTransactions", visibleTransactions);
