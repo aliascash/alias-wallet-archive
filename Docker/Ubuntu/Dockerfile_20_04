@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-ubuntu-19-10:1.7 as build
+FROM aliascash/alias-wallet-builder-ubuntu-20-04:1.8 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -34,8 +34,8 @@ ARG ALIASWALLET_REPOSITORY=alias-wallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Aliaswallet-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-Ubuntu-19-10.tgz
-ENV CHKSUM_FILE=Checksum-Aliaswallet-Ubuntu-19-10.txt
+ENV ARCHIVE=Aliaswallet-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-Ubuntu-20-04.tgz
+ENV CHKSUM_FILE=Checksum-Aliaswallet-Ubuntu-20-04.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
