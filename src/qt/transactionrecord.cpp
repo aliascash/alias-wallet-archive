@@ -46,7 +46,7 @@ QString TransactionRecord::getTypeLabel(const int &type)
     case GeneratedSPECTREDonation:
         return SpectreGUI::tr("Private donated");
     case GeneratedSPECTREContribution:
-        return SpectreGUI::tr("Private ontributed");
+        return SpectreGUI::tr("Private contributed");
     case RecvSpectre:
         return SpectreGUI::tr("Private received with");
     case SendSpectre:
