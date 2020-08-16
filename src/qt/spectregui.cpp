@@ -742,7 +742,7 @@ void SpectreGUI::incomingTransaction(const QModelIndex & parent, int start, int 
                         tr("%1 %2")
                         .arg(BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), amount, true))
                         .arg(type),
-                        narration.size() > 0 ? tr("Address: %1\n" "Narration: %2\n").arg(address).arg(narration) :
+                        narration.size() > 0 ? tr("Address: %1\n" "Note: %2\n").arg(address).arg(narration) :
                                                tr("Address: %1\n").arg(address),
                         icon);
 }
