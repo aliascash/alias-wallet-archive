@@ -135,6 +135,7 @@ private:
         void removeAttribute(QString attribute);
         void addClass(QString className);
         void removeClass(QString className);
+        void setContent(QString value);
     private:
         SpectreGUI* spectreGUI;
         QString name;

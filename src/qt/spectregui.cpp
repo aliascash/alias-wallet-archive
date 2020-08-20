@@ -110,6 +110,13 @@ void SpectreGUI::WebElement::removeClass(QString className)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
+void SpectreGUI::WebElement::setContent(QString value)
+{
+    value = value.replace("\n"," ");
+    QString javascriptCode = getElementJS + "innerHTML = \"" + value + "\";";
+    spectreGUI->runJavaScript(javascriptCode);
+}
+
 SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     QMainWindow(parent),
     bridge(new SpectreBridge(this)),
@@ -500,8 +507,18 @@ void SpectreGUI::aboutClicked()
 void SpectreGUI::setNumConnections(int count)
 {
     WebElement connectionIcon = WebElement(this, "connectionsIcon");
+    WebElement syncingIcon = WebElement(this, "syncingIcon");
+    WebElement syncingIconText = WebElement(this, "syncingIconText");
 
-    QString className = count < 12 ? (QString("connection-") + QString::number(count)) : "connection-12";
+    if (count <= 0)
+    {
+        syncingIcon.addClass("none");
+        syncingIconText.addClass("invisible");
+    }
+
+    QString className = count <= 0 ? "fa-spin " : "";
+
+    className += count < 12 ? (QString("connection-") + QString::number(count)) : "connection-12";
     connectionIcon.setAttribute("class", className);
 
     QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
@@ -510,15 +527,14 @@ void SpectreGUI::setNumConnections(int count)
 
 void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 {
-    WebElement blocksIcon = WebElement(this, "blocksIcon");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
-    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
+    WebElement syncingIconText = WebElement(this, "syncingIconText");
 
-    // don't show / hide progress bar and its label if we have no connection to the network
+    // don't show / hide syncing icon and its text if we have no connection to the network
     if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
     {
-        syncProgressBar.setAttribute("style", "display:none;");
         syncingIcon.addClass("none");
+        syncingIconText.addClass("invisible");
         return;
     }
 
@@ -529,6 +545,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     QString strStatusBarWarnings = clientModel->getStatusBarWarnings();
     QString tooltip;
 
+    float nPercentageDone = -1;
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
@@ -537,19 +554,17 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                 + tr("Downloading filtered blocks...");
 
         int nRemainingBlocks = nTotalBlocks - pwalletMain->nLastFilteredHeight;
-        float nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
+        nPercentageDone = pwalletMain->nLastFilteredHeight / (nTotalBlocks * 0.01f);
 
         tooltip += "<br>"
                  + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
         count = pwalletMain->nLastFilteredHeight;
-        syncProgressBar.removeAttribute("style");
     } else
     if (count < nTotalBlocks)
     {
         int nRemainingBlocks = nTotalBlocks - count;
-        float nPercentageDone = count / (nTotalBlocks * 0.01f);
-        syncProgressBar.removeAttribute("style");
+        nPercentageDone = count / (nTotalBlocks * 0.01f);
 
         if (strStatusBarWarnings.isEmpty())
         {
@@ -613,8 +628,11 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Up to date") + "<br>" + tooltip;
-        blocksIcon.removeClass("none");
-        syncingIcon.addClass("none");
+
+        syncingIconText.addClass("invisible");
+        syncingIcon.removeClass("fa-spin");
+        syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
+        syncingIcon.removeClass("syncing");
 
         //a js script to change the style property display to none for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -623,14 +641,27 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                 javascript+= "}";
 
         runJavaScript(javascript);
-
-        syncProgressBar.setAttribute("style", "display:none;");
     } else
     {
         tooltip = tr("Catching up...") + "<br>" + tooltip;
 
-        blocksIcon.addClass("none");
-        syncingIcon.removeClass("none");
+        if (nPercentageDone >= 0)
+        {
+            int syncingState = std::floor(nPercentageDone / 5);
+            if (syncingState >= 20)
+                syncingState = 19;
+            syncingIcon.setAttribute("src", "qrc:///assets/svg/syncing-"+ QString::number(syncingState * 5) + ".svg");
+            syncingIcon.addClass("fa-spin");
+            syncingIcon.addClass("syncing");
+            syncingIconText.setContent(QString::number(nPercentageDone, 'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
+            syncingIconText.removeClass("invisible");
+        }
+        else {
+            syncingIconText.addClass("invisible");
+            syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+            syncingIcon.addClass("fa-spin");
+            syncingIcon.addClass("syncing");
+        }
 
         //a js script to change the style property display to inline for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -639,8 +670,6 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                 javascript+= "}";
 
         runJavaScript(javascript);
-
-        syncProgressBar.removeAttribute("style");
     }
 
     if (!text.isEmpty())
@@ -648,12 +677,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         tooltip += "<br>";
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
-
-    blocksIcon.setAttribute("data-title", tooltip);
     syncingIcon.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("value", QString::number(count));
-    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
+    syncingIcon.removeClass("none");
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
