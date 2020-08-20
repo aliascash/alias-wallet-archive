@@ -653,7 +653,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
             syncingIcon.setAttribute("src", "qrc:///assets/svg/syncing-"+ QString::number(syncingState * 5) + ".svg");
             syncingIcon.addClass("fa-spin");
             syncingIcon.addClass("syncing");
-            syncingIconText.setContent(QString::number(nPercentageDone, 'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
+            syncingIconText.setContent(QString::number(nPercentageDone > 99 ? 99 : nPercentageDone, 'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
             syncingIconText.removeClass("invisible");
         }
         else {
