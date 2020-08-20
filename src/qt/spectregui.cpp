@@ -1066,7 +1066,7 @@ void SpectreGUI::updateStakingIcon()
         if (fDebug)
             textDebug = tr(" (last 72 blocks %1)").arg(nNetworkWeightRecent);
 
-        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
+        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Average time between rewards is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
         stakingIcon.addClass("not-staking");
