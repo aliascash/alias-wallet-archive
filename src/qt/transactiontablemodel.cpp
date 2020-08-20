@@ -512,12 +512,12 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
     case TransactionStatus::Confirmed:
         return "fa-check-circle green";
     case TransactionStatus::NotAccepted:
-        return "fa-exclamation-triangle";
+        return "fa-exclamation-triangle grey";
     case TransactionStatus::Conflicted:
         return "fa-exclamation-triangle red";
 
     default:
-        return "fa-question-circle black";
+        return "fa-question-circle grey";
     }
 }
 
