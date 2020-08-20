@@ -1974,7 +1974,7 @@
         <file alias="assets/svg/spinner.svg">src/qt/res/assets/svg/spinner.svg</file>
         <file alias="assets/svg/staking_off.svg">src/qt/res/assets/svg/staking_off.svg</file>
         <file alias="assets/svg/staking.svg">src/qt/res/assets/svg/staking.svg</file>
-        <file alias="assets/svg/synced-100.svg">src/qt/res/assets/svg/synced-100.svg</file>
+        <file alias="assets/svg/syncing-100.svg">src/qt/res/assets/svg/syncing-100.svg</file>
         <file alias="assets/svg/synced.svg">src/qt/res/assets/svg/synced.svg</file>
         <file alias="assets/svg/syncing-0.svg">src/qt/res/assets/svg/syncing-0.svg</file>
         <file alias="assets/svg/syncing-100-bg.svg">src/qt/res/assets/svg/syncing-100-bg.svg</file>
