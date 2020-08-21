@@ -647,13 +647,24 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
         if (nPercentageDone >= 0)
         {
-            int syncingState = std::floor(nPercentageDone / 5);
-            if (syncingState >= 20)
-                syncingState = 19;
-            syncingIcon.setAttribute("src", "qrc:///assets/svg/syncing-"+ QString::number(syncingState * 5) + ".svg");
+            QString svgPercent = nPercentageDone < 2.5 ? "2.5" : nPercentageDone > 95 ? "95" : QString::number(nPercentageDone);
+            QString svgData = "data:image/svg+xml;utf8,"
+                              "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 64 64' style='enable-background:new 0 0 64 64;' xml:space='preserve'>"
+                              "  <style type='text/css'>"
+                              "      .st0{opacity:0.3;stroke:#F38220;enable-background:new;}"
+                              "      .st1{stroke:#F38220;}"
+                              "      .st2{enable-background:new;}"
+                              "  </style>"
+                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='6'/>"
+                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='6' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
+                              "</svg>";
+            syncingIcon.setAttribute("src", svgData);
             syncingIcon.addClass("fa-spin");
             syncingIcon.addClass("syncing");
-            syncingIconText.setContent(QString::number(nPercentageDone > 99 ? 99 : nPercentageDone, 'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
+            syncingIconText.setContent(QString::number(nPercentageDone > 99 ? 99 :
+                                                                              nPercentageDone >= 10 ? std::floor(nPercentageDone) :
+                                                                                                      std::floor(nPercentageDone * 10) / 10
+                                                                                                      ,'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
             syncingIconText.removeClass("invisible");
         }
         else {
