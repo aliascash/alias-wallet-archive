@@ -3,13 +3,11 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
 <style type="text/css">
-	.st0{opacity:0.3;fill:#F38220;enable-background:new    ;}
-	.st1{fill:#F38220;}
+	.st0{opacity:0.3;stroke:#F38220;enable-background:new    ;}
+	.st1{stroke:#F38220;}
+	.st2{enable-background:new    ;}
 </style>
-<path class="st0" d="M32,0.4C14.6,0.4,0.4,14.6,0.4,32S14.5,63.6,32,63.6c17.4,0,31.6-14.1,31.6-31.6C63.6,14.6,49.4,0.4,32,0.4z
-	 M32,57.9C17.7,57.9,6.1,46.3,6.1,32S17.7,6.2,32,6.2S57.8,17.7,57.8,32S46.3,57.9,32,57.9z"/>
-<g>
-	<path class="st1" d="M32,0.4v5.7c14.3,0,25.9,11.6,25.9,25.9S46.3,57.9,32,57.9v5.7c17.4,0,31.6-14.1,31.6-31.6
-		C63.6,14.6,49.4,0.4,32,0.4z"/>
-</g>
+<circle class="st0" cx="32" cy="32" r="29" fill="none" stroke-width="6"/>
+<circle class="st1" cx="32" cy="32" r="29" fill="none" stroke-width="6" stroke-dasharray="calc(50
+ * 182.2124 / 100) 182.2124" transform="rotate(-90) translate(-64)" />
 </svg>
