@@ -110,6 +110,7 @@ private:
     QTimer *pollTimer;
 
     uint64_t nWeight;
+    bool fConnectionInit = true;
 
     /** Create the main UI actions. */
     void createActions();

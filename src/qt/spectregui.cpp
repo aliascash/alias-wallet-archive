@@ -512,8 +512,18 @@ void SpectreGUI::setNumConnections(int count)
 
     if (count <= 0)
     {
+        fConnectionInit = true;
         syncingIcon.addClass("none");
         syncingIconText.addClass("invisible");
+    }
+    else if (fConnectionInit)
+    {
+        fConnectionInit = false;
+        syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+        syncingIcon.setAttribute("data-title", "Checking wallet state with network");
+        syncingIconText.removeClass("syncing");
+        syncingIcon.removeClass("syncing");
+        syncingIcon.removeClass("none");
     }
 
     QString className = count <= 0 ? "fa-spin " : "";
@@ -630,6 +640,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         tooltip = tr("Up to date") + "<br>" + tooltip;
 
         syncingIconText.addClass("invisible");
+        syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("fa-spin");
         syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
         syncingIcon.removeClass("syncing");
@@ -661,6 +672,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
             syncingIcon.setAttribute("src", svgData);
             syncingIcon.addClass("fa-spin");
             syncingIcon.addClass("syncing");
+            syncingIconText.addClass("syncing");
             syncingIconText.setContent(QString::number(nPercentageDone > 99 ? 99 :
                                                                               nPercentageDone >= 10 ? std::floor(nPercentageDone) :
                                                                                                       std::floor(nPercentageDone * 10) / 10
@@ -669,9 +681,10 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         }
         else {
             syncingIconText.addClass("invisible");
+            syncingIconText.removeClass("syncing");
+            syncingIcon.removeClass("syncing");
             syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
             syncingIcon.addClass("fa-spin");
-            syncingIcon.addClass("syncing");
         }
 
         //a js script to change the style property display to inline for all outofsync elements
