@@ -27,8 +27,32 @@ We have implemented a check for DCBs and we have implemented a replay protection
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.x.y (released 2020-??-??)
-- Update to Qt 5.15.0 (Windows / Mac)
+## 4.3.0 (released 2020-??-??)
+- Update to Qt 5.15.1 (Windows / Mac)
+- Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
+- Refactored overall namings according to project rebranding
+- Refactored naming of some RPC methods according to project rebranding:
+  - `sendspectoanon` > `sendpublictoprivate`
+  - `sendanontoanon` > `sendprivate`
+  - `sendanontospec` > `sendprivatetopublic`
+  - `estimateanonfee` > `estimateprivatefee`
+- Renamed some fields on RPC results:
+  - `anonbalance` > `balance_private`
+  - `spectrestake` > `stake_private`
+  - `spectrestakeweight` > `stakeweight_private`
+  - `unconfirmedanonbalance` > `unconfirmedbalance_private`
+  - `spectrestakeweight` > `stakeweight_private`
+  - `anonsupply` > `moneysupply_private`
+- Added new fields to RPC results:
+  - `balance_public`
+  - `stake_public`
+  - `stakeweight_public`
+  - `unconfirmedbalance_public`
+  - `stakeweight_public`
+  - `moneysupply_public`
+- Updated Fedora build to Fedora 32
+- Added build for Ubuntu 20.04
+- Wipe out build for Ubuntu 19.x as it's EOL
 
 ## 4.2.0 (released 2020-05-02)
 - Update to Qt 5.12.8
