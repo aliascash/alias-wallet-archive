@@ -50,6 +50,8 @@ SPDX-License-Identifier: MIT
   - `unconfirmedbalance_public`
   - `stakeweight_public`
   - `moneysupply_public`
+- Complete UI revision based on new style and with many UX improvements
+- Fix: private transaction did cost twice as much fee as effectivly required and shown in confirmation dialog
 - Updated Fedora build to Fedora 32
 - Added build for Ubuntu 20.04
 - Wipe out build for Ubuntu 19.x as it's EOL
