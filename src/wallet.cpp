@@ -4367,7 +4367,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                 nTotalIn += vPickedCoins[ic]->nValue;
             };
 
-            int64_t nChange = nTotalIn - (nValueTest + nFee);
+            int64_t nChange = nTotalIn - nValueTest;
 
 
             CStealthAddress sxChange;
