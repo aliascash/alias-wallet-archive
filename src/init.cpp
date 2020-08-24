@@ -1051,7 +1051,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     InitRPCMining();
 
     // Mine proof-of-stake blocks in the background
-    if (!GetBoolArg("-staking", true))
+    fIsStakingEnabled = GetBoolArg("-staking", true);
+    if (!fIsStakingEnabled && !fHaveGUI)
         LogPrintf("Staking disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "miner", &ThreadStakeMiner, pwalletMain));

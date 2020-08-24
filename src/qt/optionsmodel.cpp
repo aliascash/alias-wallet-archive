@@ -53,7 +53,10 @@ void OptionsModel::Init()
     if (!language.isEmpty())
         SoftSetArg("-lang", language.toStdString());
     if (settings.contains("fStaking"))
+    {
         SoftSetBoolArg("-staking", settings.value("fStaking").toBool());
+        fIsStakingEnabled = settings.value("fStaking").toBool();
+    }
     if (settings.contains("nMinStakeInterval"))
         SoftSetArg("-minstakeinterval", settings.value("nMinStakeInterval").toString().toStdString());
     if (settings.contains("nStakingDonation"))
@@ -258,6 +261,8 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case Staking:
             settings.setValue("fStaking", value.toBool());
+            SoftSetBoolArg("-staking", value.toBool());
+            fIsStakingEnabled = value.toBool();
             break;
         case StakingDonation:
             nStakingDonation = value.toInt();

@@ -102,6 +102,7 @@ extern bool fThinFullIndex;
 extern bool fReindexing;
 extern bool fHaveGUI;
 extern volatile bool fIsStaking;
+extern volatile bool fIsStakingEnabled;
 extern bool fMakeExtKeyInitials;
 extern volatile bool fPassGuiAddresses;
 

@@ -40,6 +40,7 @@ bool fThinFullIndex = false; // when in thin mode don't keep all headers in memo
 bool fReindexing = false;
 bool fHaveGUI = false;
 volatile bool fIsStaking = false; // looks at stake weight also
+volatile bool fIsStakingEnabled = false;
 bool fMakeExtKeyInitials = false;
 volatile bool fPassGuiAddresses = false; // force the gui to process new addresses, gui doesn't update addresses when syncing
 
