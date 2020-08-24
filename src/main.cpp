@@ -887,17 +887,11 @@ bool CTransaction::CheckTransaction() const
 
 int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mode, unsigned int nBytes) const
 {
-    // Base fee is either MIN_TX_FEE or MIN_RELAY_TX_FEE for standard txns, and MIN_TX_FEE_ANON for anon txns
-
-    // -- force GMF_ANON if anon txn
-    if (nVersion == ANON_TXN_VERSION)
-        mode = GMF_ANON;
-
+    // Base fee is either MIN_TX_FEE or MIN_RELAY_TX_FEE for standard txns
     int64_t nBaseFee;
     switch (mode)
     {
         case GMF_RELAY: nBaseFee = nMinRelayTxFee; break;
-        case GMF_ANON:  nBaseFee = nMinTxFeeAnonLegacy;  if (!Params().IsForkV3(nTime)) break;
         default:        nBaseFee = nMinTxFee;       break;
     };
 
@@ -1008,8 +1002,6 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
                 };
 
                 nFees += nSumAnon;
-
-                feeMode = GMF_ANON;
             };
 
 

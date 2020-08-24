@@ -468,7 +468,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         int nTestnetScaleMod = 10;
         nMinTxFee /= nTestnetScaleMod;
-        nMinTxFeeAnonLegacy /= nTestnetScaleMod;
         nMinRelayTxFee /= nTestnetScaleMod;
         nStakeReward /= nTestnetScaleMod;
         nAnonStakeReward /= nTestnetScaleMod;

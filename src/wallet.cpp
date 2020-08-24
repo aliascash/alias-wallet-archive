@@ -4290,7 +4290,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             + GetSizeOfCompactSize((i+1))
             + nByteSizePerInCoin * (i+1);
 
-        nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
+        nFee = wtxNew.GetMinFee(0, GMF_SEND, nTotalBytes);
         if (nFee == MAX_MONEY)
         {
             sError = "The transaction is over the maximum size limit. Create multiple transactions with smaller amounts.";
@@ -4395,7 +4395,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                 + GetSizeOfCompactSize((i+1))
                 + nByteSizePerInCoin * (i+1);
 
-            int64_t nTestFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
+            int64_t nTestFee = wtxNew.GetMinFee(0, GMF_SEND, nTotalBytes);
 
             if (nTestFee > nFee)
             {

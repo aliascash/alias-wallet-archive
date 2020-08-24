@@ -30,7 +30,6 @@ enum GetMinFee_mode
     GMF_BLOCK,
     GMF_RELAY,
     GMF_SEND,
-    GMF_ANON,
 };
 
 class CTransaction;

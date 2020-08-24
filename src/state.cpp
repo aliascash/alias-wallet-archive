@@ -54,7 +54,6 @@ unsigned int nBlockPrioritySize;
 unsigned int nBlockMinSize;
 
 int64_t nMinTxFee = 10000;
-int64_t nMinTxFeeAnonLegacy = 1000000;
 int64_t nMinRelayTxFee = nMinTxFee;
 
 int64_t nStakeReward = 2 * COIN;

@@ -304,7 +304,7 @@ CBlock* CreateNewBlock(CWallet* pwallet, bool fProofOfStake, int64_t* pFees)
                 continue;
 
             // Transaction fee
-            int64_t nMinFee = tx.GetMinFee(nBlockSize, GMF_BLOCK); // will get GMF_ANON if tx.nVersion == ANON_TXN_VERSION
+            int64_t nMinFee = tx.GetMinFee(nBlockSize, GMF_BLOCK);
 
             // Skip free transactions if we're past the minimum block size:
             if (fSortedByFee && (dFeePerKb < nMinTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))

@@ -116,7 +116,6 @@ extern unsigned int nBlockMinSize;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
 extern int64_t nMinTxFee;
-extern int64_t nMinTxFeeAnonLegacy;
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
 extern int64_t nMinRelayTxFee;
 
