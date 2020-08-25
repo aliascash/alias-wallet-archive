@@ -828,6 +828,8 @@ ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_SPECTRECOIN=false
 WITH_TOR=false
 
+defineQtVersionForCurrentDistribution
+
 while getopts c:fgsth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
@@ -840,8 +842,6 @@ while getopts c:fgsth? option; do
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
 done
-
-defineQtVersionForCurrentDistribution
 
 # Go to Spectrecoin repository root directory
 cd ..
