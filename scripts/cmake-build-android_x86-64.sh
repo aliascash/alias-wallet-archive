@@ -84,7 +84,7 @@ BUILD_DIR=cmake-build-cmdline-android${ANDROID_API}_${ANDROID_ARCH}
 helpMe() {
     echo "
 
-    Helper script to build Spectrecoin wallet and daemon using CMake.
+    Helper script to build Alias wallet and daemon using CMake.
     Required library archives will be downloaded once and will be used
     on subsequent builds. This includes also Android NDK.
 
@@ -103,7 +103,7 @@ helpMe() {
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build UI (Qt) components.
-    -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
+    -s  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
@@ -128,7 +128,7 @@ checkOpenSSLArchive(){
 }
 
 # For OpenSSL we're using a fork of https://github.com/viaduck/openssl-cmake
-# with some slight modifications for Spectrecoin
+# with some slight modifications for Alias
 checkOpenSSLClone(){
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
@@ -138,7 +138,7 @@ checkOpenSSLClone(){
         git pull --prune
     else
         info " -> Cloning openssl-cmake"
-        git clone --branch spectrecoin https://github.com/spectrecoin/openssl-cmake.git openssl-cmake
+        git clone --branch alias https://github.com/alias-cash/openssl-cmake.git openssl-cmake
     fi
     cd "${currentDir}"
 }
@@ -903,7 +903,7 @@ fi
 FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
-BUILD_ONLY_SPECTRECOIN=false
+BUILD_ONLY_ALIAS=false
 WITH_TOR=false
 
 while getopts a:c:fgsth? option; do
@@ -913,14 +913,14 @@ while getopts a:c:fgsth? option; do
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
            ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake";;
-        s) BUILD_ONLY_SPECTRECOIN=true;;
+        s) BUILD_ONLY_ALIAS=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
 done
 
-# Go to Spectrecoin repository root directory
+# Go to alias-wallet repository root directory
 cd ..
 
 if [[ ! -d ${BUILD_DIR} ]] ; then
@@ -938,10 +938,10 @@ if ${FULLBUILD} ; then
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
     info " -> Done"
-elif ${BUILD_ONLY_SPECTRECOIN} ; then
+elif ${BUILD_ONLY_ALIAS} ; then
     info ""
-    info "Cleanup spectrecoin folder from previous build run"
-    rm -rf ./spectrecoin
+    info "Cleanup alias folder from previous build run"
+    rm -rf ./aliaswallet
     info " -> Done"
 fi
 
@@ -960,11 +960,11 @@ if ${ENABLE_GUI} ; then
     checkQt
 fi
 
-mkdir -p ${BUILD_DIR}/spectrecoin
-cd ${BUILD_DIR}/spectrecoin
+mkdir -p ${BUILD_DIR}/aliaswallet
+cd ${BUILD_DIR}/aliaswallet
 
 info ""
-info "Generating Spectrecoin build configuration"
+info "Generating Alias build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DANDROID=1 \

@@ -77,7 +77,7 @@ BUILD_DIR=cmake-build-mac-cmdline
 helpMe() {
     echo "
 
-    Helper script to build Spectrecoin wallet and daemon using CMake.
+    Helper script to build Alias wallet and daemon using CMake.
     Required library archives will be downloaded once and will be used
     on subsequent builds.
 
@@ -96,7 +96,7 @@ helpMe() {
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build UI (Qt) components.
-    -s  Perfom only Spectrecoin fullbuild. Only the spectrecoin buildfolder
+    -s  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
@@ -121,7 +121,7 @@ checkOpenSSLArchive(){
 }
 
 # For OpenSSL we're using a fork of https://github.com/viaduck/openssl-cmake
-# with some slight modifications for Spectrecoin
+# with some slight modifications for Alias
 checkOpenSSLClone(){
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
@@ -131,7 +131,7 @@ checkOpenSSLClone(){
         git pull --prune
     else
         info " -> Cloning openssl-cmake"
-        git clone --branch spectrecoin https://github.com/spectrecoin/openssl-cmake.git openssl-cmake
+        git clone --branch alias https://github.com/alias-cash/openssl-cmake.git openssl-cmake
     fi
     cd "${currentDir}"
 }
@@ -365,7 +365,7 @@ cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
     -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
-    -DEVENT__DISABLE_TESTS=ON
+    -DEVENT__DISABLE_TESTS=ON \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
 EOM
@@ -743,7 +743,7 @@ fi
 FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
-BUILD_ONLY_SPECTRECOIN=false
+BUILD_ONLY_ALIAS=false
 WITH_TOR=false
 
 while getopts c:fgsth? option; do
@@ -752,14 +752,14 @@ while getopts c:fgsth? option; do
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
            ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_INSTALLATION_DIR}/lib/cmake";;
-        s) BUILD_ONLY_SPECTRECOIN=true;;
+        s) BUILD_ONLY_ALIAS=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
     esac
 done
 
-# Go to Spectrecoin repository root directory
+# Go to alias-wallet repository root directory
 cd ..
 
 if [[ ! -d ${BUILD_DIR} ]] ; then
@@ -777,10 +777,10 @@ if ${FULLBUILD} ; then
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
     info " -> Done"
-elif ${BUILD_ONLY_SPECTRECOIN} ; then
+elif ${BUILD_ONLY_ALIAS} ; then
     info ""
-    info "Cleanup spectrecoin folder from previous build run"
-    rm -rf ./spectrecoin
+    info "Cleanup alias folder from previous build run"
+    rm -rf ./aliaswallet
     info " -> Done"
 fi
 
@@ -800,11 +800,11 @@ if ${ENABLE_GUI} ; then
     checkQt
 fi
 
-mkdir -p ${BUILD_DIR}/spectrecoin
-cd ${BUILD_DIR}/spectrecoin
+mkdir -p ${BUILD_DIR}/aliaswallet
+cd ${BUILD_DIR}/aliaswallet
 
 info ""
-info "Generating Spectrecoin build configuration"
+info "Generating Alias build configuration"
 read -r -d '' cmd << EOM
 cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
@@ -857,9 +857,9 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Spectrecoin binaries built"
+    info " -> Finished"
 else
-    die 50 " => Binary build finished with return code ${rtc}"
+    error " => Finished with return code ${rtc}"
 fi
 
 info ""
@@ -880,7 +880,7 @@ info ""
 info "Executing MacDeployQT (preparation):"
 read -r -d '' cmd << EOM
 ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Spectrecoin.app/ \
+    src/Alias.app/ \
     -qmldir=${ownLocation}/../src/qt/res \
     -always-overwrite \
     -verbose=2
@@ -894,7 +894,7 @@ info ""
 info 'Executing MacDeployQT (create *.dmg):'
 read -r -d '' cmd << EOM
 ${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Spectrecoin.app/ \
+    src/Alias.app/ \
     -dmg \
     -always-overwrite \
     -verbose=2
@@ -907,9 +907,9 @@ rtc=$?
 
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished: ${BUILD_DIR}/spectrecoin/src/Spectrecoin.dmg"
+    info " -> Finished: ${BUILD_DIR}/alias/src/Alias.dmg"
 else
-    die 50 " => Creation of Spectrecoin.dmg failed with return code ${rtc}"
+    die 50 " => Creation of Alias.dmg failed with return code ${rtc}"
 fi
 
 cd "${callDir}" || die 1 "Unable to cd back to where we came from (${callDir})"

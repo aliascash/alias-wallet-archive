@@ -30,7 +30,7 @@ dir
 
 echo on
 
-del "%OUT_DIR%\Spectrecoin.exe" 2>nul
+del "%OUT_DIR%\Alias.exe" 2>nul
 rmdir /S /Q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 mkdir "%BUILD_DIR%"
@@ -47,10 +47,10 @@ nmake || goto :ERROR
 
 popd
 
-%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res --qml --quick --webengine "%OUT_DIR%\Spectrecoin.exe" || goto :ERROR
+%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res --qml --quick --webengine "%OUT_DIR%\Alias.exe" || goto :ERROR
 
-::ren "%OUT_DIR%" Spectrecoin
-::echo "The prepared package is in: %SRC_DIR%\Spectrecoin"
+::ren "%OUT_DIR%" Alias
+::echo "The prepared package is in: %SRC_DIR%\Alias"
 
 echo "Everything is OK"
 GOTO END
