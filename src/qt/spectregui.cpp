@@ -610,7 +610,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         bridge->networkAlert(strStatusBarWarnings);
 
     QDateTime lastBlockDate = clientModel->getLastBlockDate();
-    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime());
+    int secs = lastBlockDate.secsTo(QDateTime::currentDateTime().addSecs(GetTimeOffset()));
     QString text;
 
     // Represent time from last generated block in human readable text
