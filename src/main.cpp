@@ -5372,7 +5372,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         LogPrint("net", "receive version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", pfrom->nVersion, pfrom->nChainHeight, addrMe.ToString(), addrFrom.ToString(), pfrom->addr.ToString());
 
+        LOCK(cs_main);
         cPeerBlockCounts.input(pfrom->nChainHeight);
+
+        BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ? pindexBest->GetBlockTime() : pindexBestHeader->GetBlockTime()};
+        uiInterface.NotifyBlocksChanged(blockChangedEvent);
     }
 
 
