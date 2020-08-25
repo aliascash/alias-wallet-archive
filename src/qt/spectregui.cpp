@@ -551,6 +551,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         return;
     }
 
+    fConnectionInit = false;
+
     // -- translation (tr()) makes it difficult to neatly pick block/header
     static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
     static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
