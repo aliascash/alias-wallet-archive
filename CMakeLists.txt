@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.14)
-project(Spectrecoin
+project(Alias
         VERSION 4.0
         LANGUAGES
         CXX

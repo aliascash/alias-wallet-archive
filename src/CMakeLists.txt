@@ -20,11 +20,11 @@ configure_file(
 set(DUMMY_SOURCE ${CMAKE_BINARY_DIR}/dummy.c)
 file(WRITE ${DUMMY_SOURCE} "")
 
-add_library(spectrecoin_lib
+add_library(aliaswallet_lib
         OBJECT
         ${DUMMY_SOURCE})
 
-target_link_libraries(spectrecoin_lib
+target_link_libraries(aliaswallet_lib
         Oracle::BerkeleyDB
         leveldb::leveldb
         OpenSSL::SSL
@@ -41,7 +41,7 @@ target_link_libraries(spectrecoin_lib
         Boost::thread
         )
 
-target_include_directories(spectrecoin_lib
+target_include_directories(aliaswallet_lib
         SYSTEM BEFORE PUBLIC
         ${PROJECT_BINARY_DIR}/usr/local/include
         ${PROJECT_BINARY_DIR}/libdb/libdb-install/include
@@ -50,7 +50,7 @@ target_include_directories(spectrecoin_lib
         )
 
 # Common sources
-target_sources(spectrecoin_lib
+target_sources(aliaswallet_lib
         PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/addrman.h
         ${CMAKE_CURRENT_LIST_DIR}/alert.h
@@ -174,54 +174,54 @@ endif ()
 ##### Setup and link the executables #########################################
 
 # The daemon
-add_executable(Spectrecoind ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
+add_executable(Aliaswalletd ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # On Mac without "-static"
-    target_link_libraries(Spectrecoind
+    target_link_libraries(Aliaswalletd
             OpenSSL::SSL
             OpenSSL::Crypto
             Oracle::BerkeleyDB
             leveldb::leveldb
-            spectrecoin_lib
+            aliaswallet_lib
             )
 else()
     # Link the daemon as static binary
-    target_link_libraries(Spectrecoind
+    target_link_libraries(Aliaswalletd
             OpenSSL::SSL
             OpenSSL::Crypto
             Oracle::BerkeleyDB
             leveldb::leveldb
-            spectrecoin_lib
+            aliaswallet_lib
             -static
             )
 endif()
 
 if (ENABLE_GUI)
     if (ANDROID)
-        # Create a shared library 'libSpectrecoin_<arch>.so'
-        add_library(Spectrecoin
+        # Create a shared library 'libAliaswallet_<arch>.so'
+        add_library(Aliaswallet
                 SHARED
                 ../spectre.qrc
                 ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
                 )
-#        set_target_properties(Spectrecoin
+#        set_target_properties(Aliaswallet
 #                PROPERTIES
-#                OUTPUT_NAME "Spectrecoin_${CMAKE_ANDROID_ARCH}"
+#                OUTPUT_NAME "Aliaswallet_${CMAKE_ANDROID_ARCH}"
 #                )
-        install(TARGETS Spectrecoin
+        install(TARGETS Aliaswallet
             LIBRARY DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
             ARCHIVE DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
             )
 
         # Link the UI wallet
         # QtWebEngine not static available, so no static binary here :-(
-        target_link_libraries(Spectrecoin
+        target_link_libraries(Aliaswallet
                 OpenSSL::SSL
                 OpenSSL::Crypto
                 Oracle::BerkeleyDB
                 leveldb::leveldb
-                spectrecoin_lib
+                aliaswallet_lib
                 Qt5::Core
                 Qt5::Widgets
                 Qt5::WebView
@@ -232,7 +232,7 @@ if (ENABLE_GUI)
                 Qt5::Svg
                 )
 
-        target_sources(Spectrecoin
+        target_sources(Aliaswallet
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
@@ -305,19 +305,19 @@ if (ENABLE_GUI)
     else()
         # The UI wallet
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            add_executable(Spectrecoin MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            add_executable(Aliaswallet MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
         else()
-            add_executable(Spectrecoin ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
         endif()
 
         # Link the UI wallet
         # QtWebEngine not static available, so no static binary here :-(
-        target_link_libraries(Spectrecoin
+        target_link_libraries(Aliaswallet
                 OpenSSL::SSL
                 OpenSSL::Crypto
                 Oracle::BerkeleyDB
                 leveldb::leveldb
-                spectrecoin_lib
+                aliaswallet_lib
                 Qt5::Core
                 Qt5::Widgets
                 Qt5::WebView
@@ -328,7 +328,7 @@ if (ENABLE_GUI)
                 Qt5::Svg
                 )
 
-        target_sources(Spectrecoin
+        target_sources(Aliaswallet
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
@@ -400,7 +400,7 @@ if (ENABLE_GUI)
                 )
 
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            target_sources(Spectrecoin
+            target_sources(Aliaswallet
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.h
@@ -408,26 +408,26 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/macdockiconhandler.mm
                 ${CMAKE_CURRENT_LIST_DIR}/qt/macnotificationhandler.mm
                 )
-            set_target_properties(Spectrecoin PROPERTIES
-                MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}${DBG_EXTENSION} Version ${VERSION_STRING}, © 2016 The Spectrecoin (XSPEC) developers."
+            set_target_properties(Aliaswallet PROPERTIES
+                MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}${DBG_EXTENSION} Version ${VERSION_STRING}, © 2020 The Alias developers."
                 MACOSX_BUNDLE_GUI_IDENTIFIER "${PROJECT_NAME}${DBG_EXTENSION}"
                 MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_NAME}${DBG_EXTENSION} Version ${VERSION_STRING}"
                 MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME}${DBG_EXTENSION}
                 MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION_STRING}
                 MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_STRING}
-                MACOSX_BUNDLE_COPYRIGHT " © 2016 The Spectrecoin (XSPEC) developers"
+                MACOSX_BUNDLE_COPYRIGHT " © 2020 The Alias developers"
                 MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in
                 )
-            target_link_libraries(Spectrecoin "-framework AppKit")
+            target_link_libraries(Aliaswallet "-framework AppKit")
         endif()
         if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            target_sources(Spectrecoin
+            target_sources(Aliaswallet
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.h
                 PRIVATE
                 ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.cpp
                 )
-            target_link_libraries(Spectrecoin "Shlwapi")
+            target_link_libraries(Aliaswallet "Shlwapi")
         endif()
     endif()
 endif ()

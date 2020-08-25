@@ -1,9 +1,13 @@
 #!/bin/bash
 # ===========================================================================
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # Created: 2019-10-22 HLXEasy
 #
-# This script can be used to build Spectrecoin for Android using CMake
+# This script can be used to build Alias for Android using CMake
 #
 # ===========================================================================
 

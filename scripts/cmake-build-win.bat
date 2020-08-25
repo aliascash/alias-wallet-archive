@@ -1,4 +1,14 @@
-:: Helper script to build Spectrecoin on Windows using VS2017 and QT.
+:: ===========================================================================
+::
+:: SPDX-FileCopyrightText: © 2020 Alias Developers
+:: SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+:: SPDX-License-Identifier: MIT
+::
+:: Created: 2019-10-22 HLXEasy
+::
+:: Helper script to build Alias on Windows using VS2019 and QT.
+::
+:: ===========================================================================
 
 IF "%QTDIR%" == "" GOTO NOQT
 :YESQT

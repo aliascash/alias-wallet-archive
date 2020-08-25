@@ -1,9 +1,11 @@
 #!/bin/bash
 # ===========================================================================
 #
-# Created: 2019-11-30 HLXEasy
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
-# This script can be used to build Spectrecoin using CMake
+# Created: 2019-11-30 HLXEasy
 #
 # ===========================================================================
 
