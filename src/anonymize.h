@@ -1,6 +1,8 @@
-/* Copyright (c) 2014, BritCoin Developers */
-// Copyright (c) 2016-2019 The Spectrecoin developers
-/* See LICENSE for licensing information */
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2013 BritCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 /**
  * \file anonymize.h

@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "editaddressdialog.h"
 #include "ui_editaddressdialog.h"
@@ -117,7 +118,7 @@ void EditAddressDialog::accept()
             break;
         case AddressTableModel::INVALID_ADDRESS:
             QMessageBox::warning(this, windowTitle(),
-                tr("The entered address \"%1\" is not a valid Spectrecoin address.").arg(ui->addressEdit->text()),
+                tr("The entered address \"%1\" is not a valid Alias address.").arg(ui->addressEdit->text()),
                 QMessageBox::Ok, QMessageBox::Ok);
             break;
         case AddressTableModel::DUPLICATE_ADDRESS:

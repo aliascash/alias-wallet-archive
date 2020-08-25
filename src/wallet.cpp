@@ -1,8 +1,12 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+// SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+// SPDX-FileCopyrightText: © 2011 PPCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "txdb.h"
 #include "wallet.h"
@@ -576,7 +580,7 @@ void CWallet::WalletUpdateSpent(const CTransaction &tx, bool fBlock)
                 } else
                 if (!wtx.IsSpent(txin.prevout.n) && IsMine(wtx.vout[txin.prevout.n]))
                 {
-                    LogPrintf("WalletUpdateSpent found spent coin %s XSPEC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    LogPrintf("WalletUpdateSpent found spent coin %s ALIAS (public) %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkSpent(txin.prevout.n);
                     wtx.WriteToDisk();
                     NotifyTransactionChanged(this, txin.prevout.hash, CT_UPDATED);
@@ -1196,17 +1200,17 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         nFee = nDebit - nValueOut;
     };
 
-    Currency currencyDestination = XSPEC;
-    Currency currencySource = XSPEC;
+    Currency currencyDestination = PUBLIC;
+    Currency currencySource = PUBLIC;
 
     if (IsAnonCoinStake())
-        currencySource = SPECTRE;
+        currencySource = PRIVATE;
     else
         for(const CTxIn& txin: vin)
         {
             if (txin.IsAnonInput())
             {
-                currencySource = SPECTRE;
+                currencySource = PRIVATE;
                 break;
             }
         }
@@ -1237,7 +1241,7 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
         if (nVersion == ANON_TXN_VERSION
             && txout.IsAnonOutput())
         {
-            currencyDestination = SPECTRE;
+            currencyDestination = PRIVATE;
 
             CKeyID ckidD = txout.ExtractAnonPk().GetID();
 
@@ -1792,7 +1796,7 @@ void CWallet::ReacceptWalletTransactions()
 
                 if (fUpdated)
                 {
-                    LogPrintf("ReacceptWalletTransactions found spent coin %s XSPEC %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
+                    LogPrintf("ReacceptWalletTransactions found spent coin %s ALIAS (public) %s\n", FormatMoney(wtx.GetCredit()).c_str(), wtx.GetHash().ToString().c_str());
                     wtx.MarkDirty();
                     wtx.WriteToDisk();
                 };
@@ -4286,7 +4290,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
             + GetSizeOfCompactSize((i+1))
             + nByteSizePerInCoin * (i+1);
 
-        nFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
+        nFee = wtxNew.GetMinFee(0, GMF_SEND, nTotalBytes);
         if (nFee == MAX_MONEY)
         {
             sError = "The transaction is over the maximum size limit. Create multiple transactions with smaller amounts.";
@@ -4363,7 +4367,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                 nTotalIn += vPickedCoins[ic]->nValue;
             };
 
-            int64_t nChange = nTotalIn - (nValueTest + nFee);
+            int64_t nChange = nTotalIn - nValueTest;
 
 
             CStealthAddress sxChange;
@@ -4391,7 +4395,7 @@ int CWallet::PickAnonInputs(int rsType, int64_t nValue, int64_t& nFee, int nRing
                 + GetSizeOfCompactSize((i+1))
                 + nByteSizePerInCoin * (i+1);
 
-            int64_t nTestFee = wtxNew.GetMinFee(0, GMF_ANON, nTotalBytes);
+            int64_t nTestFee = wtxNew.GetMinFee(0, GMF_SEND, nTotalBytes);
 
             if (nTestFee > nFee)
             {
@@ -4983,7 +4987,7 @@ bool CWallet::SendSpecToAnon(CStealthAddress& sxAddress, int64_t nValue, std::st
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -5086,7 +5090,7 @@ bool CWallet::SendAnonToAnon(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -5176,7 +5180,7 @@ bool CWallet::SendAnonToSpec(CStealthAddress& sxAddress, int64_t nValue, int nRi
 
     if (vNodes.empty())
     {
-        sError = _("Error: Spectrecoin is not connected!");
+        sError = _("Error: Alias is not connected!");
         return false;
     };
 
@@ -5707,7 +5711,7 @@ int CWallet::CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFil
     return 0;
 };
 
-int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight)
+int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     auto start = std::chrono::high_resolution_clock::now();
     int64_t nTotalAoRead = 0;
@@ -5740,8 +5744,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
     ssStartKey << make_pair(string("ao"), pkZero);
     iterator->Seek(ssStartKey.str());
 
+    uint32_t count = 0;
     while (iterator->Valid())
     {   
+         if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(0, count);
+         count++;
+
         // Unpack keys and values.
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
@@ -5830,6 +5838,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
 
         iterator->Next();
     };
+    if (funcProgress) funcProgress(0, count);
 
     delete iterator;
 
@@ -5841,8 +5850,12 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
     ssStartKey << make_pair(string("ki"), pkZero);
     iterator->Seek(ssStartKey.str());
 
+    count = 0;
     while (iterator->Valid())
     {   
+        if (funcProgress && count != 0 && count % 10000 == 0) funcProgress(1, count);
+        count++;
+
         CDataStream ssKey(SER_DISK, CLIENT_VERSION);
         ssKey.write(iterator->key().data(), iterator->key().size());
         string strType;
@@ -5877,6 +5890,7 @@ int CWallet::CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int
 
         iterator->Next();
     };
+    if (funcProgress) funcProgress(1, count);
 
     delete iterator;
 
@@ -6272,7 +6286,7 @@ bool CWallet::RemoveAnonStats(CTxDB& txdb, int nBlockHeight)
     return true;
 }
 
-bool CWallet::CacheAnonStats(int nBlockHeight)
+bool CWallet::CacheAnonStats(int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     if (fDebugRingSig)
         LogPrintf("CacheAnonStats(%d)\n", nBlockHeight);
@@ -6280,7 +6294,7 @@ bool CWallet::CacheAnonStats(int nBlockHeight)
     AssertLockHeld(cs_main);
 
     std::list<CAnonOutputCount> lOutputCounts;
-    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight) != 0)
+    if (CountAllAnonOutputs(lOutputCounts, nBlockHeight, funcProgress) != 0)
     {
         LogPrintf("Error: CountAllAnonOutputs() failed.\n");
         return false;
@@ -7668,7 +7682,7 @@ void CWallet::FixSpentCoins(int& nMismatchFound, int64_t& nBalanceInQuestion, bo
         {
             if (IsMine(pcoin->vout[n]) && pcoin->IsSpent(n) && (txindex.vSpent.size() <= n || txindex.vSpent[n].IsNull()))
             {
-                LogPrintf("FixSpentCoins found lost coin %s XSPEC %s[%d], %s\n",
+                LogPrintf("FixSpentCoins found lost coin %s ALIAS (public) %s[%d], %s\n",
                     FormatMoney(pcoin->vout[n].nValue).c_str(), pcoin->GetHash().ToString().c_str(), n, fCheckOnly? "repair not attempted" : "repairing");
                 nMismatchFound++;
                 nBalanceInQuestion += pcoin->vout[n].nValue;
@@ -7680,7 +7694,7 @@ void CWallet::FixSpentCoins(int& nMismatchFound, int64_t& nBalanceInQuestion, bo
             } else
             if (IsMine(pcoin->vout[n]) && !pcoin->IsSpent(n) && (txindex.vSpent.size() > n && !txindex.vSpent[n].IsNull()))
             {
-                LogPrintf("FixSpentCoins found spent coin %s XSPEC %s[%d], %s\n",
+                LogPrintf("FixSpentCoins found spent coin %s ALIAS (public) %s[%d], %s\n",
                     FormatMoney(pcoin->vout[n].nValue).c_str(), pcoin->GetHash().ToString().c_str(), n, fCheckOnly? "repair not attempted" : "repairing");
                 nMismatchFound++;
                 nBalanceInQuestion += pcoin->vout[n].nValue;
@@ -8656,7 +8670,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
             if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY_BTC))
             {
                 pwdb->TxnAbort();
-                return errorN(1, "-bip44key defines invalid key. Key must begin with Spectrecoin prefix.");
+                return errorN(1, "-bip44key defines invalid key. Key must begin with Alias prefix.");
             }
             ekBip44 = eKey58.GetKey().GetExtKey();
             LogPrintf("Using given -bip44key for initial master key.\n");
@@ -8699,7 +8713,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
     }
 
     CEKAStealthKey aks;
-    string strLbl = "Default Stealth Address";
+    string strLbl = "Default Private Address";
     if (0 != NewStealthKeyFromAccount(pwdb, idDefaultAccount, strLbl, aks))
     {
         pwdb->TxnAbort();
@@ -8712,7 +8726,7 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
         return errorN(1, "TxnCommit failed.");
     };
 
-    SetAddressBookName(CBitcoinAddress(newKey.GetID()).Get(), "Default Address", NULL, true, true);
+    SetAddressBookName(CBitcoinAddress(newKey.GetID()).Get(), "Default Public Address", NULL, true, true);
 
     return 0;
 }

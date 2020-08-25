@@ -1,7 +1,8 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectregui.h"
 #include "clientmodel.h"
@@ -93,7 +94,7 @@ static void InitMessage(const std::string &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message) + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
         QApplication::instance()->processEvents();
     }
 }
@@ -111,7 +112,7 @@ static std::string Translate(const char* psz)
 static void handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Spectrecoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
+    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Alias can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
 }
 
@@ -147,11 +148,19 @@ int main(int argc, char *argv[])
     fTestNet = GetBoolArg("-testnet", false);
     if (!SelectParamsFromCommandLine())
     {
-        QMessageBox::critical(0, "Spectrecoin", QString("Error: Invalid combination of -testnet and -regtest."));
+        QMessageBox::critical(0, "Alias", QString("Error: Invalid combination of -testnet and -regtest."));
         return 1;
     }
 
     QApplication app(argc, argv);
+
+    // Set global styles
+    app.setStyleSheet("a {color: #f28321; }");
+    QPalette newPal(app.palette());
+    newPal.setColor(QPalette::Link, QColor(242, 131, 33));
+    newPal.setColor(QPalette::LinkVisited, QColor(242, 131, 33));
+    app.setPalette(newPal);
+
     QtWebView::initialize();
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
@@ -168,12 +177,12 @@ int main(int argc, char *argv[])
         qApp->installNativeEventFilter(new WinShutdownMonitor());
     #endif
 
-    // ... then spectrecoin.conf:
+    // ... then alias.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
         // (which not yet possible because lang=XX can be overridden in bitcoin.conf in the data directory)
-        QMessageBox::critical(0, "Spectrecoin",
+        QMessageBox::critical(0, "Alias",
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
@@ -181,12 +190,12 @@ int main(int argc, char *argv[])
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
-    app.setOrganizationName("The Spectrecoin Project");
-    app.setOrganizationDomain("spectreproject.io");
+    app.setOrganizationName("The Alias Foundation");
+    app.setOrganizationDomain("alias.cash");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        app.setApplicationName("Spectrecoin-testnet");
+        app.setApplicationName("Alias-testnet");
     else
-        app.setApplicationName("Spectrecoin");
+        app.setApplicationName("Alias");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
@@ -253,7 +262,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    QSplashScreen splash(QPixmap(":/images/splash"), 0);
+    QSplashScreen splash(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(62, 87, 476, 476)));
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);
@@ -267,7 +276,7 @@ int main(int argc, char *argv[])
 
     //---- Create webSocket server for JavaScript client
     QWebSocketServer server(
-        QStringLiteral("Spectrecoin Websocket Server"),
+        QStringLiteral("Alias Websocket Server"),
         QWebSocketServer::NonSecureMode
     );
     if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT)) {
@@ -298,7 +307,7 @@ int main(int argc, char *argv[])
 
         // Periodically check if shutdown was requested to properly quit the Qt application
         #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Alias Core did't yet exit safely..."), (HWND)window.winId());
         #endif
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
@@ -311,7 +320,7 @@ int main(int argc, char *argv[])
                 // Get locks upfront, to make sure we can completly setup our client before core sends notifications
                 ENTER_CRITICAL_SECTION(cs_main); // no RAII
                 ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
-                
+
                 paymentServer->setOptionsModel(&optionsModel);
 
                 ClientModel clientModel(&optionsModel);
@@ -348,7 +357,7 @@ int main(int argc, char *argv[])
                     QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
                     QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
                 }
- 
+
                // Release lock before starting event processing, otherwise lock would never be released
                LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
                LEAVE_CRITICAL_SECTION(cs_main);
@@ -364,7 +373,7 @@ int main(int argc, char *argv[])
                 guiref = 0;
             }
             // Shutdown the core and its threads, but don't exit Qt here
-            LogPrintf("Spectrecoin shutdown.\n\n");
+            LogPrintf("Alias shutdown.\n\n");
             std::cout << "interrupt_all\n";
             threadGroup.interrupt_all();
             std::cout << "join_all\n";

@@ -1,6 +1,10 @@
 #!/bin/bash
 # ===========================================================================
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # Created: 2019-01-22 HLXEasy
 #
 # Helper script to create checksums for given file (1st parameter)
@@ -18,24 +22,24 @@ else
     echo "### ${releaseDescription}" > ${workspace}/releaseNotesToDeploy.txt
 fi
 for currentChecksumfile in \
-    Checksum-Spectrecoin-CentOS.txt \
-    Checksum-Spectrecoin-Debian-Buster.txt \
-    Checksum-Spectrecoin-Debian-Stretch.txt \
-    Checksum-Spectrecoin-Fedora.txt \
-    Checksum-Spectrecoin-Mac.txt \
-    Checksum-Spectrecoin-Mac-OBFS4.txt \
-    Checksum-Spectrecoin-RaspberryPi-Buster.txt \
-    Checksum-Spectrecoin-RaspberryPi-Stretch.txt \
-    Checksum-Spectrecoin-Ubuntu-18-04.txt \
-    Checksum-Spectrecoin-Ubuntu-19-04.txt \
-    Checksum-Spectrecoin-Ubuntu-19-10.txt \
-    Checksum-Spectrecoin-Win64.txt \
-    Checksum-Spectrecoin-Win64-OBFS4.txt \
-    Checksum-Spectrecoin-Win64-Qt5.12.txt \
-    Checksum-Spectrecoin-Win64-Qt5.12-OBFS4.txt \
-    Checksum-Spectrecoin-Win64-Qt5.9.6.txt \
-    Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt ; do
-#    wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
+    Checksum-Aliaswallet-CentOS.txt \
+    Checksum-Aliaswallet-Debian-Buster.txt \
+    Checksum-Aliaswallet-Debian-Stretch.txt \
+    Checksum-Aliaswallet-Fedora.txt \
+    Checksum-Aliaswallet-Mac.txt \
+    Checksum-Aliaswallet-Mac-OBFS4.txt \
+    Checksum-Aliaswallet-RaspberryPi-Buster.txt \
+    Checksum-Aliaswallet-RaspberryPi-Stretch.txt \
+    Checksum-Aliaswallet-Ubuntu-18-04.txt \
+    Checksum-Aliaswallet-Ubuntu-19-04.txt \
+    Checksum-Aliaswallet-Ubuntu-19-10.txt \
+    Checksum-Aliaswallet-Win64.txt \
+    Checksum-Aliaswallet-Win64-OBFS4.txt \
+    Checksum-Aliaswallet-Win64-Qt5.12.txt \
+    Checksum-Aliaswallet-Win64-Qt5.12-OBFS4.txt \
+    Checksum-Aliaswallet-Win64-Qt5.9.6.txt \
+    Checksum-Aliaswallet-Win64-Qt5.9.6-OBFS4.txt ; do
+#    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
     wget ${jobURL}/artifact/${currentChecksumfile} || true
     if test -e "${currentChecksumfile}" ; then
         archiveFilename=$(cat ${currentChecksumfile} | cut -d ' ' -f1)

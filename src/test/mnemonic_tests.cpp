@@ -1,6 +1,8 @@
-// Copyright (c) 2015 The ShadowCoin developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <boost/test/unit_test.hpp>
 
@@ -31,14 +33,14 @@ Object read_json_object(const std::string &filename)
 {
     namespace fs = boost::filesystem;
     fs::path testFile = fs::current_path() / "test" / "data" / filename;
-    
+
 #ifdef TEST_DATA_DIR
     if (!fs::exists(testFile))
     {
         testFile = fs::path(BOOST_PP_STRINGIZE(TEST_DATA_DIR)) / filename;
     }
 #endif
-    
+
     std::ifstream ifs(testFile.string().c_str(), std::ifstream::in);
     Value v;
     if (!read_stream(ifs, v))
@@ -49,13 +51,13 @@ Object read_json_object(const std::string &filename)
             BOOST_ERROR("JSON syntax error in " << filename);
         return Object();
     };
-    
+
     if (v.type() != obj_type)
     {
         BOOST_ERROR(filename << " does not contain a json object");
         return Object();
     };
-    
+
     return v.get_obj();
 };
 
@@ -64,7 +66,7 @@ Object read_json_object(const std::string &filename)
 void TestMnemonic(int nLanguage, const Array &va)
 {
     std::string sError;
-    
+
     std::string sEntropy = va[0].get_str();
     std::string sWords = va[1].get_str();
     std::string sSeed;
@@ -78,41 +80,41 @@ void TestMnemonic(int nLanguage, const Array &va)
         sPassphrase = "TREZOR";
         sSeed = va[2].get_str();
     };
-    
+
     //BOOST_TEST_MESSAGE("sEntropy " << sEntropy);
     //BOOST_TEST_MESSAGE("sWords " << sWords);
     //BOOST_TEST_MESSAGE("sSeed " << sSeed);
     //BOOST_TEST_MESSAGE("sPassphrase " << sPassphrase);
-    
+
     std::vector<uint8_t> vEntropy = ParseHex(sEntropy);
     std::vector<uint8_t> vEntropyTest;
-    
+
     std::string sWordsTest;
     BOOST_CHECK_MESSAGE(0 == MnemonicEncode(nLanguage, vEntropy, sWordsTest, sError), "MnemonicEncode: " << sError);
-    
+
     BOOST_CHECK(sWords == sWordsTest);
-    
+
     BOOST_CHECK_MESSAGE(0 == MnemonicDecode(-1, sWords, vEntropyTest, sError), "MnemonicDecode: " << sError);
     BOOST_CHECK(vEntropy == vEntropyTest);
-    
+
     std::vector<uint8_t> vSeed = ParseHex(sSeed);
     std::vector<uint8_t> vSeedTest;
-    
+
     BOOST_CHECK(0 == MnemonicToSeed(sWords, sPassphrase, vSeedTest));
     BOOST_CHECK(vSeed == vSeedTest);
     //BOOST_TEST_MESSAGE("vSeedTest " << HexStr(vSeedTest));
-    
+
     if (va.size() > 4)
     {
         CExtKey58 eKey58;
         std::string sExtKey = va[4].get_str();
-        
+
         CExtKey ekTest;
         ekTest.SetMaster(&vSeed[0], vSeed.size());
-        
+
         eKey58.SetKey(ekTest, CChainParams::EXT_SECRET_KEY_BTC);
         BOOST_CHECK(eKey58.ToString() == sExtKey);
-        
+
         //BOOST_TEST_MESSAGE("sExtKey " << sExtKey);
         //BOOST_TEST_MESSAGE("eKey58  " << eKey58.ToString());
     };
@@ -125,20 +127,20 @@ void RunMnemonicTests()
     std::string sWords = "legals winner thank year wave sausage worth useful legal winner thank yellow";
     std::string sError;
     BOOST_CHECK_MESSAGE(3 == MnemonicDecode(-1, sWords, vEntropy, sError), "MnemonicDecode: " << sError);
-    
+
     sWords = "winner legal thank year wave sausage worth useful legal winner thank yellow";
     BOOST_CHECK_MESSAGE(5 == MnemonicDecode(-1, sWords, vEntropy, sError), "MnemonicDecode: " << sError);
-    
+
     Object vectors = read_json_object("bip39_vectors.json");
-    
+
     int nLanguage;
     for (Object::size_type i = 0; i < vectors.size(); ++i)
-    {   
+    {
         const Pair &pair = vectors[i];
         const std::string &name = pair.name_;
-        
+
         BOOST_TEST_MESSAGE("Language: " << name);
-        
+
         if (name == "english")
             nLanguage = WLL_ENGLISH;
         else
@@ -146,17 +148,17 @@ void RunMnemonicTests()
             nLanguage = WLL_JAPANESE;
         else
             nLanguage = -1;
-        
+
         BOOST_CHECK(nLanguage != -1);
-        
+
         if (pair.value_.type() != array_type)
         {
             BOOST_TEST_MESSAGE("Error, not array.");
             continue;
         };
-        
+
         const Array &array = pair.value_.get_array();
-        
+
         BOOST_FOREACH(const Value &v, array)
         {
             if (v.type() != array_type)
@@ -164,12 +166,12 @@ void RunMnemonicTests()
                 BOOST_TEST_MESSAGE("Error, not array.");
                 continue;
             };
-            
+
             const Array &va = v.get_array();
             if (va.size() < 3
                 || va.size() > 5)
                 continue;
-            
+
             TestMnemonic(nLanguage, va);
         };
     };

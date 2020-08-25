@@ -1,6 +1,10 @@
 #!/bin/bash
 # ===========================================================================
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # Created: 2018-11-28 HLXEasy
 #
 # This script can be used to build Spectrecoin on Mac
@@ -14,7 +18,7 @@ ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd ${ownLocation}
 . ./include/helpers_console.sh
 
-# Go to Spectrecoin repository root directory
+# Go to Aliaswallet repository root directory
 cd ..
 
 if [[ -z "${QT_PATH}" ]] ; then

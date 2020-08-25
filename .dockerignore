@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+#
+# SPDX-License-Identifier: MIT
+
 # Ignore git submodules as they produce an error
 # if the clone is copied to the intermediate docker build container!
 db4.8

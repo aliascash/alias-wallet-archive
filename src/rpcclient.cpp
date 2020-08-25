@@ -1,8 +1,9 @@
-// Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2010 Satoshi Nakamoto
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <set>
 #include "rpcclient.h"
@@ -161,13 +162,13 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "signrawtransaction", 1},
     { "signrawtransaction", 2},
     { "keypoolrefill", 0 },
-    { "sendspectoanon", 1 },
-    { "sendanontoanon", 1 },
-    { "sendanontoanon", 2 },
-    { "sendanontospec", 1 },
-    { "sendanontospec", 2 },
-    { "estimateanonfee", 0 },
-    { "estimateanonfee", 1 },
+    { "sendpublictoprivate", 1 },
+    { "sendprivate", 1 },
+    { "sendprivate", 2 },
+    { "sendprivatetopublic", 1 },
+    { "sendprivatetopublic", 2 },
+    { "estimateprivatefee", 0 },
+    { "estimateprivatefee", 1 },
     { "thinscanmerkleblocks", 0 },
     { "thinforcestate", 0 },
     { "importprivkey", 2 },

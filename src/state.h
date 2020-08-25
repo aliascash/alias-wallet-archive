@@ -1,7 +1,8 @@
-// Copyright (c) 2014 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef COIN_STATE_H
 #define COIN_STATE_H
@@ -101,6 +102,7 @@ extern bool fThinFullIndex;
 extern bool fReindexing;
 extern bool fHaveGUI;
 extern volatile bool fIsStaking;
+extern volatile bool fIsStakingEnabled;
 extern bool fMakeExtKeyInitials;
 extern volatile bool fPassGuiAddresses;
 
@@ -115,7 +117,6 @@ extern unsigned int nBlockMinSize;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for transaction creation) */
 extern int64_t nMinTxFee;
-extern int64_t nMinTxFeeAnonLegacy;
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying) */
 extern int64_t nMinRelayTxFee;
 

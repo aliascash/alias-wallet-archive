@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2011 pooler
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
 # Copyright 2011-2012 pooler@litecoinpool.org
 # All rights reserved.
 #

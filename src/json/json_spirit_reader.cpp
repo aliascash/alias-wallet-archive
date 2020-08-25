@@ -1,5 +1,6 @@
-//          Copyright John W. Wilkinson 2007 - 2009.
-// Distributed under the MIT License, see accompanying file LICENSE.txt
+// SPDX-FileCopyrightText: © 2007 John W. Wilkinson
+//
+// SPDX-License-Identifier: MIT
 
 // json spirit version 4.03
 

@@ -1,5 +1,10 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+#
+# SPDX-License-Identifier: MIT
+
 ### At first perform source build ###
-FROM spectreproject/spectre-builder-raspi-buster:1.7
+FROM aliascash/alias-wallet-builder-raspi-buster:1.7
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -8,13 +13,13 @@ ARG BUILD_THREADS="6"
 # Runtime parameters
 ENV BUILD_THREADS=$BUILD_THREADS
 
-COPY . /spectre
+COPY . /alias-wallet
 
-RUN cd /spectre \
+RUN cd /alias-wallet \
  && mkdir db4.8 leveldb \
  && ./autogen.sh \
  && ./configure \
         --enable-gui \
  && make -j${BUILD_THREADS} \
- && strip /spectre/src/spectrecoind \
- && strip /spectre/src/spectre
+ && strip /alias-wallet/src/aliaswalletd \
+ && strip /alias-wallet/src/aliaswallet

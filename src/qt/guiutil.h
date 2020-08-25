@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef GUIUTIL_H
 #define GUIUTIL_H
@@ -98,6 +99,12 @@ namespace GUIUtil
 
     // Open debug.log
     void openDebugLogfile();
+
+    // Create a scaled and devicePixelRatio considering pixmap from a SVG resource
+    QPixmap createPixmap(const QString& svgResource, int width, int height);
+
+    // Create a pixmap with given width and height (considering devicePixelRatio), fill with given color, draw scaled SVG into given bounds
+    QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString& svgResource, const QRect& bounds);
 
     /** Qt event filter that intercepts ToolTipChange events, and replaces the tooltip with a rich text
       representation if needed. This assures that Qt can word-wrap long tooltip messages.

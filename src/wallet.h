@@ -1,8 +1,13 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+// SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+// SPDX-FileCopyrightText: © 2011 PPCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
+
 #ifndef BITCOIN_WALLET_H
 #define BITCOIN_WALLET_H
 
@@ -10,7 +15,6 @@
 #include <string>
 #include <vector>
 #include <regex>
-
 
 #include "main.h"
 #include "key.h"
@@ -23,6 +27,7 @@
 #include "walletdb.h"
 #include "stealth.h"
 #include "smessage.h"
+#include "currency.h"
 
 static const std::string sAnonPrefix = "ao ";
 static const std::string sStealthPrefix = "sa ";
@@ -69,12 +74,6 @@ enum WalletFeature
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
     FEATURE_LATEST = 60000
-};
-
-enum Currency
-{
-    XSPEC,
-    SPECTRE
 };
 
 /** A key pool entry */
@@ -324,13 +323,13 @@ public:
     int ListUnspentAnonOutputs(std::list<COwnedAnonOutput>& lUAnonOutputs, MaturityFilter nFilter) const;
     bool ListAvailableAnonOutputs(std::list<COwnedAnonOutput>& lAvailableAnonOutputs, int64_t& nAmountCheck, int nRingSize, MaturityFilter nFilter, std::string& sError, int64_t nMaxAmount = MAX_MONEY) const;
     int CountAnonOutputs(std::map<int64_t, int>& mOutputCounts, MaturityFilter nFilter) const;
-    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight);
+    int CountAllAnonOutputs(std::list<CAnonOutputCount>& lOutputCounts, int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     int CountOwnedAnonOutputs(std::map<int64_t, int>& mOwnedOutputCounts, MaturityFilter nFilter);
     int CountLockedAnonOutputs();
 
     uint64_t EraseAllAnonData(std::function<void (const char *, const uint32_t&)> funcProgress = nullptr);
 
-    bool CacheAnonStats(int nBlockHeight);
+    bool CacheAnonStats(int nBlockHeight, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     bool UpdateAnonStats(CTxDB& txdb, int nBlockHeight);
     bool RemoveAnonStats(CTxDB& txdb, int nBlockHeight);
     void AddToAnonBlockStats(const std::map<int64_t, CAnonBlockStat>& mapAnonBlockStat, int nBlockHeight);

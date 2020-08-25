@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "guiutil.h"
 #include "bitcoinaddressvalidator.h"
@@ -26,6 +27,10 @@
 #include <QThread>
 #include <QSettings>
 #include <QUrlQuery>
+#include <QScreen>
+#include <QSvgRenderer>
+#include <QPainter>
+#include <QImage>
 
 #ifndef Q_MOC_RUN
 #include <boost/filesystem.hpp>
@@ -165,7 +170,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
 bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
     // NovaCoin: check prefix
-    if(uri.scheme() != QString("spectrecoin"))
+    if(uri.scheme() != QString("alias"))
         return false;
 
     SendCoinsRecipient rv;
@@ -189,11 +194,16 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
             rv.label = i->second;
             fShouldReturnFalse = false;
         }
+        else if (i->first == "narration")
+        {
+            rv.narration = i->second;
+            fShouldReturnFalse = false;
+        }
         else if (i->first == "amount")
         {
             if(!i->second.isEmpty())
             {
-                if(!BitcoinUnits::parse(BitcoinUnits::XSPEC, i->second, &rv.amount))
+                if(!BitcoinUnits::parse(BitcoinUnits::ALIAS, i->second, &rv.amount))
                 {
                     return false;
                 }
@@ -217,9 +227,9 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
     //
     //    Cannot handle this later, because bitcoin:// will cause Qt to see the part after // as host,
     //    which will lower-case it (and thus invalidate the address).
-    if(uri.startsWith("spectrecoin://"))
+    if(uri.startsWith("alias://"))
     {
-        uri.replace("spectrecoin://", "spectrecoin:");
+        uri.replace("alias://", "alias:");
     }
     QUrl uriInstance(uri);
     return parseBitcoinURI(uriInstance, out);
@@ -389,7 +399,7 @@ bool ToolTipToRichTextFilter::eventFilter(QObject *obj, QEvent *evt)
 #ifdef WIN32
 boost::filesystem::path static StartupShortcutPath()
 {
-    return GetSpecialFolderPath(CSIDL_STARTUP) / "Spectrecoin.lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / "Alias.lnk";
 }
 
 bool GetStartOnSystemStartup()
@@ -471,7 +481,7 @@ boost::filesystem::path static GetAutostartDir()
 
 boost::filesystem::path static GetAutostartFilePath()
 {
-    return GetAutostartDir() / "spectrecoin.desktop";
+    return GetAutostartDir() / "alias.desktop";
 }
 
 bool GetStartOnSystemStartup()
@@ -513,13 +523,13 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         optionFile << "[Desktop Entry]\n" \
                    << "Version=" << FormatFullVersion() << "\n" \
                    << "Type=Application\n" \
-                   << "Name=Spectrecoin\n" \
+                   << "Name=Alias\n" \
                    << "Exec=" << pszExePath << "%u -min\n" \
                    << "Icon=" <<  QFileInfo(":/icons/spectre").absoluteFilePath().toStdString() << "\n" \
                    << "Terminal=false\n" \
                    << "Hidden=false\n" \
                    << "Categories=Application;Network;\n" \
-                   << "MimeType=x-scheme-handler/spectrecoin;\n";
+                   << "MimeType=x-scheme-handler/alias;\n";
         optionFile.close();
     }
     return true;
@@ -537,10 +547,10 @@ bool SetStartOnSystemStartup(bool fAutoStart) { return false; }
 HelpMessageBox::HelpMessageBox(QWidget *parent) :
     QMessageBox(parent)
 {
-    header = tr("Spectrecoin") + " " + tr("version") + " " +
+    header = tr("Alias") + " " + tr("version") + " " +
         QString::fromStdString(FormatFullVersion()) + "\n\n" +
         tr("Usage:") + "\n" +
-        "  spectrecoin [" + tr("command-line options") + "]                     " + "\n";
+        "  aliaswallet [" + tr("command-line options") + "]                     " + "\n";
 
     coreOptions = QString::fromStdString(HelpMessage());
 
@@ -549,7 +559,7 @@ HelpMessageBox::HelpMessageBox(QWidget *parent) :
         "  -min                   " + tr("Start minimized") + "\n" +
         "  -splash                " + tr("Show splash screen on startup (default: 1)") + "\n";
 
-    setWindowTitle(tr("Spectrecoin"));
+    setWindowTitle(tr("Alias"));
     setTextFormat(Qt::PlainText);
     // setMinimumWidth is ignored for QMessageBox so put in non-breaking spaces to make it wider.
     setText(header + QString(QChar(0x2003)).repeated(50));
@@ -572,6 +582,33 @@ void HelpMessageBox::showOrPrint()
         // On other operating systems, print help text to console
         printToConsole();
 #endif
+}
+
+QPixmap createPixmap(const QString& svgResource, int width, int height)
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    double dpr = screen->devicePixelRatio();
+    QSvgRenderer renderer(svgResource);
+    // QT 5.15 renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
+    QPainter painter(&image);
+    renderer.render(&painter);
+    image.setDevicePixelRatio(dpr);
+    return QPixmap::fromImage(image);
+}
+
+QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString& svgResource, const QRect& bounds)
+{
+    QScreen *screen = QGuiApplication::primaryScreen();
+    double dpr = screen->devicePixelRatio();
+    QSvgRenderer renderer(svgResource);
+    // QT 5.15 renderer.setAspectRatioMode(Qt::KeepAspectRatio);
+    QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
+    image.fill(bgColor);
+    QPainter painter(&image);
+    renderer.render(&painter, QRectF(bounds.left() * dpr, bounds.top() * dpr, bounds.width() * dpr, bounds.height() * dpr));
+    image.setDevicePixelRatio(dpr);
+    return QPixmap::fromImage(image);
 }
 
 } // namespace GUIUtil

@@ -1,8 +1,12 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+// SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+// SPDX-FileCopyrightText: © 2011 PPCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef BITCOIN_UTIL_H
 #define BITCOIN_UTIL_H
@@ -571,7 +575,7 @@ inline uint32_t ByteReverse(uint32_t value)
 //    threadGroup.create_thread(boost::bind(&LoopForever<boost::function<void()> >, "nothing", f, milliseconds));
 template <typename Callable> void LoopForever(const char* name,  Callable func, int64_t msecs)
 {
-    std::string s = strprintf("spectrecoin-%s", name);
+    std::string s = strprintf("alias-%s", name);
     RenameThread(s.c_str());
     LogPrintf("%s thread start\n", name);
     try
@@ -595,7 +599,7 @@ template <typename Callable> void LoopForever(const char* name,  Callable func, 
 // .. and a wrapper that just calls func once
 template <typename Callable> void TraceThread(const char* name,  Callable func)
 {
-    std::string s = strprintf("spectrecoin-%s", name);
+    std::string s = strprintf("alias-%s", name);
     RenameThread(s.c_str());
     try
     {
@@ -615,7 +619,7 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
 
 template <typename Callable, typename T> void TraceThread(const char* name, Callable func, T arg)
 {
-    std::string s = strprintf("spectrecoin-%s", name);
+    std::string s = strprintf("alias-%s", name);
     RenameThread(s.c_str());
     try
     {

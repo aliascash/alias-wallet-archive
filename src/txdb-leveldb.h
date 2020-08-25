@@ -1,8 +1,9 @@
-// Copyright (c) 2009-2012 The Bitcoin Developers.
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Authored by Google, Inc.
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers.
+// SPDX-FileCopyrightText: © Google, Inc.
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef BITCOIN_LEVELDB_H
 #define BITCOIN_LEVELDB_H
@@ -277,7 +278,7 @@ public:
     bool WriteSyncCheckpoint(uint256 hashCheckpoint);
     bool ReadCheckpointPubKey(std::string& strPubKey);
     bool WriteCheckpointPubKey(const std::string& strPubKey);
-    bool LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate = nullptr, std::function<void (const uint32_t&)> funcProgress = nullptr);
+    bool LoadBlockIndex(std::function<bool (const CBlockIndex* const)> funcValidate = nullptr, std::function<void (const unsigned mode, const uint32_t&)> funcProgress = nullptr);
     bool LoadBlockThinIndex();
 private:
     bool LoadBlockIndexGuts();

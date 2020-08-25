@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef BRIDGETRANSLATIONS_H
 #define BRIDGETRANSLATIONS_H
@@ -33,7 +34,7 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "Sign Message"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Verify Message"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Debug"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "About Spectrecoin"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "About Alias"),
     QT_TRANSLATE_NOOP("SpectreBridge", "About QT"),
     QT_TRANSLATE_NOOP("SpectreBridge", "QR code"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Address:"),
@@ -83,20 +84,20 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "i2p connection offline"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Wallet is encrypted and currently locked"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Not staking because wallet is locked"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "0 active connection(s) to Spectrecoin network"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "0 active connection(s) to Alias network"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Wallet is syncing"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Enter a label for this address to add it to your address book"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Enter a address to add it to your address book"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Inputs"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Values"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Outputs"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Spectrecoin address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Enter the message you want to sign"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Click sign message to generate signature"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Copy the signed message signature"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Spectrecoin address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Enter the message you want to verify"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Spectrecoin signature"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a Alias signature"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Paste signature from clipboard"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Your total balance"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Balances overview"),

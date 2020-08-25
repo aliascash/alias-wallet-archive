@@ -1,4 +1,8 @@
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 //
+// SPDX-License-Identifier: MIT
+
 // Unit tests for block-chain checkpoints
 //
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'

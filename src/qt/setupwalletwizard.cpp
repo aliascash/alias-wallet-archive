@@ -1,10 +1,12 @@
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "setupwalletwizard.h"
 #include "extkey.h"
 #include "util.h"
+#include "guiutil.h"
 #include "base58.h"
 
 #include <QtWidgets>
@@ -27,12 +29,13 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setWizardStyle(ModernStyle);
 //#endif
     setOption(HaveHelpButton, true);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
+
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
 
-    setWindowTitle(tr("Spectrecoin Wallet Setup"));
-    setWindowIcon(QIcon(":icons/spectre"));
+    setWindowTitle(tr("Alias Wallet Setup"));
+    setWindowIcon(QIcon(":icons/alias-app"));
 }
 
 void SetupWalletWizard::showHelp()
@@ -68,7 +71,7 @@ void SetupWalletWizard::showHelp()
         message = tr("This help is likely not to be of any help.");
     }
 
-    QMessageBox::information(this, tr("Spectrecoin Wallet Setup Help"), message);
+    QMessageBox::information(this, tr("Alias Wallet Setup Help"), message);
 
     lastHelpMessage = message;
 }
@@ -78,7 +81,7 @@ IntroPage::IntroPage(QWidget *parent)
 {
     setTitle(tr("Set Up Your Wallet"));
 
-    setPixmap(QWizard::WatermarkPixmap, QPixmap(":/images/watermark"));
+    setPixmap(QWizard::WatermarkPixmap, GUIUtil::createPixmap(96, 400, QColor(55, 43, 62), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(3, 155, 90, 90)));
 
     topLabel = new QLabel(tr("The application has detected that you don't have a wallet.dat file, which holds your private keys. Please choose how you want to create or restore your private keys."));
     topLabel->setWordWrap(true);
@@ -429,7 +432,7 @@ bool NewMnemonicVerificationPage::isComplete() const
     for (int i = 0; i < 24; i++)
     {
         QString sVerificationMnemonic = field(QString("verification.mnemonic.%1").arg(i)).toString().normalized(QString::NormalizationForm_KD);
-        if (mnemonicPage->mnemonicList[i] != sVerificationMnemonic)
+        if (mnemonicPage->mnemonicList[i].compare(sVerificationMnemonic, Qt::CaseInsensitive) != 0)
             return false;
     }
     return true;
