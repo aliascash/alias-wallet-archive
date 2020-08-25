@@ -520,10 +520,12 @@ void SpectreGUI::setNumConnections(int count)
     else if (fConnectionInit)
     {
         fConnectionInit = false;
-        syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
-        syncingIcon.setAttribute("data-title", "Checking wallet state with network");
+        syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("syncing");
+        syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+        syncingIcon.setAttribute("data-title", "Checking wallet state with network");
+        syncingIcon.addClass("fa-spin");
         syncingIcon.removeClass("none");
     }
 
@@ -642,6 +644,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
+        QApplication::instance()->processEvents();
         syncingIcon.removeClass("fa-spin");
         syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
         syncingIcon.removeClass("syncing");
