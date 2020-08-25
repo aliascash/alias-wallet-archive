@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.14)
 project(Spectrecoin
         VERSION 4.0
