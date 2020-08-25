@@ -644,7 +644,6 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
-        QApplication::instance()->processEvents();
         syncingIcon.removeClass("fa-spin");
         syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
         syncingIcon.removeClass("syncing");
