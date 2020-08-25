@@ -5,7 +5,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#include "ui_interface.h"
+#include "interface.h"
 #include "init.h"
 #include "rpcserver.h"
 
