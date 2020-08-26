@@ -54,8 +54,15 @@ if (ANDROID)
         set(ENABLE_GUI ON)
     endif()
     message(STATUS "Configuring for Android")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC -Wno-deprecated-declarations -Wno-dangling-else")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-deprecated-declarations -Wno-dangling-else")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
+
+    # https://github.com/arsenm/sanitizers-cmake/issues/13#issuecomment-315532253
+    # Use "-fPIC" / "-fPIE" for all targets by default, including static libs
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    # CMake doesn't add "-pie" by default for executables (CMake issue #14983)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
