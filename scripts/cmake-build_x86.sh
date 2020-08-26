@@ -483,7 +483,8 @@ cmake \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
     -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
-    -DEVENT__DISABLE_TESTS=ON
+    -DEVENT__DISABLE_TESTS=ON \
+    -DEVENT__DISABLE_MBEDTLS=ON \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
 EOM
