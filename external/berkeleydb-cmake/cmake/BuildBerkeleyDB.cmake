@@ -108,6 +108,7 @@ else()
             --disable-replication
             --enable-cxx
             --prefix=${CMAKE_INSTALL_PREFIX}
+            --with-pic
             )
 
     # cross-compiling
