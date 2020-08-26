@@ -196,7 +196,7 @@ defineQtVersionForCurrentDistribution(){
     fi
 }
 
-# ===== Start of berkeleydb functions ========================================
+# ===== Start of openssl functions ===========================================
 checkOpenSSLArchive(){
     if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
         info " -> Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
