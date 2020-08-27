@@ -66,7 +66,7 @@ public:
 
     void setSplashScreen(QSplashScreen* splash);
 
-    void loadIndex();
+    void loadIndex(QString webSocketToken);
 
     void runJavaScript(QString javascriptCode);
 

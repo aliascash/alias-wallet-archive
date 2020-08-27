@@ -31,6 +31,7 @@
 
 #include <QWebChannel>
 #include <QWebSocketServer>
+#include <QUuid>
 
 
 
@@ -284,7 +285,9 @@ int main(int argc, char *argv[])
     qDebug() << "QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
 
     // wrap WebSocket clients in QWebChannelAbstractTransport objects
-    WebSocketClientWrapper clientWrapper(&server);
+    QString webSocketToken = QUuid::createUuid().toString().remove(QChar('{')).remove(QChar('}'));
+    // qDebug() << "QWebSocketServer access token: " << webSocketToken;
+    WebSocketClientWrapper clientWrapper(&server, webSocketToken);
 
     // setup the channel
     QWebChannel webChannel;
@@ -348,7 +351,7 @@ int main(int argc, char *argv[])
                 if (!ShutdownRequested())
                 {
                     InitMessage("...Start UI...");
-                    window.loadIndex();
+                    window.loadIndex(webSocketToken);
 
                     // Now that initialization/startup is done, process any command-line
                     // spectre: URIs

@@ -181,7 +181,7 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 
 unsigned short const onion_port = 9089;
 
-void SpectreGUI::loadIndex() {
+void SpectreGUI::loadIndex(QString webSocketToken) {
 #ifdef Q_OS_WIN
     QFile html("C:/alias-wallet-ui/index.html");
     QFileInfo webchannelJS("C:/alias-wallet-ui/qtwebchannel/qwebchannel.js");
@@ -199,7 +199,9 @@ void SpectreGUI::loadIndex() {
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
     view->setSource(QUrl("qrc:///qml/main"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
-    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") +
+             (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +
+             "token=" + webSocketToken);
     qmlWebView->setProperty("url", url);
 
     setCentralWidget(view);
