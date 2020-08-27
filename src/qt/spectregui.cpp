@@ -673,8 +673,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                               "      .st1{stroke:#F38220;}"
                               "      .st2{enable-background:new;}"
                               "  </style>"
-                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='6'/>"
-                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='6' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
+                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='5'/>"
+                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='5' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
                               "</svg>";
             syncingIcon.setAttribute("src", svgData);
             syncingIcon.addClass("fa-spin");
