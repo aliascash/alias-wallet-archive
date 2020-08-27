@@ -254,7 +254,7 @@ void SpectreGUI::pageLoaded(bool ok)
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
         updateStakingIcon();
-        if (GetBoolArg("-staking", true) && !initialized)
+        if (!initialized)
         {
             QTimer *timerStakingIcon = new QTimer(this);
             connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
@@ -1105,7 +1105,7 @@ void SpectreGUI::updateStakingIcon()
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
+                                               (!fIsStakingEnabled)                     ? tr("Not staking, staking is disabled")  : \
                                                (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                                (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
                                                (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \
