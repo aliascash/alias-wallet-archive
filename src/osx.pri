@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 # 1. Before using autotools & make, make sure to set the macOS target platform in the shell:
-# export MACOSX_DEPLOYMENT_TARGET=10.10
+# export MACOSX_DEPLOYMENT_TARGET=10.12
 
 # 2. Install all libraries with homebrew:
 # brew install autoconf automake libtool pkg-config openssl@1.1 libevent boost gcc wget

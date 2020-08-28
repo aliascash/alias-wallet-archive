@@ -161,7 +161,7 @@ pipeline {
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
                         QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
                     steps {
                         script {
@@ -573,7 +573,7 @@ pipeline {
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
                         QT_PATH = "${QT_PATH_MAC}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
                     stages {
                         stage('MacOS build') {

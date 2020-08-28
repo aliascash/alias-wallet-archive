@@ -45,8 +45,8 @@ info "Cleanup previous build artifacts"
 if [[ -e Alias.dmg ]] ; then
     rm -f Alias.dmg
 fi
-if [[ -e src/bin/alias.dmg ]] ; then
-    rm -f src/bin/alias.dmg
+if [[ -e src/bin/Alias.dmg ]] ; then
+    rm -f src/bin/Alias.dmg
 fi
 
 info "Call macdeployqt:"
@@ -79,9 +79,11 @@ done
 
 
 info "Create dmg package:"
-${QT_PATH}/bin/macdeployqt src/bin/Alias.app -dmg -always-overwrite -verbose=2
+cd src/bin
+${QT_PATH}/bin/macdeployqt Alias.app -dmg -always-overwrite -verbose=2
 rtc=$?
 if [[ ${rtc} != 0 ]] ; then
     die ${rtc} "Error during macdeployqt!"
 fi
+cd ../..
 mv src/bin/Alias.dmg Alias.dmg

@@ -183,7 +183,7 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 
 unsigned short const onion_port = 9089;
 
-void SpectreGUI::loadIndex() {
+void SpectreGUI::loadIndex(QString webSocketToken) {
 #ifdef Q_OS_WIN
     QFile html("C:/alias-wallet-ui/index.html");
     QFileInfo webchannelJS("C:/alias-wallet-ui/qtwebchannel/qwebchannel.js");
@@ -201,7 +201,9 @@ void SpectreGUI::loadIndex() {
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
     view->setSource(QUrl("qrc:///qml/main"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
-    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") +
+             (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +
+             "token=" + webSocketToken);
     qmlWebView->setProperty("url", url);
 
     setCentralWidget(view);
@@ -254,7 +256,7 @@ void SpectreGUI::pageLoaded(bool ok)
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
         updateStakingIcon();
-        if (GetBoolArg("-staking", true) && !initialized)
+        if (!initialized)
         {
             QTimer *timerStakingIcon = new QTimer(this);
             connect(timerStakingIcon, SIGNAL(timeout()), this, SLOT(updateStakingIcon()));
@@ -556,6 +558,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         return;
     }
 
+    fConnectionInit = false;
+
     // -- translation (tr()) makes it difficult to neatly pick block/header
     static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
     static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
@@ -606,7 +610,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
 
         tooltip += (tooltip.isEmpty()? "" : "<br>")
          + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 2);
+                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3);
     } else
     {
         tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
@@ -674,8 +678,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                               "      .st1{stroke:#F38220;}"
                               "      .st2{enable-background:new;}"
                               "  </style>"
-                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='6'/>"
-                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='6' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
+                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='5'/>"
+                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='5' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
                               "</svg>";
             syncingIcon.setAttribute("src", svgData);
             syncingIcon.addClass("fa-spin");
@@ -1106,7 +1110,7 @@ void SpectreGUI::updateStakingIcon()
         //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
-                                               (!GetBoolArg("-staking", true))          ? tr("Not staking, staking is disabled")  : \
+                                               (!fIsStakingEnabled)                     ? tr("Not staking, staking is disabled")  : \
                                                (pwalletMain && pwalletMain->IsLocked()) ? tr("Not staking because wallet is locked")  : \
                                                (vNodes.empty())                         ? tr("Not staking because wallet is offline") : \
                                                (clientModel->inInitialBlockDownload())  ? tr("Not staking because wallet is syncing") : \

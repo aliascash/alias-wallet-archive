@@ -21,8 +21,15 @@ cd ${ownLocation}
 # Go to Aliaswallet repository root directory
 cd ..
 
+if [[ -z "${MACOSX_DEPLOYMENT_TARGET}" ]] ; then
+    MACOSX_DEPLOYMENT_TARGET=10.12
+    warning "MACOSX_DEPLOYMENT_TARGET not set, using '${MACOSX_DEPLOYMENT_TARGET}'"
+else
+    info "MACOSX_DEPLOYMENT_TARGET: ${MACOSX_DEPLOYMENT_TARGET}"
+fi
+
 if [[ -z "${QT_PATH}" ]] ; then
-    QT_PATH=~/Qt/5.9.6/clang_64
+    QT_PATH=~/Qt/5.12.9/clang_64
     warning "QT_PATH not set, using '${QT_PATH}'"
 else
     info "QT_PATH: ${QT_PATH}"
