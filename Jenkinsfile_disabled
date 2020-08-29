@@ -62,6 +62,24 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
@@ -401,6 +419,35 @@ pipeline {
                                         ],
                                         wait: false
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('CentOS 8') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/CentOS/Dockerfile',
+                                            dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Aliaswallet-CentOS-8.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Aliaswallet-CentOS-8.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }

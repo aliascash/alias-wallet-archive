@@ -22,7 +22,7 @@ else
     echo "### ${releaseDescription}" > ${workspace}/releaseNotesToDeploy.txt
 fi
 for currentChecksumfile in \
-    Checksum-Aliaswallet-CentOS.txt \
+    Checksum-Aliaswallet-CentOS-8.txt \
     Checksum-Aliaswallet-Debian-Buster.txt \
     Checksum-Aliaswallet-Debian-Stretch.txt \
     Checksum-Aliaswallet-Fedora.txt \
@@ -31,8 +31,7 @@ for currentChecksumfile in \
     Checksum-Aliaswallet-RaspberryPi-Buster.txt \
     Checksum-Aliaswallet-RaspberryPi-Stretch.txt \
     Checksum-Aliaswallet-Ubuntu-18-04.txt \
-    Checksum-Aliaswallet-Ubuntu-19-04.txt \
-    Checksum-Aliaswallet-Ubuntu-19-10.txt \
+    Checksum-Aliaswallet-Ubuntu-20-04.txt \
     Checksum-Aliaswallet-Win64.txt \
     Checksum-Aliaswallet-Win64-OBFS4.txt \
     Checksum-Aliaswallet-Win64-Qt5.12.txt \
