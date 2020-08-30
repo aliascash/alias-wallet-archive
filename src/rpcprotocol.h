@@ -108,7 +108,7 @@ public:
     }
     bool connect(const std::string& server, const std::string& port)
     {
-        boost::asio::ip::tcp::resolver resolver(stream.get_io_service());
+        boost::asio::ip::tcp::resolver resolver((boost::asio::io_context&)(stream).get_executor().context());
         boost::asio::ip::tcp::resolver::query query(server.c_str(), port.c_str());
         boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
         boost::asio::ip::tcp::resolver::iterator end;
