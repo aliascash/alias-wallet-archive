@@ -420,7 +420,7 @@ if (ENABLE_GUI)
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
-                    COMMAND "${MACDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery
+                    COMMAND "${MACDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery --${DEPLOY_QT_BINARY_TYPE} --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res --qml --quick --webengine
                     "$<TARGET_FILE_DIR:Aliaswallet>/../.."
                     -always-overwrite
                     COMMENT "Running macdeployqt..."
@@ -435,7 +435,7 @@ if (ENABLE_GUI)
             target_link_libraries(Aliaswallet "Shlwapi")
             add_custom_command(TARGET Aliaswallet POST_BUILD
                     COMMAND "${CMAKE_COMMAND}" -E
-                    env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery --debug --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res --qml --quick --webengine
+                    env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery --${DEPLOY_QT_BINARY_TYPE} --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res --qml --quick --webengine
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMENT "Running windeployqt..."
                     )

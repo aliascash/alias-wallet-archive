@@ -100,6 +100,13 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 # locations on all platforms.
 include(GNUInstallDirs)
 
+# Handle build type
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(DEPLOY_QT_BINARY_TYPE "debug")
+else()
+    set(DEPLOY_QT_BINARY_TYPE "release")
+endif()
+message(STATUS "Building in ${DEPLOY_QT_BINARY_TYPE} mode")
 
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
