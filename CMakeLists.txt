@@ -209,6 +209,27 @@ if (ENABLE_GUI)
     find_package(Qt5Svg)
     message(STATUS "Qt5Svg version: ${Qt5Svg_VERSION}")
     get_target_property(QtSvg_location Qt5::Svg LOCATION)
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        # Retrieve the absolute path to qmake and then use that path
+        # to find the windeployqt binary
+        get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+        get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+        find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+        # Put delivery result into dedicated directory
+        set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/delivery)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # Retrieve the absolute path to qmake and then use that path
+        # to find the macdeployqt binary
+        get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+        get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+        find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+
+        # Put delivery result into dedicated directory
+        set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/delivery)
+    endif()
+
 else()
     message(STATUS "Building without UI, skipping Qt detection")
 endif ()
