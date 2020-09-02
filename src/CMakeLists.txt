@@ -306,6 +306,8 @@ if (ENABLE_GUI)
         # The UI wallet
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             add_executable(Aliaswallet MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc)
         else()
             add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
         endif()
@@ -451,11 +453,12 @@ if (ENABLE_GUI)
                     --libdir ${CMAKE_BINARY_DIR}/delivery
                     --plugindir ${CMAKE_BINARY_DIR}/delivery
                     ${DEPLOY_QT_BINARY_TYPE_OPTION}
-                    --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res
+                    --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res/qml
                     --qml
                     --quick
                     --webengine
                     "$<TARGET_FILE:Aliaswallet>"
+                    COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMENT "Running windeployqt..."
                     )
         endif()
