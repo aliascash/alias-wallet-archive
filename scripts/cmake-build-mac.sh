@@ -865,17 +865,17 @@ fi
 
 info ""
 info "Extracting Tor resource archive:"
-mkdir -p ${BUILD_DIR}/spectrecoin/tor-resources
-cd ${BUILD_DIR}/spectrecoin/tor-resources
+mkdir -p ${BUILD_DIR}/aliaswallet/tor-resources
+cd ${BUILD_DIR}/aliaswallet/tor-resources
 unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
-rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app
+rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app
 cd - >/dev/null
-rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
+rm -rf ${BUILD_DIR}/aliaswallet/tor-resources
 
 info ""
 info "Put icon file to proper location:"
-mkdir -p ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
-cp ${BUILD_DIR}/../src/qt/res/assets/icons/spectre.icns ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
+mkdir -p ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app/Contents/Resources
+cp ${BUILD_DIR}/../src/qt/res/assets/icons/spectre.icns ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app/Contents/Resources
 
 info ""
 info "Executing MacDeployQT (preparation):"
