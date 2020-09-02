@@ -54,7 +54,7 @@ QT_VERSION_FEDORA=5.14.2
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
-QT_VERSION_MAC=5.15.0
+QT_VERSION_MAC=5.12.9
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30
