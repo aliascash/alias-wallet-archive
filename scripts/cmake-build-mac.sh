@@ -860,7 +860,7 @@ info ""
 if [[ ${rtc} = 0 ]] ; then
     info " -> Finished"
 else
-    error " => Finished with return code ${rtc}"
+    die ${rtc} " => Finished with return code ${rtc}"
 fi
 
 info ""
