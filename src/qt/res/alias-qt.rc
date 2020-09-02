@@ -1,4 +1,4 @@
-IDI_ICON1 ICON DISCARDABLE "icons/spectrecoin.ico"
+IDI_ICON1 ICON DISCARDABLE "icons/alias-app.ico"
 
 #include <windows.h>             // needed for VERSIONINFO
 #include "../../clientversion.h" // holds the needed client version information
@@ -14,24 +14,24 @@ PRODUCTVERSION  VER_PRODUCTVERSION
 FILEOS          VOS_NT_WINDOWS32
 FILETYPE        VFT_APP
 BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
+        BLOCK "StringFileInfo"
+BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
-        BEGIN
-            VALUE "CompanyName",        "SpectreCoin"
-            VALUE "FileDescription",    "Spectre (OSS GUI client for SpectreCoin)"
-            VALUE "FileVersion",        VER_FILEVERSION_STR
-            VALUE "InternalName",       "spectre"
-            VALUE "LegalCopyright",     "2009-2014 The Bitcoin developers, 2012-2014 The NovaCoin & PPCoin developers, 2014 The BlackCoin developers, 2014-2015 The ShadowCoin developers, 2016-2017 The SpectreCoin developers"
-            VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
-            VALUE "OriginalFilename",   "spectre.exe"
-            VALUE "ProductName",        "Spectre"
-            VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
-        END
-    END
-
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x0, 1252 // language neutral - multilingual (decimal)
-    END
+BEGIN
+        VALUE "CompanyName",        "Alias"
+VALUE "FileDescription",    "Alias wallet (OSS GUI client for Alias)"
+VALUE "FileVersion",        VER_FILEVERSION_STR
+VALUE "InternalName",       "alias"
+VALUE "LegalCopyright",     "2009 (c) The Bitcoin developers, 2012 (c) The NovaCoin & PPCoin developers, 2014 (c) The BlackCoin developers, 2014 (c) The ShadowCoin developers, 2016 (c) The SpectreCoin developers, 2020 (c) The Alias developers"
+VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
+VALUE "OriginalFilename",   "Alias.exe"
+VALUE "ProductName",        "Alias"
+VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
 END
+        END
+
+BLOCK "VarFileInfo"
+BEGIN
+        VALUE "Translation", 0x0, 1252 // language neutral - multilingual (decimal)
+END
+        END
