@@ -221,10 +221,12 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         total += rcp.amount;
     }
 
-    if (recipients.size() > setAddress.size())
-        foreach(QString rcpAddr, setAddress)
-            if(!IsStealthAddress(rcpAddr.toStdString()))
+    if (recipients.size() > setAddress.size()) {
+        foreach(QString rcpAddr, setAddress) {
+            if (!IsStealthAddress(rcpAddr.toStdString()))
                 return DuplicateAddress;
+        }
+    }
 
     int64_t nBalance = 0;
     std::vector<COutput> vCoins;
