@@ -426,6 +426,7 @@ if (ENABLE_GUI)
                     -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
                     -always-overwrite
                     -verbose=2
+                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
                     COMMENT "Running macdeployqt..."
                     )
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -438,7 +439,15 @@ if (ENABLE_GUI)
             target_link_libraries(Aliaswallet "Shlwapi")
             add_custom_command(TARGET Aliaswallet POST_BUILD
                     COMMAND "${CMAKE_COMMAND}" -E
-                    env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery --${DEPLOY_QT_BINARY_TYPE} --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res --qml --quick --webengine
+                    env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+                    --force
+                    --libdir ${CMAKE_BINARY_DIR}/delivery
+                    --plugindir ${CMAKE_BINARY_DIR}/delivery
+                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res
+                    --qml
+                    --quick
+                    --webengine
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMENT "Running windeployqt..."
                     )

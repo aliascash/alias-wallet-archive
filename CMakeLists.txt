@@ -68,6 +68,13 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Configuring on/for macOS")
+
+    # Handle build type
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "-use-debug-libs")
+    else()
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "")
+    endif()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring on/for Windows")
     #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
@@ -75,6 +82,13 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_definitions("/wd4244")
     add_definitions("/wd4267")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
+
+    # Handle build type
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "--debug")
+    else()
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "--release")
+    endif()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else ()
@@ -100,13 +114,7 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 # locations on all platforms.
 include(GNUInstallDirs)
 
-# Handle build type
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    set(DEPLOY_QT_BINARY_TYPE "debug")
-else()
-    set(DEPLOY_QT_BINARY_TYPE "release")
-endif()
-message(STATUS "Building in ${DEPLOY_QT_BINARY_TYPE} mode")
+message(STATUS "Building in '${CMAKE_BUILD_TYPE}' mode")
 
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
