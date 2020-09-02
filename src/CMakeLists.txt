@@ -416,7 +416,7 @@ if (ENABLE_GUI)
                 MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION_STRING}
                 MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_STRING}
                 MACOSX_BUNDLE_COPYRIGHT " © 2020 The Alias developers"
-                MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in
+                MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/MacOSXBundleInfo.plist.in
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
