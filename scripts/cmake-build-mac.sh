@@ -70,7 +70,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # Location of archive will be resolved like this:
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
-TOR_RESOURCE_ARCHIVE=Spectrecoin.Tor.libraries.macOS.zip
+TOR_RESOURCE_ARCHIVE=Tor.libraries.MacOS.zip
 
 BUILD_DIR=cmake-build-mac-cmdline
 
@@ -822,7 +822,9 @@ cmake \
     -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
     -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
+    \
+    -DTOR_ARCHIVE=${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
 EOM
 
 # Insert additional parameters

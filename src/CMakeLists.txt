@@ -425,8 +425,14 @@ if (ENABLE_GUI)
                     ${CMAKE_BINARY_DIR}/delivery/Alias.app/
                     -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
                     -always-overwrite
-                    -verbose=2
+                    -verbose=1
                     ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/Alias.app/
+                    COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+                    ${CMAKE_BINARY_DIR}/delivery/Alias.app/
+                    -dmg
+                    -always-overwrite
+                    -verbose=1
                     COMMENT "Running macdeployqt..."
                     )
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
