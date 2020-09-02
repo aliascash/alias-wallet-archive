@@ -422,14 +422,15 @@ if (ENABLE_GUI)
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
                     COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-                    ${CMAKE_BINARY_DIR}/delivery/Alias.app/
+                    ${CMAKE_BINARY_DIR}/Alias.app/
                     -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
                     -always-overwrite
                     -verbose=1
                     ${DEPLOY_QT_BINARY_TYPE_OPTION}
-                    COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/Alias.app/
+                    COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/Alias.app/
+                    COMMAND cp ${CMAKE_SOURCE_DIR}/src/qt/res/icons/alias-app.icns ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources/
                     COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-                    ${CMAKE_BINARY_DIR}/delivery/Alias.app/
+                    ${CMAKE_BINARY_DIR}/Alias.app/
                     -dmg
                     -always-overwrite
                     -verbose=1

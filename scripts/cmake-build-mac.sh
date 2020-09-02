@@ -860,57 +860,7 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished"
-else
-    die ${rtc} " => Finished with return code ${rtc}"
-fi
-
-info ""
-info "Extracting Tor resource archive:"
-mkdir -p ${BUILD_DIR}/aliaswallet/tor-resources
-cd ${BUILD_DIR}/aliaswallet/tor-resources
-unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
-rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app
-cd - >/dev/null
-rm -rf ${BUILD_DIR}/aliaswallet/tor-resources
-
-info ""
-info "Put icon file to proper location:"
-mkdir -p ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app/Contents/Resources
-cp ${BUILD_DIR}/../src/qt/res/assets/icons/spectre.icns ${BUILD_DIR}/aliaswallet/src/Spectrecoin.app/Contents/Resources
-
-info ""
-info "Executing MacDeployQT (preparation):"
-read -r -d '' cmd << EOM
-${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Alias.app/ \
-    -qmldir=${ownLocation}/../src/qt/res \
-    -always-overwrite \
-    -verbose=2
-EOM
-echo "${cmd}"
-#read a
-${cmd}
-#read a
-
-info ""
-info 'Executing MacDeployQT (create *.dmg):'
-read -r -d '' cmd << EOM
-${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Alias.app/ \
-    -dmg \
-    -always-overwrite \
-    -verbose=2
-EOM
-echo "${cmd}"
-#read a
-${cmd}
-#read a
-rtc=$?
-
-info ""
-if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished: ${BUILD_DIR}/alias/src/Alias.dmg"
+    info " -> Finished: ${BUILD_DIR}/aliaswallet/Alias.dmg"
 else
     die 50 " => Creation of Alias.dmg failed with return code ${rtc}"
 fi
