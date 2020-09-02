@@ -219,6 +219,12 @@ if (ENABLE_GUI)
 
         # Put delivery result into dedicated directory
         set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+        if (NOT TOR_ARCHIVE)
+            include(DownloadFile)
+            set(TOR_ARCHIVE "Tor.libraries.MacOS.zip")
+            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.MacOS.zip ${TOR_ARCHIVE} SHA1 0be391e0cad9e93d33c226d6bff719f568b56093)
+        endif ()
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         # Retrieve the absolute path to qmake and then use that path
         # to find the windeployqt binary
@@ -228,7 +234,13 @@ if (ENABLE_GUI)
 
         # Put delivery result into dedicated directory
         set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/delivery)
-    endif()
+
+        if (NOT TOR_ARCHIVE)
+            include(DownloadFile)
+            set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
+            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
+        endif()
+endif()
 
 else()
     message(STATUS "Building without UI, skipping Qt detection")
