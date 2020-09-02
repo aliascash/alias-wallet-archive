@@ -417,11 +417,12 @@ if (ENABLE_GUI)
                 MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_STRING}
                 MACOSX_BUNDLE_COPYRIGHT " © 2020 The Alias developers"
                 MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/MacOSXBundleInfo.plist.in
+                OUTPUT_NAME Alias
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
                     COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-                    ${CMAKE_BINARY_DIR}/Alias.app/
+                    ${CMAKE_BINARY_DIR}/delivery/Alias.app/
                     -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
                     -always-overwrite
                     -verbose=2
