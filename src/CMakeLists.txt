@@ -420,9 +420,11 @@ if (ENABLE_GUI)
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
-                    COMMAND "${MACDEPLOYQT_EXECUTABLE}" --force --libdir ${CMAKE_BINARY_DIR}/delivery --plugindir ${CMAKE_BINARY_DIR}/delivery --${DEPLOY_QT_BINARY_TYPE} --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res --qml --quick --webengine
-                    "$<TARGET_FILE_DIR:Aliaswallet>/../.."
+                    COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+                    ${CMAKE_BINARY_DIR}/Alias.app/
+                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
                     -always-overwrite
+                    -verbose=2
                     COMMENT "Running macdeployqt..."
                     )
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
