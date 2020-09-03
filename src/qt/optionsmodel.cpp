@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "optionsmodel.h"
 #include "bitcoinunits.h"
@@ -22,9 +23,15 @@ void OptionsModel::Init()
 {
     QSettings settings;
 
+    int nSettingsVersion = settings.value("nSettingsVersion", 0).toInt();
+    if (nSettingsVersion < 1) {
+        settings.clear();
+        settings.setValue("nSettingsVersion", 1);
+    }
+
     // These are Qt-only settings:
-    //setDisplayUnit(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
-    setDisplayUnit(BitcoinUnits::XSPEC);
+    //setDisplayUnit(settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt());
+    setDisplayUnit(BitcoinUnits::ALIAS);
     setDisplayAddresses(settings.value("bDisplayAddresses", false).toBool());
     setMinimizeToTray(settings.value("fMinimizeToTray", false).toBool());
     setMinimizeOnClose(settings.value("fMinimizeOnClose", false).toBool());

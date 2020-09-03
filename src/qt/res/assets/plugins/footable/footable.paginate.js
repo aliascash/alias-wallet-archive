@@ -191,9 +191,9 @@
                     $prev.after('<li class="footable-page"><a data-page="' + i + '" href="#">' + (i + 1) + '</a></li>');
                 }
             }
-            if (start === 0){ $prev.hide(); }
+            if (start === 0 || info.limitNavigation == 1){ $prev.hide(); }
             else { $prev.show(); }
-            if (start + info.limitNavigation >= info.pages.length){ $next.hide(); }
+            if (start + info.limitNavigation >= info.pages.length || info.limitNavigation == 1){ $next.hide(); }
             else { $next.show(); }
         };
 

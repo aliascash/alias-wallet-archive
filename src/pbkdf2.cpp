@@ -1,5 +1,8 @@
-// Copyright (c) 2013 NovaCoin Developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <string.h>
 #include "pbkdf2.h"

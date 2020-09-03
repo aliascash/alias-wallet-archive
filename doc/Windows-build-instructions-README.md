@@ -55,8 +55,46 @@ use both if you want to build 32Bit and 64Bit versions.
 
 ```
 D:\coding> git clone https://github.com/Microsoft/vcpkg.git
+```
+
+We need to get back to Boost 1.69.0 now. Perform the following steps using WSL:
+
+```
+# cd vcpkg/ports
+# for i in boost* ; do cd $i ; pwd ; git checkout 208bb8ee -- . ; cd - ; done
+```
+Now enable deprecated functions on OpenSSL. To do so, modify `ports/openssl-windows/portfile.cmake`
+by replacing the block
+
+```
+set(CONFIGURE_COMMAND ${PERL} Configure
+    enable-static-engine
+    enable-capieng
+    no-ssl2
+    -utf-8
+    ${OPENSSL_SHARED}
+)
+```
+
+with this one:
+
+```
+set(CONFIGURE_COMMAND ${PERL} Configure
+    enable-deprecated                         <-- Add this entry
+    enable-static-engine
+    enable-capieng
+    no-ssl2
+    -utf-8
+    ${OPENSSL_SHARED}
+)
+```
+
+Should be around line 38.
+
+Back to the Windows cmd prompt, bootstrap the whole thing:
+
+```
 D:\coding> cd vcpkg
-D:\coding\vcpkg> git checkout 208bb8ee -- ports/boost*
 D:\coding\vcpkg> .\bootstrap-vcpkg.bat
 ```
 
@@ -94,8 +132,42 @@ Restart the Boost build afterwards and have patience, this might take a long tim
 D:\coding\vcpkg> .\vcpkg.exe install boost
 ```
 
+- Fix for boost-math if you hit this error:
+```
+Building package boost-math[core]:x64-windows...
+-- Downloading https://github.com/boostorg/math/archive/boost-1.72.0.tar.gz...
+-- Extracting source D:/coding/vcpkg/downloads/boostorg-math-boost-1.72.0.tar.gz
+CMake Error at scripts/cmake/vcpkg_extract_source_archive_ex.cmake:140 (file):
+  file RENAME failed to rename
+
+    D:/coding/vcpkg/buildtrees/boost-math/src/TEMP/math-boost-1.72.0
+
+  to
+
+    D:/coding/vcpkg/buildtrees/boost-math/src/ost-1.72.0-2786b6df16
+
+  because: No such file or directory
+
+Call Stack (most recent call first):
+  scripts/cmake/vcpkg_from_github.cmake:139 (vcpkg_extract_source_archive_ex)
+  ports/boost-math/portfile.cmake:5 (vcpkg_from_github)
+  scripts/ports.cmake:76 (include)
+
+
+Error: Building package boost-math:x64-windows failed with: BUILD_FAILED
+Please ensure you're using the latest portfiles with `.\vcpkg update`, then
+submit an issue at https://github.com/Microsoft/vcpkg/issues including:
+  Package: boost-math:x64-windows
+  Vcpkg version: 2020.02.04-nohash
+
+Additionally, attach any relevant sections from the log files above.
+```
+
+Copy the folder D:\coding\vcpkg\buildtrees\boost-math\src\TEMP\math-boost-1.72.0 one folder
+level up, rename it to ost-1.72.0-2786b6df16 and restart the build.
+
+
 ToDocument: 
-- Fix for boost-math 
 - Fix for boost-thread
 
 

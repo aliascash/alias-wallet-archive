@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
+
 #ifndef _WORDLIST_ENGLISH_H
 #define _WORDLIST_ENGLISH_H 1
 

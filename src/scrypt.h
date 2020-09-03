@@ -1,3 +1,10 @@
+// SPDX-FileCopyrightText: © 2013 Balthazar
+// SPDX-FileCopyrightText: © 2011 pooler
+// SPDX-FileCopyrightText: © 2011 ArtForz
+// SPDX-FileCopyrightText: © 2009 Colin Percival
+//
+// SPDX-License-Identifier: BSD-2-Clause
+
 #ifndef SCRYPT_MINE_H
 #define SCRYPT_MINE_H
 

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, <info@kdab.com>
+//
+// SPDX-License-Identifier: BSD-4-Clause
+
 /****************************************************************************
 **
 ** Copyright (C) 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Milian Wolff <milian.wolff@kdab.com>
@@ -64,7 +68,7 @@ class WebSocketClientWrapper : public QObject
     Q_OBJECT
 
 public:
-    WebSocketClientWrapper(QWebSocketServer *server, QObject *parent = nullptr);
+    WebSocketClientWrapper(QWebSocketServer *server, QString accessToken, QObject *parent = nullptr);
 
 signals:
     void clientConnected(WebSocketTransport *client);
@@ -74,6 +78,7 @@ private slots:
 
 private:
     QWebSocketServer *m_server;
+    QString accessToken;
 };
 
 #endif // WEBSOCKETCLIENTWRAPPER_H

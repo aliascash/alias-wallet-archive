@@ -1,7 +1,8 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "applicationmodel.h"
 #include "spectrebridge.h"
@@ -31,6 +32,7 @@
 
 #include <QWebChannel>
 #include <QWebSocketServer>
+#include <QUuid>
 
 #ifdef ANDROID
 #include <QtAndroidExtras>
@@ -125,7 +127,7 @@ static void InitQMessage(const QString &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n") + message + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
         QApplication::instance()->processEvents();
     }
 }
@@ -143,7 +145,7 @@ static std::string Translate(const char* psz)
 static void handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Spectrecoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
+    QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Alias can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
 }
 
@@ -189,21 +191,23 @@ bool AndroidAppInit(int argc, char* argv[])
         QString bip44key = QtAndroid::androidService().getObjectField<jstring>("bip44key").toString();
         if (!bip44key.isEmpty()) SoftSetArg("-bip44key", bip44key.toStdString());
 
-        //---- Setup remote objects host
-        QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
-        ApplicationModel applicationModel;
-        srcNode.enableRemoting(&applicationModel); // enable remoting
-        applicationModelRef = &applicationModel;
-        srcNode.enableRemoting(&optionsModel); // enable remoting
-
         //---- Create core webSocket server for JavaScript client
         QWebSocketServer server(QStringLiteral("Spectrecoin Core Websocket Server"), QWebSocketServer::NonSecureMode);
         if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT))
             throw std::runtime_error(strprintf("Spectrecoin Core QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
         qDebug() << "Core QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
-        WebSocketClientWrapper clientWrapper(&server);  // wrap WebSocket clients in QWebChannelAbstractTransport objects
+        QString webSocketToken = QUuid::createUuid().toString().remove(QChar('{')).remove(QChar('}'));
+        // qDebug() << "QWebSocketServer access token: " << webSocketToken;
+        WebSocketClientWrapper clientWrapper(&server, webSocketToken);  // wrap WebSocket clients in QWebChannelAbstractTransport objects
         QWebChannel webChannel;                         // setup the channel
         QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo); 
+
+        //---- Setup remote objects host
+        QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
+        ApplicationModel applicationModel;
+        applicationModel.setWebSocketToken(webSocketToken);
+        srcNode.enableRemoting(&applicationModel); // enable remoting
+        applicationModelRef = &applicationModel;
 
         // Initialize Core
         fRet = AppInit2(threadGroup);
@@ -323,11 +327,19 @@ int main(int argc, char *argv[])
     fTestNet = GetBoolArg("-testnet", false);
     if (!SelectParamsFromCommandLine())
     {
-        QMessageBox::critical(0, "Spectrecoin", QString("Error: Invalid combination of -testnet and -regtest."));
+        QMessageBox::critical(0, "Alias", QString("Error: Invalid combination of -testnet and -regtest."));
         return 1;
     }
 
     QApplication app(argc, argv);
+
+    // Set global styles
+    app.setStyleSheet("a {color: #f28321; }");
+    QPalette newPal(app.palette());
+    newPal.setColor(QPalette::Link, QColor(242, 131, 33));
+    newPal.setColor(QPalette::LinkVisited, QColor(242, 131, 33));
+    app.setPalette(newPal);
+
     QtWebView::initialize();
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
@@ -345,12 +357,12 @@ int main(int argc, char *argv[])
         qApp->installNativeEventFilter(new WinShutdownMonitor());
     #endif
 
-    // ... then spectrecoin.conf:
+    // ... then alias.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
         // (which not yet possible because lang=XX can be overridden in bitcoin.conf in the data directory)
-        QMessageBox::critical(0, "Spectrecoin",
+        QMessageBox::critical(0, "Alias",
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
@@ -358,12 +370,12 @@ int main(int argc, char *argv[])
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
-    app.setOrganizationName("The Spectrecoin Project");
-    app.setOrganizationDomain("spectreproject.io");
+    app.setOrganizationName("The Alias Foundation");
+    app.setOrganizationDomain("alias.cash");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        app.setApplicationName("Spectrecoin-testnet");
+        app.setApplicationName("Alias-testnet");
     else
-        app.setApplicationName("Spectrecoin");
+        app.setApplicationName("Alias");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
@@ -470,7 +482,7 @@ int main(int argc, char *argv[])
     std::string bip44key = GetArg("-bip44key", "");
     QtAndroid::androidActivity().callMethod<void>("startCore", "(ZLjava/lang/String;)V", GetBoolArg("-rescan"), QAndroidJniObject::fromString(QString::fromStdString(bip44key)).object<jstring>());
 #else
-    QPixmap splashPixmap(":/images/splash");
+    QPixmap splashPixmap(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(62, 87, 476, 476)));
 #endif
     QSplashScreen splash(splashPixmap, 0);
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
@@ -483,19 +495,6 @@ int main(int argc, char *argv[])
     app.processEvents();
 
     app.setQuitOnLastWindowClosed(false);
-
-    //---- Create webSocket server for JavaScript client
-    QWebSocketServer server(QStringLiteral("Spectrecoin Client Websocket Server"), QWebSocketServer::NonSecureMode);
-    if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1 : WEBSOCKETPORT + 1)) {
-        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1)) {
-            qFatal("Spectrecoin Client QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1);
-            return 1;
-        }
-    }
-    qDebug() << "Client QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
-    WebSocketClientWrapper clientWrapper(&server); // wrap WebSocket clients in QWebChannelAbstractTransport objects
-    QWebChannel webChannel;                        // setup the channel
-    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
 
     try
     {
@@ -537,6 +536,21 @@ int main(int argc, char *argv[])
         if (!addressModelPtr->waitForSource())
             throw std::runtime_error("SpectreGUI() : AddressModelRemoteReplica was not initialized!");
 
+        //---- Create webSocket server for JavaScript client
+        QWebSocketServer server(QStringLiteral("Alias Client Websocket Server"), QWebSocketServer::NonSecureMode);
+        if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1 : WEBSOCKETPORT + 1)) {
+            if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1)) {
+                qFatal("Spectrecoin Client QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1);
+                return 1;
+            }
+        }
+        qDebug() << "Client QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
+        QString webSocketToken = QUuid::createUuid().toString().remove(QChar('{')).remove(QChar('}'));
+        // qDebug() << "QWebSocketServer access token: " << webSocketToken;
+        WebSocketClientWrapper clientWrapper(&server, applicationModelPtr.data()->webSocketToken()); // wrap WebSocket clients in QWebChannelAbstractTransport objects
+        QWebChannel webChannel;                                                                      // setup the channel
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
+
         SpectreGUI window(applicationModelPtr, clientModelPtr, walletModelPtr, addressModelPtr, optionsModelPtr);
         window.setSplashScreen(&splash);
         guiref = &window;
@@ -545,7 +559,7 @@ int main(int argc, char *argv[])
 
         // Periodically check if shutdown was requested to properly quit the Qt application
         #if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
-            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Spectrecoin Core did't yet exit safely..."), (HWND)window.winId());
+            WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("Alias Core did't yet exit safely..."), (HWND)window.winId());
         #endif
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
@@ -588,7 +602,7 @@ int main(int argc, char *argv[])
                 }
 
                 if (!ShutdownRequested())
-                    window.loadIndex();
+                    window.loadIndex(applicationModelPtr.data()->webSocketToken());
  
 //               // Release lock before starting event processing, otherwise lock would never be released
 //               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);

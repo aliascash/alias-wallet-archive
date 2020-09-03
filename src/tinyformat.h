@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2011, Chris Foster [chris42f (at) gmail (d0t) com]
+//
+// SPDX-License-Identifier: BSL-1.0
+
 // tinyformat.h
 // Copyright (C) 2011, Chris Foster [chris42f (at) gmail (d0t) com]
 //

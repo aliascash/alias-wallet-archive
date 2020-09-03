@@ -1,8 +1,9 @@
-// Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2010 Satoshi Nakamoto
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef _BITCOINRPC_SERVER_H_
 #define _BITCOINRPC_SERVER_H_ 1
@@ -213,18 +214,18 @@ extern json_spirit::Value getorphans(const json_spirit::Array& params, bool fHel
 extern json_spirit::Value getcheckpoint(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value gettxout(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value getnewstealthaddress(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value liststealthaddresses(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value importstealthaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value getnewprivateaddress(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listprivateaddresses(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value importprivateaddress(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value clearwallettransactions(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value scanforalltxns(const json_spirit::Array& params, bool fHelp);
 
-extern json_spirit::Value sendspectoanon(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendanontoanon(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value sendanontospec(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value estimateanonfee(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value anonoutputs(const json_spirit::Array& params, bool fHelp);
-extern json_spirit::Value anoninfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendpublictoprivate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendprivate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendprivatetopublic(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value estimateprivatefee(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value privateoutputs(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value privateinfo(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value txnreport(const json_spirit::Array& params, bool fHelp);
 

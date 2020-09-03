@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <array name="qt_sources">
-        <item>https://download.qt.io/ministro/android/qt5/qt-5.14</item>
+        <item>https://download.qt.io/ministro/android/qt5/qt-5.15</item>
     </array>
 
     <array name="manual_libs">

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, <info@kdab.com>
+//
+// SPDX-License-Identifier: BSD-4-Clause
+
 /****************************************************************************
 **
 ** Copyright (C) 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Milian Wolff <milian.wolff@kdab.com>

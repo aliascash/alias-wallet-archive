@@ -1,4 +1,4 @@
-# Spectrecoin building from source for Mac OSX
+# Aliaswallet building from source for Mac OSX
 
 At first you need to clone the Git repository. ;-)
 
@@ -6,7 +6,7 @@ At first you need to clone the Git repository. ;-)
 ### Install Qt SDK 5.12.2 (QtWebEngine)
 - Qt SDK: https://www.qt.io/download-qt-installer
 
-Now you can open `<path-to-your-spectre-git-repo-clone>/src/src.pro` on Qt-Creator.
+Now you can open `<path-to-your-alias-wallet-git-repo-clone>/src/src.pro` on Qt-Creator.
 
 
 ## Build on cmdline
@@ -58,15 +58,15 @@ export OPENSSL_PATH=/usr/local/Cellar/openssl@1.1/1.1.1d
 cd ~
 mkdir Tor
 cd Tor
-wget https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.macOS.zip
+wget https://github.com/aliascash/resources/raw/master/resources/Aliaswallet.Tor.libraries.macOS.zip
 ```
 
 ### Build using helper scripts
 
 ```
-cd <path-to-your-spectre-git-repo-clone>
+cd <path-to-your-alias-wallet-git-repo-clone>
 ./scripts/mac-build.sh
-rm -f Spectrecoin*.dmg
+rm -f Aliaswallet*.dmg
 unzip ~/Tor/Tor.zip
 # rm -rf src/bin/debug
 ./scripts/mac-deployqt.sh

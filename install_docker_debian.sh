@@ -1,6 +1,10 @@
 #!/bin/bash
 # ============================================================================
 #
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+#
 # Docker installation based on
 # https://docs.docker.com/install/linux/docker-ce/debian/#install-docker-ce-1
 #

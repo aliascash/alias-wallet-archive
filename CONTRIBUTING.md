@@ -1,17 +1,21 @@
-How to contribute to XSPEC
-============================
+# Licensing
 
-The XSPEC project operates with an open contributor model where anyone is welcome to contribute towards development. This can be contributions in the form of peer reviews, testing and patches via pull requests. We will actively encourage community involvement and reward good work. This document explains the practical process and guidelines for contributing to XSPEC.
+* SPDX-FileCopyrightText: © 2020 Alias Developers
+* SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+* SPDX-License-Identifier: MIT
 
-In terms of XSPEC code governance structure, there are no privileged individuals or developers. XSPEC as most open source projects naturally revolves around meritocracy where longer term contributors gain more trust from the developer community. However, a certain hierarchy is necessary for practical purposes.
+# How to contribute to Alias
 
-Therefore, there will be repository “curators” who are responsible for merging pull requests as well as the XSPEC Core Team who are responsible for the release cycle, moderation and appointment of "curators".
+The Alias project operates with an open contributor model where anyone is welcome to contribute towards development. This can be contributions in the form of peer reviews, testing and patches via pull requests. We will actively encourage community involvement and reward good work. This document explains the practical process and guidelines for contributing to Alias.
+
+In terms of Alias code governance structure, there are no privileged individuals or developers. Alias as most open source projects naturally revolves around meritocracy where longer term contributors gain more trust from the developer community. However, a certain hierarchy is necessary for practical purposes.
+
+Therefore, there will be repository “curators” who are responsible for merging pull requests as well as the Alias Core Team who are responsible for the release cycle, moderation and appointment of "curators".
 
 
-Contributor Workflow
---------------------
+# Contributor Workflow
 
-The XSPEC codebase is maintained using the “contributor workflow” where everyone contributes patch proposals using “pull requests”. This facilitates social contribution, easy testing and peer review. There may be circumstances where the XSPEC Core Team will update the code if needed.
+The Alias codebase is maintained using the “contributor workflow” where everyone contributes patch proposals using “pull requests”. This facilitates social contribution, easy testing and peer review. There may be circumstances where the Alias Core Team will update the code if needed.
 
 To contribute a patch, the workflow is as follows:
 
@@ -46,8 +50,7 @@ The body of the pull request should contain enough description about what the pa
 At this stage one should expect comments and review from other contributors. You can add more commits to your pull request by committing them locally and pushing to your fork until you have satisfied all feedback. If your pull request is accepted for merging, you may be asked by a curator to squash and or rebase your commits before it will be merged. The length of time required for peer review is unpredictable and will vary from patch to patch.
 
 
-Pull Request Philosophy
------------------------
+# Pull Request Philosophy
 
 Patchsets should always be focused. For example, a pull request could add a feature, fix a bug, or refactor code; but not a mixture. Please also avoid super pull requests which attempt to do too much, are overly large, or overly complex as this makes review difficult.
 
@@ -63,15 +66,14 @@ Refactoring is a necessary part of any software project's evolution. The followi
 
 There are three categories of refactoring, code only moves, code style fixes, code refactoring. In general refactoring pull requests should not mix these three kinds of activity in order to make refactoring pull requests easy to review and uncontroversial. In all cases, refactoring PRs must not change the behaviour of code within the pull request (bugs must be preserved as is).
 
-Project curators aim for a quick turnaround on refactoring pull requests, so where possible keep them short, uncomplex and easy to verify. 
+Project curators aim for a quick turnaround on refactoring pull requests, so where possible keep them short, uncomplex and easy to verify.
 
 
-"Decision Making" Process
--------------------------
+# "Decision Making" Process
 
-The following applies to code changes to the XSPEC Core project (and related projects such as libsecp256k1), and is not to be confused with overall XSPEC Network Protocol consensus changes.
+The following applies to code changes to the Alias Core project (and related projects such as libsecp256k1), and is not to be confused with overall Alias Network Protocol consensus changes.
 
-Whether a pull request is merged into the XSPEC Core rests with the project merge curators and ultimately the XSPEC Core Team.
+Whether a pull request is merged into the Alias Core rests with the project merge curators and ultimately the Alias Core Team.
 
 Curators will take into consideration if a patch is in line with the general principles of the project; meets the minimum standards for inclusion; and will judge the general consensus of contributors.
 
@@ -84,7 +86,7 @@ In general, all pull requests must:
   - not break the existing test suite;
   - where bugs are fixed, where possible, there should be unit tests demonstrating the bug and also proving the fix. This helps prevent regression.
 
-Patches that change XSPEC consensus rules are considerably more involved than normal because they affect the entire ecosystem and so must be preceded by extensive discussions. While each case will be different, one should be prepared to expend more time and effort than for other kinds of patches because of increased peer review and consensus building requirements.
+Patches that change Alias consensus rules are considerably more involved than normal because they affect the entire ecosystem and so must be preceded by extensive discussions. While each case will be different, one should be prepared to expend more time and effort than for other kinds of patches because of increased peer review and consensus building requirements.
 
 
 ### Peer Review
@@ -103,12 +105,11 @@ Project curators reserve the right to weigh the opinions of peer reviewers using
 
 Where a patch set affects consensus critical code, the bar will be set much higher in terms of discussion and peer review requirements, keeping in mind that mistakes could be very costly to the wider community. This includes refactoring of consensus critical code.
 
-Where a patch set proposes to change the XSPEC consensus, it must have been discussed extensively on the appropriate Discord channel, and have a generally widely perceived technical consensus of being a worthwhile change based on the judgement of the curators and the XSPEC Core Team.
+Where a patch set proposes to change the Alias consensus, it must have been discussed extensively on the appropriate Discord channel, and have a generally widely perceived technical consensus of being a worthwhile change based on the judgement of the curators and the Alias Core Team.
 
 
-Release Policy
---------------
+# Release Policy
 
-The XSPEC Core Team is the release manager for each XSPEC Core release.
+The Alias Core Team is the release manager for each Alias Core release.
 
 This document is subject to change and will be updated.

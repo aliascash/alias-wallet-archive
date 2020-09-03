@@ -14,8 +14,50 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be de
 ### Replay Protection
 We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
 
+### Licensing
+
+- SPDX-FileCopyrightText: © 2020 Alias Developers
+- SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+- SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+- SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+- SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+- SPDX-FileCopyrightText: © 2011 PPCoin Developers
+- SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+
+SPDX-License-Identifier: MIT
+
 ### Changelog
-## 4.2.0 (released 2020-04-??)
+## 4.3.0 (released 2020-??-??)
+- Update to Qt 5.15.1 (Windows / Mac)
+- Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
+- Refactored overall namings according to project rebranding
+- Refactored naming of some RPC methods according to project rebranding:
+  - `sendspectoanon` > `sendpublictoprivate`
+  - `sendanontoanon` > `sendprivate`
+  - `sendanontospec` > `sendprivatetopublic`
+  - `estimateanonfee` > `estimateprivatefee`
+- Renamed some fields on RPC results:
+  - `anonbalance` > `balance_private`
+  - `spectrestake` > `stake_private`
+  - `spectrestakeweight` > `stakeweight_private`
+  - `unconfirmedanonbalance` > `unconfirmedbalance_private`
+  - `spectrestakeweight` > `stakeweight_private`
+  - `anonsupply` > `moneysupply_private`
+- Added new fields to RPC results:
+  - `balance_public`
+  - `stake_public`
+  - `stakeweight_public`
+  - `unconfirmedbalance_public`
+  - `stakeweight_public`
+  - `moneysupply_public`
+- Complete UI revision based on new style and with many UX improvements
+- Fix: private transaction did cost twice as much fee as effectivly required and shown in confirmation dialog
+- Updated Fedora build to Fedora 32
+- Added build for Ubuntu 20.04
+- Wipe out build for Ubuntu 19.x as it's EOL
+
+## 4.2.0 (released 2020-05-02)
+- Update to Qt 5.12.8
 - Replace QtWebEngine with QtWebView to support mobile platforms.
 - Open 'Unlock Wallet' Dialog on incoming anon staking reward with unknown sender.
 - Allow to select parts of the transaction detail dialog text.
@@ -24,30 +66,30 @@ We have implemented a check for DCBs and we have implemented a replay protection
   - 'Initializing staking...' is now shown instead 'Not staking because you don't have mature coins' during staker thread initialization
 - Improve synchronization tooltip: blockchain synchronization state is now updated every 500ms. (Tooltips in general are now updated when open and underlying data changes)
 - Improve splash screen with progress messages to reduce UI freezes during startup.
-- [#183](https://github.com/spectrecoin/spectre/issues/183) Reduce UI freezes during blockchain sync.
+- [#183](https://github.com/aliascash/alias-wallet/issues/183) Reduce UI freezes during blockchain sync.
 
 ### Changelog
 ## 4.1.0 (released 2019-10-13)
-- [#82](https://github.com/spectrecoin/spectre/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
+- [#82](https://github.com/aliascash/alias-wallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
   - Create new `wallet.dat` file based on mnemonic seed words.
   - Restore `wallet.dat` from mnemonic seed words.
   - Import existing `wallet.dat` file.
 
   For further details see [here](https://medium.com/coinmonks/mnemonic-generation-bip39-simply-explained-e9ac18db9477).
-  Duplicated by [#115](https://github.com/spectrecoin/spectre/issues/115)
+  Duplicated by [#115](https://github.com/aliascash/alias-wallet/issues/115)
 
-- [#214](https://github.com/spectrecoin/spectre/issues/214) Migrate Debian/Raspbian build to Buster.
+- [#214](https://github.com/aliascash/alias-wallet/issues/214) Migrate Debian/Raspbian build to Buster.
   Binaries for both Stretch and Buster will be provided.
 
-- [#216](https://github.com/spectrecoin/spectre/issues/216) Tor Hidden Service v3 implementation + minor Tor improvements.
+- [#216](https://github.com/aliascash/alias-wallet/issues/216) Tor Hidden Service v3 implementation + minor Tor improvements.
   - Implementation of Tor Hidden Service v3.
   - Creation of launch argument `-onionv2`, allowing the usage of legacy v2 addresses.
   - Creation of an torrc-defaults file on Linux.
   - By default, Tor will now use hardware crypto acceleration if available, only connect to Hidden Services,
     and will write to disk less frequently, preserving the lifespan of SD cards on Raspbian.
 
-- [#218](https://github.com/spectrecoin/spectre/issues/218) Provide binaries for Ubuntu 19.04.
+- [#218](https://github.com/aliascash/alias-wallet/issues/218) Provide binaries for Ubuntu 19.04.
   Binaries for both Ubuntu 18.04 and 19.04 will be provided.
 
 - Updated packaged Tor for MacOS and Windows to 0.4.1.5

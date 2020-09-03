@@ -1,6 +1,6 @@
-// Copyright (c) 2012 Pieter Wuille
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2012 Pieter Wuille
+//
+// SPDX-License-Identifier: MIT
 
 #include "addrman.h"
 #include "hash.h"
@@ -390,9 +390,9 @@ CAddress CAddrMan::Select_(int nUnkBias)
 {
     if (size() == 0)
         return CAddress();
-    
+
     int nTries = fTestNet ? 100 : 100000;
-    
+
     double nCorTried = sqrt(nTried) * (100.0 - nUnkBias);
     double nCorNew = sqrt(nNew) * nUnkBias;
     if ((nCorTried + nCorNew)*GetRandInt(1<<30)/(1<<30) < nCorTried)
@@ -431,7 +431,7 @@ CAddress CAddrMan::Select_(int nUnkBias)
             fChanceFactor *= fTestNet ? 12 : 1.2;
         };
     };
-    
+
     return CAddress();
 }
 

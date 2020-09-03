@@ -1,9 +1,11 @@
 #!/bin/bash
 # ===========================================================================
 #
-# Created: 2019-11-30 HLXEasy
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
 #
-# This script can be used to build Spectrecoin using CMake
+# Created: 2019-11-30 HLXEasy
 #
 # ===========================================================================
 
@@ -30,16 +32,29 @@ BOOST_ARCHIVE_HASH=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4
 QT_INSTALLATION_PATH=${HOME}/Qt
 
 # Qt version to use. In fact the folder right below ${QT_INSTALLATION_PATH}
+#QT_VERSION=5.11.3
+#QT_ARCHIVE_HASH=unknown
 #QT_VERSION=5.12.7
 #QT_ARCHIVE_HASH=ce2c5661c028b9de6183245982d7c120
 #QT_VERSION=5.12.8
 #QT_ARCHIVE_HASH=8ec2a0458f3b8e9c995b03df05e006e4
-QT_VERSION=5.14.2
-QT_ARCHIVE_HASH=b3d2b6d00e6ca8a8ede6d1c9bdc74daf
+#QT_VERSION=5.14.2
+#QT_ARCHIVE_HASH=b3d2b6d00e6ca8a8ede6d1c9bdc74daf
+QT_VERSION=5.15.0
+QT_ARCHIVE_HASH=610a228dba6ef469d14d145b71ab3b88
+
+# These are the default Qt versions on the corresponding distributions
+QT_VERSION_ANDROID=5.15.0
+QT_VERSION_DEBIAN_BUSTER=5.11.3
+QT_VERSION_UBUNTU_1804=5.9.5
+QT_VERSION_UBUNTU_1904=5.12.4
+QT_VERSION_UBUNTU_1910=5.12.4
+QT_VERSION_UBUNTU_2004=5.12.8
+QT_VERSION_FEDORA=5.14.2
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
-QT_VERSION_MAC=5.12.8
+QT_VERSION_MAC=5.15.0
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30

@@ -1,8 +1,13 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+// SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+// SPDX-FileCopyrightText: © 2011 PPCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
+
 #ifndef BITCOIN_WALLET_H
 #define BITCOIN_WALLET_H
 
@@ -10,7 +15,6 @@
 #include <string>
 #include <vector>
 #include <regex>
-
 
 #include "main.h"
 #include "key.h"
@@ -23,6 +27,7 @@
 #include "walletdb.h"
 #include "stealth.h"
 #include "smessage.h"
+#include "currency.h"
 
 static const std::string sAnonPrefix = "ao ";
 static const std::string sStealthPrefix = "sa ";
@@ -69,12 +74,6 @@ enum WalletFeature
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
     FEATURE_LATEST = 60000
-};
-
-enum Currency
-{
-    XSPEC,
-    SPECTRE
 };
 
 /** A key pool entry */

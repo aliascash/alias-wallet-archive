@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectrebridge.h"
 
@@ -114,6 +115,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toLongLong());
     transaction.insert("am_d", amount.data().toString());
     transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
+    transaction.insert("am_unit", amount.data(TransactionTableModel::UnitRole).toInt());
 
     return transaction;
 }
@@ -153,7 +155,7 @@ void TransactionModel::populateRows(int start, int end, int max)
         qDebug() << "emitTransactions " << transactionsBuffer.size();
         emitTransactions(transactionsBuffer.values());
         transactionsBuffer.clear();
-    }        
+    }
 
     running = false;
 }
@@ -425,8 +427,6 @@ void SpectreBridge::populateOptions()
 
         visibleTransactions.append(txType);
     }
-
-    QVariantList messageTypes;
 
     notifications.insert("transactions", visibleTransactions);
 
@@ -939,7 +939,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
             if (txn.nVersion == ANON_TXN_VERSION
                 && txin.IsAnonInput())
             {
-                sAddr = "SPECTRE";
+                sAddr = "ALIAS (private)";
                 std::vector<uint8_t> vchImage;
                 txin.ExtractKeyImage(vchImage);
 
@@ -995,7 +995,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 
              if( txn.nVersion == ANON_TXN_VERSION
                  && txout.IsAnonOutput() )
-                 sAddr = "SPECTRE";
+                 sAddr = "ALIAS (private)";
              else
              {
                  CTxDestination address;
@@ -1492,7 +1492,7 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, qu
         if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
          && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
-            result.insert("error_msg", "Import failed - Key must begin with Spectrecoin prefix.");
+            result.insert("error_msg", "Import failed - Key must begin with Alias prefix.");
             emit extKeyImportResult(result);
             return;
         }
