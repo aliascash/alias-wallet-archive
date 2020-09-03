@@ -36,6 +36,7 @@ ui_*.h
 #qt creator
 *.pro.user
 CMakeLists.txt.user
+CMakeSettings.json
 #mac specific
 .DS_Store
 build*/
