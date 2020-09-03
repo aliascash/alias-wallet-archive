@@ -22,8 +22,8 @@ BEGIN
 VALUE "FileDescription",    "Alias wallet (OSS GUI client for Alias)"
 VALUE "FileVersion",        VER_FILEVERSION_STR
 VALUE "InternalName",       "alias"
-VALUE "LegalCopyright",     "2009 (c) The Bitcoin developers, 2012 (c) The NovaCoin & PPCoin developers, 2014 (c) The BlackCoin developers, 2014 (c) The ShadowCoin developers, 2016 (c) The SpectreCoin developers, 2020 (c) The Alias developers"
-VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
+VALUE "LegalCopyright",     "2020 (c) The Alias developers, 2016 (c) The SpectreCoin developers, 2014 (c) The ShadowCoin developers, 2014 (c) The BlackCoin developers, 2012 (c) The NovaCoin & PPCoin developers, 2009 (c) The Bitcoin developers"
+VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license"
 VALUE "OriginalFilename",   "Alias.exe"
 VALUE "ProductName",        "Alias"
 VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
