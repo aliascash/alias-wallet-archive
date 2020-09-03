@@ -92,6 +92,12 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     else()
         set(DEPLOY_QT_BINARY_TYPE_OPTION "--release")
     endif()
+
+    # Check if unzip is installed
+    find_program(UNZIP unzip)
+    if (${UNZIP} STREQUAL "UNZIP-NOTFOUND")
+        message(FATAL_ERROR "You need to install 'unzip'!")
+    endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else ()
