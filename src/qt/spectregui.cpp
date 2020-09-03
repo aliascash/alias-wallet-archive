@@ -127,6 +127,15 @@ void SpectreGUI::WebElement::setContent(QString value)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
+QString webviewResource(QString resource)
+{
+#ifdef ANDROID
+    return resource;
+#else
+    return "qrc:///" + resource;
+#endif
+}
+
 SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,
                        QSharedPointer<ClientModelRemoteReplica> clientModelPtr,
                        QSharedPointer<WalletModelRemoteReplica> walletModelPtr,
@@ -578,7 +587,7 @@ void SpectreGUI::setNumConnections(int count)
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("syncing");
-        syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
         syncingIcon.setAttribute("data-title", "Checking wallet state with network");
         syncingIcon.addClass("fa-spin");
         syncingIcon.removeClass("none");
@@ -711,7 +720,7 @@ void SpectreGUI::setNumBlocks()
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("fa-spin");
-        syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/synced.svg"));
         syncingIcon.removeClass("syncing");
 
         //a js script to change the style property display to none for all outofsync elements
@@ -752,7 +761,7 @@ void SpectreGUI::setNumBlocks()
             syncingIconText.addClass("invisible");
             syncingIconText.removeClass("syncing");
             syncingIcon.removeClass("syncing");
-            syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+            syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
             syncingIcon.addClass("fa-spin");
         }
 
