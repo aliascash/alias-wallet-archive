@@ -1,4 +1,4 @@
-package org.spectrecoin.wallet;
+package org.alias.wallet;
 
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -24,15 +24,15 @@ import java.util.Comparator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity {
 
-    private static final String TAG = "SpectrecoinActivity";
+    private static final String TAG = "AliasActivity";
 
     private int softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
     private int screenOrientationMode = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
     private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
 
-    // native method to handle 'spectrecoin:' URIs
+    // native method to handle 'alias:' URIs
     public static native void receiveURI(String url);
     // native method to handle boostrap service events
     public static native void updateBootstrapState(int state, int progress, boolean indeterminate);
@@ -89,7 +89,7 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     }
 
     public void startCore(boolean rescan, String bip44key) {
-        Intent intent = new Intent(getApplicationContext(), SpectrecoinService.class);
+        Intent intent = new Intent(getApplicationContext(), AliasService.class);
         Bundle bundle = intent.getExtras();
         if (rescan) {
             intent.putExtra("rescan", true);
@@ -113,7 +113,7 @@ public class SpectrecoinActivity extends org.qtproject.qt5.android.bindings.QtAc
     protected void handleIntent() {
         hasPendingIntent = false;
         Intent intent = getIntent();
-        if (intent != null && intent.getData() != null && intent.getDataString().startsWith("spectrecoin:")) {
+        if (intent != null && intent.getData() != null && intent.getDataString().startsWith("alias:")) {
             // process payment URI
             Log.d(TAG, "onStartCommand process URI: " + intent.getDataString());
             receiveURI(intent.getDataString());

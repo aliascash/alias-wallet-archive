@@ -222,10 +222,10 @@ if (ENABLE_GUI)
                 SHARED
                 ${SPECTRECOIN_SRCS}
                 )
-#        set_target_properties(Aliaswallet
-#                PROPERTIES
-#                OUTPUT_NAME "Aliaswallet_${CMAKE_ANDROID_ARCH}"
-#                )
+        set_target_properties(Aliaswallet
+                PROPERTIES
+                    OUTPUT_NAME "Alias"
+                )
         install(TARGETS Aliaswallet
             LIBRARY DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"
             ARCHIVE DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/android-build/libs/${DCMAKE_ANDROID_ARCH_ABI}/"

@@ -117,7 +117,7 @@ static void InitMessage(const std::string &message)
 #endif
     }
     if(splashref) {
-        splashref->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n" + message + "\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashref->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n" + message + "\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
     }
     if (splashref || applicationModelRef)
         QApplication::instance()->processEvents();
@@ -163,7 +163,7 @@ bool AndroidAppInit(int argc, char* argv[])
     boost::thread_group threadGroup;
 
     // Android: detect location of tor binary
-    QString nativeLibraryDir = QAndroidJniObject::getStaticObjectField<jstring>("org/spectrecoin/wallet/SpectrecoinService","nativeLibraryDir").toString();
+    QString nativeLibraryDir = QAndroidJniObject::getStaticObjectField<jstring>("org/alias/wallet/AliasService","nativeLibraryDir").toString();
     torPath = nativeLibraryDir.toStdString() + "/libtor.so";
 
     bool fRet = false;
@@ -192,9 +192,9 @@ bool AndroidAppInit(int argc, char* argv[])
         if (!bip44key.isEmpty()) SoftSetArg("-bip44key", bip44key.toStdString());
 
         //---- Create core webSocket server for JavaScript client
-        QWebSocketServer server(QStringLiteral("Spectrecoin Core Websocket Server"), QWebSocketServer::NonSecureMode);
+        QWebSocketServer server(QStringLiteral("Alias Core Websocket Server"), QWebSocketServer::NonSecureMode);
         if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT))
-            throw std::runtime_error(strprintf("Spectrecoin Core QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
+            throw std::runtime_error(strprintf("Alias Core QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET : WEBSOCKETPORT));
         qDebug() << "Core QWebSocketServer started: " << server.serverAddress() << ":" << server.serverPort();
         QString webSocketToken = QUuid::createUuid().toString().remove(QChar('{')).remove(QChar('}'));
         // qDebug() << "QWebSocketServer access token: " << webSocketToken;
@@ -203,11 +203,12 @@ bool AndroidAppInit(int argc, char* argv[])
         QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo); 
 
         //---- Setup remote objects host
-        QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:spectrecoin")));
+        QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:alias")));
         ApplicationModel applicationModel;
-        applicationModel.setWebSocketToken(webSocketToken);
-        srcNode.enableRemoting(&applicationModel); // enable remoting
         applicationModelRef = &applicationModel;
+        applicationModel.setWebSocketToken(webSocketToken);
+        srcNode.enableRemoting(&applicationModel);  // enable remoting
+        srcNode.enableRemoting(&optionsModel);      // enable remoting
 
         // Initialize Core
         fRet = AppInit2(threadGroup);
@@ -459,22 +460,16 @@ int main(int argc, char *argv[])
 
 #ifdef ANDROID
     // For Android, adjust width of splash screen to fill width.
-    QPixmap splashSourcePixmap(":/images/splash");
-    QScreen *screen = QGuiApplication::primaryScreen();
-    QRect  screenGeometry = screen->availableGeometry();
-    double splashPixelRatio = screenGeometry.width() < screenGeometry.height() ?
-                (screenGeometry.width() * screen->devicePixelRatio()) / splashSourcePixmap.width() :
-                (screenGeometry.height() * screen->devicePixelRatio()) / splashSourcePixmap.height();
-    QPixmap splashPixmap((screenGeometry.width() * screen->devicePixelRatio()),
-                         (screenGeometry.height() * screen->devicePixelRatio()));
-    splashPixmap.fill(QColor(22, 21, 28));
-    QPainter p;
-    p.begin(&splashPixmap);
-    QRect targetRect((splashPixmap.width() - (splashSourcePixmap.width()*splashPixelRatio)) / 2,
-                     (splashPixmap.height() - (splashSourcePixmap.height()*splashPixelRatio)) / 2,
-                     splashSourcePixmap.width() * splashPixelRatio, splashSourcePixmap.height() * splashPixelRatio);
-    p.drawPixmap(targetRect, splashSourcePixmap);
-    splashPixmap.setDevicePixelRatio(screen->devicePixelRatio());
+    QRect  screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+
+    int size = screenGeometry.width() < screenGeometry.height() ?
+                screenGeometry.width() - (screenGeometry.width() / 5) :
+                screenGeometry.height() - (screenGeometry.height() / 5);
+    QRect targetRect((screenGeometry.width() - size) / 2,
+                     (screenGeometry.height() - size) / 7 * 3,
+                     size, size);
+
+    QPixmap splashPixmap(GUIUtil::createPixmap(screenGeometry.width(), screenGeometry.height(), QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), targetRect));
 
     // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
     QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
@@ -514,7 +509,7 @@ int main(int argc, char *argv[])
         QSharedPointer<WalletModelRemoteReplica> walletModelPtr; // holds reference to walletmodel replica
         QSharedPointer<AddressModelRemoteReplica> addressModelPtr; // holds reference to walletmodel replica
         QSharedPointer<OptionsModelRemoteReplica> optionsModelPtr; // holds reference to optionsmodel replica
-        repNode.connectToNode(QUrl(QStringLiteral("local:spectrecoin"))); // connect with remote host node
+        repNode.connectToNode(QUrl(QStringLiteral("local:alias"))); // connect with remote host node
 
         applicationModelPtr.reset(repNode.acquire<ApplicationModelRemoteReplica>()); // acquire replica of source from host node
         clientModelPtr.reset(repNode.acquire<ClientModelRemoteReplica>()); // acquire replica of source from host node
@@ -540,7 +535,7 @@ int main(int argc, char *argv[])
         QWebSocketServer server(QStringLiteral("Alias Client Websocket Server"), QWebSocketServer::NonSecureMode);
         if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1 : WEBSOCKETPORT + 1)) {
             if (!server.listen(QHostAddress::LocalHost, fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1)) {
-                qFatal("Spectrecoin Client QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1);
+                qFatal("Alias Client QWebSocketServer failed to listen on port %d", fTestNet ? WEBSOCKETPORT_TESTNET + 1: WEBSOCKETPORT + 1);
                 return 1;
             }
         }
@@ -565,7 +560,7 @@ int main(int argc, char *argv[])
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
         pollShutdownTimer->start(200);
 
-        // Connect paymentserver that after core and UI are ready, to process any spectrecoin URIs
+        // Connect paymentserver that after core and UI are ready, to process any alias URIs
         QObject::connect(paymentServer, SIGNAL(receivedURI(QString)), &window, SLOT(handleURI(QString)));
         QObject::connect(applicationModelPtr.data(), SIGNAL(uiReady()), paymentServer, SLOT(uiReady()));
 
@@ -651,7 +646,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL
-Java_org_spectrecoin_wallet_SpectrecoinActivity_receiveURI(JNIEnv *env, jobject obj, jstring url)
+Java_org_alias_wallet_AliasActivity_receiveURI(JNIEnv *env, jobject obj, jstring url)
 {
     const char *urlStr = env->GetStringUTFChars(url, NULL);
     Q_UNUSED (obj)
@@ -666,7 +661,7 @@ Java_org_spectrecoin_wallet_SpectrecoinActivity_receiveURI(JNIEnv *env, jobject 
 }
 
 JNIEXPORT void JNICALL
-Java_org_spectrecoin_wallet_SpectrecoinActivity_updateBootstrapState(JNIEnv *env, jobject obj, jint state, jint progress, jboolean indeterminate)
+Java_org_alias_wallet_AliasActivity_updateBootstrapState(JNIEnv *env, jobject obj, jint state, jint progress, jboolean indeterminate)
 {
     //qDebug() << "JNI updateBootstrapState: state=" << state << " progress="<< progress << " indeterminate=" << indeterminate;
     Q_UNUSED (obj)

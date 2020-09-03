@@ -1,4 +1,4 @@
-package org.spectrecoin.wallet;
+package org.alias.wallet;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -34,7 +34,7 @@ public class BootstrapService extends Service {
 
     private static final String TAG = "BootstrapService";
 
-    public static final String BOOTSTRAP_BROADCAST_ACTION = "org.spectrecoin.wallet.boostrap";
+    public static final String BOOTSTRAP_BROADCAST_ACTION = "org.alias.wallet.boostrap";
 
     public static final String ACTION_STOP = "ACTION_STOP";
 
@@ -61,9 +61,9 @@ public class BootstrapService extends Service {
     public void onCreate() {
         super.onCreate();
         // Create the NotificationChannel for the permanent notification
-        SpectrecoinService.createServiceNotificationChannel(this);
+        AliasService.createServiceNotificationChannel(this);
 
-        Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
+        Intent notificationIntent = new Intent(this, AliasActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Intent stopIntent = new Intent(this, BootstrapService.class);
@@ -71,11 +71,11 @@ public class BootstrapService extends Service {
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
         Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Abort", stopPendingIntent).build();
 
-        notificationBuilder = new Notification.Builder(this, SpectrecoinService.CHANNEL_ID_SERVICE)
+        notificationBuilder = new Notification.Builder(this, AliasService.CHANNEL_ID_SERVICE)
                 .setContentTitle("Blockchain Bootstrap")//getText(R.string.notification_title))
                 .setContentText("Downloading...")//getText(R.string.notification_message))
                 .setOnlyAlertOnce(true)
-                .setSmallIcon(R.drawable.icon)
+                .setSmallIcon(R.drawable.icon_status)
                 .setContentIntent(pendingIntent)
                 .setProgress(100, 0, false)
                 .addAction(stopAction);
@@ -116,7 +116,7 @@ public class BootstrapService extends Service {
             //
             // Prepare Paths
             //
-            Path destinationDir = Paths.get(getFilesDir().toPath().toString(), ".spectrecoin");
+            Path destinationDir = Paths.get(getFilesDir().toPath().toString(), ".aliaswallet");
             Path bootstrapPath = Paths.get(destinationDir.toString(), "BootstrapChain.zip");
             try {
                 //

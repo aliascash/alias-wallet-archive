@@ -37,7 +37,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setOption(NoCancelButton, true);
     setOption(NoBackButtonOnStartPage, true);
 
-    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app"), 48, 48));
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app.svg"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
     connect(this, &QWizard::currentIdChanged, this, &SetupWalletWizard::pageChanged);
@@ -61,7 +61,7 @@ void SetupWalletWizard::showSideWidget()
     QLabel * label = new QLabel(this);
     label->setAutoFillBackground(true);
     QPalette palette;
-    QBrush brush1(QColor(29, 29, 29, 255));
+    QBrush brush1(QColor(55, 43, 62, 255));
     brush1.setStyle(Qt::SolidPattern);
     palette.setBrush(QPalette::All, QPalette::Window, brush1);
     palette.setBrush(QPalette::All, QPalette::Base, brush1);

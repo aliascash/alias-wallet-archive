@@ -1,4 +1,4 @@
-package org.spectrecoin.wallet;
+package org.alias.wallet;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -15,14 +15,14 @@ import org.qtproject.qt5.android.bindings.QtService;
 
 import java.util.Objects;
 
-public class SpectrecoinService extends QtService {
+public class AliasService extends QtService {
 
-    private static final String TAG = "SpectrecoinService";
+    private static final String TAG = "AliasService";
 
     public static String nativeLibraryDir;
 
-    public static String CHANNEL_ID_SERVICE = "SPECTRECOIN_SERVICE";
-    private static String CHANNEL_ID_WALLET = "SPECTRECOIN_WALLET";
+    public static String CHANNEL_ID_SERVICE = "ALIAS_SERVICE";
+    private static String CHANNEL_ID_WALLET = "ALIAS_WALLET";
     private static int NOTIFICATION_ID_SERVICE = 100;
     private static int NOTIFICATION_ID_WALLET = 1000;
 
@@ -43,7 +43,7 @@ public class SpectrecoinService extends QtService {
 
         // Create the NotificationChannel for the permanent notification
         CharSequence serviceNotificationName = "Background Service"; //getString(R.string.channel_name);
-        String serviceNotificationDescription = "The permanent notification which shows you the state of the Spectrecoin service."; //getString(R.string.channel_description);
+        String serviceNotificationDescription = "The permanent notification which shows you the state of the Alias service."; //getString(R.string.channel_description);
         NotificationChannel channelSevice = new NotificationChannel(CHANNEL_ID_SERVICE, serviceNotificationName, NotificationManager.IMPORTANCE_DEFAULT);
         channelSevice.setDescription(serviceNotificationDescription);
         notificationManager.createNotificationChannel(channelSevice);
@@ -65,10 +65,10 @@ public class SpectrecoinService extends QtService {
         channelWallet.setDescription(walletNotificationDescription);
         notificationManager.createNotificationChannel(channelWallet);
 
-        Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
+        Intent notificationIntent = new Intent(this, AliasActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        Intent stopIntent = new Intent(this, SpectrecoinService.class);
+        Intent stopIntent = new Intent(this, AliasService.class);
         stopIntent.setAction(ACTION_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
         Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Shutdown", stopPendingIntent).build();
@@ -77,7 +77,7 @@ public class SpectrecoinService extends QtService {
                         .setContentTitle("Core Service")//getText(R.string.notification_title))
                         .setContentText("Running...")//getText(R.string.notification_message))
                         .setOnlyAlertOnce(true)
-                        .setSmallIcon(R.drawable.icon)
+                        .setSmallIcon(R.drawable.icon_status)
                         .setContentIntent(pendingIntent)
                         .addAction(stopAction);
                         //.setTicker(getText(R.string.ticker_text));
@@ -95,7 +95,7 @@ public class SpectrecoinService extends QtService {
             if(action!=null)
                 switch (action) {
                     case ACTION_STOP:
-                        this.stopService(new Intent(this, SpectrecoinService.class));
+                        this.stopService(new Intent(this, AliasService.class));
                         return START_NOT_STICKY;
                 }
 
@@ -112,8 +112,8 @@ public class SpectrecoinService extends QtService {
     }
 
     public void stopCore() {
-        Intent intent = new Intent(getApplicationContext(), SpectrecoinService.class);
-        intent.setAction(SpectrecoinService.ACTION_STOP);
+        Intent intent = new Intent(getApplicationContext(), AliasService.class);
+        intent.setAction(AliasService.ACTION_STOP);
         getApplicationContext().startForegroundService(intent);
     }
 
@@ -127,7 +127,7 @@ public class SpectrecoinService extends QtService {
     public void createNotification(String title, String text) {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
-        Intent notificationIntent = new Intent(this, SpectrecoinActivity.class);
+        Intent notificationIntent = new Intent(this, AliasActivity.class);
         PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         boolean sameNotification = false;
