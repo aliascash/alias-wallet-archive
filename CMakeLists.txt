@@ -20,11 +20,6 @@ set(VERSION_STRING "${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VER
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-# https://www.jetbrains.com/help/clion/cmake-profile.html
-# adding two custom build types to the cached value
-# variable CMAKE_CONFIGURATION_TYPES should be defined before other definitions:
-set(CMAKE_CONFIGURATION_TYPES "DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
-
 #set(ANDROID 1)
 set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/android")
 
@@ -38,6 +33,11 @@ if (WIN32)
 endif ()
 
 if (ANDROID)
+    # https://www.jetbrains.com/help/clion/cmake-profile.html
+    # adding two custom build types to the cached value
+    # variable CMAKE_CONFIGURATION_TYPES should be defined before other definitions:
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES};DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
+
     if(DEFINED ENV{BOOST_ROOT})
         message(STATUS "Getting settings from environment")
         set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
