@@ -192,11 +192,8 @@ void WalletModel::updateStakingInfo()
         if (nWeight)
             nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
     }
-    setStakingInfo(StakingInfo(fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
+    setStakingInfo(StakingInfo(fIsStakingEnabled, fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
 }
-
-
-
 
 void WalletModel::updateTransaction(const QString &hash, int status)
 {

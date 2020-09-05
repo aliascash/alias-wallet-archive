@@ -44,7 +44,7 @@ POD SendCoinsReturn(SendCoinsStatusEnum::SendCoinsStatus status,
                          QString hex); // is filled with the transaction hash if status is "OK", error message otherwise
 POD BlockInfo(int nNodeMode, int nNodeState, int numBlocks, int numBlocksOfPeers, bool isInitialBlockDownload, QDateTime lastBlockTime, qint64 nTimeOffset, int nLastFilteredHeight)
 POD EncryptionInfo(EncryptionStatusEnum::EncryptionStatus status, bool fWalletUnlockStakingOnly);
-POD StakingInfo(bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint64 nNetworkWeight, quint64 nNetworkWeightRecent);
+POD StakingInfo(bool fIsStakingEnabled, bool fIsStaking, quint64 nWeight, unsigned nEstimateTime, quint64 nNetworkWeight, quint64 nNetworkWeightRecent);
 POD SendCoinsRecipient(QString address, QString label, QString narration, int addressTypeInd, qint64 amount, TxnTypeEnum::TxnType txnType, int nRingSize);
 POD OutPoint(QString hex, // transaction hash as hex
                   unsigned n); // transaction output

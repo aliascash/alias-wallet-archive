@@ -648,6 +648,8 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
 
         //update options in javascript
         getOptions();
+
+        walletModel->updateStakingInfo();
     }
 
     return QJsonValue();

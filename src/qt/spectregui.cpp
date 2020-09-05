@@ -1141,6 +1141,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
     WebElement stakingIcon = WebElement(this, "stakingIcon");
     quint64 nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();
     unsigned nEstimateTime = stakingInfo.nEstimateTime();
+    bool fIsStakingEnabled = stakingInfo.fIsStakingEnabled();
     bool fIsStaking = stakingInfo.fIsStaking();
 
     if (fIsStaking && nEstimateTime)
@@ -1174,14 +1175,14 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
         bool walletLocked = walletModel->encryptionInfo().status() == 1;
         bool offline = clientModel->numConnections() == 0;
         bool isInitialBlockDownload = clientModel->blockInfo().isInitialBlockDownload();
-        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)          ? tr("Not staking because wallet is in thin mode") : \
-                                               (!optionsModel->staking())      ? tr("Not staking, staking is disabled")  : \
-                                               (walletLocked)                  ? tr("Not staking because wallet is locked")  : \
-                                               (offline)                       ? tr("Not staking because wallet is offline") : \
-                                               (isInitialBlockDownload)        ? tr("Not staking because wallet is syncing") : \
-                                               (!fIsStaking)                   ? tr("Initializing staking...") : \
-                                               (!nWeight)                      ? tr("Not staking because you don't have mature coins") : \
-                                                                                 tr("Not staking"));
+        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)   ? tr("Not staking because wallet is in thin mode") : \
+                                               (!fIsStakingEnabled)     ? tr("Not staking, staking is disabled")  : \
+                                               (walletLocked)           ? tr("Not staking because wallet is locked")  : \
+                                               (offline)                ? tr("Not staking because wallet is offline") : \
+                                               (isInitialBlockDownload) ? tr("Not staking because wallet is syncing") : \
+                                               (!fIsStaking)            ? tr("Initializing staking...") : \
+                                               (!nWeight)               ? tr("Not staking because you don't have mature coins") : \
+                                                                          tr("Not staking"));
     }
 }
 
