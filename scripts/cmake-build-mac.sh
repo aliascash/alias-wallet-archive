@@ -29,7 +29,7 @@ MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Trying to find required Homebrew Boost libs
-BOOST_VERSION_MAC=1.68.0_1
+BOOST_VERSION_MAC=1.73.0
 BOOST_INCLUDEDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/include
 BOOST_LIBRARYDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
@@ -70,7 +70,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # Location of archive will be resolved like this:
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
-TOR_RESOURCE_ARCHIVE=Spectrecoin.Tor.libraries.macOS.zip
+TOR_RESOURCE_ARCHIVE=Tor.libraries.MacOS.zip
 
 BUILD_DIR=cmake-build-mac-cmdline
 
@@ -822,7 +822,9 @@ cmake \
     -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
     -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
+    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
+    \
+    -DTOR_ARCHIVE=${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
 EOM
 
 # Insert additional parameters
@@ -858,57 +860,7 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished"
-else
-    error " => Finished with return code ${rtc}"
-fi
-
-info ""
-info "Extracting Tor resource archive:"
-mkdir -p ${BUILD_DIR}/spectrecoin/tor-resources
-cd ${BUILD_DIR}/spectrecoin/tor-resources
-unzip ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
-rsync -av src/bin/spectrecoin.app/ ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app
-cd - >/dev/null
-rm -rf ${BUILD_DIR}/spectrecoin/tor-resources
-
-info ""
-info "Put icon file to proper location:"
-mkdir -p ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
-cp ${BUILD_DIR}/../src/qt/res/assets/icons/spectre.icns ${BUILD_DIR}/spectrecoin/src/Spectrecoin.app/Contents/Resources
-
-info ""
-info "Executing MacDeployQT (preparation):"
-read -r -d '' cmd << EOM
-${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Alias.app/ \
-    -qmldir=${ownLocation}/../src/qt/res \
-    -always-overwrite \
-    -verbose=2
-EOM
-echo "${cmd}"
-#read a
-${cmd}
-#read a
-
-info ""
-info 'Executing MacDeployQT (create *.dmg):'
-read -r -d '' cmd << EOM
-${MAC_QT_ROOT_DIR}/bin/macdeployqt \
-    src/Alias.app/ \
-    -dmg \
-    -always-overwrite \
-    -verbose=2
-EOM
-echo "${cmd}"
-#read a
-${cmd}
-#read a
-rtc=$?
-
-info ""
-if [[ ${rtc} = 0 ]] ; then
-    info " -> Finished: ${BUILD_DIR}/alias/src/Alias.dmg"
+    info " -> Finished: ${BUILD_DIR}/aliaswallet/Alias.dmg"
 else
     die 50 " => Creation of Alias.dmg failed with return code ${rtc}"
 fi

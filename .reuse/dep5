@@ -3,12 +3,12 @@ Upstream-Name: Alias
 Upstream-Contact: Alias Developers <info@alias.cash>
 Source: https://github.com/aliascash/alias
 
-Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/* src/qt/res/assets/plugins/framework/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/src/* src/src.aps
+Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/* src/qt/res/assets/plugins/framework/* src/qt/res/assets/svg/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/qml/* src/qt/res/src/* src/src.aps
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
-Files: src/qt/res/bitcoin-qt.rc src/qt/res/index.html src/qt/res/main.qml
+Files: external/*/patches/* scripts/patches/* src/qt/res/alias-qt.rc src/qt/res/index.html src/qt/res/main.qml
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT

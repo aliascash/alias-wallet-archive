@@ -306,6 +306,8 @@ if (ENABLE_GUI)
         # The UI wallet
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             add_executable(Aliaswallet MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+        elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc)
         else()
             add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
         endif()
@@ -416,11 +418,30 @@ if (ENABLE_GUI)
                 MACOSX_BUNDLE_SHORT_VERSION_STRING ${VERSION_STRING}
                 MACOSX_BUNDLE_BUNDLE_VERSION ${VERSION_STRING}
                 MACOSX_BUNDLE_COPYRIGHT " © 2020 The Alias developers"
-                MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/Info.plist.in
+                MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_LIST_DIR}/osx/MacOSXBundleInfo.plist.in
+                OUTPUT_NAME Alias
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
-        endif()
-        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+            add_custom_command(TARGET Aliaswallet POST_BUILD
+                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+                    Alias.app
+                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
+                    -always-overwrite
+                    -verbose=1
+                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/Alias.app/
+                    COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/tor.real
+                    COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/libevent*
+                    COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/PluggableTransports/*
+                    COMMAND cp ${CMAKE_SOURCE_DIR}/src/qt/res/icons/alias-app.icns ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources/
+                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+                    Alias.app
+                    -dmg
+                    -always-overwrite
+                    -verbose=1
+                    COMMENT "Running macdeployqt..."
+                    )
+        elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             target_sources(Aliaswallet
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.h
@@ -428,6 +449,21 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.cpp
                 )
             target_link_libraries(Aliaswallet "Shlwapi")
+            add_custom_command(TARGET Aliaswallet POST_BUILD
+                    COMMAND "${CMAKE_COMMAND}" -E
+                    env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+                    --force
+                    --libdir ${CMAKE_BINARY_DIR}/delivery
+                    --plugindir ${CMAKE_BINARY_DIR}/delivery
+                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    --qmldir ${CMAKE_SOURCE_DIR}/src/qt/res/qml
+                    --qml
+                    --quick
+                    --webengine
+                    "$<TARGET_FILE:Aliaswallet>"
+                    COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
+                    COMMENT "Running windeployqt..."
+                    )
         endif()
     endif()
 endif ()
