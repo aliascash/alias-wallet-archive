@@ -191,6 +191,9 @@ else()
             aliaswallet_lib
             -static
             )
+    set_target_properties(Aliaswalletd PROPERTIES
+            OUTPUT_NAME aliaswalletd
+            )
 endif()
 
 if (ENABLE_GUI)
@@ -444,6 +447,9 @@ if (ENABLE_GUI)
                 PRIVATE
                 ${CMAKE_CURRENT_LIST_DIR}/qt/winshutdownmonitor.cpp
                 )
+            set_target_properties(Aliaswallet PROPERTIES
+                    OUTPUT_NAME Alias
+                    )
             target_link_libraries(Aliaswallet "Shlwapi")
             add_custom_command(TARGET Aliaswallet POST_BUILD
                     COMMAND "${CMAKE_COMMAND}" -E
@@ -459,6 +465,10 @@ if (ENABLE_GUI)
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMENT "Running windeployqt..."
+                    )
+        else()
+            set_target_properties(Aliaswallet PROPERTIES
+                    OUTPUT_NAME aliaswallet
                     )
         endif()
     endif()
