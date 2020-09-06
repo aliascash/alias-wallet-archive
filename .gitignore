@@ -127,3 +127,5 @@ Checksum-Aliaswallet-*
 # Mac
 *.dmg
 .qmake.stash
+
+src/android/.gradle/
