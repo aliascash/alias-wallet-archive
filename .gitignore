@@ -129,3 +129,5 @@ Checksum-Aliaswallet-*
 .qmake.stash
 
 src/android/.gradle/
+
+src/android/gradle/wrapper/
