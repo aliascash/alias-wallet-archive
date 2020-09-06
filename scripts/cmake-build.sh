@@ -78,8 +78,6 @@ helpMe() {
     ${0} [options]
 
     Optional parameters:
-    -a  Perfom only Alias fullbuild. Only the alias buildfolder
-        will be wiped out before. All other folders stay in place.
     -c <cores-to-use>
         The amount of cores to use for build. If not using this option
         the script determines the available cores on this machine.
@@ -88,6 +86,8 @@ helpMe() {
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build GUI (Qt) components
+    -o  Perfom only Alias fullbuild. Only the alias buildfolder
+        will be wiped out before. All other folders stay in place.
     -s  Use Qt from system
     -t  Build with included Tor
     -h  Show this help
@@ -837,12 +837,12 @@ SYSTEM_QT=false
 
 defineQtVersionForCurrentDistribution
 
-while getopts ac:fgsth? option; do
+while getopts c:fgosth? option; do
     case ${option} in
-        a) BUILD_ONLY_ALIAS=true;;
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true;;
+        o) BUILD_ONLY_ALIAS=true;;
         s) SYSTEM_QT=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
@@ -875,8 +875,8 @@ elif ${BUILD_ONLY_ALIAS} ; then
     info " -> Done"
 fi
 
-if [[ $ENABLE_GUI ]] ; then
-    if [[ $SYSTEM_QT ]] ; then
+if ${ENABLE_GUI} ; then
+    if ${SYSTEM_QT} ; then
         ENABLE_GUI_PARAMETERS="ON"
     else
         checkQt

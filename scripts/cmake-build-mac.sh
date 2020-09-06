@@ -96,7 +96,7 @@ helpMe() {
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build UI (Qt) components.
-    -s  Perfom only Alias fullbuild. Only the alias buildfolder
+    -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
@@ -747,13 +747,13 @@ ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
 WITH_TOR=false
 
-while getopts c:fgsth? option; do
+while getopts c:fgoth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
            ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_INSTALLATION_DIR}/lib/cmake";;
-        s) BUILD_ONLY_ALIAS=true;;
+        o) BUILD_ONLY_ALIAS=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;

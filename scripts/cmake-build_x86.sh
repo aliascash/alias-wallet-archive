@@ -85,9 +85,10 @@ helpMe() {
         BerkeleyDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -g  Build UI (Qt) components.
-    -s  Perfom only Alias fullbuild. Only the alias buildfolder
+    -g  Build GUI (Qt) components
+    -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
+    -s  Use Qt from system
     -t  Build with included Tor
     -h  Show this help
 
@@ -867,16 +868,17 @@ ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
 WITH_TOR=false
+SYSTEM_QT=false
 
 defineQtVersionForCurrentDistribution
 
-while getopts c:fgsth? option; do
+while getopts c:fgosth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
         f) FULLBUILD=true;;
-        g) ENABLE_GUI=true
-           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${QT_LIBRARYDIR}/cmake";;
-        s) BUILD_ONLY_ALIAS=true;;
+        g) ENABLE_GUI=true;;
+        o) BUILD_ONLY_ALIAS=true;;
+        s) SYSTEM_QT=true;;
         t) WITH_TOR=true;;
         h|?) helpMe && exit 0;;
         *) die 90 "invalid option \"${OPTARG}\"";;
@@ -908,11 +910,19 @@ elif ${BUILD_ONLY_ALIAS} ; then
     info " -> Done"
 fi
 
+if ${ENABLE_GUI} ; then
+    if ${SYSTEM_QT} ; then
+        ENABLE_GUI_PARAMETERS="ON"
+    else
+        checkQt
+        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${QT_LIBRARYDIR}/cmake"
+    fi
+fi
+
 checkBoost
 checkBerkeleyDB
 checkLevelDB
 checkOpenSSL
-checkQt
 if ${WITH_TOR} ; then
     checkXZLib
     checkZStdLib
