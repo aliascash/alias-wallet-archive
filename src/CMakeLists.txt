@@ -173,19 +173,15 @@ endif ()
 ##############################################################################
 ##### Setup and link the executables #########################################
 
-# The daemon
-add_executable(Aliaswalletd ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    # On Mac without "-static"
-    target_link_libraries(Aliaswalletd
-            OpenSSL::SSL
-            OpenSSL::Crypto
-            Oracle::BerkeleyDB
-            leveldb::leveldb
-            aliaswallet_lib
-            )
+    message(STATUS "No daemon build on Mac")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "No daemon build on Windows")
 else()
+    # The daemon
+    add_executable(Aliaswalletd ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
+
     # Link the daemon as static binary
     target_link_libraries(Aliaswalletd
             OpenSSL::SSL
