@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "clientmodel.h"
 #include "walletmodel.h"
@@ -102,7 +103,7 @@ void ClientModel::updateServiceStatus()
     {
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
                                                      QAndroidJniObject::fromString("No network connection").object<jstring>(),
-                                                     QAndroidJniObject::fromString("Spectrecoin is not connected to any node.").object<jstring>());
+                                                     QAndroidJniObject::fromString("Alias is not connected to any node.").object<jstring>());
         return;
     }
     if (isImporting())

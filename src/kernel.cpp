@@ -1,7 +1,8 @@
-// Copyright (c) 2012-2013 The PPCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2012 PPCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <boost/assign/list_of.hpp>
 

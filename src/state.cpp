@@ -1,7 +1,8 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "state.h"
 
@@ -54,7 +55,6 @@ unsigned int nBlockPrioritySize;
 unsigned int nBlockMinSize;
 
 int64_t nMinTxFee = 10000;
-int64_t nMinTxFeeAnonLegacy = 1000000;
 int64_t nMinRelayTxFee = nMinTxFee;
 
 int64_t nStakeReward = 2 * COIN;

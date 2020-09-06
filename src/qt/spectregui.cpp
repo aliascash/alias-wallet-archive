@@ -1,7 +1,8 @@
-// Copyright (c) 2014-2016 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectregui.h"
 //#include "transactiontablemodel.h"
@@ -119,6 +120,22 @@ void SpectreGUI::WebElement::removeClass(QString className)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
+void SpectreGUI::WebElement::setContent(QString value)
+{
+    value = value.replace("\n"," ");
+    QString javascriptCode = getElementJS + "innerHTML = \"" + value + "\";";
+    spectreGUI->runJavaScript(javascriptCode);
+}
+
+QString webviewResource(QString resource)
+{
+#ifdef ANDROID
+    return resource;
+#else
+    return "qrc:///" + resource;
+#endif
+}
+
 SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> applicationModelPtr,
                        QSharedPointer<ClientModelRemoteReplica> clientModelPtr,
                        QSharedPointer<WalletModelRemoteReplica> walletModelPtr,
@@ -149,10 +166,10 @@ SpectreGUI::SpectreGUI(QSharedPointer<ApplicationModelRemoteReplica> application
 {
 
     resize(1280, 720);
-    setWindowTitle(tr("Spectrecoin") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
-#ifndef Q_OS_MACOS
-    qApp->setWindowIcon(QIcon(":icons/spectre"));
-    setWindowIcon(QIcon(":icons/spectre"));
+    setWindowTitle(tr("Alias") + " - " + tr("Client") + " - " + tr(CLIENT_PLAIN_VERSION.c_str()));
+#ifndef Q_OS_MAC
+    qApp->setWindowIcon(QIcon(":icons/alias-app"));
+    setWindowIcon(QIcon(":icons/alias-app"));
 #else
     setUnifiedTitleAndToolBarOnMac(true);
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
@@ -189,7 +206,7 @@ void initMessage(QSplashScreen *splashScreen, const std::string &message)
 {
     if(splashScreen)
     {
-        splashScreen->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n" + message + "\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(235,149,50));
+        splashScreen->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + QString::fromStdString(message) + "\n\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
         QApplication::instance()->processEvents();
     }
 }
@@ -201,32 +218,35 @@ void SpectreGUI::updateCoreMessage(QString message)
 
 unsigned short const onion_port = 9089;
 
-void SpectreGUI::loadIndex() {
+void SpectreGUI::loadIndex(QString webSocketToken) {
     initMessage(splashScreen, "...Start UI...");
 
     QQuickWidget *view = new QQuickWidget(this);
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
-    view->setSource(QUrl("qrc:///src/qt/res/main.qml"));
+    view->setSource(QUrl("qrc:///qml/main"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
 
 #ifdef ANDROID
     // On Android webview can't load resources via qrc, we have to provide and load the resources from the apps assets folder
-    QUrl url("file:///android_asset/index.html" + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+    QUrl url("file:///android_asset/index.html" + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +
+             "token=" + webSocketToken);  
 #else
-  #ifdef Q_OS_WIN
-    QFile html("C:/spectrecoin-ui/index.html");
-    QFileInfo webchannelJS("C:/spectrecoin-ui/qtwebchannel/qwebchannel.js");
-  #else
-    QFile html("/opt/spectrecoin-ui/index.html");
-    QFileInfo webchannelJS("/opt/spectrecoin-ui/qtwebchannel/qwebchannel.js");
-  #endif
+   #ifdef Q_OS_WIN
+    QFile html("C:/alias-wallet-ui/index.html");
+    QFileInfo webchannelJS("C:/alias-wallet-ui/qtwebchannel/qwebchannel.js");
+   #else
+    QFile html("/opt/alias-wallet-ui/index.html");
+    QFileInfo webchannelJS("/opt/alias-wallet-ui/qtwebchannel/qwebchannel.js");
+   #endif
     // Check if external qwebchannel exists and if not, create it! (this is how you get the right qwebchannel.js)
     if (html.exists() && !webchannelJS.exists()) {
         qDebug() << "Copy qwebchannel.js to" << webchannelJS.absoluteFilePath();
         QFile::copy(":/qtwebchannel/qwebchannel.js",webchannelJS.absoluteFilePath());
     }
 
-    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) : ""));
+    QUrl url((html.exists() ? "file:///" + html.fileName() : "qrc:///src/qt/res/index.html") +
+             (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +
+             "token=" + webSocketToken);  
 #endif
     qmlWebView->setProperty("url", url);
 
@@ -344,16 +364,16 @@ void SpectreGUI::createActions()
     quitAction->setToolTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Spectrecoin"), this);
-    aboutAction->setToolTip(tr("Show information about Spectrecoin"));
+    aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Alias"), this);
+    aboutAction->setToolTip(tr("Show information about Alias"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
-    optionsAction->setToolTip(tr("Modify configuration options for Spectrecoin"));
+    optionsAction->setToolTip(tr("Modify configuration options for Alias"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/spectre"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/alias-app"), tr("&Show / Hide"), this);
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
     encryptWalletAction->setToolTip(tr("Encrypt or decrypt wallet"));
     encryptWalletAction->setCheckable(true);
@@ -432,7 +452,7 @@ void SpectreGUI::createMenuBar()
 //            if (sMode.length() > 0)
 //                sMode[0] = sMode[0].toUpper();
 
-//            setWindowTitle(tr("Spectrecoin") + " - " + tr("Wallet") + ", " + sMode);
+//            setWindowTitle(tr("Alias") + " - " + tr("Wallet") + ", " + sMode);
 //        };
 
 //        // Replace some strings and icons, when using the testnet
@@ -440,15 +460,15 @@ void SpectreGUI::createMenuBar()
 //        {
 //            setWindowTitle(windowTitle() + QString(" ") + tr("[testnet]"));
 //#ifndef Q_OS_MAC
-//            qApp->setWindowIcon(QIcon(":icons/spectre_testnet"));
-//            setWindowIcon(QIcon(":icons/spectre_testnet"));
+//            qApp->setWindowIcon(QIcon(":icons/alias-app_testnet"));
+//            setWindowIcon(QIcon(":icons/alias-app_testnet"));
 //#else
-//            MacDockIconHandler::instance()->setIcon(QIcon(":icons/spectre_testnet"));
+//            MacDockIconHandler::instance()->setIcon(QIcon(":icons/alias-app_testnet"));
 //#endif
 //            if(trayIcon)
 //            {
-//                trayIcon->setToolTip(tr("Spectrecoin client") + QString(" ") + tr("[testnet]"));
-//                trayIcon->setIcon(QIcon(":/icons/spectre_testnet"));
+//                trayIcon->setToolTip(tr("Alias") + QString(" ") + tr("[testnet]"));
+//                trayIcon->setIcon(QIcon(":/icons/alias-app_testnet"));
 //                toggleHideAction->setIcon(QIcon(":/icons/toolbar_testnet"));
 //            }
 
@@ -506,8 +526,8 @@ void SpectreGUI::createTrayIcon()
     trayIcon = new QSystemTrayIcon(this);
     trayIconMenu = new QMenu(this);
     trayIcon->setContextMenu(trayIconMenu);
-    trayIcon->setToolTip(tr("Spectrecoin client"));
-    trayIcon->setIcon(QIcon(":/icons/spectre"));
+    trayIcon->setToolTip(tr("Alias"));
+    trayIcon->setIcon(QIcon(":/icons/alias-app"));
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
     trayIcon->show();
@@ -552,26 +572,33 @@ void SpectreGUI::aboutClicked()
 void SpectreGUI::setNumConnections(int count)
 {
     WebElement connectionIcon = WebElement(this, "connectionsIcon");
+    WebElement syncingIcon = WebElement(this, "syncingIcon");
+    WebElement syncingIconText = WebElement(this, "syncingIconText");
 
-    QString className;
-
-    switch(count)
+    if (count <= 0)
     {
-    case 0:          className = "connect-0"; break;
-    case 1: case 2:  className = "connect-1"; break;
-    case 3: case 4:  className = "connect-2"; break;
-    case 5: case 6:  className = "connect-3"; break;
-    case 7: case 8:  className = "connect-4"; break;
-    case 9: case 10: className = "connect-5"; break;
-    default:         className = "connect-6"; break;
+        fConnectionInit = true;
+        syncingIcon.addClass("none");
+        syncingIconText.addClass("invisible");
+    }
+    else if (fConnectionInit)
+    {
+        fConnectionInit = false;
+        syncingIconText.addClass("invisible");
+        syncingIconText.removeClass("syncing");
+        syncingIcon.removeClass("syncing");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
+        syncingIcon.setAttribute("data-title", "Checking wallet state with network");
+        syncingIcon.addClass("fa-spin");
+        syncingIcon.removeClass("none");
     }
 
+    QString className = count <= 0 ? "fa-spin " : "";
+
+    className += count < 12 ? (QString("connection-") + QString::number(count)) : "connection-12";
     connectionIcon.setAttribute("class", className);
 
-    QString source = "qrc:///icons/" + className.replace("-", "_");
-    connectionIcon.setAttribute("src", source);
-
-    QString dataTitle = tr("%n active connection(s) to Spectrecoin network", "", count);
+    QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
 
     updateStakingIcon(walletModel->stakingInfo());
@@ -581,22 +608,21 @@ void SpectreGUI::setNumBlocks()
 {
     const BlockInfo& blockInfo = clientModel->blockInfo();
 
-    WebElement blocksIcon = WebElement(this, "blocksIcon");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
-    WebElement syncProgressBar = WebElement(this, "syncProgressBar");
+    WebElement syncingIconText = WebElement(this, "syncingIconText");
 
     // don't show / hide progress bar and its label if we have no connection to the network
     if (!clientModel || (clientModel->numConnections() == 0 && !clientModel->isImporting()))
     {
-        syncProgressBar.setAttribute("style", "display:none;");
-        blocksIcon.addClass("none");
         syncingIcon.addClass("none");
+        syncingIconText.addClass("invisible");
         return;
     }
 
     int nNodeMode = blockInfo.nNodeMode();
     int nNodeState = blockInfo.nNodeState();
-
+    fConnectionInit = false;
+    
     // -- translation (tr()) makes it difficult to neatly pick block/header
     static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
     static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
@@ -606,7 +632,8 @@ void SpectreGUI::setNumBlocks()
 
     int count = blockInfo.numBlocks();
     int nTotalBlocks = blockInfo.numBlocksOfPeers();
-
+    float nPercentageDone = -1;
+    
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
@@ -615,19 +642,17 @@ void SpectreGUI::setNumBlocks()
                 + tr("Downloading filtered blocks...");
 
         int nRemainingBlocks = blockInfo.numBlocksOfPeers() - blockInfo.nLastFilteredHeight();
-        float nPercentageDone = blockInfo.nLastFilteredHeight() / (blockInfo.numBlocksOfPeers() * 0.01f);
+        nPercentageDone = blockInfo.nLastFilteredHeight() / (blockInfo.numBlocksOfPeers() * 0.01f);
 
         tooltip += "<br>"
                  + tr("~%1 filtered block(s) remaining (%2% done).").arg(nRemainingBlocks).arg(nPercentageDone);
 
         count = blockInfo.nLastFilteredHeight();
-        syncProgressBar.removeAttribute("style");
     } else
     if (count < nTotalBlocks)
     {
         int nRemainingBlocks = nTotalBlocks - count;
-        float nPercentageDone = count / (nTotalBlocks * 0.01f);
-        syncProgressBar.removeAttribute("style");
+        nPercentageDone = count / (nTotalBlocks * 0.01f);
 
         if (strStatusBarWarnings.isEmpty())
         {
@@ -691,8 +716,12 @@ void SpectreGUI::setNumBlocks()
         && nNodeState != NS_GET_FILTERED_BLOCKS)
     {
         tooltip = tr("Up to date") + "<br>" + tooltip;
-        blocksIcon.removeClass("none");
-        syncingIcon.addClass("none");
+
+        syncingIconText.addClass("invisible");
+        syncingIconText.removeClass("syncing");
+        syncingIcon.removeClass("fa-spin");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/synced.svg"));
+        syncingIcon.removeClass("syncing");
 
         //a js script to change the style property display to none for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -701,14 +730,40 @@ void SpectreGUI::setNumBlocks()
                 javascript+= "}";
 
         runJavaScript(javascript);
-
-        syncProgressBar.setAttribute("style", "display:none;");
     } else
     {
         tooltip = tr("Catching up...") + "<br>" + tooltip;
 
-        blocksIcon.addClass("none");
-        syncingIcon.removeClass("none");
+        if (nPercentageDone >= 0)
+        {
+            QString svgPercent = nPercentageDone < 2.5 ? "2.5" : nPercentageDone > 95 ? "95" : QString::number(nPercentageDone);
+            QString svgData = "data:image/svg+xml;utf8,"
+                              "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 64 64' style='enable-background:new 0 0 64 64;' xml:space='preserve'>"
+                              "  <style type='text/css'>"
+                              "      .st0{opacity:0.3;stroke:%23F38220;enable-background:new;}"
+                              "      .st1{stroke:%23F38220;}"
+                              "      .st2{enable-background:new;}"
+                              "  </style>"
+                              "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='5'/>"
+                              "  <circle class='st1' cx='32' cy='32' r='29' fill='none' stroke-width='5' stroke-dasharray='calc(" + svgPercent + " * 182.2124 / 100) 182.2124' transform='rotate(-90) translate(-64)' />"
+                              "</svg>";
+            syncingIcon.setAttribute("src", svgData);
+            syncingIcon.addClass("fa-spin");
+            syncingIcon.addClass("syncing");
+            syncingIconText.addClass("syncing");
+            syncingIconText.setContent(QString::number(nPercentageDone > 99 ? 99 :
+                                                                              nPercentageDone >= 10 ? std::floor(nPercentageDone) :
+                                                                                                      std::floor(nPercentageDone * 10) / 10
+                                                                                                      ,'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
+            syncingIconText.removeClass("invisible");
+        }
+        else {
+            syncingIconText.addClass("invisible");
+            syncingIconText.removeClass("syncing");
+            syncingIcon.removeClass("syncing");
+            syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
+            syncingIcon.addClass("fa-spin");
+        }
 
         //a js script to change the style property display to inline for all outofsync elements
         QString javascript = "var divsToHide = document.getElementsByClassName('outofsync');";
@@ -717,8 +772,6 @@ void SpectreGUI::setNumBlocks()
                 javascript+= "}";
 
         runJavaScript(javascript);
-
-        syncProgressBar.removeAttribute("style");
     }
 
     if (!text.isEmpty())
@@ -726,14 +779,8 @@ void SpectreGUI::setNumBlocks()
         tooltip += "<br>";
         tooltip += tr("Last received %1 was generated %2.").arg(sBlockType).arg(text);
     };
-
-    blocksIcon.setAttribute("data-title", tooltip);
     syncingIcon.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("data-title", tooltip);
-    syncProgressBar.setAttribute("value", QString::number(count));
-    syncProgressBar.setAttribute("max", QString::number(nTotalBlocks));
-
-    updateStakingIcon(walletModel->stakingInfo());
+    syncingIcon.removeClass("none");
 }
 
 void SpectreGUI::error(const QString &title, const QString &message, bool modal)
@@ -787,7 +834,7 @@ void SpectreGUI::askFee(qint64 nFeeRequired, bool *payFee)
     QString strMessage =
         tr("To process this transaction, a fee of %1 will be charged to support the network. "
            "Do you want to submit the transaction?").arg(
-                BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, nFeeRequired));
+                BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, nFeeRequired));
     QMessageBox::StandardButton retval = QMessageBox::question(
           this, tr("Confirm transaction fee"), strMessage,
           QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Yes);
@@ -862,7 +909,7 @@ void SpectreGUI::dropEvent(QDropEvent *event)
        if (nValidUrisFound)
             clientBridge->triggerElement("#navitems a[href=#send]", "click");
        else
-            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
+            notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters."));
     }
 
     event->acceptProposedAction();
@@ -884,7 +931,7 @@ void SpectreGUI::handleURI(QString strURI)
         showNormalIfMinimized();
     }
     else
-        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Spectrecoin address or malformed URI parameters."));
+        notificator->notify(Notificator::Warning, tr("URI handling"), tr("URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters."));
 }
 
 void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
@@ -898,7 +945,7 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
     switch(encryptionInfo.status())
     {
     case EncryptionStatus::Unencrypted:
-        encryptionIcon.setAttribute("style", "display:none;");
+        encryptionIcon.addClass("none");
         changePassphrase.addClass("none");
         toggleLock.addClass("none");
         encryptMenuItem.removeClass("none");
@@ -910,35 +957,23 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
         break;
     case EncryptionStatus::Unlocked:
         encryptMenuItem  .addClass("none");
-        encryptionIcon.removeAttribute("style");
-        encryptionIcon.removeClass("fa-lock");
+        encryptionIcon.removeClass("none");
         encryptionIcon.removeClass("encryption");
-        encryptionIcon.   addClass("fa-unlock");
-        encryptionIcon.   addClass("no-encryption");
         encryptMenuItem  .addClass("none");
         toggleLockIcon.removeClass("fa-unlock");
         toggleLockIcon.removeClass("fa-unlock-alt");
         toggleLockIcon.   addClass("fa-lock");
-        encryptionIcon   .setAttribute("src", "qrc:///icons/lock_open");
 
         if (encryptionInfo.fWalletUnlockStakingOnly())
         {
             encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b> for staking only"));
-            encryptionIcon. removeClass("red");
-            encryptionIcon.    addClass("orange");
+            encryptionIcon. removeClass("no-encryption");
             encryptionIcon.    addClass("encryption-stake");
-
-            toggleLockIcon.removeClass("red");
-            toggleLockIcon   .addClass("orange");
         } else
         {
             encryptionIcon.setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
-            encryptionIcon.    addClass("red");
-            encryptionIcon. removeClass("orange");
             encryptionIcon. removeClass("encryption-stake");
-
-            toggleLockIcon .removeClass("orange");
-            toggleLockIcon    .addClass("red");
+            encryptionIcon.    addClass("no-encryption");
         };
 
         encryptButton.addClass("none");
@@ -951,23 +986,17 @@ void SpectreGUI::setEncryptionInfo(const EncryptionInfo& encryptionInfo)
         encryptWalletAction->setEnabled(false); // TODO: decrypt currently not supported
         break;
     case EncryptionStatus::Locked:
-        encryptionIcon.removeAttribute("style");
-        encryptionIcon.removeClass("fa-unlock");
+        encryptionIcon.removeClass("none");
         encryptionIcon.removeClass("no-encryption");
         encryptionIcon.removeClass("encryption-stake");
-        encryptionIcon.   addClass("fa-lock");
         encryptionIcon.   addClass("encryption");
         toggleLockIcon.removeClass("fa-lock");
         toggleLockIcon.   addClass("fa-unlock-alt");
         encryptionIcon   .setAttribute("data-title", tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
 
-        encryptionIcon     .addClass("red");
-        encryptionIcon  .removeClass("orange");
         encryptButton      .addClass("none");
         encryptMenuItem    .addClass("none");
         changePassphrase.removeClass("none");
-        toggleLockIcon  .removeClass("orange");
-        toggleLockIcon     .addClass("red");
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
         unlockWalletAction->setVisible(true);
@@ -1112,6 +1141,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
     WebElement stakingIcon = WebElement(this, "stakingIcon");
     quint64 nWeight = stakingInfo.nWeight(), nNetworkWeight = stakingInfo.nNetworkWeight(), nNetworkWeightRecent = stakingInfo.nNetworkWeightRecent();
     unsigned nEstimateTime = stakingInfo.nEstimateTime();
+    bool fIsStakingEnabled = stakingInfo.fIsStakingEnabled();
     bool fIsStaking = stakingInfo.fIsStaking();
 
     if (fIsStaking && nEstimateTime)
@@ -1134,7 +1164,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
         if (fDebug)
             textDebug = tr(" (last 72 blocks %1)").arg(nNetworkWeightRecent);
 
-        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Expected time to earn reward is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
+        stakingIcon.setAttribute("data-title", tr("Staking.<br/>Your weight is %1<br/>Network weight is %2%3<br/>Average time between rewards is %4").arg(nWeight).arg(nNetworkWeight).arg(textDebug).arg(text));
     } else
     {
         stakingIcon.addClass("not-staking");
@@ -1145,14 +1175,14 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
         bool walletLocked = walletModel->encryptionInfo().status() == 1;
         bool offline = clientModel->numConnections() == 0;
         bool isInitialBlockDownload = clientModel->blockInfo().isInitialBlockDownload();
-        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)          ? tr("Not staking because wallet is in thin mode") : \
-                                               (!optionsModel->staking())      ? tr("Not staking, staking is disabled")  : \
-                                               (walletLocked)                  ? tr("Not staking because wallet is locked")  : \
-                                               (offline)                       ? tr("Not staking because wallet is offline") : \
-                                               (isInitialBlockDownload)        ? tr("Not staking because wallet is syncing") : \
-                                               (!fIsStaking)                   ? tr("Initializing staking...") : \
-                                               (!nWeight)                      ? tr("Not staking because you don't have mature coins") : \
-                                                                                 tr("Not staking"));
+        stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)   ? tr("Not staking because wallet is in thin mode") : \
+                                               (!fIsStakingEnabled)     ? tr("Not staking, staking is disabled")  : \
+                                               (walletLocked)           ? tr("Not staking because wallet is locked")  : \
+                                               (offline)                ? tr("Not staking because wallet is offline") : \
+                                               (isInitialBlockDownload) ? tr("Not staking because wallet is syncing") : \
+                                               (!fIsStaking)            ? tr("Initializing staking...") : \
+                                               (!nWeight)               ? tr("Not staking because you don't have mature coins") : \
+                                                                          tr("Not staking"));
     }
 }
 

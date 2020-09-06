@@ -1,3 +1,8 @@
+:: SPDX-FileCopyrightText: © 2020 Alias Developers
+:: SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+::
+:: SPDX-License-Identifier: MIT
+::
 :: Helper script to create build.h.
 echo off
 set SRC_DIR=%cd%\src

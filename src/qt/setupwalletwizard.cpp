@@ -1,10 +1,12 @@
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "setupwalletwizard.h"
 #include "extkey.h"
 #include "util.h"
+#include "guiutil.h"
 #include "base58.h"
 
 #include <QtWidgets>
@@ -35,13 +37,13 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setOption(NoCancelButton, true);
     setOption(NoBackButtonOnStartPage, true);
 
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app.svg"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
     connect(this, &QWizard::currentIdChanged, this, &SetupWalletWizard::pageChanged);
 
-    setWindowTitle(tr("Spectrecoin Wallet Setup"));
-    setWindowIcon(QIcon(":icons/spectre"));
+    setWindowTitle(tr("Alias Wallet Setup"));
+    setWindowIcon(QIcon(":icons/alias-app"));
 
     showSideWidget();
 }
@@ -59,12 +61,12 @@ void SetupWalletWizard::showSideWidget()
     QLabel * label = new QLabel(this);
     label->setAutoFillBackground(true);
     QPalette palette;
-    QBrush brush1(QColor(29, 29, 29, 255));
+    QBrush brush1(QColor(55, 43, 62, 255));
     brush1.setStyle(Qt::SolidPattern);
     palette.setBrush(QPalette::All, QPalette::Window, brush1);
     palette.setBrush(QPalette::All, QPalette::Base, brush1);
     label->setPalette(palette);
-    label->setPixmap(QPixmap(":/images/watermark"));
+    label->setPixmap(GUIUtil::createPixmap(96, 400, QColor(55, 43, 62), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(3, 155, 90, 90)));
     label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
     setSideWidget(label);
 }
@@ -102,7 +104,7 @@ void SetupWalletWizard::showHelp()
         message = tr("This help is likely not to be of any help.");
     }
 
-    QMessageBox::information(this, tr("Spectrecoin Wallet Setup Help"), message);
+    QMessageBox::information(this, tr("Alias Wallet Setup Help"), message);
 
     lastHelpMessage = message;
 }

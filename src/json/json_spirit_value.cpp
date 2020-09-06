@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2007 John W. Wilkinson
+//
+// SPDX-License-Identifier: MIT
+
 /* Copyright (c) 2007 John W Wilkinson
 
    This source code can be used for any purpose as long as

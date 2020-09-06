@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2012 pooler <pooler@litecoinpool.org>
+//
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 /*
  * Copyright 2012 pooler@litecoinpool.org
  *

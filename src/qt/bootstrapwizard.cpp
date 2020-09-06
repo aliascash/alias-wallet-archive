@@ -3,6 +3,7 @@
 // file license.txt or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bootstrapwizard.h"
+#include "guiutil.h"
 
 #include <QtWidgets>
 #include <QScreen>
@@ -33,13 +34,13 @@ BootstrapWizard::BootstrapWizard(int daysSinceBlockchainUpdate, QWidget *parent)
     setOption(NoBackButtonOnStartPage, true);
 
     //setOption(HaveFinishButtonOnEarlyPages, true);
-    setPixmap(QWizard::LogoPixmap, QPixmap(":/assets/icons/spectrecoin-48.png"));
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app.svg"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &BootstrapWizard::showHelp);
     connect(this, &QWizard::currentIdChanged, this, &BootstrapWizard::pageChanged);
 
-    setWindowTitle(tr("Spectrecoin Blockchain Setup"));
-    setWindowIcon(QIcon(":icons/spectre"));
+    setWindowTitle(tr("Alias Blockchain Setup"));
+    setWindowIcon(QIcon(":icons/alias-app"));
 
     showSideWidget();
 
@@ -70,12 +71,12 @@ void BootstrapWizard::showSideWidget()
     QLabel * label = new QLabel(this);
     label->setAutoFillBackground(true);
     QPalette palette;
-    QBrush brush1(QColor(29, 29, 29, 255));
+    QBrush brush1(QColor(55, 43, 62, 255));
     brush1.setStyle(Qt::SolidPattern);
     palette.setBrush(QPalette::All, QPalette::Window, brush1);
     palette.setBrush(QPalette::All, QPalette::Base, brush1);
     label->setPalette(palette);
-    label->setPixmap(QPixmap(":/images/watermark"));
+    label->setPixmap(GUIUtil::createPixmap(96, 400, QColor(55, 43, 62), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(3, 155, 90, 90)));
     label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored);
     setSideWidget(label);
 }

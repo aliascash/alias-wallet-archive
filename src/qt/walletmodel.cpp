@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "walletmodel.h"
 #include "guiconstants.h"
@@ -191,11 +192,8 @@ void WalletModel::updateStakingInfo()
         if (nWeight)
             nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
     }
-    setStakingInfo(StakingInfo(fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
+    setStakingInfo(StakingInfo(fIsStakingEnabled, fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
 }
-
-
-
 
 void WalletModel::updateTransaction(const QString &hash, int status)
 {
@@ -527,7 +525,7 @@ SendCoinsReturn WalletModel::sendCoinsAnon(const qint64 feeApproval, const QList
         return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString("Block chain must be fully synced first."));
 
     if (vNodes.empty())
-        return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString("Spectrecoin is not connected!"));
+        return SendCoinsReturn(SendCoinsStatusEnum::SCR_ErrorWithMsg, 0, QString::fromStdString("Alias is not connected!"));
 
 
     // -- verify input type and ringsize

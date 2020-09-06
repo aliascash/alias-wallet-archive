@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest package="org.spectrecoin.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
+<manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
@@ -12,17 +12,17 @@
 
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
 
-    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="-- %%INSERT_APP_NAME%% --" android:extractNativeLibs="true" android:usesCleartextTraffic="true" android:icon="@drawable/icon">
-        <activity android:windowSoftInputMode="adjustPan" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.spectrecoin.wallet.SpectrecoinActivity" android:label="-- %%INSERT_APP_NAME%% --" android:screenOrientation="locked" android:launchMode="singleTop" android:theme="@style/AppBaseTheme">
+    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="-- %%INSERT_APP_NAME%% --" android:extractNativeLibs="true" android:usesCleartextTraffic="true" android:icon="@drawable/ic_alias_app">
+        <activity android:windowSoftInputMode="adjustPan" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.alias.wallet.AliasActivity" android:label="-- %%INSERT_APP_NAME%% --" android:screenOrientation="locked" android:launchMode="singleTop" android:theme="@style/AppBaseTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter android:label="Open payment URI">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="spectrecoin"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="alias"/>
             </intent-filter>
 
 
@@ -88,7 +88,7 @@
     </activity>
 
     <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-    <service android:process=":SpectrecoinService" android:name=".SpectrecoinService" android:exported="false">
+    <service android:process=":AliasService" android:name=".AliasService" android:exported="false">
       <!-- android:process=":qt" is needed to force the service to run on a separate process than the Activity -->
 
       <!-- Application arguments. Uncomment the following line to use the same main function. -->

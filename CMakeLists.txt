@@ -1,5 +1,9 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.14)
-project(Spectrecoin
+project(Alias
         VERSION 4.0
         LANGUAGES
         CXX
@@ -8,7 +12,7 @@ project(Spectrecoin
 
 # The version number.
 set(CLIENT_VERSION_MAJOR 4)
-set(CLIENT_VERSION_MINOR 2)
+set(CLIENT_VERSION_MINOR 3)
 set(CLIENT_VERSION_REVISION 0)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
@@ -50,8 +54,15 @@ if (ANDROID)
         set(ENABLE_GUI ON)
     endif()
     message(STATUS "Configuring for Android")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fPIC -Wno-deprecated-declarations -Wno-dangling-else")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wno-deprecated-declarations -Wno-dangling-else")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold")
+
+    # https://github.com/arsenm/sanitizers-cmake/issues/13#issuecomment-315532253
+    # Use "-fPIC" / "-fPIE" for all targets by default, including static libs
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    # CMake doesn't add "-pie" by default for executables (CMake issue #14983)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Configuring on/for Linux")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
@@ -127,6 +138,7 @@ if (ENABLE_GUI)
         set(Qt5WebSockets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebSockets")
         set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
         set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
+        set(Qt5Svg_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Svg")
         set(Qt5AndroidExtras_DIR "${QT_CMAKE_MODULE_PATH}/Qt5AndroidExtras")
         set(Qt5RemoteObjects_DIR "${QT_CMAKE_MODULE_PATH}/Qt5RemoteObjects")
 
@@ -143,6 +155,7 @@ if (ENABLE_GUI)
         set(Qt5WebEngine_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngine")
         set(Qt5WebEngineWidgets_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngineWidgets")
         set(Qt5_DIR "${Qt5_DIR}/lib/cmake/Qt5")
+        set(Qt5Svg_DIR "${Qt5_DIR}/lib/cmake/Qt5Svg")
         set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake.exe")
 
         # Additional entries:
@@ -151,7 +164,7 @@ if (ENABLE_GUI)
         set(Qt5Qml_DIR "${Qt5_DIR}/lib/cmake/Qt5Qml")
         set(Qt5Network_DIR "${Qt5_DIR}/lib/cmake/Qt5Network")
         set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
-    elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    else()
         set(Qt5Core_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Core")
         set(Qt5Widgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Widgets")
         set(Qt5WebView_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebView")
@@ -159,6 +172,7 @@ if (ENABLE_GUI)
         set(Qt5WebSockets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebSockets")
         set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
         set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
+        set(Qt5Svg_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Svg")
 
         # Additional entries:
         set(Qt5_DIR "${QT_CMAKE_MODULE_PATH}/Qt5")
@@ -209,6 +223,10 @@ if (ENABLE_GUI)
     find_package(Qt5Quick)
     message(STATUS "Qt5Quick version: ${Qt5Quick_VERSION}")
     get_target_property(QtQuick_location Qt5::Quick LOCATION)
+
+    find_package(Qt5Svg)
+    message(STATUS "Qt5Svg version: ${Qt5Svg_VERSION}")
+    get_target_property(QtSvg_location Qt5::Svg LOCATION)
 
     if (ANDROID)
         find_package(Qt5AndroidExtras)

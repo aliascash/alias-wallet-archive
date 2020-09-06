@@ -2,8 +2,9 @@
 class ApplicationModelRemote
 {
     PROP(QString coreMessage SOURCEONLYSETTER);
+    PROP(QString webSocketToken SOURCEONLYSETTER);
 
     SIGNAL(uiReady());
 
-    SLOT(requestShutdownCore(unsigned flags));
+    SLOT(void requestShutdownCore(unsigned flags));
 };

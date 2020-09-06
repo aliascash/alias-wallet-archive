@@ -1,10 +1,13 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef BITCOINUNITS_H
 #define BITCOINUNITS_H
+
+#include "currency.h"
 
 #include <QString>
 #include <QAbstractListModel>
@@ -22,10 +25,10 @@ public:
      */
     enum Unit
     {
-        XSPEC,
-        mXSPEC,
-        uXSPEC,
-        sXSPEC
+        ALIAS,
+        mALIAS,
+        uALIAS,
+        satALIAS
     };
 
     //! @name Static API
@@ -38,10 +41,8 @@ public:
     static bool valid(int unit);
     //! Short name
     static QString name(int unit);
-    static QString nameSpectre(int unit);
     //! Longer description
     static QString description(int unit);
-    static QString descriptionSpectre(int unit);
     //! Number of Satoshis (1e-8) per unit
     static qint64 factor(int unit);
     //! Number of amount digits (to represent max number of coins)
@@ -52,7 +53,8 @@ public:
     static QString format(int unit, qint64 amount, bool plussign=false);
     //! Format as string (with unit)
     static QString formatWithUnit(int unit, qint64 amount, bool plussign=false);
-    static QString formatWithUnitSpectre(int unit, qint64 amount, bool plussign=false);
+    //! Format as string (with unit)
+    static QString formatWithUnitCurrency(int unit, qint64 amount, Currency currency, bool plussign=false);
     //! Parse string to coin amount
     static bool parse(int unit, const QString &value, qint64 *val_out);
     ///@}

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, <info@kdab.com>
+//
+// SPDX-License-Identifier: BSD-4-Clause
+
 /****************************************************************************
 **
 ** Copyright (C) 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Milian Wolff <milian.wolff@kdab.com>
@@ -52,6 +56,11 @@
 #include "websockettransport.h"
 
 #include <QWebSocketServer>
+#include <QWebSocket>
+#include <QByteArray>
+#include <QUrlQuery>
+#include <QString>
+#include <QDebug>
 
 /*!
     \brief Wraps connected QWebSockets clients in WebSocketTransport objects.
@@ -67,9 +76,9 @@
     All clients connecting to the QWebSocketServer will be automatically wrapped
     in WebSocketTransport objects.
 */
-WebSocketClientWrapper::WebSocketClientWrapper(QWebSocketServer *server, QObject *parent)
+WebSocketClientWrapper::WebSocketClientWrapper(QWebSocketServer *server, QString accessToken, QObject *parent)
     : QObject(parent)
-    , m_server(server)
+    , m_server(server), accessToken(accessToken)
 {
     connect(server, &QWebSocketServer::newConnection,
             this, &WebSocketClientWrapper::handleNewConnection);
@@ -80,5 +89,13 @@ WebSocketClientWrapper::WebSocketClientWrapper(QWebSocketServer *server, QObject
 */
 void WebSocketClientWrapper::handleNewConnection()
 {
-    emit clientConnected(new WebSocketTransport(m_server->nextPendingConnection()));
+    QWebSocket* pendingConnection = m_server->nextPendingConnection();
+    QUrlQuery urlQuery(pendingConnection->request().url());
+    QString token = urlQuery.queryItemValue("token");
+    if (!urlQuery.hasQueryItem("token"))
+        qDebug() << "new webocket connection refused: token query param is missing";
+    else if (token != accessToken)
+        qDebug() << "new webocket connection refused: invalid token: " << token;
+    else
+        emit clientConnected(new WebSocketTransport(pendingConnection));
 }

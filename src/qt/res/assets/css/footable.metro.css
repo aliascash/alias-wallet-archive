@@ -3,7 +3,7 @@
   border-spacing: 0;
   width: 100%;
   border: 3px solid #52b9e9;
-  font-family: "Open Sans", Helvetica, sans-serif;
+  font-family: Montserrat, sans-serif;
   color: #444444;
   background: #efefef;
   -moz-border-radius: 0;
@@ -73,9 +73,9 @@
 }
 .footable > tfoot .pagination ul {
   display: inline-block;
-  -webkit-box-spectre: none;
-  -moz-box-spectre: none;
-  box-spectre: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
   vertical-align: middle;
   margin: 0;
   padding: 0;

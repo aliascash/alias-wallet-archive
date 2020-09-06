@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef TRANSACTIONRECORD_H
 #define TRANSACTIONRECORD_H
@@ -95,13 +96,13 @@ public:
     static const int RecommendedNumConfirmations = 6;
 
     TransactionRecord():
-            hash(), time(0), type(Other), address(""), narration(""), debit(0), credit(0), currency(XSPEC), idx(0)
+            hash(), time(0), type(Other), address(""), narration(""), debit(0), credit(0), currency(PUBLIC), idx(0)
     {
     }
 
     TransactionRecord(uint256 hash, int64_t time):
             hash(hash), time(time), type(Other), address(""), narration(""), debit(0),
-            credit(0), currency(XSPEC), idx(0)
+            credit(0), currency(PUBLIC), idx(0)
     {
     }
 

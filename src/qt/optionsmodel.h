@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef OPTIONSMODEL_H
 #define OPTIONSMODEL_H
@@ -27,7 +28,7 @@ public:
     enum OptionID {
         /// Main Options
         Fee,                 /**< Transaction Fee. qint64 - Optional transaction fee per kB that helps make sure your transactions are processed quickly.
-                               *< Most transactions are 1 kB. Fee 0.01 recommended. 0.0001 XSPEC */
+                               *< Most transactions are 1 kB. Fee 0.01 recommended. 0.0001 ALIAS */
         ReserveBalance,      /**< Reserve Balance. qint64 - Reserved amount does not participate in staking and is therefore spendable at any time. */
         StartAtStartup,      /**< Default Transaction Fee. bool */
         DetachDatabases,     /**< Default Transaction Fee. bool */

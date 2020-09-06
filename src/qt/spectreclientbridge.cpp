@@ -124,21 +124,21 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnType())
         {
             case TxnTypeEnum::TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
+                formatted.append(tr("<b>%1</b> from your public balance to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 0;
                 break;
             case TxnTypeEnum::TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
+                formatted.append(tr("<b>%1</b> from public to private, using address %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TxnTypeEnum::TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
+                formatted.append(tr("<b>%1</b> from your private balance, ring size %2, to %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TxnTypeEnum::TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
+                formatted.append(tr("<b>%1</b> from private to public, ring size %2, using address %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount()), QString::number(rcp.nRingSize()), rcp.label().toHtmlEscaped(), lineBreakAddress(rcp.address())));
                 inputType = 1;
                 break;
             default:
@@ -245,11 +245,11 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         case SendCoinsStatusEnum::InvalidAddress:
             return abortSendCoins(tr("The recipient address is not valid, please recheck."));
         case SendCoinsStatusEnum::StealthAddressOnlyAllowedForSPECTRE:
-            return abortSendCoins(tr("Only SPECTRE from your Private balance can be send to a stealth address."));
+            return abortSendCoins(tr("Only ALIAS from your Private balance can be send to a private address."));
         case SendCoinsStatusEnum::RecipientAddressNotOwnedXSPECtoSPECTRE:
-            return abortSendCoins(tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."));
+            return abortSendCoins(tr("Transfer from Public to Private is only allowed within your account."));
         case SendCoinsStatusEnum::RecipientAddressNotOwnedSPECTREtoXSPEC:
-            return abortSendCoins(tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."));
+            return abortSendCoins(tr("Transfer from Private to Public is only allowed within your account."));
         case SendCoinsStatusEnum::InvalidAmount:
             return abortSendCoins(tr("The amount to pay must be larger than 0."));
         case SendCoinsStatusEnum::AmountExceedsBalance:
@@ -271,13 +271,13 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         case SendCoinsStatusEnum::SCR_NeedFullMode:
             return abortSendCoins(tr("Error: Must be in full mode to send anon."));
         case SendCoinsStatusEnum::SCR_StealthAddressFail:
-            return abortSendCoins(tr("Error: Invalid Stealth Address."));
+            return abortSendCoins(tr("Error: Invalid Private Address."));
         case SendCoinsStatusEnum::SCR_StealthAddressFailAnonToSpec:
-            return abortSendCoins(tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."));
+            return abortSendCoins(tr("Error: Invalid Private Address. Private to public conversion requires a stealth address."));
         case SendCoinsStatusEnum::SCR_AmountExceedsBalance:
-            return abortSendCoins(tr("The amount exceeds your SPECTRE balance."));
+            return abortSendCoins(tr("The amount exceeds your ALIAS balance."));
         case SendCoinsStatusEnum::SCR_AmountWithFeeExceedsSpectreBalance:
-            return abortSendCoins(tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
+            return abortSendCoins(tr("The total exceeds your private ALIAS balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendResult.fee())));
         case SendCoinsStatusEnum::SCR_Error:
             return abortSendCoins(tr("Error generating transaction."));
         case SendCoinsStatusEnum::SCR_ErrorWithMsg:
@@ -292,7 +292,7 @@ void SpectreClientBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             CoinControlDialog::payAmounts.clear();
             // TODO CoinControlDialog::updateLabels(walletModel, 0, this);
             QMessageBox::information(window, tr("Send Coins"),
-                            tr("Transaction successfully created. Fee payed %1").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendResult.fee())));
+                            tr("Transaction successfully created. Fee payed %1").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendResult.fee())));
             recipients.clear();
             break;
     }

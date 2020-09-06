@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "askpassphrasedialog.h"
 #include "ui_askpassphrasedialog.h"
@@ -55,7 +56,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->passLabel3->hide();
             ui->passEdit3->hide();
             if (mode==UnlockRescan)
-                ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>SPECTRE balance might be shown wrong</b>."));
+                ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>private ALIAS balance might be shown wrong</b>."));
             else
                 ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
             setWindowTitle(tr("Unlock wallet"));
@@ -140,7 +141,7 @@ void AskPassphraseDialog::accept()
                 {
                     QMessageBox::warning(this, tr("Wallet encrypted"),
                                          "<qt>" +
-                                         tr("Spectrecoin will close now to finish the encryption process. "
+                                         tr("Alias will close now to finish the encryption process. "
                                          "Remember that encrypting your wallet cannot fully protect "
                                          "your coins from being stolen by malware infecting your computer.") +
                                          "<br><br><b>" +
