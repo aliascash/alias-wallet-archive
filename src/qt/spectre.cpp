@@ -117,7 +117,7 @@ static void InitMessage(const std::string &message)
 #endif
     }
     if(splashref) {
-        splashref->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n" + message + "\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
+        splashref->showMessage(QString::fromStdString("v" + FormatClientVersion() + "\n" + message + "\n\n"), Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
     }
     if (splashref || applicationModelRef)
         QApplication::instance()->processEvents();
@@ -127,7 +127,7 @@ static void InitQMessage(const QString &message)
 {
     if(splashref)
     {
-        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message + "\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
+        splashref->showMessage(QString::fromStdString("v"+FormatClientVersion()) + "\n" + message + "\n\n", Qt::AlignBottom|Qt::AlignHCenter, QColor(138,140,142));
         QApplication::instance()->processEvents();
     }
 }
@@ -488,7 +488,11 @@ int main(int argc, char *argv[])
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.setEnabled(false);
+#ifdef ANDROID
+        splash.showFullScreen();
+#else
         splash.show();
+#endif
         splashref = &splash;
     }
 
