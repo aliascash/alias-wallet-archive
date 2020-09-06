@@ -462,14 +462,19 @@ int main(int argc, char *argv[])
     // For Android, adjust width of splash screen to fill width.
     QRect  screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
 
-    int size = screenGeometry.width() < screenGeometry.height() ?
-                screenGeometry.width() - (screenGeometry.width() / 5) :
-                screenGeometry.height() - (screenGeometry.height() / 5);
-    QRect targetRect((screenGeometry.width() - size) / 2,
-                     (screenGeometry.height() - size) / 7 * 3,
-                     size, size);
+    int height = screenGeometry.width() < screenGeometry.height() ?
+                 screenGeometry.width() - (screenGeometry.width() / 5) :
+                 screenGeometry.height() / 2;
+    int width = screenGeometry.width() < screenGeometry.height() ? height : height / 4 * 10;
+    QRect targetRect((screenGeometry.width() - width) / 2,
+                     screenGeometry.width() < screenGeometry.height() ?
+                         ((screenGeometry.height() - height) / 7 * 3) :
+                         ((screenGeometry.height() - height) / 5 * 2),
+                     width, height);
 
-    QPixmap splashPixmap(GUIUtil::createPixmap(screenGeometry.width(), screenGeometry.height(), QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), targetRect));
+    QPixmap splashPixmap(GUIUtil::createPixmap(screenGeometry.width(), screenGeometry.height(), QColor(40, 40, 41),
+                                               screenGeometry.width() < screenGeometry.height() ? QString(":/assets/svg/Alias-Stacked-Reverse.svg") : QString(":/assets/svg/Alias-Horizontal-Reverse.svg"),
+                                               targetRect));
 
     // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
     QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
