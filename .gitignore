@@ -131,3 +131,9 @@ Checksum-Aliaswallet-*
 src/android/.gradle/
 
 src/android/gradle/wrapper/
+
+src/android/local.properties
+
+src/android/gradlew.bat
+
+src/android/gradlew
