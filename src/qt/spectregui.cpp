@@ -1160,7 +1160,6 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
 
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
-        //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
         nWeight        /= COIN;
         nNetworkWeight /= COIN;
@@ -1174,7 +1173,6 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
     {
         stakingIcon.addClass("not-staking");
         stakingIcon.removeClass("staking");
-        //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         int nNodeMode = clientModel->blockInfo().nNodeMode();
         bool walletLocked = walletModel->encryptionInfo().status() == 1;
