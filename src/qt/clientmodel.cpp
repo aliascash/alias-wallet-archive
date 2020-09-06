@@ -103,7 +103,7 @@ void ClientModel::updateServiceStatus()
     {
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
                                                      QAndroidJniObject::fromString("No network connection").object<jstring>(),
-                                                     QAndroidJniObject::fromString("Spectrecoin is not connected to any node.").object<jstring>());
+                                                     QAndroidJniObject::fromString("Alias is not connected to any node.").object<jstring>());
         return;
     }
     if (isImporting())
