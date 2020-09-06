@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#282829</color>
+    <color name="primary">#F28321</color>
     <style name="AppBaseTheme" parent="android:Theme.Holo.NoActionBar.Fullscreen">
         <item name="android:windowBackground">@color/background</item>
     </style>

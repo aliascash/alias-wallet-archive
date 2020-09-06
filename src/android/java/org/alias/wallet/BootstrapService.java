@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -75,7 +76,8 @@ public class BootstrapService extends Service {
                 .setContentTitle("Blockchain Bootstrap")//getText(R.string.notification_title))
                 .setContentText("Downloading...")//getText(R.string.notification_message))
                 .setOnlyAlertOnce(true)
-                .setSmallIcon(R.drawable.icon_status)
+                .setSmallIcon(R.drawable.ic_alias_app_white)
+                .setColor(ContextCompat.getColor(this, R.color.primary))
                 .setContentIntent(pendingIntent)
                 .setProgress(100, 0, false)
                 .addAction(stopAction);
