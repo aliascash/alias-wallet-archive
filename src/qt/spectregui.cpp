@@ -1093,7 +1093,6 @@ void SpectreGUI::updateStakingIcon()
 
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
-        //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
         nWeight        /= COIN;
         nNetworkWeight /= COIN;
@@ -1107,7 +1106,6 @@ void SpectreGUI::updateStakingIcon()
     {
         stakingIcon.addClass("not-staking");
         stakingIcon.removeClass("staking");
-        //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
                                                (!fIsStakingEnabled)                     ? tr("Not staking, staking is disabled")  : \
