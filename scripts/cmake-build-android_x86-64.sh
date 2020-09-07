@@ -100,9 +100,11 @@ helpMe() {
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
         BerkeleyDB.
+    -d  Do _not_ build Alias but only the dependencies. Used to prepare
+        build slaves a/o builder docker images.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -g  Build UI (Qt) components.
+    -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
@@ -905,12 +907,14 @@ FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
+BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 
-while getopts a:c:fgoth? option; do
+while getopts a:c:dfgoth? option; do
     case ${option} in
         a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
         c) CORES_TO_USE="${OPTARG}";;
+        d) BUILD_ONLY_DEPENDENCIES=true;;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true
            ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake";;
@@ -959,6 +963,12 @@ if ${WITH_TOR} ; then
 fi
 if ${ENABLE_GUI} ; then
     checkQt
+fi
+
+if ${BUILD_ONLY_DEPENDENCIES} ; then
+    info ""
+    info "Checked a/o built all required dependencies."
+    exit
 fi
 
 mkdir -p ${BUILD_DIR}/aliaswallet

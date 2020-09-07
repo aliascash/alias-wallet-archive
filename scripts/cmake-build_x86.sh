@@ -83,6 +83,8 @@ helpMe() {
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
         BerkeleyDB.
+    -d  Do _not_ build Alias but only the dependencies. Used to prepare
+        build slaves a/o builder docker images.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build GUI (Qt) components
@@ -867,14 +869,16 @@ FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
+BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 SYSTEM_QT=false
 
 defineQtVersionForCurrentDistribution
 
-while getopts c:fgosth? option; do
+while getopts c:dfgosth? option; do
     case ${option} in
         c) CORES_TO_USE="${OPTARG}";;
+        d) BUILD_ONLY_DEPENDENCIES=true;;
         f) FULLBUILD=true;;
         g) ENABLE_GUI=true;;
         o) BUILD_ONLY_ALIAS=true;;
@@ -928,6 +932,12 @@ if ${WITH_TOR} ; then
     checkZStdLib
     checkEventLib
     checkTor
+fi
+
+if ${BUILD_ONLY_DEPENDENCIES} ; then
+    info ""
+    info "Checked a/o built all required dependencies."
+    exit
 fi
 
 mkdir -p ${BUILD_DIR}/aliaswallet
