@@ -26,10 +26,12 @@ ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
 BOOST_VERSION=1.73.0
 BOOST_ARCHIVE_HASH=9a2c2819310839ea373f42d69e733c339b4e9a19deab6bfec448281554aa4dbb
 
-##### ### # Qt (Android) # ### ##############################################
+##### ### # Qt # ### ########################################################
 # Path to the folder which contains the Qt installation
 # aka version folder to use
 QT_INSTALLATION_PATH=${HOME}/Qt
+
+QT_REQUIRED_LIBS='Core Widgets WebView WebChannel WebSockets QuickWidgets Quick Gui Qml Network'
 
 # Qt version to use. In fact the folder right below ${QT_INSTALLATION_PATH}
 #QT_VERSION=5.11.3
