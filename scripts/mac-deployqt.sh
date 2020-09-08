@@ -22,7 +22,7 @@ cd ${ownLocation}
 cd ..
 
 if [[ -z "${QT_PATH}" ]] ; then
-    QT_PATH=~/Qt/5.9.6/clang_64
+    QT_PATH=~/Qt/5.12.9/clang_64
     warning "QT_PATH not set, using '${QT_PATH}'"
 else
     info "QT_PATH: ${QT_PATH}"
