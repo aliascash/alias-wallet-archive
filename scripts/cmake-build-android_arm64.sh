@@ -31,7 +31,7 @@ ANDROID_ABI=arm64-v8a
 ANDROID_API=22
 
 ##### ### # Android Qt # ### ################################################
-ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION}/android
+ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_ANDROID}/android
 ANDROID_QT_LIBRARYDIR=${ANDROID_QT_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
