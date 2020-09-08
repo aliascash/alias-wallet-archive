@@ -16,11 +16,14 @@ IF "%QTDIR%" == "" GOTO NOQT
 IF "%VSDIR%" == "" GOTO NOVS
 :YESVS
 
-set CALL_DIR=%cd%
-set SRC_DIR=%cd%\src
-set DIST_DIR=%SRC_DIR%\dist
-set BUILD_DIR=%SRC_DIR%\build
-set OUT_DIR=%SRC_DIR%\bin
+IF "%CMAKEDIR%" == "" GOTO NOCMAKE
+:YESVS
+
+IF "%VCPKGDIR%" == "" GOTO NOVCPKG
+:YESVS
+
+set SRC_DIR=%cd%
+set BUILD_DIR=%cd%\build
 
 :: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 call "%VSDIR%\Community\VC\Auxiliary\Build\vcvars64.bat"
@@ -30,27 +33,16 @@ dir
 
 echo on
 
-del "%OUT_DIR%\Alias.exe" 2>nul
-rmdir /S /Q "%DIST_DIR%"
-mkdir "%DIST_DIR%"
+rmdir /S /Q "%BUILD_DIR%\delivery"
 mkdir "%BUILD_DIR%"
-mkdir "%OUT_DIR%"
+cd %BUILD_DIR%
 
-pushd "%BUILD_DIR%"
+%CMAKEDIR%\cmake.exe -D CMAKE_TOOLCHAIN_FILE=%VCPKGDIR%\scripts\buildsystems\vcpkg.cmake -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER -D ENABLE_GUI=ON -D QT_CMAKE_MODULE_PATH=%QTDIR%\lib\cmake -D CMAKE_BUILD_TYPE=Release .. || goto :ERROR
 
-%QTDIR%\bin\qmake.exe ^
-  -spec win32-msvc ^
-  "CONFIG += release" ^
-  "%SRC_DIR%\src.pro" || goto :ERROR
-
-nmake || goto :ERROR
-
-popd
-
-%QTDIR%\bin\windeployqt --force --qmldir %SRC_DIR%\qt\res --qml --quick --webengine "%OUT_DIR%\Alias.exe" || goto :ERROR
+%CMAKEDIR%\cmake.exe --build . --target Aliaswallet --config Release || goto :ERROR
 
 ::ren "%OUT_DIR%" Alias
-::echo "The prepared package is in: %SRC_DIR%\Alias"
+::echo "The prepared package is in: %BUILD_DIR%\delivery"
 
 echo "Everything is OK"
 GOTO END
@@ -58,6 +50,14 @@ GOTO END
 :ERROR
 echo Failed with error #%errorlevel%.
 exit /b %errorlevel%
+GOTO END
+
+:NOVCPKG
+@ECHO The VCPKGDIR environment variable was NOT detected!
+GOTO END
+
+:NOCMAKE
+@ECHO The CMAKEDIR environment variable was NOT detected!
 GOTO END
 
 :NOVS
@@ -68,4 +68,4 @@ GOTO END
 @ECHO The QTDIR environment variable was NOT detected!
 
 :END
-cd %CALL_DIR%
+cd %SRC_DIR%

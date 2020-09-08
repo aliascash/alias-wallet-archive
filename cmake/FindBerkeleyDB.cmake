@@ -1,6 +1,9 @@
 # Author: sum01 <sum01@protonmail.com>
 # Git: https://github.com/sum01/FindBerkeleyDB
 # Read the README.md for the full info.
+#
+# SPDX-FileCopyrightText: © 2018
+# SPDX-License-Identifier: Unlicense
 
 # NOTE: If Berkeley DB ever gets a Pkg-config ".pc" file, add pkg_check_modules() here
 
