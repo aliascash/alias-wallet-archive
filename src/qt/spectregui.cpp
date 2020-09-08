@@ -519,6 +519,7 @@ void SpectreGUI::aboutClicked()
 void SpectreGUI::setNumConnections(int count)
 {
     WebElement connectionIcon = WebElement(this, "connectionsIcon");
+    WebElement connectionIconText = WebElement(this, "connectionsIconText");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
     WebElement syncingIconText = WebElement(this, "syncingIconText");
 
@@ -538,6 +539,15 @@ void SpectreGUI::setNumConnections(int count)
         syncingIcon.setAttribute("data-title", "Checking wallet state with network");
         syncingIcon.addClass("fa-spin");
         syncingIcon.removeClass("none");
+    }
+
+    connectionIconText.setContent(QString::number(count));
+    if (count <= 12)
+    {
+        connectionIconText.addClass("invisible");
+    }
+    else {
+        connectionIconText.removeClass("invisible");
     }
 
     if (count <= 0)
