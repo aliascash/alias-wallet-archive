@@ -118,6 +118,15 @@ void SpectreGUI::WebElement::setContent(QString value)
     spectreGUI->runJavaScript(javascriptCode);
 }
 
+QString webviewResource(QString resource)
+{
+#ifdef ANDROID
+    return resource;
+#else
+    return "qrc:///" + resource;
+#endif
+}
+
 SpectreGUI::SpectreGUI(QWebChannel *webChannel, QWidget *parent):
     QMainWindow(parent),
     bridge(new SpectreBridge(this)),
@@ -515,6 +524,7 @@ void SpectreGUI::aboutClicked()
 void SpectreGUI::setNumConnections(int count)
 {
     WebElement connectionIcon = WebElement(this, "connectionsIcon");
+    WebElement connectionIconText = WebElement(this, "connectionsIconText");
     WebElement syncingIcon = WebElement(this, "syncingIcon");
     WebElement syncingIconText = WebElement(this, "syncingIconText");
 
@@ -530,16 +540,30 @@ void SpectreGUI::setNumConnections(int count)
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("syncing");
-        syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
         syncingIcon.setAttribute("data-title", "Checking wallet state with network");
         syncingIcon.addClass("fa-spin");
         syncingIcon.removeClass("none");
     }
 
-    QString className = count <= 0 ? "fa-spin " : "";
+    connectionIconText.setContent(QString::number(count));
+    if (count <= 12)
+    {
+        connectionIconText.addClass("invisible");
+    }
+    else {
+        connectionIconText.removeClass("invisible");
+    }
 
-    className += count < 12 ? (QString("connection-") + QString::number(count)) : "connection-12";
-    connectionIcon.setAttribute("class", className);
+    if (count <= 0)
+    {
+        connectionIcon.setAttribute("src", webviewResource("assets/svg/connection-0.svg"));
+        connectionIcon.addClass("fa-spin");
+    }
+    else {
+        connectionIcon.removeClass("fa-spin");
+        connectionIcon.setAttribute("src", webviewResource("assets/svg/connection-" + (count < 12 ? QString::number(count) : "12") + ".svg"));
+    }
 
     QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
     connectionIcon.setAttribute("data-title", dataTitle);
@@ -654,7 +678,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         syncingIconText.addClass("invisible");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("fa-spin");
-        syncingIcon.setAttribute("src", "qrc:///assets/svg/synced.svg");
+        syncingIcon.setAttribute("src", webviewResource("assets/svg/synced.svg"));
         syncingIcon.removeClass("syncing");
 
         //a js script to change the style property display to none for all outofsync elements
@@ -674,8 +698,8 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
             QString svgData = "data:image/svg+xml;utf8,"
                               "<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 64 64' style='enable-background:new 0 0 64 64;' xml:space='preserve'>"
                               "  <style type='text/css'>"
-                              "      .st0{opacity:0.3;stroke:#F38220;enable-background:new;}"
-                              "      .st1{stroke:#F38220;}"
+                              "      .st0{opacity:0.3;stroke:%23F38220;enable-background:new;}"
+                              "      .st1{stroke:%23F38220;}"
                               "      .st2{enable-background:new;}"
                               "  </style>"
                               "  <circle class='st0' cx='32' cy='32' r='29' fill='none' stroke-width='5'/>"
@@ -695,7 +719,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
             syncingIconText.addClass("invisible");
             syncingIconText.removeClass("syncing");
             syncingIcon.removeClass("syncing");
-            syncingIcon.setAttribute("src", "qrc:///assets/svg/spinner.svg");
+            syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
             syncingIcon.addClass("fa-spin");
         }
 
@@ -1093,7 +1117,6 @@ void SpectreGUI::updateStakingIcon()
 
         stakingIcon.removeClass("not-staking");
         stakingIcon.   addClass("staking");
-        //stakingIcon.   addClass("fa-spin"); // TODO: Replace with gif... too much cpu usage
 
         nWeight        /= COIN;
         nNetworkWeight /= COIN;
@@ -1107,7 +1130,6 @@ void SpectreGUI::updateStakingIcon()
     {
         stakingIcon.addClass("not-staking");
         stakingIcon.removeClass("staking");
-        //stakingIcon.removeClass("fa-spin"); // TODO: See above TODO...
 
         stakingIcon.setAttribute("data-title", (nNodeMode == NT_THIN)                   ? tr("Not staking because wallet is in thin mode") : \
                                                (!fIsStakingEnabled)                     ? tr("Not staking, staking is disabled")  : \
