@@ -13,7 +13,7 @@
 # ============================================================================
 
 # Remove potential old versions
-sudo apt-get remove docker docker-engine docker.io
+sudo apt-get remove docker docker-engine docker.io containerd runc
 
 # Update the apt package index
 sudo apt-get update
@@ -23,7 +23,7 @@ sudo apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
-    gnupg2 \
+    gnupg-agent \
     software-properties-common
 
 # Add Docker’s official GPG key:
@@ -39,7 +39,7 @@ sudo add-apt-repository \
 sudo apt-get update
 
 # Install the latest version of Docker CE
-sudo apt-get install docker-ce
+sudo apt-get install docker-ce docker-ce-cli containerd.io
 
 # Test installation by running the hello-world-container
-sudo docker run hello-world
+sudo docker run --rm hello-world

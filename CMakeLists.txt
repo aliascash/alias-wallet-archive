@@ -20,11 +20,6 @@ set(VERSION_STRING "${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VER
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
-# https://www.jetbrains.com/help/clion/cmake-profile.html
-# adding two custom build types to the cached value
-# variable CMAKE_CONFIGURATION_TYPES should be defined before other definitions:
-set(CMAKE_CONFIGURATION_TYPES "DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
-
 #set(ANDROID 1)
 set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/android")
 
@@ -38,6 +33,11 @@ if (WIN32)
 endif ()
 
 if (ANDROID)
+    # https://www.jetbrains.com/help/clion/cmake-profile.html
+    # adding two custom build types to the cached value
+    # variable CMAKE_CONFIGURATION_TYPES should be defined before other definitions:
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES};DebugAndroid;ReleaseAndroid" CACHE STRING "" FORCE)
+
     if(DEFINED ENV{BOOST_ROOT})
         message(STATUS "Getting settings from environment")
         set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
@@ -68,6 +68,16 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -g -Wall")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "Configuring on/for macOS")
+
+    # Handle build type
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "-use-debug-libs")
+    else()
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "")
+    endif()
+
+    # Handle direct access linker warnings with Boost
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fvisibility-inlines-hidden -fvisibility=hidden")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Configuring on/for Windows")
     #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHc-")
@@ -75,6 +85,19 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_definitions("/wd4244")
     add_definitions("/wd4267")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
+
+    # Handle build type
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "--debug")
+    else()
+        set(DEPLOY_QT_BINARY_TYPE_OPTION "--release")
+    endif()
+
+    # Check if unzip is installed
+    find_program(UNZIP unzip)
+    if (${UNZIP} STREQUAL "UNZIP-NOTFOUND")
+        message(FATAL_ERROR "You need to install 'unzip'!")
+    endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "AIX")
     message(STATUS "Configuring on/for IBM AIX")
 else ()
@@ -100,6 +123,7 @@ get_git_head_revision(GIT_REFSPEC CLIENT_VERSION_GIT_SHA1)
 # locations on all platforms.
 include(GNUInstallDirs)
 
+message(STATUS "Building in '${CMAKE_BUILD_TYPE}' mode")
 
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
@@ -130,40 +154,8 @@ message(STATUS "Boost_LIBRARIES:    ${Boost_LIBRARIES}")
 # ============================================================================================
 message(STATUS "=== Qt =====================================================================")
 if (ENABLE_GUI)
-    if (ANDROID)
-        set(Qt5Core_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Core")
-        set(Qt5Widgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Widgets")
-        set(Qt5WebView_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebView")
-        set(Qt5WebChannel_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebChannel")
-        set(Qt5WebSockets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5WebSockets")
-        set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
-        set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
-        set(Qt5Svg_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Svg")
-        set(Qt5AndroidExtras_DIR "${QT_CMAKE_MODULE_PATH}/Qt5AndroidExtras")
-        set(Qt5RemoteObjects_DIR "${QT_CMAKE_MODULE_PATH}/Qt5RemoteObjects")
-
-        # Additional entries:
-        set(Qt5_DIR "${QT_CMAKE_MODULE_PATH}/Qt5")
-        set(Qt5Gui_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Gui")
-        set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
-        set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
-        set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
-    elseif(WIN32)
-        # -DQt5_DIR=C:/Qt/5.12.7/msvc2017_64
-        set(Qt5Core_DIR "${Qt5_DIR}/lib/cmake/Qt5Core")
-        set(Qt5Widgets_DIR "${Qt5_DIR}/lib/cmake/Qt5Widgets")
-        set(Qt5WebEngine_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngine")
-        set(Qt5WebEngineWidgets_DIR "${Qt5_DIR}/lib/cmake/Qt5WebEngineWidgets")
-        set(Qt5_DIR "${Qt5_DIR}/lib/cmake/Qt5")
-        set(Qt5Svg_DIR "${Qt5_DIR}/lib/cmake/Qt5Svg")
-        set(QT_QMAKE_EXECUTABLE "${Qt5_DIR}/bin/qmake.exe")
-
-        # Additional entries:
-        set(Qt5_DIR "${Qt5_DIR}/lib/cmake/Qt5")
-        set(Qt5Gui_DIR "${Qt5_DIR}/lib/cmake/Qt5Gui")
-        set(Qt5Qml_DIR "${Qt5_DIR}/lib/cmake/Qt5Qml")
-        set(Qt5Network_DIR "${Qt5_DIR}/lib/cmake/Qt5Network")
-        set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
+    if ("${QT_CMAKE_MODULE_PATH}" STREQUAL "")
+        message(STATUS "QT_CMAKE_MODULE_PATH not given, using Qt from system")
     else()
         set(Qt5Core_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Core")
         set(Qt5Widgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Widgets")
@@ -180,7 +172,11 @@ if (ENABLE_GUI)
         set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
         set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
         set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
-    endif ()
+        if (ANDROID)
+            set(Qt5AndroidExtras_DIR "${QT_CMAKE_MODULE_PATH}/Qt5AndroidExtras")
+            set(Qt5RemoteObjects_DIR "${QT_CMAKE_MODULE_PATH}/Qt5RemoteObjects")
+        endif ()
+    endif()
 
     # Find includes in corresponding build directories
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -237,6 +233,39 @@ if (ENABLE_GUI)
         message(STATUS "Qt5RemoteObjects version: ${Qt5RemoteObjects_VERSION}")
         get_target_property(QtRemoteObjects_location Qt5::RemoteObjects LOCATION)
     endif()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # Retrieve the absolute path to qmake and then use that path
+        # to find the macdeployqt binary
+        get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+        get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+        find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+
+        # Put delivery result into dedicated directory
+        set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+        if (NOT TOR_ARCHIVE)
+            include(DownloadFile)
+            set(TOR_ARCHIVE "Tor.libraries.MacOS.zip")
+            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.MacOS.zip ${TOR_ARCHIVE} SHA1 0be391e0cad9e93d33c226d6bff719f568b56093)
+        endif ()
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        # Retrieve the absolute path to qmake and then use that path
+        # to find the windeployqt binary
+        get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+        get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+        find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+
+        # Put delivery result into dedicated directory
+        set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/delivery)
+
+        if (NOT TOR_ARCHIVE)
+            include(DownloadFile)
+            set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
+            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
+        endif()
+    endif()
+
 else()
     message(STATUS "Building without UI, skipping Qt detection")
 endif ()

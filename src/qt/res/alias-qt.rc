@@ -1,0 +1,41 @@
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-License-Identifier: MIT
+
+IDI_ICON1 ICON DISCARDABLE "icons/alias-app.ico"
+
+#include <windows.h>             // needed for VERSIONINFO
+#include "../../clientversion.h" // holds the needed client version information
+
+#define VER_PRODUCTVERSION     CLIENT_VERSION_MAJOR,CLIENT_VERSION_MINOR,CLIENT_VERSION_REVISION,CLIENT_VERSION_BUILD
+#define VER_PRODUCTVERSION_STR STRINGIZE(CLIENT_VERSION_MAJOR) "." STRINGIZE(CLIENT_VERSION_MINOR) "." STRINGIZE(CLIENT_VERSION_REVISION) "." STRINGIZE(CLIENT_VERSION_BUILD)
+#define VER_FILEVERSION        VER_PRODUCTVERSION
+#define VER_FILEVERSION_STR    VER_PRODUCTVERSION_STR
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_APP
+BEGIN
+        BLOCK "StringFileInfo"
+BEGIN
+        BLOCK "040904E4" // U.S. English - multilingual (hex)
+BEGIN
+        VALUE "CompanyName",        "Alias"
+VALUE "FileDescription",    "Alias wallet (OSS GUI client for Alias)"
+VALUE "FileVersion",        VER_FILEVERSION_STR
+VALUE "InternalName",       "alias"
+VALUE "LegalCopyright",     "2020 (c) The Alias developers, 2016 (c) The SpectreCoin developers, 2014 (c) The ShadowCoin developers, 2014 (c) The BlackCoin developers, 2012 (c) The NovaCoin & PPCoin developers, 2009 (c) The Bitcoin developers"
+VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license"
+VALUE "OriginalFilename",   "Alias.exe"
+VALUE "ProductName",        "Alias"
+VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
+END
+        END
+
+BLOCK "VarFileInfo"
+BEGIN
+        VALUE "Translation", 0x0, 1252 // language neutral - multilingual (decimal)
+END
+        END

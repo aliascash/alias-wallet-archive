@@ -15,7 +15,7 @@
 # Store path from where script was called, determine own location
 # and source helper content from there
 callDir=$(pwd)
-ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ownLocation="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${ownLocation}" || die 1 "Unable to cd into own location ${ownLocation}"
 . ./include/helpers_console.sh
 _init
@@ -31,7 +31,7 @@ ANDROID_ABI=arm64-v8a
 ANDROID_API=22
 
 ##### ### # Android Qt # ### ################################################
-ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION}/android
+ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_ANDROID}/android
 ANDROID_QT_LIBRARYDIR=${ANDROID_QT_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
@@ -100,10 +100,12 @@ helpMe() {
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
         BerkeleyDB.
+    -d  Do _not_ build Alias but only the dependencies. Used to prepare
+        build slaves a/o builder docker images.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -g  Build UI (Qt) components.
-    -s  Perfom only Alias fullbuild. Only the alias buildfolder
+    -g  Build GUI (Qt) components
+    -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
     -h  Show this help
@@ -112,13 +114,13 @@ helpMe() {
 }
 
 # ===== Start of openssl functions ===========================================
-checkOpenSSLArchive(){
-    if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]] ; then
+checkOpenSSLArchive() {
+    if [[ -e "${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz" ]]; then
         info " -> Using OpenSSL archive ${OPENSSL_ARCHIVE_LOCATION}/openssl-${OPENSSL_BUILD_VERSION}.tar.gz"
     else
         OPENSSL_ARCHIVE_URL=https://mirror.viaduck.org/openssl/openssl-${OPENSSL_BUILD_VERSION}.tar.gz
         info " -> Downloading OpenSSL archive ${OPENSSL_ARCHIVE_URL}"
-        if [[ ! -e ${OPENSSL_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${OPENSSL_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${OPENSSL_ARCHIVE_LOCATION}
         fi
         cd ${OPENSSL_ARCHIVE_LOCATION}
@@ -129,26 +131,26 @@ checkOpenSSLArchive(){
 
 # For OpenSSL we're using a fork of https://github.com/viaduck/openssl-cmake
 # with some slight modifications for Alias
-checkOpenSSLClone(){
+checkOpenSSLClone() {
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
-    if [[ -d openssl-cmake ]] ; then
+    if [[ -d openssl-cmake ]]; then
         info " -> Updating openssl-cmake clone"
         cd openssl-cmake
         git pull --prune
     else
         info " -> Cloning openssl-cmake"
-        git clone --branch alias https://github.com/alias-cash/openssl-cmake.git openssl-cmake
+        git clone --branch spectrecoin https://github.com/spectrecoin/openssl-cmake.git openssl-cmake
     fi
     cd "${currentDir}"
 }
 
-checkOpenSSLBuild(){
+checkOpenSSLBuild() {
     mkdir -p ${BUILD_DIR}/openssl
     cd ${BUILD_DIR}/openssl
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCROSS_ANDROID=ON \
@@ -171,9 +173,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -184,7 +186,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished openssl build and install"
     else
         die ${rtc} " => OpenSSL build failed with return code ${rtc}"
@@ -193,10 +195,10 @@ EOM
     cd - >/dev/null
 }
 
-checkOpenSSL(){
+checkOpenSSL() {
     info ""
     info "OpenSSL:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
@@ -209,13 +211,13 @@ checkOpenSSL(){
 # ============================================================================
 
 # ===== Start of berkeleydb functions ========================================
-checkBerkeleyDBArchive(){
-    if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]] ; then
+checkBerkeleyDBArchive() {
+    if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]]; then
         info " -> Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
     else
         BERKELEYDB_ARCHIVE_URL=https://download.oracle.com/berkeley-db/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
         info " -> Downloading BerkeleyDB archive ${BERKELEYDB_ARCHIVE_URL}"
-        if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
         fi
         cd ${BERKELEYDB_ARCHIVE_LOCATION}
@@ -224,12 +226,12 @@ checkBerkeleyDBArchive(){
     fi
 }
 
-checkBerkeleyDBBuild(){
+checkBerkeleyDBBuild() {
     mkdir -p ${BUILD_DIR}/libdb
     cd ${BUILD_DIR}/libdb
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCROSS_ANDROID=ON \
@@ -252,9 +254,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -265,7 +267,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished BerkeleyDB (libdb) build and install"
     else
         die ${rtc} " => BerkeleyDB (libdb) build failed with return code ${rtc}"
@@ -274,10 +276,10 @@ EOM
     cd - >/dev/null
 }
 
-checkBerkeleyDB(){
+checkBerkeleyDB() {
     info ""
     info "BerkeleyDB:"
-    if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]] ; then
+    if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
         info " -> Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
     else
         checkBerkeleyDBArchive
@@ -289,14 +291,14 @@ checkBerkeleyDB(){
 # ============================================================================
 
 # ===== Start of boost functions =============================================
-checkBoost(){
+checkBoost() {
     info ""
     info "Boost:"
     info " -> Searching required static Boost libs"
     buildBoost=false
-    if [[ -d ${BOOST_LIBRARYDIR} ]] ; then
-        for currentBoostDependency in ${BOOST_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]] ; then
+    if [[ -d ${BOOST_LIBRARYDIR} ]]; then
+        for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
+            if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
                 warning " -> ${currentBoostDependency}: Not found!"
@@ -307,13 +309,13 @@ checkBoost(){
         info " -> Boost library directory ${BOOST_LIBRARYDIR} not found!"
         buildBoost=true
     fi
-    if ${buildBoost} ; then
+    if ${buildBoost}; then
         local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${BOOST_ARCHIVE_LOCATION}
         fi
         cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]] ; then
+        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
             info " -> Downloading Boost archive"
             wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
         else
@@ -339,38 +341,37 @@ checkBoost(){
 # ============================================================================
 
 # ===== Start of Qt functions ================================================
-checkQt(){
+checkQt() {
     info ""
     info "Qt:"
     info " -> Searching required Qt libs"
-    buildQt=false
-    if [[ -d ${ANDROID_QT_LIBRARYDIR} ]] ; then
+    qtComponentMissing=false
+    if [[ -d ${ANDROID_QT_LIBRARYDIR} ]]; then
         # libQt5Quick.so
-        for currentQtDependency in ${QT_REQUIRED_LIBS} ; do
-            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}_${ANDROID_ABI}.so") ]] ; then
+        for currentQtDependency in ${QT_REQUIRED_LIBS}; do
+            if [[ -n $(find ${ANDROID_QT_LIBRARYDIR}/ -name "libQt5${currentQtDependency}_${ANDROID_ABI}.so") ]]; then
                 info " -> ${currentQtDependency}: OK"
             else
                 warning " -> ${currentQtDependency}: Not found!"
-                buildQt=true
+                qtComponentMissing=true
             fi
         done
     else
         info " -> Qt library directory ${ANDROID_QT_LIBRARYDIR} not found"
-        buildQt=true
+        qtComponentMissing=true
     fi
-    if ${buildQt} ; then
-        error " -> Qt ${QT_VERSION} not found!"
-        error "    You need to install Qt ${QT_VERSION}"
+    if ${qtComponentMissing}; then
+        error " -> Qt ${QT_VERSION}: Not all required components found!"
         error ""
         die 43 "Stopping build because of missing Qt"
 
         # Maybe used later: Build Qt ourself
         local currentDir=$(pwd)
-        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${QT_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${QT_ARCHIVE_LOCATION}
         fi
         cd ${QT_ARCHIVE_LOCATION}
-        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]] ; then
+        if [[ ! -e "qt-everywhere-src-${QT_VERSION}.tar.xz" ]]; then
             info " -> Downloading Qt archive"
             wget https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz
         else
@@ -378,7 +379,7 @@ checkQt(){
         fi
         info " -> Verifying archive checksum"
         determinedMD5Sum=$(md5sum qt-everywhere-src-${QT_VERSION}.tar.xz | cut -d ' ' -f 1)
-        if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]] ; then
+        if [[ "${determinedMD5Sum}" != "${QT_ARCHIVE_HASH}" ]]; then
             warning " => Checksum of downloaded archive not matching expected value of ${QT_ARCHIVE_HASH}: ${determinedMD5Sum}"
         else
             info " -> Archive checksum ok"
@@ -415,13 +416,13 @@ checkQt(){
 # ============================================================================
 
 # ===== Start of libevent functions ==========================================
-checkEventLibArchive(){
-    if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]] ; then
+checkEventLibArchive() {
+    if [[ -e "${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz" ]]; then
         info " -> Using EventLib archive ${LIBEVENT_ARCHIVE_LOCATION}/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz"
     else
         LIBEVENT_ARCHIVE_URL=https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_BUILD_VERSION}-stable/libevent-${LIBEVENT_BUILD_VERSION}-stable.tar.gz
         info " -> Downloading EventLib archive ${LIBEVENT_ARCHIVE_URL}"
-        if [[ ! -e ${LIBEVENT_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${LIBEVENT_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${LIBEVENT_ARCHIVE_LOCATION}
         fi
         cd ${LIBEVENT_ARCHIVE_LOCATION}
@@ -430,10 +431,10 @@ checkEventLibArchive(){
     fi
 }
 
-checkEventLibClone(){
+checkEventLibClone() {
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
-    if [[ -d libevent ]] ; then
+    if [[ -d libevent ]]; then
         info " -> Updating libevent clone"
         cd libevent
         git pull --prune
@@ -444,12 +445,12 @@ checkEventLibClone(){
     cd "${currentDir}"
 }
 
-checkEventLibBuild(){
+checkEventLibBuild() {
     mkdir -p ${BUILD_DIR}/libevent
     cd ${BUILD_DIR}/libevent
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DANDROID_PLATFORM=${ANDROID_API} \
@@ -467,17 +468,17 @@ cmake \
     -DEVENT__DISABLE_MBEDTLS=ON
 EOM
 
-# Disable Thread support if Android API is lower than 28
-# See https://github.com/libevent/libevent/issues/949
-if [[ ${ANDROID_API} -lt 28 ]] ; then
-    read -r -d '' cmd << EOM
+    # Disable Thread support if Android API is lower than 28
+    # See https://github.com/libevent/libevent/issues/949
+    if [[ ${ANDROID_API} -lt 28 ]]; then
+        read -r -d '' cmd <<EOM
 ${cmd} \
     -DEVENT__DISABLE_THREAD_SUPPORT=ON
 EOM
-fi
+    fi
 
-# Finalize build cmd
-read -r -d '' cmd << EOM
+    # Finalize build cmd
+    read -r -d '' cmd <<EOM
 ${cmd} \
     -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
     ${BUILD_DIR}/../external/libevent
@@ -487,9 +488,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -500,7 +501,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished libevent build, installing..."
         make install || die $? " => Error during installation of libevent"
     else
@@ -510,10 +511,10 @@ EOM
     cd - >/dev/null
 }
 
-checkEventLib(){
+checkEventLib() {
     info ""
     info "EventLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
@@ -526,10 +527,10 @@ checkEventLib(){
 # ============================================================================
 
 # ===== Start of leveldb functions ===========================================
-checkLevelDBClone(){
+checkLevelDBClone() {
     local currentDir=$(pwd)
     cd ${ownLocation}/../external
-    if [[ -d leveldb ]] ; then
+    if [[ -d leveldb ]]; then
         info " -> Updating LevelDB clone"
         cd leveldb
         git pull --prune
@@ -543,12 +544,12 @@ checkLevelDBClone(){
     cd "${currentDir}"
 }
 
-checkLevelDBBuild(){
+checkLevelDBBuild() {
     mkdir -p ${BUILD_DIR}/libleveldb
     cd ${BUILD_DIR}/libleveldb
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DANDROID_PLATFORM=${ANDROID_API} \
@@ -567,9 +568,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -580,20 +581,20 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished libevent build, installing..."
         make install || die $? "Error during installation of libleveldb"
     else
         die ${rtc} " => libleveldb build failed with return code ${rtc}"
     fi
-#    read a
+    #    read a
     cd - >/dev/null
 }
 
-checkLevelDB(){
+checkLevelDB() {
     info ""
     info "LevelDB:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
@@ -606,13 +607,13 @@ checkLevelDB(){
 # ============================================================================
 
 # ===== Start of libzstd functions ===========================================
-checkZStdLibArchive(){
-    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]] ; then
+checkZStdLibArchive() {
+    if [[ -e "${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz" ]]; then
         info " -> Using ZLib archive ${LIBZ_ARCHIVE_LOCATION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz"
     else
         LIBZ_ARCHIVE_URL=https://github.com/facebook/zstd/releases/download/v${LIBZ_BUILD_VERSION}/zstd-${LIBZ_BUILD_VERSION}.tar.gz
         info " -> Downloading ZLib archive ${LIBZ_ARCHIVE_URL}"
-        if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${LIBZ_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${LIBZ_ARCHIVE_LOCATION}
         fi
         cd ${LIBZ_ARCHIVE_LOCATION}
@@ -620,7 +621,7 @@ checkZStdLibArchive(){
         cd - >/dev/null
     fi
     cd ${ownLocation}/../external
-    if [[ -d libzstd ]] ; then
+    if [[ -d libzstd ]]; then
         info " -> Directory external/libzstd already existing. Remove it to extract it again"
     else
         info " -> Extracting zstd-${LIBZ_BUILD_VERSION}.tar.gz..."
@@ -630,12 +631,12 @@ checkZStdLibArchive(){
     cd - >/dev/null
 }
 
-checkZStdLibBuild(){
+checkZStdLibBuild() {
     mkdir -p ${BUILD_DIR}/libzstd
     cd ${BUILD_DIR}/libzstd
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCMAKE_ANDROID_API=${ANDROID_API} \
@@ -652,9 +653,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -665,7 +666,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished libzstd build, installing..."
         make install || die $? "Error during installation of libzstd"
     else
@@ -675,10 +676,10 @@ EOM
     cd - >/dev/null
 }
 
-checkZStdLib(){
+checkZStdLib() {
     info ""
     info "ZStdLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
         checkZStdLibArchive
@@ -690,13 +691,13 @@ checkZStdLib(){
 # ============================================================================
 
 # ===== Start of libxz functions =============================================
-checkXZLibArchive(){
-    if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]] ; then
+checkXZLibArchive() {
+    if [[ -e "${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz" ]]; then
         info " -> Using XZLib archive ${LIBXZ_ARCHIVE_LOCATION}/xz-${LIBXZ_BUILD_VERSION}.tar.gz"
     else
         LIBXZ_ARCHIVE_URL=https://tukaani.org/xz/xz-${LIBXZ_BUILD_VERSION}.tar.gz
         info " -> Downloading XZLib archive ${LIBZ_ARCHIVE_URL}"
-        if [[ ! -e ${LIBXZ_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${LIBXZ_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${LIBXZ_ARCHIVE_LOCATION}
         fi
         cd ${LIBXZ_ARCHIVE_LOCATION}
@@ -705,12 +706,12 @@ checkXZLibArchive(){
     fi
 }
 
-checkXZLibBuild(){
+checkXZLibBuild() {
     mkdir -p ${BUILD_DIR}/libxz
     cd ${BUILD_DIR}/libxz
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCROSS_ANDROID=ON \
@@ -732,9 +733,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -745,7 +746,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished libxz build and install"
     else
         die ${rtc} " => libxz build failed with return code ${rtc}"
@@ -754,10 +755,10 @@ EOM
     cd - >/dev/null
 }
 
-checkXZLib(){
+checkXZLib() {
     info ""
     info "XZLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
         checkXZLibArchive
@@ -769,14 +770,14 @@ checkXZLib(){
 # ============================================================================
 
 # ===== Start of tor functions ===============================================
-checkTorArchive(){
-    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz" ]] ; then
+checkTorArchive() {
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz" ]]; then
         info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz"
     else
-#        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
+        #        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
         TOR_ARCHIVE_URL=https://github.com/guardianproject/tor/archive/tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz
         info " -> Downloading Tor archive ${TOR_ARCHIVE_URL}"
-        if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
         fi
         cd ${TOR_ARCHIVE_LOCATION}
@@ -785,12 +786,12 @@ checkTorArchive(){
     fi
 }
 
-checkTorBuild(){
+checkTorBuild() {
     mkdir -p ${BUILD_DIR}/tor
     cd ${BUILD_DIR}/tor
 
     info " -> Generating build configuration"
-    read -r -d '' cmd << EOM
+    read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCROSS_ANDROID=ON \
@@ -812,9 +813,9 @@ EOM
     echo "Executing the following CMake cmd:"
     echo "${cmd}"
     echo "=============================================================================="
-#    read a
+    #    read a
     ${cmd}
-#    read a
+    #    read a
 
     info ""
     info " -> Building with ${CORES_TO_USE} cores:"
@@ -825,7 +826,7 @@ EOM
 
     rtc=$?
     info ""
-    if [[ ${rtc} = 0 ]] ; then
+    if [[ ${rtc} = 0 ]]; then
         info " -> Finished tor build and install"
     else
         die ${rtc} " => Tor build failed with return code ${rtc}"
@@ -834,10 +835,10 @@ EOM
     cd - >/dev/null
 }
 
-checkTor(){
+checkTor() {
     info ""
     info "Tor:"
-    if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]] ; then
+    if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
         checkTorArchive
@@ -849,20 +850,20 @@ checkTor(){
 # ============================================================================
 
 # ===== Start of NDK functions ===============================================
-checkNDKArchive(){
+checkNDKArchive() {
     info ""
     info "NDK:"
     info " -> Searching Android toolchain file ${ANDROID_TOOLCHAIN_CMAKE}"
-    if [[ -e ${ANDROID_TOOLCHAIN_CMAKE} ]] ; then
+    if [[ -e ${ANDROID_TOOLCHAIN_CMAKE} ]]; then
         info " -> Found it! :-)"
     else
         warning " -> Android toolchain file ${ANDROID_TOOLCHAIN_CMAKE} not found!"
         local currentDir=$(pwd)
-        if [[ ! -e ${ANDROID_NDK_ARCHIVE_LOCATION} ]] ; then
+        if [[ ! -e ${ANDROID_NDK_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${ANDROID_NDK_ARCHIVE_LOCATION}
         fi
         cd ${ANDROID_NDK_ARCHIVE_LOCATION}
-        if [[ -e "${ANDROID_NDK_ARCHIVE}" ]] ; then
+        if [[ -e "${ANDROID_NDK_ARCHIVE}" ]]; then
             info " -> Using existing NDK archive"
         else
             ANDROID_NDK_ARCHIVE_URL=https://dl.google.com/android/repository/${ANDROID_NDK_ARCHIVE}
@@ -905,26 +906,30 @@ FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
+BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 
-while getopts a:c:fgsth? option; do
+while getopts a:c:dfgoth? option; do
     case ${option} in
-        a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}";;
-        c) CORES_TO_USE="${OPTARG}";;
-        f) FULLBUILD=true;;
-        g) ENABLE_GUI=true
-           ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake";;
-        s) BUILD_ONLY_ALIAS=true;;
-        t) WITH_TOR=true;;
-        h|?) helpMe && exit 0;;
-        *) die 90 "invalid option \"${OPTARG}\"";;
+    a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}" ;;
+    c) CORES_TO_USE="${OPTARG}" ;;
+    d) BUILD_ONLY_DEPENDENCIES=true ;;
+    f) FULLBUILD=true ;;
+    g)
+        ENABLE_GUI=true
+        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake"
+        ;;
+    o) BUILD_ONLY_ALIAS=true ;;
+    t) WITH_TOR=true ;;
+    h | ?) helpMe && exit 0 ;;
+    *) die 90 "invalid option \"${OPTARG}\"" ;;
     esac
 done
 
 # Go to alias-wallet repository root directory
 cd ..
 
-if [[ ! -d ${BUILD_DIR} ]] ; then
+if [[ ! -d ${BUILD_DIR} ]]; then
     info ""
     info "Creating build directory ${BUILD_DIR}"
     mkdir ${BUILD_DIR}
@@ -934,12 +939,12 @@ fi
 cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
 BUILD_DIR=$(pwd)
 
-if ${FULLBUILD} ; then
+if ${FULLBUILD}; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
     info " -> Done"
-elif ${BUILD_ONLY_ALIAS} ; then
+elif ${BUILD_ONLY_ALIAS}; then
     info ""
     info "Cleanup alias folder from previous build run"
     rm -rf ./aliaswallet
@@ -951,14 +956,20 @@ checkBoost
 checkBerkeleyDB
 checkLevelDB
 checkOpenSSL
-if ${WITH_TOR} ; then
+if ${WITH_TOR}; then
     checkXZLib
     checkZStdLib
     checkEventLib
     checkTor
 fi
-if ${ENABLE_GUI} ; then
+if ${ENABLE_GUI}; then
     checkQt
+fi
+
+if ${BUILD_ONLY_DEPENDENCIES}; then
+    info ""
+    info "Checked a/o built all required dependencies."
+    exit
 fi
 
 mkdir -p ${BUILD_DIR}/aliaswallet
@@ -966,7 +977,7 @@ cd ${BUILD_DIR}/aliaswallet
 
 info ""
 info "Generating Alias build configuration"
-read -r -d '' cmd << EOM
+read -r -d '' cmd <<EOM
 cmake \
     -DANDROID=1 \
     -DCMAKE_ANDROID_API=${ANDROID_API} \
@@ -1003,7 +1014,7 @@ EOM
 #fi
 
 # Finalize build cmd
-read -r -d '' cmd << EOM
+read -r -d '' cmd <<EOM
 ${cmd} \
     ${BUILD_DIR}/..
 EOM
@@ -1025,7 +1036,7 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 
 rtc=$?
 info ""
-if [[ ${rtc} = 0 ]] ; then
+if [[ ${rtc} = 0 ]]; then
     info " -> Finished"
 else
     error " => Finished with return code ${rtc}"

@@ -20,7 +20,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ip/v6_only.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
@@ -522,7 +522,7 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<
       <Protocol>
     * conn = new AcceptedConnectionImpl
       <Protocol>
-    (acceptor->get_io_service(), context, fUseSSL);
+    ((boost::asio::io_context&)(acceptor)->get_executor().context(), context, fUseSSL);
 
     acceptor->async_accept(
             conn->sslStream.lowest_layer(),
@@ -739,7 +739,7 @@ void RPCRunLater(const std::string& name, boost::function<void(void)> func, int6
                                         boost::shared_ptr<deadline_timer>(new deadline_timer(*rpc_io_service))));
     }
     deadlineTimers[name]->expires_from_now(posix_time::seconds(nSeconds));
-    deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, _1, func));
+    deadlineTimers[name]->async_wait(boost::bind(RPCRunHandler, boost::placeholders::_1, func));
 }
 
 CNetAddr BoostAsioToCNetAddr(boost::asio::ip::address address)

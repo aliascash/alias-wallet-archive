@@ -560,7 +560,7 @@ BOOST_DEFUN([Assign],
 # ------------
 # Look for Boost.Bind.
 BOOST_DEFUN([Bind],
-[BOOST_FIND_HEADER([boost/bind.hpp])])
+[BOOST_FIND_HEADER([boost/bind/bind.hpp])])
 
 
 # BOOST_CHRONO()
