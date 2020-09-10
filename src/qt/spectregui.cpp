@@ -527,12 +527,12 @@ void SpectreGUI::setNumConnections(int count)
     {
         fConnectionInit = true;
         syncingIcon.addClass("none");
-        syncingIconText.addClass("invisible");
+        syncingIconText.addClass("none");
     }
     else if (fConnectionInit)
     {
         fConnectionInit = false;
-        syncingIconText.addClass("invisible");
+        syncingIconText.addClass("none");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("syncing");
         syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
@@ -544,10 +544,10 @@ void SpectreGUI::setNumConnections(int count)
     connectionIconText.setContent(QString::number(count));
     if (count <= 12)
     {
-        connectionIconText.addClass("invisible");
+        connectionIconText.addClass("none");
     }
     else {
-        connectionIconText.removeClass("invisible");
+        connectionIconText.removeClass("none");
     }
 
     if (count <= 0)
@@ -573,7 +573,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     if (!clientModel || (clientModel->getNumConnections() == 0 && !clientModel->isImporting()))
     {
         syncingIcon.addClass("none");
-        syncingIconText.addClass("invisible");
+        syncingIconText.addClass("none");
         return;
     }
 
@@ -670,7 +670,7 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
     {
         tooltip = tr("Up to date") + "<br>" + tooltip;
 
-        syncingIconText.addClass("invisible");
+        syncingIconText.addClass("none");
         syncingIconText.removeClass("syncing");
         syncingIcon.removeClass("fa-spin");
         syncingIcon.setAttribute("src", webviewResource("assets/svg/synced.svg"));
@@ -708,10 +708,10 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
                                                                               nPercentageDone >= 10 ? std::floor(nPercentageDone) :
                                                                                                       std::floor(nPercentageDone * 10) / 10
                                                                                                       ,'f', nPercentageDone < 10 ? 1 : 0) + QString("%"));
-            syncingIconText.removeClass("invisible");
+            syncingIconText.removeClass("none");
         }
         else {
-            syncingIconText.addClass("invisible");
+            syncingIconText.addClass("none");
             syncingIconText.removeClass("syncing");
             syncingIcon.removeClass("syncing");
             syncingIcon.setAttribute("src", webviewResource("assets/svg/spinner.svg"));
