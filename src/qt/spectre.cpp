@@ -111,9 +111,10 @@ static void InitMessage(const std::string &message)
     {
         applicationModelRef->setCoreMessage(QString::fromStdString(message));
 #ifdef ANDROID
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString(QObject::tr("Initializing")).object<jstring>(),
-                                                     QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>());
+                                                     QAndroidJniObject::fromString(QString::fromStdString(message)).object<jstring>(),
+                                                     1);
 #endif
     }
     if(splashref) {
@@ -200,7 +201,7 @@ bool AndroidAppInit(int argc, char* argv[])
         // qDebug() << "QWebSocketServer access token: " << webSocketToken;
         WebSocketClientWrapper clientWrapper(&server, webSocketToken);  // wrap WebSocket clients in QWebChannelAbstractTransport objects
         QWebChannel webChannel;                         // setup the channel
-        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo); 
+        QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &webChannel, &QWebChannel::connectTo);
 
         //---- Setup remote objects host
         QRemoteObjectHost srcNode(QUrl(QStringLiteral("local:alias")));
@@ -607,7 +608,7 @@ int main(int argc, char *argv[])
 
                 if (!ShutdownRequested())
                     window.loadIndex(applicationModelPtr.data()->webSocketToken());
- 
+
 //               // Release lock before starting event processing, otherwise lock would never be released
 //               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
 //               LEAVE_CRITICAL_SECTION(cs_main);

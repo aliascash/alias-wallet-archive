@@ -101,16 +101,18 @@ void ClientModel::updateServiceStatus()
 
     if (numConnections() == 0)
     {
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString("No network connection").object<jstring>(),
-                                                     QAndroidJniObject::fromString("Alias is not connected to any node.").object<jstring>());
+                                                     QAndroidJniObject::fromString("Alias is not connected to any node.").object<jstring>(),
+                                                     2);
         return;
     }
     if (isImporting())
     {
-        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString("Importing!").object<jstring>(),
-                                                     QAndroidJniObject::fromString("...").object<jstring>());
+                                                     QAndroidJniObject::fromString("...").object<jstring>(),
+                                                     3);
         return;
     }
 
@@ -126,6 +128,7 @@ void ClientModel::updateServiceStatus()
     QDateTime lastBlockDate = blockInfo.lastBlockTime();
 
     QString title, msg, connection;
+    int type = 0;
     connection = tr("%1 nodes connected").arg(numConnections());
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
@@ -171,18 +174,23 @@ void ClientModel::updateServiceStatus()
                    (nEstimateTime < 60 * 60)      ? tr("%1 minute(s), %2 second(s)").arg(nEstimateTime / 60).arg(nEstimateTime % 60) : \
                    (nEstimateTime < 24 * 60 * 60) ? tr("%1 hour(s), %2 minute(s)").arg(nEstimateTime / (60 * 60)).arg((nEstimateTime % (60 * 60)) / 60) : \
                                                     tr("%1 day(s), %2 hour(s)").arg(nEstimateTime / (60 * 60 * 24)).arg((nEstimateTime % (60 * 60 * 24)) / (60 * 60));
+            type = 6;
         }
         else
         {
             title = tr("Up to date") + " / " + connection;
+            type = 5;
         }
     }
-    else
+    else {
         title = tr("Synchronizing") + " / " + connection;
+        type = 4;
+    }
 
-    QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+    QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                  QAndroidJniObject::fromString(title).object<jstring>(),
-                                                 QAndroidJniObject::fromString(msg).object<jstring>());
+                                                 QAndroidJniObject::fromString(msg).object<jstring>(),
+                                                 type);
 }
 
 void ClientModel::updateTimer() {

@@ -6,6 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
@@ -26,6 +31,13 @@ public class AliasService extends QtService {
     private static String CHANNEL_ID_WALLET = "ALIAS_WALLET";
     private static int NOTIFICATION_ID_SERVICE = 100;
     private static int NOTIFICATION_ID_WALLET = 1000;
+
+    private static int NOTIFICATION_TYPE_INIT = 1;
+    private static int NOTIFICATION_TYPE_NO_CONNECTION = 2;
+    private static int NOTIFICATION_TYPE_NO_IMPORTING = 3;
+    private static int NOTIFICATION_TYPE_SYNCING = 4;
+    private static int NOTIFICATION_TYPE_SYNCED = 5;
+    private static int NOTIFICATION_TYPE_STAKING = 6;
 
     public static final String ACTION_STOP = "ACTION_STOP";
 
@@ -119,10 +131,13 @@ public class AliasService extends QtService {
         getApplicationContext().startForegroundService(intent);
     }
 
-    public void updateNotification(String title, String text) {
+    public void updateNotification(String title, String text, int type) {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(text);
+        if (NOTIFICATION_TYPE_STAKING == type) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_staking));
+        }
         notificationManager.notify(NOTIFICATION_ID_SERVICE, notificationBuilder.build());
     }
 
