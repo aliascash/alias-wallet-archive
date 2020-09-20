@@ -21,28 +21,30 @@ cd ${ownLocation}
 # Go to Alias repository root directory
 cd ..
 
-echo "change the permision of .dmg file"
+info "Change permision of .dmg file"
 hdiutil convert "Alias.dmg" -format UDRW -o "Alias_Rw.dmg"
+info " -> Done"
 
-echo "mount it and save the device"
+info "Mount it and save the device"
 DEVICE=$(hdiutil attach -readwrite -noverify "Alias_Rw.dmg" |egrep '^/dev/' |sed 1q |awk '{print $1}')
+info " -> Done"
 
 sleep 2
 
-echo "create the sysmbolic link to application folder"
+info "Create symbolic link to application folder"
 PATH_AT_VOLUME=/Volumes/Alias     ## check Path inside cd /Volume/
 
 pushd "$PATH_AT_VOLUME"
 ln -s /Applications
 popd
+info " -> Done"
 
-#echo "copy the background image in to package"
+#info "Copy background image in to package"
 #mkdir "$PATH_AT_VOLUME"/.background
 #cp backgroundImage.png "$PATH_AT_VOLUME"/.background/
-#echo "done"
+#info " -> Done"
 
-# tell the Finder to resize the window, set the background,
-#  change the icon size, place the icons in the right position, etc.
+info "Resize window, set background, change icon size, place icons in the right position, etc."
 echo '
     tell application "Finder"
     tell disk "Alias"   ## check Path inside cd /Volume/
@@ -64,16 +66,20 @@ echo '
     end tell
     end tell
 ' | osascript
+info " -> Done"
 
 sync
 
-# unmount it
+info "Unmount"
 hdiutil detach "${DEVICE}"
+info " -> Done"
 
+info "Cleanup and convert"
 rm -f "Alias.dmg"
-
-
 hdiutil convert "Alias_Rw.dmg" -format UDZO -o "Alias.dmg"
-
 rm -f "Alias_Rw.dmg"
+info " -> Done"
+
+info "Finished"
+
 exit
