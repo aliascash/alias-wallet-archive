@@ -547,22 +547,16 @@ void SpectreGUI::setNumConnections(int count)
     }
 
     connectionIconText.setContent(QString::number(count));
-    if (count <= 12)
-    {
-        connectionIconText.addClass("none");
-    }
-    else {
-        connectionIconText.removeClass("none");
-    }
-
     if (count <= 0)
     {
+        connectionIconText.addClass("none");
         connectionIcon.setAttribute("src", webviewResource("assets/svg/connection-0.svg"));
         connectionIcon.addClass("fa-spin");
     }
     else {
         connectionIcon.removeClass("fa-spin");
         connectionIcon.setAttribute("src", webviewResource("assets/svg/connection-" + (count < 12 ? QString::number(count) : "12") + ".svg"));
+        connectionIconText.removeClass("none");
     }
 
     QString dataTitle = tr("%n active connection(s) to Alias network", "", count);
