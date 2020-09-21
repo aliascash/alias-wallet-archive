@@ -1867,6 +1867,7 @@ void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, i
     QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
     qint64 amount   = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
     QIcon   icon    = qvariant_cast<QIcon>(ttm->index(start, TransactionTableModel::ToAddress, parent).data(Qt::DecorationRole));
+    QString shortType =  TransactionRecord::getTypeShort(ttm->index(start, TransactionTableModel::Type, parent).data(TransactionTableModel::TypeRole).toInt());
 
     QString title = tr("%1 %2")
             .arg(BitcoinUnits::format(walletModel->getOptionsModel()->displayUnit(), amount, true))
@@ -1874,7 +1875,8 @@ void SpectreBridge::incomingTransaction(const QModelIndex & parent, int start, i
     QString message = narration.size() > 0 ? tr("%1 | %2").arg(address).arg(narration) :
                                              tr("%1").arg(address);
 #ifdef ANDROID
-    QtAndroid::androidService().callMethod<void>("createNotification", "(Ljava/lang/String;Ljava/lang/String;)V",
+    QtAndroid::androidService().callMethod<void>("createWalletNotification", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+                                                 QAndroidJniObject::fromString(shortType).object<jstring>(),
                                                  QAndroidJniObject::fromString(title).object<jstring>(),
                                                  QAndroidJniObject::fromString(message).object<jstring>());
 #endif

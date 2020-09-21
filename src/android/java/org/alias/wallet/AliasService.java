@@ -32,12 +32,19 @@ public class AliasService extends QtService {
     private static int NOTIFICATION_ID_SERVICE = 100;
     private static int NOTIFICATION_ID_WALLET = 1000;
 
-    private static int NOTIFICATION_TYPE_INIT = 1;
-    private static int NOTIFICATION_TYPE_NO_CONNECTION = 2;
-    private static int NOTIFICATION_TYPE_NO_IMPORTING = 3;
-    private static int NOTIFICATION_TYPE_SYNCING = 4;
-    private static int NOTIFICATION_TYPE_SYNCED = 5;
-    private static int NOTIFICATION_TYPE_STAKING = 6;
+    private static int SERVICE_NOTIFICATION_TYPE_INIT = 1;
+    private static int SERVICE_NOTIFICATION_TYPE_NO_CONNECTION = 2;
+    private static int SERVICE_NOTIFICATION_TYPE_NO_IMPORTING = 3;
+    private static int SERVICE_NOTIFICATION_TYPE_SYNCING = 4;
+    private static int SERVICE_NOTIFICATION_TYPE_SYNCED = 5;
+    private static int SERVICE_NOTIFICATION_TYPE_STAKING = 6;
+
+    private static String WALLET_NOTIFICATION_TYPE_TX_STAKED = "staked";
+    private static String WALLET_NOTIFICATION_TYPE_TX_DONATED = "donated";
+    private static String WALLET_NOTIFICATION_TYPE_TX_CONTRIBUTED = "contributed";
+    private static String WALLET_NOTIFICATION_TYPE_TX_INPUT = "input";
+    private static String WALLET_NOTIFICATION_TYPE_TX_OUTPUT = "output";
+    private static String WALLET_NOTIFICATION_TYPE_TX_INOUT = "inout";
 
     public static final String ACTION_STOP = "ACTION_STOP";
 
@@ -135,13 +142,13 @@ public class AliasService extends QtService {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(text);
-        if (NOTIFICATION_TYPE_STAKING == type) {
+        if (SERVICE_NOTIFICATION_TYPE_STAKING == type) {
             notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_staking));
         }
         notificationManager.notify(NOTIFICATION_ID_SERVICE, notificationBuilder.build());
     }
 
-    public void createNotification(String title, String text) {
+    public void createWalletNotification(String type, String title, String text) {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
 
         Intent notificationIntent = new Intent(this, AliasActivity.class);
@@ -166,6 +173,17 @@ public class AliasService extends QtService {
                 .setSmallIcon(R.drawable.ic_alias_app_white)
                 .setColor(ContextCompat.getColor(this, R.color.primary))
                 .setContentIntent(pendingIntent);
+        if (WALLET_NOTIFICATION_TYPE_TX_STAKED.equalsIgnoreCase(type) ||
+                WALLET_NOTIFICATION_TYPE_TX_DONATED.equalsIgnoreCase(type) ||
+                WALLET_NOTIFICATION_TYPE_TX_CONTRIBUTED.equalsIgnoreCase(type)) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_tx_staked));
+        } else if (WALLET_NOTIFICATION_TYPE_TX_INPUT.equalsIgnoreCase(type)) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_tx_input));
+        } else if (WALLET_NOTIFICATION_TYPE_TX_OUTPUT.equalsIgnoreCase(type)) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_tx_output));
+        } else if (WALLET_NOTIFICATION_TYPE_TX_INOUT.equalsIgnoreCase(type)) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_tx_inout));
+        }
         //.setTicker(getText(R.string.ticker_text));
         notificationManager.notify(NOTIFICATION_ID_WALLET, notificationBuilder.build());
 
