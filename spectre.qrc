@@ -1955,6 +1955,7 @@
         <file alias="assets/svg/Alias-Horizontal-Reverse.svg">src/qt/res/assets/svg/Alias-Horizontal-Reverse.svg</file>
         <file alias="assets/svg/Alias-Stacked-Reverse.svg">src/qt/res/assets/svg/Alias-Stacked-Reverse.svg</file>
         <file alias="assets/svg/Alias-Vertical-Reverse.svg">src/qt/res/assets/svg/Alias-Vertical-Reverse.svg</file>
+        <file alias="assets/svg/Alias-Stacked-Orange.svg">src/qt/res/assets/svg/Alias-Stacked-Orange.svg</file>
         <file alias="assets/svg/connection-0.svg">src/qt/res/assets/svg/connection-0.svg</file>
         <file alias="assets/svg/connection-10.svg">src/qt/res/assets/svg/connection-10.svg</file>
         <file alias="assets/svg/connection-11.svg">src/qt/res/assets/svg/connection-11.svg</file>
