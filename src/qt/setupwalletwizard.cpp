@@ -30,7 +30,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
 //#endif
     setOption(HaveHelpButton, true);
 
-    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app"), 48, 48));
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/Alias-Stacked-Reverse.svg"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
 
