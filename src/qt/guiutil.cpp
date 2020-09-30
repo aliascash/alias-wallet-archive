@@ -591,6 +591,7 @@ QPixmap createPixmap(const QString& svgResource, int width, int height)
     QSvgRenderer renderer(svgResource);
     // QT 5.15 renderer.setAspectRatioMode(Qt::KeepAspectRatio);
     QImage image(width * dpr, height * dpr, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
     QPainter painter(&image);
     renderer.render(&painter);
     image.setDevicePixelRatio(dpr);
