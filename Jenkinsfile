@@ -330,7 +330,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
-                                    user: 'spectrecoin',
+                                    user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ true
@@ -339,7 +339,7 @@ pipeline {
                     steps {
                         script {
                             removeRelease(
-                                    user: 'spectrecoin',
+                                    user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             )
@@ -350,7 +350,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
-                                    user: 'spectrecoin',
+                                    user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ false
@@ -359,7 +359,7 @@ pipeline {
                     steps {
                         script {
                             createRelease(
-                                    user: 'spectrecoin',
+                                    user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}",
                                     name: "${RELEASE_NAME}",
@@ -667,14 +667,14 @@ pipeline {
                                             """
                                     )
                                     uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
+                                            user: 'aliascash',
                                             repository: 'alias-wallet',
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
                                     sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                     uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
+                                            user: 'aliascash',
                                             repository: 'alias-wallet',
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
@@ -825,7 +825,7 @@ pipeline {
                             """
                         )
                         editRelease(
-                                user: 'spectrecoin',
+                                user: 'aliascash',
                                 repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 name: "${RELEASE_NAME}",
@@ -833,7 +833,7 @@ pipeline {
                                 preRelease: "${PRERELEASE}"
                         )
                         uploadArtifactToGitHub(
-                                user: 'spectrecoin',
+                                user: 'aliascash',
                                 repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
@@ -960,14 +960,14 @@ def uploadDeliveries(def suffix) {
                 """
         )
         uploadArtifactToGitHub(
-                user: 'spectrecoin',
+                user: 'aliascash',
                 repository: 'alias-wallet',
                 tag: "${GIT_TAG_TO_USE}",
                 artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
         )
         sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
         uploadArtifactToGitHub(
-                user: 'spectrecoin',
+                user: 'aliascash',
                 repository: 'alias-wallet',
                 tag: "${GIT_TAG_TO_USE}",
                 artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
