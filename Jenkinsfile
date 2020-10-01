@@ -407,7 +407,7 @@ pipeline {
                         stage('Trigger image build') {
                             steps {
                                 build(
-                                        job: 'Alias/pi-gen/aliaswallet',
+                                        job: 'Alias/pi-gen/alias',
                                         parameters: [
                                                 string(
                                                         name: 'ALIAS_RELEASE',
