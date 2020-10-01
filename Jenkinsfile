@@ -687,7 +687,7 @@ pipeline {
                                             filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
                                             checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
                                     )
-                                    sh "rm -f Aliaswallet*.dmg* Checksum-Alias*"
+                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
                                 }
                             }
                             post {
@@ -733,7 +733,7 @@ pipeline {
                             steps {
                                 script {
                                     buildWindows("-Qt5.12")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                 }
                             }
                         }
@@ -779,7 +779,7 @@ pipeline {
                             steps {
                                 script {
                                     buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
                                     build(
                                             job: 'Alias/installer/master',
                                             parameters: [
@@ -789,7 +789,7 @@ pipeline {
                                                     ),
                                                     string(
                                                             name: 'ARCHIVE_NAME',
-                                                            value: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                                     ),
                                                     string(
                                                             name: 'GIT_TAG_TO_USE',
@@ -963,7 +963,7 @@ def uploadDeliveries(def suffix) {
                 user: 'aliascash',
                 repository: 'alias-wallet',
                 tag: "${GIT_TAG_TO_USE}",
-                artifactNameRemote: "Aliaswallet-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+                artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
         )
         sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
         uploadArtifactToGitHub(
