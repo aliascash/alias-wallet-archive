@@ -27,7 +27,7 @@
     right: 0px;
     width: 100px;
     height: 100%;
-    box-spectre: 0 0 10px #22df80, 0 0 5px #22df80;
+    box-shadow: 0 0 10px #22df80, 0 0 5px #22df80;
     opacity: 1.0;
     -webkit-transform: rotate(3deg) translate(0px, -4px);
     -moz-transform: rotate(3deg) translate(0px, -4px);

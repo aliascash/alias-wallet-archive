@@ -835,8 +835,8 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
     position: absolute;
     z-index: 9999;
     max-width: 300px;
-    -webkit-box-spectre: 0 0 5px #aaa;
-    box-spectre: 0 0 5px #aaa
+    -webkit-box-shadow: 0 0 5px #aaa;
+    box-shadow: 0 0 5px #aaa
 }
 
 body .ui-tooltip {
@@ -860,11 +860,11 @@ body .ui-tooltip {
 .ui-widget-content {
     border: 1px solid #ddd;
     background: #eee url(qrc:///assets/plugins/jquery-ui/images/images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x;
-    color: #333
+    color: #282829
 }
 
 .ui-widget-content a {
-    color: #333
+    color: #282829
 }
 
 .ui-widget-header {

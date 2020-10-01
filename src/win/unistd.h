@@ -1,3 +1,10 @@
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2010 Satoshi Nakamoto
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
+
 #ifdef _MSC_VER
 #ifndef UNISTD_H
 #define UNISTD_H

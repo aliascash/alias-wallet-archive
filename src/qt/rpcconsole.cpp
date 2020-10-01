@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2014 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "rpcconsole.h"
 #include "ui_rpcconsole.h"
@@ -44,10 +45,10 @@ const struct {
     const char *url;
     const char *source;
 } ICON_MAPPING[] = {
-    {"cmd-request", ":/icons/tx_input"},
-    {"cmd-reply", ":/icons/tx_output"},
-    {"cmd-error", ":/icons/tx_output"},
-    {"misc", ":/icons/tx_inout"},
+    {"cmd-request", ":/icons/cmd_request"},
+    {"cmd-reply", ":/icons/cmd_reply"},
+    {"cmd-error", ":/icons/cmd_error"},
+    {"misc", ":/icons/cmd_misc"},
     {NULL, NULL}
 };
 
@@ -322,7 +323,7 @@ void RPCConsole::clear()
     ui->lineEdit->setFocus();
 
 
-    QColor colour(226, 29, 57);
+    QColor colour(242, 131, 33);
 
     // Add smoothly scaled icon images.
     // (when using width/height on an img, Qt uses nearest instead of linear interpolation)
@@ -344,7 +345,7 @@ void RPCConsole::clear()
                 "b { color: #006060; } "
                 );
 
-    message(CMD_REPLY, (tr("Welcome to the Spectrecoin Core RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the Alias Core RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                         tr("Type <b>help</b> for an overview of available commands.")), true);
 }

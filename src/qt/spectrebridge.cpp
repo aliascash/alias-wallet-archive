@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "spectrebridge.h"
 
@@ -109,6 +110,7 @@ QVariantMap TransactionModel::addTransaction(int row)
     transaction.insert("am",   amount.data(TransactionTableModel::AmountRole).toLongLong());
     transaction.insert("am_d", amount.data().toString());
     transaction.insert("am_curr", amount.data(TransactionTableModel::CurrencyRole).toString());
+    transaction.insert("am_unit", amount.data(TransactionTableModel::UnitRole).toInt());
 
     return transaction;
 }
@@ -148,7 +150,7 @@ void TransactionModel::populateRows(int start, int end, int max)
         qDebug() << "emitTransactions " << transactionsBuffer.size();
         emitTransactions(transactionsBuffer.values());
         transactionsBuffer.clear();
-    }        
+    }
 
     running = false;
 }
@@ -347,10 +349,6 @@ void SpectreBridge::populateOptions()
         visibleTransactions.append(txType);
     }
 
-    QVariantList messageTypes;
-
-    messageTypes.append(tr("Incoming Message"));
-    notifications.insert("messages", messageTypes);
     notifications.insert("transactions", visibleTransactions);
 
     options.insert("optVisibleTransactions", visibleTransactions);
@@ -372,19 +370,21 @@ void SpectreBridge::populateOptions()
     }
 
     options.insert("optLanguage", languages);
-    options.insert("Fee", ((double)options.value("Fee").toLongLong()) / COIN );
-    options.insert("ReserveBalance", ((double)options.value("ReserveBalance").toLongLong()) / COIN );
+    options.insert("Fee", options.value("Fee").toLongLong());
+    options.insert("ReserveBalance", options.value("ReserveBalance").toLongLong() );
 
     info->insert("options", options);
 }
 
 // Transactions
-void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType, int nRingSize)
+void SpectreBridge::addRecipient(QString address, QString label, QString narration, qint64 amount, int txnType)
 {
-    if (!window->walletModel->validateAddress(address)) {
-        emit addRecipientResult(false);
-        return;
-    }
+    // TODO Don't validate address atm, because UI does not properly handle addRecipientResult(false), address will be validated in sendCoins
+    //    QRemoteObjectPendingReply<bool> validateAddressPendingReply = window->walletModel->validateAddress(address);
+    //    if (!validateAddressPendingReply.waitForFinished() || !validateAddressPendingReply.returnValue()) {
+    //        emit addRecipientResult(false);
+    //        return;
+    //    }
 
     SendCoinsRecipient rv;
 
@@ -401,7 +401,7 @@ void SpectreBridge::addRecipient(QString address, QString label, QString narrati
         rv.typeInd = address.length() > 75 ? AT_Stealth : AT_Normal;
 
     rv.txnTypeInd = txnType;
-    rv.nRingSize = nRingSize;
+    rv.nRingSize = GetRingSizeMinMax().first;
 
     recipients.append(rv);
 
@@ -434,21 +434,21 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         switch(rcp.txnTypeInd)
         {
             case TXT_SPEC_TO_SPEC:
-                formatted.append(tr("<b>%1</b> to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from your public balance to %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 break;
             case TXT_SPEC_TO_ANON:
-                formatted.append(tr("<b>%1</b> to SPECTRE, %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from public to private, using address %2 (%3)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 0;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_ANON:
-                formatted.append(tr("<b>%1</b>, ring size %2 to %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from your private balance, ring size %2, to %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 nAnonOutputs++;
                 break;
             case TXT_ANON_TO_SPEC:
-                formatted.append(tr("<b>%1</b>, ring size %2 to XSPEC, %3 (%4)").arg(BitcoinUnits::formatWithUnitSpectre(BitcoinUnits::XSPEC, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
+                formatted.append(tr("<b>%1</b> from private to public, ring size %2, using address %3 (%4)").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, rcp.amount), QString::number(rcp.nRingSize), rcp.label.toHtmlEscaped(), lineBreakAddress(rcp.address)));
                 inputType = 1;
                 break;
             default:
@@ -559,19 +559,19 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
         case WalletModel::StealthAddressOnlyAllowedForSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Only SPECTRE from your Private balance can be send to a stealth address."),
+                tr("Only ALIAS from your Private balance can be send to a stealth address."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedXSPECtoSPECTRE:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Public to Private (XSPEC to SPECTRE) is only allowed within your account."),
+                tr("Transfer from Public to Private is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
         case WalletModel::RecipientAddressNotOwnedSPECTREtoXSPEC:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Transfer from Private to Public (SPECTRE to XSPEC) is only allowed within your account."),
+                tr("Transfer from Private to Public is only allowed within your account."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -590,7 +590,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
         case WalletModel::AmountWithFeeExceedsBalance:
             QMessageBox::warning(window, tr("Send Coins"),
                 tr("The total exceeds your balance when the %1 transaction fee is included.").
-                arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -643,20 +643,20 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             emit sendCoinsResult(false);
             return;
         case WalletModel::SCR_StealthAddressFailAnonToSpec:
-            QMessageBox::warning(window, tr("Convert SPECTRE to XSPEC"),
-                tr("Error: Invalid Stealth Address. SPECTRE to XSPEC conversion requires a stealth address."),
+            QMessageBox::warning(window, tr("Convert Alias from Private to Public"),
+                tr("Error: Invalid Stealth Address. Private to public conversion requires a stealth address."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
 		case WalletModel::SCR_AmountExceedsBalance:
 			QMessageBox::warning(window, tr("Send Coins"),
-				tr("The amount exceeds your SPECTRE balance."),
+                tr("The amount exceeds your ALIAS balance."),
 				QMessageBox::Ok, QMessageBox::Ok);
 			emit sendCoinsResult(false);
 			return;
         case WalletModel::SCR_AmountWithFeeExceedsSpectreBalance:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("The total exceeds your SPECTRE balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::XSPEC, sendstatus.fee)),
+                tr("The total exceeds your private ALIAS balance when the %1 transaction fee is included.").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::ALIAS, sendstatus.fee)),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -970,23 +970,7 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
 
         for(int option = 0;option < optionsModel->rowCount(); option++) {
             if(object.contains(optionsModel->optionIDName(option))) {
-                if (optionsModel->optionIDName(option) == "Fee") {
-                    //smallest number is 0.00000001
-                    //convert to long before saving it
-                    QString feeAsString = object.value(optionsModel->optionIDName(option)).toString();
-                    QVariant longFee;
-                    longFee.setValue((qlonglong)(feeAsString.toDouble() * COIN));
-                    optionsModel->setData(optionsModel->index(option), longFee);
-                } else if (optionsModel->optionIDName(option) == "ReserveBalance") {
-                    //smallest number is 0.00000001
-                    //convert to long before saving it
-                    QString reserveBalanceAsString = object.value(optionsModel->optionIDName(option)).toString();
-                    QVariant longReserveBalance;
-                    longReserveBalance.setValue((qlonglong)(reserveBalanceAsString.toDouble() * COIN));
-                    optionsModel->setData(optionsModel->index(option), longReserveBalance);
-                } else {
-                    optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
-                }
+                optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
             }
         }
 
@@ -1285,7 +1269,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
             if (txn.nVersion == ANON_TXN_VERSION
                 && txin.IsAnonInput())
             {
-                sAddr = "SPECTRE";
+                sAddr = "ALIAS (private)";
                 std::vector<uint8_t> vchImage;
                 txin.ExtractKeyImage(vchImage);
 
@@ -1341,7 +1325,7 @@ void SpectreBridge::txnDetails(QString blkHash, QString txnHash)
 
              if( txn.nVersion == ANON_TXN_VERSION
                  && txout.IsAnonOutput() )
-                 sAddr = "SPECTRE";
+                 sAddr = "ALIAS (private)";
              else
              {
                  CTxDestination address;
@@ -1885,7 +1869,7 @@ void SpectreBridge::extKeyImport(QString inKey, QString inLabel, bool fBip44, qu
         if (!eKey58.IsValid(CChainParams::EXT_SECRET_KEY)
          && !eKey58.IsValid(CChainParams::EXT_PUBLIC_KEY_BTC))
         {
-            result.insert("error_msg", "Import failed - Key must begin with Spectrecoin prefix.");
+            result.insert("error_msg", "Import failed - Key must begin with Alias prefix.");
             emit extKeyImportResult(result);
             return;
         }

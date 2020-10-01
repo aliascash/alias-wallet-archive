@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 Bitcoin Developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <iostream>
 #include <fstream>
@@ -116,7 +117,7 @@ Value importprivkey(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 4)
         throw runtime_error(
-            "importprivkey <spectrecoinprivkey> [label] [rescan=true] [timestamp=1]\n"
+            "importprivkey <publicaddress_privkey> [label] [rescan=true] [timestamp=1]\n"
             "Adds a private key (as returned by dumpprivkey) to your wallet.");
 
     string strSecret = params[0].get_str();
@@ -258,8 +259,8 @@ Value dumpprivkey(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "dumpprivkey <spectrecoinaddress/public_key_hex>\n"
-            "Reveals the private key corresponding to <spectrecoinaddress>.");
+            "dumpprivkey <public_address/public_key_hex>\n"
+            "Reveals the private key corresponding to <public_address>.");
 
     EnsureWalletIsUnlocked();
 
@@ -281,7 +282,7 @@ Value dumpprivkey(const Array& params, bool fHelp)
     } else
     {
         if (!address.SetString(strAddress))
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Spectrecoin address");
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Alias address");
         if (!address.GetKeyID(keyID))
             throw JSONRPCError(RPC_TYPE_ERROR, "Address does not refer to a key");
     };
@@ -323,7 +324,7 @@ Value dumpwallet(const Array& params, bool fHelp)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-    file << strprintf("# Wallet dump created by Spectrecoin %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
+    file << strprintf("# Wallet dump created by Alias %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", nBestHeight, hashBestChain.ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(pindexBest->nTime));

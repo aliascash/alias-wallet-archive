@@ -1,8 +1,9 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+// SPDX-FileCopyrightText: © 2009 Satoshi Nakamoto
+//
+// SPDX-License-Identifier: MIT
 
 #include "txdb.h"
 #include "walletdb.h"
@@ -196,13 +197,13 @@ void ThreadSignalHandler(void *nothing)
 
 bool static InitError(const std::string &str)
 {
-    uiInterface.ThreadSafeMessageBox(str, _("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::MODAL);
+    uiInterface.ThreadSafeMessageBox(str, _("Alias"), CClientUIInterface::BTN_OK | CClientUIInterface::MODAL);
     return false;
 }
 
 bool static InitWarning(const std::string &str)
 {
-    uiInterface.ThreadSafeMessageBox(str, _("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
+    uiInterface.ThreadSafeMessageBox(str, _("Alias"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
     return true;
 }
 
@@ -228,8 +229,8 @@ std::string HelpMessage()
 {
     std::string strUsage = _("Options:") + "\n";
     strUsage += "  -?                     " + _("This help message") + "\n";
-    strUsage += "  -conf=<file>           " + _("Specify configuration file (default: spectrecoin.conf)") + "\n";
-    strUsage += "  -pid=<file>            " + _("Specify pid file (default: spectrecoind.pid)") + "\n";
+    strUsage += "  -conf=<file>           " + _("Specify configuration file (default: alias.conf)") + "\n";
+    strUsage += "  -pid=<file>            " + _("Specify pid file (default: alias.pid)") + "\n";
     strUsage += "  -datadir=<dir>         " + _("Specify data directory") + "\n";
     strUsage += "  -wallet=<dir>          " + _("Specify wallet file (within data directory)") + "\n";
     strUsage += "  -dbcache=<n>           " + _("Set database cache size in megabytes (default: 25)") + "\n";
@@ -467,7 +468,6 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         int nTestnetScaleMod = 10;
         nMinTxFee /= nTestnetScaleMod;
-        nMinTxFeeAnonLegacy /= nTestnetScaleMod;
         nMinRelayTxFee /= nTestnetScaleMod;
         nStakeReward /= nTestnetScaleMod;
         nAnonStakeReward /= nTestnetScaleMod;
@@ -546,7 +546,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
     // Sanity check
     if (!InitSanityCheck())
-        return InitError(_("Initialization sanity check failed. Spectrecoin is shutting down."));
+        return InitError(_("Initialization sanity check failed. Alias is shutting down."));
 
     std::string strDataDir = GetDataDir().string();
     std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
@@ -566,13 +566,13 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
     if (!lock.try_lock())
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  Spectrecoin is probably already running."), strDataDir.c_str()));
+        return InitError(strprintf(_("Cannot obtain a lock on data directory %s.  Alias is probably already running."), strDataDir.c_str()));
 
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("Spectrecoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
+    LogPrintf("Alias version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
     LogPrintf("Operating in %s mode.\n", GetNodeModeName(nNodeMode));
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 
@@ -586,7 +586,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (fDaemon)
     {
-        fprintf(stdout, "Spectrecoin server starting\n");
+        fprintf(stdout, "Alias server starting\n");
         fflush(stdout);
     };
 
@@ -685,7 +685,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
                 " your balance or transactions are incorrect you should"
                 " restore from a backup."), strDataDir.c_str());
-            uiInterface.ThreadSafeMessageBox(msg, _("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
+            uiInterface.ThreadSafeMessageBox(msg, _("Alias"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
         };
 
         if (r == CDBEnv::RECOVER_FAIL)
@@ -831,8 +831,13 @@ bool AppInit2(boost::thread_group& threadGroup)
         txdb.RecreateDB();
     };
 
-    switch (LoadBlockIndex(true, [] (const uint32_t& nBlock) -> void {
-                           uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
+    switch (LoadBlockIndex(true, [] (const unsigned mode, const uint32_t& nBlock) -> void {
+                           if (mode == 0)
+                                uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
+                           else if (mode == 1)
+                                uiInterface.InitMessage(strprintf("Calculating chain trust... (%d)", nBlock));
+                           else
+                                uiInterface.InitMessage(strprintf("Validating last %d block...", nBlock));
                        }))
     {
         case 1:
@@ -910,15 +915,15 @@ bool AppInit2(boost::thread_group& threadGroup)
         {
             std::string msg(_("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                          " or address book entries might be missing or incorrect."));
-            uiInterface.ThreadSafeMessageBox(msg, _("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
+            uiInterface.ThreadSafeMessageBox(msg, _("Alias"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
         } else
         if (nLoadWalletRet == DB_TOO_NEW)
         {
-            strErrors << _("Error loading wallet.dat: Wallet requires newer version of Spectrecoin") << "\n";
+            strErrors << _("Error loading wallet.dat: Wallet requires newer version of Alias") << "\n";
         } else
         if (nLoadWalletRet == DB_NEED_REWRITE)
         {
-            strErrors << _("Wallet needed to be rewritten: restart Spectrecoin to complete") << "\n";
+            strErrors << _("Wallet needed to be rewritten: restart Alias to complete") << "\n";
             LogPrintf("%s", strErrors.str().c_str());
             return InitError(strErrors.str());
         } else
@@ -958,7 +963,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LOCK2(cs_main, pwalletMain->cs_wallet);
             pwalletMain->MarkDirty();
             pwalletMain->ScanForWalletTransactions(pindexRescan, true, [] (const int& nCurrentHeight, const int& nBestHeight, const int& foundOwned) -> bool {
-                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d)", nCurrentHeight, nBestHeight, foundOwned));
+                uiInterface.InitMessage(strprintf("Rescanning... %d / %d (%d txns)", nCurrentHeight, nBestHeight, foundOwned));
                 return true;
             },100);
             pwalletMain->ReacceptWalletTransactions();
@@ -1051,7 +1056,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     InitRPCMining();
 
     // Mine proof-of-stake blocks in the background
-    if (!GetBoolArg("-staking", true))
+    fIsStakingEnabled = GetBoolArg("-staking", true);
+    if (!fIsStakingEnabled && !fHaveGUI)
         LogPrintf("Staking disabled\n");
     else
         threadGroup.create_thread(boost::bind(&TraceThread<void (*)(CWallet*), CWallet*>, "miner", &ThreadStakeMiner, pwalletMain));

@@ -1,10 +1,11 @@
-#ifndef JSON_SPIRIT_WRITER_TEMPLATE
-#define JSON_SPIRIT_WRITER_TEMPLATE
-
-//          Copyright John W. Wilkinson 2007 - 2009.
-// Distributed under the MIT License, see accompanying file LICENSE.txt
+// SPDX-FileCopyrightText: © 2007 John W. Wilkinson
+//
+// SPDX-License-Identifier: MIT
 
 // json spirit version 4.03
+
+#ifndef JSON_SPIRIT_WRITER_TEMPLATE
+#define JSON_SPIRIT_WRITER_TEMPLATE
 
 #include "json_spirit_value.h"
 
@@ -145,8 +146,8 @@ namespace json_spirit
 
         void output( const Obj_member_type& member )
         {
-            output( Config_type::get_name( member ) ); space(); 
-            os_ << ':'; space(); 
+            output( Config_type::get_name( member ) ); space();
+            os_ << ':'; space();
             output( Config_type::get_value( member ) );
         }
 
@@ -178,7 +179,7 @@ namespace json_spirit
             os_ << start_char; new_line();
 
             ++indentation_level_;
-            
+
             for( typename T::const_iterator i = t.begin(); i != t.end(); ++i )
             {
                 indent(); output( *i );
@@ -197,13 +198,13 @@ namespace json_spirit
 
             indent(); os_ << end_char;
         }
-        
+
         void indent()
         {
             if( !pretty_ ) return;
 
             for( int i = 0; i < indentation_level_; ++i )
-            { 
+            {
                 os_ << "    ";
             }
         }

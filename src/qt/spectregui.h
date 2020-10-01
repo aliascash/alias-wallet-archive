@@ -1,7 +1,8 @@
-// Copyright (c) 2014 The ShadowCoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef SPECTREGUI_H
 #define SPECTREGUI_H
@@ -65,7 +66,7 @@ public:
 
     void setSplashScreen(QSplashScreen* splash);
 
-    void loadIndex();
+    void loadIndex(QString webSocketToken);
 
     void runJavaScript(QString javascriptCode);
 
@@ -109,6 +110,7 @@ private:
     QTimer *pollTimer;
 
     uint64_t nWeight;
+    bool fConnectionInit = true;
 
     /** Create the main UI actions. */
     void createActions();
@@ -134,6 +136,7 @@ private:
         void removeAttribute(QString attribute);
         void addClass(QString className);
         void removeClass(QString className);
+        void setContent(QString value);
     private:
         SpectreGUI* spectreGUI;
         QString name;

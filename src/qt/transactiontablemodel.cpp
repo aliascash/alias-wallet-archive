@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "transactiontablemodel.h"
 #include "guiutil.h"
@@ -87,9 +88,9 @@ public:
         {
 
             // Find bounds of this transaction in model
-            QList<TransactionRecord>::iterator lower = qLowerBound(
+            QList<TransactionRecord>::iterator lower = std::lower_bound(
                 cachedWallet.begin(), cachedWallet.end(), hash, TxLessThan());
-            QList<TransactionRecord>::iterator upper = qUpperBound(
+            QList<TransactionRecord>::iterator upper = std::upper_bound(
                 cachedWallet.begin(), cachedWallet.end(), hash, TxLessThan());
             int lowerIndex = (lower - cachedWallet.begin());
             int upperIndex = (upper - cachedWallet.begin());
@@ -336,7 +337,7 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         status = tr("Unconfirmed");
         break;
     case TransactionStatus::Confirming:
-        status = wtx->currency == SPECTRE ? tr("Confirming (%1 of %2 required confirmations)").
+        status = wtx->currency == PRIVATE ? tr("Confirming (%1 of %2 required confirmations)").
                                             arg(wtx->status.depth).arg(MIN_ANON_SPEND_DEPTH) :
                                             tr("Confirming (%1 of %2 recommended confirmations)").
                                             arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
@@ -353,11 +354,11 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
         break;
     case TransactionStatus::MaturesWarning:
         status = tr("Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!").
-                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");;
+                arg(wtx->currency == PRIVATE ? "ALIAS (private)" : "ALIAS (public)");;
         break;
     case TransactionStatus::NotAccepted:
         status = tr("Orphan %1 stake, someone else submitted the block before you.").
-                arg(wtx->currency == SPECTRE ? " SPECTRE" : "XSPEC");
+                arg(wtx->currency == PRIVATE ? "ALIAS (private)" : "ALIAS (public)");
         break;
     }
 
@@ -499,7 +500,7 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
     case TransactionStatus::Immature:
     case TransactionStatus::Confirming:
         status_switch = (confirmations * 3) / (wtx->status.status == TransactionStatus::Confirming ?
-                    wtx->currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
+                    wtx->currency == PRIVATE ? MIN_ANON_SPEND_DEPTH : TransactionRecord::RecommendedNumConfirmations :
                     Params().GetStakeMinConfirmations(wtx->time)) + 1;
         switch(status_switch)
         {
@@ -511,12 +512,12 @@ QString TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx) 
     case TransactionStatus::Confirmed:
         return "fa-check-circle green";
     case TransactionStatus::NotAccepted:
-        return "fa-exclamation-triangle";
+        return "fa-exclamation-triangle grey";
     case TransactionStatus::Conflicted:
-        return "fa-exclamation-triangle orange";
+        return "fa-exclamation-triangle red";
 
     default:
-        return "fa-question-circle black";
+        return "fa-question-circle grey";
     }
 }
 
@@ -619,7 +620,9 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
     case AmountRole:
         return rec->credit + rec->debit;
     case CurrencyRole:
-        return rec->currency == SPECTRE ? "SPECTRE" : "XSPEC";
+        return rec->currency == PRIVATE ? "PRIVATE" : "PUBLIC";
+    case UnitRole:
+        return walletModel->getOptionsModel()->getDisplayUnit();
     case TxIDRole:
         return QString::fromStdString(rec->getTxID());
     case ConfirmedRole:
@@ -722,13 +725,13 @@ static void NotifyTransactionChanged(TransactionTableModel *ttm, CWallet *wallet
 void TransactionTableModel::subscribeToCoreSignals()
 {
     // Connect signals to wallet
-    wallet->NotifyTransactionChanged.connect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+    wallet->NotifyTransactionChanged.connect(boost::bind(NotifyTransactionChanged, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3));
     //wallet->ShowProgress.connect(boost::bind(ShowProgress, this, _1, _2)); TODO: Queue notifications...
 }
 
 void TransactionTableModel::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from wallet
-    wallet->NotifyTransactionChanged.disconnect(boost::bind(NotifyTransactionChanged, this, _1, _2, _3));
+    wallet->NotifyTransactionChanged.disconnect(boost::bind(NotifyTransactionChanged, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3));
     //wallet->ShowProgress.disconnect(boost::bind(ShowProgress, this, _1, _2));
 }
