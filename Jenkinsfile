@@ -564,24 +564,6 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Trigger Docker image build') {
-                            steps {
-                                build(
-                                        job: "Alias/docker-aliaswalletd/${GIT_BRANCH}",
-                                        parameters: [
-                                                string(
-                                                        name: 'ALIAS_RELEASE',
-                                                        value: "${GIT_TAG_TO_USE}"
-                                                ),
-                                                string(
-                                                        name: 'GIT_COMMIT_SHORT',
-                                                        value: "${GIT_COMMIT_SHORT}"
-                                                )
-                                        ],
-                                        wait: false
-                                )
-                            }
-                        }
                     }
                 }
                 stage('Ubuntu 20.04') {
@@ -609,6 +591,24 @@ pipeline {
                                 always {
                                     sh "docker system prune --all --force"
                                 }
+                            }
+                        }
+                        stage('Trigger Docker image build') {
+                            steps {
+                                build(
+                                        job: "Alias/docker-aliaswalletd/${GIT_BRANCH}",
+                                        parameters: [
+                                                string(
+                                                        name: 'ALIAS_RELEASE',
+                                                        value: "${GIT_TAG_TO_USE}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
+                                                )
+                                        ],
+                                        wait: false
+                                )
                             }
                         }
                     }
