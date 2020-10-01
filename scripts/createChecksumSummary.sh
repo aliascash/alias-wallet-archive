@@ -22,22 +22,22 @@ else
     echo "### ${releaseDescription}" > ${workspace}/releaseNotesToDeploy.txt
 fi
 for currentChecksumfile in \
-    Checksum-Aliaswallet-CentOS-8.txt \
-    Checksum-Aliaswallet-Debian-Buster.txt \
-    Checksum-Aliaswallet-Debian-Stretch.txt \
-    Checksum-Aliaswallet-Fedora.txt \
-    Checksum-Aliaswallet-Mac.txt \
-    Checksum-Aliaswallet-Mac-OBFS4.txt \
-    Checksum-Aliaswallet-RaspberryPi-Buster.txt \
-    Checksum-Aliaswallet-RaspberryPi-Stretch.txt \
-    Checksum-Aliaswallet-Ubuntu-18-04.txt \
-    Checksum-Aliaswallet-Ubuntu-20-04.txt \
-    Checksum-Aliaswallet-Win64.txt \
-    Checksum-Aliaswallet-Win64-OBFS4.txt \
-    Checksum-Aliaswallet-Win64-Qt5.12.txt \
-    Checksum-Aliaswallet-Win64-Qt5.12-OBFS4.txt \
-    Checksum-Aliaswallet-Win64-Qt5.9.6.txt \
-    Checksum-Aliaswallet-Win64-Qt5.9.6-OBFS4.txt ; do
+    Checksum-Alias-CentOS-8.txt \
+    Checksum-Alias-Debian-Buster.txt \
+    Checksum-Alias-Debian-Stretch.txt \
+    Checksum-Alias-Fedora.txt \
+    Checksum-Alias-Mac.txt \
+    Checksum-Alias-Mac-OBFS4.txt \
+    Checksum-Alias-RaspberryPi-Buster.txt \
+    Checksum-Alias-RaspberryPi-Stretch.txt \
+    Checksum-Alias-Ubuntu-18-04.txt \
+    Checksum-Alias-Ubuntu-20-04.txt \
+    Checksum-Alias-Win64.txt \
+    Checksum-Alias-Win64-OBFS4.txt \
+    Checksum-Alias-Win64-Qt5.12.txt \
+    Checksum-Alias-Win64-Qt5.12-OBFS4.txt \
+    Checksum-Alias-Win64-Qt5.9.6.txt \
+    Checksum-Alias-Win64-Qt5.9.6-OBFS4.txt ; do
 #    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
     wget ${jobURL}/artifact/${currentChecksumfile} || true
     if test -e "${currentChecksumfile}" ; then
