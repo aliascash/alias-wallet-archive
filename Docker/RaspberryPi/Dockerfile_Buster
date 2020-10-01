@@ -35,7 +35,7 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV ARCHIVE=Alias-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-RaspberryPi-Buster.tgz
-ENV CHKSUM_FILE=Checksum-Aliaswallet-RaspberryPi-Buster.txt
+ENV CHKSUM_FILE=Checksum-Alias-RaspberryPi-Buster.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 

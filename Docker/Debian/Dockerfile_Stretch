@@ -35,7 +35,7 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV ARCHIVE=Alias-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-Debian-Stretch.tgz
-ENV CHKSUM_FILE=Checksum-Aliaswallet-Debian-Stretch.txt
+ENV CHKSUM_FILE=Checksum-Alias-Debian-Stretch.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
