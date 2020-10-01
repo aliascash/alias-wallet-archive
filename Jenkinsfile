@@ -140,10 +140,11 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-                            )
+                            echo "Ubuntu 18.04 build disabled for now"
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+//                            )
                         }
                     }
                     post {
@@ -543,17 +544,18 @@ pipeline {
                         stage('Ubuntu 18.04') {
                             steps {
                                 script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
+                                    echo "Ubuntu 18.04 build disabled for now"
+//                                    buildBranch(
+//                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
+//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+//                                            gitTag: "${GIT_TAG_TO_USE}",
+//                                            gitCommit: "${GIT_COMMIT_SHORT}"
+//                                    )
+//                                    getChecksumfileFromImage(
+//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+//                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
+//                                    )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
                                 }
                             }
                             post {
