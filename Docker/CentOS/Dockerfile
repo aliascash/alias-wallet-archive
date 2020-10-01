@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-centos8:1.8 as build
+FROM aliascash/alias-wallet-builder-centos:1.8 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
