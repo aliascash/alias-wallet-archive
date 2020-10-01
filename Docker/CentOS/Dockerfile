@@ -37,7 +37,7 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 ENV ARCHIVE=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-CentOS.tgz
-ENV CHKSUM_FILE=Checksum-Alias-CentOS.txt
+ENV CHKSUM_FILE=Checksum-Alias-CentOS-8.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
