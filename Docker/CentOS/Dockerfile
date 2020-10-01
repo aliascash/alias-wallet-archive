@@ -48,7 +48,7 @@ COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
  && github-release upload \
-        --user spectrecoin \
+        --user aliascash \
         --security-token "${GITHUB_TOKEN}" \
         --repo "${ALIASWALLET_REPOSITORY}" \
         --tag "${ALIASWALLET_RELEASE}" \
