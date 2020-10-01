@@ -734,6 +734,28 @@ pipeline {
                                 script {
                                     buildWindows("-Qt5.12")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    build(
+                                            job: 'Alias/installer/master',
+                                            parameters: [
+                                                    string(
+                                                            name: 'ARCHIVE_LOCATION',
+                                                            value: "${WORKSPACE}"
+                                                    ),
+                                                    string(
+                                                            name: 'ARCHIVE_NAME',
+                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_TAG_TO_USE',
+                                                            value: "${GIT_TAG_TO_USE}"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_COMMIT_SHORT',
+                                                            value: "${GIT_COMMIT_SHORT}"
+                                                    )
+                                            ],
+                                            wait: false
+                                    )
                                 }
                             }
                         }
@@ -780,28 +802,6 @@ pipeline {
                                 script {
                                     buildWindows("")
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
-                                    build(
-                                            job: 'Alias/installer/master',
-                                            parameters: [
-                                                    string(
-                                                            name: 'ARCHIVE_LOCATION',
-                                                            value: "${WORKSPACE}"
-                                                    ),
-                                                    string(
-                                                            name: 'ARCHIVE_NAME',
-                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
-                                                    ),
-                                                    string(
-                                                            name: 'GIT_TAG_TO_USE',
-                                                            value: "${GIT_TAG_TO_USE}"
-                                                    ),
-                                                    string(
-                                                            name: 'GIT_COMMIT_SHORT',
-                                                            value: "${GIT_COMMIT_SHORT}"
-                                                    )
-                                            ],
-                                            wait: false
-                                    )
                                 }
                             }
                         }
