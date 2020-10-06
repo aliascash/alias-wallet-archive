@@ -305,20 +305,20 @@ checkQt() {
         #                info " -> ${currentQtDependency}: OK"
         #            else
         #                warning " -> ${currentQtDependency}: Not found!"
-        #                buildQt=true
+        #                qtComponentMissing=true
         #            fi
         #        done
         info " -> Found Qt library directory ${MAC_QT_LIBRARYDIR}"
         info "    Detailed check for required libs needs to be implemented"
     else
         info " -> Qt library directory ${MAC_QT_LIBRARYDIR} not found"
-        buildQt=true
+        qtComponentMissing=true
     fi
-    if ${buildQt}; then
+    if ${qtComponentMissing}; then
         error " -> Qt ${QT_VERSION_MAC} not found!"
         error "    You need to install Qt ${QT_VERSION_MAC}"
         error ""
-        die 43 "Stopping build because of missing Boost"
+        die 43 "Stopping build because of missing Qt component(s)"
     fi
 }
 # ===== End of Qt functions ==================================================
