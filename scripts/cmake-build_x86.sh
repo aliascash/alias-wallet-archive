@@ -226,7 +226,7 @@ checkOpenSSLClone() {
         git pull --prune
     else
         info " -> Cloning openssl-cmake"
-        git clone --branch alias https://github.com/alias-cash/openssl-cmake.git openssl-cmake
+        git clone --branch alias https://github.com/aliascash/openssl-cmake.git openssl-cmake
     fi
     cd "${currentDir}"
 }
