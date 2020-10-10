@@ -140,11 +140,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "Ubuntu 18.04 build disabled for now"
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-//                            )
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
