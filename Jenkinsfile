@@ -178,7 +178,7 @@ pipeline {
                     environment {
                         BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
@@ -620,7 +620,7 @@ pipeline {
                     environment {
                         BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
                         MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
