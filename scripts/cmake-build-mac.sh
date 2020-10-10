@@ -787,9 +787,10 @@ elif ${BUILD_ONLY_ALIAS}; then
     info " -> Done"
 fi
 
-checkBoost
-checkBerkeleyDB
-checkLevelDB
+# ToDo: Implement checks against homebrew
+#checkBoost
+#checkBerkeleyDB
+#checkLevelDB
 checkOpenSSL
 if ${WITH_TOR}; then
     checkXZLib
