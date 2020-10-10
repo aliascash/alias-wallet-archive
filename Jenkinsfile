@@ -244,7 +244,7 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    bat 'scripts\cmake-build-win.bat'
+                                    bat 'scripts/cmake-build-win.bat'
                                 }
                             }
                         }
