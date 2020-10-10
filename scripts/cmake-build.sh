@@ -106,6 +106,17 @@ defineQtVersionForCurrentDistribution() {
         usedDistro=''
         releaseName=''
         case ${ID} in
+        "centos")
+            usedDistro="CENTOS"
+            case ${VERSION_ID} in
+            "8")
+                releaseName='8'
+                ;;
+            *)
+                echo "Unsupported operating system ID=${ID}, VERSION_ID=${VERSION_ID}"
+                ;;
+            esac
+            ;;
         "debian")
             usedDistro="DEBIAN"
             case ${VERSION_ID} in
