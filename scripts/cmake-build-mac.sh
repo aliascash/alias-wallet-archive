@@ -131,7 +131,7 @@ checkOpenSSLClone() {
         git pull --prune
     else
         info " -> Cloning openssl-cmake"
-        git clone --branch alias https://github.com/alias-cash/openssl-cmake.git openssl-cmake
+        git clone --branch alias https://github.com/aliascash/openssl-cmake.git openssl-cmake
     fi
     cd "${currentDir}"
 }
@@ -818,11 +818,11 @@ cmake \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     \
-    -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
-    -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBerkeleyDB_ROOT_DIR=/usr/local/opt/berkeley-db@4 \
+    -DBERKELEYDB_INCLUDE_DIR=/usr/local/opt/berkeley-db@4/include \
     \
-    -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
-    -Dleveldb_INCLUDE_DIR=${BUILD_DIR}/local/include \
+    -Dleveldb_DIR=/usr/local/opt/leveldb \
+    -Dleveldb_INCLUDE_DIR=/usr/local/opt/leveldb/include \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \
