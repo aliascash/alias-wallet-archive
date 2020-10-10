@@ -128,11 +128,15 @@ message(STATUS "Building in '${CMAKE_BUILD_TYPE}' mode")
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
 message(STATUS "=== Boost ==================================================================")
-set(Boost_USE_STATIC_LIBS ON)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "Using dynamic Boost libs on Mac")
+else()
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
+endif()
 set(Boost_USE_DEBUG_LIBS OFF) # ignore debug libs and
 set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost 1.65.1 REQUIRED COMPONENTS
         atomic
