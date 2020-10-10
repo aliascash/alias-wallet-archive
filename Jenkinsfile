@@ -241,6 +241,8 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
                                 VSDIR = "${VS2017_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
