@@ -16,10 +16,6 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /alias-wallet
 
 RUN cd /alias-wallet \
- && mkdir db4.8 leveldb \
- && ./autogen.sh \
- && ./configure \
-        --enable-gui \
- && make -j${BUILD_THREADS} \
- && strip /alias-wallet/src/aliaswalletd \
- && strip /alias-wallet/src/aliaswallet
+ && ./scripts/cmake-build.sh -g -o -c ${BUILD_THREADS} \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/Aliaswalletd \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/Aliaswallet
