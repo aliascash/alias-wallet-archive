@@ -171,126 +171,126 @@ pipeline {
                         }
                     }
                 }
-                stage('Mac') {
-                    agent {
-                        label "mac"
-                    }
-                    environment {
-                        BOOST_PATH = "${BOOST_PATH_MAC}"
-                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC}"
-                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.12
-                    }
-                    steps {
-                        script {
-                            sh(
-                                    script: """
-                                        pwd
-                                        ./scripts/mac-build.sh
-                                        rm -f Alias*.dmg
-                                    """
-                            )
-                            prepareMacDelivery()
-                            sh(
-                                    script: """
-                                        ./scripts/mac-deployqt.sh
-                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                    """
-                            )
-                            // Archive step here only to be able to make feature branch builds available for download
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                            prepareMacOBFS4Delivery()
-                            sh(
-                                    script: """
-                                        ./scripts/mac-deployqt.sh
-                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-                                    """
-                            )
-                        }
-                    }
-                }
-                stage('Windows Qt5.12.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.12.x') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN_512}"
-                                VSDIR = "${VS2017_DIR}"
-                            }
-                            steps {
-                                script {
-                                    buildWindows("-Qt5.12")
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Windows Qt5.15.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.15.x') {
-                            agent {
-                                label "windows2"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                                VSDIR = "${VS2019_DIR}"
-                            }
-                            steps {
-                                script {
-                                    buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
-                                }
-                            }
-                        }
-                    }
-                }
+//                stage('Mac') {
+//                    agent {
+//                        label "mac"
+//                    }
+//                    environment {
+//                        BOOST_PATH = "${BOOST_PATH_MAC}"
+//                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+//                        QT_PATH = "${QT_PATH_MAC}"
+//                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+//                        MACOSX_DEPLOYMENT_TARGET = 10.12
+//                    }
+//                    steps {
+//                        script {
+//                            sh(
+//                                    script: """
+//                                        pwd
+//                                        ./scripts/mac-build.sh
+//                                        rm -f Alias*.dmg
+//                                    """
+//                            )
+//                            prepareMacDelivery()
+//                            sh(
+//                                    script: """
+//                                        ./scripts/mac-deployqt.sh
+//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                    """
+//                            )
+//                            // Archive step here only to be able to make feature branch builds available for download
+//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+//                            prepareMacOBFS4Delivery()
+//                            sh(
+//                                    script: """
+//                                        ./scripts/mac-deployqt.sh
+//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+//                                    """
+//                            )
+//                        }
+//                    }
+//                }
+//                stage('Windows Qt5.12.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.12.x') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN_512}"
+//                                VSDIR = "${VS2017_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    buildWindows("-Qt5.12")
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                stage('Windows Qt5.15.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.15.x') {
+//                            agent {
+//                                label "windows2"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN}"
+//                                VSDIR = "${VS2019_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    buildWindows("")
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
         stage('Prepare master branch build') {
