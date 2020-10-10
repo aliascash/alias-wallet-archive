@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-centos8:1.8 as build
+FROM aliascash/alias-wallet-builder-centos-8:1.8 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -31,13 +31,13 @@ FROM aliascash/github-uploader:latest
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 ARG GITHUB_TOKEN=1234567
-ARG ALIASWALLET_RELEASE=latest
-ARG ALIASWALLET_REPOSITORY=alias-wallet
+ARG ALIAS_RELEASE=latest
+ARG ALIAS_REPOSITORY=alias-wallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-ENV ARCHIVE=Aliaswallet-${ALIASWALLET_RELEASE}-${GIT_COMMIT}-CentOS.tgz
-ENV CHKSUM_FILE=Checksum-Aliaswallet-CentOS.txt
+ENV ARCHIVE=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-CentOS.tgz
+ENV CHKSUM_FILE=Checksum-Alias-CentOS-8.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
@@ -48,10 +48,10 @@ COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 RUN cd /filesToUpload \
  && tar czf ${ARCHIVE} . \
  && github-release upload \
-        --user spectrecoin \
+        --user aliascash \
         --security-token "${GITHUB_TOKEN}" \
-        --repo "${ALIASWALLET_REPOSITORY}" \
-        --tag "${ALIASWALLET_RELEASE}" \
+        --repo "${ALIAS_REPOSITORY}" \
+        --tag "${ALIAS_RELEASE}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
         ${REPLACE_EXISTING_ARCHIVE} \

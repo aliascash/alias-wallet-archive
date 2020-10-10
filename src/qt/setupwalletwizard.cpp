@@ -30,7 +30,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
 //#endif
     setOption(HaveHelpButton, true);
 
-    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/alias-app"), 48, 48));
+    setPixmap(QWizard::LogoPixmap, GUIUtil::createPixmap(QString(":/assets/svg/Alias-Stacked-Orange.svg"), 48, 48));
 
     connect(this, &QWizard::helpRequested, this, &SetupWalletWizard::showHelp);
 
@@ -198,6 +198,7 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
+    passwordEdit->setEchoMode(QLineEdit::Password);
     passwordLabel->setBuddy(passwordEdit);
 
     registerField("newmnemonic.language", languageComboBox, "currentData", "currentIndexChanged");
@@ -388,6 +389,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
+    passwordEdit->setEchoMode(QLineEdit::Password);
     passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("verification.password", passwordEdit);
@@ -446,6 +448,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
     passwordLabel = new QLabel(tr("&Password:"));
     passwordEdit = new QLineEdit;
+    passwordEdit->setEchoMode(QLineEdit::Password);
     passwordLabel->setBuddy(passwordEdit);
     registerField("recover.password", passwordEdit);
 

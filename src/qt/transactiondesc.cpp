@@ -61,7 +61,7 @@ QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 {
     if (explorer.isEmpty())
-        explorer = fTestNet ? "https://chainz.cryptoid.info/xspec-test/" : "https://chainz.cryptoid.info/xspec/";
+        explorer = fTestNet ? "https://chainz.cryptoid.info/alias-test/" : "https://chainz.cryptoid.info/alias/";
 
     QString strHTML;
 
