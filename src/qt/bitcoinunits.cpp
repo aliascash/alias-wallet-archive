@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "bitcoinunits.h"
 
@@ -16,10 +17,10 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(XSPEC);
-    unitlist.append(mXSPEC);
-    unitlist.append(uXSPEC);
-    unitlist.append(sXSPEC);
+    unitlist.append(ALIAS);
+    unitlist.append(mALIAS);
+    unitlist.append(uALIAS);
+    unitlist.append(satALIAS);
     return unitlist;
 }
 
@@ -27,10 +28,10 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
-    case XSPEC:
-    case mXSPEC:
-    case uXSPEC:
-    case sXSPEC:
+    case ALIAS:
+    case mALIAS:
+    case uALIAS:
+    case satALIAS:
         return true;
     default:
         return false;
@@ -41,22 +42,10 @@ QString BitcoinUnits::name(int unit)
 {
     switch(unit)
     {
-    case XSPEC: return QString("XSPEC");
-    case mXSPEC: return QString("mXSPEC");
-    case uXSPEC: return QString::fromUtf8("μXSPEC");
-    case sXSPEC: return QString::fromUtf8("spectoshi");
-    default: return QString("???");
-    }
-}
-
-QString BitcoinUnits::nameSpectre(int unit)
-{
-    switch(unit)
-    {
-    case XSPEC: return QString("SPECTRE");
-    case mXSPEC: return QString("mSPECTRE");
-    case uXSPEC: return QString::fromUtf8("μSPECTRE");
-    case sXSPEC: return QString::fromUtf8("Spectoshi");
+    case ALIAS: return QString("ALIAS");
+    case mALIAS: return QString("mALIAS");
+    case uALIAS: return QString::fromUtf8("μALIAS");
+    case satALIAS: return QString::fromUtf8("satALIAS");
     default: return QString("???");
     }
 }
@@ -65,22 +54,10 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
-    case XSPEC:  return QString("XSPEC");
-    case mXSPEC: return QString("Milli-XSPEC (1 / 1,000)");
-    case uXSPEC: return QString("Micro-XSPEC (1 / 1,000,000)");
-    case sXSPEC: return QString("xSpectoshi (1 / 100,000,000)");
-    default:   return QString("???");
-    }
-}
-
-QString BitcoinUnits::descriptionSpectre(int unit)
-{
-    switch(unit)
-    {
-    case XSPEC:  return QString("SPECTRE");
-    case mXSPEC: return QString("Milli-SPECTRE (1 / 1,000)");
-    case uXSPEC: return QString("Micro-SPECTRE (1 / 1,000,000)");
-    case sXSPEC: return QString("Spectoshi (1 / 100,000,000)");
+    case ALIAS:  return QString("ALIAS (public)");
+    case mALIAS: return QString("Milli-ALIAS (1 / 1,000)");
+    case uALIAS: return QString("Micro-ALIAS (1 / 1,000,000)");
+    case satALIAS: return QString("Satoshi-ALIAS (1 / 100,000,000)");
     default:   return QString("???");
     }
 }
@@ -89,9 +66,9 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case mXSPEC: return 100000;
-    case uXSPEC: return 100;
-    case sXSPEC: return 1;
+    case mALIAS: return 100000;
+    case uALIAS: return 100;
+    case satALIAS: return 1;
     default:   return 100000000;
     }
 }
@@ -100,10 +77,10 @@ int BitcoinUnits::amountDigits(int unit)
 {
     switch(unit)
     {
-    case XSPEC: return 8; // 21,000,000 (# digits, without commas)
-    case mXSPEC: return 11; // 21,000,000,000
-    case uXSPEC: return 14; // 21,000,000,000,000
-    case sXSPEC: return 16; // 2,100,000,000,000,000
+    case ALIAS: return 8; // 21,000,000 (# digits, without commas)
+    case mALIAS: return 11; // 21,000,000,000
+    case uALIAS: return 14; // 21,000,000,000,000
+    case satALIAS: return 16; // 2,100,000,000,000,000
     default: return 0;
     }
 }
@@ -112,9 +89,9 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
-    case XSPEC: return 8;
-    case mXSPEC: return 5;
-    case uXSPEC: return 2;
+    case ALIAS: return 8;
+    case mALIAS: return 5;
+    case uALIAS: return 2;
     default: return 0;
     }
 }
@@ -151,9 +128,10 @@ QString BitcoinUnits::formatWithUnit(int unit, qint64 amount, bool plussign)
     return format(unit, amount, plussign) + QString(" ") + name(unit);
 }
 
-QString BitcoinUnits::formatWithUnitSpectre(int unit, qint64 amount, bool plussign)
+
+QString BitcoinUnits::formatWithUnitCurrency(int unit, qint64 amount, Currency currency, bool plussign)
 {
-    return format(unit, amount, plussign) + QString(" ") + nameSpectre(unit);
+    return formatWithUnit(unit, amount, plussign) + QString(" ") + (currency == PUBLIC ? "(public)" : "(private)");
 }
 
 bool BitcoinUnits::parse(int unit, const QString &value, qint64 *val_out)

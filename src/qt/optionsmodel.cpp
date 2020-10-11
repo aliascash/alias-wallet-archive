@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "optionsmodel.h"
 #include "bitcoinunits.h"
@@ -22,12 +23,19 @@ void OptionsModel::Init()
 {
     QSettings settings;
 
+    int nSettingsVersion = settings.value("nSettingsVersion", 0).toInt();
+    if (nSettingsVersion < 1) {
+        settings.clear();
+        settings.setValue("nSettingsVersion", 1);
+    }
+
     // These are Qt-only settings:
-    nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt();
+    //nDisplayUnit = settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt();
+    nDisplayUnit = BitcoinUnits::ALIAS;
     bDisplayAddresses = settings.value("bDisplayAddresses", false).toBool();
     fMinimizeToTray = settings.value("fMinimizeToTray", false).toBool();
     fMinimizeOnClose = settings.value("fMinimizeOnClose", false).toBool();
-    nTransactionFee = settings.value("nTransactionFee").toLongLong();
+    nTransactionFee = settings.value("nTransactionFee").toLongLong() >= nMinTxFee ? settings.value("nTransactionFee").toLongLong() : nMinTxFee;
     nReserveBalance = settings.value("nReserveBalance").toLongLong();
     language = settings.value("language", "").toString();
     nRowsPerPage = settings.value("nRowsPerPage", 20).toInt();
@@ -45,7 +53,10 @@ void OptionsModel::Init()
     if (!language.isEmpty())
         SoftSetArg("-lang", language.toStdString());
     if (settings.contains("fStaking"))
+    {
         SoftSetBoolArg("-staking", settings.value("fStaking").toBool());
+        fIsStakingEnabled = settings.value("fStaking").toBool();
+    }
     if (settings.contains("nMinStakeInterval"))
         SoftSetArg("-minstakeinterval", settings.value("nMinStakeInterval").toString().toStdString());
     if (settings.contains("nStakingDonation"))
@@ -183,7 +194,7 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             settings.setValue("fMinimizeOnClose", fMinimizeOnClose);
             break;
         case Fee:
-            nTransactionFee = value.toLongLong();
+            nTransactionFee = value.toLongLong() < nMinTxFee ? nMinTxFee : value.toLongLong();
             settings.setValue("nTransactionFee", (qint64) nTransactionFee);
             emit transactionFeeChanged(nTransactionFee);
             break;
@@ -193,14 +204,14 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             emit reserveBalanceChanged(nReserveBalance);
             break;
         case DisplayUnit:
-            nDisplayUnit = value.toInt();
-            settings.setValue("nDisplayUnit", nDisplayUnit);
+            //nDisplayUnit = value.toInt();
+            //settings.setValue("nDisplayUnit", nDisplayUnit);
             emit displayUnitChanged(nDisplayUnit);
             break;
         case DisplayAddresses:
             bDisplayAddresses = value.toBool();
             settings.setValue("bDisplayAddresses", bDisplayAddresses);
-            emit displayUnitChanged(settings.value("nDisplayUnit", BitcoinUnits::XSPEC).toInt());
+            emit displayUnitChanged(settings.value("nDisplayUnit", BitcoinUnits::ALIAS).toInt());
             break;
         case DetachDatabases: {
             bool fDetachDB = value.toBool();
@@ -250,6 +261,8 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case Staking:
             settings.setValue("fStaking", value.toBool());
+            SoftSetBoolArg("-staking", value.toBool());
+            fIsStakingEnabled = value.toBool();
             break;
         case StakingDonation:
             nStakingDonation = value.toInt();

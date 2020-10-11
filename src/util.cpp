@@ -1,8 +1,12 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2014 ShadowCoin Developers
+// SPDX-FileCopyrightText: © 2014 BlackCoin Developers
+// SPDX-FileCopyrightText: © 2013 NovaCoin Developers
+// SPDX-FileCopyrightText: © 2011 PPCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "util.h"
 
@@ -20,12 +24,13 @@
 // /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
 // See also: http://stackoverflow.com/questions/10020179/compilation-fail-in-boost-librairies-program-options
 //           http://clang.debian.net/status.php?version=3.0&key=CANNOT_FIND_FUNCTION
+/*
 namespace boost {
     namespace program_options {
         std::string to_internal(const std::string&);
     }
 }
-
+*/
 
 #include <boost/program_options/detail/config_file.hpp>
 #include <boost/program_options/parsers.hpp>
@@ -1016,7 +1021,7 @@ static std::string FormatException(std::exception* pex, const char* pszThread)
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "spectrecoin";
+    const char* pszModule = "alias";
 #endif
     if (pex)
         return strprintf(
@@ -1044,6 +1049,38 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
 }
 
 boost::filesystem::path GetDefaultDataDir()
+{
+    namespace fs = boost::filesystem;
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Aliaswallet
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Aliaswallet
+    // Mac: ~/Library/Application Support/Aliaswallet
+    // Unix: ~/.aliaswallet
+
+
+#ifdef WIN32
+    // Windows
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Aliaswallet";
+#else
+    fs::path pathRet;
+    char* pszHome = getenv("HOME");
+    if (pszHome == NULL || strlen(pszHome) == 0)
+        pathRet = fs::path("/");
+    else
+        pathRet = fs::path(pszHome);
+    #ifdef MAC_OSX
+        // Mac
+        pathRet /= "Library/Application Support";
+        fs::create_directory(pathRet);
+        return pathRet / "Aliaswallet";
+    #else
+        // Unix
+        return pathRet / ".aliaswallet";
+    #endif
+#endif
+
+}
+
+boost::filesystem::path GetOldDefaultDataDir()
 {
     namespace fs = boost::filesystem;
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Spectrecoin
@@ -1107,6 +1144,9 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
         }
     } else {
         path = GetDefaultDataDir();
+        fs::path oldpath = GetOldDefaultDataDir();
+        if (fs::exists(oldpath) && !fs::exists(path))
+            fs::rename(oldpath, path);
     }
     if (fNetSpecific)
         path /= Params().DataDir();
@@ -1124,8 +1164,17 @@ void ClearDatadirCache()
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "spectrecoin.conf"));
-    if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
+    namespace fs = boost::filesystem;
+    fs::path dataDir = GetDataDir(false);
+
+    // Migrate spectrecoin.conf
+    fs::path oldConfigFile = dataDir / "spectrecoin.conf";
+    fs::path newConfigFile = dataDir / "alias.conf";
+    if (fs::exists(oldConfigFile) && !fs::exists(newConfigFile))
+        fs::rename(oldConfigFile, newConfigFile);
+
+    fs::path pathConfigFile(GetArg("-conf", "alias.conf"));
+    if (!pathConfigFile.is_complete()) pathConfigFile = dataDir / pathConfigFile;
     return pathConfigFile;
 }
 
@@ -1157,7 +1206,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "spectrecoind.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "alias.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -1345,10 +1394,10 @@ void AddTimeData(const CNetAddr& ip, int64_t nTime)
                 if (!fMatch)
                 {
                     fDone = true;
-                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Spectrecoin will not work properly.");
+                    string strMessage = _("Warning: Please check that your computer's date and time are correct! If your clock is wrong Alias will not work properly.");
                     strMiscWarning = strMessage;
                     LogPrintf("*** %s\n", strMessage.c_str());
-                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("Spectrecoin"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
+                    uiInterface.ThreadSafeMessageBox(strMessage+" ", string("Alias"), CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING);
                 }
             }
         }

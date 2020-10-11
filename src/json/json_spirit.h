@@ -1,10 +1,11 @@
-#ifndef JSON_SPIRIT
-#define JSON_SPIRIT
-
-//          Copyright John W. Wilkinson 2007 - 2009.
-// Distributed under the MIT License, see accompanying file LICENSE.txt
+// SPDX-FileCopyrightText: © 2007 John W. Wilkinson
+//
+// SPDX-License-Identifier: MIT
 
 // json spirit version 4.03
+
+#ifndef JSON_SPIRIT
+#define JSON_SPIRIT
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once

@@ -1,4 +1,8 @@
 #!groovy
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 pipeline {
     agent {
@@ -58,6 +62,24 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Debian Stretch') {
                     agent {
                         label "docker"
@@ -66,7 +88,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -84,7 +106,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-                                    dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -102,7 +124,7 @@ pipeline {
                         script {
                             buildFeatureBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}"
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -118,10 +140,11 @@ pipeline {
                     }
                     steps {
                         script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}"
-                            )
+                            echo "Ubuntu 18.04 build disabled for now"
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+//                            )
                         }
                     }
                     post {
@@ -130,33 +153,15 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu 19.04') {
+                stage('Ubuntu 20.04') {
                     agent {
                         label "docker"
                     }
                     steps {
                         script {
                             buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_04_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Ubuntu 19.10') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_19_10_noUpload',
-                                    dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}"
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                             )
                         }
                     }
@@ -173,81 +178,36 @@ pipeline {
                     environment {
                         BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
                     steps {
                         script {
-                            sh(
-                                    script: """
-                                        pwd
-                                        ./scripts/mac-build.sh
-                                        rm -f Spectrecoin*.dmg
-                                    """
-                            )
-                            prepareMacDelivery()
-                            sh(
-                                    script: """
-                                        ./scripts/mac-deployqt.sh
-                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                    """
-                            )
-                            // Archive step here only to be able to make feature branch builds available for download
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                            prepareMacOBFS4Delivery()
-                            sh(
-                                    script: """
-                                        ./scripts/mac-deployqt.sh
-                                        mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-                                    """
-                            )
-                        }
-                    }
-                }
-                stage('Windows Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.9.6') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                }
-                            }
+                            echo "Mac build disabled for now"
+//                            sh(
+//                                    script: """
+//                                        pwd
+//                                        ./scripts/mac-build.sh
+//                                        rm -f Alias*.dmg
+//                                    """
+//                            )
+//                            prepareMacDelivery()
+//                            sh(
+//                                    script: """
+//                                        ./scripts/mac-deployqt.sh
+//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                    """
+//                            )
+//                            // Archive step here only to be able to make feature branch builds available for download
+//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+//                            prepareMacOBFS4Delivery()
+//                            sh(
+//                                    script: """
+//                                        ./scripts/mac-deployqt.sh
+//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+//                                    """
+//                            )
                         }
                     }
                 }
@@ -277,22 +237,56 @@ pipeline {
                         }
                         stage('Win + Qt5.12.x') {
                             agent {
-                                label "windows2"
+                                label "windows"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: ""
+                                    buildWindows("-Qt5.12")
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Windows Qt5.15.x') {
+                    stages {
+                        stage('Start Windows slave') {
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
+                                    sh(
+                                            script: """
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+                                            """
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                }
+                            }
+                        }
+                        stage('Win + Qt5.15.x') {
+                            agent {
+                                label "windows2"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
+                            }
+                            steps {
+                                script {
+                                    buildWindows("")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                 }
                             }
                         }
@@ -337,8 +331,8 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
-                                    user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ true
                         }
@@ -346,8 +340,8 @@ pipeline {
                     steps {
                         script {
                             removeRelease(
-                                    user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             )
                         }
@@ -357,8 +351,8 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
-                                    user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
                             ) ==~ false
                         }
@@ -366,8 +360,8 @@ pipeline {
                     steps {
                         script {
                             createRelease(
-                                    user: 'spectrecoin',
-                                    repository: 'spectre',
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}",
                                     name: "${RELEASE_NAME}",
                                     description: "${RELEASE_DESCRIPTION}",
@@ -394,15 +388,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
-                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-raspi-buster:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                            dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-RaspberryPi-Buster.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-RaspberryPi-Buster.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-RaspberryPi-Buster.txt"
                                 }
                             }
                             post {
@@ -414,10 +408,10 @@ pipeline {
                         stage('Trigger image build') {
                             steps {
                                 build(
-                                        job: 'Spectrecoin/pi-gen/spectrecoin',
+                                        job: 'Alias/pi-gen/alias',
                                         parameters: [
                                                 string(
-                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        name: 'ALIAS_RELEASE',
                                                         value: "${GIT_TAG_TO_USE}"
                                                 ),
                                                 string(
@@ -427,6 +421,35 @@ pipeline {
                                         ],
                                         wait: false
                                 )
+                            }
+                        }
+                    }
+                }
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('CentOS 8') {
+                            steps {
+                                script {
+                                    buildBranch(
+                                            dockerfile: 'Docker/CentOS/Dockerfile',
+                                            dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-CentOS-8.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-CentOS-8.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
                             }
                         }
                     }
@@ -441,15 +464,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Stretch',
-                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-debian-stretch:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                            dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-Debian-Stretch.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Stretch.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Stretch.txt"
                                 }
                             }
                             post {
@@ -470,15 +493,15 @@ pipeline {
                                 script {
                                     buildBranch(
                                             dockerfile: 'Docker/Debian/Dockerfile_Buster',
-                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
+                                            dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-debian-buster:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Debian-Buster.txt"
+                                            dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-Debian-Buster.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Debian-Buster.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Buster.txt"
                                 }
                             }
                             post {
@@ -497,15 +520,15 @@ pipeline {
                         script {
                             buildBranch(
                                     dockerfile: 'Docker/Fedora/Dockerfile',
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
                                     gitCommit: "${GIT_COMMIT_SHORT}"
                             )
                             getChecksumfileFromImage(
-                                    dockerTag: "spectreproject/spectre-fedora:${GIT_TAG_TO_USE}",
-                                    checksumfile: "Checksum-Spectrecoin-Fedora.txt"
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
+                                    checksumfile: "Checksum-Alias-Fedora.txt"
                             )
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Fedora.txt"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Fedora.txt"
                         }
                     }
                     post {
@@ -522,17 +545,47 @@ pipeline {
                         stage('Ubuntu 18.04') {
                             steps {
                                 script {
+                                    echo "Ubuntu 18.04 build disabled for now"
+//                                    buildBranch(
+//                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
+//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+//                                            gitTag: "${GIT_TAG_TO_USE}",
+//                                            gitCommit: "${GIT_COMMIT_SHORT}"
+//                                    )
+//                                    getChecksumfileFromImage(
+//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+//                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
+//                                    )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
+                                }
+                            }
+                            post {
+                                always {
+                                    sh "docker system prune --all --force"
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Ubuntu 20.04') {
+                    agent {
+                        label "docker"
+                    }
+                    stages {
+                        stage('Ubuntu 20.04') {
+                            steps {
+                                script {
                                     buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_20_04',
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
                                             gitCommit: "${GIT_COMMIT_SHORT}"
                                     )
                                     getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-18-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-Ubuntu-20-04.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-18-04.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-20-04.txt"
                                 }
                             }
                             post {
@@ -544,10 +597,10 @@ pipeline {
                         stage('Trigger Docker image build') {
                             steps {
                                 build(
-                                        job: "Spectrecoin/docker-spectrecoind/${GIT_BRANCH}",
+                                        job: "Alias/docker-aliaswalletd/${GIT_BRANCH}",
                                         parameters: [
                                                 string(
-                                                        name: 'SPECTRECOIN_RELEASE',
+                                                        name: 'ALIAS_RELEASE',
                                                         value: "${GIT_TAG_TO_USE}"
                                                 ),
                                                 string(
@@ -561,64 +614,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Ubuntu 19.04') {
-                    agent {
-                        label "docker"
-                    }
-                    stages {
-                        stage('Ubuntu 19.04') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_04',
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-04:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Ubuntu 19.10') {
-                    agent {
-                        label "docker"
-                    }
-                    stages {
-                        stage('Ubuntu 19.10') {
-                            steps {
-                                script {
-                                    buildBranch(
-                                            dockerfile: 'Docker/Ubuntu/Dockerfile_19_10',
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
-                                            gitTag: "${GIT_TAG_TO_USE}",
-                                            gitCommit: "${GIT_COMMIT_SHORT}"
-                                    )
-                                    getChecksumfileFromImage(
-                                            dockerTag: "spectreproject/spectre-ubuntu-19-10:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Spectrecoin-Ubuntu-19-10.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
                 stage('Mac') {
                     agent {
                         label "mac"
@@ -626,37 +621,38 @@ pipeline {
                     environment {
                         BOOST_PATH = "${BOOST_PATH_MAC}"
                         OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
                         PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.10
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
                     }
                     stages {
                         stage('MacOS build') {
                             steps {
                                 script {
-                                    sh(
-                                            script: """
-                                                pwd
-                                                ./scripts/mac-build.sh
-                                                rm -f Spectrecoin*.dmg
-                                            """
-                                    )
-                                    prepareMacDelivery()
-                                    sh(
-                                            script: """
-                                                ./scripts/mac-deployqt.sh
-                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                            """
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-                                    prepareMacOBFS4Delivery()
-                                    sh(
-                                            script: """
-                                                ./scripts/mac-deployqt.sh
-                                                mv Spectrecoin.dmg Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-                                            """
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+                                    echo "Mac build disabled for now"
+//                                    sh(
+//                                            script: """
+//                                                pwd
+//                                                ./scripts/mac-build.sh
+//                                                rm -f Alias*.dmg
+//                                            """
+//                                    )
+//                                    prepareMacDelivery()
+//                                    sh(
+//                                            script: """
+//                                                ./scripts/mac-deployqt.sh
+//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                            """
+//                                    )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+//                                    prepareMacOBFS4Delivery()
+//                                    sh(
+//                                            script: """
+//                                                ./scripts/mac-deployqt.sh
+//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+//                                            """
+//                                    )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                 }
                             }
                         }
@@ -666,120 +662,40 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    sh(
-                                            script: """
-                                                rm -f Spectrecoin*.dmg*
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                            checksumfile: "Checksum-Spectrecoin-Mac.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-                                            checksumfile: "Checksum-Spectrecoin-Mac-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin*.dmg* Checksum-Spectrecoin*"
+                                    echo "Mac upload for now"
+//                                    sh(
+//                                            script: """
+//                                                rm -f Alias*.dmg*
+//                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                            """
+//                                    )
+//                                    uploadArtifactToGitHub(
+//                                            user: 'aliascash',
+//                                            repository: 'alias-wallet',
+//                                            tag: "${GIT_TAG_TO_USE}",
+//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                    )
+//                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
+//                                    uploadArtifactToGitHub(
+//                                            user: 'aliascash',
+//                                            repository: 'alias-wallet',
+//                                            tag: "${GIT_TAG_TO_USE}",
+//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
+//                                    )
+//                                    createAndArchiveChecksumFile(
+//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                            checksumfile: "Checksum-Alias-Mac.txt"
+//                                    )
+//                                    createAndArchiveChecksumFile(
+//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
+//                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
+//                                    )
+//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
                                 }
                             }
                             post {
                                 always {
                                     sh "docker system prune --all --force"
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Windows Qt5.9.6') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.9.6') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                            }
-                            steps {
-                                script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: "-Qt5.9.6"
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                }
-                            }
-                        }
-                        stage('Upload deliveries') {
-                            steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Spectrecoin-*-Win64-Qt5.9.6.zip Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.9.6-OBFS4.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin-*-Win64-Qt5.9.6-OBFS4.zip Spectrecoin-*-Win64-Qt5.9.6.zip Checksum-Spectrecoin-Win64-Qt5.9.6.txt Checksum-Spectrecoin-Win64-Qt5.9.6-OBFS4.txt"
                                 }
                             }
                         }
@@ -811,24 +727,18 @@ pipeline {
                         }
                         stage('Win + Qt5.12.x') {
                             agent {
-                                label "windows2"
+                                label "windows"
                             }
                             environment {
-                                QTDIR = "${QT512_DIR_WIN}"
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2017_DIR}"
                             }
                             steps {
                                 script {
-                                    prepareWindowsBuild()
-                                    bat 'scripts\\win-genbuild.bat'
-                                    bat 'scripts\\win-build.bat'
-//                                    bat 'scripts\\win-installer.bat'
-                                    createWindowsDelivery(
-                                            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
-                                            suffix: ""
-                                    )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    buildWindows("-Qt5.12")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                     build(
-                                            job: 'Spectrecoin/installer/master',
+                                            job: 'Alias/installer/master',
                                             parameters: [
                                                     string(
                                                             name: 'ARCHIVE_LOCATION',
@@ -836,7 +746,7 @@ pipeline {
                                                     ),
                                                     string(
                                                             name: 'ARCHIVE_NAME',
-                                                            value: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
                                                     ),
                                                     string(
                                                             name: 'GIT_TAG_TO_USE',
@@ -854,36 +764,53 @@ pipeline {
                         }
                         stage('Upload deliveries') {
                             steps {
-                                script {
+                                uploadDeliveries("-Qt5.12")
+                            }
+                        }
+                    }
+                }
+                stage('Windows Qt5.15.x') {
+                    stages {
+                        stage('Start Windows slave') {
+                            steps {
+                                withCredentials([[
+                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                                                 ]]) {
                                     sh(
                                             script: """
-                                                rm -f Spectrecoin-*-Win64.zip Spectrecoin-*-Win64-OBFS4.zip
-                                                wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+                                                docker run \
+                                                    --rm \
+                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+                                                    garland/aws-cli-docker \
+                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
                                             """
                                     )
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
-                                    )
-                                    sh "wget https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
-                                    uploadArtifactToGitHub(
-                                            user: 'spectrecoin',
-                                            repository: 'spectre',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64.txt"
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Spectrecoin-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip",
-                                            checksumfile: "Checksum-Spectrecoin-Win64-OBFS4.txt"
-                                    )
-                                    sh "rm -f Spectrecoin-*-Win64-OBFS4.zip Spectrecoin-*-Win64.zip Checksum-Spectrecoin-Win64.txt Checksum-Spectrecoin-Win64-OBFS4.txt"
                                 }
+                            }
+                        }
+                        stage('Win + Qt5.15.x') {
+                            agent {
+                                label "windows2"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN}"
+                                VSDIR = "${VS2019_DIR}"
+                            }
+                            steps {
+                                script {
+                                    buildWindows("")
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                }
+                            }
+                        }
+                        stage('Upload deliveries') {
+                            steps {
+                                uploadDeliveries("")
                             }
                         }
                     }
@@ -897,20 +824,20 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.spectreproject.io/job/Spectrecoin/job/spectre/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
-                                user: 'spectrecoin',
-                                repository: 'spectre',
+                                user: 'aliascash',
+                                repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 name: "${RELEASE_NAME}",
                                 description: "${WORKSPACE}/releaseNotesToDeploy.txt",
                                 preRelease: "${PRERELEASE}"
                         )
                         uploadArtifactToGitHub(
-                                user: 'spectrecoin',
-                                repository: 'spectre',
+                                user: 'aliascash',
+                                repository: 'alias-wallet',
                                 tag: "${GIT_TAG_TO_USE}",
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
@@ -1014,5 +941,48 @@ pipeline {
                     webhookURL: "${DISCORD_WEBHOOK}"
             )
         }
+    }
+}
+
+def buildWindows(def suffix) {
+    prepareWindowsBuild()
+    bat 'scripts\\win-genbuild.bat'
+    bat 'scripts\\win-build.bat'
+    createWindowsDelivery(
+            version: "${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}",
+            suffix: "${suffix}"
+    )
+}
+
+def uploadDeliveries(def suffix) {
+    script {
+        sh(
+                script: """
+                    rm -f Alias-*-Win64${suffix}.zip Alias-*-Win64${suffix}-OBFS4.zip
+                    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                """
+        )
+        uploadArtifactToGitHub(
+                user: 'aliascash',
+                repository: 'alias-wallet',
+                tag: "${GIT_TAG_TO_USE}",
+                artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+        )
+        sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
+        uploadArtifactToGitHub(
+                user: 'aliascash',
+                repository: 'alias-wallet',
+                tag: "${GIT_TAG_TO_USE}",
+                artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+        )
+        createAndArchiveChecksumFile(
+                filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
+                checksumfile: "Checksum-Alias-Win64${suffix}.txt"
+        )
+        createAndArchiveChecksumFile(
+                filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
+                checksumfile: "Checksum-Alias-Win64${suffix}-OBFS4.txt"
+        )
+        sh "rm -f Alias-*-Win64${suffix}-OBFS4.zip Alias-*-Win64${suffix}.zip Checksum-Alias-Win64${suffix}.txt Checksum-Alias-Win64${suffix}-OBFS4.txt"
     }
 }

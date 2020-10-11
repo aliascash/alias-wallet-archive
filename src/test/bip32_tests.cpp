@@ -1,6 +1,8 @@
-// Copyright (c) 2013 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2013 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include <boost/test/unit_test.hpp>
 

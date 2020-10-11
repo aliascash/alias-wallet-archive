@@ -1,8 +1,9 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+// SPDX-FileCopyrightText: © 2009 Satoshi Nakamoto
+//
+// SPDX-License-Identifier: MIT
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
@@ -87,7 +88,7 @@ std::vector<CMerkleBlockIncoming> vIncomingMerkleBlocks; // blocks with txns att
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "Spectrecoin Signed Message:\n";
+const string strMessageMagic = "Alias Signed Message:\n";
 
 // Settings
 int64_t nTransactionFee = nMinTxFee;
@@ -886,17 +887,11 @@ bool CTransaction::CheckTransaction() const
 
 int64_t CTransaction::GetMinFee(unsigned int nBlockSize, enum GetMinFee_mode mode, unsigned int nBytes) const
 {
-    // Base fee is either MIN_TX_FEE or MIN_RELAY_TX_FEE for standard txns, and MIN_TX_FEE_ANON for anon txns
-
-    // -- force GMF_ANON if anon txn
-    if (nVersion == ANON_TXN_VERSION)
-        mode = GMF_ANON;
-
+    // Base fee is either MIN_TX_FEE or MIN_RELAY_TX_FEE for standard txns
     int64_t nBaseFee;
     switch (mode)
     {
         case GMF_RELAY: nBaseFee = nMinRelayTxFee; break;
-        case GMF_ANON:  nBaseFee = nMinTxFeeAnonLegacy;  if (!Params().IsForkV3(nTime)) break;
         default:        nBaseFee = nMinTxFee;       break;
     };
 
@@ -1007,8 +1002,6 @@ bool AcceptToMemoryPool(CTxMemPool &pool, CTransaction &tx, CTxDB &txdb, bool *p
                 };
 
                 nFees += nSumAnon;
-
-                feeMode = GMF_ANON;
             };
 
 
@@ -2061,7 +2054,7 @@ bool IsInitialBlockDownload()
 }
 
 void static InvalidChainFound(CBlockIndex* pindexNew)
-{ 
+{
     if (pindexNew->nChainTrust > nBestInvalidTrust)
     {
         nBestInvalidTrust = pindexNew->nChainTrust;
@@ -2626,7 +2619,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 }
 
 bool CBlock::DisconnectBlock(CTxDB& txdb, CBlockIndex* pindex)
-{    
+{
     // Disconnect in reverse order
     for (int i = vtx.size()-1; i >= 0; i--)
         if (!vtx[i].DisconnectInputs(txdb))
@@ -3928,7 +3921,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock, uint256& hash)
                 pfrom->Misbehaving(1);
                 return error("ProcessBlock() : orphan root block with timestamp before last checkpoint");
             }
-            else {         
+            else {
                 // Ask this guy to fill in what we're missing
                 pfrom->PushGetBlocks(pindexBest, GetOrphanRoot(hash));
                 // ppcoin: getblocks may not obtain the ancestor block rejected
@@ -4225,7 +4218,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low!");
         strMiscWarning = strMessage;
         LogPrintf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "Spectrecoin", CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "Alias", CClientUIInterface::BTN_OK | CClientUIInterface::ICON_WARNING | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -4282,7 +4275,7 @@ FILE* AppendBlockFile(bool fHeaderFile, unsigned int& nFileRet, const char* fmod
 }
 
 
-int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcProgress)
+int LoadBlockIndex(bool fAllowNew, std::function<void (const unsigned mode, const uint32_t&)> funcProgress)
 {
     LOCK(cs_main);
 
@@ -4310,7 +4303,12 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const uint32_t&)> funcPro
             }, funcProgress))
             return res;
 
-        if (!pwalletMain->CacheAnonStats(nBestHeight))
+        if (!pwalletMain->CacheAnonStats(nBestHeight, [] (const unsigned mode, const uint32_t& nOutpus) -> void {
+                                            if (mode == 0)
+                                                uiInterface.InitMessage(strprintf("Read ATXOs... (%d)", nOutpus));
+                                            else
+                                                uiInterface.InitMessage(strprintf("Read spent ATXOs... (%d)", nOutpus));
+                                        }))
             LogPrintf("CacheAnonStats() failed.\n");
     } else
     {
@@ -4536,7 +4534,7 @@ struct CImportingNow
 
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
-    RenameThread("spectrecoin-loadblk");
+    RenameThread("alias-loadblk");
     CImportingNow imp;
 
     // -loadblock=
@@ -5379,7 +5377,11 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         LogPrint("net", "receive version message: version %d, blocks=%d, us=%s, them=%s, peer=%s\n", pfrom->nVersion, pfrom->nChainHeight, addrMe.ToString(), addrFrom.ToString(), pfrom->addr.ToString());
 
+        LOCK(cs_main);
         cPeerBlockCounts.input(pfrom->nChainHeight);
+
+        BlockChangedEvent blockChangedEvent = {nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ? pindexBest->GetBlockTime() : pindexBestHeader->GetBlockTime()};
+        uiInterface.NotifyBlocksChanged(blockChangedEvent);
     }
 
 

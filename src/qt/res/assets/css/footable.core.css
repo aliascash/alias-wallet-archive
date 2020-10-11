@@ -1,3 +1,11 @@
+@font-face{font-family:'footable';src:url(qrc:///assets/fonts/Footable/footable.eot);
+  src:url(qrc:///assets/fonts/Footable/footable.eot) format('embedded-opentype'),
+  url(qrc:///assets/fonts/Footable/footable.woff) format('woff'),
+  url(qrc:///assets/fonts/Footable/footable.ttf) format('truetype'),
+  url(qrc:///assets/fonts/Footable/footable.svg) format('svg');
+  font-weight:normal;
+  font-style:normal}
+
 .footable {
   width: 100%;
   /** SORTING **/

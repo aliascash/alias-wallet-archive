@@ -1,7 +1,8 @@
-// Copyright (c) 2009-2012 The Bitcoin developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2009 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "coincontroldialog.h"
 #include "ui_coincontroldialog.h"
@@ -534,7 +535,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog *dialog, Spectr
     } else
     {
         // actually update labels
-        int nDisplayUnit = BitcoinUnits::XSPEC;
+        int nDisplayUnit = BitcoinUnits::ALIAS;
         if (model && model->getOptionsModel())
             nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
@@ -594,11 +595,13 @@ void CoinControlDialog::updateView()
 
     ui->treeWidget->clear();
     ui->treeWidget->setEnabled(false); // performance, otherwise updateLabels would be called for every checked checkbox
+#ifndef Q_OS_MAC
     ui->treeWidget->setAlternatingRowColors(!treeMode);
+#endif
     QFlags<Qt::ItemFlag> flgCheckbox=Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
     QFlags<Qt::ItemFlag> flgTristate=Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsTristate;
 
-    int nDisplayUnit = BitcoinUnits::XSPEC;
+    int nDisplayUnit = BitcoinUnits::ALIAS;
     if (model && model->getOptionsModel())
         nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 
@@ -632,8 +635,10 @@ void CoinControlDialog::updateView()
             itemWalletAddress->setFlags(flgTristate);
             itemWalletAddress->setCheckState(COLUMN_CHECKBOX,Qt::Unchecked);
 
+#ifndef Q_OS_MAC
             for (int i = 0; i < ui->treeWidget->columnCount(); i++)
                 itemWalletAddress->setBackground(i, QColor(248, 247, 246));
+#endif
 
             // label
             itemWalletAddress->setText(COLUMN_LABEL, sWalletLabel);

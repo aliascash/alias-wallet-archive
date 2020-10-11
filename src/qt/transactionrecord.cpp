@@ -1,7 +1,8 @@
-// Copyright (c) 2011-2013 The Bitcoin Core developers
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+// SPDX-FileCopyrightText: © 2011 Bitcoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "transactionrecord.h"
 
@@ -24,36 +25,36 @@ QString TransactionRecord::getTypeLabel(const int &type)
     switch(type)
     {
     case RecvWithAddress:
-        return SpectreGUI::tr("XSPEC received with");
+        return SpectreGUI::tr("Public received with");
     case RecvFromOther:
-        return SpectreGUI::tr("XSPEC received from");
+        return SpectreGUI::tr("Public received from");
     case SendToAddress:
     case SendToOther:
-        return SpectreGUI::tr("XSPEC sent to");
+        return SpectreGUI::tr("Public sent to");
     case SendToSelf:
-        return SpectreGUI::tr("XSPEC sent to self");
+        return SpectreGUI::tr("Public sent to self");
     case SendToSelfSPECTRE:
-        return SpectreGUI::tr("SPECTRE sent to self");
+        return SpectreGUI::tr("Private sent to self");
     case Generated:
-        return SpectreGUI::tr("XSPEC Staked");
+        return SpectreGUI::tr("Public staked");
     case GeneratedDonation:
-        return SpectreGUI::tr("XSPEC Donated");
-	case GeneratedContribution:
-        return SpectreGUI::tr("XSPEC Contributed");
+        return SpectreGUI::tr("Public donated");
+    case GeneratedContribution:
+        return SpectreGUI::tr("Public contributed");
     case GeneratedSPECTRE:
-        return SpectreGUI::tr("SPECTRE Staked");
+        return SpectreGUI::tr("Private staked");
     case GeneratedSPECTREDonation:
-        return SpectreGUI::tr("SPECTRE Donated");
+        return SpectreGUI::tr("Private donated");
     case GeneratedSPECTREContribution:
-        return SpectreGUI::tr("SPECTRE Contributed");
+        return SpectreGUI::tr("Private contributed");
     case RecvSpectre:
-        return SpectreGUI::tr("SPECTRE received with");
+        return SpectreGUI::tr("Private received with");
     case SendSpectre:
-        return SpectreGUI::tr("SPECTRE sent to");
+        return SpectreGUI::tr("Private sent to");
     case ConvertSPECTREtoXSPEC:
-        return SpectreGUI::tr("SPECTRE to XSPEC");
+        return SpectreGUI::tr("Private to Public");
     case ConvertXSPECtoSPECTRE:
-        return SpectreGUI::tr("XSPEC to SPECTRE");
+        return SpectreGUI::tr("Public to Private");
     case Other:
         return SpectreGUI::tr("Other");
     default:
@@ -73,7 +74,7 @@ QString TransactionRecord::getTypeShort(const int &type)
         return "donated";
     case TransactionRecord::GeneratedContribution:
     case TransactionRecord::GeneratedSPECTREContribution:
-		return "contributed";      
+        return "contributed";
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
     case TransactionRecord::RecvSpectre:
@@ -118,7 +119,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
         if (wtx.IsAnonCoinStake() && !listReceived.empty())
-        {      
+        {
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
             int64_t stakingReward = allFee < 0 ? -allFee : rAmount;
             TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
@@ -148,9 +149,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
             const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
 
-            if (sCurrency == XSPEC && rCurrency == SPECTRE)
+            if (sCurrency == PUBLIC && rCurrency == PRIVATE)
                 trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
-            else if (sCurrency == SPECTRE && rCurrency == XSPEC)
+            else if (sCurrency == PRIVATE && rCurrency == PUBLIC)
                 trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
             for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
@@ -191,7 +192,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             if (wallet->IsMine(txout))
             {
                 TransactionRecord sub(hash, nTime);
-                sub.idx = parts.size(); // sequence number         
+                sub.idx = parts.size(); // sequence number
 
                 CTxDestination address;
 
@@ -295,7 +296,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             };
 
             parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "", narration,
-                            -(nDebit - nChange), nCredit - nChange, XSPEC));
+                            -(nDebit - nChange), nCredit - nChange, PUBLIC));
         } else
         if (fAllFromMe)
         {
@@ -359,7 +360,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             //
             // Mixed debit transaction, can't break down payees
             //
-            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0, XSPEC);
+            TransactionRecord sub(hash, nTime, TransactionRecord::Other, "", "", nNet, 0, PUBLIC);
             /*
             for (unsigned int nOut = 0; nOut < wtx.vout.size(); nOut++)
             {
@@ -459,7 +460,7 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
             status.status = TransactionStatus::Offline;
         else if (status.depth == 0)
             status.status = TransactionStatus::Unconfirmed;
-        else if (status.depth < (currency == SPECTRE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
+        else if (status.depth < (currency == PRIVATE ? MIN_ANON_SPEND_DEPTH : RecommendedNumConfirmations))
             status.status = TransactionStatus::Confirming;
         else
             status.status = TransactionStatus::Confirmed;
