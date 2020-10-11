@@ -582,6 +582,17 @@ EOM
         die ${rtc} " => libleveldb build failed with return code ${rtc}"
     fi
     #    read a
+
+    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
+        info " -> Using ${BUILD_DIR}/usr/local/lib/libleveldb.a"
+        LIB_LEVELDB_LOCATION=${BUILD_DIR}/usr/local/lib/cmake/leveldb
+    elif [[ -f ${BUILD_DIR}/usr/local/lib64/libleveldb.a ]]; then
+        info " -> Using ${BUILD_DIR}/usr/local/lib64/libleveldb.a"
+        LIB_LEVELDB_LOCATION=${BUILD_DIR}/usr/local/lib64/cmake/leveldb
+    else
+        die 23 " => libleveldb build result not found!"
+    fi
+
     cd - >/dev/null
 }
 
@@ -590,6 +601,10 @@ checkLevelDB() {
     info "LevelDB:"
     if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
         info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
+        LIB_LEVELDB_LOCATION=${BUILD_DIR}/usr/local/lib/cmake/leveldb
+    elif [[ -f ${BUILD_DIR}/usr/local/lib64/libleveldb.a ]]; then
+        info " -> Found ${BUILD_DIR}/usr/local/lib64/libleveldb.a, skip build"
+        LIB_LEVELDB_LOCATION=${BUILD_DIR}/usr/local/lib64/cmake/leveldb
     else
         checkLevelDBClone
         checkLevelDBBuild
@@ -847,6 +862,7 @@ BUILD_ONLY_ALIAS=false
 BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 SYSTEM_QT=false
+LIB_LEVELDB_LOCATION=''
 
 defineQtVersionForCurrentDistribution
 
@@ -937,7 +953,7 @@ cmake \
     -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
     -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
     \
-    -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb \
+    -Dleveldb_DIR=${LIB_LEVELDB_LOCATION} \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
 EOM
