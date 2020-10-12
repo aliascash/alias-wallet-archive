@@ -8,7 +8,7 @@ Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
-Files: src/qt/res/bitcoin-qt.rc src/qt/res/index.html src/qt/res/main.qml
+Files: src/qt/res/bitcoin-qt.rc src/qt/res/index.html src/qt/res/qml/main.qml
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
