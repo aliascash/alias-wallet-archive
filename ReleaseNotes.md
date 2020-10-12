@@ -27,8 +27,8 @@ We have implemented a check for DCBs and we have implemented a replay protection
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.3.0 (released 2020-??-??)
-- Update to Qt 5.15.1 (Windows / Mac)
+## 4.3.0 (released 2020-10-01)
+- Update to Qt 5.12.9 (Windows / Mac)
 - Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
 - Refactored overall namings according to project rebranding
 - Refactored naming of some RPC methods according to project rebranding:
