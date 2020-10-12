@@ -472,8 +472,8 @@ EOM
 checkLevelDB() {
     info ""
     info "LevelDB:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
+    if [[ -f ${BUILD_DIR}/local/lib/libleveldb.a ]]; then
+        info " -> Found ${BUILD_DIR}/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
         checkLevelDBBuild
@@ -790,7 +790,7 @@ fi
 # ToDo: Implement checks against homebrew
 #checkBoost
 #checkBerkeleyDB
-#checkLevelDB
+checkLevelDB
 checkOpenSSL
 if ${WITH_TOR}; then
     checkXZLib
@@ -822,8 +822,7 @@ cmake \
     -DBerkeleyDB_ROOT_DIR=/usr/local/opt/berkeley-db@4 \
     -DBERKELEYDB_INCLUDE_DIR=/usr/local/opt/berkeley-db@4/include \
     \
-    -Dleveldb_DIR=/usr/local/opt/leveldb \
-    -Dleveldb_INCLUDE_DIR=/usr/local/opt/leveldb/include \
+    -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \

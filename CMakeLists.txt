@@ -239,6 +239,7 @@ if (ENABLE_GUI)
             set(TOR_ARCHIVE "Tor.libraries.MacOS.zip")
             download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.MacOS.zip ${TOR_ARCHIVE} SHA1 0be391e0cad9e93d33c226d6bff719f568b56093)
         endif ()
+        set(HAVE_SNAPPY 0)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         # Retrieve the absolute path to qmake and then use that path
         # to find the windeployqt binary
