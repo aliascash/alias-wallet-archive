@@ -193,70 +193,19 @@ checkOpenSSL() {
 # ============================================================================
 
 # ===== Start of berkeleydb functions ========================================
-checkBerkeleyDBArchive() {
-    if [[ -e "${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz" ]]; then
-        info " -> Using BerkeleyDB archive ${BERKELEYDB_ARCHIVE_LOCATION}/db-${BERKELEYDB_BUILD_VERSION}.tar.gz"
-    else
-        BERKELEYDB_ARCHIVE_URL=https://download.oracle.com/berkeley-db/db-${BERKELEYDB_BUILD_VERSION}.tar.gz
-        info " -> Downloading BerkeleyDB archive ${BERKELEYDB_ARCHIVE_URL}"
-        if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]]; then
-            mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
-        fi
-        cd ${BERKELEYDB_ARCHIVE_LOCATION}
-        wget ${BERKELEYDB_ARCHIVE_URL}
-        cd - >/dev/null
-    fi
-}
-
-checkBerkeleyDBBuild() {
-    mkdir -p ${BUILD_DIR}/libdb
-    cd ${BUILD_DIR}/libdb
-
-    info " -> Generating build configuration"
-    read -r -d '' cmd <<EOM
-cmake \
-    -DBERKELEYDB_ARCHIVE_LOCATION=${BERKELEYDB_ARCHIVE_LOCATION} \
-    -DBERKELEYDB_BUILD_VERSION=${BERKELEYDB_BUILD_VERSION} \
-    -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
-    -DBERKELEYDB_ARCHIVE_HASH=${BERKELEYDB_ARCHIVE_HASH} \
-    -DCMAKE_INSTALL_PREFIX=/libdb-install \
-    ${BUILD_DIR}/../external/berkeleydb-cmake
-EOM
-
-    echo "=============================================================================="
-    echo "Executing the following CMake cmd:"
-    echo "${cmd}"
-    echo "=============================================================================="
-    #    read a
-    ${cmd}
-    #    read a
-
-    info ""
-    info " -> Building with ${CORES_TO_USE} cores:"
-    CORES_TO_USE=${CORES_TO_USE} cmake \
-        --build . \
-        -- \
-        -j "${CORES_TO_USE}"
-
-    rtc=$?
-    info ""
-    if [[ ${rtc} = 0 ]]; then
-        info " -> Finished BerkeleyDB (libdb) build and install"
-    else
-        die ${rtc} " => BerkeleyDB (libdb) build failed with return code ${rtc}"
-    fi
-
-    cd - >/dev/null
-}
-
 checkBerkeleyDB() {
     info ""
     info "BerkeleyDB:"
-    if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
-        info " -> Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
+    info " -> Searching required Homebrew BerkeleyDB package"
+    berkeleydbVersion=$(brew ls --versions berkeley-db@4)
+    if [ $? -eq 0 ] ; then
+        info " -> Found ${berkeleydbVersion}"
     else
-        checkBerkeleyDBArchive
-        checkBerkeleyDBBuild
+        error " -> Required BerkeleyDB dependency not found!"
+        error "    You need to install homebrew and install BerkeleyDB:"
+        error "    brew install berkeley-db@4"
+        error ""
+        die 42 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of berkeleydb functions ==========================================
@@ -267,24 +216,14 @@ checkBerkeleyDB() {
 checkBoost() {
     info ""
     info "Boost:"
-    info " -> Searching required static Boost libs"
-    buildBoost=false
-    for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt.dylib ]]; then
-            info " -> ${currentBoostDependency}: OK"
-        else
-            warning " => ${currentBoostDependency}: Not found!"
-            buildBoost=true
-        fi
-    done
-    if ${buildBoost}; then
+    info " -> Searching required Homebrew Boost package"
+    boostVersion=$(brew ls --versions boost)
+    if [ $? -eq 0 ] ; then
+        info " -> Found ${boostVersion}"
+    else
         error " -> Required Boost dependencies not found!"
-        error "    You need to install homebrew and switch to"
-        error "    version ${BOOST_VERSION_MAC} with the following cmds:"
-        error "    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/80584e1ba06664c2610707dc71c308f82b13895a/Formula/boost.rb"
-        error "    brew switch boost 1.68.0_1"
-        error "    brew link --overwrite --dry-run boost"
-        error "    brew link --overwrite boost"
+        error "    You need to install homebrew and install Boost:"
+        error "    brew install boost"
         error ""
         die 42 "Stopping build because of missing Boost"
     fi
@@ -787,9 +726,8 @@ elif ${BUILD_ONLY_ALIAS}; then
     info " -> Done"
 fi
 
-# ToDo: Implement checks against homebrew
-#checkBoost
-#checkBerkeleyDB
+checkBoost
+checkBerkeleyDB
 checkLevelDB
 checkOpenSSL
 if ${WITH_TOR}; then
