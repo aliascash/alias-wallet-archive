@@ -92,7 +92,7 @@ helpMe() {
         The amount of cores to use for build. If not using this option
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
-        BerkeleyDB.
+        LevelDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build UI (Qt) components.
@@ -103,6 +103,25 @@ helpMe() {
 
     "
 }
+
+# ===== Start of homebrew functions ==========================================
+checkHomebrew() {
+    info ""
+    info "Homebrew:"
+    if homebrewVersion=$(brew --version 2>/dev/null) ; then
+        # Show only the first line of the version output
+        info " -> Found ${homebrewVersion/$'\n'*/}"
+    else
+        error " -> Homebrew not found!"
+        error "    You need to install homebrew and after that BerkeleyDB v4 and Boost:"
+        error "    brew install berkeley-db@4 boost"
+        error ""
+        die 40 "Stopping build because of missing Homebrew"
+    fi
+}
+# ===== End of homebrew functions ============================================
+
+# ============================================================================
 
 # ===== Start of openssl functions ===========================================
 checkOpenSSLArchive() {
@@ -202,10 +221,10 @@ checkBerkeleyDB() {
         info " -> Found ${berkeleydbVersion}"
     else
         error " -> Required BerkeleyDB dependency not found!"
-        error "    You need to install homebrew and install BerkeleyDB:"
+        error "    You need to install homebrew and install BerkeleyDB v4:"
         error "    brew install berkeley-db@4"
         error ""
-        die 42 "Stopping build because of missing Boost"
+        die 41 "Stopping build because of missing Boost"
     fi
 }
 # ===== End of berkeleydb functions ==========================================
@@ -726,6 +745,7 @@ elif ${BUILD_ONLY_ALIAS}; then
     info " -> Done"
 fi
 
+checkHomebrew
 checkBoost
 checkBerkeleyDB
 checkLevelDB
