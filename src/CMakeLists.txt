@@ -428,6 +428,7 @@ if (ENABLE_GUI)
                     -always-overwrite
                     -verbose=1
                     ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    COMMAND rm -rf ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor
                     COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/Alias.app/
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/tor.real
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/libevent*
@@ -464,6 +465,8 @@ if (ENABLE_GUI)
                     --webengine
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
                     COMMENT "Running windeployqt..."
                     )
         else()
