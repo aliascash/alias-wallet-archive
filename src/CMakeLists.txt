@@ -465,6 +465,8 @@ if (ENABLE_GUI)
                     --webengine
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
                     COMMENT "Running windeployqt..."
                     )
         else()
