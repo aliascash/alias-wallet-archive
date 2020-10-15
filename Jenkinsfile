@@ -198,7 +198,7 @@ pipeline {
 //                                    """
 //                            )
 //                            // Archive step here only to be able to make feature branch builds available for download
-//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
 //                            prepareMacOBFS4Delivery()
 //                            sh(
 //                                    script: """
