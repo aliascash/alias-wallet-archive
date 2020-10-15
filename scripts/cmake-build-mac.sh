@@ -866,6 +866,7 @@ echo '
             set viewOptions to the icon view options of container window
             set arrangement of viewOptions to not arranged
             set icon size of viewOptions to 200
+            set text size of viewOptions to 16
             set background picture of viewOptions to file ".background:app-slide-arrow.png"
             set position of item "Alias.app" of container window to {180, 200}
             set position of item "Applications" of container window to {620, 200}
