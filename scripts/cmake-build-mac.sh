@@ -849,10 +849,10 @@ ln -s /Applications
 popd
 info " -> Done"
 
-#info "Copy background image in to package"
-#mkdir "$PATH_AT_VOLUME"/.background
-#cp backgroundImage.png "$PATH_AT_VOLUME"/.background/
-#info " -> Done"
+info "Copy background image in to package"
+mkdir "$PATH_AT_VOLUME"/.background
+cp ${ownLocation}/../src/osx/app-slide-arrow.png "$PATH_AT_VOLUME"/.background/
+info " -> Done"
 
 info "Resize window, set background, change icon size, place icons in the right position, etc."
 echo '
@@ -862,11 +862,11 @@ echo '
             set current view of container window to icon view
             set toolbar visible of container window to false
             set statusbar visible of container window to false
-            set the bounds of container window to {400, 100, 1200, 650}
+            set the bounds of container window to {400, 100, 1200, 520}
             set viewOptions to the icon view options of container window
             set arrangement of viewOptions to not arranged
             set icon size of viewOptions to 200
-            ## set background picture of viewOptions to file ".background:backgroundImage.png"
+            set background picture of viewOptions to file ".background:app-slide-arrow.png"
             set position of item "Alias.app" of container window to {180, 200}
             set position of item "Applications" of container window to {620, 200}
         close
