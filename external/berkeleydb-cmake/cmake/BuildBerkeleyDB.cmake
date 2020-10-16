@@ -172,6 +172,12 @@ else()
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/patches/db-atomic.patch
         COMMAND patch -p1 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/patches/fix-string-is-not-a-string-literal.patch
 
+        # Update config.guess and config.sub as it's too old to detect aarch64
+        COMMAND rm -f ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
+        COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/patches/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess
+        COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/patches/config.sub   ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
+        COMMAND chmod +x ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
+
         CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${COMMAND_CONFIGURE}
 
         BUILD_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${MAKE_PROGRAM} -j ${NUM_JOBS}
