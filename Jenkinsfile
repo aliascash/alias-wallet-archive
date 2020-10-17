@@ -31,7 +31,7 @@ pipeline {
                 script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
-        RELEASE_NAME = "Continuous build No. ${BUILD_NUMBER}"
+        RELEASE_NAME = "Continuous build #${BUILD_NUMBER} (Branch ${GIT_BRANCH})"
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
         PRERELEASE = "true"
     }
