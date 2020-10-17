@@ -749,17 +749,23 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
                                 VSDIR = "${VS2017_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
-                                    buildWindows("-Qt5.12")
+                                    bat 'scripts/cmake-build-win.bat'
+                                    zip(
+                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
+                                        dir: "${WORKSPACE}/build/delivery"
+                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                     build(
                                             job: 'Alias/installer/master',
                                             parameters: [
                                                     string(
                                                             name: 'ARCHIVE_LOCATION',
-                                                            value: "${WORKSPACE}"
+                                                            value: "${WORKSPACE}/build"
                                                     ),
                                                     string(
                                                             name: 'ARCHIVE_NAME',
