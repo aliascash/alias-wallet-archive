@@ -565,18 +565,17 @@ pipeline {
                         stage('Ubuntu 18.04') {
                             steps {
                                 script {
-                                    echo "Ubuntu 18.04 build disabled for now"
-//                                    buildBranch(
-//                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-//                                            gitTag: "${GIT_TAG_TO_USE}",
-//                                            gitCommit: "${GIT_COMMIT_SHORT}"
-//                                    )
-//                                    getChecksumfileFromImage(
-//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-//                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
-//                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
                                 }
                             }
                             post {
