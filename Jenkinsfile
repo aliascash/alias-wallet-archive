@@ -760,7 +760,7 @@ pipeline {
                                         dir: "${WORKSPACE}/build",
                                         glob: "Alias/*"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, ${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                     build(
                                             job: 'Alias/installer/master',
                                             parameters: [
