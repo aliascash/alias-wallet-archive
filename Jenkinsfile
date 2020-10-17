@@ -757,9 +757,10 @@ pipeline {
                                     bat 'scripts/cmake-build-win.bat'
                                     zip(
                                         zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
-                                        dir: "${WORKSPACE}/build/delivery"
+                                        dir: "${WORKSPACE}/build",
+                                        glob: "Alias/*"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, ${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
                                     build(
                                             job: 'Alias/installer/master',
                                             parameters: [
