@@ -15,8 +15,6 @@ pipeline {
         disableConcurrentBuilds()
     }
     environment {
-        // In case another branch beside master or develop should be deployed, enter it here
-        BRANCH_TO_DEPLOY = 'xyz'
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
@@ -36,6 +34,10 @@ pipeline {
         RELEASE_NAME = "Continuous build No. ${BUILD_NUMBER}"
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
         PRERELEASE = "true"
+    }
+    parameters {
+        // In case another branch beside master or develop should be deployed, enter it here
+        string(name: 'BRANCH_TO_DEPLOY', defaultValue: 'xzy', description: 'Branch name which should be build and deployed to Github?')
     }
     stages {
         stage('Notification') {
