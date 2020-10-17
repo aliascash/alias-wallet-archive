@@ -875,20 +875,21 @@ pipeline {
                 branch 'master'
             }
             steps {
-                build(
-                        job: 'updateDownloadURLs',
-                        parameters: [
-                                string(
-                                        name: 'RELEASE_VERSION',
-                                        value: "${GIT_TAG_TO_USE}"
-                                ),
-                                string(
-                                        name: 'GIT_COMMIT_SHORT',
-                                        value: "${GIT_COMMIT_SHORT}"
-                                )
-                        ],
-                        wait: false
-                )
+                echo "Update of download links currently disabled"
+//                build(
+//                        job: 'updateDownloadURLs',
+//                        parameters: [
+//                                string(
+//                                        name: 'RELEASE_VERSION',
+//                                        value: "${GIT_TAG_TO_USE}"
+//                                ),
+//                                string(
+//                                        name: 'GIT_COMMIT_SHORT',
+//                                        value: "${GIT_COMMIT_SHORT}"
+//                                )
+//                        ],
+//                        wait: false
+//                )
             }
         }
     }
