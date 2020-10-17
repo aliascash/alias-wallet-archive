@@ -648,14 +648,13 @@ pipeline {
                         stage('MacOS build') {
                             steps {
                                 script {
-                                    echo "Mac build disabled for now"
-//                                    sh(
-//                                            script: """
-//                                                pwd
-//                                                ./scripts/mac-build.sh
-//                                                rm -f Alias*.dmg
-//                                            """
-//                                    )
+                                    sh(
+                                            script: """
+                                                pwd
+                                                ./scripts/cmake-build-mac.sh -g
+                                                cp ./cmake-build-mac-cmdline/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
 //                                    prepareMacDelivery()
 //                                    sh(
 //                                            script: """
@@ -663,7 +662,7 @@ pipeline {
 //                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
 //                                            """
 //                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
 //                                    prepareMacOBFS4Delivery()
 //                                    sh(
 //                                            script: """
@@ -681,19 +680,18 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    echo "Mac upload for now"
-//                                    sh(
-//                                            script: """
-//                                                rm -f Alias*.dmg*
-//                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                            """
-//                                    )
-//                                    uploadArtifactToGitHub(
-//                                            user: 'aliascash',
-//                                            repository: 'alias-wallet',
-//                                            tag: "${GIT_TAG_TO_USE}",
-//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                    )
+                                    sh(
+                                            script: """
+                                                rm -f Alias*.dmg*
+                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
+                                    uploadArtifactToGitHub(
+                                            user: 'aliascash',
+                                            repository: 'alias-wallet',
+                                            tag: "${GIT_TAG_TO_USE}",
+                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                    )
 //                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
 //                                    uploadArtifactToGitHub(
 //                                            user: 'aliascash',
@@ -701,15 +699,15 @@ pipeline {
 //                                            tag: "${GIT_TAG_TO_USE}",
 //                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
 //                                    )
-//                                    createAndArchiveChecksumFile(
-//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                            checksumfile: "Checksum-Alias-Mac.txt"
-//                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            checksumfile: "Checksum-Alias-Mac.txt"
+                                    )
 //                                    createAndArchiveChecksumFile(
 //                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
 //                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
 //                                    )
-//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
+                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
                                 }
                             }
                             post {
