@@ -62,6 +62,24 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('Raspberry Pi Buster arm64') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('CentOS 8') {
                     agent {
                         label "docker"
