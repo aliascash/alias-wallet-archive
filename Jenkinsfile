@@ -69,7 +69,7 @@ pipeline {
                     steps {
                         script {
                             buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_noUpload',
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
                                     dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                             )
                         }
