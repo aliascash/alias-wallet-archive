@@ -27,6 +27,11 @@ We have implemented a check for DCBs and we have implemented a replay protection
 SPDX-License-Identifier: MIT
 
 ### Changelog
+## 4.3.1 (released 2020-??-??)
+- Refactored the whole build to CMake as basement.
+  For all supported operating systems, there are corresponding
+  helper scripts on `scripts/cmake-build*`.
+
 ## 4.3.0 (released 2020-10-01)
 - Update to Qt 5.12.9 (Windows / Mac)
 - Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
