@@ -764,7 +764,7 @@ pipeline {
                                     zip(
                                         zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
                                         dir: "${WORKSPACE}/build",
-                                        glob: "Alias/*"
+                                        glob: "Alias/**"
                                     )
                                     bat(
                                         script: """
@@ -849,7 +849,7 @@ pipeline {
                                     zip(
                                         zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
                                         dir: "${WORKSPACE}/build",
-                                        glob: "Alias/*"
+                                        glob: "Alias/**"
                                     )
                                     bat(
                                         script: """
