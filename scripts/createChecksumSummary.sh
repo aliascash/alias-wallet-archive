@@ -29,6 +29,7 @@ for currentChecksumfile in \
     Checksum-Alias-Mac.txt \
     Checksum-Alias-Mac-OBFS4.txt \
     Checksum-Alias-RaspberryPi-Buster.txt \
+    Checksum-Alias-RaspberryPi-Buster-aarch64.txt \
     Checksum-Alias-RaspberryPi-Stretch.txt \
     Checksum-Alias-Ubuntu-18-04.txt \
     Checksum-Alias-Ubuntu-20-04.txt \
