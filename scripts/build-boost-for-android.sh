@@ -90,10 +90,6 @@ info " -> Generating config..."
 echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > ${ANDROID_ARCH}-config.jam
 echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
 
-# Patching of Boost 1.73 not necessary
-#info " -> Patching..."
-#patch -p1 < ${ownLocation}/patches/boost_1_69_0_android.patch
-
 info " -> Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
 ./bootstrap.sh #--with-libraries=${BOOST_LIBS_TO_BUILD}
