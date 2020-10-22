@@ -1,68 +1,68 @@
 # Spectrecoin building from source on Windows
 
-The goal is to build the whole project using CMake. At the moment the Windows
-build could use the current directory structure but is still not CMake based.
-To reach this goal, some more refactorings and updated need to be finished
-first.
+The goal is to build the whole project using CMake. To do so, just
+follow the steps below.
 
-## Install required tools and libs
+* [Install required tools and libs](#tools)
+  * [Git](#git)
+  * [Visual Studio](#vs)
+  * [Qt](#qt)
+  * [VCPKG](#vcpkg)
+* [Build Alias Wallet](#build)
+  * via [cmdline](#build-cmdline)
+  * on [CLion](#build-clion)
 
-- Git: https://git-scm.com/
-- Visual studio: https://www.visualstudio.com/downloads/
-- Qt SDK: https://www.qt.io/download-qt-installer
-- VCPKG: https://github.com/microsoft/vcpkg/
 
-
-
-### Git
-Just install it with default settings. ;-)
+## <a name="tools"></a>Install required tools and libs
 
 
 
-### Visual Studio 2019
-Visual Studio 2019 Community Edition is enough.
+### <a name="git"></a>Git
 
-Install at least these components:
-
-![Required VS 2019 components](VS_InstallerComponents.png)
-
-If you're not on an English Windows, you need to install the Englisch language package too:
-
-![VS 2019 language pack](VS_InstallerComponents_Language.png)
+* Download from https://git-scm.com/
+* Just install it with default settings. ;-)
 
 
 
-### Qt
+### <a name="vs"></a>Visual Studio 2019
+* Download from [https://www.visualstudio.com/downloads/](https://www.visualstudio.com/downloads/)
+* Visual Studio 2019 Community Edition is enough.
+* Install at least these components:  
+  ![Required VS 2019 components](VS_InstallerComponents.png)
+* **Important:** If you're not on an English Windows, you need to install the Englisch language package too:  
+  ![VS 2019 language pack](VS_InstallerComponents_Language.png)
+
+
+
+### <a name="qt"></a>Qt
+Qt SDK can be found at [https://www.qt.io/download-qt-installer](https://www.qt.io/download-qt-installer).
 Here are the components from Qt SDK that we really need to compile Spectrecoin
 application. Please keep Qt creator selected as well! If MinGW is ticked you
 may untick that, unless you need it for other projects.
+
+Select the components from the latest 5.12 release as this is an LTS line.
+With newer versions up to 5.15.1 (at the time of this writing), the build
+will work but we've spot issues with a duplicated task bar icon. So it's
+perfectly fine to stay on the latest 5.12 version.
 
 ![Required Qt components](Qt_Windows.png)
 
 
 
-### VCPKG
+### <a name="vcpkg"></a>VCPKG
+VCPKG is a Github project, you can find it at [https://github.com/microsoft/vcpkg/](https://github.com/microsoft/vcpkg/)
 
-Clone VCPKG Git repository
-
-**Important 1:** The Boost directories must be reset to the state before the
-update of Boost to 1.70 or newer, as we're based on Boost 1.69 at the moment.
-
-**Important 2:** You need to use `Start menu` > `Visual Studio 2019` > 
-`x64 Native Tools Command Prompt for VS 2019` for all the next steps! To build
-x86 (32Bit) dependencies, just use `Developer Command Prompt for VS 2019` or
-use both if you want to build 32Bit and 64Bit versions.
+At first change to your desired directory and clone VCPKG Git repository:
 
 ```
 D:\coding> git clone https://github.com/Microsoft/vcpkg.git
 ```
 
-We need to get back to Boost 1.69.0 now. Perform the following steps using WSL:
+Before building the required vcpkg components, you need to define the following
+environment variable, to enable build in 64Bit:
 
-```
-# cd vcpkg/ports
-# for i in boost* ; do cd $i ; pwd ; git checkout 208bb8ee -- . ; cd - ; done
-```
+`VCPKG_DEFAULT_TRIPLET=x64-windows`
+
 Now enable deprecated functions on OpenSSL. To do so, modify `ports/openssl-windows/portfile.cmake`
 by replacing the block
 
@@ -91,7 +91,10 @@ set(CONFIGURE_COMMAND ${PERL} Configure
 
 Should be around line 38.
 
-Back to the Windows cmd prompt, bootstrap the whole thing:
+**Important:** For all the next steps on vcpkg, you need to use `Start menu` >
+`Visual Studio 2019` > `x64 Native Tools Command Prompt for VS 2019` for all the next steps!
+
+On `x64 Native Tools Command Prompt for VS 2019` bootstrap the whole thing:
 
 ```
 D:\coding> cd vcpkg
@@ -110,29 +113,10 @@ Subsequent executions could be done with normal user permissions.
 Now install the following packages:
 
 ```
-D:\coding\vcpkg> .\vcpkg.exe install berkeleydb leveldb openssl
+D:\coding\vcpkg> .\vcpkg.exe install berkeleydb boost leveldb openssl
 ```
 
-The installation of Boost needs special handling, as the used Visual Studio is
-too new for Boost 1.69. To tweak the boost build, the required files needs to
-be created at first. So start the build of boost, even if it will fail:
-
-```
-D:\coding\vcpkg> .\vcpkg.exe install boost
-```
-
-Now modify the file `D:\coding\vcpkg\installed\x64-windows\tools\boost-build\src\tools\msvc.jam`
-by replacing all occurrences of `VS150COMNTOOLS` with `VS160COMNTOOLS`. If 
-you're building for x86 aka 32Bit, the same change must be performed on 
-`D:\coding\vcpkg\installed\x86-windows\tools\boost-build\src\tools\msvc.jam`.
-
-Restart the Boost build afterwards and have patience, this might take a long time:
-
-```
-D:\coding\vcpkg> .\vcpkg.exe install boost
-```
-
-- Fix for boost-math if you hit this error:
+In case you hit this build error on boost-math:
 ```
 Building package boost-math[core]:x64-windows...
 -- Downloading https://github.com/boostorg/math/archive/boost-1.72.0.tar.gz...
@@ -167,57 +151,66 @@ Copy the folder D:\coding\vcpkg\buildtrees\boost-math\src\TEMP\math-boost-1.72.0
 level up, rename it to ost-1.72.0-2786b6df16 and restart the build.
 
 
-ToDocument: 
-- Fix for boost-thread
+## <a name="build"></a>Build Alias Wallet
+### Get sources
+At first clone the Alias wallet repository:
+```
+D:\coding> git clone https://github.com/aliascash/alias-wallet 
+```
 
 
-# Work in progress!!!
-## Setup environment vars
+### <a name="build-cmdline"></a>Build on cmdline
+#### Setup environment
+You need to define the following environment variables:
+* `QTDIR` Pointing to the msvc directory within the Qt version to use
+* `VSDIR` Pointing to the Visual Studio installation directory
+* `VCPKGDIR` Pointing to the root directory of your vcpkg clone
+* `CMAKEDIR` Pointing to the `bin` folder on the CMake installation to use.
+  The cmake binaries from vcpkg are perfectly fine, see example below.
 
-![CMake environment variables](CMakeEnvVars.png)
+Example:
+```
+QTDIR=C:\Qt\5.12.9\msvc2017_64
+VSDIR=C:\Program Files (x86)\Microsoft Visual Studio\2019
+VCPKGDIR=D:\coding\vcpkg
+CMAKEDIR=D:\coding\vcpkg\downloads\tools\cmake-3.17.2-windows\cmake-3.17.2-win32-x86\bin
+```
 
-Please use the default installation path `C:\Program Files (x86)\Microsoft Visual Studio`.
+#### Build
+To build, just open a cmd window, cd into the Git clone of alias-wallet repository and
+start the Windows build script:
+```
+D:\coding> scripts\cmake-build-win.bat
+```
+The build result could be found on the folder `build/Alias` inside of the Git clone.
 
+### <a name="build-clion">Build with CLion
+Go to `File` > `Settings` > `Build, Execution, Deployment` > `Toolchains` and make sure
+the toolchain is configured as on the following screenshot:
 
-# OLD stuff:
+![CLion Toolchain settings](Clion-Toolchain-Settings.png)
 
-## Easy (Prebuilt libs)
+Take special care of the path to the x86_64 version of Make, C and C++ compiler!
 
-Since quite many of our users found it hard to compile, especially on
-Windows, we are adding an easy way and provided prebuilt package for all
-the libraries required to compile Spectrecoin wallet. Go ahead and download
-all the libraries from the following links:
+Now open `File` > `Settings` > `Build, Execution, Deployment` > `CMake`, expand
+`CMake options` and put in the following content:
 
-https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Prebuild.libraries.win64.zip
-https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.QT.libraries.win64.zip
-https://github.com/spectrecoin/resources/raw/master/resources/Spectrecoin.Tor.libraries.win64.zip
+```
+-DCMAKE_TOOLCHAIN_FILE=D:/coding/vcpkg/scripts/buildsystems/vcpkg.cmake
+-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER
+-DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER
+-DENABLE_GUI=ON
+-DQT_CMAKE_MODULE_PATH=C:\Qt\5.12.9\msvc2017_64\lib\cmake
+```
 
-Clone Spectrecoin repository. You can simply download the “Zip”s from Github.
+![CLion Toolchain settings](Clion-CMake-Settings.png)
 
-Now unzip Prebuild, QT and Tor libraries.zip that you just downloaded into the
-root folder of the cloned repository. Once done properly you should end up with
-`src` and `packages64bit` all on one folder.
+With a click on the "Build-Hammer", you can trigger the build:
 
-Now go ahead and open a the file src/src.pro (It should open up with Qt Creator).
-Make sure MSVC 64 bit compiler is selected. Click configure and build and run as
-usual with Qt.
-
+![Perform build](Clion-Build.png)
 
 ## Library Notes
 
-- The Tor libraries zip contains simply the official Tor binaries and are
-  only required at runtime.
-- The libraries contained in Spectrecoin.QT.libraries.win64.zip have been
-  automatically gathered by QT with the windeployqt tool.
-  See http://doc.qt.io/qt-5/windows-deployment.html
-
-## Library Notes
-
-You can use the scripts `scripts/win-genbuild.bat` and `scripts/win-build.bat`
-to build from cmdline. The first script creates the header file `build.h` with
-some required variable definitions. The second script performs the build itself
-and to use it, you need to define `%QTDIR%`. This env var must point to the root
-folder or your local Qt installation.
-
-At the moment it is assumed, that MSVC is installed on the default path
-`C:\Program Files (x86)\Microsoft Visual Studio`.
+During the build the archive https://github.com/aliascash/resources/raw/master/resources/Tor.libraries.Win64.zip
+will be downloaded and extracted. It contains the Tor binary and it's libraries. The archive is installed beside
+the Alias binary and required on runtime.
