@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-raspi-buster:latest
+FROM aliascash/alias-wallet-builder-raspi-buster:2.0
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-fedora:latest as build
+FROM aliascash/alias-wallet-builder-fedora:2.0 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
