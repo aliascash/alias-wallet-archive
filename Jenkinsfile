@@ -413,9 +413,9 @@ pipeline {
                                     )
                                     getChecksumfileFromImage(
                                             dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
-                                            checksumfile: "Checksum-Alias-RaspberryPi-Buster.txt"
+                                            checksumfile: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
                                     )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-RaspberryPi-Buster.txt"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
                                 }
                             }
                             post {
