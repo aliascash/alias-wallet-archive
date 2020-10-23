@@ -254,7 +254,7 @@ checkBoost() {
 # ===== Start of Qt functions ================================================
 checkQt() {
     info ""
-    info "Searching required Qt libs"
+    info "Qt:"
     qtComponentMissing=false
     if [[ -d ${MAC_QT_LIBRARYDIR} ]]; then
         # libQt5Quick.so
