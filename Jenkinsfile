@@ -427,7 +427,7 @@ pipeline {
                         stage('Trigger image build') {
                             steps {
                                 build(
-                                        job: 'Alias/pi-gen/alias',
+                                        job: 'Alias/pi-gen/alias_arm64',
                                         parameters: [
                                                 string(
                                                         name: 'ALIAS_RELEASE',
