@@ -9,7 +9,7 @@
 #include "paymentserver.h"
 
 #include "guiconstants.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "util.h"
 
 #include <QByteArray>

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-raspi-buster:1.8
+FROM aliascash/alias-wallet-builder-raspi-buster:2.0
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -16,10 +16,6 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /alias-wallet
 
 RUN cd /alias-wallet \
- && mkdir db4.8 leveldb \
- && ./autogen.sh \
- && ./configure \
-        --enable-gui \
- && make -j${BUILD_THREADS} \
- && strip /alias-wallet/src/aliaswalletd \
- && strip /alias-wallet/src/aliaswallet
+ && ./scripts/cmake-build.sh -g -o -s -c ${BUILD_THREADS} \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswalletd \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswallet

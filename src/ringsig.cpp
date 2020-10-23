@@ -296,11 +296,7 @@ int generateRingSignature(const data_chunk &keyImage, const uint256 &txnHash, in
     }
 
     // zero sum
-    if (!bnSum || !(BN_zero(bnSum)))
-    {
-        LogPrintf("%s: BN_zero failed.\n", __func__);
-        rv = 1; goto End;
-    }
+    BN_zero(bnSum);
 
     if (   !(ptT1 = EC_POINT_new(ecGrp))
         || !(ptT2 = EC_POINT_new(ecGrp))
@@ -539,11 +535,7 @@ int verifyRingSignature(const data_chunk &keyImage, const uint256 &txnHash, int 
     ssCommitHash << txnHash;
 
     // zero sum
-    if (!bnSum || !(BN_zero(bnSum)))
-    {
-        LogPrintf("%s: BN_zero failed.\n", __func__);
-        rv = 1; goto End;
-    }
+    BN_zero(bnSum);
 
     if (   !(ptT1 = EC_POINT_new(ecGrp))
         || !(ptT2 = EC_POINT_new(ecGrp))

@@ -22,7 +22,7 @@
 #include "keystore.h"
 #include "crypter.h"
 #include "script.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "util.h"
 #include "walletdb.h"
 #include "stealth.h"

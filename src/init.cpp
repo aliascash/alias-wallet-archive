@@ -13,7 +13,7 @@
 #include "state.h"
 #include "sync.h"
 #include "util.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "ringsig.h"
 #include "miner.h"
 
@@ -574,7 +574,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("Alias version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
     LogPrintf("Operating in %s mode.\n", GetNodeModeName(nNodeMode));
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
+#else
+    LogPrintf("Using OpenSSL version %s\n", OpenSSL_version(OPENSSL_VERSION));
+#endif
 
     if (!fLogTimestamps)
         LogPrintf("Startup time: %s\n", DateTimeStrFormat("%x %H:%M:%S", GetTime()).c_str());

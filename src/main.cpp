@@ -15,7 +15,7 @@
 #include "txdb.h"
 #include "net.h"
 #include "init.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "kernel.h"
 
 

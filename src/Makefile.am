@@ -133,7 +133,7 @@ qt/qrc_%.cpp: ../%.qrc
 		@RCC@ $< -o $@
 
 if OS_MACOS
-  MOC_CPPFLAGS = -DQ_OS_MAC
+  MOC_CPPFLAGS = -DQ_OS_MACOS
 endif
 
 qt/moc_%.cpp: qt/%.h

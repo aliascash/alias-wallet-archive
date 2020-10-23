@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-debian-stretch:1.8 as build
+FROM aliascash/alias-wallet-builder-debian-stretch:2.0 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -16,13 +16,9 @@ ENV BUILD_THREADS=$BUILD_THREADS
 COPY . /alias-wallet
 
 RUN cd /alias-wallet \
- && mkdir db4.8 leveldb \
- && ./autogen.sh \
- && ./configure \
-        --enable-gui \
- && make -j${BUILD_THREADS} \
- && strip /alias-wallet/src/aliaswalletd \
- && strip /alias-wallet/src/aliaswallet
+ && ./scripts/cmake-build.sh -g -o -s -c ${BUILD_THREADS} \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswalletd \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswallet
 
 ### Now upload binaries to GitHub ###
 FROM aliascash/github-uploader:latest
@@ -39,8 +35,8 @@ ENV CHKSUM_FILE=Checksum-Alias-Debian-Stretch.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
-COPY --from=build /alias-wallet/src/aliaswalletd /filesToUpload/usr/local/bin/
-COPY --from=build /alias-wallet/src/aliaswallet /filesToUpload/usr/local/bin/
+COPY --from=build /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswalletd /filesToUpload/usr/local/bin/aliaswalletd
+COPY --from=build /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswallet /filesToUpload/usr/local/bin/aliaswallet
 COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \

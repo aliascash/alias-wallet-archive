@@ -9,7 +9,7 @@
 #include "net.h"
 #include "hash.h"
 #include "main.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 

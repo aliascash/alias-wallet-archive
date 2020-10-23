@@ -85,8 +85,9 @@ To build the Alias wallet from source, you will need the following dependencies:
  runtime dependency)
 * Qt 5 if you want to build the GUI wallet. At runtime Qt Webengine is required but not at built time. Qt is not needed for the console wallet.
 
-Additionally, you'll need the native C/C++ compiler for your platform and the basic
-dependencies needed for any kind of development. After the wipe out of Qt Webengine as a compile time dependency, we're working on cross compiling. But at the moment it is not possible.
+Additionally, you'll need the native C/C++ compiler for your platform, CMake at least in 
+version 3.14 and the basic dependencies needed for any kind of development. Because of 
+Qt Webengine cross compiling is currently not possible.
 
  * macOS - Xcode with Command Line Tools and clang, QTs QMAKE
  * Windows - [vcpkg](https://github.com/Microsoft/vcpkg) and MSVC, QTs QMAKE

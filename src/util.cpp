@@ -15,7 +15,7 @@
 #include "sync.h"
 #include "strlcpy.h"
 #include "version.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
@@ -77,7 +77,7 @@ CMedianFilter<int64_t> vTimeOffsets(200,0);
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;
-void locking_callback(int mode, int i, const char* file, int line)
+void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAFETY_ANALYSIS
 {
     if (mode & CRYPTO_LOCK) {
         ENTER_CRITICAL_SECTION(*ppmutexOpenSSL[i]);

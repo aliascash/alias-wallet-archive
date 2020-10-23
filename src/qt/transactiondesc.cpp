@@ -12,7 +12,7 @@
 #include "main.h"
 #include "wallet.h"
 #include "txdb.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "base58.h"
 
 void toHTML(CWallet *wallet, CWalletTx &wtx, QString& strHTML, const bool& debit, const CTxDestination& destination, const std::vector<CTxDestination>& destSubs, const int64_t& amount, const Currency& currency, const std::string& narration, bool& narrationHandled);

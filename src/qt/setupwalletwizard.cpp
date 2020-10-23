@@ -25,7 +25,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
 
     setStartId(Page_Intro);
 
-//#ifndef Q_OS_MAC
+//#ifndef Q_OS_MACOS
     setWizardStyle(ModernStyle);
 //#endif
     setOption(HaveHelpButton, true);

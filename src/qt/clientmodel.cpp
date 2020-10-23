@@ -13,7 +13,7 @@
 
 #include "alert.h"
 #include "main.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <QDateTime>
 #include <QTimer>

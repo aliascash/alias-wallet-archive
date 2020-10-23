@@ -10,7 +10,7 @@
 #include "init.h"
 #include "strlcpy.h"
 #include "addrman.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include <sys/stat.h>
 #include <boost/dll.hpp>
 

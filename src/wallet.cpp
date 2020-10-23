@@ -13,7 +13,7 @@
 #include "walletdb.h"
 #include "bloom.h"
 #include "crypter.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "base58.h"
 #include "kernel.h"
 #include "coincontrol.h"
@@ -3881,7 +3881,7 @@ bool CWallet::GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAdd
         sxAddress = *it;
         return true;
     };
-
+    return false;
 }
 
 

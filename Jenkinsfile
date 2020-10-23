@@ -15,8 +15,6 @@ pipeline {
         disableConcurrentBuilds()
     }
     environment {
-        // In case another branch beside master or develop should be deployed, enter it here
-        BRANCH_TO_DEPLOY = 'xyz'
         DISCORD_WEBHOOK = credentials('991ce248-5da9-4068-9aea-8a6c2c388a19')
         GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
@@ -33,9 +31,13 @@ pipeline {
                 script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
-        RELEASE_NAME = "Continuous build No. ${BUILD_NUMBER}"
+        RELEASE_NAME = "Continuous build #${BUILD_NUMBER} (Branch ${GIT_BRANCH})"
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
         PRERELEASE = "true"
+    }
+    parameters {
+        // In case another branch beside master or develop should be deployed, enter it here
+        string(name: 'BRANCH_TO_DEPLOY', defaultValue: 'xzy', description: 'Branch name which should be build and deployed to Github?')
     }
     stages {
         stage('Notification') {
@@ -62,6 +64,24 @@ pipeline {
             }
             //noinspection GroovyAssignabilityCheck
             parallel {
+                stage('Raspberry Pi Buster arm64') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('CentOS 8') {
                     agent {
                         label "docker"
@@ -140,11 +160,10 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "Ubuntu 18.04 build disabled for now"
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-//                            )
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                            )
                         }
                     }
                     post {
@@ -184,14 +203,13 @@ pipeline {
                     }
                     steps {
                         script {
-                            echo "Mac build disabled for now"
-//                            sh(
-//                                    script: """
-//                                        pwd
-//                                        ./scripts/mac-build.sh
-//                                        rm -f Alias*.dmg
-//                                    """
-//                            )
+                            sh(
+                                    script: """
+                                        pwd
+                                        ./scripts/cmake-build-mac.sh -g
+                                        cp ./cmake-build-mac-cmdline/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                    """
+                            )
 //                            prepareMacDelivery()
 //                            sh(
 //                                    script: """
@@ -200,7 +218,7 @@ pipeline {
 //                                    """
 //                            )
 //                            // Archive step here only to be able to make feature branch builds available for download
-//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
 //                            prepareMacOBFS4Delivery()
 //                            sh(
 //                                    script: """
@@ -242,10 +260,12 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
                                 VSDIR = "${VS2017_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
-                                    buildWindows("-Qt5.12")
+                                    bat 'scripts/cmake-build-win.bat'
                                 }
                             }
                         }
@@ -282,11 +302,12 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN}"
                                 VSDIR = "${VS2019_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
-                                    buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+                                    bat 'scripts/cmake-build-win.bat'
                                 }
                             }
                         }
@@ -545,18 +566,17 @@ pipeline {
                         stage('Ubuntu 18.04') {
                             steps {
                                 script {
-                                    echo "Ubuntu 18.04 build disabled for now"
-//                                    buildBranch(
-//                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
-//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-//                                            gitTag: "${GIT_TAG_TO_USE}",
-//                                            gitCommit: "${GIT_COMMIT_SHORT}"
-//                                    )
-//                                    getChecksumfileFromImage(
-//                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
-//                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
-//                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
+                                    buildBranch(
+                                            dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            gitTag: "${GIT_TAG_TO_USE}",
+                                            gitCommit: "${GIT_COMMIT_SHORT}"
+                                    )
+                                    getChecksumfileFromImage(
+                                            dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
+                                            checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
+                                    )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
                                 }
                             }
                             post {
@@ -629,14 +649,13 @@ pipeline {
                         stage('MacOS build') {
                             steps {
                                 script {
-                                    echo "Mac build disabled for now"
-//                                    sh(
-//                                            script: """
-//                                                pwd
-//                                                ./scripts/mac-build.sh
-//                                                rm -f Alias*.dmg
-//                                            """
-//                                    )
+                                    sh(
+                                            script: """
+                                                pwd
+                                                ./scripts/cmake-build-mac.sh -g
+                                                cp ./cmake-build-mac-cmdline/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
 //                                    prepareMacDelivery()
 //                                    sh(
 //                                            script: """
@@ -644,7 +663,7 @@ pipeline {
 //                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
 //                                            """
 //                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
 //                                    prepareMacOBFS4Delivery()
 //                                    sh(
 //                                            script: """
@@ -662,19 +681,18 @@ pipeline {
                             }
                             steps {
                                 script {
-                                    echo "Mac upload for now"
-//                                    sh(
-//                                            script: """
-//                                                rm -f Alias*.dmg*
-//                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                            """
-//                                    )
-//                                    uploadArtifactToGitHub(
-//                                            user: 'aliascash',
-//                                            repository: 'alias-wallet',
-//                                            tag: "${GIT_TAG_TO_USE}",
-//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                    )
+                                    sh(
+                                            script: """
+                                                rm -f Alias*.dmg*
+                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                            """
+                                    )
+                                    uploadArtifactToGitHub(
+                                            user: 'aliascash',
+                                            repository: 'alias-wallet',
+                                            tag: "${GIT_TAG_TO_USE}",
+                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                    )
 //                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
 //                                    uploadArtifactToGitHub(
 //                                            user: 'aliascash',
@@ -682,15 +700,15 @@ pipeline {
 //                                            tag: "${GIT_TAG_TO_USE}",
 //                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
 //                                    )
-//                                    createAndArchiveChecksumFile(
-//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                            checksumfile: "Checksum-Alias-Mac.txt"
-//                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            checksumfile: "Checksum-Alias-Mac.txt"
+                                    )
 //                                    createAndArchiveChecksumFile(
 //                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
 //                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
 //                                    )
-//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
+                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
                                 }
                             }
                             post {
@@ -732,17 +750,34 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN_512}"
                                 VSDIR = "${VS2017_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
-                                    buildWindows("-Qt5.12")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12-OBFS4.zip"
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+                                            scripts/cmake-build-win.bat
+                                        """
+                                        )
+                                    zip(
+                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
+                                        dir: "${WORKSPACE}/build",
+                                        glob: "Alias/**"
+                                    )
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+                                        """
+                                        )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
                                     build(
                                             job: 'Alias/installer/master',
                                             parameters: [
                                                     string(
                                                             name: 'ARCHIVE_LOCATION',
-                                                            value: "${WORKSPACE}"
+                                                            value: "${WORKSPACE}/build"
                                                     ),
                                                     string(
                                                             name: 'ARCHIVE_NAME',
@@ -800,11 +835,28 @@ pipeline {
                             environment {
                                 QTDIR = "${QT_DIR_WIN}"
                                 VSDIR = "${VS2019_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
                             }
                             steps {
                                 script {
-                                    buildWindows("")
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip, Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-OBFS4.zip"
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+                                            scripts/cmake-build-win.bat
+                                        """
+                                        )
+                                    zip(
+                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
+                                        dir: "${WORKSPACE}/build",
+                                        glob: "Alias/**"
+                                    )
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+                                        """
+                                        )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
                                 }
                             }
                         }
@@ -852,20 +904,21 @@ pipeline {
                 branch 'master'
             }
             steps {
-                build(
-                        job: 'updateDownloadURLs',
-                        parameters: [
-                                string(
-                                        name: 'RELEASE_VERSION',
-                                        value: "${GIT_TAG_TO_USE}"
-                                ),
-                                string(
-                                        name: 'GIT_COMMIT_SHORT',
-                                        value: "${GIT_COMMIT_SHORT}"
-                                )
-                        ],
-                        wait: false
-                )
+                echo "Update of download links currently disabled"
+//                build(
+//                        job: 'updateDownloadURLs',
+//                        parameters: [
+//                                string(
+//                                        name: 'RELEASE_VERSION',
+//                                        value: "${GIT_TAG_TO_USE}"
+//                                ),
+//                                string(
+//                                        name: 'GIT_COMMIT_SHORT',
+//                                        value: "${GIT_COMMIT_SHORT}"
+//                                )
+//                        ],
+//                        wait: false
+//                )
             }
         }
     }
@@ -958,7 +1011,7 @@ def uploadDeliveries(def suffix) {
     script {
         sh(
                 script: """
-                    rm -f Alias-*-Win64${suffix}.zip Alias-*-Win64${suffix}-OBFS4.zip
+                    rm -f Alias-*-Win64${suffix}.zip
                     wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
@@ -968,21 +1021,10 @@ def uploadDeliveries(def suffix) {
                 tag: "${GIT_TAG_TO_USE}",
                 artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
         )
-        sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip"
-        uploadArtifactToGitHub(
-                user: 'aliascash',
-                repository: 'alias-wallet',
-                tag: "${GIT_TAG_TO_USE}",
-                artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
-        )
         createAndArchiveChecksumFile(
                 filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip",
                 checksumfile: "Checksum-Alias-Win64${suffix}.txt"
         )
-        createAndArchiveChecksumFile(
-                filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}-OBFS4.zip",
-                checksumfile: "Checksum-Alias-Win64${suffix}-OBFS4.txt"
-        )
-        sh "rm -f Alias-*-Win64${suffix}-OBFS4.zip Alias-*-Win64${suffix}.zip Checksum-Alias-Win64${suffix}.txt Checksum-Alias-Win64${suffix}-OBFS4.txt"
+        sh "rm -f Alias-*-Win64${suffix}.zip Checksum-Alias-Win64${suffix}.txt"
     }
 }
