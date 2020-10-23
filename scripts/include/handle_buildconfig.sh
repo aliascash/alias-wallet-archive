@@ -104,4 +104,25 @@ TOR_ARCHIVE_HASH_ANDROID=be22b9326093dd6b012377d9e3c456028cd2104e5a454a7773aebf7
 
 EOF
 fi
+info ""
+info "Build configuration:"
+info " -> Loading general build configuration"
 . .buildconfig
+
+if [ -e "${HOME}/.alias_buildconfig" ] ; then
+    info " -> Loading personal build configuration"
+    # Personal build config found, so load it
+    . ${HOME}/.alias_buildconfig
+else
+    # Personal build config not existing, create it with all entries commented
+    info ""
+    warning " -> Personal build configuration not found, creating it now!"
+    sed "s/^\([a-zA-Z]\)/#\1/g" .buildconfig > ${HOME}/.alias_buildconfig
+    info ""
+    info "If you like to modify '${HOME}/.alias_buildconfig',"
+    info "you should break script execution now (Ctrl-C)"
+    for i in $(seq 10 -1 0) ; do
+        info "${i}"
+        sleep 1
+    done
+fi
