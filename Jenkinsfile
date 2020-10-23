@@ -37,10 +37,6 @@ pipeline {
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
         PRERELEASE = "true"
     }
-    parameters {
-        // In case another branch beside master or develop should be deployed, enter it here
-        string(name: 'BRANCH_TO_DEPLOY', defaultValue: 'xzy', description: 'Branch name which should be build and deployed to Github?')
-    }
     stages {
         stage('Notification') {
             steps {
