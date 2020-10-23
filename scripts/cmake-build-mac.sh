@@ -23,7 +23,7 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=/Applications/Qt/${QT_VERSION_MAC}/clang_64
+MAC_QT_ROOT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
 MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
 MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
 
