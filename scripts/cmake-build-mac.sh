@@ -366,7 +366,6 @@ checkEventLib() {
         checkEventLibBuild
     fi
 }
-
 # ===== End of libevent functions ============================================
 
 # ============================================================================
@@ -437,7 +436,6 @@ checkLevelDB() {
         checkLevelDBBuild
     fi
 }
-
 # ===== End of leveldb functions =============================================
 
 # ============================================================================
@@ -781,6 +779,7 @@ cmake \
     -DBERKELEYDB_INCLUDE_DIR=/usr/local/opt/berkeley-db@4/include \
     \
     -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
+    -DLEVELDB_INCLUDE_DIR=${BUILD_DIR}/local/include \
     \
     -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
     \
