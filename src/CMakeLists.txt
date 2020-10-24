@@ -47,6 +47,7 @@ target_include_directories(aliaswallet_lib
         ${PROJECT_BINARY_DIR}/libdb/libdb-install/include
         ${OPENSSL_INCLUDE_DIR}
         ${BERKELEYDB_INCLUDE_DIR}
+        ${LEVELDB_INCLUDE_DIR}
         )
 
 # Common sources
