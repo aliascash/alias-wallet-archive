@@ -424,24 +424,24 @@ pipeline {
                                 }
                             }
                         }
-//                        stage('Trigger image build') {
-//                            steps {
-//                                build(
-//                                        job: 'Alias/pi-gen/alias_arm64',
-//                                        parameters: [
-//                                                string(
-//                                                        name: 'ALIAS_RELEASE',
-//                                                        value: "${GIT_TAG_TO_USE}"
-//                                                ),
-//                                                string(
-//                                                        name: 'GIT_COMMIT_SHORT',
-//                                                        value: "${GIT_COMMIT_SHORT}"
-//                                                )
-//                                        ],
-//                                        wait: false
-//                                )
-//                            }
-//                        }
+                        stage('Trigger image build') {
+                            steps {
+                                build(
+                                        job: 'Alias/pi-gen/alias_arm64',
+                                        parameters: [
+                                                string(
+                                                        name: 'ALIAS_RELEASE',
+                                                        value: "${GIT_TAG_TO_USE}"
+                                                ),
+                                                string(
+                                                        name: 'GIT_COMMIT_SHORT',
+                                                        value: "${GIT_COMMIT_SHORT}"
+                                                )
+                                        ],
+                                        wait: false
+                                )
+                            }
+                        }
                     }
                 }
                 stage('CentOS 8') {
