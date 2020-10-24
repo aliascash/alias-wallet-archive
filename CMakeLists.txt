@@ -291,6 +291,8 @@ find_package(BerkeleyDB)
 #     -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb
 message(STATUS "=== LevelDB ================================================================")
 find_package(leveldb)
+message(STATUS "LevelDB directory: ${leveldb_DIR}")
+message(STATUS "LevelDB version: ${leveldb_VERSION}")
 
 # ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
