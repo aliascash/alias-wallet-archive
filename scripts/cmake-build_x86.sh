@@ -62,7 +62,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
-BUILD_DIR=cmake-build-cmdline_x86
+BUILD_DIR=cmake-build-cmdline-x86
 
 helpMe() {
     echo "

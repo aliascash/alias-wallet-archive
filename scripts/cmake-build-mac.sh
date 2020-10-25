@@ -72,7 +72,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 TOR_RESOURCE_ARCHIVE=Tor.libraries.MacOS.zip
 
-BUILD_DIR=cmake-build-mac-cmdline
+BUILD_DIR=cmake-build-cmdline-mac
 
 helpMe() {
     echo "
