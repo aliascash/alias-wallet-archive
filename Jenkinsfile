@@ -205,7 +205,7 @@ pipeline {
                                     script: """
                                         pwd
                                         ./scripts/cmake-build-mac.sh -g
-                                        cp ./cmake-build-mac-cmdline/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                     """
                             )
 //                            prepareMacDelivery()
@@ -651,7 +651,7 @@ pipeline {
                                             script: """
                                                 pwd
                                                 ./scripts/cmake-build-mac.sh -g
-                                                cp ./cmake-build-mac-cmdline/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                                cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
 //                                    prepareMacDelivery()
