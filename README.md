@@ -23,7 +23,7 @@ SPDX-License-Identifier: MIT
 # Social
 - Visit our website [Alias](https://alias.cash/) (ALIAS)
 - Please join us on our [Discord](https://discord.gg/ckkrb8m) server
-- Read the latest [Newsletter](https://news.spectreproject.io/)
+- Read the latest [News](https://alias.cash/news/)
 - Visit our thread at [BitcoinTalk](https://bitcointalk.org/index.php?topic=2103301.0)
 
 ## Key Privacy Technology
