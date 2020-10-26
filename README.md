@@ -55,24 +55,16 @@ therefore protected at all times.
 <tr><td>Ring Size</td><td>fix 10</td></tr>
 </table>
 
-## Building from source
+## Further documentation
 
-**NOTE** that these instructions are relevant for building from branch `develop`, which contains the latest
-code in development. It is generally stable but can contain features that have had less
-testing than released versions. If you want to build a stable version of Alias, please
-check out the latest release tag before you start building.
+For detailed description and further documentation have a look at our [Wiki](https://github.com/aliascash/documentation/wiki).
 
-The release 4.3.0 was the last release using different build strategies through the supported
-operating systems. Starting with releases above 4.3.0 the whole build process was refactored
-to use [CMake](https://cmake.org/). To make the build as easy as possible, some helper scripts
-for the different operating systems where developed. See all the files `scripts/cmake-build*`
-[here](https://github.com/aliascash/alias-wallet/tree/develop/scripts).
-
-For detailed description checkout the content of our [Wiki](https://github.com/aliascash/documentation/wiki) or go straight to these pages there:
+ Like to build from source? Go straight to these pages there:
 * Build on and for [Windows](https://github.com/aliascash/documentation/wiki/Build-Windows)
 * Build on and for [Mac](https://github.com/aliascash/documentation/wiki/Build-Mac)
+* Separate pages for different flavours of Linux are also available there
 
-### UI development
+#### UI development
 
 The following files where maintained on the separate Git repository
 [alias-wallet-ui](https://github.com/aliascash/alias-wallet-ui):
