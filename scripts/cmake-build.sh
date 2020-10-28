@@ -165,6 +165,10 @@ defineQtVersionForCurrentDistribution() {
         "fedora")
             usedDistro="FEDORA"
             ;;
+        "opensuse-tumbleweed")
+            usedDistro="OPENSUSE"
+            releaseName="TUMBLEWEED"
+            ;;
         "raspbian")
             usedDistro="RASPBERRY"
             case ${VERSION_ID} in

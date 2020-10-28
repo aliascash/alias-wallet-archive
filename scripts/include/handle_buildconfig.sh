@@ -54,6 +54,7 @@ QT_VERSION_UBUNTU_1904=5.12.4
 QT_VERSION_UBUNTU_1910=5.12.4
 QT_VERSION_UBUNTU_2004=5.12.8
 QT_VERSION_FEDORA=5.14.2
+QT_VERSION_OPENSUSE_TUMBLEWEED=5.15.1
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
