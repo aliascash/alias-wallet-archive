@@ -152,6 +152,24 @@ pipeline {
                         }
                     }
                 }
+                stage('OpenSUSE') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
                 stage('Ubuntu 18.04') {
                     agent {
                         label "docker"
@@ -548,6 +566,31 @@ pipeline {
                                     checksumfile: "Checksum-Alias-Fedora.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Fedora.txt"
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('OpenSUSE') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildBranch(
+                                    dockerfile: 'Docker/OpenSUSE/Dockerfile',
+                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}",
+                                    gitTag: "${GIT_TAG_TO_USE}",
+                                    gitCommit: "${GIT_COMMIT_SHORT}"
+                            )
+                            getChecksumfileFromImage(
+                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}",
+                                    checksumfile: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
+                            )
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
                         }
                     }
                     post {
