@@ -72,7 +72,7 @@ while getopts a:l:n:p:v:h? option; do
 done
 
 info " -> Boost $BOOST_VERSION..."
-cd ${callDir}
+cd "${callDir}"
 
 case ${ANDROID_ARCH} in
     arm64)
@@ -108,17 +108,17 @@ info " -> Building boost with './b2 -d+2 \
     --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH} \
     install'"
 ./b2 -d+2 \
-    -j ${CORES_TO_USE} \
+    -j "${CORES_TO_USE}" \
     --reconfigure \
     target-os=android \
-    toolset=clang-${jamEntry1} \
+    toolset=clang-"${jamEntry1}" \
     link=static \
     variant=release \
     threading=multi \
     cxxflags="-std=c++14 -fPIC" \
-    --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
-    --user-config=${ANDROID_ARCH}-config.jam \
-    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH} \
+    --with-"${BOOST_LIBS_TO_BUILD//,/ --with-}" \
+    --user-config="${ANDROID_ARCH}"-config.jam \
+    --prefix="$(pwd)"/../boost_"${BOOST_VERSION//./_}"_android"${ANDROID_API}"_"${ANDROID_ARCH}" \
     install
 info " -> Done!"
 #read a
