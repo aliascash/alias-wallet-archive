@@ -54,283 +54,283 @@ pipeline {
                 )
             }
         }
-        stage('Feature branch') {
-            when {
-                not {
-                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
-                }
-            }
-            //noinspection GroovyAssignabilityCheck
-            parallel {
-                stage('Raspberry Pi Buster arm64') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('CentOS 8') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Debian Stretch') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Debian Buster') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Fedora') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('OpenSUSE') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Ubuntu 18.04') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Ubuntu 20.04') {
-                    agent {
-                        label "docker"
-                    }
-                    steps {
-                        script {
-                            buildFeatureBranch(
-                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
-                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
-                            )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
-                        }
-                    }
-                }
-                stage('Mac') {
-                    agent {
-                        label "mac"
-                    }
-                    environment {
-                        BOOST_PATH = "${BOOST_PATH_MAC}"
-                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-                        QT_PATH = "${QT_PATH_MAC_512}"
-                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-                        MACOSX_DEPLOYMENT_TARGET = 10.12
-                    }
-                    steps {
-                        script {
-                            sh(
-                                    script: """
-                                        pwd
-                                        ./scripts/cmake-build-mac.sh -g
-                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                    """
-                            )
-//                            prepareMacDelivery()
+//        stage('Feature branch') {
+//            when {
+//                not {
+//                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
+//                }
+//            }
+//            //noinspection GroovyAssignabilityCheck
+//            parallel {
+//                stage('Raspberry Pi Buster arm64') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('CentOS 8') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Debian Stretch') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Debian Buster') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Fedora') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('OpenSUSE') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Ubuntu 18.04') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Ubuntu 20.04') {
+//                    agent {
+//                        label "docker"
+//                    }
+//                    steps {
+//                        script {
+//                            buildFeatureBranch(
+//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
+//                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
+//                            )
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "docker system prune --all --force"
+//                        }
+//                    }
+//                }
+//                stage('Mac') {
+//                    agent {
+//                        label "mac"
+//                    }
+//                    environment {
+//                        BOOST_PATH = "${BOOST_PATH_MAC}"
+//                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+//                        QT_PATH = "${QT_PATH_MAC_512}"
+//                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+//                        MACOSX_DEPLOYMENT_TARGET = 10.12
+//                    }
+//                    steps {
+//                        script {
 //                            sh(
 //                                    script: """
-//                                        ./scripts/mac-deployqt.sh
-//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                        pwd
+//                                        ./scripts/cmake-build-mac.sh -g
+//                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
 //                                    """
 //                            )
-//                            // Archive step here only to be able to make feature branch builds available for download
-                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-//                            prepareMacOBFS4Delivery()
-//                            sh(
-//                                    script: """
-//                                        ./scripts/mac-deployqt.sh
-//                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-//                                    """
-//                            )
-                        }
-                    }
-                }
-                stage('Windows Qt5.12.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.12.x') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN_512}"
-                                VSDIR = "${VS2017_DIR}"
-                                CMAKEDIR = "${CMAKE_DIR}"
-                                VCPKGDIR = "${VCPKG_DIR}"
-                            }
-                            steps {
-                                script {
-                                    bat 'scripts/cmake-build-win.bat'
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Windows Qt5.15.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.15.x') {
-                            agent {
-                                label "windows2"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                                VSDIR = "${VS2019_DIR}"
-                                CMAKEDIR = "${CMAKE_DIR}"
-                                VCPKGDIR = "${VCPKG_DIR}"
-                            }
-                            steps {
-                                script {
-                                    bat 'scripts/cmake-build-win.bat'
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+////                            prepareMacDelivery()
+////                            sh(
+////                                    script: """
+////                                        ./scripts/mac-deployqt.sh
+////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+////                                    """
+////                            )
+////                            // Archive step here only to be able to make feature branch builds available for download
+//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+////                            prepareMacOBFS4Delivery()
+////                            sh(
+////                                    script: """
+////                                        ./scripts/mac-deployqt.sh
+////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
+////                                    """
+////                            )
+//                        }
+//                    }
+//                }
+//                stage('Windows Qt5.12.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.12.x') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN_512}"
+//                                VSDIR = "${VS2017_DIR}"
+//                                CMAKEDIR = "${CMAKE_DIR}"
+//                                VCPKGDIR = "${VCPKG_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    bat 'scripts/cmake-build-win.bat'
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                stage('Windows Qt5.15.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.15.x') {
+//                            agent {
+//                                label "windows2"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN}"
+//                                VSDIR = "${VS2019_DIR}"
+//                                CMAKEDIR = "${CMAKE_DIR}"
+//                                VCPKGDIR = "${VCPKG_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    bat 'scripts/cmake-build-win.bat'
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
         stage('Prepare master branch build') {
             when {
                 branch 'master'
