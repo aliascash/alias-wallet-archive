@@ -120,7 +120,7 @@ info " -> Building boost with './b2 -d+2 \
     variant=release \
     threading=multi \
     cxxflags="-std=c++14 -fPIC" \
-    --with-"${BOOST_LIBS_TO_BUILD//,/ --with-}" \
+    --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
     --user-config="${ANDROID_ARCH}"-config.jam \
     --prefix="$(pwd)"/../boost_"${BOOST_VERSION//./_}"_android"${ANDROID_API}"_"${ANDROID_ARCH}" \
     install
