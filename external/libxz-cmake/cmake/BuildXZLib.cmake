@@ -105,7 +105,7 @@ else()
         endif()
 
         if (ARMEABI_V7A)
-            set(LIBLZMA_PLATFORM "--host=armeabi")
+            set(LIBLZMA_PLATFORM "--host armv7")
             #set(CONFIGURE_LIBLZMA_PARAMS ${CONFIGURE_LIBLZMA_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")

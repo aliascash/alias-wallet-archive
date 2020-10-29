@@ -114,7 +114,7 @@ else()
         endif()
         
         if (ARMEABI_V7A)
-            set(BERKELEYDB_PLATFORM "--host armeabi")
+            set(BERKELEYDB_PLATFORM "--host armv7")
 #            set(CONFIGURE_BERKELEYDB_PARAMS ${CONFIGURE_BERKELEYDB_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
