@@ -26,6 +26,7 @@ for currentChecksumfile in \
     Checksum-Alias-Debian-Buster.txt \
     Checksum-Alias-Debian-Stretch.txt \
     Checksum-Alias-Fedora.txt \
+    Checksum-Alias-OpenSUSE-Tumbleweed.txt \
     Checksum-Alias-Mac.txt \
     Checksum-Alias-Mac-OBFS4.txt \
     Checksum-Alias-RaspberryPi-Buster.txt \
