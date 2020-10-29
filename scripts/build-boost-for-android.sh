@@ -87,8 +87,12 @@ esac
 
 set -eu
 info " -> Generating config..."
-echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > ${ANDROID_ARCH}-config.jam
-echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-android23-clang++ ;" >> ${ANDROID_ARCH}-config.jam
+echo "path-constant ndk : ${ANDROID_NDK_ROOT} ;" > "${ANDROID_ARCH}"-config.jam
+if [[ "${ANDROID_ARCH}" = "armv7a" ]] ; then
+    echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-androideabi${ANDROID_API}-clang++ ;" >> "${ANDROID_ARCH}"-config.jam
+else
+    echo "using clang : ${jamEntry1} : \$(ndk)/toolchains/llvm/prebuilt/${HOST_SYSTEM}-x86_64/bin/${jamEntry2}-linux-android${ANDROID_API}-clang++ ;" >> "${ANDROID_ARCH}"-config.jam
+fi
 
 info " -> Bootstrapping..."
 #./bootstrap.sh #--with-toolset=clang
