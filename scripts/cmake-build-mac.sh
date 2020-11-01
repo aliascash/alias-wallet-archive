@@ -665,7 +665,7 @@ checkTorMacArchive() {
     if [[ -e "${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}" ]]; then
         info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}"
     else
-        TOR_ARCHIVE_URL=https://github.com/spectrecoin/resources/raw/master/resources/${TOR_RESOURCE_ARCHIVE}
+        TOR_ARCHIVE_URL=https://github.com/aliascash/resources/raw/master/resources/${TOR_RESOURCE_ARCHIVE}
         info " -> Downloading Tor archive ${TOR_RESOURCE_ARCHIVE}"
         if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
