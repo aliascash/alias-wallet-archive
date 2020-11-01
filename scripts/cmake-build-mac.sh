@@ -95,7 +95,7 @@ helpMe() {
         LevelDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -g  Build UI (Qt) components.
+    -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
@@ -255,6 +255,7 @@ checkBoost() {
 checkQt() {
     info ""
     info "Qt:"
+    info " -> Searching required Qt libs"
     qtComponentMissing=false
     if [[ -d ${MAC_QT_LIBRARYDIR} ]]; then
         # libQt5Quick.so

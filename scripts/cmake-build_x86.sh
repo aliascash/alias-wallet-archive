@@ -106,6 +106,17 @@ defineQtVersionForCurrentDistribution() {
         usedDistro=''
         releaseName=''
         case ${ID} in
+        "centos")
+            usedDistro="CENTOS"
+            case ${VERSION_ID} in
+            "8")
+                releaseName='8'
+                ;;
+            *)
+                echo "Unsupported operating system ID=${ID}, VERSION_ID=${VERSION_ID}"
+                ;;
+            esac
+            ;;
         "debian")
             usedDistro="DEBIAN"
             case ${VERSION_ID} in
@@ -433,7 +444,7 @@ checkQt() {
     if ${qtComponentMissing}; then
         error " -> Qt ${QT_VERSION}: Not all required components found!"
         error ""
-        die 43 "Stopping build because of missing Qt"
+        die 43 "Stopping build because of missing Qt component(s)"
     fi
 }
 # ===== End of Qt functions ==================================================
@@ -528,7 +539,6 @@ checkEventLib() {
         checkEventLibBuild
     fi
 }
-
 # ===== End of libevent functions ============================================
 
 # ============================================================================
@@ -604,7 +614,6 @@ checkLevelDB() {
         checkLevelDBBuild
     fi
 }
-
 # ===== End of leveldb functions =============================================
 
 # ============================================================================
