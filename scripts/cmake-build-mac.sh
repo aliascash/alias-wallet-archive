@@ -95,7 +95,7 @@ helpMe() {
         LevelDB.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
-    -g  Build UI (Qt) components.
+    -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
     -t  Build with included Tor
@@ -255,6 +255,7 @@ checkBoost() {
 checkQt() {
     info ""
     info "Qt:"
+    info " -> Searching required Qt libs"
     qtComponentMissing=false
     if [[ -d ${MAC_QT_LIBRARYDIR} ]]; then
         # libQt5Quick.so
@@ -664,7 +665,7 @@ checkTorMacArchive() {
     if [[ -e "${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}" ]]; then
         info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}"
     else
-        TOR_ARCHIVE_URL=https://github.com/spectrecoin/resources/raw/master/resources/${TOR_RESOURCE_ARCHIVE}
+        TOR_ARCHIVE_URL=https://github.com/aliascash/resources/raw/master/resources/${TOR_RESOURCE_ARCHIVE}
         info " -> Downloading Tor archive ${TOR_RESOURCE_ARCHIVE}"
         if [[ ! -e ${TOR_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${TOR_ARCHIVE_LOCATION}
