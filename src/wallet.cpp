@@ -1184,8 +1184,7 @@ int CWalletTx::GetRequestCount() const
     return nRequests;
 }
 
-void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
-                           list<tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
+void CWalletTx::GetDestinationDetails(list<CTxDestinationDetail>& listReceived, list<CTxDestinationDetail>& listSent, int64_t& nFee, string& strSentAccount) const
 {
     nFee = 0;
     listReceived.clear();
@@ -1329,27 +1328,27 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencySource, sNarr));
+            listSent.emplace_back(address, std::vector<CTxDestination>(), txout.nValue, std::optional<std::uint32_t>{index}, currencySource, sNarr);
 
         // If we are receiving the output, add it as a "received" entry
         if (fIsMine)
-            listReceived.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencyDestination, sNarr));
+            listReceived.emplace_back(address, std::vector<CTxDestination>(), txout.nValue, std::optional<std::uint32_t>{index}, currencyDestination, sNarr);
     };
 
     for (const auto & [address, amount] : mapStealthSent) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listSent.push_back(std::make_tuple(stealthAddress, mapDestinationSubs[address], amount, currencySource, mapStealthNarration[address]));
+            listSent.emplace_back(stealthAddress, mapDestinationSubs[address], amount, std::nullopt, currencySource, mapStealthNarration[address]);
         else
-            listSent.push_back(std::make_tuple(CNoDestination(), mapDestinationSubs[address], amount,currencySource, mapStealthNarration[address]));
+            listSent.emplace_back(CNoDestination(), mapDestinationSubs[address], amount, std::nullopt, currencySource, mapStealthNarration[address]);
     }
 
     for (const auto & [address, amount] : mapStealthReceived) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listReceived.push_back(std::make_tuple(stealthAddress, mapDestinationSubs[address], amount, currencyDestination, mapStealthNarration[address]));
+            listReceived.emplace_back(stealthAddress, mapDestinationSubs[address], amount, std::nullopt, currencyDestination, mapStealthNarration[address]);
         else
-            listReceived.push_back(std::make_tuple(CNoDestination(), mapDestinationSubs[address], amount, currencyDestination, mapStealthNarration[address]));
+            listReceived.emplace_back(CNoDestination(), mapDestinationSubs[address], amount, std::nullopt, currencyDestination, mapStealthNarration[address]);
     }
 }
 
@@ -1433,30 +1432,30 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nRecei
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
-    std::list<std::tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
+    std::list<CTxDestinationDetail> listReceived;
+    std::list<CTxDestinationDetail> listSent;
     GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
     if (strAccount == strSentAccount)
     {
-        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
-            nSent += amount;
+        for(const auto & destination : listSent)
+            nSent += destination.amount;
         nFee = allFee;
     };
 
     {
         LOCK(pwallet->cs_wallet);
-        for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
+        for(const auto & destination : listReceived)
         {
-            if (pwallet->mapAddressBook.count(address))
+            if (pwallet->mapAddressBook.count(destination.address))
             {
-                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(address);
+                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(destination.address);
                 if (mi != pwallet->mapAddressBook.end() && (*mi).second == strAccount)
-                    nReceived += amount;
+                    nReceived += destination.amount;
             } else
             if (strAccount.empty())
             {
-                nReceived += amount;
+                nReceived += destination.amount;
             };
         };
     } // pwallet->cs_wallet
