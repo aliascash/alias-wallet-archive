@@ -113,22 +113,22 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
     {
         int64_t allFee;
         std::string strSentAccount;
-        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
-        std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
+        std::list<CTxDestinationDetail> listReceived;
+        std::list<CTxDestinationDetail> listSent;
 
         wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
         if (wtx.IsAnonCoinStake() && !listReceived.empty())
         {
-            const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
-            int64_t stakingReward = allFee < 0 ? -allFee : rAmount;
+            const auto & destinationR = listReceived.front();
+            int64_t stakingReward = allFee < 0 ? -allFee : destinationR.amount;
             TransactionRecord sub = TransactionRecord(hash, nTime, TransactionRecord::GeneratedSPECTRE,
-                                            rDestination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(rDestination).Encoded(): "",
-                                            rNarration, 0, stakingReward, rCurrency, parts.size());
+                                            destinationR.address.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destinationR.address).Encoded(): "",
+                                            destinationR.narration, 0, stakingReward, destinationR.currency, parts.size());
 
-            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+            for (const auto & destination: listSent)
             {
-                std::string strAddress = CBitcoinAddress(destination).ToString();
+                std::string strAddress = CBitcoinAddress(destination.address).ToString();
                 if (strAddress == Params().GetDevContributionAddress() || strAddress == Params().GetSupplyIncreaseAddress())
                 {
                     sub.address = strAddress;
@@ -146,33 +146,33 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
         {
             // Transfer within account
             TransactionRecord::Type trxType = TransactionRecord::SendToSelfSPECTRE;
-            const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
-            const auto & [rDestination, rDestSubs, rAmount, rCurrency, rNarration] = listReceived.front();
+            const auto & destinationS = listSent.front();
+            const auto & destinationR = listReceived.front();
 
-            if (sCurrency == PUBLIC && rCurrency == PRIVATE)
+            if (destinationS.currency == PUBLIC && destinationR.currency == PRIVATE)
                 trxType = TransactionRecord::ConvertXSPECtoSPECTRE;
-            else if (sCurrency == PRIVATE && rCurrency == PUBLIC)
+            else if (destinationS.currency == PRIVATE && destinationR.currency == PUBLIC)
                 trxType = TransactionRecord::ConvertSPECTREtoXSPEC;
 
-            for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
+            for (const auto & destination : listReceived)
                 parts.append(TransactionRecord(hash, nTime, trxType,
-                        destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
-                        narration, 0, amount, currency, parts.size())
+                        destination.address.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination.address).Encoded(): "",
+                        destination.narration, 0, destination.amount, destination.currency, parts.size())
                 );
         }
         else
         {
-            for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+            for (const auto & destination: listSent)
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendSpectre,
-                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
-                                               narration, parts.size() == 0 ? -(amount + allFee): -amount, // add trx fees to first trx record
-                                               0, currency, parts.size())
+                                               destination.address.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination.address).Encoded(): "",
+                                               destination.narration, parts.size() == 0 ? -(destination.amount + allFee): -destination.amount, // add trx fees to first trx record
+                                               0, destination.currency, parts.size())
                 );
 
-            for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
+            for (const auto & destination : listReceived)
                 parts.append(TransactionRecord(hash, nTime, TransactionRecord::RecvSpectre,
-                                               destination.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination).Encoded(): "",
-                                               narration, 0, amount, currency, parts.size())
+                                               destination.address.type() == typeid(CStealthAddress) ? boost::get<CStealthAddress>(destination.address).Encoded(): "",
+                                               destination.narration, 0, destination.amount, destination.currency, parts.size())
                 );
         }
 

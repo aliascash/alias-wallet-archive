@@ -57,6 +57,7 @@ class CWalletTx;
 class CReserveKey;
 class COutput;
 class CCoinControl;
+class CTxDestinationDetail;
 
 typedef std::map<CKeyID, CStealthKeyMetadata> StealthKeyMetaMap;
 typedef std::map<std::string, std::string> mapValue_t;
@@ -984,8 +985,8 @@ public:
         return nChangeCached;
     }
 
-    void GetDestinationDetails(std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
-                    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetDestinationDetails(std::list<CTxDestinationDetail>& listReceived,
+                    std::list<CTxDestinationDetail>& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
@@ -1162,6 +1163,27 @@ public:
     )
 };
 
+
+class CTxDestinationDetail
+{
+public:
+    CTxDestinationDetail(CTxDestination address, std::vector<CTxDestination> vAddressElements, int64_t amount, std::optional<uint32_t> vout, Currency currency, std::string narration) :
+        address(address),
+        vAddressElements(vAddressElements),
+        amount(amount),
+        vout(vout),
+        currency(currency),
+        narration(narration)
+    {
+    }
+
+    CTxDestination address;
+    std::vector<CTxDestination> vAddressElements;
+    int64_t amount;
+    std::optional<uint32_t> vout;
+    Currency currency;
+    std::string narration;
+};
 
 
 /** Internal transfers.
