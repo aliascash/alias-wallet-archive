@@ -76,6 +76,11 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 
     QString txid(wtx.GetHash().ToString().c_str());
     strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"tx.dws?" + txid +"\");'>" + txid + "</a><br>";
+    if (wtx.hashBlock != 0)
+    {
+        QString blockHash = QString::fromStdString(wtx.hashBlock.GetHex());
+        strHTML += "<b>" + tr("Block Hash") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"block.dws?" + blockHash +"\");'>" + blockHash + "</a><br>";
+    }
 
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx);
     int nRequests = wtx.GetRequestCount();
