@@ -21,9 +21,7 @@ After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be
 a designated DCB and will be sent to the Alias team development fund wallet.
 This fund will ensure a future for Alias and will enable us to pay for certain
 services, to hire contractors and to pay Alias core team members in ALIAS
-to enable them to work full time on the project. We have some long term projects
-and concepts to implement such as a new proof-of-stake algorithm we call
-Proof-of-Stealth to enable so called "stealth staking". These developments
+to enable them to work full time on the project. The further development
 depend on a source of steady funding. We believe this will give us the opportunity
 to produce better software and will create value for investors. We currently
 have some very skilled developers working for us and we want to keep it that way.
