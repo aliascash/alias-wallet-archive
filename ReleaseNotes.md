@@ -1,9 +1,9 @@
 ## Alias V4
 
-`By downloading and using this software, you agree that 1/6 of the staking
-rewards are contributed to a development fund. The development fund aims
-to support the long term development and value of Alias. The fund is managed
-by the Alias core team.`
+> By downloading and using this software, you agree that 1/6 of the staking
+> rewards are contributed to a development fund. The development fund aims
+> to support the long term development and value of Alias. The fund is managed
+> by the Alias core team.
 
 This is a major release and a **MANDATORY** update to the Alias software!
 This update involves consensus changes (_details below_) and **you MUST
