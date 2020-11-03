@@ -1299,9 +1299,11 @@ void ListTransactions(const CWalletTx& wtx, const std::string& strAccount, int n
                     entry.push_back(Pair("amount", ValueFromAmount(-nFee)));
                     stop = true; // only one coinstake output
                 };
-                entry.push_back(Pair("currency", (currency == PRIVATE ? "PRIVATE" : "PUBLIC")));
-                if (!narration.empty())
-                    entry.push_back(Pair("narration", narration));
+                if (destination.vout)
+                    entry.push_back(Pair("vout", (int)destination.vout.value_or(-1)));
+                entry.push_back(Pair("currency", (destination.currency == PRIVATE ? "PRIVATE" : "PUBLIC")));
+                if (!destination.narration.empty())
+                    entry.push_back(Pair("narration", destination.narration));
                 if (fLong)
                     WalletTxToJSON(wtx, entry, false);
                 ret.push_back(entry);
