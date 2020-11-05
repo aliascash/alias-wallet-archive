@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.android.gms.net.CronetProviderInstaller;
+import com.google.android.gms.tasks.Task;
+
 import org.chromium.net.CronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 
@@ -24,7 +27,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -91,12 +93,31 @@ public class BootstrapService extends Service {
         notificationManager.notify(NOTIFICATION_ID_SERVICE_PROGRESS, notification);
         startForeground(NOTIFICATION_ID_SERVICE_PROGRESS, notification);
 
-        CronetEngine.Builder engineBuilder = new JavaCronetProvider(this).createBuilder();
-        engine = engineBuilder.build();
+        Task<Void> installTask = CronetProviderInstaller.installProvider(this);
+        installTask.addOnCompleteListener(
+                task -> {
+                    CronetEngine.Builder engineBuilder;
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "BootstrapTask: CronetProviderInstaller successfull!");
+                        engineBuilder = new CronetEngine.Builder(this);
+                    }
+                    else {
+                        if (task.getException() != null) {
+                            Log.d(TAG, "BootstrapTask: CronetProvider not available. Fallback to JavaCronetProvider", task.getException());
+                        } else {
+                            Log.d(TAG, "BootstrapTask: CronetProvider not available. Fallback to JavaCronetProvider");
+                        }
+                        engineBuilder = new JavaCronetProvider(this).createBuilder();
+                    }
+                    engine = engineBuilder
+                            .enableHttp2(true)
+                            .enableQuic(true)
+                            .build();
 
-        // Start bootstrap process in separate thread
-        bootstrapTask = new BootstrapTask();
-        bootstrapTask.execute();
+                    // Start bootstrap process in separate thread
+                    bootstrapTask = new BootstrapTask();
+                    bootstrapTask.execute();
+                });
     }
 
     @Override
