@@ -8,6 +8,8 @@
 
     <array name="manual_libs">
        <item>arm64-v8a;tor</item>
+       <item>armeabi-v7a;tor</item>
+       <item>x86_64;tor</item>
     </array>
 
     <!-- The following is handled automatically by the deployment tool. It should
