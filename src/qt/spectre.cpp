@@ -477,8 +477,6 @@ int main(int argc, char *argv[])
                                                screenGeometry.width() < screenGeometry.height() ? QString(":/assets/svg/Alias-Stacked-Reverse.svg") : QString(":/assets/svg/Alias-Horizontal-Reverse.svg"),
                                                targetRect));
 
-    // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
-    QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
     // Start core service (if service is allready running, this has not effect.)
     std::string bip44key = GetArg("-bip44key", "");
     QtAndroid::androidActivity().callMethod<void>("startCore", "(ZLjava/lang/String;)V", GetBoolArg("-rescan"), QAndroidJniObject::fromString(QString::fromStdString(bip44key)).object<jstring>());
@@ -608,6 +606,11 @@ int main(int argc, char *argv[])
 
                 if (!ShutdownRequested())
                     window.loadIndex(applicationModelPtr.data()->webSocketToken());
+
+#ifdef ANDROID
+                // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
+                QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
+#endif
 
 //               // Release lock before starting event processing, otherwise lock would never be released
 //               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
