@@ -39,7 +39,7 @@ public class BootstrapService extends Service {
 
     private static final String TAG = "BootstrapService";
 
-    public static final String BOOTSTRAP_BROADCAST_ACTION = "org.alias.wallet.boostrap";
+    public static final String BOOTSTRAP_BROADCAST_ACTION = "org.alias.wallet.bootstrap";
 
     public static final String ACTION_STOP = "ACTION_STOP";
 
@@ -53,7 +53,9 @@ public class BootstrapService extends Service {
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
 
     private Notification.Builder notificationBuilder;
+
     private BootstrapTask bootstrapTask;
+    private Notification.Action stopAction;
 
     private CronetEngine engine;
 
@@ -74,7 +76,7 @@ public class BootstrapService extends Service {
         Intent stopIntent = new Intent(this, BootstrapService.class);
         stopIntent.setAction(ACTION_STOP);
         PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0);
-        Notification.Action stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Abort", stopPendingIntent).build();
+        stopAction = new Notification.Action.Builder(Icon.createWithResource(this, R.drawable.baseline_stop_black_24), "Abort", stopPendingIntent).build();
 
         notificationBuilder = new Notification.Builder(this, AliasService.CHANNEL_ID_SERVICE)
                 .setContentTitle("Blockchain Bootstrap")//getText(R.string.notification_title))
@@ -289,8 +291,17 @@ public class BootstrapService extends Service {
         if (state != STATE_CANCEL) {
             notificationBuilder.setProgress(max, progress, indeterminate);
             notificationBuilder.setContentText(text);
-            // Final notification is shown with separate Id that its not closed when service is stopped.
-            int notificationId = (state == STATE_ERROR || state == STATE_FINISHED) ? NOTIFICATION_ID_SERVICE_RESULT : NOTIFICATION_ID_SERVICE_PROGRESS;
+            int notificationId;
+            if (state == STATE_ERROR || state == STATE_FINISHED) {
+                // Final notification is shown with separate Id that its not closed when service is stopped.
+                notificationId = NOTIFICATION_ID_SERVICE_RESULT;
+                notificationBuilder.setActions();
+                notificationBuilder.setAutoCancel(true);
+            }
+            else {
+                notificationId = NOTIFICATION_ID_SERVICE_PROGRESS;
+                notificationBuilder.setActions(stopAction);
+            }
             notificationManager.notify(notificationId, notificationBuilder.build());
         }
         sendBootstrapProgressBroadcast(state, progress, indeterminate);
