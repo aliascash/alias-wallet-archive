@@ -13,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import org.chromium.net.CronetEngine;
+import org.chromium.net.impl.JavaCronetProvider;
+
 import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -20,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -51,6 +55,7 @@ public class BootstrapService extends Service {
     private Notification.Builder notificationBuilder;
     private BootstrapTask bootstrapTask;
 
+    private CronetEngine engine;
 
     @Nullable
     @Override
@@ -88,6 +93,9 @@ public class BootstrapService extends Service {
         notificationManager.cancel(NOTIFICATION_ID_SERVICE_RESULT);
         notificationManager.notify(NOTIFICATION_ID_SERVICE_PROGRESS, notification);
         startForeground(NOTIFICATION_ID_SERVICE_PROGRESS, notification);
+
+        CronetEngine.Builder engineBuilder = new JavaCronetProvider(this).createBuilder();
+        engine = engineBuilder.build();
 
         // Start bootstrap process in separate thread
         bootstrapTask = new BootstrapTask();
@@ -189,7 +197,7 @@ public class BootstrapService extends Service {
                 // Make sure target directory for bootstrap exists
                 Files.createDirectories(bootstrapFile.getParent());
 
-                URLConnection connection = bootstrapURL.openConnection();
+                HttpURLConnection connection = (HttpURLConnection)engine.openConnection(bootstrapURL);
                 connection.setConnectTimeout(10000);
                 connection.connect();
                 // this will be useful so that you can show a typical 0-100% progress bar
