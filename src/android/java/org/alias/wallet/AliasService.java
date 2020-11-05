@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.qtproject.qt5.android.bindings.QtService;
@@ -98,7 +97,7 @@ public class AliasService extends QtService {
                         .setContentText("Running...")//getText(R.string.notification_message))
                         .setOnlyAlertOnce(true)
                         .setSmallIcon(R.drawable.ic_alias_app_white)
-                        .setColor(ContextCompat.getColor(this, R.color.primary))
+                        .setColor(getColor(R.color.primary))
                         .setContentIntent(pendingIntent)
                         .addAction(stopAction);
                         //.setTicker(getText(R.string.ticker_text));
@@ -171,7 +170,7 @@ public class AliasService extends QtService {
                 .setContentTitle(titleForNotification)//getText(R.string.notification_title))
                 .setContentText(text)//getText(R.string.notification_message))
                 .setSmallIcon(R.drawable.ic_alias_app_white)
-                .setColor(ContextCompat.getColor(this, R.color.primary))
+                .setColor(getColor(R.color.primary))
                 .setContentIntent(pendingIntent);
         if (WALLET_NOTIFICATION_TYPE_TX_STAKED.equalsIgnoreCase(type) ||
                 WALLET_NOTIFICATION_TYPE_TX_DONATED.equalsIgnoreCase(type) ||

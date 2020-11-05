@@ -9,8 +9,6 @@ import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.chromium.net.CronetEngine;
@@ -57,7 +55,6 @@ public class BootstrapService extends Service {
 
     private CronetEngine engine;
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -82,7 +79,7 @@ public class BootstrapService extends Service {
                 .setContentText("Downloading...")//getText(R.string.notification_message))
                 .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.ic_alias_app_white)
-                .setColor(ContextCompat.getColor(this, R.color.primary))
+                .setColor(getColor(R.color.primary))
                 .setContentIntent(pendingIntent)
                 .setProgress(100, 0, false)
                 .addAction(stopAction);
