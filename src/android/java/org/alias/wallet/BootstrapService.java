@@ -126,7 +126,7 @@ public class BootstrapService extends Service {
                 //
                 URL bootstrapURL;
                 try {
-                    bootstrapURL = new URL("https://download.spectreproject.io/files/bootstrap/BootstrapChain.zip");
+                    bootstrapURL = new URL("https://download.alias.cash/files/bootstrap/BootstrapChain.zip");
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e);
                 }
