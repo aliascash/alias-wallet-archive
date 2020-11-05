@@ -171,6 +171,7 @@ public class AliasService extends QtService {
                 .setContentText(text)//getText(R.string.notification_message))
                 .setSmallIcon(R.drawable.ic_alias_app_white)
                 .setColor(getColor(R.color.primary))
+                .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
         if (WALLET_NOTIFICATION_TYPE_TX_STAKED.equalsIgnoreCase(type) ||
                 WALLET_NOTIFICATION_TYPE_TX_DONATED.equalsIgnoreCase(type) ||
