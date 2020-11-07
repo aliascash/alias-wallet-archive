@@ -79,7 +79,7 @@ LIBXZ_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/XZLib
 # ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION}.tar.gz
 TOR_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Tor
 
-DEFAULT_BUILD_DIR=cmake-build-cmdline-android${ANDROID_API}_${ANDROID_ARCH}
+BUILD_DIR=cmake-build-cmdline-android${ANDROID_API}_${ANDROID_ARCH}
 
 helpMe() {
     echo "
@@ -107,12 +107,17 @@ helpMe() {
     -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
-    -p  Put build folder for dependencies onto the parent directory of
-        the Git clone. So the created build folder will be on the same
-        directory level as the Git clone itself or in other words
-        'outside' of the main project. This is required if Qt Creator
-        is used, as it will always scan the whole content again and
-        again.
+    -p <path-to-build-and-install-dependencies-directory>
+        Build/install the required dependencies onto the given directory.
+        With this option the required dependencies could be located outside
+        the Git clone. This is useful
+        a) to have them only once at the local machine, even if working
+           with multiple Git clones and
+        b) to have them separated from the project itself, which is a must
+           if using Qt Creator. Otherwise Qt Creator always scans and finds
+           all the other content again and again.
+        Given value must be an absolute path or relative to the root of the
+        Git clone.
     -s  Use Qt from system
     -t  Build with included Tor
     -h  Show this help
@@ -153,8 +158,8 @@ checkOpenSSLClone() {
 }
 
 checkOpenSSLBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/openssl
-    cd ${DEPENDENCIES_BUILD_DIR}/openssl
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl"
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -206,8 +211,8 @@ EOM
 checkOpenSSL() {
     info ""
     info "OpenSSL:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libssl.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libssl.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
         checkOpenSSLClone
@@ -228,15 +233,15 @@ checkBerkeleyDBArchive() {
         if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
         fi
-        cd ${BERKELEYDB_ARCHIVE_LOCATION}
+        cd ${BERKELEYDB_ARCHIVE_LOCATION} || die 1 "Unable to cd into ${BERKELEYDB_ARCHIVE_LOCATION}"
         wget ${BERKELEYDB_ARCHIVE_URL}
         cd - >/dev/null
     fi
 }
 
 checkBerkeleyDBBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/libdb
-    cd ${DEPENDENCIES_BUILD_DIR}/libdb
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb"
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -287,8 +292,8 @@ EOM
 checkBerkeleyDB() {
     info ""
     info "BerkeleyDB:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
     else
         checkBerkeleyDBArchive
         checkBerkeleyDBBuild
@@ -454,8 +459,8 @@ checkEventLibClone() {
 }
 
 checkEventLibBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/libevent
-    cd ${DEPENDENCIES_BUILD_DIR}/libevent
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -469,9 +474,9 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/usr/local/include \
-    -DZLIB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/usr/local/include \
-    -DZLIB_LIBRARY_RELEASE=${DEPENDENCIES_BUILD_DIR}/usr/local/lib \
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib \
     -DEVENT__DISABLE_TESTS=ON \
     -DEVENT__DISABLE_MBEDTLS=ON
 EOM
@@ -488,7 +493,7 @@ EOM
     # Finalize build cmd
     read -r -d '' cmd <<EOM
 ${cmd} \
-    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/usr/local \
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
     ${ownLocation}/../external/libevent
 EOM
 
@@ -522,8 +527,8 @@ EOM
 checkEventLib() {
     info ""
     info "EventLib:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libevent.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
         checkEventLibBuild
@@ -552,8 +557,8 @@ checkLevelDBClone() {
 }
 
 checkLevelDBBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/libleveldb
-    cd ${DEPENDENCIES_BUILD_DIR}/libleveldb
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -567,7 +572,7 @@ cmake \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=NEVER \
     \
-    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/usr/local \
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
     ${ownLocation}/../external/leveldb
 EOM
 
@@ -601,8 +606,8 @@ EOM
 checkLevelDB() {
     info ""
     info "LevelDB:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
         checkLevelDBBuild
@@ -638,8 +643,8 @@ checkZStdLibArchive() {
 }
 
 checkZStdLibBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/libzstd
-    cd ${DEPENDENCIES_BUILD_DIR}/libzstd
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -651,7 +656,7 @@ cmake \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_TOOLCHAIN_CMAKE} \
     -DANDROID_ABI=${ANDROID_ABI} \
     \
-    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/usr/local \
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
     ${ownLocation}/../external/libzstd/build/cmake
 EOM
 
@@ -685,8 +690,8 @@ EOM
 checkZStdLib() {
     info ""
     info "ZStdLib:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
         checkZStdLibArchive
         checkZStdLibBuild
@@ -713,8 +718,8 @@ checkXZLibArchive() {
 }
 
 checkXZLibBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/libxz
-    cd ${DEPENDENCIES_BUILD_DIR}/libxz
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -764,8 +769,8 @@ EOM
 checkXZLib() {
     info ""
     info "XZLib:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
         checkXZLibArchive
         checkXZLibBuild
@@ -793,8 +798,8 @@ checkTorArchive() {
 }
 
 checkTorBuild() {
-    mkdir -p ${DEPENDENCIES_BUILD_DIR}/tor
-    cd ${DEPENDENCIES_BUILD_DIR}/tor
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -844,8 +849,8 @@ EOM
 checkTor() {
     info ""
     info "Tor:"
-    if [[ -f ${DEPENDENCIES_BUILD_DIR}/usr/local/bin/tor ]]; then
-        info " -> Found ${DEPENDENCIES_BUILD_DIR}/usr/local/bin/tor, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
         checkTorArchive
         checkTorBuild
@@ -914,9 +919,9 @@ ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
 BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
-DEPENDENCIES_ON_PARENT_DIR=false
+GIVEN_DEPENDENCIES_BUILD_DIR=''
 
-while getopts a:c:dfgopth? option; do
+while getopts a:c:dfgop:th? option; do
     case ${option} in
     a) ANDROID_TOOLCHAIN_CMAKE="${OPTARG}" ;;
     c) CORES_TO_USE="${OPTARG}" ;;
@@ -927,7 +932,7 @@ while getopts a:c:dfgopth? option; do
         ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${ANDROID_QT_LIBRARYDIR}/cmake"
         ;;
     o) BUILD_ONLY_ALIAS=true ;;
-    p) DEPENDENCIES_ON_PARENT_DIR=true ;;
+    p) GIVEN_DEPENDENCIES_BUILD_DIR="${OPTARG}" ;;
     t) WITH_TOR=true ;;
     h | ?) helpMe && exit 0 ;;
     *) die 90 "invalid option \"${OPTARG}\"" ;;
@@ -938,24 +943,39 @@ done
 cd ..
 
 # ============================================================================
-# Handle build locations
-if ${DEPENDENCIES_ON_PARENT_DIR} ; then
-    DEPENDENCIES_BUILD_DIR=../${DEFAULT_BUILD_DIR}
-    InfoMessage="dependencies "
-else
-    DEPENDENCIES_BUILD_DIR=${DEFAULT_BUILD_DIR}
-    InfoMessage=""
+# Handle given path to dependency location
+if [[ -n "${GIVEN_DEPENDENCIES_BUILD_DIR}" ]] ; then
+    # ${GIVEN_DEPENDENCIES_BUILD_DIR} is set,
+    # so store given path on build configuration
+    if [[ "${GIVEN_DEPENDENCIES_BUILD_DIR}" = /* ]]; then
+        # Absolute path given
+        DEPENDENCIES_BUILD_DIR=${GIVEN_DEPENDENCIES_BUILD_DIR}
+    else
+        # Relative path given
+        DEPENDENCIES_BUILD_DIR=${ownLocation}/../${GIVEN_DEPENDENCIES_BUILD_DIR}
+    fi
+    storeDependenciesBuildDir "${DEPENDENCIES_BUILD_DIR}"
 fi
-ALIAS_BUILD_DIR=${DEFAULT_BUILD_DIR}/aliaswallet
 
-if [[ ! -d ${DEPENDENCIES_BUILD_DIR} ]]; then
+# ============================================================================
+# If ${DEPENDENCIES_BUILD_DIR} is empty, no path to the dependencies is given
+# or stored on script/.buildproperties. In this case use default location
+# inside of Git clone
+if [[ -z "${DEPENDENCIES_BUILD_DIR}" ]] ; then
+    DEPENDENCIES_BUILD_DIR=${ownLocation}/..
+fi
+
+info ""
+info "Building/using dependencies on/from directory '${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}'"
+
+if [[ ! -d ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR} ]]; then
     info ""
-    info "Creating ${InfoMessage}build directory ${DEPENDENCIES_BUILD_DIR}"
-    mkdir ${DEPENDENCIES_BUILD_DIR}
+    info "Creating dependency build directory ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    mkdir -p "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     info " -> Done"
 fi
 
-cd ${DEPENDENCIES_BUILD_DIR} || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}"
+cd "${DEPENDENCIES_BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}"
 
 # Update $BUILD_DIR with full path
 DEPENDENCIES_BUILD_DIR=$(pwd)
@@ -1001,14 +1021,14 @@ fi
 
 # ============================================================================
 # Dependencies are ready. Go ahead with the main project
-cd "${ownLocation}"/.. || die 1 "Unable to cd into Git clone root directory"
+ALIAS_BUILD_DIR=${ownLocation}/../${BUILD_DIR}/aliaswallet
 if [[ ! -d ${ALIAS_BUILD_DIR} ]]; then
     info ""
     info "Creating Alias build directory ${ALIAS_BUILD_DIR}"
-    mkdir -p ${ALIAS_BUILD_DIR}
+    mkdir -p "${ALIAS_BUILD_DIR}"
     info " -> Done"
 fi
-cd ${ALIAS_BUILD_DIR} || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
+cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
 
 # Update $ALIAS_BUILD_DIR with full path
 ALIAS_BUILD_DIR=${pwd}
@@ -1034,12 +1054,12 @@ cmake \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     \
-    -DBerkeleyDB_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/libdb/libdb-install \
-    -DBERKELEYDB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/libdb/libdb-install/include \
+    -DBerkeleyDB_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install \
+    -DBERKELEYDB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/include \
     \
-    -Dleveldb_DIR=${DEPENDENCIES_BUILD_DIR}/usr/local/lib/cmake/leveldb \
+    -Dleveldb_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/cmake/leveldb \
     \
-    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/usr/local/include
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include
 EOM
 
 # Insert additional parameters
