@@ -1043,7 +1043,7 @@ fi
 cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
 
 # Update $ALIAS_BUILD_DIR with full path
-ALIAS_BUILD_DIR=${pwd}
+ALIAS_BUILD_DIR=$(pwd)
 
 info ""
 info "Generating Alias build configuration"
