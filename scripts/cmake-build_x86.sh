@@ -26,8 +26,6 @@ _init
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
@@ -395,10 +393,43 @@ checkBerkeleyDB() {
 # ============================================================================
 
 # ===== Start of boost functions =============================================
+checkBoostArchive() {
+    local currentDir=$(pwd)
+    if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
+        mkdir -p ${BOOST_ARCHIVE_LOCATION}
+    fi
+    cd ${BOOST_ARCHIVE_LOCATION} || die 1 "Unable to cd into ${BOOST_ARCHIVE_LOCATION}"
+    if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
+        info " -> Downloading Boost archive"
+        wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
+    else
+        info " -> Using existing Boost archive"
+    fi
+}
+
+buildBoost() {
+    info " -> Building Boost on ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    pwd
+    ls -l
+    info " -> Cleanup before extraction"
+    rm -rf boost_${BOOST_VERSION//./_}
+    info " -> Extracting Boost archive"
+    tar xzf ${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}.tar.gz
+    info " -> Building Boost"
+    cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
+    ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
+    #        ./bootstrap.sh
+    ./b2 -j"${CORES_TO_USE}"
+    cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
+}
+
 checkBoost() {
     info ""
     info "Boost:"
     info " -> Searching required static Boost libs"
+    BOOST_INCLUDEDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}
+    BOOST_LIBRARYDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}/stage/lib
     buildBoost=false
     for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
         if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
@@ -408,28 +439,11 @@ checkBoost() {
             buildBoost=true
         fi
     done
-    if ${buildBoost}; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
-            mkdir -p ${BOOST_ARCHIVE_LOCATION}
-        fi
-        cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
-            info " -> Downloading Boost archive"
-            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
-        else
-            info " -> Using existing Boost archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf boost_${BOOST_VERSION//./_}
-        info " -> Extracting Boost archive"
-        tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        info " -> Building Boost"
-        cd boost_${BOOST_VERSION//./_}
-        ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
-        #        ./bootstrap.sh
-        ./b2 address-model=32 -j"${CORES_TO_USE}"
-        cd "${currentDir}"
+    if ${buildBoost} ; then
+        checkBoostArchive
+        buildBoost
+    else
+        info " => All Boost requirements found"
     fi
 }
 # ===== End of boost functions ===============================================

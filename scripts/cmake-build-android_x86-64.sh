@@ -37,9 +37,6 @@ ANDROID_QT_LIBRARYDIR=${ANDROID_QT_DIR}/lib
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_ROOT=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH}
-BOOST_INCLUDEDIR=${BOOST_ROOT}/include
-BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
@@ -303,49 +300,64 @@ checkBerkeleyDB() {
 # ============================================================================
 
 # ===== Start of boost functions =============================================
+checkBoostArchive() {
+    local currentDir=$(pwd)
+    if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
+        mkdir -p ${BOOST_ARCHIVE_LOCATION}
+    fi
+    cd ${BOOST_ARCHIVE_LOCATION} || die 1 "Unable to cd into ${BOOST_ARCHIVE_LOCATION}"
+    if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
+        info " -> Downloading Boost archive"
+        wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
+    else
+        info " -> Using existing Boost archive"
+    fi
+}
+
+buildBoost() {
+    info " -> Building Boost on ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    info " -> Cleanup before extraction"
+    rm -rf "${BOOST_ROOT}"
+    mkdir -p "${BOOST_ROOT}"
+    cd "${BOOST_ROOT}" || die 1 "Unable to cd into ${BOOST_ROOT}"
+    info " -> Extracting Boost archive"
+    tar xzf ${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}.tar.gz
+    cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
+    mv * ../
+    cd - >/dev/null || die 1 "Unable to cd into ${BOOST_ROOT}"
+    rm -rf boost_${BOOST_VERSION//./_}
+    info " -> Building Boost"
+    "${ownLocation}"/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -p ${ANDROID_API} -n ${ANDROID_NDK_ROOT} -l "${BOOST_REQUIRED_LIBS// /,}"
+    cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
+}
+
 checkBoost() {
     info ""
     info "Boost:"
     info " -> Searching required static Boost libs"
+    BOOST_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH}
+    BOOST_INCLUDEDIR=${BOOST_ROOT}/include
+    BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
     buildBoost=false
     if [[ -d ${BOOST_LIBRARYDIR} ]]; then
         for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-            if [[ -n $(find ${BOOST_LIBRARYDIR}/ -name "libboost_${currentBoostDependency}*.a") ]]; then
+            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
-                warning " -> ${currentBoostDependency}: Not found!"
+                warning " => ${currentBoostDependency}: Not found!"
                 buildBoost=true
             fi
         done
     else
-        info " -> Boost library directory ${BOOST_LIBRARYDIR} not found!"
+        warning " => Boost library directory ${BOOST_LIBRARYDIR} not found!"
         buildBoost=true
     fi
-    if ${buildBoost}; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
-            mkdir -p ${BOOST_ARCHIVE_LOCATION}
-        fi
-        cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
-            info " -> Downloading Boost archive"
-            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
-        else
-            info " -> Using existing Boost archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf ${BOOST_ROOT}
-        mkdir ${BOOST_ROOT}
-        cd ${BOOST_ROOT}
-        info " -> Extracting Boost archive"
-        tar xzf ../boost_${BOOST_VERSION//./_}.tar.gz
-        cd boost_${BOOST_VERSION//./_}
-        mv * ../
-        cd - >/dev/null
-        rm -rf boost_${BOOST_VERSION//./_}
-        info " -> Building Boost"
-        ${ownLocation}/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -p ${ANDROID_API} -n ${ANDROID_NDK_ROOT} -l ${BOOST_REQUIRED_LIBS// /,}
-        cd "${currentDir}"
+    if ${buildBoost} ; then
+        checkBoostArchive
+        buildBoost
+    else
+        info " => All Boost requirements found"
     fi
 }
 # ===== End of boost functions ===============================================
