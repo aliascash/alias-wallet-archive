@@ -987,21 +987,15 @@ if [[ ! -d ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR} ]]; then
 fi
 
 cd "${DEPENDENCIES_BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}"
-
-# Update $BUILD_DIR with full path
 DEPENDENCIES_BUILD_DIR=$(pwd)
 
 # ============================================================================
 # Handle which parts should be build
+cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
 if ${FULLBUILD}; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
-    info " -> Done"
-elif ${BUILD_ONLY_ALIAS}; then
-    info ""
-    info "Cleanup alias folder from previous build run"
-    rm -rf ./aliaswallet
     info " -> Done"
 fi
 
@@ -1043,6 +1037,14 @@ cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALI
 
 # Update $ALIAS_BUILD_DIR with full path
 ALIAS_BUILD_DIR=$(pwd)
+
+# If requested, cleanup leftovers from previous build
+if [[ ${FULLBUILD} = true ]] || [[ ${BUILD_ONLY_ALIAS} = true ]]; then
+    info ""
+    info "Cleanup leftovers from previous build run"
+    rm -rf ./*
+    info " -> Done"
+fi
 
 info ""
 info "Generating Alias build configuration"
