@@ -410,8 +410,6 @@ checkBoostArchive() {
 buildBoost() {
     info " -> Building Boost on ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
-    pwd
-    ls -l
     info " -> Cleanup before extraction"
     rm -rf boost_${BOOST_VERSION//./_}
     info " -> Extracting Boost archive"
@@ -1040,7 +1038,7 @@ info ""
 info "Generating Alias build configuration"
 
 # FindBerkeleyDB.cmake requires this
-export BERKELEYDB_ROOT=${BUILD_DIR}/libdb/libdb-install
+export BERKELEYDB_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install
 
 read -r -d '' cmd <<EOM
 cmake \
