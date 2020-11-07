@@ -93,6 +93,8 @@ helpMe() {
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
         LevelDB.
+    -d  Do _not_ build Alias but only the dependencies. Used to prepare
+        build slaves a/o builder docker images.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build GUI (Qt) components
@@ -713,12 +715,14 @@ FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
+BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 GIVEN_DEPENDENCIES_BUILD_DIR=''
 
-while getopts c:fgop:th? option; do
+while getopts c:dfgop:th? option; do
     case ${option} in
     c) CORES_TO_USE="${OPTARG}" ;;
+    d) BUILD_ONLY_DEPENDENCIES=true ;;
     f) FULLBUILD=true ;;
     g)
         ENABLE_GUI=true
@@ -798,6 +802,14 @@ else
 fi
 if ${ENABLE_GUI}; then
     checkQt
+fi
+
+# ============================================================================
+# Only dependencies should be build, so exit here
+if ${BUILD_ONLY_DEPENDENCIES}; then
+    info ""
+    info "Checked a/o built all required dependencies."
+    exit
 fi
 
 # ============================================================================
