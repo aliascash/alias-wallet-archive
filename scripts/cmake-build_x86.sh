@@ -430,16 +430,21 @@ checkBoost() {
     info " -> Searching required static Boost libs"
     BOOST_INCLUDEDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}
     BOOST_LIBRARYDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}/stage/lib
-    buildBoost=false
-    for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
-            info " -> ${currentBoostDependency}: OK"
-        else
-            warning " => ${currentBoostDependency}: Not found!"
-            buildBoost=true
-        fi
-    done
-    if ${buildBoost} ; then
+    boostBuildRequired=false
+    if [[ -d ${BOOST_LIBRARYDIR} ]]; then
+        for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
+            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
+                info " -> ${currentBoostDependency}: OK"
+            else
+                warning " => ${currentBoostDependency}: Not found!"
+                boostBuildRequired=true
+            fi
+        done
+    else
+        warning " => Boost library directory ${BOOST_LIBRARYDIR} not found!"
+        boostBuildRequired=true
+    fi
+    if ${boostBuildRequired} ; then
         checkBoostArchive
         buildBoost
     else

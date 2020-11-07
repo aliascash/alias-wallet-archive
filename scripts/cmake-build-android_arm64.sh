@@ -339,21 +339,21 @@ checkBoost() {
     BOOST_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH}
     BOOST_INCLUDEDIR=${BOOST_ROOT}/include
     BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
-    buildBoost=false
+    boostBuildRequired=false
     if [[ -d ${BOOST_LIBRARYDIR} ]]; then
         for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
             if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
                 warning " => ${currentBoostDependency}: Not found!"
-                buildBoost=true
+                boostBuildRequired=true
             fi
         done
     else
         warning " => Boost library directory ${BOOST_LIBRARYDIR} not found!"
-        buildBoost=true
+        boostBuildRequired=true
     fi
-    if ${buildBoost} ; then
+    if ${boostBuildRequired} ; then
         checkBoostArchive
         buildBoost
     else
