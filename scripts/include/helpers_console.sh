@@ -62,3 +62,9 @@ evaluateRtc(){
         fi
     fi
 }
+
+storeDependenciesBuildDir() {
+    local _dependenciesBuildDir=$1
+    sed -i "/DEPENDENCIES_BUILD_DIR/d" "${ownLocation}"/.buildconfig
+    echo "DEPENDENCIES_BUILD_DIR=${_dependenciesBuildDir}" >> "${ownLocation}"/.buildconfig
+}
