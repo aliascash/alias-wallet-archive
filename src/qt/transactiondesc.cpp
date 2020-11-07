@@ -76,6 +76,11 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 
     QString txid(wtx.GetHash().ToString().c_str());
     strHTML += "<b>" + tr("Transaction ID") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"tx.dws?" + txid +"\");'>" + txid + "</a><br>";
+    if (wtx.hashBlock != 0)
+    {
+        QString blockHash = QString::fromStdString(wtx.hashBlock.GetHex());
+        strHTML += "<b>" + tr("Block Hash") + ":</b> <a href='javascript:void(0);' onclick='bridge.urlClicked(\""+explorer+"block.dws?" + blockHash +"\");'>" + blockHash + "</a><br>";
+    }
 
     strHTML += "<b>" + tr("Status") + ":</b> " + FormatTxStatus(wtx);
     int nRequests = wtx.GetRequestCount();
@@ -119,21 +124,21 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
-    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
+    std::list<CTxDestinationDetail> listReceived;
+    std::list<CTxDestinationDetail> listSent;
 
     wtx.GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
     if (listSent.size() > 0 && allFee > 0) {
-        const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
-        strHTML += "<b>" + tr("Transaction fee") + ":</b> " + BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, -allFee, sCurrency) + "<br>";
+        const auto & destination = listSent.front();
+        strHTML += "<b>" + tr("Transaction fee") + ":</b> " + BitcoinUnits::formatWithUnitCurrency(BitcoinUnits::ALIAS, -allFee, destination.currency) + "<br>";
     }
 
     Currency netCurrency = PUBLIC;
     if (listSent.size() > 0)
-        netCurrency = std::get<3>(listSent.front());
+        netCurrency = listSent.front().currency;
     else if (listReceived.size() > 0)
-        netCurrency = std::get<3>(listSent.front());
+        netCurrency = listReceived.front().currency;
 
     if (wtx.GetBlocksToMaturity() == 0)
     {
@@ -143,27 +148,27 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
     if (!(wtx.IsCoinBase() || wtx.IsCoinStake()) &&  listReceived.size() > 0 && listSent.size() > 0)
     {
         // Transfer within account
-        const auto & [sDestination, sDestSubs, sAmount, sCurrency, sNarration] = listSent.front();
-        for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
+        const auto & destinationSent = listSent.front();
+        for (const auto & destination: listReceived)
         {
-             ::toHTML(wallet, wtx, strHTML, sCurrency, destination, destSubs, amount, currency, narration, narrationHandled);
+             ::toHTML(wallet, wtx, strHTML, destinationSent.currency, destination.address, destination.vAddressElements, destination.amount, destination.currency, destination.narration, narrationHandled);
         }
     }
     else {
-        for (const auto & [destination, destSubs, amount, currency, narration]: listReceived)
+        for (const auto & destination : listReceived)
         {
-             ::toHTML(wallet, wtx, strHTML, false, destination, destSubs, amount, currency, narration, narrationHandled);
+             ::toHTML(wallet, wtx, strHTML, false, destination.address, destination.vAddressElements, destination.amount, destination.currency, destination.narration, narrationHandled);
         }
-        for (const auto & [destination, destSubs, amount, currency, narration]: listSent)
+        for (const auto & destination : listSent)
         {
             if (wtx.IsCoinStake())
             {
                 // only add contributions/donations
-                std::string strAddress = CBitcoinAddress(destination).ToString();
+                std::string strAddress = CBitcoinAddress(destination.address).ToString();
                 if (strAddress != Params().GetDevContributionAddress() && strAddress != Params().GetSupplyIncreaseAddress())
                     continue;
             }
-            ::toHTML(wallet, wtx, strHTML, true, destination, destSubs, amount, currency, narration, narrationHandled);
+            ::toHTML(wallet, wtx, strHTML, true, destination.address, destination.vAddressElements, destination.amount, destination.currency, destination.narration, narrationHandled);
         }
     }
 
