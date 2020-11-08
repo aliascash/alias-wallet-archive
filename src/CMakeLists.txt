@@ -434,6 +434,7 @@ if (ENABLE_GUI)
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/tor.real
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/libevent*
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/PluggableTransports/*
+                    COMMAND mkdir -p ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources
                     COMMAND cp ${CMAKE_SOURCE_DIR}/src/qt/res/icons/alias-app.icns ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources/
 #                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
 #                    Alias.app
