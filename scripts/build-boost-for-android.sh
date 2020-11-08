@@ -109,7 +109,7 @@ info " -> Building boost with './b2 -d+2 \
     cxxflags="-std=c++14 -fPIC" \
     --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
     --user-config=${ANDROID_ARCH}-config.jam \
-    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH} \
+    --prefix=$(pwd)/../boost_${BOOST_VERSION//./_} \
     install'"
 ./b2 -d+2 \
     -j "${CORES_TO_USE}" \
@@ -122,7 +122,7 @@ info " -> Building boost with './b2 -d+2 \
     cxxflags="-std=c++14 -fPIC" \
     --with-${BOOST_LIBS_TO_BUILD//,/ --with-} \
     --user-config="${ANDROID_ARCH}"-config.jam \
-    --prefix="$(pwd)"/../boost_"${BOOST_VERSION//./_}"_android"${ANDROID_API}"_"${ANDROID_ARCH}" \
+    --prefix="$(pwd)"/../boost_"${BOOST_VERSION//./_}" \
     install
 info " -> Done!"
 #read a
