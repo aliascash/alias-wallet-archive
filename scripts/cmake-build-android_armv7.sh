@@ -973,7 +973,8 @@ if [[ -z "${DEPENDENCIES_BUILD_DIR}" ]] ; then
 fi
 
 info ""
-info "Building/using dependencies on/from directory '${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}'"
+info "Building/using dependencies on/from directory:"
+info " -> ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
 
 if [[ ! -d ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR} ]]; then
     info ""
