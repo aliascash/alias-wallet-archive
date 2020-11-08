@@ -318,16 +318,11 @@ buildBoost() {
     info " -> Building Boost on ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     info " -> Cleanup before extraction"
-    rm -rf "${BOOST_ROOT}"
-    mkdir -p "${BOOST_ROOT}"
-    cd "${BOOST_ROOT}" || die 1 "Unable to cd into ${BOOST_ROOT}"
+    rm -rf boost_${BOOST_VERSION//./_}
     info " -> Extracting Boost archive"
     tar xzf ${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}.tar.gz
-    cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
-    mv * ../
-    cd - >/dev/null || die 1 "Unable to cd into ${BOOST_ROOT}"
-    rm -rf boost_${BOOST_VERSION//./_}
     info " -> Building Boost"
+    cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
     "${ownLocation}"/build-boost-for-android.sh -v ${BOOST_VERSION} -a ${ANDROID_ARCH} -p ${ANDROID_API} -n ${ANDROID_NDK_ROOT} -l "${BOOST_REQUIRED_LIBS// /,}"
     cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
 }
@@ -336,7 +331,7 @@ checkBoost() {
     info ""
     info "Boost:"
     info " -> Searching required static Boost libs"
-    BOOST_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}_android${ANDROID_API}_${ANDROID_ARCH}
+    BOOST_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}
     BOOST_INCLUDEDIR=${BOOST_ROOT}/include
     BOOST_LIBRARYDIR=${BOOST_ROOT}/lib
     boostBuildRequired=false
