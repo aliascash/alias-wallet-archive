@@ -23,9 +23,8 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
-MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
-MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
+MAC_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
+MAC_QT_LIBRARYDIR=${MAC_QT_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Trying to find required Homebrew Boost libs
@@ -726,7 +725,7 @@ while getopts c:dfgop:th? option; do
     f) FULLBUILD=true ;;
     g)
         ENABLE_GUI=true
-        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_INSTALLATION_DIR}/lib/cmake"
+        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_DIR}/cmake"
         ;;
     o) BUILD_ONLY_ALIAS=true ;;
     p) GIVEN_DEPENDENCIES_BUILD_DIR="${OPTARG}" ;;
