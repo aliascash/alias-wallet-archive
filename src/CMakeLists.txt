@@ -423,24 +423,24 @@ if (ENABLE_GUI)
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
-                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
-                    Alias.app
-                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
-                    -always-overwrite
-                    -verbose=1
-                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+#                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+#                    Alias.app
+#                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
+#                    -always-overwrite
+#                    -verbose=1
+#                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
                     COMMAND rm -rf ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor
                     COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/Alias.app/
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/tor.real
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/libevent*
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/PluggableTransports/*
                     COMMAND cp ${CMAKE_SOURCE_DIR}/src/qt/res/icons/alias-app.icns ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources/
-                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
-                    Alias.app
-                    -dmg
-                    -always-overwrite
-                    -verbose=1
-                    COMMENT "Running macdeployqt..."
+#                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+#                    Alias.app
+#                    -dmg
+#                    -always-overwrite
+#                    -verbose=1
+                    COMMENT "Put additional content onto app directory"
                     )
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             target_sources(Aliaswallet

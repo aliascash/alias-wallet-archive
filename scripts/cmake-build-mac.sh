@@ -890,9 +890,33 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]]; then
-    info " -> Finished pure build of Alias.dmg"
+    info " -> Finished"
 else
-    die 50 " => Creation of Alias.dmg failed with return code ${rtc}"
+    die 50 " => Failed with return code ${rtc}"
+fi
+
+# Debug build:
+#DEPLOY_QT_BINARY_TYPE_OPTION="-use-debug-libs"
+DEPLOY_QT_BINARY_TYPE_OPTION=''
+
+if [[ -e ${MAC_QT_DIR}/bin/macdeployqt ]] ; then
+    info ""
+    info "Creating dmg:"
+    cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into ${ALIAS_BUILD_DIR}"
+    ${MAC_QT_DIR}/bin/macdeployqt \
+        Alias.app \
+        -qmldir="${ownLocation}"/../src/qt/res \
+        -always-overwrite \
+        -verbose=1 \
+        "${DEPLOY_QT_BINARY_TYPE_OPTION}"
+    ${MAC_QT_DIR}/bin/macdeployqt \
+        Alias.app \
+        -dmg \
+        -always-overwrite \
+        -verbose=1
+    info " -> Alias.dmg created"
+else
+    die 23 "${MAC_QT_DIR}/bin/macdeployqt not found, unable to create dmg!"
 fi
 
 info ""
