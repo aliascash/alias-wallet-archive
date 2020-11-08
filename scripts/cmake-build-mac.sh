@@ -725,7 +725,7 @@ while getopts c:dfgop:th? option; do
     f) FULLBUILD=true ;;
     g)
         ENABLE_GUI=true
-        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_DIR}/cmake"
+        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_LIBRARYDIR}/cmake"
         ;;
     o) BUILD_ONLY_ALIAS=true ;;
     p) GIVEN_DEPENDENCIES_BUILD_DIR="${OPTARG}" ;;
