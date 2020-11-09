@@ -23,9 +23,8 @@ _init
 
 ##### ### # Global definitions # ### ########################################
 ##### ### # Mac Qt # ### ####################################################
-MAC_QT_ROOT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
-MAC_QT_INSTALLATION_DIR=${MAC_QT_ROOT_DIR}
-MAC_QT_LIBRARYDIR=${MAC_QT_INSTALLATION_DIR}/lib
+MAC_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
+MAC_QT_LIBRARYDIR=${MAC_QT_DIR}/lib
 
 ##### ### # Boost # ### #####################################################
 # Trying to find required Homebrew Boost libs
@@ -93,11 +92,24 @@ helpMe() {
         the script determines the available cores on this machine.
         Not used for build steps of external libraries like OpenSSL or
         LevelDB.
+    -d  Do _not_ build Alias but only the dependencies. Used to prepare
+        build slaves a/o builder docker images.
     -f  Perform fullbuild by cleanup all generated data from previous
         build runs.
     -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
+    -p <path-to-build-and-install-dependencies-directory>
+        Build/install the required dependencies onto the given directory.
+        With this option the required dependencies could be located outside
+        the Git clone. This is useful
+        a) to have them only once at the local machine, even if working
+           with multiple Git clones and
+        b) to have them separated from the project itself, which is a must
+           if using Qt Creator. Otherwise Qt Creator always scans and finds
+           all the other content again and again.
+        Given value must be an absolute path or relative to the root of the
+        Git clone.
     -t  Build with included Tor
     -h  Show this help
 
@@ -156,8 +168,8 @@ checkOpenSSLClone() {
 }
 
 checkOpenSSLBuild() {
-    mkdir -p ${BUILD_DIR}/openssl
-    cd ${BUILD_DIR}/openssl
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl"
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -167,7 +179,7 @@ cmake \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
     -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/openssl-cmake
+    ${ownLocation}/../external/openssl-cmake
 EOM
 
     echo "=============================================================================="
@@ -199,8 +211,8 @@ EOM
 checkOpenSSL() {
     info ""
     info "OpenSSL:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
         checkOpenSSLClone
@@ -315,19 +327,19 @@ checkEventLibClone() {
 }
 
 checkEventLibBuild() {
-    mkdir -p ${BUILD_DIR}/libevent
-    cd ${BUILD_DIR}/libevent
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
 cmake \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
-    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib \
     -DEVENT__DISABLE_TESTS=ON \
     -DEVENT__DISABLE_MBEDTLS=ON \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    ${BUILD_DIR}/../external/libevent
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
+    ${ownLocation}/../external/libevent
 EOM
 
     echo "=============================================================================="
@@ -360,8 +372,8 @@ EOM
 checkEventLib() {
     info ""
     info "EventLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
         checkEventLibBuild
@@ -390,14 +402,14 @@ checkLevelDBClone() {
 }
 
 checkLevelDBBuild() {
-    mkdir -p ${BUILD_DIR}/libleveldb
-    cd ${BUILD_DIR}/libleveldb
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
 cmake \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/local \
-    ${BUILD_DIR}/../external/leveldb
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/local \
+    ${ownLocation}/../external/leveldb
 EOM
 
     echo "=============================================================================="
@@ -430,8 +442,8 @@ EOM
 checkLevelDB() {
     info ""
     info "LevelDB:"
-    if [[ -f ${BUILD_DIR}/local/lib/libleveldb.a ]]; then
-        info " -> Found ${BUILD_DIR}/local/lib/libleveldb.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/local/lib/libleveldb.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
         checkLevelDBBuild
@@ -467,8 +479,8 @@ checkZStdLibArchive() {
 }
 
 checkZStdLibBuild() {
-    mkdir -p ${BUILD_DIR}/libzstd
-    cd ${BUILD_DIR}/libzstd
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -477,8 +489,8 @@ cmake \
     -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
     -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
     -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    ${BUILD_DIR}/../external/libzstd/build/cmake
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
+    ${ownLocation}/../external/libzstd/build/cmake
 EOM
 
     echo "=============================================================================="
@@ -511,8 +523,8 @@ EOM
 checkZStdLib() {
     info ""
     info "ZStdLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
         checkZStdLibArchive
         checkZStdLibBuild
@@ -539,8 +551,8 @@ checkXZLibArchive() {
 }
 
 checkXZLibBuild() {
-    mkdir -p ${BUILD_DIR}/libxz
-    cd ${BUILD_DIR}/libxz
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -549,7 +561,7 @@ cmake \
     -DLIBXZ_BUILD_VERSION=${LIBXZ_BUILD_VERSION} \
     -DLIBXZ_BUILD_VERSION_SHORT=${LIBXZ_BUILD_VERSION%.*} \
     -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/libxz-cmake
+    ${ownLocation}/../external/libxz-cmake
 EOM
 
     echo "=============================================================================="
@@ -581,8 +593,8 @@ EOM
 checkXZLib() {
     info ""
     info "XZLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
         checkXZLibArchive
         checkXZLibBuild
@@ -609,8 +621,8 @@ checkTorArchive() {
 }
 
 checkTorBuild() {
-    mkdir -p ${BUILD_DIR}/tor
-    cd ${BUILD_DIR}/tor
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -619,7 +631,7 @@ cmake \
     -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
     -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
     -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/tor-cmake
+    ${ownLocation}/../external/tor-cmake
 EOM
 
     echo "=============================================================================="
@@ -651,8 +663,8 @@ EOM
 checkTor() {
     info ""
     info "Tor:"
-    if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
         checkTorArchive
         checkTorBuild
@@ -702,17 +714,21 @@ FULLBUILD=false
 ENABLE_GUI=false
 ENABLE_GUI_PARAMETERS='OFF'
 BUILD_ONLY_ALIAS=false
+BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
+GIVEN_DEPENDENCIES_BUILD_DIR=''
 
-while getopts c:fgoth? option; do
+while getopts c:dfgop:th? option; do
     case ${option} in
     c) CORES_TO_USE="${OPTARG}" ;;
+    d) BUILD_ONLY_DEPENDENCIES=true ;;
     f) FULLBUILD=true ;;
     g)
         ENABLE_GUI=true
-        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_INSTALLATION_DIR}/lib/cmake"
+        ENABLE_GUI_PARAMETERS="ON -DQT_CMAKE_MODULE_PATH=${MAC_QT_LIBRARYDIR}/cmake"
         ;;
     o) BUILD_ONLY_ALIAS=true ;;
+    p) GIVEN_DEPENDENCIES_BUILD_DIR="${OPTARG}" ;;
     t) WITH_TOR=true ;;
     h | ?) helpMe && exit 0 ;;
     *) die 90 "invalid option \"${OPTARG}\"" ;;
@@ -722,28 +738,55 @@ done
 # Go to alias-wallet repository root directory
 cd ..
 
-if [[ ! -d ${BUILD_DIR} ]]; then
+# ============================================================================
+# Handle given path to dependency location
+if [[ -n "${GIVEN_DEPENDENCIES_BUILD_DIR}" ]] ; then
+    # ${GIVEN_DEPENDENCIES_BUILD_DIR} is set,
+    # so store given path on build configuration
+    if [[ "${GIVEN_DEPENDENCIES_BUILD_DIR}" = /* ]]; then
+        # Absolute path given
+        DEPENDENCIES_BUILD_DIR=${GIVEN_DEPENDENCIES_BUILD_DIR}
+    else
+        # Relative path given
+        DEPENDENCIES_BUILD_DIR=${ownLocation}/../${GIVEN_DEPENDENCIES_BUILD_DIR}
+    fi
+    storeDependenciesBuildDir "${DEPENDENCIES_BUILD_DIR}"
+fi
+
+# ============================================================================
+# If ${DEPENDENCIES_BUILD_DIR} is empty, no path to the dependencies is given
+# or stored on script/.buildproperties. In this case use default location
+# inside of Git clone
+if [[ -z "${DEPENDENCIES_BUILD_DIR}" ]] ; then
+    DEPENDENCIES_BUILD_DIR=${ownLocation}/..
+fi
+
+info ""
+info "Building/using dependencies on/from directory:"
+info " -> ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+
+if [[ ! -d ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR} ]]; then
     info ""
-    info "Creating build directory ${BUILD_DIR}"
-    mkdir ${BUILD_DIR}
+    info "Creating dependency build directory ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    mkdir -p "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     info " -> Done"
 fi
 
-cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
-BUILD_DIR=$(pwd)
+cd "${DEPENDENCIES_BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}"
+DEPENDENCIES_BUILD_DIR=$(pwd)
 
+# ============================================================================
+# Handle which parts should be build
+cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
 if ${FULLBUILD}; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
     info " -> Done"
-elif ${BUILD_ONLY_ALIAS}; then
-    info ""
-    info "Cleanup alias folder from previous build run"
-    rm -rf ./aliaswallet
-    info " -> Done"
 fi
 
+# ============================================================================
+# Check a/o build requirements/dependencies
 checkHomebrew
 checkBoost
 checkBerkeleyDB
@@ -761,8 +804,35 @@ if ${ENABLE_GUI}; then
     checkQt
 fi
 
-mkdir -p ${BUILD_DIR}/aliaswallet
-cd ${BUILD_DIR}/aliaswallet
+# ============================================================================
+# Only dependencies should be build, so exit here
+if ${BUILD_ONLY_DEPENDENCIES}; then
+    info ""
+    info "Checked a/o built all required dependencies."
+    exit
+fi
+
+# ============================================================================
+# Dependencies are ready. Go ahead with the main project
+ALIAS_BUILD_DIR=${ownLocation}/../${BUILD_DIR}/aliaswallet
+if [[ ! -d ${ALIAS_BUILD_DIR} ]]; then
+    info ""
+    info "Creating Alias build directory ${ALIAS_BUILD_DIR}"
+    mkdir -p "${ALIAS_BUILD_DIR}"
+    info " -> Done"
+fi
+cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
+
+# Update $ALIAS_BUILD_DIR with full path
+ALIAS_BUILD_DIR=$(pwd)
+
+# If requested, cleanup leftovers from previous build
+if [[ ${FULLBUILD} = true ]] || [[ ${BUILD_ONLY_ALIAS} = true ]]; then
+    info ""
+    info "Cleanup leftovers from previous build run"
+    rm -rf ./*
+    info " -> Done"
+fi
 
 info ""
 info "Generating Alias build configuration"
@@ -779,10 +849,10 @@ cmake \
     -DBerkeleyDB_ROOT_DIR=/usr/local/opt/berkeley-db@4 \
     -DBERKELEYDB_INCLUDE_DIR=/usr/local/opt/berkeley-db@4/include \
     \
-    -Dleveldb_DIR=${BUILD_DIR}/local/lib/cmake/leveldb \
-    -DLEVELDB_INCLUDE_DIR=${BUILD_DIR}/local/include \
+    -Dleveldb_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/local/lib/cmake/leveldb \
+    -DLEVELDB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/local/include \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
     \
     -DTOR_ARCHIVE=${TOR_ARCHIVE_LOCATION}/${TOR_RESOURCE_ARCHIVE}
 EOM
@@ -799,7 +869,7 @@ EOM
 # Finalize build cmd
 read -r -d '' cmd <<EOM
 ${cmd} \
-    ${BUILD_DIR}/..
+    ${ALIAS_BUILD_DIR}/../..
 EOM
 
 echo "=============================================================================="
@@ -820,16 +890,40 @@ CORES_TO_USE=${CORES_TO_USE} cmake \
 rtc=$?
 info ""
 if [[ ${rtc} = 0 ]]; then
-    info " -> Finished pure build of Alias.dmg"
+    info " -> Finished"
 else
-    die 50 " => Creation of Alias.dmg failed with return code ${rtc}"
+    die 50 " => Failed with return code ${rtc}"
+fi
+
+# Debug build:
+#DEPLOY_QT_BINARY_TYPE_OPTION="-use-debug-libs"
+DEPLOY_QT_BINARY_TYPE_OPTION=''
+
+if [[ -e ${MAC_QT_DIR}/bin/macdeployqt ]] ; then
+    info ""
+    info "Creating dmg:"
+    cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into ${ALIAS_BUILD_DIR}"
+    ${MAC_QT_DIR}/bin/macdeployqt \
+        Alias.app \
+        -qmldir="${ownLocation}"/../src/qt/res \
+        -always-overwrite \
+        -verbose=1 \
+        "${DEPLOY_QT_BINARY_TYPE_OPTION}"
+    ${MAC_QT_DIR}/bin/macdeployqt \
+        Alias.app \
+        -dmg \
+        -always-overwrite \
+        -verbose=1
+    info " -> Alias.dmg created"
+else
+    die 23 "${MAC_QT_DIR}/bin/macdeployqt not found, unable to create dmg!"
 fi
 
 info ""
 info "Performing post build steps:"
 info "============================"
 
-cd ${BUILD_DIR}/aliaswallet/
+cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
 cp Alias.dmg Alias.dmg.bak
 
 info "Change permision of .dmg file"
@@ -851,7 +945,7 @@ info " -> Done"
 
 info "Copy background image in to package"
 mkdir "$PATH_AT_VOLUME"/.background
-cp ${ownLocation}/../src/osx/app-slide-arrow.png "$PATH_AT_VOLUME"/.background/
+cp "${ownLocation}"/../src/osx/app-slide-arrow.png "$PATH_AT_VOLUME"/.background/
 info " -> Done"
 
 info "Resize window, set background, change icon size, place icons in the right position, etc."
@@ -891,6 +985,6 @@ hdiutil convert "Alias_Rw.dmg" -format UDZO -o "Alias.dmg"
 rm -f "Alias_Rw.dmg"
 info " -> Done"
 
-info " -> Finished: ${BUILD_DIR}/aliaswallet/Alias.dmg"
+info " -> Finished: ${ALIAS_BUILD_DIR}/Alias.dmg"
 
 cd "${callDir}" || die 1 "Unable to cd back to where we came from (${callDir})"

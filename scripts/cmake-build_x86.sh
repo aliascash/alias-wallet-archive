@@ -26,8 +26,6 @@ _init
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_INCLUDEDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}
-BOOST_LIBRARYDIR=${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}/stage/lib
 BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
 # regex date_time atomic
 
@@ -90,6 +88,17 @@ helpMe() {
     -g  Build GUI (Qt) components
     -o  Perfom only Alias fullbuild. Only the alias buildfolder
         will be wiped out before. All other folders stay in place.
+    -p <path-to-build-and-install-dependencies-directory>
+        Build/install the required dependencies onto the given directory.
+        With this option the required dependencies could be located outside
+        the Git clone. This is useful
+        a) to have them only once at the local machine, even if working
+           with multiple Git clones and
+        b) to have them separated from the project itself, which is a must
+           if using Qt Creator. Otherwise Qt Creator always scans and finds
+           all the other content again and again.
+        Given value must be an absolute path or relative to the root of the
+        Git clone.
     -s  Use Qt from system
     -t  Build with included Tor
     -h  Show this help
@@ -164,6 +173,10 @@ defineQtVersionForCurrentDistribution() {
             ;;
         "fedora")
             usedDistro="FEDORA"
+            ;;
+        "opensuse-tumbleweed")
+            usedDistro="OPENSUSE"
+            releaseName="TUMBLEWEED"
             ;;
         "raspbian")
             usedDistro="RASPBERRY"
@@ -243,8 +256,8 @@ checkOpenSSLClone() {
 }
 
 checkOpenSSLBuild() {
-    mkdir -p ${BUILD_DIR}/openssl
-    cd ${BUILD_DIR}/openssl
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/openssl"
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -259,7 +272,7 @@ cmake \
     -DOPENSSL_BUILD_VERSION=${OPENSSL_BUILD_VERSION} \
     -DOPENSSL_API_COMPAT=0x00908000L \
     -DOPENSSL_ARCHIVE_HASH=${OPENSSL_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/openssl-cmake
+    ${ownLocation}/../external/openssl-cmake
 EOM
 
     echo "=============================================================================="
@@ -291,8 +304,8 @@ EOM
 checkOpenSSL() {
     info ""
     info "OpenSSL:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libssl.a, skip build"
     else
         checkOpenSSLArchive
         checkOpenSSLClone
@@ -313,15 +326,15 @@ checkBerkeleyDBArchive() {
         if [[ ! -e ${BERKELEYDB_ARCHIVE_LOCATION} ]]; then
             mkdir -p ${BERKELEYDB_ARCHIVE_LOCATION}
         fi
-        cd ${BERKELEYDB_ARCHIVE_LOCATION}
+        cd ${BERKELEYDB_ARCHIVE_LOCATION} || die 1 "Unable to cd into ${BERKELEYDB_ARCHIVE_LOCATION}"
         wget ${BERKELEYDB_ARCHIVE_URL}
         cd - >/dev/null
     fi
 }
 
 checkBerkeleyDBBuild() {
-    mkdir -p ${BUILD_DIR}/libdb
-    cd ${BUILD_DIR}/libdb
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb"
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -336,7 +349,7 @@ cmake \
     -DBERKELEYDB_BUILD_VERSION_SHORT=${BERKELEYDB_BUILD_VERSION%.*} \
     -DBERKELEYDB_ARCHIVE_HASH=${BERKELEYDB_ARCHIVE_HASH} \
     -DCMAKE_INSTALL_PREFIX=/libdb-install \
-    ${BUILD_DIR}/../external/berkeleydb-cmake
+    ${ownLocation}/../external/berkeleydb-cmake
 EOM
 
     echo "=============================================================================="
@@ -368,8 +381,8 @@ EOM
 checkBerkeleyDB() {
     info ""
     info "BerkeleyDB:"
-    if [[ -f ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
-        info " -> Found ${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/lib/libdb.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/lib/libdb.a, skip build"
     else
         checkBerkeleyDBArchive
         checkBerkeleyDBBuild
@@ -380,41 +393,60 @@ checkBerkeleyDB() {
 # ============================================================================
 
 # ===== Start of boost functions =============================================
+checkBoostArchive() {
+    local currentDir=$(pwd)
+    if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
+        mkdir -p ${BOOST_ARCHIVE_LOCATION}
+    fi
+    cd ${BOOST_ARCHIVE_LOCATION} || die 1 "Unable to cd into ${BOOST_ARCHIVE_LOCATION}"
+    if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
+        info " -> Downloading Boost archive"
+        wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
+    else
+        info " -> Using existing Boost archive"
+    fi
+}
+
+buildBoost() {
+    info " -> Building Boost on ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    info " -> Cleanup before extraction"
+    rm -rf boost_${BOOST_VERSION//./_}
+    info " -> Extracting Boost archive"
+    tar xzf ${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}.tar.gz
+    info " -> Building Boost"
+    cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
+    ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
+    #        ./bootstrap.sh
+    ./b2 -j"${CORES_TO_USE}"
+    cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
+}
+
 checkBoost() {
     info ""
     info "Boost:"
     info " -> Searching required static Boost libs"
-    buildBoost=false
-    for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-        if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
-            info " -> ${currentBoostDependency}: OK"
-        else
-            warning " => ${currentBoostDependency}: Not found!"
-            buildBoost=true
-        fi
-    done
-    if ${buildBoost}; then
-        local currentDir=$(pwd)
-        if [[ ! -e ${BOOST_ARCHIVE_LOCATION} ]]; then
-            mkdir -p ${BOOST_ARCHIVE_LOCATION}
-        fi
-        cd ${BOOST_ARCHIVE_LOCATION}
-        if [[ ! -e "boost_${BOOST_VERSION//./_}.tar.gz" ]]; then
-            info " -> Downloading Boost archive"
-            wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION//./_}.tar.gz
-        else
-            info " -> Using existing Boost archive"
-        fi
-        info " -> Cleanup before extraction"
-        rm -rf boost_${BOOST_VERSION//./_}
-        info " -> Extracting Boost archive"
-        tar xzf boost_${BOOST_VERSION//./_}.tar.gz
-        info " -> Building Boost"
-        cd boost_${BOOST_VERSION//./_}
-        ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
-        #        ./bootstrap.sh
-        ./b2 address-model=32 -j"${CORES_TO_USE}"
-        cd "${currentDir}"
+    BOOST_INCLUDEDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}
+    BOOST_LIBRARYDIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/boost_${BOOST_VERSION//./_}/stage/lib
+    boostBuildRequired=false
+    if [[ -d ${BOOST_LIBRARYDIR} ]]; then
+        for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
+            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
+                info " -> ${currentBoostDependency}: OK"
+            else
+                warning " => ${currentBoostDependency}: Not found!"
+                boostBuildRequired=true
+            fi
+        done
+    else
+        warning " => Boost library directory ${BOOST_LIBRARYDIR} not found!"
+        boostBuildRequired=true
+    fi
+    if ${boostBuildRequired} ; then
+        checkBoostArchive
+        buildBoost
+    else
+        info " => All Boost requirements found"
     fi
 }
 # ===== End of boost functions ===============================================
@@ -482,8 +514,8 @@ checkEventLibClone() {
 }
 
 checkEventLibBuild() {
-    mkdir -p ${BUILD_DIR}/libevent
-    cd ${BUILD_DIR}/libevent
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libevent
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -493,13 +525,13 @@ cmake \
     -DCMAKE_SHARED_LINKER_FLAGS_INIT=-m32 \
     -DCMAKE_MODULE_LINKER_FLAGS_INIT=-m32 \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include \
-    -DZLIB_INCLUDE_DIR=${BUILD_DIR}/usr/local/include \
-    -DZLIB_LIBRARY_RELEASE=${BUILD_DIR}/usr/local/lib \
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include \
+    -DZLIB_LIBRARY_RELEASE=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib \
     -DEVENT__DISABLE_TESTS=ON \
     -DEVENT__DISABLE_MBEDTLS=ON \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    ${BUILD_DIR}/../external/libevent
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
+    ${ownLocation}/../external/libevent
 EOM
 
     echo "=============================================================================="
@@ -532,8 +564,8 @@ EOM
 checkEventLib() {
     info ""
     info "EventLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libevent.a, skip build"
     else
         checkEventLibClone
         checkEventLibBuild
@@ -562,8 +594,8 @@ checkLevelDBClone() {
 }
 
 checkLevelDBBuild() {
-    mkdir -p ${BUILD_DIR}/libleveldb
-    cd ${BUILD_DIR}/libleveldb
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libleveldb
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -573,8 +605,8 @@ cmake \
     -DCMAKE_SHARED_LINKER_FLAGS_INIT=-m32 \
     -DCMAKE_MODULE_LINKER_FLAGS_INIT=-m32 \
     \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    ${BUILD_DIR}/../external/leveldb
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
+    ${ownLocation}/../external/leveldb
 EOM
 
     echo "=============================================================================="
@@ -607,8 +639,8 @@ EOM
 checkLevelDB() {
     info ""
     info "LevelDB:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libleveldb.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libleveldb.a, skip build"
     else
         checkLevelDBClone
         checkLevelDBBuild
@@ -644,8 +676,8 @@ checkZStdLibArchive() {
 }
 
 checkZStdLibBuild() {
-    mkdir -p ${BUILD_DIR}/libzstd
-    cd ${BUILD_DIR}/libzstd
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libzstd
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -659,8 +691,8 @@ cmake \
     -DLIBZ_BUILD_VERSION=${LIBZ_BUILD_VERSION} \
     -DLIBZ_BUILD_VERSION_SHORT=${LIBZ_BUILD_VERSION%.*} \
     -DLIBZ_ARCHIVE_HASH=${LIBZ_ARCHIVE_HASH} \
-    -DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/usr/local \
-    ${BUILD_DIR}/../external/libzstd/build/cmake
+    -DCMAKE_INSTALL_PREFIX=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local \
+    ${ownLocation}/../external/libzstd/build/cmake
 EOM
 
     echo "=============================================================================="
@@ -693,8 +725,8 @@ EOM
 checkZStdLib() {
     info ""
     info "ZStdLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/libzstd.a, skip build"
     else
         checkZStdLibArchive
         checkZStdLibBuild
@@ -721,8 +753,8 @@ checkXZLibArchive() {
 }
 
 checkXZLibBuild() {
-    mkdir -p ${BUILD_DIR}/libxz
-    cd ${BUILD_DIR}/libxz
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libxz
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -736,7 +768,7 @@ cmake \
     -DLIBXZ_BUILD_VERSION=${LIBXZ_BUILD_VERSION} \
     -DLIBXZ_BUILD_VERSION_SHORT=${LIBXZ_BUILD_VERSION%.*} \
     -DLIBXZ_ARCHIVE_HASH=${LIBXZ_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/libxz-cmake
+    ${ownLocation}/../external/libxz-cmake
 EOM
 
     echo "=============================================================================="
@@ -768,8 +800,8 @@ EOM
 checkXZLib() {
     info ""
     info "XZLib:"
-    if [[ -f ${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/liblzma.a, skip build"
     else
         checkXZLibArchive
         checkXZLibBuild
@@ -796,8 +828,8 @@ checkTorArchive() {
 }
 
 checkTorBuild() {
-    mkdir -p ${BUILD_DIR}/tor
-    cd ${BUILD_DIR}/tor
+    mkdir -p ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
+    cd ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/tor
 
     info " -> Generating build configuration"
     read -r -d '' cmd <<EOM
@@ -811,7 +843,7 @@ cmake \
     -DTOR_BUILD_VERSION=${TOR_BUILD_VERSION} \
     -DTOR_BUILD_VERSION_SHORT=${TOR_BUILD_VERSION%.*} \
     -DTOR_ARCHIVE_HASH=${TOR_ARCHIVE_HASH} \
-    ${BUILD_DIR}/../external/tor-cmake
+    ${ownLocation}/../external/tor-cmake
 EOM
 
     echo "=============================================================================="
@@ -843,8 +875,8 @@ EOM
 checkTor() {
     info ""
     info "Tor:"
-    if [[ -f ${BUILD_DIR}/usr/local/bin/tor ]]; then
-        info " -> Found ${BUILD_DIR}/usr/local/bin/tor, skip build"
+    if [[ -f ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor ]]; then
+        info " -> Found ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/bin/tor, skip build"
     else
         checkTorArchive
         checkTorBuild
@@ -880,16 +912,18 @@ BUILD_ONLY_ALIAS=false
 BUILD_ONLY_DEPENDENCIES=false
 WITH_TOR=false
 SYSTEM_QT=false
+GIVEN_DEPENDENCIES_BUILD_DIR=''
 
 defineQtVersionForCurrentDistribution
 
-while getopts c:dfgosth? option; do
+while getopts c:dfgop:sth? option; do
     case ${option} in
     c) CORES_TO_USE="${OPTARG}" ;;
     d) BUILD_ONLY_DEPENDENCIES=true ;;
     f) FULLBUILD=true ;;
     g) ENABLE_GUI=true ;;
     o) BUILD_ONLY_ALIAS=true ;;
+    p) GIVEN_DEPENDENCIES_BUILD_DIR="${OPTARG}" ;;
     s) SYSTEM_QT=true ;;
     t) WITH_TOR=true ;;
     h | ?) helpMe && exit 0 ;;
@@ -900,28 +934,55 @@ done
 # Go to alias-wallet repository root directory
 cd ..
 
-if [[ ! -d ${BUILD_DIR} ]]; then
+# ============================================================================
+# Handle given path to dependency location
+if [[ -n "${GIVEN_DEPENDENCIES_BUILD_DIR}" ]] ; then
+    # ${GIVEN_DEPENDENCIES_BUILD_DIR} is set,
+    # so store given path on build configuration
+    if [[ "${GIVEN_DEPENDENCIES_BUILD_DIR}" = /* ]]; then
+        # Absolute path given
+        DEPENDENCIES_BUILD_DIR=${GIVEN_DEPENDENCIES_BUILD_DIR}
+    else
+        # Relative path given
+        DEPENDENCIES_BUILD_DIR=${ownLocation}/../${GIVEN_DEPENDENCIES_BUILD_DIR}
+    fi
+    storeDependenciesBuildDir "${DEPENDENCIES_BUILD_DIR}"
+fi
+
+# ============================================================================
+# If ${DEPENDENCIES_BUILD_DIR} is empty, no path to the dependencies is given
+# or stored on script/.buildproperties. In this case use default location
+# inside of Git clone
+if [[ -z "${DEPENDENCIES_BUILD_DIR}" ]] ; then
+    DEPENDENCIES_BUILD_DIR=${ownLocation}/..
+fi
+
+info ""
+info "Building/using dependencies on/from directory:"
+info " -> ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+
+if [[ ! -d ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR} ]]; then
     info ""
-    info "Creating build directory ${BUILD_DIR}"
-    mkdir ${BUILD_DIR}
+    info "Creating dependency build directory ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
+    mkdir -p "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
     info " -> Done"
 fi
 
-cd ${BUILD_DIR} || die 1 "Unable to cd into ${BUILD_DIR}"
-BUILD_DIR=$(pwd)
+cd "${DEPENDENCIES_BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}"
+DEPENDENCIES_BUILD_DIR=$(pwd)
 
+# ============================================================================
+# Handle which parts should be build
+cd "${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}" || die 1 "Unable to cd into ${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}"
 if ${FULLBUILD}; then
     info ""
     info "Cleanup leftovers from previous build run"
     rm -rf ./*
     info " -> Done"
-elif ${BUILD_ONLY_ALIAS}; then
-    info ""
-    info "Cleanup alias folder from previous build run"
-    rm -rf ./aliaswallet
-    info " -> Done"
 fi
 
+# ============================================================================
+# If GUI should be build, set proper parameters
 if ${ENABLE_GUI}; then
     if ${SYSTEM_QT}; then
         ENABLE_GUI_PARAMETERS="ON"
@@ -931,6 +992,8 @@ if ${ENABLE_GUI}; then
     fi
 fi
 
+# ============================================================================
+# Check a/o build requirements/dependencies
 checkBoost
 checkBerkeleyDB
 checkLevelDB
@@ -942,20 +1005,41 @@ if ${WITH_TOR}; then
     checkTor
 fi
 
+# ============================================================================
+# Only dependencies should be build, so exit here
 if ${BUILD_ONLY_DEPENDENCIES}; then
     info ""
     info "Checked a/o built all required dependencies."
     exit
 fi
 
-mkdir -p ${BUILD_DIR}/aliaswallet
-cd ${BUILD_DIR}/aliaswallet
+# ============================================================================
+# Dependencies are ready. Go ahead with the main project
+ALIAS_BUILD_DIR=${ownLocation}/../${BUILD_DIR}/aliaswallet
+if [[ ! -d ${ALIAS_BUILD_DIR} ]]; then
+    info ""
+    info "Creating Alias build directory ${ALIAS_BUILD_DIR}"
+    mkdir -p "${ALIAS_BUILD_DIR}"
+    info " -> Done"
+fi
+cd "${ALIAS_BUILD_DIR}" || die 1 "Unable to cd into Alias build directory '${ALIAS_BUILD_DIR}'"
+
+# Update $ALIAS_BUILD_DIR with full path
+ALIAS_BUILD_DIR=$(pwd)
+
+# If requested, cleanup leftovers from previous build
+if [[ ${FULLBUILD} = true ]] || [[ ${BUILD_ONLY_ALIAS} = true ]]; then
+    info ""
+    info "Cleanup leftovers from previous build run"
+    rm -rf ./*
+    info " -> Done"
+fi
 
 info ""
 info "Generating Alias build configuration"
 
 # FindBerkeleyDB.cmake requires this
-export BERKELEYDB_ROOT=${BUILD_DIR}/libdb/libdb-install
+export BERKELEYDB_ROOT=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install
 
 read -r -d '' cmd <<EOM
 cmake \
@@ -972,12 +1056,12 @@ cmake \
     -DBOOST_INCLUDEDIR=${BOOST_INCLUDEDIR} \
     -DBOOST_LIBRARYDIR=${BOOST_LIBRARYDIR} \
     \
-    -DBerkeleyDB_ROOT_DIR=${BUILD_DIR}/libdb/libdb-install \
-    -DBERKELEYDB_INCLUDE_DIR=${BUILD_DIR}/libdb/libdb-install/include \
+    -DBerkeleyDB_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install \
+    -DBERKELEYDB_INCLUDE_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/libdb/libdb-install/include \
     \
-    -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb \
+    -Dleveldb_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib/cmake/leveldb \
     \
-    -DOPENSSL_ROOT_DIR=${BUILD_DIR}/usr/local/lib;${BUILD_DIR}/usr/local/include
+    -DOPENSSL_ROOT_DIR=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/lib;${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR}/usr/local/include
 EOM
 
 # Insert additional parameters
@@ -992,7 +1076,7 @@ EOM
 # Finalize build cmd
 read -r -d '' cmd <<EOM
 ${cmd} \
-    ${BUILD_DIR}/..
+    ${ALIAS_BUILD_DIR}/../..
 EOM
 
 echo "=============================================================================="

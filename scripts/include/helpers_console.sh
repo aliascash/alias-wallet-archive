@@ -10,17 +10,17 @@
 # ===========================================================================
 
 _init() {
-#    if [ -n "${TERM}" -a "${TERM}" != "dumb" ]; then
-        GREEN='\e[0;32m' RED='\e[0;31m' BLUE='\e[0;34m' NORMAL='\e[0m'
-#    else
-#        GREEN="" RED="" BLUE="" NORMAL=""
-#    fi
+    #if [ -n "${TERM}" -a "${TERM}" != "dumb" ]; then
+    GREEN='\e[0;32m' RED='\e[0;31m' BLUE='\e[0;34m' NORMAL='\e[0m'
+    #else
+    #    GREEN="" RED="" BLUE="" NORMAL=""
+    #fi
 }
 die() {
-    error=${1:-1}
+    local error=${1:-1}
     shift
     error "$*" >&2
-    exit ${error}
+    exit "${error}"
 }
 info() {
     printf "${GREEN}%-7s: %s${NORMAL}\n" "Info" "$*"
@@ -45,20 +45,26 @@ executeCommand() {
     echo "Executing '${_command}'"
     eval "${_command}"
     rtc=$?
-    evaluateRtc ${rtc} ${_returnCodeForError}
+    evaluateRtc ${rtc} "${_returnCodeForError}"
     return ${rtc}
 }
 
-evaluateRtc(){
+evaluateRtc() {
     local _givenRtc=$1
     local _returnCodeForError=$2
-    if [ ${_givenRtc} -ne 0 ] ; then
-        if [ -z "$_returnCodeForError" ] ; then
+    if [ "${_givenRtc}" -ne 0 ]; then
+        if [ -z "$_returnCodeForError" ]; then
             die 80 "Error during build steps"
-        elif [ ${_returnCodeForError} -lt 0 ] ; then
+        elif [ "${_returnCodeForError}" -lt 0 ]; then
             warning "Last command finished with non-zero return code but ignoring this for now"
         else
-            die ${_returnCodeForError} "Error during build steps! (${_returnCodeForError})"
+            die "${_returnCodeForError}" "Error during build steps! (${_returnCodeForError})"
         fi
     fi
+}
+
+storeDependenciesBuildDir() {
+    local _dependenciesBuildDir=$1
+    sed -i ".bak" "/DEPENDENCIES_BUILD_DIR/d" "${ownLocation}"/.buildconfig
+    echo "DEPENDENCIES_BUILD_DIR=${_dependenciesBuildDir}" >> "${ownLocation}"/.buildconfig
 }
