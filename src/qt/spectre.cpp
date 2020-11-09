@@ -254,12 +254,7 @@ int main(int argc, char *argv[])
         if (!wizard.exec())
             return 0;
         if (wizard.hasVisitedPage(SetupWalletWizard::Page_RecoverFromMnemonic))
-        {
-            SoftSetArg("-bip44key", static_cast<RecoverFromMnemonicPage*>(wizard.page(SetupWalletWizard::Page_RecoverFromMnemonic))->sKey);
             SoftSetBoolArg("-rescan", true);
-        }
-        else if (wizard.hasVisitedPage(SetupWalletWizard::Page_NewMnemonic_Verification))
-            SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
 #endif
 

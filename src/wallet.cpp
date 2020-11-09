@@ -282,7 +282,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         {
             fMakeExtKeyInitials = false;
             CWalletDB wdb(strWalletFile, "r+");
-            if (ExtKeyCreateInitial(&wdb) != 0)
+            if (ExtKeyCreateInitial(&wdb, GetArg("-bip44key", "")) != 0)
             {
                LogPrintf("Warning: ExtKeyCreateInitial failed.\n");
             };
@@ -8650,7 +8650,7 @@ int CWallet::ExtKeyUnlock(const CKeyingMaterial &vMKey)
 };
 
 
-int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
+int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb, std::string sBip44Key)
 {
     LogPrintf("Creating intital extended master key and account.\n");
 
@@ -8660,7 +8660,6 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
         return errorN(1, "TxnBegin failed.");
 
     CExtKey ekBip44;
-    std::string sBip44Key = GetArg("-bip44key", "");
     if (!sBip44Key.empty())
     {
         CExtKey58 eKey58;
@@ -8752,7 +8751,7 @@ int CWallet::ExtKeyLoadMaster()
                 return 0;
             };
 
-            if (ExtKeyCreateInitial(&wdb) != 0)
+            if (ExtKeyCreateInitial(&wdb, GetArg("-bip44key", "")) != 0)
                 return errorN(1, "ExtKeyCreateDefaultMaster failed.");
 
             return 0;
@@ -10003,5 +10002,26 @@ bool IsMine(const CWallet &wallet, const CScript& scriptPubKey)
     }
     }
     return false;
+}
+
+int SetupWalletData(const std::string& strWalletFile, const std::string& sBip44Key, const SecureString& strWalletPassphrase)
+{
+    if (boost::filesystem::exists(GetDataDir() / strWalletFile))
+    {
+        return errorN(1, "Wallet file already exists.");
+    }
+
+    CWallet wallet(strWalletFile);
+    {
+        CWalletDB wdb(strWalletFile, "cr+");
+        if (wallet.ExtKeyCreateInitial(&wdb, sBip44Key) != 0)
+            return errorN(2, "ExtKeyCreateInitial failed.");
+    }
+
+    if (!wallet.EncryptWallet(strWalletPassphrase)) {
+        return errorN(3, "EncryptWallet failed.");
+    }
+    bitdb.Flush(false);
+    return 0;
 }
 
