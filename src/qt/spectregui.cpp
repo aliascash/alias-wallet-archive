@@ -1087,7 +1087,7 @@ void SpectreGUI::lockWallet()
 {
     if(!walletModel->isInitialized() || !walletModel->isReplicaValid())
          return;
-    walletModel->lockWallet();
+    walletModel->lockWallet(false);
 }
 
 void SpectreGUI::toggleLock()
@@ -1232,16 +1232,16 @@ void SpectreGUI::resetBlockchain()
 SpectreGUI::UnlockContext SpectreGUI::requestUnlock(UnlockMode mode)
 {
     bool was_locked = walletModel->encryptionInfo().status() == EncryptionStatus::Locked;
+    bool valid = !was_locked;
 
     if ((!was_locked) && walletModel->encryptionInfo().fWalletUnlockStakingOnly())
     {
-       QRemoteObjectPendingReply<bool> reply = walletModel->lockWallet();
+       QRemoteObjectPendingReply<bool> reply = walletModel->lockWallet(true);
        if (!reply.waitForFinished())
            return UnlockContext(this, false, false);
-       was_locked = true;
-
+       valid = false;
     }
-    bool valid = !was_locked;
+
     if(was_locked)
         // Request UI to unlock wallet, mark context as invalid if unlocked failed
         valid = unlockWallet(mode);
@@ -1260,7 +1260,7 @@ SpectreGUI::UnlockContext::~UnlockContext()
 {
     if(valid && relock)
     {
-        window->walletModel->lockWallet();
+        window->walletModel->lockWallet(false);
     }
 }
 

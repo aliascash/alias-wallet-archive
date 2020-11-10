@@ -7,7 +7,7 @@ class WalletModelRemote
     SLOT(int countLockedAnonOutputs());
     SLOT(bool setWalletEncrypted(bool encrypted, const QString &passphrase));
     SLOT(bool changePassphrase(const QString &oldPass, const QString &newPass));
-    SLOT(bool lockWallet());
+    SLOT(bool lockWallet(bool forUnlock));
     SLOT(bool unlockWallet(const QString &passPhrase, const bool fStakingOnly));
     SLOT(bool validateAddress(const QString &address));
     SLOT(QVariantMap signMessage(const QString &address, const QString &message));

@@ -95,7 +95,9 @@ AskPassphraseDialog::~AskPassphraseDialog()
 void AskPassphraseDialog::setWalletModel(QSharedPointer<WalletModelRemoteReplica> model)
 {
     this->walletModel = model;
-    ui->stakingCheckBox->setChecked(model->encryptionInfo().fWalletUnlockStakingOnly());
+    ui->stakingCheckBox->setChecked(mode == UnlockStaking || model->encryptionInfo().fWalletUnlockStakingOnly());
+    if (mode == UnlockLogin && model->encryptionInfo().fWalletUnlockStakingOnly())
+        ui->stakingCheckBox->hide();
 }
 
 void AskPassphraseDialog::setApplicationModel(QSharedPointer<ApplicationModelRemoteReplica> model)

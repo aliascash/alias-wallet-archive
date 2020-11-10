@@ -791,10 +791,13 @@ bool WalletModel::setWalletEncrypted(bool encrypted, const QString &passphrase)
     }
 }
 
-bool WalletModel::lockWallet()
+bool WalletModel::lockWallet(bool forUnlock)
 {
     // Lock
-    return wallet->Lock();
+    bool locked = wallet->Lock();
+    if (locked && !forUnlock)
+        fWalletUnlockStakingOnly = false;
+    return locked;
 }
 
 bool WalletModel::unlockWallet(const QString &passPhrase, const bool fStakingOnly)
@@ -920,7 +923,7 @@ WalletModel::UnlockContext WalletModel::requestUnlock(WalletModel::UnlockMode mo
 
     if ((!was_locked) && fWalletUnlockStakingOnly)
     {
-       lockWallet();
+       lockWallet(true);
        was_locked = getEncryptionStatus() == EncryptionStatus::Locked;
 
     }
@@ -946,7 +949,7 @@ WalletModel::UnlockContext::~UnlockContext()
 {
     if(valid && relock)
     {
-        wallet->lockWallet();
+        wallet->lockWallet(false);
     }
 }
 

@@ -67,7 +67,7 @@ public:
 
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const QString &passphrase);
-    bool lockWallet();
+    bool lockWallet(bool forUnlock);
     bool unlockWallet(const QString &passPhrase, const bool fStakingOnly);
     bool changePassphrase(const QString &oldPass, const QString &newPass);
     // Wallet backup
