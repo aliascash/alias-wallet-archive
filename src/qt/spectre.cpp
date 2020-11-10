@@ -589,9 +589,9 @@ int main(int argc, char *argv[])
 //                uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
                 // Check if wallet unlock is needed to determine current balance
-                if (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked && evaluate(walletModelPtr->countLockedAnonOutputs()) > 0)
+                if (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked || walletModelPtr->encryptionInfo().fWalletUnlockStakingOnly())
                 {
-                    SpectreGUI::UnlockContext unlockContext = window.requestUnlock(SpectreGUI::UnlockMode::rescan);
+                    SpectreGUI::UnlockContext unlockContext = window.requestUnlock(SpectreGUI::UnlockMode::login);
                     if (!unlockContext.isValid())
                     {
                         InitMessage("Shutdown...");
