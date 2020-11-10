@@ -107,6 +107,8 @@ public:
 bool IsDestMine(const CWallet &wallet, const CTxDestination &dest);
 bool IsMine(const CWallet& wallet, const CScript& scriptPubKey);
 
+int SetupWalletData(const std::string& strWalletFile, const std::string& sBip44Key, const SecureString& strWalletPassphrase);
+
 /** A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
  */
@@ -542,7 +544,7 @@ public:
     int ExtKeyUnlock(CStoredExtKey *sek, const CKeyingMaterial &vMKey);
     int ExtKeyUnlock(const CKeyingMaterial &vMKey);
 
-    int ExtKeyCreateInitial(CWalletDB *pwdb);
+    int ExtKeyCreateInitial(CWalletDB *pwdb, std::string sBip44Key = "");
     int ExtKeyLoadMaster();
     int ExtKeyLoadAccounts();
 

@@ -165,6 +165,7 @@ if (ENABLE_GUI)
         set(Qt5QuickWidgets_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QuickWidgets")
         set(Qt5Quick_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Quick")
         set(Qt5Svg_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Svg")
+        set(Qt5Concurrent_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Concurrent")
 
         # Additional entries:
         set(Qt5_DIR "${QT_CMAKE_MODULE_PATH}/Qt5")
@@ -223,6 +224,10 @@ if (ENABLE_GUI)
     find_package(Qt5Svg)
     message(STATUS "Qt5Svg version: ${Qt5Svg_VERSION}")
     get_target_property(QtSvg_location Qt5::Svg LOCATION)
+
+    find_package(Qt5Concurrent)
+    message(STATUS "Qt5Concurrent version: ${Qt5Concurrent_VERSION}")
+    get_target_property(QtConcurrent_location Qt5::Concurrent LOCATION)
 
     if (ANDROID)
         find_package(Qt5AndroidExtras)

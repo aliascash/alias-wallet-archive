@@ -14,6 +14,7 @@ class QComboBox;
 class QLabel;
 class QLineEdit;
 class QRadioButton;
+class QProgressBar;
 QT_END_NAMESPACE
 
 class SetupWalletWizard : public QWizard
@@ -24,7 +25,8 @@ public:
     enum { Page_Intro,
            Page_ImportWalletDat,
            Page_NewMnemonic_Settings, Page_NewMnemonic_Result, Page_NewMnemonic_Verification,
-           Page_RecoverFromMnemonic };
+           Page_RecoverFromMnemonic,
+           Page_EncryptWallet};
 
     SetupWalletWizard(QWidget *parent = 0);
 
@@ -155,6 +157,30 @@ private:
     QLabel *passwordLabel;
     QLineEdit *passwordEdit;
     std::vector<QLineEdit*> vMnemonicEdit;
+};
+
+class EncryptWalletPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    EncryptWalletPage(QWidget *parent = 0);
+
+    int nextId() const override;
+    void initializePage() override;
+    bool isComplete() const override;
+    bool validatePage() override;
+
+private:
+   int encryptWallet(const QString strWalletFile, const QString sBip44Key, const QString password);
+
+   QLabel *progressLabel;
+   QProgressBar *progressBar;
+
+   QLabel *passwordLabel;
+   QLineEdit *passwordEdit;
+   QLabel *passwordVerifyLabel;
+   QLineEdit *passwordVerifyEdit;
 };
 
 #endif // SETUPWALLETWIZARD_H

@@ -246,6 +246,7 @@ if (ENABLE_GUI)
                 Qt5::Quick
                 Qt5::QuickWidgets
                 Qt5::Svg
+                Qt5::Concurrent
                 Qt5::AndroidExtras
                 Qt5::RemoteObjects
                 )
@@ -353,6 +354,7 @@ if (ENABLE_GUI)
                 Qt5::Quick
                 Qt5::QuickWidgets
                 Qt5::Svg
+                Qt5::Concurrent
                 )
 
         target_sources(Aliaswallet

@@ -7,11 +7,14 @@
 #include "extkey.h"
 #include "util.h"
 #include "guiutil.h"
+#include "guiconstants.h"
 #include "base58.h"
+#include "wallet.h"
 
 #include <QtWidgets>
 #include <QScreen>
 #include <QInputMethod>
+#include <QtConcurrent>
 
 namespace fs = boost::filesystem;
 
@@ -27,6 +30,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setPage(Page_NewMnemonic_Result, new NewMnemonicResultPage);
     setPage(Page_NewMnemonic_Verification, new NewMnemonicVerificationPage);
     setPage(Page_RecoverFromMnemonic, new RecoverFromMnemonicPage);
+    setPage(Page_EncryptWallet, new EncryptWalletPage);
 
     setStartId(Page_Intro);
 
@@ -504,7 +508,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
 int NewMnemonicVerificationPage::nextId() const
 {
-    return -1;
+    return SetupWalletWizard::Page_EncryptWallet;
 }
 
 bool NewMnemonicVerificationPage::isComplete() const
@@ -576,7 +580,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
 int RecoverFromMnemonicPage::nextId() const
 {
-    return -1;
+    return SetupWalletWizard::Page_EncryptWallet;
 }
 
 bool RecoverFromMnemonicPage::validatePage()
@@ -653,3 +657,116 @@ void SetupWalletWizard::showEvent(QShowEvent *e)
 #endif
     QDialog::showEvent(e);
 }
+
+EncryptWalletPage::EncryptWalletPage(QWidget *parent)
+    : QWizardPage(parent)
+{
+    setTitle(tr("Wallet Encryption"));
+    setSubTitle(tr("Please enter a password to encrypt the wallet.dat file."));
+
+    passwordLabel = new QLabel(tr("&Password:"));
+    passwordEdit = new QLineEdit;
+    passwordEdit->setEchoMode(QLineEdit::Password);
+    passwordLabel->setBuddy(passwordEdit);
+
+    passwordVerifyLabel = new QLabel(tr("&Password Verification:"));
+    passwordVerifyEdit = new QLineEdit;
+    passwordVerifyEdit->setEchoMode(QLineEdit::Password);
+    passwordVerifyLabel->setBuddy(passwordVerifyEdit);
+
+    registerField("encryptwallet.password*", passwordEdit);
+    registerField("encryptwallet.passwordverify*", passwordVerifyEdit);
+
+    progressLabel = new QLabel(tr("Create and encrypt wallet.dat ..."));
+    progressLabel->setWordWrap(true);
+    QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    progressLabel->setSizePolicy(sizePolicy);
+    progressLabel->setAlignment(Qt::AlignHCenter);
+
+    progressBar = new QProgressBar();
+    progressBar->setRange(0, 0);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QGridLayout *formLayout = new QGridLayout;
+    formLayout->addWidget(passwordLabel, 0, 0);
+    formLayout->addWidget(passwordEdit, 0, 1);
+    formLayout->addWidget(passwordVerifyLabel, 1, 0);
+    formLayout->addWidget(passwordVerifyEdit, 1, 1);
+
+    layout->addLayout(formLayout);
+
+    layout->addSpacing(50);
+    layout->addWidget(progressLabel);
+    layout->addSpacing(20);
+    layout->addWidget(progressBar);
+    progressLabel->setVisible(false);
+    progressBar->setVisible(false);
+
+    setLayout(layout);
+}
+
+int EncryptWalletPage::nextId() const
+{
+    return -1;
+}
+
+void EncryptWalletPage::initializePage()
+{
+   passwordEdit->setText("");
+   passwordVerifyEdit->setText("");
+}
+
+
+bool EncryptWalletPage::isComplete() const
+{
+    QString sPassword = field("encryptwallet.password").toString();
+    QString sVerificationPassword = field("encryptwallet.passwordverify").toString();
+    return sPassword == sVerificationPassword && sPassword.length() > 0;
+}
+
+bool EncryptWalletPage::validatePage()
+{
+    progressLabel->setVisible(true);
+    progressBar->setVisible(true);
+    passwordEdit->setEnabled(false);
+    passwordVerifyEdit->setEnabled(false);
+    wizard()->button(QWizard::BackButton)->setEnabled(false);
+    wizard()->button(QWizard::FinishButton)->setEnabled(false);
+
+    const std::string& sBip44Key = wizard()->hasVisitedPage(SetupWalletWizard::Page_RecoverFromMnemonic) ?
+                static_cast<RecoverFromMnemonicPage*>(wizard()->page(SetupWalletWizard::Page_RecoverFromMnemonic))->sKey :
+                static_cast<NewMnemonicSettingsPage*>(wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey;
+
+    QFuture<int> future = QtConcurrent::run(this, &EncryptWalletPage::encryptWallet,
+                                            QString("wallet.dat"),
+                                            QString::fromStdString(sBip44Key),
+                                            field("encryptwallet.password").toString());
+    while (!future.isResultReadyAt(0))
+        QApplication::instance()->processEvents();
+
+    int ret = future.result();
+    progressLabel->setVisible(false);
+    progressBar->setVisible(false);
+    if (ret == 0)
+        return true;
+    else {
+        passwordEdit->setEnabled(true);
+        passwordVerifyEdit->setEnabled(true);
+        wizard()->button(QWizard::BackButton)->setEnabled(true);
+        wizard()->button(QWizard::FinishButton)->setEnabled(true);
+        QMessageBox::critical(this, tr("Error"), tr("Failed to create wallet.dat. ErrorCode: %1").arg(ret));
+        return false;
+    }
+}
+
+int EncryptWalletPage::encryptWallet(const QString strWalletFile, const QString sBip44Key, const QString password)
+{
+    SecureString secString;
+    secString.reserve(MAX_PASSPHRASE_SIZE);
+    secString.assign(password.toStdString().c_str());
+
+    return SetupWalletData(strWalletFile.toStdString(), sBip44Key.toStdString(), secString);
+}
+
+
