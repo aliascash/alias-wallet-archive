@@ -335,9 +335,9 @@ int main(int argc, char *argv[])
                 uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
                 // Check if wallet unlock is needed to determine current balance
-                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                if (pwalletMain->IsLocked())
                 {
-                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
+                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::login);
                     if (!unlockContext.isValid())
                     {
                         InitMessage("Shutdown...");

@@ -34,6 +34,7 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     ui->passEdit3->installEventFilter(this);
 
     ui->stakingCheckBox->setChecked(fWalletUnlockStakingOnly);
+    ui->stakingCheckBox->hide();
 
     switch(mode)
     {
@@ -44,7 +45,8 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             setWindowTitle(tr("Encrypt wallet"));
             break;
         case UnlockRescan:
-            ui->stakingCheckBox->setText(tr("Keep wallet unlocked."));
+        case UnlockLogin:
+            ui->stakingCheckBox->setText(tr("Keep wallet unlocked for staking."));
         case UnlockStaking:
             ui->stakingCheckBox->setChecked(mode == UnlockStaking);
             ui->stakingCheckBox->show();
@@ -56,6 +58,8 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             ui->passEdit3->hide();
             if (mode==UnlockRescan)
                 ui->warningLabel->setText(tr("Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your <b>private ALIAS balance might be shown wrong</b>."));
+            else if (mode==UnlockLogin)
+                ui->warningLabel->setText(tr("<b>Alias Wallet Login</b>"));
             else
                 ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
             setWindowTitle(tr("Unlock wallet"));
@@ -157,6 +161,7 @@ void AskPassphraseDialog::accept()
         }
         } break;
     case UnlockRescan:
+    case UnlockLogin:
     case UnlockStaking:
     case Unlock:
         if(!model->setWalletLocked(false, oldpass))
@@ -215,6 +220,7 @@ void AskPassphraseDialog::textChanged()
         acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
         break;
     case UnlockStaking:
+    case UnlockLogin:
     case UnlockRescan:
     case Unlock: // Old passphrase x1
     case Decrypt:

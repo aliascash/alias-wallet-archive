@@ -1001,6 +1001,9 @@ void SpectreGUI::unlockWallet(WalletModel::UnlockMode unlockMode)
     if (unlockMode == WalletModel::UnlockMode::rescan) {
          mode = AskPassphraseDialog::UnlockRescan;
     }
+    else if (unlockMode == WalletModel::UnlockMode::login) {
+         mode = AskPassphraseDialog::UnlockLogin;
+    }
     else {
         mode = sender() == unlockWalletAction ?
                     AskPassphraseDialog::UnlockStaking : AskPassphraseDialog::Unlock;
