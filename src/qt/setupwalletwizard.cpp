@@ -682,7 +682,7 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     setTitle(tr("Wallet Encryption"));
     setSubTitle(tr("Please enter a password to encrypt the wallet.dat file."));
 
-    passwordLabel = new QLabel(tr("&Password:"));
+    passwordLabel = new QLabel(tr("&Wallet Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
     passwordLabel->setBuddy(passwordEdit);
