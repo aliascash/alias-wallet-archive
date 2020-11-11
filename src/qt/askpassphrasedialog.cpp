@@ -179,7 +179,7 @@ void AskPassphraseDialog::accept()
     case UnlockLogin:
     case UnlockStaking:
     case Unlock:
-        if(!evaluate(walletModel->unlockWallet(oldpass, ui->stakingCheckBox->isChecked()), mode == UnlockRescan))
+        if(!evaluate(walletModel->unlockWallet(oldpass, ui->stakingCheckBox->isChecked()), mode == UnlockRescan || mode == UnlockLogin))
         {
             QMessageBox::critical(this, tr("Wallet unlock failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
