@@ -54,158 +54,158 @@ pipeline {
                 )
             }
         }
-//        stage('Feature branch') {
-//            when {
-//                not {
-//                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
-//                }
-//            }
-//            //noinspection GroovyAssignabilityCheck
-//            parallel {
-//                stage('Raspberry Pi Buster arm64') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('CentOS 8') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Debian Stretch') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Debian Buster') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Fedora') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('OpenSUSE') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Ubuntu 18.04') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Ubuntu 20.04') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
+        stage('Feature branch') {
+            when {
+                not {
+                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
+                }
+            }
+            //noinspection GroovyAssignabilityCheck
+            parallel {
+                stage('Raspberry Pi Buster arm64') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Debian Stretch') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Debian Buster') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Fedora') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('OpenSUSE') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Ubuntu 18.04') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
+                stage('Ubuntu 20.04') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                    post {
+                        always {
+                            sh "docker system prune --all --force"
+                        }
+                    }
+                }
 //                stage('Mac') {
 //                    agent {
 //                        label "mac"
@@ -329,8 +329,8 @@ pipeline {
 //                        }
 //                    }
 //                }
-//            }
-//        }
+            }
+        }
         stage('Prepare master branch build') {
             when {
                 branch 'master'
