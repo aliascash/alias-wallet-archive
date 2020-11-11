@@ -194,22 +194,7 @@ pipeline {
 //                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
 //                                    """
 //                            )
-////                            prepareMacDelivery()
-////                            sh(
-////                                    script: """
-////                                        ./scripts/mac-deployqt.sh
-////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-////                                    """
-////                            )
-////                            // Archive step here only to be able to make feature branch builds available for download
 //                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-////                            prepareMacOBFS4Delivery()
-////                            sh(
-////                                    script: """
-////                                        ./scripts/mac-deployqt.sh
-////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-////                                    """
-////                            )
 //                        }
 //                    }
 //                }
@@ -633,22 +618,7 @@ pipeline {
                                                 cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
-//                                    prepareMacDelivery()
-//                                    sh(
-//                                            script: """
-//                                                ./scripts/mac-deployqt.sh
-//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                            """
-//                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-//                                    prepareMacOBFS4Delivery()
-//                                    sh(
-//                                            script: """
-//                                                ./scripts/mac-deployqt.sh
-//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-//                                            """
-//                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                 }
                             }
                         }
@@ -670,21 +640,10 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-//                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
-//                                    uploadArtifactToGitHub(
-//                                            user: 'aliascash',
-//                                            repository: 'alias-wallet',
-//                                            tag: "${GIT_TAG_TO_USE}",
-//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-//                                    )
                                     createAndArchiveChecksumFile(
                                             filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                             checksumfile: "Checksum-Alias-Mac.txt"
                                     )
-//                                    createAndArchiveChecksumFile(
-//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-//                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
-//                                    )
                                     sh "rm -f Alias*.dmg* Checksum-Alias*"
                                 }
                             }
