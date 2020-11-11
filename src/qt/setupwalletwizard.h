@@ -88,6 +88,7 @@ public:
 
     int nextId() const override;
     bool validatePage() override;
+    bool isComplete() const override;
     void cleanupPage() override;
 
     QStringList mnemonicList;
@@ -97,8 +98,10 @@ private:
     QLabel *noteLabel;
     QLabel *languageLabel;
     QLabel *passwordLabel;
+    QLabel *passwordVerifyLabel;
     QComboBox *languageComboBox;
     QLineEdit *passwordEdit;
+    QLineEdit *passwordVerifyEdit;
 };
 
 class NewMnemonicResultPage : public QWizardPage
