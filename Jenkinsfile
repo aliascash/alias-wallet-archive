@@ -72,11 +72,7 @@ pipeline {
                                     dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
                                     dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -90,11 +86,7 @@ pipeline {
                                     dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
                                     dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -108,11 +100,7 @@ pipeline {
                                     dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
                                     dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -126,11 +114,7 @@ pipeline {
                                     dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
                                     dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -144,11 +128,7 @@ pipeline {
                                     dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
                                     dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -162,11 +142,7 @@ pipeline {
                                     dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
                                     dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -180,11 +156,7 @@ pipeline {
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
                                     dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -198,11 +170,7 @@ pipeline {
                                     dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
                                     dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                             )
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -434,11 +402,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -481,11 +445,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-CentOS-8.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-CentOS-8.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -510,11 +470,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Debian-Stretch.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -539,11 +495,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Debian-Buster.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Buster.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -566,11 +518,7 @@ pipeline {
                                     checksumfile: "Checksum-Alias-Fedora.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Fedora.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -591,11 +539,7 @@ pipeline {
                                     checksumfile: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -618,11 +562,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -647,11 +587,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Ubuntu-20-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-20-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -750,11 +686,6 @@ pipeline {
 //                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
 //                                    )
                                     sh "rm -f Alias*.dmg* Checksum-Alias*"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
                                 }
                             }
                         }
@@ -935,7 +866,6 @@ pipeline {
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
                         )
-                        sh "docker system prune --all --force"
                     }
                 }
             }
