@@ -106,6 +106,9 @@ namespace GUIUtil
     // Create a pixmap with given width and height (considering devicePixelRatio), fill with given color, draw scaled SVG into given bounds
     QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString& svgResource, const QRect& bounds);
 
+    // returns true if current screen width has more pixel than current screen height.
+    bool isScreenLandscape();
+
     /** Qt event filter that intercepts ToolTipChange events, and replaces the tooltip with a rich text
       representation if needed. This assures that Qt can word-wrap long tooltip messages.
       Tooltips longer than the provided size threshold (in characters) are wrapped.

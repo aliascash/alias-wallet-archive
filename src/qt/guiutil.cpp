@@ -615,5 +615,11 @@ QPixmap createPixmap(int width, int height, const QColor& bgColor, const QString
     return QPixmap::fromImage(image);
 }
 
+bool isScreenLandscape()
+{
+    QRect  screenGeometry = QGuiApplication::primaryScreen()->availableGeometry();
+    return screenGeometry.width() > screenGeometry.height();
+}
+
 } // namespace GUIUtil
 

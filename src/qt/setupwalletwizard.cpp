@@ -373,10 +373,11 @@ NewMnemonicResultPage::NewMnemonicResultPage(QWidget *parent)
     scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     QGridLayout *gridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicResultLabel.reserve(24);
+    bool fLandscape = GUIUtil::isScreenLandscape();
     for (int i = 0; i < 24; i++)
     {
         vMnemonicResultLabel.push_back(new QLabel(scrollAreaWidgetContents));
-        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+        if (fLandscape)
             gridLayout->addWidget(vMnemonicResultLabel[i], i / 4 + 1,  i % 4);
         else
             gridLayout->addWidget(vMnemonicResultLabel[i], i / 2 + 1,  i % 2);
@@ -504,6 +505,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
+    bool fLandscape = GUIUtil::isScreenLandscape();
     for (int i = 0; i < 24; i++)
     {
         QLineEdit *qLineEdit = new QLineEdit;
@@ -513,7 +515,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
 
         QFormLayout *formLayout = new QFormLayout;
         formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
-        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+        if (fLandscape)
             fieldGridLayout->addLayout(formLayout, i / 4 + 2,  i % 4);
         else
             fieldGridLayout->addLayout(formLayout, i / 2 + 2,  i % 2);
@@ -576,6 +578,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     scrollAreaWidgetContents->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
+    bool fLandscape = GUIUtil::isScreenLandscape();
     for (int i = 0; i < 24; i++)
     {
         QLineEdit *qLineEdit = new QLineEdit;
@@ -585,7 +588,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
         QFormLayout *formLayout = new QFormLayout;
         formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
-        if (QGuiApplication::primaryScreen()->isLandscape(Qt::ScreenOrientation::PrimaryOrientation))
+        if (fLandscape)
             fieldGridLayout->addLayout(formLayout, i / 4 + 2,  i % 4);
         else
             fieldGridLayout->addLayout(formLayout, i / 2 + 2,  i % 2);
