@@ -682,6 +682,9 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     setTitle(tr("Wallet Encryption"));
     setSubTitle(tr("Please enter a password to encrypt the wallet.dat file."));
 
+    topLabel = new QLabel(tr("The password protects your private keys and will be asked by the wallet on startup and for critical operations."));
+    topLabel->setWordWrap(true);
+
     passwordLabel = new QLabel(tr("&Wallet Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
@@ -705,6 +708,9 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     progressBar->setRange(0, 0);
 
     QVBoxLayout *layout = new QVBoxLayout;
+
+    layout->addWidget(topLabel);
+    layout->addSpacing(20);
 
     QGridLayout *formLayout = new QGridLayout;
     formLayout->addWidget(passwordLabel, 0, 0);
