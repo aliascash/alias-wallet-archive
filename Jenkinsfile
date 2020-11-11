@@ -370,7 +370,7 @@ pipeline {
             parallel {
                 stage('Raspberry Pi Buster') {
                     agent {
-                        label "raspi-builder"
+                        label "docker"
                     }
                     stages {
                         stage('Raspberry Pi Buster') {
