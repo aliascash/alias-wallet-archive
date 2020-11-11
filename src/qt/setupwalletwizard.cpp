@@ -186,7 +186,7 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     noteLabel = new QLabel(tr("Creating mnemonic seed words is a three step procedure:"
                              "<ol><li>Define language and optional password for your seed.</li>"
                              "<li>Write down created seed words.</li>"
-                             "<li>Verify seed words and password.</li></ol>"));
+                             "<li>Verify seed words and seed password.</li></ol>"));
     noteLabel->setWordWrap(true);
 
     languageLabel = new QLabel(tr("&Language:"));
@@ -200,10 +200,19 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     languageComboBox->addItem("Chinese (Simplified)", 5);
     languageComboBox->addItem("Chinese (Traditional)", 6);
 
-    passwordLabel = new QLabel(tr("&Password:"));
+    passwordLabel = new QLabel(tr("&Seed Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
     passwordLabel->setBuddy(passwordEdit);
+    registerField("newmnemonic.password", passwordEdit);
+    connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
+
+    passwordVerifyLabel = new QLabel(tr("&Verify Password:"));
+    passwordVerifyEdit = new QLineEdit;
+    passwordVerifyEdit->setEchoMode(QLineEdit::Password);
+    passwordVerifyLabel->setBuddy(passwordVerifyEdit);
+    registerField("newmnemonic.passwordverify", passwordVerifyEdit);
+    connect(passwordVerifyEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     registerField("newmnemonic.language", languageComboBox, "currentData", "currentIndexChanged");
     registerField("newmnemonic.password", passwordEdit);
@@ -215,6 +224,8 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     formLayout->addWidget(languageComboBox, 0, 1);
     formLayout->addWidget(passwordLabel, 1, 0);
     formLayout->addWidget(passwordEdit, 1, 1);
+    formLayout->addWidget(passwordVerifyLabel, 2, 0);
+    formLayout->addWidget(passwordVerifyEdit, 2, 1);
     layout->addLayout(formLayout);
 
     noteLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -233,6 +244,13 @@ void NewMnemonicSettingsPage::cleanupPage()
     QWizardPage::cleanupPage();
     sKey.clear();
     mnemonicList.clear();
+}
+
+bool NewMnemonicSettingsPage::isComplete() const
+{
+    QString sPassword = field("newmnemonic.password").toString();
+    QString sVerificationPassword = field("newmnemonic.passwordverify").toString();
+    return sPassword == sVerificationPassword;
 }
 
 bool NewMnemonicSettingsPage::validatePage()
@@ -391,7 +409,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     setTitle(tr("Create private keys with Mnemonic Recovery Seed Words"));
     setSubTitle(tr("Step 3/3: Verify you have the correct words and (optional) password noted."));
 
-    passwordLabel = new QLabel(tr("&Password:"));
+    passwordLabel = new QLabel(tr("&Seed Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
     passwordEdit->installEventFilter(this);
@@ -539,7 +557,7 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     passwordEdit->setEchoMode(QLineEdit::Password);
     passwordLabel->setBuddy(passwordEdit);
 
-    passwordVerifyLabel = new QLabel(tr("&Password Verification:"));
+    passwordVerifyLabel = new QLabel(tr("&Verify Password:"));
     passwordVerifyEdit = new QLineEdit;
     passwordVerifyEdit->setEchoMode(QLineEdit::Password);
     passwordVerifyLabel->setBuddy(passwordVerifyEdit);
