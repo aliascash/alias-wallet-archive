@@ -170,6 +170,7 @@ private:
    QLabel *progressLabel;
    QProgressBar *progressBar;
 
+   QLabel *topLabel;
    QLabel *passwordLabel;
    QLineEdit *passwordEdit;
    QLabel *passwordVerifyLabel;
