@@ -554,12 +554,21 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     setTitle(tr("Recover Wallet"));
     setSubTitle(tr("Enter (optional) password and your mnemonic seed words."));
 
-    passwordLabel = new QLabel(tr("&Password:"));
+    passwordLabel = new QLabel(tr("&Seed Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
     passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("recover.password", passwordEdit);
+    connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
+
+    passwordVerifyLabel = new QLabel(tr("&Verify Password:"));
+    passwordVerifyEdit = new QLineEdit;
+    passwordVerifyEdit->setEchoMode(QLineEdit::Password);
+    passwordVerifyEdit->installEventFilter(this);
+    passwordVerifyLabel->setBuddy(passwordVerifyEdit);
+    registerField("recover.passwordverify", passwordVerifyEdit);
+    connect(passwordVerifyEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
 
@@ -568,7 +577,9 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     QGridLayout *gridLayout = new QGridLayout(this);
     gridLayout->addWidget(passwordLabel, 0, 0);
     gridLayout->addWidget(passwordEdit, 0, 1, 1, 3);
-    gridLayout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    gridLayout->addWidget(passwordVerifyLabel, 1, 0);
+    gridLayout->addWidget(passwordVerifyEdit, 1, 1, 1, 3);
+    gridLayout->addWidget(mnemonicLabel, 2, 0, 1, 4);
     verticalLayout->addLayout(gridLayout);
 
     QScrollArea *scrollArea = new QScrollArea(this);
@@ -602,6 +613,62 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 int RecoverFromMnemonicPage::nextId() const
 {
     return SetupWalletWizard::Page_EncryptWallet;
+}
+
+bool RecoverFromMnemonicPage::isComplete() const
+{
+    QString sPassword = field("recover.password").toString();
+    QString sVerificationPassword = field("recover.passwordverify").toString();
+
+    if (sPassword != sVerificationPassword)
+        return false;
+
+    for (int i = 0; i < 24; i++)
+    {
+        if (field(QString("recover.mnemonic.%1").arg(i)).toString().isEmpty())
+            return false;
+    }
+    return true;
+}
+
+bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::FocusIn) {
+        if (obj != passwordEdit)
+            QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+    }
+    else if (event->type()==QEvent::KeyPress)
+    {
+        if (obj != vMnemonicEdit.back())
+        {
+            QKeyEvent* key = static_cast<QKeyEvent*>(event);
+            if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+                this->focusNextChild();
+            }
+        }
+    }
+    else if (event->type() == QEvent::FocusOut)
+    {
+        if (obj == passwordVerifyEdit || obj == passwordEdit)
+        {
+            QString sPassword = field("recover.password").toString();
+            QString sPasswordVerify = field("recover.passwordverify").toString();
+
+            if (sPasswordVerify.length() > 0)
+            {
+                if (sPassword != sPasswordVerify)
+                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                else
+                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
+            }
+            else {
+                passwordVerifyEdit->setStyleSheet("");
+            }
+        }
+    }
+
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
 bool RecoverFromMnemonicPage::validatePage()
@@ -648,27 +715,6 @@ bool RecoverFromMnemonicPage::validatePage()
     }
 
     return true;
-}
-
-bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::FocusIn) {
-        if (obj != passwordEdit)
-            QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
-    }
-    else if (event->type()==QEvent::KeyPress)
-    {
-        if (obj != vMnemonicEdit.back())
-        {
-            QKeyEvent* key = static_cast<QKeyEvent*>(event);
-            if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
-                this->focusNextChild();
-            }
-        }
-    }
-
-    // standard event processing
-    return QObject::eventFilter(obj, event);
 }
 
 void SetupWalletWizard::showEvent(QShowEvent *e)
