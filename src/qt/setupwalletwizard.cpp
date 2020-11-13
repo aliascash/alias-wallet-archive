@@ -468,18 +468,30 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     setTitle(tr("Recover private keys from Mnemonic Seed Words"));
     setSubTitle(tr("Please enter (optional) password and your mnemonic seed words to recover private keys."));
 
-    passwordLabel = new QLabel(tr("&Password:"));
+    passwordLabel = new QLabel(tr("&Seed Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
+    passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("recover.password", passwordEdit);
+    connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
+
+    passwordVerifyLabel = new QLabel(tr("&Verify Password:"));
+    passwordVerifyEdit = new QLineEdit;
+    passwordVerifyEdit->setEchoMode(QLineEdit::Password);
+    passwordVerifyEdit->installEventFilter(this);
+    passwordVerifyLabel->setBuddy(passwordVerifyEdit);
+    registerField("recover.passwordverify", passwordVerifyEdit);
+    connect(passwordVerifyEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
 
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(passwordLabel, 0, 0);
     layout->addWidget(passwordEdit, 0, 1, 1, 3);
-    layout->addWidget(mnemonicLabel, 1, 0, 1, 4);
+    layout->addWidget(passwordVerifyLabel, 1, 0);
+    layout->addWidget(passwordVerifyEdit, 1, 1, 1, 3);
+    layout->addWidget(mnemonicLabel, 2, 0, 1, 4);
 
     vMnemonicEdit.reserve(24);
     for (int i = 0; i < 24; i++)
@@ -489,7 +501,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 
         QFormLayout *formLayout = new QFormLayout;
         formLayout->addRow(QString("%1.").arg(i + 1, 2), vMnemonicEdit[i]);
-        layout->addLayout(formLayout, i / 4 + 2,  i % 4);
+        layout->addLayout(formLayout, i / 4 + 3,  i % 4);
     }
 
     setLayout(layout);
@@ -498,6 +510,48 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
 int RecoverFromMnemonicPage::nextId() const
 {
     return SetupWalletWizard::Page_EncryptWallet;
+}
+
+bool RecoverFromMnemonicPage::isComplete() const
+{
+    QString sPassword = field("recover.password").toString();
+    QString sVerificationPassword = field("recover.passwordverify").toString();
+
+    if (sPassword != sVerificationPassword)
+        return false;
+
+    for (int i = 0; i < 24; i++)
+    {
+        if (field(QString("recover.mnemonic.%1").arg(i)).toString().isEmpty())
+            return false;
+    }
+    return true;
+}
+
+bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::FocusOut)
+    {
+        if (obj == passwordVerifyEdit || obj == passwordEdit)
+        {
+            QString sPassword = field("recover.password").toString();
+            QString sPasswordVerify = field("recover.passwordverify").toString();
+
+            if (sPasswordVerify.length() > 0)
+            {
+                if (sPassword != sPasswordVerify)
+                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                else
+                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
+            }
+            else {
+                passwordVerifyEdit->setStyleSheet("");
+            }
+        }
+    }
+
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
 bool RecoverFromMnemonicPage::validatePage()

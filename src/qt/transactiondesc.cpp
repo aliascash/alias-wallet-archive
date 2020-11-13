@@ -313,7 +313,7 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
 
         narrationHandled = true;
         if (!narration.empty())
-            strHTML += "<dt><b>" + TransactionDesc::tr("Narration") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
+            strHTML += "<dt><b>" + TransactionDesc::tr("Note") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
     }
     else {
         if (addressLink(wallet, destination, strHTML))
@@ -321,7 +321,7 @@ void toHTML(CWallet *wallet, QString& strHTML, const CTxDestination& destination
             strHTML += "</dd>";
             narrationHandled = true;
             if (!narration.empty())
-                strHTML += "<dt><b>" + TransactionDesc::tr("Narration") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
+                strHTML += "<dt><b>" + TransactionDesc::tr("Note") + ":</b></dt><dd>" + GUIUtil::HtmlEscape(narration) + "</dd>";
         }
         else
             strHTML += TransactionDesc::tr("unknown") + "</dd>";

@@ -142,13 +142,17 @@ public:
 
     int nextId() const override;
     bool validatePage() override;
+    bool isComplete() const override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
     std::string sKey;
 
 private:
     QLabel *mnemonicLabel;
     QLabel *passwordLabel;
+    QLabel *passwordVerifyLabel;
     QLineEdit *passwordEdit;
+    QLineEdit *passwordVerifyEdit;
     std::vector<QLineEdit*> vMnemonicEdit;
 };
 
