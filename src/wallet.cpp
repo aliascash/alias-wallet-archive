@@ -7167,7 +7167,7 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
         return _("Insufficient funds");
 
     if (sNarr.length() > 24)
-        return _("Narration must be 24 characters or less.");
+        return _("Note must be 24 characters or less.");
 
     // Parse Bitcoin address
     CScript scriptPubKey;
