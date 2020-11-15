@@ -381,6 +381,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
                                             dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -424,6 +425,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/CentOS/Dockerfile',
                                             dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -449,6 +451,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Debian/Dockerfile_Stretch',
                                             dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -474,6 +477,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Debian/Dockerfile_Buster',
                                             dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -497,6 +501,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch(
+                                    githubToken: GITHUB_CI_TOKEN,
                                     dockerfile: 'Docker/Fedora/Dockerfile',
                                     dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
@@ -518,6 +523,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch(
+                                    githubToken: GITHUB_CI_TOKEN,
                                     dockerfile: 'Docker/OpenSUSE/Dockerfile',
                                     dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
@@ -541,6 +547,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
                                             dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -566,6 +573,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_20_04',
                                             dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
