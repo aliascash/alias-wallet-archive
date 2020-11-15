@@ -18,7 +18,7 @@ pipeline {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = "xyz"
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
-        GITHUB_TOKEN = credentials('cdc81429-53c7-4521-81e9-83a7992bca76')
+        GITHUB_TOKEN = credentials('github-app')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
@@ -54,158 +54,126 @@ pipeline {
                 )
             }
         }
-//        stage('Feature branch') {
-//            when {
-//                not {
-//                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
-//                }
-//            }
-//            //noinspection GroovyAssignabilityCheck
-//            parallel {
-//                stage('Raspberry Pi Buster arm64') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('CentOS 8') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Debian Stretch') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Debian Buster') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Fedora') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('OpenSUSE') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Ubuntu 18.04') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
-//                stage('Ubuntu 20.04') {
-//                    agent {
-//                        label "docker"
-//                    }
-//                    steps {
-//                        script {
-//                            buildFeatureBranch(
-//                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
-//                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
-//                            )
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "docker system prune --all --force"
-//                        }
-//                    }
-//                }
+        stage('Feature branch') {
+            when {
+                not {
+                    anyOf { branch 'develop'; branch 'master'; branch "${BRANCH_TO_DEPLOY}" }
+                }
+            }
+            //noinspection GroovyAssignabilityCheck
+            parallel {
+                stage('Raspberry Pi Buster arm64') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
+                            )
+                            sh "docker rmi aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('CentOS 8') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/CentOS/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('Debian Stretch') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Stretch_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('Debian Buster') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Debian/Dockerfile_Buster_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('Fedora') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Fedora/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('OpenSUSE') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/OpenSUSE/Dockerfile_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('Ubuntu 18.04') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_18_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
+                stage('Ubuntu 20.04') {
+                    agent {
+                        label "docker"
+                    }
+                    steps {
+                        script {
+                            buildFeatureBranch(
+                                    dockerfile: 'Docker/Ubuntu/Dockerfile_20_04_noUpload',
+                                    dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
+                            )
+                            sh "docker rmi aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
+                        }
+                    }
+                }
 //                stage('Mac') {
 //                    agent {
 //                        label "mac"
@@ -226,22 +194,7 @@ pipeline {
 //                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
 //                                    """
 //                            )
-////                            prepareMacDelivery()
-////                            sh(
-////                                    script: """
-////                                        ./scripts/mac-deployqt.sh
-////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-////                                    """
-////                            )
-////                            // Archive step here only to be able to make feature branch builds available for download
 //                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-////                            prepareMacOBFS4Delivery()
-////                            sh(
-////                                    script: """
-////                                        ./scripts/mac-deployqt.sh
-////                                        mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-////                                    """
-////                            )
 //                        }
 //                    }
 //                }
@@ -329,8 +282,8 @@ pipeline {
 //                        }
 //                    }
 //                }
-//            }
-//        }
+            }
+        }
         stage('Prepare master branch build') {
             when {
                 branch 'master'
@@ -417,7 +370,7 @@ pipeline {
             parallel {
                 stage('Raspberry Pi Buster') {
                     agent {
-                        label "raspi-builder"
+                        label "docker"
                     }
                     stages {
                         stage('Raspberry Pi Buster') {
@@ -434,11 +387,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-RaspberryPi-Buster-aarch64.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -481,11 +430,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-CentOS-8.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-CentOS-8.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -510,11 +455,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Debian-Stretch.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Stretch.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -539,11 +480,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Debian-Buster.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Debian-Buster.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -566,11 +503,7 @@ pipeline {
                                     checksumfile: "Checksum-Alias-Fedora.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Fedora.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -591,11 +524,7 @@ pipeline {
                                     checksumfile: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
                             )
                             archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-OpenSUSE-Tumbleweed.txt"
-                        }
-                    }
-                    post {
-                        always {
-                            sh "docker system prune --all --force"
+                            sh "docker rmi aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}"
                         }
                     }
                 }
@@ -618,11 +547,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Ubuntu-18-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-18-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -647,11 +572,7 @@ pipeline {
                                             checksumfile: "Checksum-Alias-Ubuntu-20-04.txt"
                                     )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Ubuntu-20-04.txt"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
+                                    sh "docker rmi aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}"
                                 }
                             }
                         }
@@ -697,22 +618,7 @@ pipeline {
                                                 cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
-//                                    prepareMacDelivery()
-//                                    sh(
-//                                            script: """
-//                                                ./scripts/mac-deployqt.sh
-//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                            """
-//                                    )
                                     archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-//                                    prepareMacOBFS4Delivery()
-//                                    sh(
-//                                            script: """
-//                                                ./scripts/mac-deployqt.sh
-//                                                mv Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg
-//                                            """
-//                                    )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
                                 }
                             }
                         }
@@ -734,27 +640,11 @@ pipeline {
                                             tag: "${GIT_TAG_TO_USE}",
                                             artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                     )
-//                                    sh "wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg"
-//                                    uploadArtifactToGitHub(
-//                                            user: 'aliascash',
-//                                            repository: 'alias-wallet',
-//                                            tag: "${GIT_TAG_TO_USE}",
-//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-//                                    )
                                     createAndArchiveChecksumFile(
                                             filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
                                             checksumfile: "Checksum-Alias-Mac.txt"
                                     )
-//                                    createAndArchiveChecksumFile(
-//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac-OBFS4.dmg",
-//                                            checksumfile: "Checksum-Alias-Mac-OBFS4.txt"
-//                                    )
                                     sh "rm -f Alias*.dmg* Checksum-Alias*"
-                                }
-                            }
-                            post {
-                                always {
-                                    sh "docker system prune --all --force"
                                 }
                             }
                         }
@@ -935,7 +825,6 @@ pipeline {
                                 artifactNameLocal: "releaseNotesToDeploy.txt",
                                 artifactNameRemote: "RELEASENOTES.txt",
                         )
-                        sh "docker system prune --all --force"
                     }
                 }
             }
