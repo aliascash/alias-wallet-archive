@@ -18,7 +18,7 @@ pipeline {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = "xyz"
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
-        GITHUB_TOKEN = credentials('github-app')
+        GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
@@ -321,6 +321,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -330,6 +331,7 @@ pipeline {
                     steps {
                         script {
                             removeRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -341,6 +343,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -350,6 +353,7 @@ pipeline {
                     steps {
                         script {
                             createRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}",
