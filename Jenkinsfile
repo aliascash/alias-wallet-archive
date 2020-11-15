@@ -50,7 +50,7 @@ pipeline {
                         result: "ABORTED",
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
-                        webhookURL: "${DISCORD_WEBHOOK}"
+                        webhookURL: DISCORD_WEBHOOK
                 )
             }
         }
@@ -871,7 +871,7 @@ pipeline {
                         successful: true,
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
-                        webhookURL: "${DISCORD_WEBHOOK}"
+                        webhookURL: DISCORD_WEBHOOK
                 )
             }
         }
@@ -891,7 +891,7 @@ pipeline {
                     result: "UNSTABLE",
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
         failure {
@@ -909,7 +909,7 @@ pipeline {
                     successful: false,
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
         aborted {
@@ -921,7 +921,7 @@ pipeline {
                     result: "ABORTED",
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
     }
