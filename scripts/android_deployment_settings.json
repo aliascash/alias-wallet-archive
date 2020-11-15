@@ -1,0 +1,26 @@
+{
+  "_description": "This file is created by CMake to be read by androiddeployqt and should not be modified by hand.",
+  "application-binary": "Alias",
+  "architectures": {
+    "arm64-v8a" : "aarch64-linux-android",
+    "armeabi-v7a" : "arm-linux-androideabi",
+    "x86_64" : "x86_64-linux-android"
+  },
+  
+  
+  "android-package-source-directory": "/Users/teknex/Desktop/spectrecoin/repositories/alias/spectre_android/src/android",
+  
+  
+  
+  
+  "sdkBuildToolsRevision": "29.0.3",
+  "ndk": "/Users/teknex/Library/Android/sdk/ndk/21.1.6352462",
+  "ndk-host": "darwin-x86_64",
+  "qml-root-path": "/Users/teknex/Desktop/spectrecoin/repositories/alias/spectre_android",
+  "qt": "/Users/teknex/Qt/5.15.1/android",
+  "sdk": "/Users/teknex/Library/Android/sdk",
+  "stdcpp-path": "/Users/teknex/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/",
+  "tool-prefix": "llvm",
+  "toolchain-prefix": "llvm",
+  "useLLVM": true
+}
