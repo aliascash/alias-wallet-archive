@@ -175,30 +175,30 @@ pipeline {
                         }
                     }
                 }
-//                stage('Mac') {
-//                    agent {
-//                        label "mac"
-//                    }
-//                    environment {
-//                        BOOST_PATH = "${BOOST_PATH_MAC}"
-//                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-//                        QT_PATH = "${QT_PATH_MAC_512}"
-//                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-//                        MACOSX_DEPLOYMENT_TARGET = 10.12
-//                    }
-//                    steps {
-//                        script {
-//                            sh(
-//                                    script: """
-//                                        pwd
-//                                        ./scripts/cmake-build-mac.sh -g
-//                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                    """
-//                            )
-//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-//                        }
-//                    }
-//                }
+                stage('Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    environment {
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
+                    }
+                    steps {
+                        script {
+                            sh(
+                                    script: """
+                                        pwd
+                                        ./scripts/cmake-build-mac.sh -g
+                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                    """
+                            )
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                        }
+                    }
+                }
 //                stage('Windows Qt5.12.x') {
 //                    stages {
 //                        stage('Start Windows slave') {
