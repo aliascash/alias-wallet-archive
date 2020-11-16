@@ -19,6 +19,7 @@ pipeline {
         BRANCH_TO_DEPLOY = "xyz"
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
         GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
+        CI_URL = credentials('CI_URL')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
@@ -643,7 +644,7 @@ pipeline {
                                     sh(
                                             script: """
                                                 rm -f Alias*.dmg*
-                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                                wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
                                             """
                                     )
                                     uploadArtifactToGitHub(
@@ -819,7 +820,7 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
@@ -954,7 +955,7 @@ def uploadDeliveries(def suffix) {
         sh(
                 script: """
                     rm -f Alias-*-Win64${suffix}.zip
-                    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
         uploadArtifactToGitHub(
