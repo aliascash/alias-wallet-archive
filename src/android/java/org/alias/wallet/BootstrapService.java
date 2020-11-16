@@ -7,33 +7,39 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.google.android.gms.net.CronetProviderInstaller;
 import com.google.android.gms.tasks.Task;
 
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+
 import org.chromium.net.CronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.List;
 
 public class BootstrapService extends Service {
 
@@ -42,6 +48,8 @@ public class BootstrapService extends Service {
     public static final String BOOTSTRAP_BROADCAST_ACTION = "org.alias.wallet.bootstrap";
 
     public static final String ACTION_STOP = "ACTION_STOP";
+
+    public static final String BOOTSTRAP_BASE_URL = "https://download.alias.cash/files/bootstrap/";
 
     public static final int STATE_CANCEL = -2;
     public static final int STATE_ERROR = -1;
@@ -58,6 +66,18 @@ public class BootstrapService extends Service {
     private Notification.Action stopAction;
 
     private CronetEngine engine;
+
+    public static class BootstrapPartDefinition {
+        public String hash;
+        public Path path;
+        public URL url;
+
+        public BootstrapPartDefinition(String hash, Path path, URL url) {
+            this.hash = hash;
+            this.path = path;
+            this.url = url;
+        }
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -147,51 +167,48 @@ public class BootstrapService extends Service {
             // Prepare Paths
             //
             Path destinationDir = Paths.get(getFilesDir().toPath().toString(), ".aliaswallet");
-            Path bootstrapPath = Paths.get(destinationDir.toString(), "BootstrapChain.zip");
+            Path bootstrapTmpPath = Paths.get(destinationDir.toString(), "tmp_bootstrap");
+            List<BootstrapPartDefinition> bootstrapPartDefinitionList = null;
             try {
                 //
-                // Prepare Download URL
+                // PHASE 0: Download Bootstrap index file
                 //
-                URL bootstrapURL;
-                try {
-                    bootstrapURL = new URL("https://download.alias.cash/files/bootstrap/BootstrapChain.zip");
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
+                bootstrapPartDefinitionList = downloadBootstrapIndexURLs(bootstrapTmpPath);
+
                 //
-                // PHASE 1: Download File
+                // PHASE 1: Download Bootstrap files
                 //
-                downloadBootstrap(notificationManager, bootstrapURL, bootstrapPath);
-                if (isCancelled()) {
-                    updateProgress(notificationManager, STATE_CANCEL, 0, false, "Canceled...");
-                    return null;
+                for (int partIndex = 0; partIndex < bootstrapPartDefinitionList.size(); partIndex++) {
+                    BootstrapPartDefinition bootstrapPartDefinition = bootstrapPartDefinitionList.get(partIndex);
+                    if (!Files.exists(bootstrapPartDefinition.path)) {
+                        downloadBootstrap(notificationManager, bootstrapPartDefinition, partIndex, bootstrapPartDefinitionList.size());
+                        if (isCancelled()) {
+                            updateProgress(notificationManager, STATE_CANCEL, 0, false, "Canceled...");
+                            return null;
+                        }
+                    }
                 }
 
                 //
                 // PHASE 2: Extract files
                 //
                 updateProgress(notificationManager, STATE_EXTRACTION, 0,true, "Extracting...");
-                prepareBootstrap(bootstrapPath, destinationDir);
+                prepareBootstrap(bootstrapPartDefinitionList, destinationDir);
+                cleanupDirectory(bootstrapTmpPath);
 
                 //
                 // PHASE 3: Finished
                 //
                 updateProgress(notificationManager, STATE_FINISHED, 0,false, "Successfully finished!");
             } catch (Exception e) {
+                if (e instanceof ZipException) {
+                    cleanupDirectory(bootstrapTmpPath);
+                }
                 //
                 // PHASE -1: Error
                 //
                 Log.d(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
                 updateProgress(notificationManager, STATE_ERROR, 0,false, "Failed...");
-            }
-            finally {
-                // clean up
-                try {
-                    Files.deleteIfExists(bootstrapPath);
-                }
-                catch (Exception ex) {
-                    Log.d(TAG, "BootstrapTask: Failed to delete bootstrap file", ex);
-                }
             }
             return null;
         }
@@ -208,26 +225,80 @@ public class BootstrapService extends Service {
             stopSelf();
         }
 
-        private void downloadBootstrap(NotificationManager notificationManager, URL bootstrapURL, Path bootstrapFile) {
+        private List<BootstrapPartDefinition> downloadBootstrapIndexURLs(Path destinationDir) throws IOException {
+            Path bootstrapIndexPath = Paths.get(destinationDir.toString(), "BootstrapChainParts.txt");
+            if (!Files.exists(bootstrapIndexPath) ||
+                    (Duration.between(Files.getLastModifiedTime(bootstrapIndexPath).toInstant(), Clock.systemUTC().instant()).toDays() > 0)) {
+
+                // Make sure target directory for bootstrap index exists and is empty
+                cleanupDirectory(destinationDir);
+                Files.createDirectories(bootstrapIndexPath.getParent());
+                Path downloadPath = bootstrapIndexPath.resolveSibling("downloading");
+
+                InputStream input = null;
+                OutputStream output = null;
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) engine.openConnection(new URL(BOOTSTRAP_BASE_URL + "BootstrapChainParts.txt"));
+                    connection.setConnectTimeout(10000);
+                    connection.connect();
+                    input = new BufferedInputStream(connection.getInputStream());
+                    output = new FileOutputStream(downloadPath.toFile());
+
+                    // download the file and write to disk
+                    byte buffer[] = new byte[1024];
+                    int bytesRead = -1;
+                    while ((bytesRead = input.read(buffer)) != -1) {
+                        output.write(buffer, 0, bytesRead);
+                    }
+                    output.flush();
+                    Files.move(downloadPath, bootstrapIndexPath);
+                } catch (Exception e) {
+                    cleanupDirectory(destinationDir);
+                    throw new RuntimeException(e);
+                } finally {
+                    // clean up
+                    close(input);
+                    close(output);
+                }
+            }
+
+            final List<BootstrapPartDefinition> bootstrapPartDefinitions = new ArrayList();
+            try (BufferedReader reader = new BufferedReader(new FileReader(bootstrapIndexPath.toFile()))) {
+                String nextLine = "";
+                while ((nextLine = reader.readLine()) != null) {
+                    String[] defArrray = nextLine.split("  ");
+                    BootstrapPartDefinition def = new BootstrapPartDefinition(defArrray[0], Paths.get(destinationDir.toString(), defArrray[1]), new URL(BOOTSTRAP_BASE_URL + defArrray[1]));
+                    bootstrapPartDefinitions.add(def);
+                }
+            }
+            return bootstrapPartDefinitions;
+        }
+
+        private void downloadBootstrap(NotificationManager notificationManager, BootstrapPartDefinition bootstrapPartDefinition, int fileIndex, int totalFiles) {
+            Path bootstrapFileTemp = bootstrapPartDefinition.path.resolveSibling("downloading");
             InputStream input = null;
             OutputStream output = null;
             try {
                 // Make sure there is no bootstrap file on disc before download
-                Files.deleteIfExists(bootstrapFile);
-                // Make sure target directory for bootstrap exists
-                Files.createDirectories(bootstrapFile.getParent());
+                Files.deleteIfExists(bootstrapPartDefinition.path);
+                Files.deleteIfExists(bootstrapFileTemp);
 
-                HttpURLConnection connection = (HttpURLConnection)engine.openConnection(bootstrapURL);
+                // Make sure target directory for bootstrap exists
+                Files.createDirectories(bootstrapPartDefinition.path.getParent());
+
+                HttpURLConnection connection = (HttpURLConnection)engine.openConnection(bootstrapPartDefinition.url);
                 connection.setConnectTimeout(10000);
                 connection.connect();
                 // this will be useful so that you can show a typical 0-100% progress bar
                 int fileLength = connection.getContentLength();
                 if (fileLength == -1) {
-                    updateProgress(notificationManager, STATE_DOWNLOAD, 0, true, "Downloading...");
+                    updateProgress(notificationManager, STATE_DOWNLOAD, 0, true, "Downloading ("+ (fileIndex+1) + "/" + totalFiles +") ...");
                 }
 
-                input = new BufferedInputStream(bootstrapURL.openStream());
-                output = new FileOutputStream(bootstrapFile.toFile());
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                DigestInputStream dis = new DigestInputStream(connection.getInputStream(), md);
+                input = new BufferedInputStream(dis);
+                output = new FileOutputStream(bootstrapFileTemp.toFile());
 
                 // download the file and write to disk
                 byte data[] = new byte[1024];
@@ -239,13 +310,22 @@ public class BootstrapService extends Service {
                     if (fileLength != -1) {
                         int progress = (int) (total * 100 / fileLength);
                         if (lastProgress != progress) {
-                            updateProgress(notificationManager, STATE_DOWNLOAD, progress, false, "Downloading...");
+                            updateProgress(notificationManager, STATE_DOWNLOAD, progress, false, "Downloading ("+ (fileIndex+1) + "/" + totalFiles +") ...");
                             lastProgress = progress;
                         }
                     }
                     output.write(data, 0, count);
                 }
                 output.flush();
+                if (!isCancelled()) {
+                    String fileHash = toHex(md.digest());
+                    if (!fileHash.equalsIgnoreCase(bootstrapPartDefinition.hash)) {
+                        throw new RuntimeException("BootstrapTask: Hash of downloaded file " + bootstrapPartDefinition.url + " is " + fileHash + " but should be " + bootstrapPartDefinition.hash);
+                    }
+                    else {
+                        Files.move(bootstrapFileTemp, bootstrapPartDefinition.path);
+                    }
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -253,25 +333,17 @@ public class BootstrapService extends Service {
                 // clean up
                 close(input);
                 close(output);
+                deleteIfExists(bootstrapFileTemp);
             }
         }
 
-        private void prepareBootstrap(Path bootstrapPath, Path destinationDir) throws Exception {
+        private void prepareBootstrap(List<BootstrapPartDefinition> bootstrapPartDefinitions, Path destinationDir) throws Exception {
             // delete existing blockchain data
             deleteBlockchainFiles(destinationDir);
 
-            // extract bootstrap zip file
-            try (ZipFile zf = new ZipFile(bootstrapPath.toFile())) {
-                Enumeration<? extends ZipEntry> entries = zf.entries();
-                while(entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    Path targetPath = newPath(destinationDir, entry);
-                    if (entry.isDirectory()) {
-                        Files.createDirectories(targetPath);
-                    } else {
-                        Files.copy(zf.getInputStream(entry), targetPath);
-                    }
-                }
+            // Extract ZIP file(s). zip4j can handle splitted zip files.
+            try {
+                new ZipFile(bootstrapPartDefinitions.get(bootstrapPartDefinitions.size()-1).path.toFile()).extractAll(destinationDir.toString());
             }
             catch (Exception ex) {
                 // cleanup blockchain files after exception
@@ -335,12 +407,21 @@ public class BootstrapService extends Service {
         }
     }
 
-    public static Path newPath(Path destinationDir, ZipEntry zipEntry) throws IOException {
-        Path destPath = Paths.get(destinationDir.toString(), zipEntry.getName());
-        if (!destPath.startsWith(destinationDir)) {
-            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+    public static void cleanupDirectory(Path directory) {
+        // clean up temporary files
+        try {
+            Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        } catch (Exception ex) {
+            Log.d(TAG, "BootstrapTask: Failed to delete files in " + directory, ex);
         }
-        return destPath;
+    }
+
+    public static void deleteIfExists(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (Exception ex) {
+            Log.d(TAG, "BootstrapTask: Failed to delete bootstrap temp file: " + path, ex);
+        }
     }
 
     public static void close(Closeable c) {
@@ -350,5 +431,17 @@ public class BootstrapService extends Service {
         } catch (IOException e) {
             Log.d(TAG, "startDownload: Failed to close Closeable", e);
         }
+    }
+
+    public static String toHex(byte[] bytes) {
+        // Create Hex String
+        StringBuilder hexString = new StringBuilder();
+        for (byte aMessageDigest : bytes) {
+            String h = Integer.toHexString(0xFF & aMessageDigest);
+            while (h.length() < 2)
+                h = "0" + h;
+            hexString.append(h);
+        }
+        return hexString.toString();
     }
 }
