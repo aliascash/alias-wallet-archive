@@ -635,32 +635,32 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload deliveries') {
-                            agent {
-                                label "housekeeping"
-                            }
-                            steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Alias*.dmg*
-                                                wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'aliascash',
-                                            repository: 'alias-wallet',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                            checksumfile: "Checksum-Alias-Mac.txt"
-                                    )
-                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
-                                }
-                            }
-                        }
+//                        stage('Upload deliveries') {
+//                            agent {
+//                                label "housekeeping"
+//                            }
+//                            steps {
+//                                script {
+//                                    sh(
+//                                            script: """
+//                                                rm -f Alias*.dmg*
+//                                                wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                            """
+//                                    )
+//                                    uploadArtifactToGitHub(
+//                                            user: 'aliascash',
+//                                            repository: 'alias-wallet',
+//                                            tag: "${GIT_TAG_TO_USE}",
+//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                    )
+//                                    createAndArchiveChecksumFile(
+//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                            checksumfile: "Checksum-Alias-Mac.txt"
+//                                    )
+//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
+//                                }
+//                            }
+//                        }
                     }
                 }
 //                stage('Windows Qt5.12.x') {
