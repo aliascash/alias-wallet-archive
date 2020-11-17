@@ -57,6 +57,8 @@ public class BootstrapService extends Service {
     public static final int STATE_EXTRACTION = 2;
     public static final int STATE_FINISHED = 3;
 
+    public static final int ERROR_NOSPC = 1;
+
     private static int NOTIFICATION_ID_SERVICE_PROGRESS = 100;
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
 
@@ -201,14 +203,18 @@ public class BootstrapService extends Service {
                 //
                 updateProgress(notificationManager, STATE_FINISHED, 0,false, "Successfully finished!");
             } catch (Exception e) {
-                if (e instanceof ZipException) {
-                    cleanupDirectory(bootstrapTmpPath);
-                }
                 //
                 // PHASE -1: Error
                 //
-                Log.d(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
-                updateProgress(notificationManager, STATE_ERROR, 0,false, "Failed...");
+                Log.e(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
+                String errorText = "Failed!";
+                if (e.getMessage() != null && e.getMessage().contains("ENOSPC")) {
+                    errorText += " No space left on device.";
+                }
+                else if (e instanceof ZipException) {
+                    cleanupDirectory(bootstrapTmpPath);
+                }
+                updateProgress(notificationManager, STATE_ERROR, 0,false, errorText);
             }
             return null;
         }
