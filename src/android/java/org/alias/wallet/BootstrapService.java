@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.alias.wallet.BootstrapService.BootstrapError.*;
+
 public class BootstrapService extends Service {
 
     private static final String TAG = "BootstrapService";
@@ -57,16 +59,10 @@ public class BootstrapService extends Service {
     public static final int STATE_CANCEL = -1;
     public static final int STATE_ERROR = -2;
 
-    public static final int ERROR_NOSPACE_DOWNLOAD = 1;
-    public static final int ERROR_NOSPACE_EXTRACTION = 2;
-    public static final int ERROR_EXTRACTION = 3;
-    public static final int ERROR_HASH = 4;
-    public static final int ERROR_BOOTSTRAP_INDEX_404 = 5;
-    public static final int ERROR_BOOTSTRAP_FILE_404 = 6;
-    public static final String ERROR_MSG_ENOSPC = "ENOSPC";
-    public static final String ERROR_MSG_BOOTSTRAP_INDEX_404 = "ERROR_BOOTSTRAP_INDEX_NOT_FOUND";
-    public static final String ERROR_MSG_BOOTSTRAP_FILE_404 = "ERROR_BOOTSTRAP_FILE_NOT_FOUND";
-    public static final String ERROR_MSG_BOOTSTRAP_HASH = "ERROR_BOOTSTRAP_HASH";
+    private static final String ERROR_MSG_ENOSPC = "ENOSPC";
+    private static final String ERROR_MSG_BOOTSTRAP_INDEX_404 = "ERROR_BOOTSTRAP_INDEX_NOT_FOUND";
+    private static final String ERROR_MSG_BOOTSTRAP_FILE_404 = "ERROR_BOOTSTRAP_FILE_NOT_FOUND";
+    private static final String ERROR_MSG_BOOTSTRAP_HASH = "ERROR_BOOTSTRAP_HASH";
 
     private static int NOTIFICATION_ID_SERVICE_PROGRESS = 100;
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
@@ -77,6 +73,16 @@ public class BootstrapService extends Service {
     private Notification.Action stopAction;
 
     private CronetEngine engine;
+
+    public enum BootstrapError {
+        UNDEFINED,
+        ERROR_NOSPACE_DOWNLOAD,
+        ERROR_NOSPACE_EXTRACTION,
+        ERROR_EXTRACTION,
+        ERROR_HASH,
+        ERROR_BOOTSTRAP_INDEX_404,
+        ERROR_BOOTSTRAP_FILE_404
+    }
 
     public static class BootstrapPartDefinition {
         public String hash;
@@ -215,7 +221,7 @@ public class BootstrapService extends Service {
                 //
                 // PHASE -1: Error
                 //
-                int errorCode = 0;
+                BootstrapError errorCode = BootstrapError.UNDEFINED;
                 Log.e(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
                 String errorText = "Failed!";
                 if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_ENOSPC)) {
@@ -245,7 +251,7 @@ public class BootstrapService extends Service {
                     errorCode = ERROR_BOOTSTRAP_FILE_404;
                     cleanupDirectory(bootstrapTmpPath);
                 }
-                updateProgress(notificationManager, STATE_ERROR, errorCode, 0,0,0, false, errorText);
+                updateProgress(notificationManager, STATE_ERROR, errorCode.ordinal(), 0,0,0, false, errorText);
             }
             return null;
         }
