@@ -72,7 +72,7 @@ public:
 
 public slots:
     void startDownload();
-    void updateBootstrapState(int state, int progress, bool indeterminate);
+    void updateBootstrapState(int state, int errorCode, int progress, int indexOfItem, int numOfItems, bool indeterminate);
 
 private:
    QLabel *progressLabel;

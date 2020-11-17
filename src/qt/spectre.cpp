@@ -440,6 +440,7 @@ int main(int argc, char *argv[])
         if (!wizard.exec())
             return 0;
     }
+    fs::remove_all(GetDataDir() / "tmp_bootstrap");
     bootstrapWizard = nullptr;
 #endif
 
@@ -669,13 +670,13 @@ Java_org_alias_wallet_AliasActivity_receiveURI(JNIEnv *env, jobject obj, jstring
 }
 
 JNIEXPORT void JNICALL
-Java_org_alias_wallet_AliasActivity_updateBootstrapState(JNIEnv *env, jobject obj, jint state, jint progress, jboolean indeterminate)
+Java_org_alias_wallet_AliasActivity_updateBootstrapState(JNIEnv *env, jobject obj, jint state, jint errorCode, jint progress, jint indexOfItem, jint numOfItems, jboolean indeterminate)
 {
     //qDebug() << "JNI updateBootstrapState: state=" << state << " progress="<< progress << " indeterminate=" << indeterminate;
     Q_UNUSED (obj)
     if (bootstrapWizard)
         QMetaObject::invokeMethod(bootstrapWizard->page(BootstrapWizard::Page_Download), "updateBootstrapState", Qt::QueuedConnection,
-                                  Q_ARG(int, state),  Q_ARG(int, progress),  Q_ARG(bool, indeterminate));
+                                  Q_ARG(int, state),  Q_ARG(int, errorCode), Q_ARG(int, progress), Q_ARG(int, indexOfItem), Q_ARG(int, numOfItems),  Q_ARG(bool, indeterminate));
     else {
         qDebug() << "Could not update Boostrap state because bootstrapWizard is not set";
     }

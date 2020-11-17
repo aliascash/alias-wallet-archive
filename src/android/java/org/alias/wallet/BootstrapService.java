@@ -51,13 +51,14 @@ public class BootstrapService extends Service {
 
     public static final String BOOTSTRAP_BASE_URL = "https://download.alias.cash/files/bootstrap/";
 
-    public static final int STATE_CANCEL = -2;
-    public static final int STATE_ERROR = -1;
     public static final int STATE_DOWNLOAD = 1;
     public static final int STATE_EXTRACTION = 2;
     public static final int STATE_FINISHED = 3;
+    public static final int STATE_CANCEL = -1;
+    public static final int STATE_ERROR = -2;
+    public static final int ERROR_NOSPACE = 1;
 
-    public static final int ERROR_NOSPC = 1;
+    public static final String ERROR_BOOTSTRAP_404 = "ERROR_BOOTSTRAP_404";
 
     private static int NOTIFICATION_ID_SERVICE_PROGRESS = 100;
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
@@ -185,7 +186,7 @@ public class BootstrapService extends Service {
                     if (!Files.exists(bootstrapPartDefinition.path)) {
                         downloadBootstrap(notificationManager, bootstrapPartDefinition, partIndex, bootstrapPartDefinitionList.size());
                         if (isCancelled()) {
-                            updateProgress(notificationManager, STATE_CANCEL, 0, false, "Canceled...");
+                            updateProgress(notificationManager, STATE_CANCEL, 0, 0, partIndex, bootstrapPartDefinitionList.size(), false, "Canceled...");
                             return null;
                         }
                     }
@@ -194,27 +195,29 @@ public class BootstrapService extends Service {
                 //
                 // PHASE 2: Extract files
                 //
-                updateProgress(notificationManager, STATE_EXTRACTION, 0,true, "Extracting...");
+                updateProgress(notificationManager, STATE_EXTRACTION, 0, 0 ,0 ,0,true, "Extracting...");
                 prepareBootstrap(bootstrapPartDefinitionList, destinationDir);
                 cleanupDirectory(bootstrapTmpPath);
 
                 //
                 // PHASE 3: Finished
                 //
-                updateProgress(notificationManager, STATE_FINISHED, 0,false, "Successfully finished!");
+                updateProgress(notificationManager, STATE_FINISHED, 0,0, 0, 0, false, "Successfully finished!");
             } catch (Exception e) {
                 //
                 // PHASE -1: Error
                 //
+                int errorCode = 0;
                 Log.e(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
                 String errorText = "Failed!";
                 if (e.getMessage() != null && e.getMessage().contains("ENOSPC")) {
                     errorText += " No space left on device.";
+                    errorCode = ERROR_NOSPACE;
                 }
-                else if (e instanceof ZipException) {
+                else if (e instanceof ZipException || (e.getMessage() != null && e.getMessage().contains(ERROR_BOOTSTRAP_404))) {
                     cleanupDirectory(bootstrapTmpPath);
                 }
-                updateProgress(notificationManager, STATE_ERROR, 0,false, errorText);
+                updateProgress(notificationManager, STATE_ERROR, errorCode, 0,0,0, false, errorText);
             }
             return null;
         }
@@ -231,7 +234,7 @@ public class BootstrapService extends Service {
             stopSelf();
         }
 
-        private List<BootstrapPartDefinition> downloadBootstrapIndexURLs(Path destinationDir) throws IOException {
+        private List<BootstrapPartDefinition> downloadBootstrapIndexURLs(Path destinationDir) throws Exception {
             Path bootstrapIndexPath = Paths.get(destinationDir.toString(), "BootstrapChainParts.txt");
             if (!Files.exists(bootstrapIndexPath) ||
                     (Duration.between(Files.getLastModifiedTime(bootstrapIndexPath).toInstant(), Clock.systemUTC().instant()).toDays() > 0)) {
@@ -246,6 +249,7 @@ public class BootstrapService extends Service {
                 try {
                     HttpURLConnection connection = (HttpURLConnection) engine.openConnection(new URL(BOOTSTRAP_BASE_URL + "BootstrapChainParts.txt"));
                     connection.setConnectTimeout(10000);
+                    connection.setReadTimeout(30000);
                     connection.connect();
                     input = new BufferedInputStream(connection.getInputStream());
                     output = new FileOutputStream(downloadPath.toFile());
@@ -260,7 +264,7 @@ public class BootstrapService extends Service {
                     Files.move(downloadPath, bootstrapIndexPath);
                 } catch (Exception e) {
                     cleanupDirectory(destinationDir);
-                    throw new RuntimeException(e);
+                    throw e;
                 } finally {
                     // clean up
                     close(input);
@@ -280,7 +284,7 @@ public class BootstrapService extends Service {
             return bootstrapPartDefinitions;
         }
 
-        private void downloadBootstrap(NotificationManager notificationManager, BootstrapPartDefinition bootstrapPartDefinition, int fileIndex, int totalFiles) {
+        private void downloadBootstrap(NotificationManager notificationManager, BootstrapPartDefinition bootstrapPartDefinition, int fileIndex, int totalFiles) throws Exception {
             Path bootstrapFileTemp = bootstrapPartDefinition.path.resolveSibling("downloading");
             InputStream input = null;
             OutputStream output = null;
@@ -294,11 +298,15 @@ public class BootstrapService extends Service {
 
                 HttpURLConnection connection = (HttpURLConnection)engine.openConnection(bootstrapPartDefinition.url);
                 connection.setConnectTimeout(10000);
+                connection.setReadTimeout(30000);
                 connection.connect();
+                if (connection.getResponseCode() == 404) {
+                    throw new RuntimeException(ERROR_BOOTSTRAP_404);
+                }
                 // this will be useful so that you can show a typical 0-100% progress bar
                 int fileLength = connection.getContentLength();
                 if (fileLength == -1) {
-                    updateProgress(notificationManager, STATE_DOWNLOAD, 0, true, "Downloading ("+ (fileIndex+1) + "/" + totalFiles +") ...");
+                    updateProgress(notificationManager, STATE_DOWNLOAD, 0, 0, fileIndex, totalFiles, true, "Downloading... ("+ (fileIndex+1) + "/" + totalFiles +")");
                 }
 
                 MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -316,7 +324,7 @@ public class BootstrapService extends Service {
                     if (fileLength != -1) {
                         int progress = (int) (total * 100 / fileLength);
                         if (lastProgress != progress) {
-                            updateProgress(notificationManager, STATE_DOWNLOAD, progress, false, "Downloading ("+ (fileIndex+1) + "/" + totalFiles +") ...");
+                            updateProgress(notificationManager, STATE_DOWNLOAD, 0, progress, fileIndex, totalFiles,false, "Downloading... ("+ (fileIndex+1) + "/" + totalFiles +")");
                             lastProgress = progress;
                         }
                     }
@@ -332,8 +340,6 @@ public class BootstrapService extends Service {
                         Files.move(bootstrapFileTemp, bootstrapPartDefinition.path);
                     }
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
             finally {
                 // clean up
@@ -364,7 +370,7 @@ public class BootstrapService extends Service {
         }
     }
 
-    protected void updateProgress(NotificationManager notificationManager, int state, int progress, boolean indeterminate, String text) {
+    protected void updateProgress(NotificationManager notificationManager, int state, int errorCode, int progress, int indexOfItem, int numOfItems, boolean indeterminate, String text) {
         int max = state == STATE_DOWNLOAD ? 100 : 0;
         if (state != STATE_CANCEL) {
             notificationBuilder.setProgress(max, progress, indeterminate);
@@ -382,14 +388,17 @@ public class BootstrapService extends Service {
             }
             notificationManager.notify(notificationId, notificationBuilder.build());
         }
-        sendBootstrapProgressBroadcast(state, progress, indeterminate);
+        sendBootstrapProgressBroadcast(state, errorCode, progress, indexOfItem, numOfItems, indeterminate);
     }
 
-    protected void sendBootstrapProgressBroadcast(int state, int progress, boolean indeterminate) {
+    protected void sendBootstrapProgressBroadcast(int state, int errorCode, int progress, int indexOfItem, int numOfItems, boolean indeterminate) {
         Intent broadCastIntent = new Intent();
         broadCastIntent.setAction(BOOTSTRAP_BROADCAST_ACTION);
         broadCastIntent.putExtra("state", state);
+        broadCastIntent.putExtra("errorCode", errorCode);
         broadCastIntent.putExtra("progress", progress);
+        broadCastIntent.putExtra("indexOfItem", indexOfItem);
+        broadCastIntent.putExtra("numOfItems", numOfItems);
         broadCastIntent.putExtra("indeterminate", indeterminate);
         sendBroadcast(broadCastIntent);
     }
