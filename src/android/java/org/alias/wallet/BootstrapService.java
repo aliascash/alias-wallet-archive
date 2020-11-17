@@ -56,9 +56,17 @@ public class BootstrapService extends Service {
     public static final int STATE_FINISHED = 3;
     public static final int STATE_CANCEL = -1;
     public static final int STATE_ERROR = -2;
-    public static final int ERROR_NOSPACE = 1;
 
-    public static final String ERROR_BOOTSTRAP_404 = "ERROR_BOOTSTRAP_404";
+    public static final int ERROR_NOSPACE_DOWNLOAD = 1;
+    public static final int ERROR_NOSPACE_EXTRACTION = 2;
+    public static final int ERROR_EXTRACTION = 3;
+    public static final int ERROR_HASH = 4;
+    public static final int ERROR_BOOTSTRAP_INDEX_404 = 5;
+    public static final int ERROR_BOOTSTRAP_FILE_404 = 6;
+    public static final String ERROR_MSG_ENOSPC = "ENOSPC";
+    public static final String ERROR_MSG_BOOTSTRAP_INDEX_404 = "ERROR_BOOTSTRAP_INDEX_NOT_FOUND";
+    public static final String ERROR_MSG_BOOTSTRAP_FILE_404 = "ERROR_BOOTSTRAP_FILE_NOT_FOUND";
+    public static final String ERROR_MSG_BOOTSTRAP_HASH = "ERROR_BOOTSTRAP_HASH";
 
     private static int NOTIFICATION_ID_SERVICE_PROGRESS = 100;
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
@@ -210,11 +218,31 @@ public class BootstrapService extends Service {
                 int errorCode = 0;
                 Log.e(TAG, "BootstrapTask: Failed with exception: " + e.getMessage(), e);
                 String errorText = "Failed!";
-                if (e.getMessage() != null && e.getMessage().contains("ENOSPC")) {
+                if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_ENOSPC)) {
                     errorText += " No space left on device.";
-                    errorCode = ERROR_NOSPACE;
+                    if (e instanceof ZipException) {
+                        errorCode = ERROR_NOSPACE_EXTRACTION;
+                    }
+                    else {
+                        errorCode = ERROR_NOSPACE_DOWNLOAD;
+                    }
                 }
-                else if (e instanceof ZipException || (e.getMessage() != null && e.getMessage().contains(ERROR_BOOTSTRAP_404))) {
+                else if (e instanceof ZipException) {
+                    errorText += " Bootstrap archive extraction error.";
+                    errorCode = ERROR_EXTRACTION;
+                    cleanupDirectory(bootstrapTmpPath);
+                }
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_HASH)) {
+                    errorText += " Bootstrap hash mismatch.";
+                    errorCode = ERROR_HASH;
+                }
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_INDEX_404)) {
+                    errorText += " Bootstrap index file missing on server.";
+                    errorCode = ERROR_BOOTSTRAP_INDEX_404;
+                }
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_FILE_404)) {
+                    errorText += " Bootstrap file missing on server.";
+                    errorCode = ERROR_BOOTSTRAP_FILE_404;
                     cleanupDirectory(bootstrapTmpPath);
                 }
                 updateProgress(notificationManager, STATE_ERROR, errorCode, 0,0,0, false, errorText);
@@ -242,17 +270,21 @@ public class BootstrapService extends Service {
                 // Make sure target directory for bootstrap index exists and is empty
                 cleanupDirectory(destinationDir);
                 Files.createDirectories(bootstrapIndexPath.getParent());
-                Path downloadPath = bootstrapIndexPath.resolveSibling("downloading");
+                Path bootstrapFileTemp = bootstrapIndexPath.resolveSibling("downloading");
 
                 InputStream input = null;
                 OutputStream output = null;
                 try {
-                    HttpURLConnection connection = (HttpURLConnection) engine.openConnection(new URL(BOOTSTRAP_BASE_URL + "BootstrapChainParts.txt"));
+                    URL bootstrapIndexUrl = new URL(BOOTSTRAP_BASE_URL + "BootstrapChainParts.txt");
+                    HttpURLConnection connection = (HttpURLConnection) engine.openConnection(bootstrapIndexUrl);
                     connection.setConnectTimeout(10000);
                     connection.setReadTimeout(30000);
                     connection.connect();
+                    if (connection.getResponseCode() == 404) {
+                        throw new RuntimeException(ERROR_MSG_BOOTSTRAP_INDEX_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapIndexUrl);
+                    }
                     input = new BufferedInputStream(connection.getInputStream());
-                    output = new FileOutputStream(downloadPath.toFile());
+                    output = new FileOutputStream(bootstrapFileTemp.toFile());
 
                     // download the file and write to disk
                     byte buffer[] = new byte[1024];
@@ -261,14 +293,12 @@ public class BootstrapService extends Service {
                         output.write(buffer, 0, bytesRead);
                     }
                     output.flush();
-                    Files.move(downloadPath, bootstrapIndexPath);
-                } catch (Exception e) {
-                    cleanupDirectory(destinationDir);
-                    throw e;
+                    Files.move(bootstrapFileTemp, bootstrapIndexPath);
                 } finally {
                     // clean up
                     close(input);
                     close(output);
+                    deleteIfExists(bootstrapFileTemp);
                 }
             }
 
@@ -301,7 +331,7 @@ public class BootstrapService extends Service {
                 connection.setReadTimeout(30000);
                 connection.connect();
                 if (connection.getResponseCode() == 404) {
-                    throw new RuntimeException(ERROR_BOOTSTRAP_404);
+                    throw new RuntimeException(ERROR_MSG_BOOTSTRAP_FILE_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapPartDefinition.url);
                 }
                 // this will be useful so that you can show a typical 0-100% progress bar
                 int fileLength = connection.getContentLength();
@@ -334,7 +364,8 @@ public class BootstrapService extends Service {
                 if (!isCancelled()) {
                     String fileHash = toHex(md.digest());
                     if (!fileHash.equalsIgnoreCase(bootstrapPartDefinition.hash)) {
-                        throw new RuntimeException("BootstrapTask: Hash of downloaded file " + bootstrapPartDefinition.url + " is " + fileHash + " but should be " + bootstrapPartDefinition.hash);
+                        throw new RuntimeException(ERROR_MSG_BOOTSTRAP_HASH +
+                                " > Hash of downloaded file " + bootstrapPartDefinition.url + " is " + fileHash + " but should be " + bootstrapPartDefinition.hash);
                     }
                     else {
                         Files.move(bootstrapFileTemp, bootstrapPartDefinition.path);

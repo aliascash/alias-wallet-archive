@@ -226,8 +226,28 @@ void DownloadPage::updateBootstrapState(int state, int errorCode, int progress, 
         switch(errorCode)
         {
         case 1:
-            progressLabel->setText(tr("Bootstrap download failed, there is not enough space left on device.<br><br>"
+            progressLabel->setText(tr("Bootstrap download failed because there is not enough space left on device.<br><br>"
                                       "Make sure you have enough free space left and try again."));
+            break;
+        case 2:
+            progressLabel->setText(tr("Bootstrap archive extraction failed because there is not enough space left on device.<br><br>"
+                                      "Make sure you have enough free space left and try again."));
+            break;
+        case 3:
+            progressLabel->setText(tr("Bootstrap archive extraction failed, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 4:
+            progressLabel->setText(tr("Bootstrap hash mismatch, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 5:
+            progressLabel->setText(tr("Bootstrap index file missing on server, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 6:
+            progressLabel->setText(tr("Bootstrap file missing on server, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
             break;
         default:
             progressLabel->setText(tr("Bootstrap download failed, please try again.<br><br>"
