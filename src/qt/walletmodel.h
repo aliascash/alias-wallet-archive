@@ -156,7 +156,7 @@ public:
         void CopyFrom(const UnlockContext& rhs);
     };
 
-    enum UnlockMode { standard, rescan };
+    enum UnlockMode { standard, rescan, login };
     UnlockContext requestUnlock(UnlockMode unlockMode = standard);
     int fUnlockRescanRequested;
 

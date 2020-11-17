@@ -614,7 +614,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
         case WalletModel::NarrationTooLong:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Narration is too long."),
+                tr("Error: Note is too long."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;

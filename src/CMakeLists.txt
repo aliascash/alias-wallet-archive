@@ -230,6 +230,7 @@ if (ENABLE_GUI)
                 Qt5::Quick
                 Qt5::QuickWidgets
                 Qt5::Svg
+                Qt5::Concurrent
                 )
 
         target_sources(Aliaswallet
@@ -328,6 +329,7 @@ if (ENABLE_GUI)
                 Qt5::Quick
                 Qt5::QuickWidgets
                 Qt5::Svg
+                Qt5::Concurrent
                 )
 
         target_sources(Aliaswallet
