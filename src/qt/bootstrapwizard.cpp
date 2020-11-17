@@ -226,12 +226,12 @@ void DownloadPage::updateBootstrapState(int state, int errorCode, int progress, 
         switch(errorCode)
         {
         case 1:
-            progressLabel->setText(tr("Bootstrap download failed because there is not enough space left on device.<br><br>"
-                                      "Make sure you have enough free space left and try again."));
+            progressLabel->setText(tr("Bootstrap download failed because there is not enough free space on this device.<br><br>"
+                                      "Make sure you have enough free space before trying again."));
             break;
         case 2:
-            progressLabel->setText(tr("Bootstrap archive extraction failed because there is not enough space left on device.<br><br>"
-                                      "Make sure you have enough free space left and try again."));
+            progressLabel->setText(tr("Bootstrap archive extraction failed because there is not enough free space on this device.<br><br>"
+                                      "Make sure you have enough free space before trying again."));
             break;
         case 3:
             progressLabel->setText(tr("Bootstrap archive extraction failed, please try again.<br><br>"
