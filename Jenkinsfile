@@ -18,7 +18,8 @@ pipeline {
         // In case another branch beside master or develop should be deployed, enter it here
         BRANCH_TO_DEPLOY = "xyz"
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
-        GITHUB_TOKEN = credentials('github-app')
+        GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
+        CI_URL = credentials('CI_URL')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
@@ -50,7 +51,7 @@ pipeline {
                         result: "ABORTED",
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
-                        webhookURL: "${DISCORD_WEBHOOK}"
+                        webhookURL: DISCORD_WEBHOOK
                 )
             }
         }
@@ -174,30 +175,30 @@ pipeline {
                         }
                     }
                 }
-//                stage('Mac') {
-//                    agent {
-//                        label "mac"
-//                    }
-//                    environment {
-//                        BOOST_PATH = "${BOOST_PATH_MAC}"
-//                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
-//                        QT_PATH = "${QT_PATH_MAC_512}"
-//                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
-//                        MACOSX_DEPLOYMENT_TARGET = 10.12
-//                    }
-//                    steps {
-//                        script {
-//                            sh(
-//                                    script: """
-//                                        pwd
-//                                        ./scripts/cmake-build-mac.sh -g
-//                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                    """
-//                            )
-//                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
-//                        }
-//                    }
-//                }
+                stage('Mac') {
+                    agent {
+                        label "mac"
+                    }
+                    environment {
+                        BOOST_PATH = "${BOOST_PATH_MAC}"
+                        OPENSSL_PATH = "${OPENSSL_PATH_MAC}"
+                        QT_PATH = "${QT_PATH_MAC_512}"
+                        PATH = "/usr/local/bin:${QT_PATH}/bin:$PATH"
+                        MACOSX_DEPLOYMENT_TARGET = 10.12
+                    }
+                    steps {
+                        script {
+                            sh(
+                                    script: """
+                                        pwd
+                                        ./scripts/cmake-build-mac.sh -g
+                                        cp ./cmake-build-cmdline-mac/aliaswallet/Alias.dmg Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+                                    """
+                            )
+                            archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg"
+                        }
+                    }
+                }
 //                stage('Windows Qt5.12.x') {
 //                    stages {
 //                        stage('Start Windows slave') {
@@ -321,6 +322,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -330,6 +332,7 @@ pipeline {
                     steps {
                         script {
                             removeRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -341,6 +344,7 @@ pipeline {
                     when {
                         expression {
                             return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}"
@@ -350,6 +354,7 @@ pipeline {
                     steps {
                         script {
                             createRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     user: 'aliascash',
                                     repository: 'alias-wallet',
                                     tag: "${GIT_TAG_TO_USE}",
@@ -377,6 +382,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/RaspberryPi/Dockerfile_Buster',
                                             dockerTag: "aliascash/alias-wallet-raspi-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -420,6 +426,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/CentOS/Dockerfile',
                                             dockerTag: "aliascash/alias-wallet-centos-8:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -445,6 +452,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Debian/Dockerfile_Stretch',
                                             dockerTag: "aliascash/alias-wallet-debian-stretch:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -470,6 +478,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Debian/Dockerfile_Buster',
                                             dockerTag: "aliascash/alias-wallet-debian-buster:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -493,6 +502,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     dockerfile: 'Docker/Fedora/Dockerfile',
                                     dockerTag: "aliascash/alias-wallet-fedora:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
@@ -514,6 +524,7 @@ pipeline {
                     steps {
                         script {
                             buildBranch(
+                                    githubCIToken: GITHUB_CI_TOKEN,
                                     dockerfile: 'Docker/OpenSUSE/Dockerfile',
                                     dockerTag: "aliascash/alias-wallet-opensuse-tumbleweed:${GIT_TAG_TO_USE}",
                                     gitTag: "${GIT_TAG_TO_USE}",
@@ -537,6 +548,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_18_04',
                                             dockerTag: "aliascash/alias-wallet-ubuntu-18-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -562,6 +574,7 @@ pipeline {
                             steps {
                                 script {
                                     buildBranch(
+                                            githubCIToken: GITHUB_CI_TOKEN,
                                             dockerfile: 'Docker/Ubuntu/Dockerfile_20_04',
                                             dockerTag: "aliascash/alias-wallet-ubuntu-20-04:${GIT_TAG_TO_USE}",
                                             gitTag: "${GIT_TAG_TO_USE}",
@@ -622,182 +635,182 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Upload deliveries') {
-                            agent {
-                                label "housekeeping"
-                            }
-                            steps {
-                                script {
-                                    sh(
-                                            script: """
-                                                rm -f Alias*.dmg*
-                                                wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-                                            """
-                                    )
-                                    uploadArtifactToGitHub(
-                                            user: 'aliascash',
-                                            repository: 'alias-wallet',
-                                            tag: "${GIT_TAG_TO_USE}",
-                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                    )
-                                    createAndArchiveChecksumFile(
-                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-                                            checksumfile: "Checksum-Alias-Mac.txt"
-                                    )
-                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
-                                }
-                            }
-                        }
+//                        stage('Upload deliveries') {
+//                            agent {
+//                                label "housekeeping"
+//                            }
+//                            steps {
+//                                script {
+//                                    sh(
+//                                            script: """
+//                                                rm -f Alias*.dmg*
+//                                                wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
+//                                            """
+//                                    )
+//                                    uploadArtifactToGitHub(
+//                                            user: 'aliascash',
+//                                            repository: 'alias-wallet',
+//                                            tag: "${GIT_TAG_TO_USE}",
+//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                    )
+//                                    createAndArchiveChecksumFile(
+//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+//                                            checksumfile: "Checksum-Alias-Mac.txt"
+//                                    )
+//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
+//                                }
+//                            }
+//                        }
                     }
                 }
-                stage('Windows Qt5.12.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.12.x') {
-                            agent {
-                                label "windows"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN_512}"
-                                VSDIR = "${VS2017_DIR}"
-                                CMAKEDIR = "${CMAKE_DIR}"
-                                VCPKGDIR = "${VCPKG_DIR}"
-                            }
-                            steps {
-                                script {
-                                    bat(
-                                        script: """
-                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
-                                            scripts/cmake-build-win.bat
-                                        """
-                                        )
-                                    zip(
-                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
-                                        dir: "${WORKSPACE}/build",
-                                        glob: "Alias/**"
-                                    )
-                                    bat(
-                                        script: """
-                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
-                                        """
-                                        )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
-                                    build(
-                                            job: 'Alias/installer/master',
-                                            parameters: [
-                                                    string(
-                                                            name: 'ARCHIVE_LOCATION',
-                                                            value: "${WORKSPACE}/build"
-                                                    ),
-                                                    string(
-                                                            name: 'ARCHIVE_NAME',
-                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
-                                                    ),
-                                                    string(
-                                                            name: 'GIT_TAG_TO_USE',
-                                                            value: "${GIT_TAG_TO_USE}"
-                                                    ),
-                                                    string(
-                                                            name: 'GIT_COMMIT_SHORT',
-                                                            value: "${GIT_COMMIT_SHORT}"
-                                                    )
-                                            ],
-                                            wait: false
-                                    )
-                                }
-                            }
-                        }
-                        stage('Upload deliveries') {
-                            steps {
-                                uploadDeliveries("-Qt5.12")
-                            }
-                        }
-                    }
-                }
-                stage('Windows Qt5.15.x') {
-                    stages {
-                        stage('Start Windows slave') {
-                            steps {
-                                withCredentials([[
-                                                         $class           : 'AmazonWebServicesCredentialsBinding',
-                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
-                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                                                 ]]) {
-                                    sh(
-                                            script: """
-                                                docker run \
-                                                    --rm \
-                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
-                                                    garland/aws-cli-docker \
-                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
-                                            """
-                                    )
-                                }
-                            }
-                        }
-                        stage('Win + Qt5.15.x') {
-                            agent {
-                                label "windows2"
-                            }
-                            environment {
-                                QTDIR = "${QT_DIR_WIN}"
-                                VSDIR = "${VS2019_DIR}"
-                                CMAKEDIR = "${CMAKE_DIR}"
-                                VCPKGDIR = "${VCPKG_DIR}"
-                            }
-                            steps {
-                                script {
-                                    bat(
-                                        script: """
-                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
-                                            scripts/cmake-build-win.bat
-                                        """
-                                        )
-                                    zip(
-                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
-                                        dir: "${WORKSPACE}/build",
-                                        glob: "Alias/**"
-                                    )
-                                    bat(
-                                        script: """
-                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
-                                        """
-                                        )
-                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
-                                }
-                            }
-                        }
-                        stage('Upload deliveries') {
-                            steps {
-                                uploadDeliveries("")
-                            }
-                        }
-                    }
-                }
+//                stage('Windows Qt5.12.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.12.x') {
+//                            agent {
+//                                label "windows"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN_512}"
+//                                VSDIR = "${VS2017_DIR}"
+//                                CMAKEDIR = "${CMAKE_DIR}"
+//                                VCPKGDIR = "${VCPKG_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    bat(
+//                                        script: """
+//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+//                                            scripts/cmake-build-win.bat
+//                                        """
+//                                        )
+//                                    zip(
+//                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
+//                                        dir: "${WORKSPACE}/build",
+//                                        glob: "Alias/**"
+//                                    )
+//                                    bat(
+//                                        script: """
+//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+//                                        """
+//                                        )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
+//                                    build(
+//                                            job: 'Alias/installer/master',
+//                                            parameters: [
+//                                                    string(
+//                                                            name: 'ARCHIVE_LOCATION',
+//                                                            value: "${WORKSPACE}/build"
+//                                                    ),
+//                                                    string(
+//                                                            name: 'ARCHIVE_NAME',
+//                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
+//                                                    ),
+//                                                    string(
+//                                                            name: 'GIT_TAG_TO_USE',
+//                                                            value: "${GIT_TAG_TO_USE}"
+//                                                    ),
+//                                                    string(
+//                                                            name: 'GIT_COMMIT_SHORT',
+//                                                            value: "${GIT_COMMIT_SHORT}"
+//                                                    )
+//                                            ],
+//                                            wait: false
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Upload deliveries') {
+//                            steps {
+//                                uploadDeliveries("-Qt5.12")
+//                            }
+//                        }
+//                    }
+//                }
+//                stage('Windows Qt5.15.x') {
+//                    stages {
+//                        stage('Start Windows slave') {
+//                            steps {
+//                                withCredentials([[
+//                                                         $class           : 'AmazonWebServicesCredentialsBinding',
+//                                                         credentialsId    : '91c4a308-07cd-4468-896c-3d75d086190d',
+//                                                         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+//                                                         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+//                                                 ]]) {
+//                                    sh(
+//                                            script: """
+//                                                docker run \
+//                                                    --rm \
+//                                                    --env AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+//                                                    --env AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+//                                                    --env AWS_DEFAULT_REGION=eu-west-1 \
+//                                                    garland/aws-cli-docker \
+//                                                    aws ec2 start-instances --instance-ids i-06fb7942772e77e55
+//                                            """
+//                                    )
+//                                }
+//                            }
+//                        }
+//                        stage('Win + Qt5.15.x') {
+//                            agent {
+//                                label "windows2"
+//                            }
+//                            environment {
+//                                QTDIR = "${QT_DIR_WIN}"
+//                                VSDIR = "${VS2019_DIR}"
+//                                CMAKEDIR = "${CMAKE_DIR}"
+//                                VCPKGDIR = "${VCPKG_DIR}"
+//                            }
+//                            steps {
+//                                script {
+//                                    bat(
+//                                        script: """
+//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+//                                            scripts/cmake-build-win.bat
+//                                        """
+//                                        )
+//                                    zip(
+//                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip",
+//                                        dir: "${WORKSPACE}/build",
+//                                        glob: "Alias/**"
+//                                    )
+//                                    bat(
+//                                        script: """
+//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip
+//                                        """
+//                                        )
+//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64.zip"
+//                                }
+//                            }
+//                        }
+//                        stage('Upload deliveries') {
+//                            steps {
+//                                uploadDeliveries("")
+//                            }
+//                        }
+//                    }
+//                }
             }
             post {
                 always {
@@ -807,7 +820,7 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
                             """
                         )
                         editRelease(
@@ -871,7 +884,7 @@ pipeline {
                         successful: true,
                         thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                         title: "$env.JOB_NAME",
-                        webhookURL: "${DISCORD_WEBHOOK}"
+                        webhookURL: DISCORD_WEBHOOK
                 )
             }
         }
@@ -891,7 +904,7 @@ pipeline {
                     result: "UNSTABLE",
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
         failure {
@@ -909,7 +922,7 @@ pipeline {
                     successful: false,
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
         aborted {
@@ -921,7 +934,7 @@ pipeline {
                     result: "ABORTED",
                     thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
                     title: "$env.JOB_NAME",
-                    webhookURL: "${DISCORD_WEBHOOK}"
+                    webhookURL: DISCORD_WEBHOOK
             )
         }
     }
@@ -942,7 +955,7 @@ def uploadDeliveries(def suffix) {
         sh(
                 script: """
                     rm -f Alias-*-Win64${suffix}.zip
-                    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
         uploadArtifactToGitHub(
