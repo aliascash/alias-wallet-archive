@@ -264,7 +264,7 @@ SendCoinsReturn WalletModel::sendCoins(const qint64 feeApproval, const QList<Sen
         }
     }
 
-    int64_t nBalance = 0;
+    int64_t nBalance = 0, nFeeRequired = 0;
     std::vector<COutput> vCoins;
     wallet->AvailableCoins(vCoins, true, coinControl);
 
@@ -430,7 +430,6 @@ SendCoinsReturn WalletModel::sendCoins(const qint64 feeApproval, const QList<Sen
             }
         }
 
-        int64_t nFeeRequired = 0;
         int nChangePos = -1;
         bool fCreated = wallet->CreateTransaction(vecSend, wtx, nFeeRequired, nChangePos, coinControl);
 
@@ -503,7 +502,7 @@ SendCoinsReturn WalletModel::sendCoins(const qint64 feeApproval, const QList<Sen
         } // wallet->cs_wallet
     };
 
-    return SendCoinsReturn(SendCoinsStatusEnum::OK, 0, hex);
+    return SendCoinsReturn(SendCoinsStatusEnum::OK, nFeeRequired, hex);
 }
 
 SendCoinsReturn WalletModel::sendCoinsAnon(const qint64 feeApproval, const QList<SendCoinsRecipient> &recipients, const QList<OutPoint> &coins)
