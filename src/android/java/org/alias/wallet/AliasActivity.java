@@ -24,7 +24,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     // native method to handle 'alias:' URIs
     public static native void receiveURI(String url);
     // native method to handle boostrap service events
-    public static native void updateBootstrapState(int state, int progress, boolean indeterminate);
+    public static native void updateBootstrapState(int state, int errorCode, int progress, int indexOfItem, int numOfItems, boolean indeterminate);
 
     private volatile boolean qtInitialized = false; // will be accessed from android UI and Qt thread
     private boolean hasPendingIntent = false; // accessed only from android UI thread
@@ -153,9 +153,12 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             int state = intent.getIntExtra("state", 0);
+            int errorCode = intent.getIntExtra("errorCode", 0);
             int progress = intent.getIntExtra("progress", 0);
+            int indexOfItem = intent.getIntExtra("indexOfItem", 0);
+            int numOfItems = intent.getIntExtra("numOfItems", 0);
             boolean indeterminate = intent.getBooleanExtra("indeterminate", false);
-            updateBootstrapState(state, progress, indeterminate);
+            updateBootstrapState(state, errorCode, progress, indexOfItem, numOfItems, indeterminate);
         }
     }
 }

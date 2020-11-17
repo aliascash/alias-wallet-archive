@@ -26,6 +26,7 @@ dependencies {
     implementation 'androidx.core:core:1.3.2'
     implementation 'com.google.android.gms:play-services-cronet:17.0.0'
     implementation 'org.chromium.net:cronet-fallback:76.3809.111'
+    implementation 'net.lingala.zip4j:zip4j:2.6.4'
 }
 
 android {

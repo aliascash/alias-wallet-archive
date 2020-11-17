@@ -214,7 +214,7 @@ bool DownloadPage::isComplete() const
     return state == 3;
 }
 
-void DownloadPage::updateBootstrapState(int state, int progress, bool indeterminate)
+void DownloadPage::updateBootstrapState(int state, int errorCode, int progress, int indexOfItem, int numOfItems, bool indeterminate)
 {
     //qDebug() << "updateBootstrapState: state=" << state << " progress="<< progress << " indeterminate=" << indeterminate;
     this->state = state;
@@ -223,22 +223,53 @@ void DownloadPage::updateBootstrapState(int state, int progress, bool indetermin
     switch(state)
     {
     case -2:
-        progressLabel->setText(tr("Bootstrap download aborted by user."));
+        switch(errorCode)
+        {
+        case 1:
+            progressLabel->setText(tr("Bootstrap download failed because there is not enough free space on this device.<br><br>"
+                                      "Make sure you have enough free space before trying again."));
+            break;
+        case 2:
+            progressLabel->setText(tr("Bootstrap archive extraction failed because there is not enough free space on this device.<br><br>"
+                                      "Make sure you have enough free space before trying again."));
+            break;
+        case 3:
+            progressLabel->setText(tr("Bootstrap archive extraction failed, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 4:
+            progressLabel->setText(tr("Bootstrap hash mismatch, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 5:
+            progressLabel->setText(tr("Bootstrap index file missing on server, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        case 6:
+            progressLabel->setText(tr("Bootstrap file missing on server, please try again.<br><br>"
+                                      "If the error persists, please contact the developers."));
+            break;
+        default:
+            progressLabel->setText(tr("Bootstrap download failed, please try again.<br><br>"
+                                      "Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi."));
+        }
         downloadButton->setVisible(true);
         downloadButton->setEnabled(true);
         progressBar->setVisible(false);
         wizard()->button(QWizard::BackButton)->show();
         break;
     case -1:
-        progressLabel->setText(tr("Bootstrap download failed, please try again.<br><br>"
-                                  "Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi."));
+        progressLabel->setText(tr("Bootstrap download aborted by user."));
         downloadButton->setVisible(true);
         downloadButton->setEnabled(true);
         progressBar->setVisible(false);
         wizard()->button(QWizard::BackButton)->show();
         break;
     case 1:
-         progressLabel->setText(tr("Downloading..."));
+         if (numOfItems > 0)
+            progressLabel->setText(tr("Downloading... (%1/%2)").arg(indexOfItem+1).arg(numOfItems));
+         else
+            progressLabel->setText(tr("Downloading..."));
          downloadButton->setVisible(false);
          progressBar->setVisible(true);
          progressBar->setRange(0, indeterminate ? 0 : 100);
