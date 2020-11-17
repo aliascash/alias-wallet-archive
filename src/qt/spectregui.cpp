@@ -1242,7 +1242,7 @@ SpectreGUI::UnlockContext SpectreGUI::requestUnlock(UnlockMode mode)
        valid = false;
     }
 
-    if(was_locked)
+    if(!valid)
         // Request UI to unlock wallet, mark context as invalid if unlocked failed
         valid = unlockWallet(mode);
 
