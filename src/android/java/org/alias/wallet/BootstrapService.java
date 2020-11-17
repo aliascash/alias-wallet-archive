@@ -60,9 +60,6 @@ public class BootstrapService extends Service {
     public static final int STATE_ERROR = -2;
 
     private static final String ERROR_MSG_ENOSPC = "ENOSPC";
-    private static final String ERROR_MSG_BOOTSTRAP_INDEX_404 = "ERROR_BOOTSTRAP_INDEX_NOT_FOUND";
-    private static final String ERROR_MSG_BOOTSTRAP_FILE_404 = "ERROR_BOOTSTRAP_FILE_NOT_FOUND";
-    private static final String ERROR_MSG_BOOTSTRAP_HASH = "ERROR_BOOTSTRAP_HASH";
 
     private static int NOTIFICATION_ID_SERVICE_PROGRESS = 100;
     private static int NOTIFICATION_ID_SERVICE_RESULT = 101;
@@ -79,7 +76,7 @@ public class BootstrapService extends Service {
         ERROR_NOSPACE_DOWNLOAD,
         ERROR_NOSPACE_EXTRACTION,
         ERROR_EXTRACTION,
-        ERROR_HASH,
+        ERROR_BOOTSTRAP_HASH,
         ERROR_BOOTSTRAP_INDEX_404,
         ERROR_BOOTSTRAP_FILE_404
     }
@@ -238,15 +235,15 @@ public class BootstrapService extends Service {
                     errorCode = ERROR_EXTRACTION;
                     cleanupDirectory(bootstrapTmpPath);
                 }
-                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_HASH)) {
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_BOOTSTRAP_HASH.name())) {
                     errorText += " Bootstrap hash mismatch.";
-                    errorCode = ERROR_HASH;
+                    errorCode = ERROR_BOOTSTRAP_HASH;
                 }
-                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_INDEX_404)) {
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_BOOTSTRAP_INDEX_404.name())) {
                     errorText += " Bootstrap index file missing on server.";
                     errorCode = ERROR_BOOTSTRAP_INDEX_404;
                 }
-                else if (e.getMessage() != null && e.getMessage().contains(ERROR_MSG_BOOTSTRAP_FILE_404)) {
+                else if (e.getMessage() != null && e.getMessage().contains(ERROR_BOOTSTRAP_FILE_404.name())) {
                     errorText += " Bootstrap file missing on server.";
                     errorCode = ERROR_BOOTSTRAP_FILE_404;
                     cleanupDirectory(bootstrapTmpPath);
@@ -287,7 +284,7 @@ public class BootstrapService extends Service {
                     connection.setReadTimeout(30000);
                     connection.connect();
                     if (connection.getResponseCode() == 404) {
-                        throw new RuntimeException(ERROR_MSG_BOOTSTRAP_INDEX_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapIndexUrl);
+                        throw new RuntimeException(ERROR_BOOTSTRAP_INDEX_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapIndexUrl);
                     }
                     input = new BufferedInputStream(connection.getInputStream());
                     output = new FileOutputStream(bootstrapFileTemp.toFile());
@@ -337,7 +334,7 @@ public class BootstrapService extends Service {
                 connection.setReadTimeout(30000);
                 connection.connect();
                 if (connection.getResponseCode() == 404) {
-                    throw new RuntimeException(ERROR_MSG_BOOTSTRAP_FILE_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapPartDefinition.url);
+                    throw new RuntimeException(ERROR_BOOTSTRAP_FILE_404 + " > Server responded with HTTP RC 404 for file: " + bootstrapPartDefinition.url);
                 }
                 // this will be useful so that you can show a typical 0-100% progress bar
                 int fileLength = connection.getContentLength();
@@ -370,7 +367,7 @@ public class BootstrapService extends Service {
                 if (!isCancelled()) {
                     String fileHash = toHex(md.digest());
                     if (!fileHash.equalsIgnoreCase(bootstrapPartDefinition.hash)) {
-                        throw new RuntimeException(ERROR_MSG_BOOTSTRAP_HASH +
+                        throw new RuntimeException(ERROR_BOOTSTRAP_HASH +
                                 " > Hash of downloaded file " + bootstrapPartDefinition.url + " is " + fileHash + " but should be " + bootstrapPartDefinition.hash);
                     }
                     else {
