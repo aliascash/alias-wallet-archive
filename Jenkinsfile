@@ -205,8 +205,8 @@ pipeline {
                         }
                     }
                 }
-//                stage('Windows Qt5.12.x') {
-//                    stages {
+                stage('Windows Qt5.12.x') {
+                    stages {
 //                        stage('Start Windows slave') {
 //                            steps {
 //                                withCredentials([[
@@ -229,24 +229,24 @@ pipeline {
 //                                }
 //                            }
 //                        }
-//                        stage('Win + Qt5.12.x') {
-//                            agent {
-//                                label "windows"
-//                            }
-//                            environment {
-//                                QTDIR = "${QT_DIR_WIN_512}"
-//                                VSDIR = "${VS2017_DIR}"
-//                                CMAKEDIR = "${CMAKE_DIR}"
-//                                VCPKGDIR = "${VCPKG_DIR}"
-//                            }
-//                            steps {
-//                                script {
-//                                    bat 'scripts/cmake-build-win.bat'
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+                        stage('Win + Qt5.12.x') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2019_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
+                            }
+                            steps {
+                                script {
+                                    bat 'scripts/cmake-build-win.bat'
+                                }
+                            }
+                        }
+                    }
+                }
 //                stage('Windows Qt5.15.x') {
 //                    stages {
 //                        stage('Start Windows slave') {
@@ -672,8 +672,8 @@ pipeline {
                         }
                     }
                 }
-//                stage('Windows Qt5.12.x') {
-//                    stages {
+                stage('Windows Qt5.12.x') {
+                    stages {
 //                        stage('Start Windows slave') {
 //                            steps {
 //                                withCredentials([[
@@ -696,67 +696,67 @@ pipeline {
 //                                }
 //                            }
 //                        }
-//                        stage('Win + Qt5.12.x') {
-//                            agent {
-//                                label "windows"
-//                            }
-//                            environment {
-//                                QTDIR = "${QT_DIR_WIN_512}"
-//                                VSDIR = "${VS2017_DIR}"
-//                                CMAKEDIR = "${CMAKE_DIR}"
-//                                VCPKGDIR = "${VCPKG_DIR}"
-//                            }
-//                            steps {
-//                                script {
-//                                    bat(
-//                                        script: """
-//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
-//                                            scripts/cmake-build-win.bat
-//                                        """
-//                                        )
-//                                    zip(
-//                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
-//                                        dir: "${WORKSPACE}/build",
-//                                        glob: "Alias/**"
-//                                    )
-//                                    bat(
-//                                        script: """
-//                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
-//                                        """
-//                                        )
-//                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
-//                                    build(
-//                                            job: 'Alias/installer/master',
-//                                            parameters: [
-//                                                    string(
-//                                                            name: 'ARCHIVE_LOCATION',
-//                                                            value: "${WORKSPACE}/build"
-//                                                    ),
-//                                                    string(
-//                                                            name: 'ARCHIVE_NAME',
-//                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
-//                                                    ),
-//                                                    string(
-//                                                            name: 'GIT_TAG_TO_USE',
-//                                                            value: "${GIT_TAG_TO_USE}"
-//                                                    ),
-//                                                    string(
-//                                                            name: 'GIT_COMMIT_SHORT',
-//                                                            value: "${GIT_COMMIT_SHORT}"
-//                                                    )
-//                                            ],
-//                                            wait: false
-//                                    )
-//                                }
-//                            }
-//                        }
-//                        stage('Upload deliveries') {
-//                            steps {
-//                                uploadDeliveries("-Qt5.12")
-//                            }
-//                        }
-//                    }
-//                }
+                        stage('Win + Qt5.12.x') {
+                            agent {
+                                label "windows"
+                            }
+                            environment {
+                                QTDIR = "${QT_DIR_WIN_512}"
+                                VSDIR = "${VS2019_DIR}"
+                                CMAKEDIR = "${CMAKE_DIR}"
+                                VCPKGDIR = "${VCPKG_DIR}"
+                            }
+                            steps {
+                                script {
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip del build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+                                            scripts/cmake-build-win.bat
+                                        """
+                                        )
+                                    zip(
+                                        zipFile: "${WORKSPACE}/build/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip",
+                                        dir: "${WORKSPACE}/build",
+                                        glob: "Alias/**"
+                                    )
+                                    bat(
+                                        script: """
+                                            if exist build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip copy build\\Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip
+                                        """
+                                        )
+                                    archiveArtifacts allowEmptyArchive: true, artifacts: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
+                                    build(
+                                            job: 'Alias/installer/master',
+                                            parameters: [
+                                                    string(
+                                                            name: 'ARCHIVE_LOCATION',
+                                                            value: "${WORKSPACE}/build"
+                                                    ),
+                                                    string(
+                                                            name: 'ARCHIVE_NAME',
+                                                            value: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64-Qt5.12.zip"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_TAG_TO_USE',
+                                                            value: "${GIT_TAG_TO_USE}"
+                                                    ),
+                                                    string(
+                                                            name: 'GIT_COMMIT_SHORT',
+                                                            value: "${GIT_COMMIT_SHORT}"
+                                                    )
+                                            ],
+                                            wait: false
+                                    )
+                                }
+                            }
+                        }
+                        stage('Upload deliveries') {
+                            steps {
+                                uploadDeliveries("-Qt5.12")
+                            }
+                        }
+                    }
+                }
 //                stage('Windows Qt5.15.x') {
 //                    stages {
 //                        stage('Start Windows slave') {
