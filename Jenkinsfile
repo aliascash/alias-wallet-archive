@@ -20,6 +20,7 @@ pipeline {
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
         GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
         CI_URL = credentials('CI_URL')
+        ACCESS_TOKEN = credentials('ACCESS_TOKEN')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
@@ -635,32 +636,35 @@ pipeline {
                                 }
                             }
                         }
-//                        stage('Upload deliveries') {
-//                            agent {
-//                                label "housekeeping"
-//                            }
-//                            steps {
-//                                script {
-//                                    sh(
-//                                            script: """
-//                                                rm -f Alias*.dmg*
-//                                                wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg
-//                                            """
-//                                    )
-//                                    uploadArtifactToGitHub(
-//                                            user: 'aliascash',
-//                                            repository: 'alias-wallet',
-//                                            tag: "${GIT_TAG_TO_USE}",
-//                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                    )
-//                                    createAndArchiveChecksumFile(
-//                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
-//                                            checksumfile: "Checksum-Alias-Mac.txt"
-//                                    )
-//                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
-//                                }
-//                            }
-//                        }
+                        stage('Upload deliveries') {
+                            agent {
+                                label "housekeeping"
+                            }
+                            steps {
+                                script {
+                                    sh(
+                                            script: """
+                                                rm -f Alias*.dmg*
+                                                curl -L \
+                                                    --user "${ACCESS_TOKEN}" \
+                                                    https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg \
+                                                    --output Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg || true
+                                            """
+                                    )
+                                    uploadArtifactToGitHub(
+                                            user: 'aliascash',
+                                            repository: 'alias-wallet',
+                                            tag: "${GIT_TAG_TO_USE}",
+                                            artifactNameRemote: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                    )
+                                    createAndArchiveChecksumFile(
+                                            filename: "Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg",
+                                            checksumfile: "Checksum-Alias-Mac.txt"
+                                    )
+                                    sh "rm -f Alias*.dmg* Checksum-Alias*"
+                                }
+                            }
+                        }
                     }
                 }
 //                stage('Windows Qt5.12.x') {
@@ -820,7 +824,8 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}"
+                                    "https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
+                                    "${ACCESS_TOKEN}"
                             """
                         )
                         editRelease(

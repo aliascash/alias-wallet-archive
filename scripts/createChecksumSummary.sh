@@ -15,6 +15,7 @@
 releaseDescription=$1
 workspace=$2
 jobURL=$3
+accessToken=$4
 
 if test -e "${releaseDescription}" ; then
     cp "${releaseDescription}" ${workspace}/releaseNotesToDeploy.txt
@@ -41,7 +42,8 @@ for currentChecksumfile in \
     Checksum-Alias-Win64-Qt5.9.6.txt \
     Checksum-Alias-Win64-Qt5.9.6-OBFS4.txt ; do
 #    wget https://ci.alias.cash/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/${currentChecksumfile} || true
-    wget ${jobURL}/artifact/${currentChecksumfile} || true
+#    wget ${jobURL}/artifact/${currentChecksumfile} || true
+    curl -X POST -L --user "${accessToken}" "${jobURL}"/artifact/${currentChecksumfile} --output ${currentChecksumfile} || true
     if test -e "${currentChecksumfile}" ; then
         archiveFilename=$(cat ${currentChecksumfile} | cut -d ' ' -f1)
         checksum=$(cat ${currentChecksumfile} | cut -d ' ' -f2)
