@@ -647,7 +647,7 @@ pipeline {
                                                 rm -f Alias*.dmg*
                                                 curl -L \
                                                     --user "${ACCESS_TOKEN}" \
-                                                    https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg \
+                                                    ${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg \
                                                     --output Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Mac.dmg || true
                                             """
                                     )
@@ -824,7 +824,7 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
+                                    "${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
                                     "${ACCESS_TOKEN}"
                             """
                         )
@@ -960,7 +960,7 @@ def uploadDeliveries(def suffix) {
         sh(
                 script: """
                     rm -f Alias-*-Win64${suffix}.zip
-                    wget https://${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    wget ${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
                 """
         )
         uploadArtifactToGitHub(
