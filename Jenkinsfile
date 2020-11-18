@@ -20,7 +20,7 @@ pipeline {
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
         GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
         CI_URL = credentials('CI_URL')
-        ACCESS_TOKEN = credentials('ACCESS_TOKEN')
+        ACCESS_TOKEN = credentials('ci_read_access')
         DEVELOP_TAG = "Build${BUILD_NUMBER}"
         RELEASE_TAG = sh(
                 script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r') | sed 's/ //g'",
