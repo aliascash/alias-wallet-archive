@@ -926,6 +926,18 @@ void SpectreGUI::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 }
 
+void SpectreGUI::keyReleaseEvent(QKeyEvent *event)
+{
+//    if (event->key() == Qt::Key_Back)
+//    {
+//        TODO hide open web dialogs instead close
+//        this->showMinimized();
+//    }
+//    else {
+        QWidget::keyReleaseEvent(event);
+//    }
+}
+
 void SpectreGUI::handleURI(QString strURI)
 {
     SendCoinsRecipient rv;

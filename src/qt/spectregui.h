@@ -112,6 +112,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 private:
     SpectreClientBridge *clientBridge;
