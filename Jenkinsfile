@@ -965,7 +965,10 @@ def uploadDeliveries(def suffix) {
         sh(
                 script: """
                     rm -f Alias-*-Win64${suffix}.zip
-                    wget ${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip
+                    curl -L \\
+                        --user "${ACCESS_TOKEN}" \\
+                        ${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}/artifact/Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip \\
+                        --output Alias-${GIT_TAG_TO_USE}-${GIT_COMMIT_SHORT}-Win64${suffix}.zip || true
                 """
         )
         uploadArtifactToGitHub(
