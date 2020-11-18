@@ -56,6 +56,11 @@ pipeline {
                 )
             }
         }
+        stage('Cleanup') {
+            steps {
+                sh "git clean -fd"
+            }
+        }
         stage('Feature branch') {
             when {
                 not {
