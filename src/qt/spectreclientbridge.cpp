@@ -40,6 +40,11 @@
 #include <QProgressDialog>
 #include <QMessageBox>
 
+#ifdef ANDROID
+#include <QAndroidIntent>
+#include <QtAndroidExtras>
+#endif
+
 
 SpectreClientBridge::SpectreClientBridge(SpectreGUI *window, QWebChannel *webChannel, QObject *parent) :
     QObject         (parent),
@@ -68,6 +73,14 @@ void SpectreClientBridge::paste()
 void SpectreClientBridge::urlClicked(const QString link)
 {
     emit window->urlClicked(QUrl(link));
+}
+
+void SpectreClientBridge::scanQRCode()
+{
+#ifdef ANDROID
+    auto cameraIntent = QAndroidIntent("android.media.action.STILL_IMAGE_CAMERA");
+    QtAndroid::startActivity(cameraIntent, 0);
+#endif
 }
 
 // Transactions

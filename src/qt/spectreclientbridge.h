@@ -39,6 +39,7 @@ public slots:
     Q_INVOKABLE void copy(QString text);
     Q_INVOKABLE void paste();
     Q_INVOKABLE void urlClicked(const QString link);
+    Q_INVOKABLE void scanQRCode();
 
     /** Show debug dialog */
     Q_INVOKABLE void userAction(QJsonValue action);
