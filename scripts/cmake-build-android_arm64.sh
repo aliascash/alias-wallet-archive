@@ -788,8 +788,8 @@ checkXZLib() {
 
 # ===== Start of tor functions ===============================================
 checkTorArchive() {
-    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz" ]]; then
-        info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz"
+    if [[ -e "${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz" ]]; then
+        info " -> Using Tor archive ${TOR_ARCHIVE_LOCATION}/tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz"
     else
         #        TOR_ARCHIVE_URL=https://github.com/torproject/tor/archive/tor-${TOR_BUILD_VERSION}.tar.gz
         TOR_ARCHIVE_URL=https://github.com/guardianproject/tor/archive/tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz
@@ -798,7 +798,7 @@ checkTorArchive() {
             mkdir -p ${TOR_ARCHIVE_LOCATION}
         fi
         cd ${TOR_ARCHIVE_LOCATION}
-        wget ${TOR_ARCHIVE_URL} -O tor-${TOR_BUILD_VERSION_ANDROID%%-*}.tar.gz
+        wget ${TOR_ARCHIVE_URL} -O tor-${TOR_BUILD_VERSION_ANDROID}.tar.gz
         cd - >/dev/null
     fi
 }
