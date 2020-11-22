@@ -1,18 +1,35 @@
-## SPECTRECOIN V4
+## Alias V4
 
-`By downloading and using this software, you agree that 1/6 of the staking rewards are contributed to a development fund. The development fund aims to support the long term development and value of Spectrecoin. The fund is managed by the Spectrecoin core team.`
+> By downloading and using this software, you agree that 1/6 of the staking
+> rewards are contributed to a development fund. The development fund aims
+> to support the long term development and value of Alias. The fund is managed
+> by the Alias core team.
 
-This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
+This is a major release and a **MANDATORY** update to the Alias software!
+This update involves consensus changes (_details below_) and **you MUST
+update** your wallet software before:
 
 2019-09-27 (_27th September 2019_) @ 2000 hours (GMT)
 
-If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
+If you do not update your wallet software you will no longer be able to connect
+to the Alias network and you will no longer be able to conduct transactions on
+the network and you will no longer be able to deposit or withdraw your funds
+(public a/o private ALIAS) from the exchanges.
 
 ### Development Contribution Blocks (DCB)
-After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be designated DCBs and will be sent to the Spectrecoin team development fund wallet. This fund will ensure a future for Spectrecoin and will enable us to pay for certain services and to hire contractors and to pay Spectrecoin core team members in XSPEC to enable them to work full time on the project. We have some long term projects and concepts to implement such as a new proof-of-stake algorithm we call Proof-of-Stealth to enable so called "stealth staking". These developments depend on a source of steady funding. We believe this will give us the opportunity to produce better software and will create value for investors. We currently have some very skilled developers working for us and we want to keep it that way.
+After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be
+a designated DCB and will be sent to the Alias team development fund wallet.
+This fund will ensure a future for Alias and will enable us to pay for certain
+services, to hire contractors and to pay Alias core team members in ALIAS
+to enable them to work full time on the project. The further development
+depend on a source of steady funding. We believe this will give us the opportunity
+to produce better software and will create value for investors. We currently
+have some very skilled developers working for us and we want to keep it that way.
 
 ### Replay Protection
-We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
+We have implemented a check for DCBs and we have implemented a replay protection
+mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not
+updated will not be able to create transactions on the Alias V3 network.
 
 ### Licensing
 
@@ -27,8 +44,13 @@ We have implemented a check for DCBs and we have implemented a replay protection
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.3.0 (released 2020-??-??)
-- Update to Qt 5.15.1 (Windows / Mac)
+## 4.3.1 (released 2020-??-??)
+- Refactored the whole build to CMake as basement.
+  For all supported operating systems, there are corresponding
+  helper scripts on `scripts/cmake-build*`.
+
+## 4.3.0 (released 2020-10-01)
+- Update to Qt 5.12.9 (Windows / Mac)
 - Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
 - Refactored overall namings according to project rebranding
 - Refactored naming of some RPC methods according to project rebranding:

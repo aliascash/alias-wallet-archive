@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: © 2020 Alias Developers
-# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 #
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-debian-buster:2.2
+FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.2
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters

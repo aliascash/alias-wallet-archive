@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: © 2020 Alias Developers
-# SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
 #
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-centos-8:2.2 as build
+FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.2 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -30,8 +29,8 @@ ARG ALIAS_REPOSITORY=alias-wallet
 ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_CI_TOKEN=${GITHUB_CI_TOKEN}
-ENV ARCHIVE=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-CentOS.tgz
-ENV CHKSUM_FILE=Checksum-Alias-CentOS-8.txt
+ENV ARCHIVE=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-OpenSUSE-Tumbleweed.tgz
+ENV CHKSUM_FILE=Checksum-Alias-OpenSUSE-Tumbleweed.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
 
