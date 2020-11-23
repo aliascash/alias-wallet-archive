@@ -99,6 +99,10 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         });
     }
 
+    public boolean hasQRCodeScanner() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+    }
+
     protected void handleIntent() {
         hasPendingIntent = false;
         Intent intent = getIntent();
