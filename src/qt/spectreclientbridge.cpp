@@ -78,8 +78,7 @@ void SpectreClientBridge::urlClicked(const QString link)
 void SpectreClientBridge::scanQRCode()
 {
 #ifdef ANDROID
-    auto cameraIntent = QAndroidIntent("android.media.action.STILL_IMAGE_CAMERA");
-    QtAndroid::startActivity(cameraIntent, 0);
+    QtAndroid::androidActivity().callMethod<void>("scanQRCode", "()V");
 #endif
 }
 
