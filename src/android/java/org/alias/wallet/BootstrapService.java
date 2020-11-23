@@ -1,5 +1,10 @@
 package org.alias.wallet;
 
+/*
+ * SPDX-FileCopyrightText: © 2020 Alias Developers
+ * SPDX-License-Identifier: MIT
+ */
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

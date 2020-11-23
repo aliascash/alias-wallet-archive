@@ -30,6 +30,10 @@ Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
+Files: scripts/android_deployment_settings.json src/android/gradle.properties src/android/res/* src/qt/rep/*
+Copyright: 2020 Alias Developers
+License: MIT
+
 Files: src/qt/res/assets/plugins/bootstrapv3/*
 Copyright: 2018 Twitter
 License: MIT
