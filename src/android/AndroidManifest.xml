@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- SPDX-FileCopyrightText: © 2020 Alias Developers -->
 <!-- SPDX-License-Identifier: MIT -->
-<manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.9" android:versionCode="10" android:installLocation="auto">
+<manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.10" android:versionCode="11" android:installLocation="auto">
     <uses-sdk android:targetSdkVersion="29"/>
 
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
