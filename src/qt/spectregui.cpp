@@ -1232,9 +1232,9 @@ void SpectreGUI::resetBlockchain()
           "- Application will stop<br>"
           "- Blockchain data deleted<br>"
           "- wallet.dat remains untouched<br>"),
-       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
+       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
 
-    if (retval == QMessageBox::Yes) {
+    if (retval == QMessageBox::Ok) {
         applicationModel->requestShutdownCore(RESET_BLOCKCHAIN);
         // Show progress dialog until application gets terminated
         QProgressDialog* dialog = showProgressDlg("Shutdown...");
