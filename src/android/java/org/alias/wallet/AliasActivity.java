@@ -14,6 +14,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -102,6 +103,16 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
                 }
             }
         });
+    }
+
+    public void scanQRCode() {
+        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
+    }
+
+    public boolean hasQRCodeScanner() {
+        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
     }
 
     protected void handleIntent() {

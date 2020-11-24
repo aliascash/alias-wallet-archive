@@ -329,9 +329,12 @@ void SpectreGUI::pageLoaded()
     if (!fDebug)
         runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-debug { display: none !important }'; document.body.appendChild(sheet);"));
 #ifdef ANDROID
-    runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
+    jboolean hasQRCodeScanner = QtAndroid::androidActivity().callMethod<jboolean>("hasQRCodeScanner", "()Z");
+    if (!hasQRCodeScanner)
+        runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.has-qr-code-scanner { display: none !important }'; document.body.appendChild(sheet);"));
 #else
     runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-mobile { display: none !important }'; document.body.appendChild(sheet);"));
+    runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.has-qr-code-scanner { display: none !important }'; document.body.appendChild(sheet);"));
 #endif
 
     initMessage(splashScreen, "Ready!");
@@ -1229,12 +1232,31 @@ void SpectreGUI::resetBlockchain()
           "- Application will stop<br>"
           "- Blockchain data deleted<br>"
           "- wallet.dat remains untouched<br>"),
-       QMessageBox::Yes|QMessageBox::Cancel, QMessageBox::Cancel);
+       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
 
-    if (retval == QMessageBox::Yes) {
+    if (retval == QMessageBox::Ok) {
         applicationModel->requestShutdownCore(RESET_BLOCKCHAIN);
         // Show progress dialog until application gets terminated
         QProgressDialog* dialog = showProgressDlg("Shutdown...");
+        dialog->exec();
+        // TODO: handle android back button, it should not be possible to quit the dialog.
+        StartShutdown();
+    }
+}
+
+void SpectreGUI::rewindBlockchain()
+{
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Rewind Blockchain Data"),
+       tr("Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.<br><br>"
+          "- Last 100 blocks will be deleted<br>"
+          "- Application will stop<br>"
+          "- wallet.dat remains untouched<br>"),
+       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
+
+    if (retval == QMessageBox::Ok) {
+        applicationModel->requestShutdownCore(REWIND_BLOCKCHAIN);
+        // Show progress dialog until application gets terminated
+        QProgressDialog* dialog = showProgressDlg("Rewind Blockchain...");
         dialog->exec();
         // TODO: handle android back button, it should not be possible to quit the dialog.
         StartShutdown();

@@ -42,6 +42,7 @@ public class AliasService extends QtService {
     private static int SERVICE_NOTIFICATION_TYPE_SYNCING = 4;
     private static int SERVICE_NOTIFICATION_TYPE_SYNCED = 5;
     private static int SERVICE_NOTIFICATION_TYPE_STAKING = 6;
+    private static int SERVICE_NOTIFICATION_TYPE_REWINDCHAIN = 7;
 
     private static String WALLET_NOTIFICATION_TYPE_TX_STAKED = "staked";
     private static String WALLET_NOTIFICATION_TYPE_TX_DONATED = "donated";
@@ -58,6 +59,7 @@ public class AliasService extends QtService {
 
     private String lastWalletNotificationTitle;
     private String lastWalletNotificationText;
+    private int lastServiceNotificationType = 0;
     private int sameNotificationCounter;
 
     private Notification.Builder notificationBuilder;
@@ -120,6 +122,7 @@ public class AliasService extends QtService {
             if(action!=null)
                 switch (action) {
                     case ACTION_STOP:
+                        stopForeground(true);
                         this.stopService(new Intent(this, AliasService.class));
                         return START_NOT_STICKY;
                 }
@@ -143,12 +146,20 @@ public class AliasService extends QtService {
     }
 
     public void updateNotification(String title, String text, int type) {
+        if (lastServiceNotificationType == SERVICE_NOTIFICATION_TYPE_REWINDCHAIN) {
+            return; // don't update notification during rewindchain
+        }
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(text);
+        notificationBuilder.setProgress(0, 0, false);
         if (SERVICE_NOTIFICATION_TYPE_STAKING == type) {
             notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_staking));
         }
+        else if (SERVICE_NOTIFICATION_TYPE_REWINDCHAIN == type) {
+            notificationBuilder.setProgress(0, 0, true);
+        }
+        lastServiceNotificationType = type;
         notificationManager.notify(NOTIFICATION_ID_SERVICE, notificationBuilder.build());
     }
 

@@ -9,7 +9,8 @@
 
 enum ShutdownFlags {
     NORMAL = 0,
-    RESET_BLOCKCHAIN  = (1U << 1)
+    RESET_BLOCKCHAIN  = (1U << 1),
+    REWIND_BLOCKCHAIN  = (1U << 2)
 };
 
 #endif // APPLICATIONMODELCONSTANTS_H

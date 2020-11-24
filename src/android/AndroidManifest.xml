@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- SPDX-FileCopyrightText: © 2020 Alias Developers -->
 <!-- SPDX-License-Identifier: MIT -->
-<manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.9" android:versionCode="10" android:installLocation="auto">
+<manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.10" android:versionCode="11" android:installLocation="auto">
     <uses-sdk android:targetSdkVersion="29"/>
 
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
@@ -11,7 +11,7 @@
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
 
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="-- %%INSERT_APP_NAME%% --" android:extractNativeLibs="true" android:usesCleartextTraffic="true" android:icon="@drawable/ic_alias_app">
-        <activity android:windowSoftInputMode="adjustPan" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.alias.wallet.AliasActivity" android:label="-- %%INSERT_APP_NAME%% --" android:screenOrientation="locked" android:launchMode="singleTop" android:theme="@style/AppBaseTheme">
+        <activity android:windowSoftInputMode="adjustPan" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.alias.wallet.AliasActivity" android:label="-- %%INSERT_APP_NAME%% --" android:screenOrientation="locked" android:launchMode="singleTask" android:theme="@style/AppBaseTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
