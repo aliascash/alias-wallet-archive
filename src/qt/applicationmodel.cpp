@@ -5,6 +5,7 @@
 
 #include "applicationmodel.h"
 #include "util.h"
+#include "rpcserver.h"
 #include "shutdown.h"
 
 #include <QApplication>
@@ -40,6 +41,17 @@ void ApplicationModel::detectShutdown()
 void ApplicationModel::requestShutdownCore(unsigned int flags)
 {
     this->shutdownFlags = flags;
+    if (shutdownFlags & REWIND_BLOCKCHAIN)
+    {
+        LogPrintf("REWIND_BLOCKCHAIN requested: issue 'rewindchain 100'b\n\n");
+        json_spirit::Array params;
+        params.push_back(100);
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
+                                                     QAndroidJniObject::fromString("Maintenance").object<jstring>(),
+                                                     QAndroidJniObject::fromString("Rewind Blockchain...").object<jstring>(),
+                                                     7);
+        rewindchain(params, false);
+    }
     StartShutdown();
 }
 

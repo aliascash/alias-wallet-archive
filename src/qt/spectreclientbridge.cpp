@@ -360,6 +360,8 @@ void SpectreClientBridge::userAction(QJsonValue action)
         window->aboutQtAction->trigger();
     if(key == "resetBlockainClicked")
         window->resetBlockchain();
+    if(key == "rewindBlockchainClicked")
+        window->rewindBlockchain();
     if(key == "debugClicked")
     {
 //  TODO

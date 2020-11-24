@@ -1244,6 +1244,25 @@ void SpectreGUI::resetBlockchain()
     }
 }
 
+void SpectreGUI::rewindBlockchain()
+{
+    QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Rewind Blockchain Data"),
+       tr("Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.<br><br>"
+          "- Last 100 blocks will be deleted<br>"
+          "- Application will stop<br>"
+          "- wallet.dat remains untouched<br>"),
+       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
+
+    if (retval == QMessageBox::Ok) {
+        applicationModel->requestShutdownCore(REWIND_BLOCKCHAIN);
+        // Show progress dialog until application gets terminated
+        QProgressDialog* dialog = showProgressDlg("Rewind Blockchain...");
+        dialog->exec();
+        // TODO: handle android back button, it should not be possible to quit the dialog.
+        StartShutdown();
+    }
+}
+
 
 // ----- WalletModel::UnlockContext implementation
 SpectreGUI::UnlockContext SpectreGUI::requestUnlock(UnlockMode mode)

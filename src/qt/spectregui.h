@@ -264,6 +264,8 @@ private slots:
 
     /** Stop application and delete all blockchain data. **/
     void resetBlockchain();
+    /** Stop application and 'rewindchain 100'. **/
+    void rewindBlockchain();
 };
 
 #endif
