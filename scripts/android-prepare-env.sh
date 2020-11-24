@@ -20,13 +20,13 @@ chmod +x ${BUILD_DIR_ARM8}/android-build/libs/arm64-v8a/libtor.so
 rm -Rf ${BUILD_DIR_ARM7}/android-build/assets
 mkdir -p ${BUILD_DIR_ARM7}/android-build
 ln -s ${DIR_UI} ${BUILD_DIR_ARM7}/android-build/assets
-mkdir -p ${BUILD_DIR_ARM7}/android-build/libs/arm64-v8a
+mkdir -p ${BUILD_DIR_ARM7}/android-build/libs/armeabi-v7a
 cp cmake-build-cmdline-android22_armv7a/usr/local/bin/tor ${BUILD_DIR_ARM7}/android-build/libs/armeabi-v7a/libtor.so
 chmod +x ${BUILD_DIR_ARM7}/android-build/libs/armeabi-v7a/libtor.so
 
 rm -Rf ${BUILD_DIR_x86_64}/android-build/assets
 mkdir -p ${BUILD_DIR_x86_64}/android-build
 ln -s ${DIR_UI} ${BUILD_DIR_x86_64}/android-build/assets
-mkdir -p ${BUILD_DIR_x86_64}/android-build/libs/arm64-v8a
+mkdir -p ${BUILD_DIR_x86_64}/android-build/libs/x86_64
 cp cmake-build-cmdline-android22_x86_64/usr/local/bin/tor ${BUILD_DIR_x86_64}/android-build/libs/x86_64/libtor.so
 chmod +x ${BUILD_DIR_x86_64}/android-build/libs/x86_64/libtor.so
