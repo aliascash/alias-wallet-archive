@@ -65,6 +65,18 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing()) {
+            // fix the unintended 'go back to camera app after qrcode scan' behavior by explictly go the home screen
+            Intent mainActivity = new Intent(Intent.ACTION_MAIN);
+            mainActivity.addCategory(Intent.CATEGORY_HOME);
+            mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(mainActivity);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         getWindow().setSoftInputMode(softInputMode);
