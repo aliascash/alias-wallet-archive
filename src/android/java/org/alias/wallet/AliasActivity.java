@@ -13,6 +13,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.Toast;
+
+import org.qtproject.qt5.android.bindings.QtApplication;
 
 public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity {
 
@@ -31,6 +34,9 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     private boolean hasPendingIntent = false; // accessed only from android UI thread
 
     private BoostrapBroadcastReceiver mBoostrapBroadcastReceiver;
+
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +82,19 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         if (qtInitialized) {
             handleIntent();
         }
+    }
+
+    public void onBackPressedQt() {
+        runOnUiThread(() -> {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                backToast.cancel();
+                finish();
+            } else {
+                backToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
+                backToast.show();
+                backPressedTime = System.currentTimeMillis();
+            }
+        });
     }
 
     public void startCore(boolean rescan, String bip44key) {

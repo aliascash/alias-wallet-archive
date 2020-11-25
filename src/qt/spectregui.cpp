@@ -931,14 +931,18 @@ void SpectreGUI::dropEvent(QDropEvent *event)
 
 void SpectreGUI::keyReleaseEvent(QKeyEvent *event)
 {
-//    if (event->key() == Qt::Key_Back)
-//    {
-//        TODO hide open web dialogs instead close
-//        this->showMinimized();
-//    }
-//    else {
+    if (event->key() == Qt::Key_Back)
+    {
+        //TODO hide open web dialogs instead close
+#ifdef ANDROID
+        QtAndroid::androidActivity().callMethod<void>("onBackPressedQt", "()V");
+#else
         QWidget::keyReleaseEvent(event);
-//    }
+#endif
+    }
+    else {
+        QWidget::keyReleaseEvent(event);
+    }
 }
 
 void SpectreGUI::handleURI(QString strURI)
