@@ -471,7 +471,7 @@ if (ENABLE_GUI)
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
-                    COMMAND rmdir /S /Q ${CMAKE_BINARY_DIR}/Alias
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
                     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/delivery ${CMAKE_BINARY_DIR}/Alias
                     COMMENT "Running windeployqt..."
                     )
