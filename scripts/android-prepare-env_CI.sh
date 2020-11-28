@@ -44,3 +44,13 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:/opt/gradle/bin/:$PATH"
 
 sed -i "s#qt5AndroidDir=.*#qt5AndroidDir=/root/Qt/5.15.2/android/src/android/java#g" src/android/gradle.properties
+
+# We need at least Gradle 6.5
+mkdir -p ${BUILD_DIR_APK}/android-build/gradle/wrapper/
+cat >"${BUILD_DIR_APK}/android-build/gradle/wrapper/gradle-wrapper.properties" <<EOF
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https://services.gradle.org/distributions/gradle-6.5-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
