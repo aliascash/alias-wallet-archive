@@ -43,4 +43,4 @@ export ANDROID_HOME=/root/Archives/Android
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:/opt/gradle/bin/:$PATH"
 
-sed -i '' "s#qt5AndroidDir=.*#qt5AndroidDir=/root/Qt/5.15.2/android/src/android/java#g" src/android/gradle.properties
+sed -i "s#qt5AndroidDir=.*#qt5AndroidDir=/root/Qt/5.15.2/android/src/android/java#g" src/android/gradle.properties
