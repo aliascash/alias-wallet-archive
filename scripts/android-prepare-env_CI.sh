@@ -7,7 +7,7 @@ ownLocation="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ ! -e /alias-wallet-ui ]] ; then
     cd /
-    git clone https://github.com/aliascash/alias-wallet-ui
+    git clone https://github.com/aliascash/alias-wallet-ui --branch android
 fi
 cd "${ownLocation}"/..
 DIR_UI=/alias-wallet-ui
@@ -54,3 +54,5 @@ distributionUrl=https://services.gradle.org/distributions/gradle-6.5-bin.zip
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 EOF
+
+cd cmake-build-cmdline-android-apk/
