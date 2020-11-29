@@ -1802,7 +1802,10 @@ static void run_tor() {
     process::child pChildTor(process::start_dir = pathTorDir, "./tor.real", argv, gTor);
     pChildTor.detach();
      // Block this thread until the process exits (to have same behavior as tor_main call for static tor integration)
-    gTor.wait();
+    std::error_code ec;
+    gTor.wait(ec);
+    if (ec && !ShutdownRequested())
+         boost::process::detail::throw_error(ec, "Tor process: waitpid(2) failed in wait");
 #elif __linux__
     // Tor separate process via fork,execvp
     argv.push_back("--Log");
