@@ -58,7 +58,7 @@ QT_VERSION_OPENSUSE_TUMBLEWEED=5.15.1
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
-QT_VERSION_MAC=5.12.9
+QT_VERSION_MAC=5.12.10
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30
