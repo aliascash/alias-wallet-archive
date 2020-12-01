@@ -7,8 +7,8 @@ ownLocation="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "$ownLocation"/../cmake-build-cmdline-android-apk/ || exit 1
 
-if [[ -z ${keystorePass} ]] ; then
-    read -r -s -p "Please enter sign keystore password: " keystorePass
+if [[ -z ${KEYSTORE_PASS} ]] ; then
+    read -r -s -p "Please enter sign keystore password: " KEYSTORE_PASS
     echo
 fi
 
@@ -20,5 +20,5 @@ fi
     --aab \
 	--jarsigner \
 	--sign /etc/ssl/certs/alias-sign-keystore.jks upload \
-	--storepass "${keystorePass}" \
+	--storepass "${KEYSTORE_PASS}" \
     | tee ../Android-Build-$(date +%Y-%m-%d_%H%M%S).log
