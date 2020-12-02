@@ -329,6 +329,7 @@ void SpectreGUI::pageLoaded()
     if (!fDebug)
         runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-debug { display: none !important }'; document.body.appendChild(sheet);"));
 #ifdef ANDROID
+    runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
     jboolean hasQRCodeScanner = QtAndroid::androidActivity().callMethod<jboolean>("hasQRCodeScanner", "()Z");
     if (!hasQRCodeScanner)
         runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.has-qr-code-scanner { display: none !important }'; document.body.appendChild(sheet);"));
