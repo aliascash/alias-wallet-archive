@@ -9,7 +9,7 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
 ARG BUILD_THREADS="6"
-ARG KEYSTORE_PASS="123456"
+ARG KEYSTORE_PASS=1234567
 
 # Runtime parameters
 ENV BUILD_THREADS=${BUILD_THREADS}

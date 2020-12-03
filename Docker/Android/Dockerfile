@@ -9,20 +9,22 @@ MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
 ARG BUILD_THREADS="6"
+ARG KEYSTORE_PASS=1234567
 
 # Runtime parameters
-ENV BUILD_THREADS=$BUILD_THREADS
+ENV BUILD_THREADS=${BUILD_THREADS}
+ENV KEYSTORE_PASS=${KEYSTORE_PASS}
 
 COPY . /alias-wallet
 
 WORKDIR /alias-wallet/
 
-RUN ./scripts/cmake-build-android_arm64.sh -t ${BUILD_THREADS} \
- && ./scripts/cmake-build-android_armv7.sh -t ${BUILD_THREADS} \
- && ./scripts/cmake-build-android_x86-64.sh -t ${BUILD_THREADS} \
- && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip ./cmake-build-cmdline-android22_arm64/aliaswallet/src/aliaswalletd \
- && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip ./cmake-build-cmdline-android22_armv7a/aliaswallet/src/aliaswalletd \
- && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/x86_64-linux-android/bin/strip  ./cmake-build-cmdline-android22_x86_64/aliaswallet/src/aliaswalletd
+RUN ./scripts/cmake-build-android_arm64.sh -g -t ${BUILD_THREADS} \
+ && ./scripts/cmake-build-android_armv7.sh -g -t ${BUILD_THREADS} \
+ && ./scripts/cmake-build-android_x86-64.sh -g -t ${BUILD_THREADS} \
+ && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip ./cmake-build-cmdline-android22_arm64/aliaswallet/android-build/libs/arm64-v8a/libAlias_arm64-v8a.so \
+ && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip ./cmake-build-cmdline-android22_armv7a/aliaswallet/android-build/libs/armeabi-v7a/libAlias_armeabi-v7a.so \
+ && /root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/x86_64-linux-android/bin/strip  ./cmake-build-cmdline-android22_x86_64/aliaswallet/android-build/libs/x86_64/libAlias_x86_64.so
 
 RUN ./scripts/android-prepare-env_CI.sh \
  && ./scripts/android-build.sh
