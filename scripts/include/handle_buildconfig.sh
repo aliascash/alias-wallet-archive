@@ -19,7 +19,7 @@ if [[ ! -e .buildconfig ]] ; then
 ARCHIVES_ROOT_DIR=${HOME}/Archives
 
 ##### ### # Android # ### ###################################################
-ANDROID_NDK_VERSION=r20
+ANDROID_NDK_VERSION=r21d
 ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
 
 ##### ### # Boost # ### #####################################################
