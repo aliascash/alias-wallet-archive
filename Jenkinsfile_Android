@@ -205,7 +205,7 @@ pipeline {
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
-                                    "${CI_URL}/job/Alias/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
+                                    "${CI_URL}/job/Alias-Android/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
                                     "${ACCESS_TOKEN}"
                             """
                         )
