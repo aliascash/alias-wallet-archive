@@ -14,12 +14,12 @@
   
   
   "sdkBuildToolsRevision": "29.0.3",
-  "ndk": "/root/Archives/Android/android-ndk-r20/",
+  "ndk": "/root/Archives/Android/android-ndk-r21d/",
   "ndk-host": "linux-x86_64",
   "qml-root-path": "/alias-wallet",
   "qt": "/root/Qt/5.15.2/android",
   "sdk": "/root/Archives/Android",
-  "stdcpp-path": "/root/Archives/Android/android-ndk-r20/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/",
+  "stdcpp-path": "/root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/",
   "tool-prefix": "llvm",
   "toolchain-prefix": "llvm",
   "useLLVM": true
