@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Branch android') {
             when {
-                branch 'developToAndroidRebase'
+                branch 'developToAndroidRebase_disabled'
             }
             agent {
                 label "docker"
