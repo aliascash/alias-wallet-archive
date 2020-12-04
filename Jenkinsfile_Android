@@ -70,14 +70,14 @@ pipeline {
             }
             steps {
                 script {
-                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeystore.jks ."
+                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ."
                     buildAndroidFeatureBranch(
                             dockerfile: 'Docker/Android/Dockerfile_noUpload',
                             dockerTag: "aliascash/alias-wallet-android:${GIT_TAG_TO_USE}",
                     )
                     sh(
                             script: """
-                                rm -f AliasWalletAndroidKeystore.jks
+                                rm -f AliasWalletAndroidKeyStore.jks
                                 docker rmi aliascash/alias-wallet-android:${GIT_TAG_TO_USE}
                             """
                     )
@@ -172,7 +172,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeystore.jks ."
+                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ."
                     buildAndroidBranch(
                             githubCIToken: GITHUB_CI_TOKEN,
                             dockerfile: 'Docker/Android/Dockerfile',
@@ -191,7 +191,7 @@ pipeline {
                     archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Android-*.txt"
                     sh(
                             script: """
-                                rm -f AliasWalletAndroidKeystore.jks
+                                rm -f AliasWalletAndroidKeyStore.jks
                                 docker rmi aliascash/alias-wallet-android:${GIT_TAG_TO_USE}
                             """
                     )
