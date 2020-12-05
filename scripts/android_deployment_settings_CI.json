@@ -13,7 +13,7 @@
   
   
   
-  "sdkBuildToolsRevision": "29.0.3",
+  "sdkBuildToolsRevision": "30.0.2",
   "ndk": "/root/Archives/Android/android-ndk-r21d/",
   "ndk-host": "linux-x86_64",
   "qml-root-path": "/alias-wallet",
