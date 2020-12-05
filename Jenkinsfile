@@ -71,7 +71,7 @@ pipeline {
             parallel {
                 stage('Raspberry Pi Buster arm64') {
                     agent {
-                        label "docker"
+                        label "raspi"
                     }
                     steps {
                         script {
@@ -381,7 +381,7 @@ pipeline {
             parallel {
                 stage('Raspberry Pi Buster') {
                     agent {
-                        label "docker"
+                        label "raspi"
                     }
                     stages {
                         stage('Raspberry Pi Buster') {
