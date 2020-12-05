@@ -186,6 +186,7 @@ public class AliasService extends QtService {
         notificationBuilder.setContentTitle(title);
         notificationBuilder.setContentText(text);
         notificationBuilder.setProgress(0, 0, false);
+        notificationBuilder.setLargeIcon((Icon)null);
         if (SERVICE_NOTIFICATION_TYPE_STAKING == type) {
             notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_staking));
         }
