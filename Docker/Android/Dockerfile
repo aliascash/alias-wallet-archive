@@ -47,8 +47,8 @@ ENV CHKSUM_FILE_AAB=Checksum-Alias-Android-AAB.txt
 
 RUN mkdir -p /filesToUpload
 
-COPY --from=build /alias-wallet/cmake-build-cmdline-android-apk/android-build/build/outputs/apk/release/android-build-release-unsigned.apk /filesToUpload/${APK}
-COPY --from=build /alias-wallet/cmake-build-cmdline-android-apk/android-build/build/outputs/bundle/release/android-build-release.aab       /filesToUpload/${AAB}
+COPY --from=build /alias-wallet/cmake-build-cmdline-android-apk/android-build/build/outputs/apk/release/android-build-release-signed.apk /filesToUpload/${APK}
+COPY --from=build /alias-wallet/cmake-build-cmdline-android-apk/android-build/build/outputs/bundle/release/android-build-release.aab     /filesToUpload/${AAB}
 COPY --from=build /alias-wallet/scripts/createChecksums.sh /tmp/
 
 RUN cd /filesToUpload \
