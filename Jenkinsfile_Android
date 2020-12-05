@@ -16,7 +16,7 @@ pipeline {
     }
     environment {
         // In case another branch beside master or develop should be deployed, enter it here
-        BRANCH_TO_DEPLOY = "developToAndroidRebase"
+        BRANCH_TO_DEPLOY = "xyz"
         DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
         GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
         CI_URL = credentials('CI_URL')
@@ -61,7 +61,7 @@ pipeline {
                 sh "git clean -fd"
             }
         }
-        stage('Branch android') {
+        stage('Featurebranch') {
             when {
                 branch 'android'
             }
@@ -84,7 +84,7 @@ pipeline {
                 }
             }
         }
-        stage('Prepare master_android branch build') {
+        stage('Prepare release') {
             when {
                 branch 'master_android'
             }
@@ -166,7 +166,7 @@ pipeline {
                 }
             }
         }
-        stage('Develop/Master (Android)') {
+        stage('Build develop/master') {
             when {
                 anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
             }
