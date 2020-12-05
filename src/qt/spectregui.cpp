@@ -1216,6 +1216,28 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
                                                (!nWeight)               ? tr("Not staking because you don't have mature coins") : \
                                                                           tr("Not staking"));
     }
+
+#ifdef ANDROID
+    if (!fIsStaking)
+    {
+        fStakeOnPhoneCheck = false;
+    }
+    else if (initialized && !fStakeOnPhoneCheck)
+    {
+
+        fStakeOnPhoneCheck = true;
+        jboolean isIgnoringBatteryOptimizations = QtAndroid::androidActivity().callMethod<jboolean>("isIgnoringBatteryOptimizations", "()Z");
+        if (!isIgnoringBatteryOptimizations)
+        {
+            QMessageBox::StandardButton retval = QMessageBox::warning(this, tr("Disable Battery Optimization"),
+                                                                       tr("App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias."),
+                                                                       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
+
+            if(retval == QMessageBox::Ok)
+                QtAndroid::androidActivity().callMethod<void>("disableBatteryOptimizations", "()V");
+        }
+    }
+#endif
 }
 
 

@@ -12,7 +12,9 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
@@ -58,6 +60,8 @@ public class AliasService extends QtService {
     private int sameNotificationCounter;
 
     private Notification.Builder notificationBuilder;
+    private PowerManager.WakeLock wakeLock;
+    private WifiManager.WifiLock wifiLock;
 
     public static void createServiceNotificationChannel(Service service) {
         NotificationManager notificationManager = service.getSystemService(NotificationManager.class);
@@ -108,7 +112,20 @@ public class AliasService extends QtService {
         notificationManager.notify(NOTIFICATION_ID_SERVICE, notification);
         startForeground(NOTIFICATION_ID_SERVICE, notification);
 
+
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AliasWallet::StakingWakeLockTag");
+
+        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        wifiLock = wifiManager.createWifiLock( WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AliasWallet::StakingWiFiLockTag");
+
         super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        setBusyMode(false);
+        super.onDestroy();
     }
 
     @Override
@@ -133,6 +150,26 @@ public class AliasService extends QtService {
         }
         init = true;
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void setBusyMode(boolean busy) {
+        Log.d(TAG, "setBusyMode=" + busy);
+        if (busy) {
+            if (!wakeLock.isHeld()) {
+                wakeLock.acquire();
+            }
+            if (!wifiLock.isHeld()) {
+                wifiLock.acquire();
+            }
+        }
+        else {
+            if (wakeLock.isHeld()) {
+                wakeLock.release();
+            }
+            if (wifiLock.isHeld()) {
+                wifiLock.release();
+            }
+        }
     }
 
     public void stopCore() {

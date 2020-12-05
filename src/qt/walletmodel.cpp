@@ -22,6 +22,10 @@
 #include <QDebug>
 #include <QFile>
 
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
+
 WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
     WalletModelRemoteSimpleSource(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
@@ -193,6 +197,12 @@ void WalletModel::updateStakingInfo()
         if (nWeight)
             nEstimateTime = GetTargetSpacing(nBestHeight, GetAdjustedTime()) * nNetworkWeight / nWeight;
     }
+#ifdef ANDROID
+    if (fIsStaking != stakingInfo().fIsStaking())
+    {
+        QtAndroid::androidService().callMethod<void>("setBusyMode", "(Z)V", fIsStaking);
+    }
+#endif
     setStakingInfo(StakingInfo(fIsStakingEnabled, fIsStaking, nWeight, nEstimateTime, nNetworkWeight, nNetworkWeightRecent));
 }
 

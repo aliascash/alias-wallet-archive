@@ -9,7 +9,9 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -139,6 +141,18 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     public boolean hasQRCodeScanner() {
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+    }
+
+    public boolean isIgnoringBatteryOptimizations() {
+        String packageName = getPackageName();
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        return pm.isIgnoringBatteryOptimizations(packageName);
+    }
+
+    public void disableBatteryOptimizations() {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+        startActivity(intent);
     }
 
     protected void handleIntent() {
