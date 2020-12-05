@@ -17,7 +17,7 @@
   "ndk": "/Users/teknex/Library/Android/sdk/ndk/21.1.6352462",
   "ndk-host": "darwin-x86_64",
   "qml-root-path": "/Users/teknex/Desktop/spectrecoin/repositories/alias/spectre_android",
-  "qt": "/Users/teknex/Qt/5.15.1/android",
+  "qt": "/Users/teknex/Qt/5.15.2/android",
   "sdk": "/Users/teknex/Library/Android/sdk",
   "stdcpp-path": "/Users/teknex/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/",
   "tool-prefix": "llvm",

@@ -329,6 +329,7 @@ void SpectreGUI::pageLoaded()
     if (!fDebug)
         runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-debug { display: none !important }'; document.body.appendChild(sheet);"));
 #ifdef ANDROID
+    runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
     jboolean hasQRCodeScanner = QtAndroid::androidActivity().callMethod<jboolean>("hasQRCodeScanner", "()Z");
     if (!hasQRCodeScanner)
         runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.has-qr-code-scanner { display: none !important }'; document.body.appendChild(sheet);"));
@@ -931,14 +932,18 @@ void SpectreGUI::dropEvent(QDropEvent *event)
 
 void SpectreGUI::keyReleaseEvent(QKeyEvent *event)
 {
-//    if (event->key() == Qt::Key_Back)
-//    {
-//        TODO hide open web dialogs instead close
-//        this->showMinimized();
-//    }
-//    else {
+    if (event->key() == Qt::Key_Back)
+    {
+        //TODO hide open web dialogs instead close
+#ifdef ANDROID
+        QtAndroid::androidActivity().callMethod<void>("onBackPressedQt", "()V");
+#else
         QWidget::keyReleaseEvent(event);
-//    }
+#endif
+    }
+    else {
+        QWidget::keyReleaseEvent(event);
+    }
 }
 
 void SpectreGUI::handleURI(QString strURI)
@@ -1211,6 +1216,28 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
                                                (!nWeight)               ? tr("Not staking because you don't have mature coins") : \
                                                                           tr("Not staking"));
     }
+
+#ifdef ANDROID
+    if (!fIsStaking)
+    {
+        fStakeOnPhoneCheck = false;
+    }
+    else if (initialized && !fStakeOnPhoneCheck)
+    {
+
+        fStakeOnPhoneCheck = true;
+        jboolean isIgnoringBatteryOptimizations = QtAndroid::androidActivity().callMethod<jboolean>("isIgnoringBatteryOptimizations", "()Z");
+        if (!isIgnoringBatteryOptimizations)
+        {
+            QMessageBox::StandardButton retval = QMessageBox::warning(this, tr("Disable Battery Optimization"),
+                                                                       tr("App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias."),
+                                                                       QMessageBox::Ok|QMessageBox::Cancel, QMessageBox::Cancel);
+
+            if(retval == QMessageBox::Ok)
+                QtAndroid::androidActivity().callMethod<void>("disableBatteryOptimizations", "()V");
+        }
+    }
+#endif
 }
 
 

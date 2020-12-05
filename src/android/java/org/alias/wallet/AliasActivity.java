@@ -14,10 +14,15 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.Toast;
+
+import org.qtproject.qt5.android.bindings.QtApplication;
 
 public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity {
 
@@ -36,6 +41,9 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     private boolean hasPendingIntent = false; // accessed only from android UI thread
 
     private BoostrapBroadcastReceiver mBoostrapBroadcastReceiver;
+
+    private long backPressedTime;
+    private Toast backToast;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +72,18 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing()) {
+            // fix the unintended 'go back to camera app after qrcode scan' behavior by explictly go the home screen
+            Intent mainActivity = new Intent(Intent.ACTION_MAIN);
+            mainActivity.addCategory(Intent.CATEGORY_HOME);
+            mainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(mainActivity);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         getWindow().setSoftInputMode(softInputMode);
@@ -81,6 +101,19 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         if (qtInitialized) {
             handleIntent();
         }
+    }
+
+    public void onBackPressedQt() {
+        runOnUiThread(() -> {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                backToast.cancel();
+                finish();
+            } else {
+                backToast = Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT);
+                backToast.show();
+                backPressedTime = System.currentTimeMillis();
+            }
+        });
     }
 
     public void startCore(boolean rescan, String bip44key) {
@@ -107,12 +140,24 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     public void scanQRCode() {
         Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         startActivity(intent);
     }
 
     public boolean hasQRCodeScanner() {
         return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+    }
+
+    public boolean isIgnoringBatteryOptimizations() {
+        String packageName = getPackageName();
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        return pm.isIgnoringBatteryOptimizations(packageName);
+    }
+
+    public void disableBatteryOptimizations() {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+        startActivity(intent);
     }
 
     protected void handleIntent() {

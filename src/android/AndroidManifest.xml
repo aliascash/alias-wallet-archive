@@ -77,7 +77,7 @@
             <!-- extract android style -->
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-        <service android:name=".AliasService" android:process=":AliasService" android:exported="false">
+        <service android:name=".AliasService" android:process=":AliasService" android:exported="false" android:foregroundServiceType="dataSync">
             <!-- android:process=":qt" is needed to force the service to run on a separate process than the Activity -->
             <!-- Application arguments. Uncomment the following line to use the same main function. -->
             <!-- Application arguments -->
@@ -115,7 +115,7 @@
             <meta-data android:name="android.app.arguments" android:value="-service"/>
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
         </service>
-        <service android:name=".BootstrapService" android:process=":BootstrapService" android:exported="false">
+        <service android:name=".BootstrapService" android:process=":BootstrapService" android:exported="false" android:foregroundServiceType="dataSync">
             <!-- Background running -->
             <meta-data android:name="android.app.background_running" android:value="true"/>
             <!-- Background running -->
@@ -136,6 +136,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.ACCESS_CHECKIN_PROPERTIES"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>

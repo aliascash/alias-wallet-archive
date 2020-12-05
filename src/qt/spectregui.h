@@ -165,6 +165,7 @@ private:
     void closeProgressDlg(QProgressDialog *pDlg);
 
     bool initialized = false;
+    bool fStakeOnPhoneCheck = false;
 
     friend class SpectreClientBridge;
 
