@@ -11,6 +11,10 @@ configure_file(
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h.in"
         "${CMAKE_CURRENT_LIST_DIR}/clientversion.h"
 )
+configure_file(
+        "${CMAKE_CURRENT_LIST_DIR}/android/AndroidManifest.in.xml"
+        "${CMAKE_CURRENT_LIST_DIR}/android/AndroidManifest.xml"
+)
 
 
 ##############################################################################
