@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Branch android') {
             when {
-                branch 'developToAndroidRebase_disabled'
+                branch 'android'
             }
             agent {
                 label "docker"
@@ -103,7 +103,7 @@ pipeline {
         }
         stage('Git tag handling') {
             when {
-                anyOf { branch 'master_android'; branch "${BRANCH_TO_DEPLOY}" }
+                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
             }
             stages {
                 stage('Create Git tag') {
@@ -168,7 +168,7 @@ pipeline {
         }
         stage('Develop/Master (Android)') {
             when {
-                anyOf { branch 'master_android'; branch "${BRANCH_TO_DEPLOY}" }
+                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
             }
             steps {
                 script {
