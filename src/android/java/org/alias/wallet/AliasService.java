@@ -113,11 +113,11 @@ public class AliasService extends QtService {
         startForeground(NOTIFICATION_ID_SERVICE, notification);
 
 
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "AliasWallet::StakingWakeLockTag");
 
-        WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-        wifiLock = wifiManager.createWifiLock( WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AliasWallet::StakingWiFiLockTag");
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AliasWallet::StakingWiFiLockTag");
 
         super.onCreate();
     }
