@@ -22,9 +22,9 @@ WORKDIR /alias-wallet/
 RUN ./scripts/cmake-build-android_arm64.sh -g -t ${BUILD_THREADS} \
  && ./scripts/cmake-build-android_armv7.sh -g -t ${BUILD_THREADS} \
  && ./scripts/cmake-build-android_x86-64.sh -g -t ${BUILD_THREADS} \
- && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip ./cmake-build-cmdline-android22_arm64/aliaswallet/android-build/libs/arm64-v8a/libAlias_arm64-v8a.so \
- && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip ./cmake-build-cmdline-android22_armv7a/aliaswallet/android-build/libs/armeabi-v7a/libAlias_armeabi-v7a.so \
- && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/x86_64-linux-android/bin/strip  ./cmake-build-cmdline-android22_x86_64/aliaswallet/android-build/libs/x86_64/libAlias_x86_64.so
+ && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/strip ./cmake-build-cmdline-android26_arm64/aliaswallet/android-build/libs/arm64-v8a/libAlias_arm64-v8a.so \
+ && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/arm-linux-androideabi/bin/strip ./cmake-build-cmdline-android26_armv7a/aliaswallet/android-build/libs/armeabi-v7a/libAlias_armeabi-v7a.so \
+ && /root/Archives/Android/android-ndk-r21d/toolchains/llvm/prebuilt/linux-x86_64/x86_64-linux-android/bin/strip  ./cmake-build-cmdline-android26_x86_64/aliaswallet/android-build/libs/x86_64/libAlias_x86_64.so
 
 RUN cp AliasWalletAndroidKeyStore.jks /etc/ssl/certs/alias-sign-keystore.jks \
  && ./scripts/android-prepare-env_CI.sh \

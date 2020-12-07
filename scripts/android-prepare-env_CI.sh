@@ -12,9 +12,9 @@ fi
 cd "${ownLocation}"/..
 DIR_UI=/alias-wallet-ui
 
-BUILD_DIR_ARM8=cmake-build-cmdline-android22_arm64
-BUILD_DIR_ARM7=cmake-build-cmdline-android22_armv7a
-BUILD_DIR_x86_64=cmake-build-cmdline-android22_x86_64
+BUILD_DIR_ARM8=cmake-build-cmdline-android26_arm64
+BUILD_DIR_ARM7=cmake-build-cmdline-android26_armv7a
+BUILD_DIR_x86_64=cmake-build-cmdline-android26_x86_64
 
 BUILD_DIR_APK=cmake-build-cmdline-android-apk
 
