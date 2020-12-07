@@ -228,7 +228,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         }
     }
 
-    int64_t nBalance = 0;
+    int64_t nBalance = 0, nFeeRequired = 0;
     std::vector<COutput> vCoins;
     wallet->AvailableCoins(vCoins, true, coinControl);
 
@@ -394,7 +394,6 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
             }
         }
 
-        int64_t nFeeRequired = 0;
         int nChangePos = -1;
         bool fCreated = wallet->CreateTransaction(vecSend, wtx, nFeeRequired, nChangePos, coinControl);
 
@@ -465,7 +464,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(const QList<SendCoinsRecipie
         } // wallet->cs_wallet
     };
 
-    return SendCoinsReturn(OK, 0, hex);
+    return SendCoinsReturn(OK, nFeeRequired, hex);
 }
 
 WalletModel::SendCoinsReturn WalletModel::sendCoinsAnon(const QList<SendCoinsRecipient> &recipients, const CCoinControl *coinControl)
