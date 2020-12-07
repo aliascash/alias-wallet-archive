@@ -23,6 +23,8 @@ else
     echo "### ${releaseDescription}" > "${workspace}"/releaseNotesToDeploy.txt
 fi
 for currentChecksumfile in \
+    Checksum-Alias-Android-APK.txt \
+    Checksum-Alias-Android-AAB.txt \
     Checksum-Alias-CentOS-8.txt \
     Checksum-Alias-Debian-Buster.txt \
     Checksum-Alias-Debian-Stretch.txt \
