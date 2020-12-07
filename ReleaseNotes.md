@@ -44,10 +44,17 @@ updated will not be able to create transactions on the Alias V3 network.
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.3.1 (released 2020-??-??)
+## 4.3.1 (released 2020-12-07)
 - Refactored the whole build to CMake as basement.
-  For all supported operating systems, there are corresponding
-  helper scripts on `scripts/cmake-build*`.
+  - For all supported operating systems, there are corresponding helper
+    scripts on `scripts/cmake-build*`.
+  - All Linux binaries now have Tor and Qt as the only dependencies. All
+    other components are compiled right into the binaries.
+- Fixed shutdown issue on Mac
+- Added build for OpenSUSE Tumbleweed
+- Switched to ARMv8 on Raspberry Pi binaries. That means Raspberry Pi is
+  migrated from 32Bit to 64Bit, which also means a complete new setup of
+  the Raspberry Pi is required.
 
 ## 4.3.0 (released 2020-10-01)
 - Update to Qt 5.12.9 (Windows / Mac)
@@ -90,7 +97,6 @@ SPDX-License-Identifier: MIT
 - Improve splash screen with progress messages to reduce UI freezes during startup.
 - [#183](https://github.com/aliascash/alias-wallet/issues/183) Reduce UI freezes during blockchain sync.
 
-### Changelog
 ## 4.1.0 (released 2019-10-13)
 - [#82](https://github.com/aliascash/alias-wallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
