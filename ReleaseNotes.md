@@ -45,12 +45,12 @@ SPDX-License-Identifier: MIT
 
 ### Changelog
 ## 4.3.1 (released 2020-12-07)
+- Fixed wallet shutdown issue on Mac
 - Refactored the whole build to CMake as basement.
   - For all supported operating systems, there are corresponding helper
     scripts on `scripts/cmake-build*`.
   - All Linux binaries now have Tor and Qt as the only dependencies. All
     other components are compiled right into the binaries.
-- Fixed shutdown issue on Mac
 - Added build for OpenSUSE Tumbleweed
 - Switched to ARMv8 on Raspberry Pi binaries. That means Raspberry Pi is
   migrated from 32Bit to 64Bit, which also means a complete new setup of
