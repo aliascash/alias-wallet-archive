@@ -120,7 +120,7 @@ else()
                 )
 
         if (ARMEABI_V7A)
-            set(TOR_PLATFORM "--host=armeabi")
+            set(TOR_PLATFORM "--host armv7")
             #set(CONFIGURE_TOR_PARAMS ${CONFIGURE_TOR_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")

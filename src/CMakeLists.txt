@@ -47,6 +47,7 @@ target_include_directories(aliaswallet_lib
         ${PROJECT_BINARY_DIR}/libdb/libdb-install/include
         ${OPENSSL_INCLUDE_DIR}
         ${BERKELEYDB_INCLUDE_DIR}
+        ${LEVELDB_INCLUDE_DIR}
         )
 
 # Common sources
@@ -455,23 +456,25 @@ if (ENABLE_GUI)
                 )
             target_link_libraries(Aliaswallet "-framework AppKit")
             add_custom_command(TARGET Aliaswallet POST_BUILD
-                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
-                    Alias.app
-                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
-                    -always-overwrite
-                    -verbose=1
-                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+#                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+#                    Alias.app
+#                    -qmldir=${CMAKE_SOURCE_DIR}/src/qt/res
+#                    -always-overwrite
+#                    -verbose=1
+#                    ${DEPLOY_QT_BINARY_TYPE_OPTION}
+                    COMMAND rm -rf ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor
                     COMMAND unzip ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/Alias.app/
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/tor.real
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/libevent*
                     COMMAND chmod +x ${CMAKE_BINARY_DIR}/Alias.app/Contents/MacOS/Tor/PluggableTransports/*
+                    COMMAND mkdir -p ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources
                     COMMAND cp ${CMAKE_SOURCE_DIR}/src/qt/res/icons/alias-app.icns ${CMAKE_BINARY_DIR}/Alias.app/Contents/Resources/
-                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
-                    Alias.app
-                    -dmg
-                    -always-overwrite
-                    -verbose=1
-                    COMMENT "Running macdeployqt..."
+#                    COMMAND cd ${CMAKE_BINARY_DIR} && "${MACDEPLOYQT_EXECUTABLE}"
+#                    Alias.app
+#                    -dmg
+#                    -always-overwrite
+#                    -verbose=1
+                    COMMENT "Put additional content onto app directory"
                     )
         elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             target_sources(Aliaswallet
@@ -497,6 +500,10 @@ if (ENABLE_GUI)
                     --webengine
                     "$<TARGET_FILE:Aliaswallet>"
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
+                    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/delivery ${CMAKE_BINARY_DIR}/Alias
                     COMMENT "Running windeployqt..."
                     )
         else()
@@ -507,6 +514,6 @@ if (ENABLE_GUI)
     endif()
 endif ()
 
-message(STATUS "BERKELEYDB_INCLUDE_PATH: ${BERKELEYDB_INCLUDE_PATH}")
-message(STATUS "OPENSSL_INCLUDE_PATH: ${OPENSSL_INCLUDE_PATH}")
-message(STATUS "OPENSSL_API_COMPAT: ${OPENSSL_API_COMPAT}")
+#message(STATUS "BERKELEYDB_INCLUDE_PATH: ${BERKELEYDB_INCLUDE_PATH}")
+#message(STATUS "OPENSSL_INCLUDE_PATH: ${OPENSSL_INCLUDE_PATH}")
+#message(STATUS "OPENSSL_API_COMPAT: ${OPENSSL_API_COMPAT}")

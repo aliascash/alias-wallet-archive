@@ -1,0 +1,305 @@
+#!groovy
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2016 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
+
+pipeline {
+    agent {
+        label "docker"
+    }
+    options {
+        timestamps()
+        timeout(time: 4, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '1'))
+        disableConcurrentBuilds()
+    }
+    environment {
+        // In case another branch beside master or develop should be deployed, enter it here
+        BRANCH_TO_DEPLOY = "xyz"
+        DISCORD_WEBHOOK = credentials('DISCORD_WEBHOOK')
+        GITHUB_CI_TOKEN = credentials('GITHUB_CI_TOKEN')
+        CI_URL = credentials('CI_URL')
+        ACCESS_TOKEN = credentials('ci_read_access')
+        DEVELOP_TAG = "Build${BUILD_NUMBER}-Android"
+        RELEASE_TAG = sh(
+                script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r')-Android | sed 's/ //g'",
+                returnStdout: true
+        )
+        GIT_TAG_TO_USE = "${DEVELOP_TAG}"
+        GIT_COMMIT_SHORT = sh(
+                script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
+                returnStdout: true
+        )
+        CURRENT_DATE = sh(
+                script: "printf \"\$(date '+%F %T')\"",
+                returnStdout: true
+        )
+        RELEASE_NAME = "Continuous build #${BUILD_NUMBER} (Branch ${GIT_BRANCH})"
+        RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
+        PRERELEASE = "true"
+    }
+    stages {
+        stage('Notification') {
+            steps {
+                // Using result state 'ABORTED' to mark the message on discord with a white border.
+                // Makes it easier to distinguish job-start from job-finished
+                discordSend(
+                        description: "Started build #$env.BUILD_NUMBER",
+                        image: '',
+                        //link: "$env.BUILD_URL",
+                        successful: true,
+                        result: "ABORTED",
+                        thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                        title: "$env.JOB_NAME",
+                        webhookURL: DISCORD_WEBHOOK
+                )
+            }
+        }
+        stage('Cleanup') {
+            steps {
+                sh "git clean -fd"
+            }
+        }
+        stage('Featurebranch') {
+            when {
+                branch 'android'
+            }
+            agent {
+                label "docker"
+            }
+            steps {
+                script {
+                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ."
+                    buildAndroidFeatureBranch(
+                            dockerfile: 'Docker/Android/Dockerfile_noUpload',
+                            dockerTag: "aliascash/alias-wallet-android:${GIT_TAG_TO_USE}",
+                    )
+                    sh(
+                            script: """
+                                rm -f AliasWalletAndroidKeyStore.jks
+                                docker rmi aliascash/alias-wallet-android:${GIT_TAG_TO_USE}
+                            """
+                    )
+                }
+            }
+        }
+        stage('Prepare release') {
+            when {
+                branch 'master_android'
+            }
+            stages {
+                stage('Setup env vars to use') {
+                    steps {
+                        script {
+                            GIT_TAG_TO_USE = "${RELEASE_TAG}"
+                            RELEASE_NAME = "Release ${GIT_TAG_TO_USE}"
+                            RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes.md"
+                            PRERELEASE = "false"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Git tag handling') {
+            when {
+                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
+            }
+            stages {
+                stage('Create Git tag') {
+                    steps {
+                        sshagent(credentials: ['Github-SSH-Login']) {
+                            createTag(
+                                    tag: "${GIT_TAG_TO_USE}",
+                                    commit: "${GIT_COMMIT_SHORT}",
+                                    comment: "Created tag ${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                }
+                stage('Remove Github release if already existing') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
+                                    tag: "${GIT_TAG_TO_USE}"
+                            ) ==~ true
+                        }
+                    }
+                    steps {
+                        script {
+                            removeRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
+                                    tag: "${GIT_TAG_TO_USE}"
+                            )
+                        }
+                    }
+                }
+                stage('Create Github release') {
+                    when {
+                        expression {
+                            return isReleaseExisting(
+                                    githubCIToken: GITHUB_CI_TOKEN,
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
+                                    tag: "${GIT_TAG_TO_USE}"
+                            ) ==~ false
+                        }
+                    }
+                    steps {
+                        script {
+                            createRelease(
+                                    githubCIToken: GITHUB_CI_TOKEN,
+                                    user: 'aliascash',
+                                    repository: 'alias-wallet',
+                                    tag: "${GIT_TAG_TO_USE}",
+                                    name: "${RELEASE_NAME}",
+                                    description: "${RELEASE_DESCRIPTION}",
+                                    preRelease: "${PRERELEASE}"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build develop/master') {
+            when {
+                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
+            }
+            steps {
+                script {
+                    sh "cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ."
+                    buildAndroidBranch(
+                            githubCIToken: GITHUB_CI_TOKEN,
+                            dockerfile: 'Docker/Android/Dockerfile',
+                            dockerTag: "aliascash/alias-wallet-android:${GIT_TAG_TO_USE}",
+                            gitTag: "${GIT_TAG_TO_USE}",
+                            gitCommit: "${GIT_COMMIT_SHORT}"
+                    )
+                    getChecksumfileFromImage(
+                            dockerTag: "aliascash/alias-wallet-android:${GIT_TAG_TO_USE}",
+                            checksumfile: "Checksum-Alias-Android-APK.txt"
+                    )
+                    getChecksumfileFromImage(
+                            dockerTag: "aliascash/alias-wallet-android:${GIT_TAG_TO_USE}",
+                            checksumfile: "Checksum-Alias-Android-AAB.txt"
+                    )
+                    archiveArtifacts allowEmptyArchive: true, artifacts: "Checksum-Alias-Android-*.txt"
+                    sh(
+                            script: """
+                                rm -f AliasWalletAndroidKeyStore.jks
+                                docker rmi aliascash/alias-wallet-android:${GIT_TAG_TO_USE}
+                            """
+                    )
+                }
+            }
+            post {
+                always {
+                    script {
+                        sh(
+                            script: """
+                                ${WORKSPACE}/scripts/createChecksumSummary.sh \
+                                    "${RELEASE_DESCRIPTION}" \
+                                    "${WORKSPACE}" \
+                                    "${CI_URL}/job/Alias-Android/job/alias-wallet/job/${GIT_BRANCH}/${BUILD_NUMBER}" \
+                                    "${ACCESS_TOKEN}"
+                            """
+                        )
+                        editRelease(
+                                user: 'aliascash',
+                                repository: 'alias-wallet',
+                                tag: "${GIT_TAG_TO_USE}",
+                                name: "${RELEASE_NAME}",
+                                description: "${WORKSPACE}/releaseNotesToDeploy.txt",
+                                preRelease: "${PRERELEASE}"
+                        )
+                        uploadArtifactToGitHub(
+                                user: 'aliascash',
+                                repository: 'alias-wallet',
+                                tag: "${GIT_TAG_TO_USE}",
+                                artifactNameLocal: "releaseNotesToDeploy.txt",
+                                artifactNameRemote: "RELEASENOTES.txt",
+                        )
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                if (!hudson.model.Result.SUCCESS.equals(currentBuild.getPreviousBuild()?.getResult())) {
+                    emailext(
+                            subject: "GREEN: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                            body: '${JELLY_SCRIPT,template="html"}',
+                            recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                            to: "to@be.defined",
+//                            replyTo: "to@be.defined"
+                    )
+                }
+                discordSend(
+                        description: "Build #$env.BUILD_NUMBER finished successfully",
+                        image: '',
+                        //link: "$env.BUILD_URL",
+                        successful: true,
+                        thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                        title: "$env.JOB_NAME",
+                        webhookURL: DISCORD_WEBHOOK
+                )
+            }
+        }
+        unstable {
+            emailext(
+                    subject: "YELLOW: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                    to: "to@be.defined",
+//                    replyTo: "to@be.defined"
+            )
+            discordSend(
+                    description: "Build #$env.BUILD_NUMBER finished unstable",
+                    image: '',
+                    //link: "$env.BUILD_URL",
+                    successful: true,
+                    result: "UNSTABLE",
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        failure {
+            emailext(
+                    subject: "RED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: '${JELLY_SCRIPT,template="html"}',
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+//                    to: "to@be.defined",
+//                    replyTo: "to@be.defined"
+            )
+            discordSend(
+                    description: "Build #$env.BUILD_NUMBER failed!",
+                    image: '',
+                    //link: "$env.BUILD_URL",
+                    successful: false,
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: DISCORD_WEBHOOK
+            )
+        }
+        aborted {
+            discordSend(
+                    description: "Build #$env.BUILD_NUMBER was aborted",
+                    image: '',
+                    //link: "$env.BUILD_URL",
+                    successful: true,
+                    result: "ABORTED",
+                    thumbnail: 'https://wiki.jenkins-ci.org/download/attachments/2916393/headshot.png',
+                    title: "$env.JOB_NAME",
+                    webhookURL: DISCORD_WEBHOOK
+            )
+        }
+    }
+}

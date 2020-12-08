@@ -1,5 +1,10 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+# SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+# SPDX-License-Identifier: MIT
+
 ownLocation="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd ${ownLocation}/..
+cd "${ownLocation}"/..
 BUILD_DIR_ARM8=build-spectre_android-Android_Qt_5_15_1_Clang_Multi_Abi_ARMv8-Release
 BUILD_DIR_ARM7=build-spectre_android-Android_Qt_5_15_1_Clang_Multi_Abi_ARMv7-Release
 BUILD_DIR_x86_64=build-spectre_android-Android_Qt_5_15_1_Clang_Multi_Abi_x86_64-Release

@@ -1,6 +1,7 @@
-// Copyright (c) 2016-2019 The Spectrecoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file license.txt or http://www.opensource.org/licenses/mit-license.php.
+// SPDX-FileCopyrightText: © 2020 Alias Developers
+// SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
+//
+// SPDX-License-Identifier: MIT
 
 #include "bootstrapwizard.h"
 #include "guiutil.h"

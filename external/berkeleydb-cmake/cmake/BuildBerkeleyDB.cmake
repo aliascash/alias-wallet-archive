@@ -114,7 +114,7 @@ else()
         endif()
         
         if (ARMEABI_V7A)
-            set(BERKELEYDB_PLATFORM "--host armeabi")
+            set(BERKELEYDB_PLATFORM "--host armv7")
 #            set(CONFIGURE_BERKELEYDB_PARAMS ${CONFIGURE_BERKELEYDB_PARAMS} "-march=armv7-a")
         else()
             if (CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
@@ -171,6 +171,12 @@ else()
         UPDATE_COMMAND ""
         PATCH_COMMAND patch -p2 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/patches/db-atomic.patch
         COMMAND patch -p1 -d ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb < ${CMAKE_CURRENT_SOURCE_DIR}/patches/fix-string-is-not-a-string-literal.patch
+
+        # Update config.guess and config.sub as it's too old to detect aarch64
+        COMMAND rm -f ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
+        COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/patches/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess
+        COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/patches/config.sub   ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
+        COMMAND chmod +x ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.guess ${BERKELEYDB_PREFIX}/berkeleydb-prefix/src/berkeleydb/dist/config.sub
 
         CONFIGURE_COMMAND ${BUILD_ENV_TOOL} <SOURCE_DIR>/${CONFIGURE_DIR} ${COMMAND_CONFIGURE}
 
