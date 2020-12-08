@@ -78,6 +78,9 @@ bool Finalise()
 {
     LogPrintf("Finalise()\n");
 
+    // Set fRequestShutdown to true, to make sure no matter how we landed here, ShutdownRequested() will reliable return true.
+    StartShutdown();
+
     StopRPCThreads();
     ShutdownRPCMining();
 
