@@ -1,22 +1,34 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Alias
 Upstream-Contact: Alias Developers <info@alias.cash>
-Source: https://github.com/aliascash/alias
+Source: https://github.com/aliascash/alias-wallet
 
-Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/* src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/* src/qt/res/assets/plugins/framework/* src/qt/res/icons/* src/qt/res/images/* src/qt/res/src/* src/src.aps
+# ############################################################################
+# MIT Licenses
+Files: doc/* Docker/*/*.patch src/qt/forms/* src/qt/locale/* src/qt/res/assets/css/* src/qt/res/assets/fonts/Footable/*
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
-Files: src/qt/res/bitcoin-qt.rc src/qt/res/index.html src/qt/res/main.qml
+Files: src/qt/res/assets/fonts/Framework-icon/* src/qt/res/assets/icons/* src/qt/res/assets/img/* src/qt/res/assets/js/*
 Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
-Files: src/qt/res/assets/fonts/FontAwesome/* src/qt/res/assets/fonts/Montserrat/* src/qt/res/assets/fonts/*.otf
-Copyright: Dave Gandy http://fontawesome.io
-Copyright: Google, Inc.
-License: OFL-1.1
+Files: src/qt/res/assets/plugins/framework/* src/qt/res/assets/svg/* src/qt/res/icons/* src/qt/res/images/*
+Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
+License: MIT
+
+Files: src/qt/res/qml/* src/qt/res/src/* src/src.aps src/osx/app-slide-arrow.png
+Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
+License: MIT
+
+Files: external/*/patches/* scripts/patches/* src/qt/res/alias-qt.rc src/qt/res/index.html src/qt/res/qml/main.qml
+Copyright: 2020 Alias Developers
+Copyright: 2016 SpectreCoin Developers
+License: MIT
 
 Files: src/qt/res/assets/plugins/bootstrapv3/*
 Copyright: 2018 Twitter
@@ -29,10 +41,6 @@ License: MIT
 Files: src/qt/res/assets/plugins/contextMenu/*
 Copyright: 2013 Sudhanshu Yadav
 License: MIT
-
-Files: src/qt/res/assets/plugins/identicon/*
-Copyright: 2013 Stewart Lord
-License: BSD-2-Clause
 
 Files: src/qt/res/assets/plugins/iscroll/*
 Copyright: 2008 Matteo Spinelli http://cubiq.org
@@ -54,10 +62,6 @@ Files: src/qt/res/assets/plugins/pace/*
 Copyright: 2016 https://github.com/HubSpot/pace
 License: MIT
 
-Files: src/qt/res/assets/plugins/pnglib/*
-Copyright: 2010 Robert Eisele
-License: BSD-2-Clause
-
 Files: src/qt/res/assets/plugins/qrcode/*
 Copyright: 2015 Twitter @davidshimjs
 License: MIT
@@ -70,17 +74,9 @@ Files: src/qt/res/assets/plugins/jquery*
 Copyright: 2014 jQuery Foundation and other contributors
 License: MIT
 
-Files: src/qt/res/assets/plugins/emojione/*
-Copyright: 2016 EmojiOne
-License: CC-BY-4.0
-
 Files: src/qt/res/assets/plugins/footable/*
 Copyright: 2014 Steven Usher & Brad Vincent
 License: MIT
-
-Files: src/qt/res/assets/plugins/shajs/*
-Copyright: 2008 Brian Turek
-License: BSD-2-Clause
 
 Files: src/test/data/*
 Copyright: 2020 Alias Developers
@@ -92,6 +88,39 @@ Copyright: 2020 Alias Developers
 Copyright: 2016 SpectreCoin Developers
 License: MIT
 
+# ############################################################################
+# BSD-2-Clause Licenses
 Files: src/lz4/*
 Copyright: 2011 Yann Collet
 License: BSD-2-Clause
+
+Files: src/qt/res/assets/plugins/identicon/*
+Copyright: 2013 Stewart Lord
+License: BSD-2-Clause
+
+Files: src/qt/res/assets/plugins/shajs/*
+Copyright: 2008 Brian Turek
+License: BSD-2-Clause
+
+Files: src/qt/res/assets/plugins/pnglib/*
+Copyright: 2010 Robert Eisele
+License: BSD-2-Clause
+
+# ############################################################################
+# GPL-3.0-or-later Licenses
+Files: external/berkeleydb-cmake/patches/config.guess external/berkeleydb-cmake/patches/config.sub
+Copyright: Per Bothner, Ben Elliston
+License: GPL-3.0-or-later
+
+# ############################################################################
+# OFL-1.1 Licenses
+Files: src/qt/res/assets/fonts/FontAwesome/* src/qt/res/assets/fonts/Montserrat/* src/qt/res/assets/fonts/*.otf
+Copyright: Dave Gandy http://fontawesome.io
+Copyright: Google, Inc.
+License: OFL-1.1
+
+# ############################################################################
+# CC-BY-4.0 Licenses
+Files: src/qt/res/assets/plugins/emojione/*
+Copyright: 2016 EmojiOne
+License: CC-BY-4.0

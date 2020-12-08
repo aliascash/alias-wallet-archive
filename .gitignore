@@ -10,6 +10,7 @@ src/aliaswallet
 src/aliaswalletd
 src/test_spectre
 src/build.h
+src/clientversion.h
 src/.libs
 .*.swp
 *.*~*
@@ -34,9 +35,11 @@ moc_*.cpp
 ui_*.h
 #qt creator
 *.pro.user
+CMakeLists.txt.user
+CMakeSettings.json
 #mac specific
 .DS_Store
-build
+build*/
 db4.8/build_unix
 .deps
 .dirstamp
@@ -110,7 +113,7 @@ Makefile\.am\.user
 # CLion/IntelliJ files
 .idea/
 *.iml
-cmake-build-debug/
+cmake-*/
 
 moc_predefs.h
 /build-tests-Desktop_Qt*
@@ -119,5 +122,10 @@ moc_predefs.h
 releaseNotesToDeploy.txt
 Checksum-Aliaswallet-*
 
+# Visual Studio
+.vs/
+*.aps
+
+# Mac
 *.dmg
 .qmake.stash

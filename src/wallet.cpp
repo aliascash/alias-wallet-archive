@@ -13,7 +13,7 @@
 #include "walletdb.h"
 #include "bloom.h"
 #include "crypter.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "base58.h"
 #include "kernel.h"
 #include "coincontrol.h"
@@ -282,7 +282,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase)
         {
             fMakeExtKeyInitials = false;
             CWalletDB wdb(strWalletFile, "r+");
-            if (ExtKeyCreateInitial(&wdb) != 0)
+            if (ExtKeyCreateInitial(&wdb, GetArg("-bip44key", "")) != 0)
             {
                LogPrintf("Warning: ExtKeyCreateInitial failed.\n");
             };
@@ -1184,8 +1184,7 @@ int CWalletTx::GetRequestCount() const
     return nRequests;
 }
 
-void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
-                           list<tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, string& strSentAccount) const
+void CWalletTx::GetDestinationDetails(list<CTxDestinationDetail>& listReceived, list<CTxDestinationDetail>& listSent, int64_t& nFee, string& strSentAccount) const
 {
     nFee = 0;
     listReceived.clear();
@@ -1329,27 +1328,27 @@ void CWalletTx::GetDestinationDetails(list<tuple<CTxDestination, vector<CTxDesti
 
         // If we are debited by the transaction, add the output as a "sent" entry
         if (nDebit > 0)
-            listSent.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencySource, sNarr));
+            listSent.emplace_back(address, std::vector<CTxDestination>(), txout.nValue, std::optional<std::uint32_t>{index}, currencySource, sNarr);
 
         // If we are receiving the output, add it as a "received" entry
         if (fIsMine)
-            listReceived.push_back(make_tuple(address, std::vector<CTxDestination>(), txout.nValue, currencyDestination, sNarr));
+            listReceived.emplace_back(address, std::vector<CTxDestination>(), txout.nValue, std::optional<std::uint32_t>{index}, currencyDestination, sNarr);
     };
 
     for (const auto & [address, amount] : mapStealthSent) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listSent.push_back(std::make_tuple(stealthAddress, mapDestinationSubs[address], amount, currencySource, mapStealthNarration[address]));
+            listSent.emplace_back(stealthAddress, mapDestinationSubs[address], amount, std::nullopt, currencySource, mapStealthNarration[address]);
         else
-            listSent.push_back(std::make_tuple(CNoDestination(), mapDestinationSubs[address], amount,currencySource, mapStealthNarration[address]));
+            listSent.emplace_back(CNoDestination(), mapDestinationSubs[address], amount, std::nullopt, currencySource, mapStealthNarration[address]);
     }
 
     for (const auto & [address, amount] : mapStealthReceived) {
         CStealthAddress stealthAddress;
         if (pwallet->GetStealthAddress(address, stealthAddress))
-            listReceived.push_back(std::make_tuple(stealthAddress, mapDestinationSubs[address], amount, currencyDestination, mapStealthNarration[address]));
+            listReceived.emplace_back(stealthAddress, mapDestinationSubs[address], amount, std::nullopt, currencyDestination, mapStealthNarration[address]);
         else
-            listReceived.push_back(std::make_tuple(CNoDestination(), mapDestinationSubs[address], amount, currencyDestination, mapStealthNarration[address]));
+            listReceived.emplace_back(CNoDestination(), mapDestinationSubs[address], amount, std::nullopt, currencyDestination, mapStealthNarration[address]);
     }
 }
 
@@ -1433,30 +1432,30 @@ void CWalletTx::GetAccountAmounts(const std::string& strAccount, int64_t& nRecei
 
     int64_t allFee;
     std::string strSentAccount;
-    std::list<std::tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> > listReceived;
-    std::list<std::tuple<CTxDestination, vector<CTxDestination>, int64_t, Currency, std::string> > listSent;
+    std::list<CTxDestinationDetail> listReceived;
+    std::list<CTxDestinationDetail> listSent;
     GetDestinationDetails(listReceived, listSent, allFee, strSentAccount);
 
     if (strAccount == strSentAccount)
     {
-        for(const auto & [address,destSubs,amount,currency,narration] : listSent)
-            nSent += amount;
+        for(const auto & destination : listSent)
+            nSent += destination.amount;
         nFee = allFee;
     };
 
     {
         LOCK(pwallet->cs_wallet);
-        for(const auto & [address,destSubs,amount,currency,narration] : listReceived)
+        for(const auto & destination : listReceived)
         {
-            if (pwallet->mapAddressBook.count(address))
+            if (pwallet->mapAddressBook.count(destination.address))
             {
-                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(address);
+                std::map<CTxDestination, std::string>::const_iterator mi = pwallet->mapAddressBook.find(destination.address);
                 if (mi != pwallet->mapAddressBook.end() && (*mi).second == strAccount)
-                    nReceived += amount;
+                    nReceived += destination.amount;
             } else
             if (strAccount.empty())
             {
-                nReceived += amount;
+                nReceived += destination.amount;
             };
         };
     } // pwallet->cs_wallet
@@ -3881,7 +3880,7 @@ bool CWallet::GetAnonStakeAddress(const COwnedAnonOutput& stakedOao, CStealthAdd
         sxAddress = *it;
         return true;
     };
-
+    return false;
 }
 
 
@@ -7168,7 +7167,7 @@ std::string CWallet::SendMoneyToDestination(const CTxDestination& address, int64
         return _("Insufficient funds");
 
     if (sNarr.length() > 24)
-        return _("Narration must be 24 characters or less.");
+        return _("Note must be 24 characters or less.");
 
     // Parse Bitcoin address
     CScript scriptPubKey;
@@ -8651,7 +8650,7 @@ int CWallet::ExtKeyUnlock(const CKeyingMaterial &vMKey)
 };
 
 
-int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
+int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb, std::string sBip44Key)
 {
     LogPrintf("Creating intital extended master key and account.\n");
 
@@ -8661,7 +8660,6 @@ int CWallet::ExtKeyCreateInitial(CWalletDB *pwdb)
         return errorN(1, "TxnBegin failed.");
 
     CExtKey ekBip44;
-    std::string sBip44Key = GetArg("-bip44key", "");
     if (!sBip44Key.empty())
     {
         CExtKey58 eKey58;
@@ -8753,7 +8751,7 @@ int CWallet::ExtKeyLoadMaster()
                 return 0;
             };
 
-            if (ExtKeyCreateInitial(&wdb) != 0)
+            if (ExtKeyCreateInitial(&wdb, GetArg("-bip44key", "")) != 0)
                 return errorN(1, "ExtKeyCreateDefaultMaster failed.");
 
             return 0;
@@ -10004,5 +10002,26 @@ bool IsMine(const CWallet &wallet, const CScript& scriptPubKey)
     }
     }
     return false;
+}
+
+int SetupWalletData(const std::string& strWalletFile, const std::string& sBip44Key, const SecureString& strWalletPassphrase)
+{
+    if (boost::filesystem::exists(GetDataDir() / strWalletFile))
+    {
+        return errorN(1, "Wallet file already exists.");
+    }
+
+    CWallet wallet(strWalletFile);
+    {
+        CWalletDB wdb(strWalletFile, "cr+");
+        if (wallet.ExtKeyCreateInitial(&wdb, sBip44Key) != 0)
+            return errorN(2, "ExtKeyCreateInitial failed.");
+    }
+
+    if (!wallet.EncryptWallet(strWalletPassphrase)) {
+        return errorN(3, "EncryptWallet failed.");
+    }
+    bitdb.Flush(false);
+    return 0;
 }
 

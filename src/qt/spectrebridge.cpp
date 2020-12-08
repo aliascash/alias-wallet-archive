@@ -614,7 +614,7 @@ void SpectreBridge::sendCoins(bool fUseCoinControl, QString sChangeAddr)
             return;
         case WalletModel::NarrationTooLong:
             QMessageBox::warning(window, tr("Send Coins"),
-                tr("Error: Narration is too long."),
+                tr("Error: Note is too long."),
                 QMessageBox::Ok, QMessageBox::Ok);
             emit sendCoinsResult(false);
             return;
@@ -891,9 +891,13 @@ void SpectreBridge::getAddressLabelForSelectorAsync(QString address, QString sel
 
 void SpectreBridge::updateAddressLabel(QString address, QString label)
 {
-    QString actualLabel = getAddressLabel(address);
-
-    addressModel->atm->setData(addressModel->atm->index(addressModel->atm->lookupAddress(address), addressModel->atm->Label), QVariant(label), Qt::EditRole);
+    const QModelIndex &index = addressModel->atm->index(addressModel->atm->lookupAddress(address), addressModel->atm->Label);
+    if (index.isValid())
+        addressModel->atm->setData(index, QVariant(label), Qt::EditRole);
+    else
+        // AddressTableModel::Send never creates new addresses and addresses are only added to the addressbook
+        // Addresstype is detected from the address itself, a owned address is automatically added to the receiving list of addresses
+        addressModel->atm->addRow(AddressTableModel::Send, label, address, 0);
 }
 
 void SpectreBridge::validateAddress(QString address)

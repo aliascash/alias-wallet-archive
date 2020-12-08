@@ -99,8 +99,8 @@ PRE_TARGETDEPS += $${LIBSPATH}/libdb_stl48.lib
 
 #LIBS += -L$$PWD/../tor/ -ltorlib
 #PRE_TARGETDEPS += $$PWD/../tor/torlib.lib
-LIBS += -L$$PWD/../leveldb/ -lleveldblib
-PRE_TARGETDEPS += $$PWD/../leveldb/leveldblib.lib
+#LIBS += -L$$PWD/../leveldb/ -lleveldblib
+#PRE_TARGETDEPS += $$PWD/../leveldb/leveldblib.lib
 #LIBS += -L$$PWD/../db4.8/ -lberkeleydblib
 #PRE_TARGETDEPS += $$PWD/../db4.8/berkeleydblib.lib
 

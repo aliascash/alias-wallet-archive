@@ -7,18 +7,15 @@
 #
 # ===========================================================================
 
-[ -d .git ] && [ -d leveldb ] && [ -d db4.8 ] || \
-  { echo "Please run this command from the root of the Aliaswallet repository." && exit 1; }
+ownLocation="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${ownLocation}"
 
-git submodule init
-git submodule sync --recursive
-git submodule update --recursive --force --remote
-
-autoreconf --no-recursive --install
-
-#pushd tor
-#./autogen.sh
-#popd
-
-# Create build.h
-./scripts/genbuild.sh src/build.h
+echo
+echo "Nothing to prepare at this stage."
+echo
+echo "To build, just run one of the cmake-build* scripts on the scripts folder:"
+echo
+ls -1 scripts/cmake-build*
+echo
+echo "Use option -h to see their possibilities"
+echo

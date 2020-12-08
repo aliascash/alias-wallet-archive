@@ -22,7 +22,7 @@
 #include "keystore.h"
 #include "crypter.h"
 #include "script.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "util.h"
 #include "walletdb.h"
 #include "stealth.h"
@@ -57,6 +57,7 @@ class CWalletTx;
 class CReserveKey;
 class COutput;
 class CCoinControl;
+class CTxDestinationDetail;
 
 typedef std::map<CKeyID, CStealthKeyMetadata> StealthKeyMetaMap;
 typedef std::map<std::string, std::string> mapValue_t;
@@ -105,6 +106,8 @@ public:
 
 bool IsDestMine(const CWallet &wallet, const CTxDestination &dest);
 bool IsMine(const CWallet& wallet, const CScript& scriptPubKey);
+
+int SetupWalletData(const std::string& strWalletFile, const std::string& sBip44Key, const SecureString& strWalletPassphrase);
 
 /** A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
@@ -541,7 +544,7 @@ public:
     int ExtKeyUnlock(CStoredExtKey *sek, const CKeyingMaterial &vMKey);
     int ExtKeyUnlock(const CKeyingMaterial &vMKey);
 
-    int ExtKeyCreateInitial(CWalletDB *pwdb);
+    int ExtKeyCreateInitial(CWalletDB *pwdb, std::string sBip44Key = "");
     int ExtKeyLoadMaster();
     int ExtKeyLoadAccounts();
 
@@ -984,8 +987,8 @@ public:
         return nChangeCached;
     }
 
-    void GetDestinationDetails(std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listReceived,
-                    std::list<std::tuple<CTxDestination, std::vector<CTxDestination>, int64_t, Currency, std::string> >& listSent, int64_t& nFee, std::string& strSentAccount) const;
+    void GetDestinationDetails(std::list<CTxDestinationDetail>& listReceived,
+                    std::list<CTxDestinationDetail>& listSent, int64_t& nFee, std::string& strSentAccount) const;
 
     void GetAccountAmounts(const std::string& strAccount, int64_t& nReceived,
                            int64_t& nSent, int64_t& nFee) const;
@@ -1162,6 +1165,27 @@ public:
     )
 };
 
+
+class CTxDestinationDetail
+{
+public:
+    CTxDestinationDetail(CTxDestination address, std::vector<CTxDestination> vAddressElements, int64_t amount, std::optional<uint32_t> vout, Currency currency, std::string narration) :
+        address(address),
+        vAddressElements(vAddressElements),
+        amount(amount),
+        vout(vout),
+        currency(currency),
+        narration(narration)
+    {
+    }
+
+    CTxDestination address;
+    std::vector<CTxDestination> vAddressElements;
+    int64_t amount;
+    std::optional<uint32_t> vout;
+    Currency currency;
+    std::string narration;
+};
 
 
 /** Internal transfers.

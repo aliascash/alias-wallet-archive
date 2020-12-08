@@ -10,7 +10,7 @@
 
 #include "rpcprotocol.h"
 #include "util.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "chainparams.h" // for Params().RPCPort()
 
 #include <stdint.h>

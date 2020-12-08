@@ -18,7 +18,7 @@
 #include "websockettransport.h"
 
 #include "init.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -246,6 +246,7 @@ int main(int argc, char *argv[])
     }
 
     // Start SetupWalletWizard if no wallet.dat exists
+#ifndef ANDROID // temporarly remove setupwizard until fixed for android
     if (!mapArgs.count("-bip44key") && !mapArgs.count("-wallet") && !mapArgs.count("-salvagewallet") && !fs::exists(GetDataDir() / "wallet.dat"))
     {
         SetupWalletWizard wizard;
@@ -253,13 +254,9 @@ int main(int argc, char *argv[])
         if (!wizard.exec())
             return 0;
         if (wizard.hasVisitedPage(SetupWalletWizard::Page_RecoverFromMnemonic))
-        {
-            SoftSetArg("-bip44key", static_cast<RecoverFromMnemonicPage*>(wizard.page(SetupWalletWizard::Page_RecoverFromMnemonic))->sKey);
             SoftSetBoolArg("-rescan", true);
-        }
-        else if (wizard.hasVisitedPage(SetupWalletWizard::Page_NewMnemonic_Verification))
-            SoftSetArg("-bip44key", static_cast<NewMnemonicSettingsPage*>(wizard.page(SetupWalletWizard::Page_NewMnemonic_Settings))->sKey);
     }
+#endif
 
     QSplashScreen splash(GUIUtil::createPixmap(600, 686, QColor(40, 40, 41), QString(":/assets/svg/Alias-Stacked-Reverse.svg"), QRect(62, 87, 476, 476)));
     if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
@@ -338,9 +335,9 @@ int main(int argc, char *argv[])
                 uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
                 // Check if wallet unlock is needed to determine current balance
-                if (pwalletMain->IsLocked() && pwalletMain->CountLockedAnonOutputs() > 0)
+                if (pwalletMain->IsLocked())
                 {
-                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::rescan);
+                    WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::login);
                     if (!unlockContext.isValid())
                     {
                         InitMessage("Shutdown...");

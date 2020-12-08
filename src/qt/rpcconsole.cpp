@@ -193,7 +193,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     ui->setupUi(this);
     //GUIUtil::restoreWindowGeometry("nRPCConsoleWindow", this->size(), this);
 
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
     ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
     ui->showCLOptionsButton->setIcon(QIcon(":/icons/options"));
 #endif
@@ -207,7 +207,12 @@ RPCConsole::RPCConsole(QWidget *parent) :
     connect(ui->btnClearTrafficGraph, SIGNAL(clicked()), ui->trafficGraph, SLOT(clear()));
 
     // set library version labels
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L)
     ui->openSSLVersion->setText(SSLeay_version(SSLEAY_VERSION));
+#else
+    ui->openSSLVersion->setText(OpenSSL_version(OPENSSL_VERSION));
+#endif
+
     ui->berkeleyDBVersion->setText(DbEnv::version(0, 0, 0));
 
     startExecutor();

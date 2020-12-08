@@ -1,0 +1,29 @@
+--- a/txn/txn.c	2010-04-12 20:25:37.000000000 +0000
++++ b/txn/txn.c	2019-11-22 19:42:03.584526294 +0000
+@@ -77,8 +77,6 @@
+ static int  __txn_undo __P((DB_TXN *));
+ static void __txn_set_txn_lsnp __P((DB_TXN *, DB_LSN **, DB_LSN **));
+ 
+-static char *TxnAlloc = "Unable to allocate a transaction handle";
+-
+ /*
+  * __txn_begin_pp --
+  *	ENV->txn_begin pre/post processing.
+@@ -168,7 +166,7 @@
+ 
+ 	*txnpp = NULL;
+ 	if ((ret = __os_calloc(env, 1, sizeof(DB_TXN), &txn)) != 0) {
+-		__db_errx(env, TxnAlloc);
++       __db_errx(env, "Unable to allocate a transaction handle");
+ 		return (ret);
+ 	}
+ 
+@@ -315,7 +313,7 @@
+ 	int ret;
+ 
+ 	if ((ret = __os_calloc(env, 1, sizeof(DB_TXN), &txn)) != 0) {
+-		__db_errx(env, TxnAlloc);
++		__db_errx(env, "Unable to allocate a transaction handle");
+ 		return (ret);
+ 	}
+ 

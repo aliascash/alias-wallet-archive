@@ -13,6 +13,9 @@
 #include <signal.h>
 
 #include "protocol.h"
+#ifdef _MSC_BUILD
+#include "win/unistd.h"
+#endif
 
 
 void ThreadCli()
@@ -130,7 +133,7 @@ void WaitForShutdown(boost::thread_group* threadGroup)
         fShutdown = ShutdownRequested();
     };
 
-    LogPrintf("SpectreCoin shutdown.\n\n");
+    LogPrintf("Alias shutdown.\n\n");
 
     if (threadGroup)
     {

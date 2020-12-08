@@ -1,0 +1,12 @@
+diff --git a/tor/configure.ac b/tor/configure.ac
+--- a/configure.ac
++++ b/configure.ac
+@@ -919,7 +919,7 @@
+     dnl We look for SSL_cipher_get_id() because it is present in
+     dnl OpenSSL >=1.0.1, because it is not deprecated, and because Tor
+     dnl depends on it.
+-    [if (getenv("THIS_SHOULDNT_BE_SET_X201803")) SSL_CIPHER_get_id((void *)0);], [],
++    [;], [],
+     [/usr/local/opt/openssl /usr/local/openssl /usr/lib/openssl /usr/local/ssl /usr/lib/ssl /usr/local /opt/openssl])
+ 
+ dnl XXXX check for OPENSSL_VERSION_NUMBER == SSLeay()

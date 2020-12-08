@@ -15,7 +15,7 @@
 #include "sync.h"
 #include "strlcpy.h"
 #include "version.h"
-#include "ui_interface.h"
+#include "interface.h"
 
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string.hpp>
@@ -77,7 +77,7 @@ CMedianFilter<int64_t> vTimeOffsets(200,0);
 
 // Init OpenSSL library multithreading support
 static CCriticalSection** ppmutexOpenSSL;
-void locking_callback(int mode, int i, const char* file, int line)
+void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAFETY_ANALYSIS
 {
     if (mode & CRYPTO_LOCK) {
         ENTER_CRITICAL_SECTION(*ppmutexOpenSSL[i]);
@@ -1067,7 +1067,7 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path("/");
     else
         pathRet = fs::path(pszHome);
-    #ifdef MAC_OSX
+    #ifdef __APPLE__
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
@@ -1099,7 +1099,7 @@ boost::filesystem::path GetOldDefaultDataDir()
         pathRet = fs::path("/");
     else
         pathRet = fs::path(pszHome);
-    #ifdef MAC_OSX
+    #ifdef __APPLE__
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
@@ -1516,7 +1516,7 @@ void RenameThread(const char* name)
     pthread_set_name_np(pthread_self(), name);
 
 // This is XCode 10.6-and-later; bring back if we drop 10.5 support:
-// #elif defined(MAC_OSX)
+// #elif defined(__APPLE__)
 //    pthread_setname_np(name);
 
 #else

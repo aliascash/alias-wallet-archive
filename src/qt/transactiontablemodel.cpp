@@ -16,7 +16,7 @@
 #include "sync.h"
 
 #include "wallet.h"
-#include "ui_interface.h"
+#include "interface.h"
 #include "shutdown.h"
 
 #include <QLocale>
@@ -248,7 +248,7 @@ TransactionTableModel::TransactionTableModel(CWallet* wallet, WalletModel *paren
         walletModel(parent),
         priv(new TransactionTablePriv(wallet, this))
 {
-    columns << QString() << tr("Date") << tr("Type") << tr("Address") << tr("Narration") << tr("Amount");
+    columns << QString() << tr("Date") << tr("Type") << tr("Address") << tr("Note") << tr("Amount");
 
     priv->refreshWallet();
 

@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: © 2020 Alias Developers
+#
+# SPDX-License-Identifier: MIT
+
+### At first perform source build ###
+FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.2
+MAINTAINER HLXEasy <hlxeasy@gmail.com>
+
+# Build parameters
+ARG BUILD_THREADS="6"
+
+# Runtime parameters
+ENV BUILD_THREADS=$BUILD_THREADS
+
+COPY . /alias-wallet
+
+RUN cd /alias-wallet \
+ && ./scripts/cmake-build.sh -g -o -s -c ${BUILD_THREADS} \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswalletd \
+ && strip /alias-wallet/cmake-build-cmdline/aliaswallet/src/aliaswallet
