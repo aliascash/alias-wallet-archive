@@ -47,14 +47,16 @@ SPDX-License-Identifier: MIT
 ## 4.3.1 (released 2020-12-08)
 - Update to Qt 5.12.10 (Mac)
 - [#227](https://github.com/aliascash/alias-wallet/issues/227) On startup, always require password if wallet is encrypted.
-_ SetupWalletWizard
+- SetupWalletWizard
   - Encryption of wallet.dat is now part of the wizard and mandatory.
   - [#248](https://github.com/aliascash/alias-wallet/issues/248) Added password verification field next to password.
 - RPC method `listsinceblock`: add attribute `vout` for public outputs
 - UI changes:
-  - Default select first address in addressbook and receive addresses.
   - Increase icon size of buttons in send page.
+  - Default select first address in addressbook and receive addresses.
+    (Fixes invalid QR code.)
   - Fix: make sure address is selected when clicking in detail row.
+    (Ensure right address is picked for QR code.)
   - Fix: address lookup in addressbook on address paste.
 - Refactored the whole build to CMake as basement.
   - For all supported operating systems, there are corresponding helper
