@@ -310,7 +310,7 @@ public class BootstrapService extends Service {
                 }
             }
 
-            final List<BootstrapPartDefinition> bootstrapPartDefinitions = new ArrayList();
+            final List<BootstrapPartDefinition> bootstrapPartDefinitions = new ArrayList<>();
             try (BufferedReader reader = new BufferedReader(new FileReader(bootstrapIndexPath.toFile()))) {
                 String nextLine = "";
                 while ((nextLine = reader.readLine()) != null) {
