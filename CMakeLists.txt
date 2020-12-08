@@ -10,11 +10,15 @@ project(Alias
         C
         )
 
-# The version number.
+# Alias version definition
 set(CLIENT_VERSION_MAJOR 4)
 set(CLIENT_VERSION_MINOR 3)
 set(CLIENT_VERSION_REVISION 1)
 set(CLIENT_VERSION_BUILD 0)
+
+# ANDROID_VERSION_CODE must be increased with every PlayStore release!
+set(ANDROID_VERSION_CODE 12)
+
 set(CLIENT_VERSION_GIT_SHA1 "---")
 set(VERSION_STRING "${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_REVISION}.${CLIENT_VERSION_BUILD}")
 #set(CMAKE_VERBOSE_MAKEFILE ON)
