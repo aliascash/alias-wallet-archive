@@ -44,12 +44,39 @@ updated will not be able to create transactions on the Alias V3 network.
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.3.1 (released 2020-??-??)
-- Refactored the whole build to CMake as basement.
-  For all supported operating systems, there are corresponding
-  helper scripts on `scripts/cmake-build*`.
+#### 4.3.1 Android (released 2020-12-10)
+- Update to QT 5.15.2
+- For leaving the app, back must be pressed twice
+- Fix unintended 'back to camera app' by explicitly go to home
+- Acquire wake locks + check for battery optimization on staking
+- Streamlined versioning of desktop and mobile wallet
+- Automated Android App build process
 
-## 4.3.0 (released 2020-10-01)
+#### 4.3.1 (released 2020-12-08)
+- Update to Qt 5.12.10 (Mac)
+- [#227](https://github.com/aliascash/alias-wallet/issues/227) On startup, always require password if wallet is encrypted.
+- SetupWalletWizard
+  - Encryption of wallet.dat is now part of the wizard and mandatory.
+  - [#248](https://github.com/aliascash/alias-wallet/issues/248) Added password verification field next to password.
+- RPC method `listsinceblock`: add attribute `vout` for public outputs
+- UI changes:
+  - Increase icon size of buttons in send page.
+  - Default select first address in addressbook and receive addresses.
+    (Fixes invalid QR code.)
+  - Fix: make sure address is selected when clicking in detail row.
+    (Ensure right address is picked for QR code.)
+  - Fix: address lookup in addressbook on address paste.
+- Refactored the whole build to CMake as basement.
+  - For all supported operating systems, there are corresponding helper
+    scripts on `scripts/cmake-build*`.
+  - All Linux binaries now have Tor and Qt as the only dependencies. All
+    other components are compiled right into the binaries.
+- Added build for OpenSUSE Tumbleweed
+- Switched to ARMv8 on Raspberry Pi binaries. That means Raspberry Pi is
+  migrated from 32Bit to 64Bit, which also means a complete new setup of
+  the Raspberry Pi is required.
+
+#### 4.3.0 (released 2020-10-01)
 - Update to Qt 5.12.9 (Windows / Mac)
 - Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
 - Refactored overall namings according to project rebranding
@@ -78,7 +105,7 @@ SPDX-License-Identifier: MIT
 - Added build for Ubuntu 20.04
 - Wipe out build for Ubuntu 19.x as it's EOL
 
-## 4.2.0 (released 2020-05-02)
+#### 4.2.0 (released 2020-05-02)
 - Update to Qt 5.12.8
 - Replace QtWebEngine with QtWebView to support mobile platforms.
 - Open 'Unlock Wallet' Dialog on incoming anon staking reward with unknown sender.
@@ -90,8 +117,7 @@ SPDX-License-Identifier: MIT
 - Improve splash screen with progress messages to reduce UI freezes during startup.
 - [#183](https://github.com/aliascash/alias-wallet/issues/183) Reduce UI freezes during blockchain sync.
 
-### Changelog
-## 4.1.0 (released 2019-10-13)
+#### 4.1.0 (released 2019-10-13)
 - [#82](https://github.com/aliascash/alias-wallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
   - Create new `wallet.dat` file based on mnemonic seed words.
@@ -116,15 +142,15 @@ SPDX-License-Identifier: MIT
 
 - Updated packaged Tor for MacOS and Windows to 0.4.1.5
 
-## 4.0.0 (released 2019-09-08)
+#### 4.0.0 (released 2019-09-08)
 **V4 blockchain fork consensus changes / Fork time is GMT: Friday, 27. September 2019 20:00:00 (1569614400 unix epoch time)**
 - One-time 3'000'000 XSPEC staking reward for foundation address SSGCEMb6xESgmuGXkx7yozGDxhVSXzBP3a
 
-## 3.x release notes
+#### 3.x release notes
 
 See [ReleaseNotes for Pre-4.x](./ReleaseNotes_Pre4.0.md)
 
-## 2.x release notes
+#### 2.x release notes
 
 See [ReleaseNotes for Pre-3.x](./ReleaseNotes_Pre3.0.md)
 
