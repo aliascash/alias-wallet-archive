@@ -1,18 +1,35 @@
-## SPECTRECOIN V4
+## Alias V4
 
-`By downloading and using this software, you agree that 1/6 of the staking rewards are contributed to a development fund. The development fund aims to support the long term development and value of Spectrecoin. The fund is managed by the Spectrecoin core team.`
+> By downloading and using this software, you agree that 1/6 of the staking
+> rewards are contributed to a development fund. The development fund aims
+> to support the long term development and value of Alias. The fund is managed
+> by the Alias core team.
 
-This is a major release and a **MANDATORY** update to the Spectrecoin software! This update involves consensus changes (_details below_) and **you MUST update** your wallet software before:
+This is a major release and a **MANDATORY** update to the Alias software!
+This update involves consensus changes (_details below_) and **you MUST
+update** your wallet software before:
 
 2019-09-27 (_27th September 2019_) @ 2000 hours (GMT)
 
-If you do not update your wallet software you will no longer be able to connect to the Spectrecoin network and you will no longer be able to conduct transactions on the network and you will no longer be able to deposit or withdraw your funds (XSPEC) from the exchanges.
+If you do not update your wallet software you will no longer be able to connect
+to the Alias network and you will no longer be able to conduct transactions on
+the network and you will no longer be able to deposit or withdraw your funds
+(public a/o private ALIAS) from the exchanges.
 
 ### Development Contribution Blocks (DCB)
-After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be designated DCBs and will be sent to the Spectrecoin team development fund wallet. This fund will ensure a future for Spectrecoin and will enable us to pay for certain services and to hire contractors and to pay Spectrecoin core team members in XSPEC to enable them to work full time on the project. We have some long term projects and concepts to implement such as a new proof-of-stake algorithm we call Proof-of-Stealth to enable so called "stealth staking". These developments depend on a source of steady funding. We believe this will give us the opportunity to produce better software and will create value for investors. We currently have some very skilled developers working for us and we want to keep it that way.
+After 21/08/2018 @ 2200 hours (GMT) one in six (1 in 6) block rewards will be
+a designated DCB and will be sent to the Alias team development fund wallet.
+This fund will ensure a future for Alias and will enable us to pay for certain
+services, to hire contractors and to pay Alias core team members in ALIAS
+to enable them to work full time on the project. The further development
+depend on a source of steady funding. We believe this will give us the opportunity
+to produce better software and will create value for investors. We currently
+have some very skilled developers working for us and we want to keep it that way.
 
 ### Replay Protection
-We have implemented a check for DCBs and we have implemented a replay protection mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not updated will not be able to create transactions on the Spectrecoin V3 network.
+We have implemented a check for DCBs and we have implemented a replay protection
+mechanism. This means that after 17/05/2019 @ 2000 hours (GMT) any wallets not
+updated will not be able to create transactions on the Alias V3 network.
 
 ### Licensing
 
@@ -27,8 +44,40 @@ We have implemented a check for DCBs and we have implemented a replay protection
 SPDX-License-Identifier: MIT
 
 ### Changelog
-## 4.3.0 (released 2020-??-??)
-- Update to Qt 5.15.1 (Windows / Mac)
+#### 4.3.1 Android (released 2020-12-10)
+- Update to QT 5.15.2
+- For leaving the app, back must be pressed twice
+- Fix unintended 'back to camera app' by explicitly go to home
+- Acquire wake locks + check for battery optimization on staking
+- Streamlined versioning of desktop and mobile wallet
+- Automated Android App build process
+
+#### 4.3.1 (released 2020-12-08)
+- Update to Qt 5.12.10 (Mac)
+- [#227](https://github.com/aliascash/alias-wallet/issues/227) On startup, always require password if wallet is encrypted.
+- SetupWalletWizard
+  - Encryption of wallet.dat is now part of the wizard and mandatory.
+  - [#248](https://github.com/aliascash/alias-wallet/issues/248) Added password verification field next to password.
+- RPC method `listsinceblock`: add attribute `vout` for public outputs
+- UI changes:
+  - Increase icon size of buttons in send page.
+  - Default select first address in addressbook and receive addresses.
+    (Fixes invalid QR code.)
+  - Fix: make sure address is selected when clicking in detail row.
+    (Ensure right address is picked for QR code.)
+  - Fix: address lookup in addressbook on address paste.
+- Refactored the whole build to CMake as basement.
+  - For all supported operating systems, there are corresponding helper
+    scripts on `scripts/cmake-build*`.
+  - All Linux binaries now have Tor and Qt as the only dependencies. All
+    other components are compiled right into the binaries.
+- Added build for OpenSUSE Tumbleweed
+- Switched to ARMv8 on Raspberry Pi binaries. That means Raspberry Pi is
+  migrated from 32Bit to 64Bit, which also means a complete new setup of
+  the Raspberry Pi is required.
+
+#### 4.3.0 (released 2020-10-01)
+- Update to Qt 5.12.9 (Windows / Mac)
 - Streamlined licensing headers a.s.o. to make the whole project compliant to [REUSE Software](https://reuse.software/)
 - Refactored overall namings according to project rebranding
 - Refactored naming of some RPC methods according to project rebranding:
@@ -56,7 +105,7 @@ SPDX-License-Identifier: MIT
 - Added build for Ubuntu 20.04
 - Wipe out build for Ubuntu 19.x as it's EOL
 
-## 4.2.0 (released 2020-05-02)
+#### 4.2.0 (released 2020-05-02)
 - Update to Qt 5.12.8
 - Replace QtWebEngine with QtWebView to support mobile platforms.
 - Open 'Unlock Wallet' Dialog on incoming anon staking reward with unknown sender.
@@ -68,8 +117,7 @@ SPDX-License-Identifier: MIT
 - Improve splash screen with progress messages to reduce UI freezes during startup.
 - [#183](https://github.com/aliascash/alias-wallet/issues/183) Reduce UI freezes during blockchain sync.
 
-### Changelog
-## 4.1.0 (released 2019-10-13)
+#### 4.1.0 (released 2019-10-13)
 - [#82](https://github.com/aliascash/alias-wallet/issues/82) Wallet.dat creation with mnemonic seed words (BIP39).
   If no `wallet.dat` file was detected during startup, the wallet opens a wizard with these three options:
   - Create new `wallet.dat` file based on mnemonic seed words.
@@ -94,15 +142,15 @@ SPDX-License-Identifier: MIT
 
 - Updated packaged Tor for MacOS and Windows to 0.4.1.5
 
-## 4.0.0 (released 2019-09-08)
+#### 4.0.0 (released 2019-09-08)
 **V4 blockchain fork consensus changes / Fork time is GMT: Friday, 27. September 2019 20:00:00 (1569614400 unix epoch time)**
 - One-time 3'000'000 XSPEC staking reward for foundation address SSGCEMb6xESgmuGXkx7yozGDxhVSXzBP3a
 
-## 3.x release notes
+#### 3.x release notes
 
 See [ReleaseNotes for Pre-4.x](./ReleaseNotes_Pre4.0.md)
 
-## 2.x release notes
+#### 2.x release notes
 
 See [ReleaseNotes for Pre-3.x](./ReleaseNotes_Pre3.0.md)
 

@@ -252,7 +252,6 @@ NewMnemonicSettingsPage::NewMnemonicSettingsPage(QWidget *parent)
     connect(passwordVerifyEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
     registerField("newmnemonic.language", languageComboBox, "currentData", "currentIndexChanged");
-    registerField("newmnemonic.password", passwordEdit);
 
     QVBoxLayout *layout = new QVBoxLayout;
 

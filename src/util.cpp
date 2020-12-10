@@ -1069,7 +1069,7 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path("/");
     else
         pathRet = fs::path(pszHome);
-    #ifdef MAC_OSX
+    #ifdef __APPLE__
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
@@ -1101,7 +1101,7 @@ boost::filesystem::path GetOldDefaultDataDir()
         pathRet = fs::path("/");
     else
         pathRet = fs::path(pszHome);
-    #ifdef MAC_OSX
+    #ifdef __APPLE__
         // Mac
         pathRet /= "Library/Application Support";
         fs::create_directory(pathRet);
@@ -1523,7 +1523,7 @@ void RenameThread(const char* name)
     pthread_set_name_np(pthread_self(), name);
 
 // This is XCode 10.6-and-later; bring back if we drop 10.5 support:
-// #elif defined(MAC_OSX)
+// #elif defined(__APPLE__)
 //    pthread_setname_np(name);
 
 #else

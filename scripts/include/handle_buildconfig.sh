@@ -19,7 +19,7 @@ if [[ ! -e .buildconfig ]] ; then
 ARCHIVES_ROOT_DIR=${HOME}/Archives
 
 ##### ### # Android # ### ###################################################
-ANDROID_NDK_VERSION=r20
+ANDROID_NDK_VERSION=r21d
 ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
 
 ##### ### # Boost # ### #####################################################
@@ -46,17 +46,19 @@ QT_VERSION=5.15.0
 QT_ARCHIVE_HASH=610a228dba6ef469d14d145b71ab3b88
 
 # These are the default Qt versions on the corresponding distributions
-QT_VERSION_ANDROID=5.15.0
+QT_VERSION_ANDROID=5.15.2
+QT_VERSION_CENTOS_8=5.12.8
 QT_VERSION_DEBIAN_BUSTER=5.11.3
 QT_VERSION_UBUNTU_1804=5.9.5
 QT_VERSION_UBUNTU_1904=5.12.4
 QT_VERSION_UBUNTU_1910=5.12.4
 QT_VERSION_UBUNTU_2004=5.12.8
 QT_VERSION_FEDORA=5.14.2
+QT_VERSION_OPENSUSE_TUMBLEWEED=5.15.1
 
 ##### ### # Qt (Mac) # ### ##################################################
 # Installed Qt version. In fact the folder below /Applications/Qt/
-QT_VERSION_MAC=5.12.9
+QT_VERSION_MAC=5.12.10
 
 ##### ### # BerkeleyDB # ### ################################################
 BERKELEYDB_BUILD_VERSION=4.8.30
@@ -90,17 +92,41 @@ LIBXZ_BUILD_VERSION=5.2.4
 LIBXZ_ARCHIVE_HASH=b512f3b726d3b37b6dc4c8570e137b9311e7552e8ccbab4d39d47ce5f4177145
 
 ##### ### # Tor # ### #######################################################
-#TOR_BUILD_VERSION=0.4.1.6
-#TOR_ARCHIVE_HASH=ee7adbbc5e30898bc35d9658bbf6a67e4242977175f7bad11c5f1ee0c1010d43
+TOR_BUILD_VERSION=0.4.1.6
+TOR_ARCHIVE_HASH=ee7adbbc5e30898bc35d9658bbf6a67e4242977175f7bad11c5f1ee0c1010d43
 #TOR_BUILD_VERSION=0.4.1.7
 #TOR_ARCHIVE_HASH=f769c8052f0c0f74b9b7bcaff6255f656e313da232bfa8f89d2a165df3868850
-TOR_BUILD_VERSION=0.4.2.5
-TOR_ARCHIVE_HASH=94ad248f4d852a8f38bd8902a12b9f41897c76e389fcd5b8a7d272aa265fd6c9
+#TOR_BUILD_VERSION=0.4.2.5
+#TOR_ARCHIVE_HASH=94ad248f4d852a8f38bd8902a12b9f41897c76e389fcd5b8a7d272aa265fd6c9
 
+TOR_BUILD_VERSION_ANDROID=0.4.1.6
+TOR_ARCHIVE_HASH_ANDROID=ee7adbbc5e30898bc35d9658bbf6a67e4242977175f7bad11c5f1ee0c1010d43
 #TOR_BUILD_VERSION_ANDROID=0.4.2.3-alpha
-TOR_BUILD_VERSION_ANDROID=0.4.2.5
-TOR_ARCHIVE_HASH_ANDROID=be22b9326093dd6b012377d9e3c456028cd2104e5a454a7773aebf75d44c1ccf
+#TOR_ARCHIVE_HASH_ANDROID=be22b9326093dd6b012377d9e3c456028cd2104e5a454a7773aebf75d44c1ccf
+#TOR_BUILD_VERSION_ANDROID=0.4.2.5
+#TOR_ARCHIVE_HASH_ANDROID=94ad248f4d852a8f38bd8902a12b9f41897c76e389fcd5b8a7d272aa265fd6c9
 
 EOF
 fi
+info ""
+info "Build configuration:"
+info " -> Loading general build configuration"
 . .buildconfig
+
+if [ -e "${HOME}/.alias_buildconfig" ] ; then
+    info " -> Loading personal build configuration"
+    # Personal build config found, so load it
+    . ${HOME}/.alias_buildconfig
+else
+    # Personal build config not existing, create it with all entries commented
+    info ""
+    warning " -> Personal build configuration not found, creating it now!"
+    sed "s/^\([a-zA-Z]\)/#\1/g" .buildconfig > ${HOME}/.alias_buildconfig
+    info ""
+    info "If you like to modify '${HOME}/.alias_buildconfig',"
+    info "you should break script execution now (Ctrl-C)"
+    for i in $(seq 10 -1 0) ; do
+        info "${i}"
+        sleep 1
+    done
+fi

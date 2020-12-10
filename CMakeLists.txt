@@ -2,19 +2,23 @@
 # SPDX-FileCopyrightText: © 2019 SpectreCoin Developers
 # SPDX-License-Identifier: MIT
 
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 project(Alias
-        VERSION 4.0
+        VERSION 4.3
         LANGUAGES
         CXX
         C
         )
 
-# The version number.
+# Alias version definition
 set(CLIENT_VERSION_MAJOR 4)
 set(CLIENT_VERSION_MINOR 3)
-set(CLIENT_VERSION_REVISION 0)
+set(CLIENT_VERSION_REVISION 1)
 set(CLIENT_VERSION_BUILD 0)
+
+# ANDROID_VERSION_CODE must be increased with every PlayStore release!
+set(ANDROID_VERSION_CODE 12)
+
 set(CLIENT_VERSION_GIT_SHA1 "---")
 set(VERSION_STRING "${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_REVISION}.${CLIENT_VERSION_BUILD}")
 #set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -128,11 +132,15 @@ message(STATUS "Building in '${CMAKE_BUILD_TYPE}' mode")
 # ============================================================================================
 # Env var BOOST_ROOT should point to local Boost installation
 message(STATUS "=== Boost ==================================================================")
-set(Boost_USE_STATIC_LIBS ON)
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "Using dynamic Boost libs on Mac")
+else()
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
+endif()
 set(Boost_USE_DEBUG_LIBS OFF) # ignore debug libs and
 set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost 1.65.1 REQUIRED COMPONENTS
         atomic
@@ -248,12 +256,7 @@ if (ENABLE_GUI)
 
         # Put delivery result into dedicated directory
         set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-
-        if (NOT TOR_ARCHIVE)
-            include(DownloadFile)
-            set(TOR_ARCHIVE "Tor.libraries.MacOS.zip")
-            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.MacOS.zip ${TOR_ARCHIVE} SHA1 0be391e0cad9e93d33c226d6bff719f568b56093)
-        endif ()
+        set(HAVE_SNAPPY 0)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         # Retrieve the absolute path to qmake and then use that path
         # to find the windeployqt binary
@@ -263,18 +266,26 @@ if (ENABLE_GUI)
 
         # Put delivery result into dedicated directory
         set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/delivery)
-
-        if (NOT TOR_ARCHIVE)
-            include(DownloadFile)
-            set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
-            download_file(https://github.com/spectrecoin/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
-        endif()
     endif()
-
 else()
     message(STATUS "Building without UI, skipping Qt detection")
 endif ()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    message(STATUS "=== Tor binary archive =====================================================")
+    if (NOT TOR_ARCHIVE)
+        include(DownloadFile)
+        set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.MacOS.zip")
+        download_file(https://github.com/aliascash/resources/raw/master/resources/Tor.libraries.MacOS.zip ${TOR_ARCHIVE} SHA1 0be391e0cad9e93d33c226d6bff719f568b56093)
+    endif ()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "=== Tor binary archive =====================================================")
+    if (NOT TOR_ARCHIVE)
+        include(DownloadFile)
+        set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
+        download_file(https://github.com/aliascash/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
+    endif()
+endif()
 
 # ============================================================================================
 # Requires lib and include dir at once, separated by ";":
@@ -302,6 +313,8 @@ find_package(BerkeleyDB)
 #     -Dleveldb_DIR=${BUILD_DIR}/usr/local/lib/cmake/leveldb
 message(STATUS "=== LevelDB ================================================================")
 find_package(leveldb)
+message(STATUS "LevelDB directory: ${leveldb_DIR}")
+message(STATUS "LevelDB version: ${leveldb_VERSION}")
 
 # ============================================================================================
 message(STATUS "=== Dive into subdirs... ===================================================")
