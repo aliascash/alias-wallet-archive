@@ -94,7 +94,7 @@ pipeline {
                         script {
                             GIT_TAG_TO_USE = "${RELEASE_TAG}"
                             RELEASE_NAME = "Release ${GIT_TAG_TO_USE}"
-                            RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes.md"
+                            RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes_Android.md"
 //                            PRERELEASE = "false"
                         }
                     }
