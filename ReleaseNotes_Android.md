@@ -19,7 +19,7 @@ SPDX-License-Identifier: MIT
 
 ### Changelog
 This releasenotes document covers only the Android relevant changes. For full
-releasenotes pleas head over to [the latest release on Github](https://github.com/aliascash/alias-wallet/releases/latest).
+releasenotes please head over to [the latest release on Github](https://github.com/aliascash/alias-wallet/releases/latest).
 
 #### 4.3.1 Android (released 2020-12-10)
 - Update to QT 5.15.2
