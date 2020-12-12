@@ -95,7 +95,7 @@ pipeline {
                             GIT_TAG_TO_USE = "${RELEASE_TAG}"
                             RELEASE_NAME = "Release ${GIT_TAG_TO_USE}"
                             RELEASE_DESCRIPTION = "${WORKSPACE}/ReleaseNotes.md"
-                            PRERELEASE = "false"
+//                            PRERELEASE = "false"
                         }
                     }
                 }
