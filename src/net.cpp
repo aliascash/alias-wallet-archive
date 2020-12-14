@@ -813,62 +813,7 @@ void ThreadSocketHandler()
         //
         // Disconnect nodes
         //
-        {
-            LOCK(cs_vNodes);
-            // Disconnect unused nodes
-            vector<CNode*> vNodesCopy = vNodes;
-            BOOST_FOREACH(CNode* pnode, vNodesCopy)
-            {
-                if (pnode->fDisconnect ||
-                    (pnode->GetRefCount() <= 0 && pnode->vRecvMsg.empty() && pnode->nSendSize == 0 && pnode->ssSend.empty()))
-                {
-                    // remove from vNodes
-                    vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
-
-                    // release outbound grant (if any)
-                    pnode->grantOutbound.Release();
-
-                    // close socket and cleanup
-                    pnode->CloseSocketDisconnect();
-                    pnode->Cleanup();
-
-                    // hold in disconnected pool until all refs are released
-                    if (pnode->fNetworkNode || pnode->fInbound)
-                        pnode->Release();
-                    vNodesDisconnected.push_back(pnode);
-                }
-            }
-        }
-        {
-            // Delete disconnected nodes
-            list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;
-            BOOST_FOREACH(CNode* pnode, vNodesDisconnectedCopy)
-            {
-                // wait until threads are done using it
-                if (pnode->GetRefCount() <= 0)
-                {
-                    bool fDelete = false;
-                    {
-                        TRY_LOCK(pnode->cs_vSend, lockSend);
-                        if (lockSend)
-                        {
-                            TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
-                            if (lockRecv)
-                            {
-                                TRY_LOCK(pnode->cs_inventory, lockInv);
-                                if (lockInv)
-                                    fDelete = true;
-                            }
-                        }
-                    }
-                    if (fDelete)
-                    {
-                        vNodesDisconnected.remove(pnode);
-                        delete pnode;
-                    }
-                }
-            }
-        }
+        ThreadSocketHandler_DisconnectNodes();
         if(vNodes.size() != nPrevNodeCount) {
             nPrevNodeCount = vNodes.size();
             uiInterface.NotifyNumConnectionsChanged(nPrevNodeCount);
@@ -1099,6 +1044,69 @@ void ThreadSocketHandler()
 
         MilliSleep(100);
     } // main loop
+}
+
+void ThreadSocketHandler_DisconnectNodes()
+{
+    //
+    // Disconnect nodes
+    //
+    {
+        LOCK(cs_vNodes);
+        // Disconnect unused nodes
+        vector<CNode*> vNodesCopy = vNodes;
+        BOOST_FOREACH(CNode* pnode, vNodesCopy)
+        {
+            if (pnode->fDisconnect ||
+                (pnode->GetRefCount() <= 0 && pnode->vRecvMsg.empty() && pnode->nSendSize == 0 && pnode->ssSend.empty()))
+            {
+                // remove from vNodes
+                vNodes.erase(remove(vNodes.begin(), vNodes.end(), pnode), vNodes.end());
+
+                // release outbound grant (if any)
+                pnode->grantOutbound.Release();
+
+                // close socket and cleanup
+                pnode->CloseSocketDisconnect();
+                pnode->Cleanup();
+
+                // hold in disconnected pool until all refs are released
+                if (pnode->fNetworkNode || pnode->fInbound)
+                    pnode->Release();
+                vNodesDisconnected.push_back(pnode);
+            }
+        }
+    }
+    {
+        // Delete disconnected nodes
+        list<CNode*> vNodesDisconnectedCopy = vNodesDisconnected;
+        BOOST_FOREACH(CNode* pnode, vNodesDisconnectedCopy)
+        {
+            // wait until threads are done using it
+            if (pnode->GetRefCount() <= 0)
+            {
+                bool fDelete = false;
+                {
+                    TRY_LOCK(pnode->cs_vSend, lockSend);
+                    if (lockSend)
+                    {
+                        TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
+                        if (lockRecv)
+                        {
+                            TRY_LOCK(pnode->cs_inventory, lockInv);
+                            if (lockInv)
+                                fDelete = true;
+                        }
+                    }
+                }
+                if (fDelete)
+                {
+                    vNodesDisconnected.remove(pnode);
+                    delete pnode;
+                }
+            }
+        }
+    }
 }
 
 

@@ -70,3 +70,6 @@ uint32_t nExtKeyLookAhead = 10;
 
 int64_t nTimeLastMblkRecv = 0;
 
+std::atomic<CoreRunningMode> coreRunningMode(CoreRunningMode::RUNNING_NORMAL);
+CCriticalSection cs_service;
+

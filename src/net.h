@@ -75,6 +75,7 @@ void StartTor(void *);
 void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
+void ThreadSocketHandler_DisconnectNodes();
 
 // Signals for message handling
 struct CNodeSignals
@@ -175,6 +176,7 @@ extern std::map<CInv, int64_t> mapAlreadyAskedFor;
 
 extern std::vector<std::string> vAddedNodes;
 extern CCriticalSection cs_vAddedNodes;
+extern CCriticalSection cs_connectNode;
 
 struct LocalServiceInfo {
     int nScore;

@@ -9,6 +9,7 @@
 #include "rpcserver.h"
 #include "shutdown.h"
 
+
 #include <QApplication>
 
 #ifdef ANDROID
@@ -64,4 +65,14 @@ void ApplicationModel::AfterShutdown()
         boost::filesystem::remove(GetDataDir() / "blk0001.dat");
         boost::filesystem::remove_all(GetDataDir() / "txleveldb");
     }
+}
+
+void ApplicationModel::updateCoreSleeping(bool sleeping)
+{
+    setCoreSleeping(sleeping);
+}
+
+void ApplicationModel::updateUIpaused(bool uiPaused)
+{
+    setUiPaused(uiPaused);
 }

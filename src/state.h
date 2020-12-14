@@ -132,6 +132,8 @@ extern int64_t nMaxAnonStakeOutput;
 extern uint32_t nExtKeyLookAhead;
 extern int64_t nTimeLastMblkRecv;
 
+enum CoreRunningMode { RUNNING_NORMAL, UI_PAUSED, REQUEST_SYNC_SLEEP, SLEEP };
+extern std::atomic<CoreRunningMode> coreRunningMode;
 
 #endif /* COIN_STATE_H */
 

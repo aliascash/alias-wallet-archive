@@ -150,6 +150,67 @@ static void handleRunawayException(std::exception *e)
     exit(1);
 }
 
+void ThreadServiceStatelHandler(void *nothing)
+{
+    RenameThread("serviceState");
+
+    while (!ShutdownRequested())
+    {
+        bool serviceSlept = false;
+        if (coreRunningMode != CoreRunningMode::RUNNING_NORMAL && coreRunningMode != CoreRunningMode::UI_PAUSED)
+        {
+            LOCK(cs_main);
+            bool staking = !pwalletMain->IsLocked() && fIsStakingEnabled;
+            if (!staking && vNodes.size() > 2 && !IsInitialBlockDownload() &&
+                    nBestHeight >= GetNumBlocksOfPeers() && pindexBest->GetBlockTime() > (GetTime() - 15 * 60))
+            {
+                LogPrintf("ThreadServiceStatelHandler service >> sleep\n");
+                // lock wallet to make sure there is no ongoing wallet operation
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: lock wallet\n");
+                ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet);
+
+                // net locks, to make sure no more network operations are done
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: lock cs_vAddedNodes\n");
+                ENTER_CRITICAL_SECTION(cs_vAddedNodes); // blocks ThreadOpenAddedConnections
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: lock cs_connectNode\n");
+                ENTER_CRITICAL_SECTION(cs_connectNode); // blocks ThreadOpenConnections
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: lock cs_vNodes\n");
+                ENTER_CRITICAL_SECTION(cs_vNodes); // blocks ThreadSocketHandler
+
+                // Disconnect all nodes
+                BOOST_FOREACH(CNode* pnode, vNodes)
+                    pnode->fDisconnect = true;
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: disconnect nodes\n");
+                ThreadSocketHandler_DisconnectNodes();
+                LogPrintf("ThreadServiceStatelHandler service >> sleep: NotifyNumConnectionsChanged %d\n", vNodes.size());
+                uiInterface.NotifyNumConnectionsChanged(vNodes.size());
+                QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, true));
+
+                if (coreRunningMode == CoreRunningMode::REQUEST_SYNC_SLEEP)
+                    coreRunningMode = CoreRunningMode::SLEEP;
+
+                while (coreRunningMode == CoreRunningMode::SLEEP && !ShutdownRequested())
+                {
+                    MilliSleep(100);
+                }
+
+                LogPrintf("ThreadServiceStatelHandler service >> resume\n");
+                LEAVE_CRITICAL_SECTION(cs_vNodes);
+                LEAVE_CRITICAL_SECTION(cs_connectNode);
+                LEAVE_CRITICAL_SECTION(cs_vAddedNodes);
+                LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+
+                serviceSlept = true;
+            }
+        }
+        MilliSleep(1000);
+
+        if (serviceSlept)
+            // delay update of core state change to prevent notification flickering
+            QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, false));
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Start
@@ -211,6 +272,9 @@ bool AndroidAppInit(int argc, char* argv[])
         srcNode.enableRemoting(&applicationModel);  // enable remoting
         srcNode.enableRemoting(&optionsModel);      // enable remoting
 
+        // New Thread for controlling the sleep mode
+        NewThread(&ThreadServiceStatelHandler, NULL);
+
         // Initialize Core
         fRet = AppInit2(threadGroup);
 
@@ -225,9 +289,9 @@ bool AndroidAppInit(int argc, char* argv[])
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
             // create models
-            WalletModel walletModel(pwalletMain, &optionsModel);
+            WalletModel walletModel(&applicationModel, pwalletMain, &optionsModel);
             InitMessage("Init client models...");
-            ClientModel clientModel(&optionsModel, &walletModel);
+            ClientModel clientModel(&applicationModel, &optionsModel, &walletModel);
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
@@ -680,6 +744,21 @@ Java_org_alias_wallet_AliasActivity_updateBootstrapState(JNIEnv *env, jobject ob
     else {
         qDebug() << "Could not update Boostrap state because bootstrapWizard is not set";
     }
+    return;
+}
+
+JNIEXPORT void JNICALL
+Java_org_alias_wallet_AliasService_setCoreRunningMode(JNIEnv *env, jobject obj, jint jCoreRunningMode)
+{
+    qDebug() << "JNI setCoreRunningMode: jCoreRunningMode=" << jCoreRunningMode;
+    Q_UNUSED (obj)
+    if (jCoreRunningMode == CoreRunningMode::SLEEP)
+        coreRunningMode = CoreRunningMode::REQUEST_SYNC_SLEEP;
+    else
+        coreRunningMode = (CoreRunningMode)jCoreRunningMode;
+    if (applicationModelRef)
+        QMetaObject::invokeMethod(applicationModelRef, "updateUIpaused", Qt::QueuedConnection,
+                                  Q_ARG(bool, coreRunningMode != CoreRunningMode::RUNNING_NORMAL));
     return;
 }
 
