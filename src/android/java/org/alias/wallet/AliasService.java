@@ -357,7 +357,6 @@ public class AliasService extends QtService {
 
     private void createSyncAlarm() {
         Log.d(TAG, "createSyncAlarm()");
-        removeSyncAlarm();
         Intent syncIntent = new Intent(this, AliasService.class);
         syncIntent.setAction(ACTION_SYNC);
         PendingIntent syncPendingIntent = PendingIntent.getService(this, 0, syncIntent, 0);
