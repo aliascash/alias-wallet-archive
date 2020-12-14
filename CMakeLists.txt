@@ -268,6 +268,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
         download_file(https://github.com/aliascash/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
     endif()
+    if (NOT VCRUNTIME_ARCHIVE)
+        include(DownloadFile)
+        set(VCRUNTIME_ARCHIVE "${CMAKE_BINARY_DIR}/VCRuntime.libraries.Win64.zip")
+        download_file(https://github.com/aliascash/resources/raw/master/resources/VCRuntime.libraries.Win64.zip ${VCRUNTIME_ARCHIVE} SHA1 8f52e83d99d88362946e97a66a748975bd78347f)
+    endif()
 endif()
 
 # ============================================================================================
