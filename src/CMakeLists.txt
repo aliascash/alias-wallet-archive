@@ -457,6 +457,7 @@ if (ENABLE_GUI)
                     )
             target_link_libraries(Aliaswallet "Shlwapi")
             add_custom_command(TARGET Aliaswallet POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
                     COMMAND "${CMAKE_COMMAND}" -E
                     env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
                     --force
@@ -471,7 +472,6 @@ if (ENABLE_GUI)
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
                     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/delivery ${CMAKE_BINARY_DIR}/Alias
                     COMMENT "Running windeployqt..."
                     )
