@@ -324,6 +324,7 @@ public class AliasService extends QtService {
     }
 
     private synchronized void handleUIPause() {
+        uiPaused = true;
         setCoreRunningMode(CoreRunningMode.UI_PAUSED.ordinal());
         if (longTimer != null) {
             longTimer.cancel();
@@ -335,12 +336,9 @@ public class AliasService extends QtService {
                 public void run() {
                     cancel();
                     longTimer = null;
-                    if (!uiPaused) {
-                        uiPaused = true;
-                        if (batterySaveModeEnabled) {
-                            setCoreRunningMode(CoreRunningMode.REQUEST_SYNC_SLEEP.ordinal());
-                            createSyncAlarm();
-                        }
+                    if (uiPaused && batterySaveModeEnabled) {
+                        setCoreRunningMode(CoreRunningMode.REQUEST_SYNC_SLEEP.ordinal());
+                        createSyncAlarm();
                     }
                 }
             }, SERVICE_SLEEP_DELAY);
@@ -348,19 +346,18 @@ public class AliasService extends QtService {
     }
 
     private synchronized void handleUIResume() {
+        uiPaused = false;
         setCoreRunningMode(CoreRunningMode.NORMAL.ordinal());
         if (longTimer != null) {
             longTimer.cancel();
             longTimer = null;
         }
-        if (uiPaused) {
-            uiPaused = false;
-            removeSyncAlarm();
-        }
+        removeSyncAlarm();
     }
 
     private void createSyncAlarm() {
         Log.d(TAG, "createSyncAlarm()");
+        removeSyncAlarm();
         Intent syncIntent = new Intent(this, AliasService.class);
         syncIntent.setAction(ACTION_SYNC);
         PendingIntent syncPendingIntent = PendingIntent.getService(this, 0, syncIntent, 0);
