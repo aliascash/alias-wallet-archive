@@ -120,7 +120,7 @@ void ClientModel::updateServiceStatus()
     {
         msg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().toString(Qt::DefaultLocaleShortDate));
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
-                                                     QAndroidJniObject::fromString("Saving Power").object<jstring>(),
+                                                     QAndroidJniObject::fromString("Power Saving (sync hourly)").object<jstring>(),
                                                      QAndroidJniObject::fromString(msg).object<jstring>(),
                                                      8);
         return;

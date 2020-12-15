@@ -218,18 +218,20 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         return false;
     }
 
-    public synchronized void informCoreUIpause() {
+    public void informCoreUIpause() {
         if (isAliasServiceRunning()) {
+            Log.d(TAG, "informCoreUIpause()");
             Intent intent = new Intent(getApplicationContext(), AliasService.class);
-            intent.setAction(AliasService.ACTION_UI_PAUSE);
+            intent.setAction(AliasService.ServiceAction.ACTION_UI_PAUSE.name());
             getApplicationContext().startForegroundService(intent);
         }
     }
 
-    public synchronized void informCoreUIresume() {
+    public void informCoreUIresume() {
         if (isAliasServiceRunning()) {
+            Log.d(TAG, "informCoreUIresume()");
             Intent intent = new Intent(getApplicationContext(), AliasService.class);
-            intent.setAction(AliasService.ACTION_UI_RESUME);
+            intent.setAction(AliasService.ServiceAction.ACTION_UI_RESUME.name());
             getApplicationContext().startForegroundService(intent);
         }
     }

@@ -106,10 +106,11 @@ static void ThreadSafeHandleURI(const std::string& strURI)
 
 static void InitMessage(const std::string &message)
 {
-    LogPrintf("%s\n", message);
+    if (fDebug) LogPrintf("%s\n", message);
     if (applicationModelRef)
     {
-        applicationModelRef->setCoreMessage(QString::fromStdString(message));
+        if (coreRunningMode == CoreRunningMode::RUNNING_NORMAL)
+            applicationModelRef->setCoreMessage(QString::fromStdString(message));
 #ifdef ANDROID
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString(QObject::tr("Initializing")).object<jstring>(),
@@ -160,28 +161,29 @@ void ThreadCoreRunningModeHandler(void *nothing)
         {
             LOCK(cs_main);
             bool staking = !pwalletMain->IsLocked() && fIsStakingEnabled;
-            if (!staking && vNodes.size() > 2 && !IsInitialBlockDownload() &&
+            if (!ShutdownRequested() && !staking && vNodes.size() > 2 && !IsInitialBlockDownload() &&
                     nBestHeight >= GetNumBlocksOfPeers() && pindexBest->GetBlockTime() > (GetTime() - 15 * 60))
             {
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep\n");
+                if (fDebug) LogPrintf("ThreadCoreRunningModeHandler service >> sleep\n");
+
                 // lock wallet to make sure there is no ongoing wallet operation
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock wallet\n");
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock wallet\n");
                 ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet);
 
                 // net locks, to make sure no more network operations are done
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vAddedNodes\n");
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vAddedNodes\n");
                 ENTER_CRITICAL_SECTION(cs_vAddedNodes); // blocks ThreadOpenAddedConnections
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_connectNode\n");
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_connectNode\n");
                 ENTER_CRITICAL_SECTION(cs_connectNode); // blocks ThreadOpenConnections
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vNodes\n");
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vNodes\n");
                 ENTER_CRITICAL_SECTION(cs_vNodes); // blocks ThreadSocketHandler
 
                 // Disconnect all nodes
                 BOOST_FOREACH(CNode* pnode, vNodes)
                     pnode->fDisconnect = true;
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: disconnect nodes\n");
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: disconnect nodes\n");
                 ThreadSocketHandler_DisconnectNodes();
-                LogPrintf("ThreadCoreRunningModeHandler service >> sleep: NotifyNumConnectionsChanged %d\n", vNodes.size());
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: NotifyNumConnectionsChanged %d\n", vNodes.size());
                 uiInterface.NotifyNumConnectionsChanged(vNodes.size());
                 QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, true));
 
@@ -193,7 +195,7 @@ void ThreadCoreRunningModeHandler(void *nothing)
                     MilliSleep(100);
                 }
 
-                LogPrintf("ThreadCoreRunningModeHandler service >> resume\n");
+                if (fDebug) LogPrintf("ThreadCoreRunningModeHandler service >> resume\n");
                 LEAVE_CRITICAL_SECTION(cs_vNodes);
                 LEAVE_CRITICAL_SECTION(cs_connectNode);
                 LEAVE_CRITICAL_SECTION(cs_vAddedNodes);
@@ -202,7 +204,8 @@ void ThreadCoreRunningModeHandler(void *nothing)
                 QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, false));
             }
         }
-        MilliSleep(1000);
+        if (!ShutdownRequested())
+            MilliSleep(1000);
     }
 }
 
