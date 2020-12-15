@@ -15,6 +15,7 @@
 #include "stealth.h"
 #include <rep_walletmodelremote_source.h>
 
+class ApplicationModel;
 class OptionsModel;
 class AddressTableModel;
 class TransactionTableModel;
@@ -38,7 +39,7 @@ class WalletModel : public WalletModelRemoteSimpleSource
     Q_OBJECT
 
 public:
-    explicit WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent = 0);
+    explicit WalletModel(ApplicationModel *applicationModel, CWallet *wallet, OptionsModel *optionsModel, QObject *parent = 0);
     ~WalletModel();
 
     OptionsModel *getOptionsModel();
@@ -116,6 +117,7 @@ public:
     void updateStakingInfo();
 
 private:
+    ApplicationModel *applicationModel;
     CWallet *wallet;
 
     // Wallet has an options model for wallet-specific options
@@ -142,6 +144,9 @@ private:
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
+
+private slots:
+    void uiPausedStateChanged(bool uiPaused);
 
 public slots:
     /* Wallet status might have changed */

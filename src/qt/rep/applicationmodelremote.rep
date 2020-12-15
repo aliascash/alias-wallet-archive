@@ -3,6 +3,8 @@ class ApplicationModelRemote
 {
     PROP(QString coreMessage SOURCEONLYSETTER);
     PROP(QString webSocketToken SOURCEONLYSETTER);
+    PROP(bool coreSleeping=false SOURCEONLYSETTER);
+    PROP(bool uiPaused=false SOURCEONLYSETTER);
 
     SIGNAL(uiReady());
 

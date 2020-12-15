@@ -4,6 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "applicationmodel.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "guiconstants.h"
@@ -25,8 +26,8 @@
 
 static const int64_t nClientStartupTime = GetTime();
 
-ClientModel::ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent) :
-    ClientModelRemoteSimpleSource(parent), optionsModel(optionsModel), walletModel(walletModel), pollTimer(0)
+ClientModel::ClientModel(ApplicationModel *applicationModel, OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent) :
+    ClientModelRemoteSimpleSource(parent), applicationModel(applicationModel), optionsModel(optionsModel), walletModel(walletModel), pollTimer(0)
 {
     peerTableModel = new PeerTableModel(this);
 
@@ -39,9 +40,10 @@ ClientModel::ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, Q
 
     subscribeToCoreSignals();
 
-    // TODO updateServiceStatus should be in a separate class, walletModel dependency removed from clientModel
+    // TODO updateServiceStatus should be in a separate class, walletModel and applicationModel dependency removed from clientModel
     connect(this, SIGNAL(numConnectionsChanged(int)), this, SLOT(updateServiceStatus()));
     connect(this, SIGNAL(blockInfoChanged(BlockInfo)), this, SLOT(updateServiceStatus()));
+    connect(applicationModel, SIGNAL(coreSleepingChanged(bool)), this, SLOT(updateServiceStatus()));
     connect(walletModel, SIGNAL(encryptionStatusChanged(int)), this, SLOT(updateServiceStatus()));
     connect(walletModel, SIGNAL(stakingInfoChanged(StakingInfo)), this, SLOT(updateServiceStatus()));
 }
@@ -99,6 +101,30 @@ void ClientModel::updateServiceStatus()
 {
     const BlockInfo& blockInfo = ClientModelRemoteSimpleSource::blockInfo();
 
+    int nNodeMode = blockInfo.nNodeMode();
+    int nNodeState = blockInfo.nNodeState();
+
+    // -- translation (tr()) makes it difficult to neatly pick block/header
+    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
+    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
+
+    int count = blockInfo.numBlocks();
+    int nTotalBlocks = blockInfo.numBlocksOfPeers();
+    QDateTime lastBlockDate = blockInfo.lastBlockTime();
+
+    QString title, msg, connection;
+    int type = 0;
+    connection = tr("%1 nodes connected").arg(numConnections());
+
+    if (applicationModel->coreSleeping())
+    {
+        msg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().toString(Qt::DefaultLocaleShortDate));
+        QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
+                                                     QAndroidJniObject::fromString("Power Saving (sync hourly)").object<jstring>(),
+                                                     QAndroidJniObject::fromString(msg).object<jstring>(),
+                                                     8);
+        return;
+    }
     if (numConnections() == 0)
     {
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
@@ -116,20 +142,7 @@ void ClientModel::updateServiceStatus()
         return;
     }
 
-    int nNodeMode = blockInfo.nNodeMode();
-    int nNodeState = blockInfo.nNodeState();
 
-    // -- translation (tr()) makes it difficult to neatly pick block/header
-    static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
-    static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
-
-    int count = blockInfo.numBlocks();
-    int nTotalBlocks = blockInfo.numBlocksOfPeers();
-    QDateTime lastBlockDate = blockInfo.lastBlockTime();
-
-    QString title, msg, connection;
-    int type = 0;
-    connection = tr("%1 nodes connected").arg(numConnections());
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {

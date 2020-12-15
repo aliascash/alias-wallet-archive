@@ -106,10 +106,11 @@ static void ThreadSafeHandleURI(const std::string& strURI)
 
 static void InitMessage(const std::string &message)
 {
-    LogPrintf("%s\n", message);
+    if (fDebug) LogPrintf("%s\n", message);
     if (applicationModelRef)
     {
-        applicationModelRef->setCoreMessage(QString::fromStdString(message));
+        if (coreRunningMode == CoreRunningMode::RUNNING_NORMAL)
+            applicationModelRef->setCoreMessage(QString::fromStdString(message));
 #ifdef ANDROID
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString(QObject::tr("Initializing")).object<jstring>(),
@@ -148,6 +149,64 @@ static void handleRunawayException(std::exception *e)
     PrintExceptionContinue(e, "Runaway exception");
     QMessageBox::critical(0, "Runaway exception", SpectreGUI::tr("A fatal error occurred. Alias can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
+}
+
+void ThreadCoreRunningModeHandler(void *nothing)
+{
+    RenameThread("coreRunningMode");
+
+    while (!ShutdownRequested())
+    {
+        if (coreRunningMode != CoreRunningMode::RUNNING_NORMAL && coreRunningMode != CoreRunningMode::UI_PAUSED)
+        {
+            LOCK(cs_main);
+            bool staking = !pwalletMain->IsLocked() && fIsStakingEnabled;
+            if (!ShutdownRequested() && !staking && vNodes.size() > 2 && !IsInitialBlockDownload() &&
+                    nBestHeight >= GetNumBlocksOfPeers() && pindexBest->GetBlockTime() > (GetTime() - 15 * 60))
+            {
+                if (fDebug) LogPrintf("ThreadCoreRunningModeHandler service >> sleep\n");
+
+                // lock wallet to make sure there is no ongoing wallet operation
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock wallet\n");
+                ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet);
+
+                // net locks, to make sure no more network operations are done
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vAddedNodes\n");
+                ENTER_CRITICAL_SECTION(cs_vAddedNodes); // blocks ThreadOpenAddedConnections
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_connectNode\n");
+                ENTER_CRITICAL_SECTION(cs_connectNode); // blocks ThreadOpenConnections
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: lock cs_vNodes\n");
+                ENTER_CRITICAL_SECTION(cs_vNodes); // blocks ThreadSocketHandler
+
+                // Disconnect all nodes
+                BOOST_FOREACH(CNode* pnode, vNodes)
+                    pnode->fDisconnect = true;
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: disconnect nodes\n");
+                ThreadSocketHandler_DisconnectNodes();
+                // LogPrintf("ThreadCoreRunningModeHandler service >> sleep: NotifyNumConnectionsChanged %d\n", vNodes.size());
+                uiInterface.NotifyNumConnectionsChanged(vNodes.size());
+                QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, true));
+
+                if (coreRunningMode == CoreRunningMode::REQUEST_SYNC_SLEEP)
+                    coreRunningMode = CoreRunningMode::SLEEP;
+
+                while (coreRunningMode == CoreRunningMode::SLEEP && !ShutdownRequested())
+                {
+                    MilliSleep(100);
+                }
+
+                if (fDebug) LogPrintf("ThreadCoreRunningModeHandler service >> resume\n");
+                LEAVE_CRITICAL_SECTION(cs_vNodes);
+                LEAVE_CRITICAL_SECTION(cs_connectNode);
+                LEAVE_CRITICAL_SECTION(cs_vAddedNodes);
+                LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+
+                QMetaObject::invokeMethod(applicationModelRef, "updateCoreSleeping", Qt::QueuedConnection, Q_ARG(bool, false));
+            }
+        }
+        if (!ShutdownRequested())
+            MilliSleep(1000);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -211,6 +270,9 @@ bool AndroidAppInit(int argc, char* argv[])
         srcNode.enableRemoting(&applicationModel);  // enable remoting
         srcNode.enableRemoting(&optionsModel);      // enable remoting
 
+        // New Thread for controlling the sleep mode
+        NewThread(&ThreadCoreRunningModeHandler, NULL);
+
         // Initialize Core
         fRet = AppInit2(threadGroup);
 
@@ -225,9 +287,9 @@ bool AndroidAppInit(int argc, char* argv[])
             ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet); // no RAII
 
             // create models
-            WalletModel walletModel(pwalletMain, &optionsModel);
+            WalletModel walletModel(&applicationModel, pwalletMain, &optionsModel);
             InitMessage("Init client models...");
-            ClientModel clientModel(&optionsModel, &walletModel);
+            ClientModel clientModel(&applicationModel, &optionsModel, &walletModel);
             SpectreBridge bridge(&webChannel);
             bridge.setClientModel(&clientModel);
             bridge.setWalletModel(&walletModel);
@@ -680,6 +742,21 @@ Java_org_alias_wallet_AliasActivity_updateBootstrapState(JNIEnv *env, jobject ob
     else {
         qDebug() << "Could not update Boostrap state because bootstrapWizard is not set";
     }
+    return;
+}
+
+JNIEXPORT void JNICALL
+Java_org_alias_wallet_AliasService_setCoreRunningMode(JNIEnv *env, jobject obj, jint jCoreRunningMode)
+{
+    qDebug() << "JNI setCoreRunningMode: jCoreRunningMode=" << jCoreRunningMode;
+    Q_UNUSED (obj)
+    if (jCoreRunningMode == CoreRunningMode::SLEEP)
+        coreRunningMode = CoreRunningMode::REQUEST_SYNC_SLEEP;
+    else
+        coreRunningMode = (CoreRunningMode)jCoreRunningMode;
+    if (applicationModelRef)
+        QMetaObject::invokeMethod(applicationModelRef, "updateUIpaused", Qt::QueuedConnection,
+                                  Q_ARG(bool, coreRunningMode != CoreRunningMode::RUNNING_NORMAL));
     return;
 }
 
