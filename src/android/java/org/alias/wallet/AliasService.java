@@ -85,7 +85,6 @@ public class AliasService extends QtService {
 
     public boolean init = false;
     public boolean rescan = false;
-    public String bip44key = "";
 
     private String lastWalletNotificationTitle;
     private String lastWalletNotificationText;
@@ -257,8 +256,6 @@ public class AliasService extends QtService {
             if (bundle != null) {
                 rescan = bundle.getBoolean("rescan", false);
                 Log.d(TAG, "onStartCommand rescan=" + rescan);
-                bip44key = bundle.getString("bip44key", "");
-                //Log.d(TAG, "onStartCommand bip44key=" + bip44key);
             }
         }
         init = true;

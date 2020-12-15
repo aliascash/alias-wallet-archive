@@ -248,8 +248,6 @@ bool AndroidAppInit(int argc, char* argv[])
         }
         rescan = QtAndroid::androidService().getField<jboolean>("rescan");
         if (rescan) SoftSetBoolArg("-rescan", true);
-        QString bip44key = QtAndroid::androidService().getObjectField<jstring>("bip44key").toString();
-        if (!bip44key.isEmpty()) SoftSetArg("-bip44key", bip44key.toStdString());
 
         //---- Create core webSocket server for JavaScript client
         QWebSocketServer server(QStringLiteral("Alias Core Websocket Server"), QWebSocketServer::NonSecureMode);
@@ -280,7 +278,6 @@ bool AndroidAppInit(int argc, char* argv[])
         {
             // reset androidservice startup flags
             QtAndroid::androidService().setField<jboolean>("rescan", false);
-            QtAndroid::androidService().setField<jstring>("bip44key", QAndroidJniObject::fromString("").object<jstring>());
 
             // Get locks upfront, to make sure we can completly setup our client before core sends notifications
             ENTER_CRITICAL_SECTION(cs_main); // no RAII
