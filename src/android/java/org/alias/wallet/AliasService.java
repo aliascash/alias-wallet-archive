@@ -312,7 +312,7 @@ public class AliasService extends QtService {
             notificationBuilder.setProgress(0, 0, true);
         }
         else if (ServiceNotificationType.SHUTDOWN.ordinal() == type) {
-            notificationBuilder.setActions(null);
+            notificationBuilder.setActions();
             notificationBuilder.setProgress(0, 0, true);
         }
         lastServiceNotificationType = type;
