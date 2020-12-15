@@ -342,6 +342,7 @@ static void RemoteModelStateChanged(QRemoteObjectReplica::State state, QRemoteOb
     switch(state)
     {
     case QRemoteObjectReplica::Suspect:
+        StartShutdown();
         QtAndroid::androidActivity().callMethod<void>("finishAndRemoveTask");
         break;
     default:
@@ -649,30 +650,27 @@ int main(int argc, char *argv[])
 //                uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
                 // Check if wallet unlock is needed to determine current balance
-                if (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked || walletModelPtr->encryptionInfo().fWalletUnlockStakingOnly())
+                if (!ShutdownRequested() && (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked || walletModelPtr->encryptionInfo().fWalletUnlockStakingOnly()))
                 {
+                    InitMessage("Login");
                     SpectreGUI::UnlockContext unlockContext = window.requestUnlock(SpectreGUI::UnlockMode::login);
                     if (!unlockContext.isValid())
-                    {
-                        InitMessage("Shutdown...");
                         StartShutdown();
-                    }
                 }
 
                 if (!ShutdownRequested())
+                {
                     window.loadIndex(applicationModelPtr.data()->webSocketToken());
-
 #ifdef ANDROID
-                // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
-                QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
+                    // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
+                    QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
 #endif
+//                  // Release lock before starting event processing, otherwise lock would never be released
+//                  LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
+//                  LEAVE_CRITICAL_SECTION(cs_main);
 
-//               // Release lock before starting event processing, otherwise lock would never be released
-//               LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
-//               LEAVE_CRITICAL_SECTION(cs_main);
-
-                if (!ShutdownRequested())
                     app.exec();
+                }
 
                 window.hide();
 //                window.setClientModel(0);
