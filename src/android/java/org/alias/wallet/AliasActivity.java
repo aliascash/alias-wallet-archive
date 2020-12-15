@@ -31,7 +31,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     private int softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
     private int screenOrientationMode = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
-    private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+    private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
     // native method to handle 'alias:' URIs
     public static native void receiveURI(String url);
