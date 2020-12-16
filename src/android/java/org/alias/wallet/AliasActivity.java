@@ -22,7 +22,8 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import org.qtproject.qt5.android.bindings.QtApplication;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity {
 
@@ -30,7 +31,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     private int softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
     private int screenOrientationMode = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
-    private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+    private int screenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
     // native method to handle 'alias:' URIs
     public static native void receiveURI(String url);
@@ -74,6 +75,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     @Override
     protected void onPause() {
         super.onPause();
+        informCoreUIpause();
         if (isFinishing()) {
             // fix the unintended 'go back to camera app after qrcode scan' behavior by explictly go the home screen
             Intent mainActivity = new Intent(Intent.ACTION_MAIN);
@@ -86,6 +88,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     @Override
     protected void onResume() {
         super.onResume();
+        informCoreUIresume();
         getWindow().setSoftInputMode(softInputMode);
         if (screenOrientationMode == ActivityInfo.SCREEN_ORIENTATION_LOCKED) {
             setRequestedOrientation(screenOrientation);
@@ -118,7 +121,6 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     public void startCore(boolean rescan, String bip44key) {
         Intent intent = new Intent(getApplicationContext(), AliasService.class);
-        Bundle bundle = intent.getExtras();
         if (rescan) {
             intent.putExtra("rescan", true);
         }
@@ -205,6 +207,35 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         }
         return false;
     }
+
+    public boolean isAliasServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (AliasService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void informCoreUIpause() {
+        if (isAliasServiceRunning()) {
+            Log.d(TAG, "informCoreUIpause()");
+            Intent intent = new Intent(getApplicationContext(), AliasService.class);
+            intent.setAction(AliasService.ServiceAction.ACTION_UI_PAUSE.name());
+            getApplicationContext().startForegroundService(intent);
+        }
+    }
+
+    public void informCoreUIresume() {
+        if (isAliasServiceRunning()) {
+            Log.d(TAG, "informCoreUIresume()");
+            Intent intent = new Intent(getApplicationContext(), AliasService.class);
+            intent.setAction(AliasService.ServiceAction.ACTION_UI_RESUME.name());
+            getApplicationContext().startForegroundService(intent);
+        }
+    }
+
 
     /**
      * BroadcastReceiver for handling BootstrapService broadcasts

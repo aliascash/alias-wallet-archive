@@ -4,6 +4,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+#include "applicationmodel.h"
 #include "walletmodel.h"
 #include "guiconstants.h"
 #include "optionsmodel.h"
@@ -26,8 +27,8 @@
 #include <QtAndroidExtras>
 #endif
 
-WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
-    WalletModelRemoteSimpleSource(parent), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
+WalletModel::WalletModel(ApplicationModel* applicationModel, CWallet *wallet, OptionsModel *optionsModel, QObject *parent) :
+    WalletModelRemoteSimpleSource(parent), applicationModel(applicationModel), wallet(wallet), optionsModel(optionsModel), addressTableModel(0),
     transactionTableModel(0),
     cachedBalance(0), cachedSpectreBal(0), cachedStake(0), cachedUnconfirmedBalance(0), cachedImmatureBalance(0),
     cachedNumTransactions(0),
@@ -46,6 +47,8 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     pollTimer = new QTimer(this);
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(pollBalanceChanged()));
     pollTimer->start(MODEL_UPDATE_DELAY);
+
+    connect(applicationModel, SIGNAL(uiPausedChanged(bool)), SLOT(uiPausedStateChanged(bool)));
 }
 
 WalletModel::~WalletModel()
@@ -115,8 +118,17 @@ void WalletModel::updateStatus(bool force)
     }
 }
 
+void WalletModel::uiPausedStateChanged(bool uiPaused)
+{
+    if (!uiPaused)
+        pollBalanceChanged();
+}
+
 void WalletModel::pollBalanceChanged()
 {
+   if (applicationModel->uiPaused())
+       return; // UI is not visible
+
     // Get required locks upfront. This avoids the GUI from getting stuck on
     // periodical polls if the core is holding the locks for a longer time -
     // for example, during a wallet rescan.

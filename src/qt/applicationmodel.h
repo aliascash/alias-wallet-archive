@@ -9,7 +9,7 @@
 
 #include <rep_applicationmodelremote_source.h>
 
-/** Model for Bitcoin network client. */
+/** Model for Core Service. */
 class ApplicationModel : public ApplicationModelRemoteSimpleSource
 {
     Q_OBJECT
@@ -22,6 +22,10 @@ public:
 
     // Executes logic after the shutdown of the core. Clients should never call this but requestShutdownCore() instead.
     void AfterShutdown();
+
+public slots:
+    void updateCoreSleeping(bool sleeping);
+    void updateUIpaused(bool uiPaused);
 
 private slots:
     void detectShutdown();

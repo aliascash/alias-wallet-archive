@@ -27,6 +27,7 @@ enum NumConnections {
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
+class ApplicationModel;
 class OptionsModel;
 class WalletModel;
 class PeerTableModel;
@@ -44,7 +45,7 @@ class ClientModel : public ClientModelRemoteSimpleSource
 {
     Q_OBJECT
 public:
-    explicit ClientModel(OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent = 0);
+    explicit ClientModel(ApplicationModel *applicationModel, OptionsModel *optionsModel, WalletModel *walletModel, QObject *parent = 0);
     ~ClientModel();
 
     OptionsModel *getOptionsModel();
@@ -80,6 +81,7 @@ public:
     QString formatClientStartupTime() const;
 
 private:
+    ApplicationModel *applicationModel;
     OptionsModel *optionsModel;
     WalletModel *walletModel;
     PeerTableModel *peerTableModel;

@@ -1243,7 +1243,7 @@ void SpectreGUI::updateStakingIcon(StakingInfo stakingInfo)
 
 void SpectreGUI::requestShutdown()
 {
-    applicationModel->requestShutdownCore(NORMAL);
+    applicationModel->requestShutdownCore(RUNNING_NORMAL);
 }
 
 void SpectreGUI::detectShutdown()
