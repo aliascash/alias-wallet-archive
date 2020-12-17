@@ -137,8 +137,6 @@ void AskPassphraseDialog::accept()
     QString newpass1 = ui->passEdit2->text();
     QString newpass2 = ui->passEdit3->text();
 
-    secureClearPassFields();
-
     switch(mode)
     {
     case Encrypt: {
@@ -173,6 +171,7 @@ void AskPassphraseDialog::accept()
                     QMessageBox::critical(this, tr("Wallet encryption failed"),
                                          tr("Wallet encryption failed due to an internal error. Your wallet was not encrypted."));
                 }
+                secureClearPassFields();
                 QDialog::accept(); // Success
             }
             else
@@ -183,6 +182,7 @@ void AskPassphraseDialog::accept()
         }
         else
         {
+            secureClearPassFields();
             QDialog::reject(); // Cancelled
         }
         } break;
@@ -203,6 +203,7 @@ void AskPassphraseDialog::accept()
                 QtAndroid::androidActivity().callMethod<jboolean>("setupBiometricUnlock", "(Ljava/lang/String;)Z",
                                                                   QAndroidJniObject::fromString(oldpass).object<jstring>());
 #endif
+            secureClearPassFields();
             QDialog::accept(); // Success
         }
         break;
@@ -218,6 +219,7 @@ void AskPassphraseDialog::accept()
 #ifdef ANDROID
             QtAndroid::androidActivity().callMethod<void>("clearBiometricUnlock", "()V");
 #endif
+            secureClearPassFields();
             QDialog::accept(); // Success
         }
         break;
@@ -231,6 +233,7 @@ void AskPassphraseDialog::accept()
 #ifdef ANDROID
                 QtAndroid::androidActivity().callMethod<void>("clearBiometricUnlock", "()V");
 #endif
+                secureClearPassFields();
                 QDialog::accept(); // Success
             }
             else
@@ -242,6 +245,8 @@ void AskPassphraseDialog::accept()
         }
         else
         {
+            ui->passEdit2->clear();
+            ui->passEdit3->clear();
             QMessageBox::critical(this, tr("Wallet encryption failed"),
                                  tr("The supplied passphrases do not match."));
         }
