@@ -15,15 +15,23 @@
 #include <QKeyEvent>
 #include <QScreen>
 
+#ifdef ANDROID
+#include <QtAndroidExtras>
+#endif
+
+AskPassphraseDialog* askPassphraseDialogRef;
+
 AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AskPassphraseDialog),
     mode(mode),
     walletModel(0),
-    fCapsLock(false)
+    fCapsLock(false),
+    fBiometricUnlock(false)
 {
     ui->setupUi(this);
 #ifdef ANDROID
+    askPassphraseDialogRef = this;
     setFixedSize(QGuiApplication::primaryScreen()->availableSize());
 #endif
     ui->progressBar->setVisible(false);
@@ -47,12 +55,11 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
             setWindowTitle(tr("Encrypt wallet"));
             break;
         case UnlockRescan:
-        case UnlockLogin:
             ui->stakingCheckBox->setText(tr("Keep wallet unlocked for staking."));
         case UnlockStaking:
-            ui->stakingCheckBox->setChecked(mode == UnlockStaking);
             ui->stakingCheckBox->show();
             // fallthru
+        case UnlockLogin:
         case Unlock:
             ui->passLabel2->hide();
             ui->passEdit2->hide();
@@ -84,11 +91,17 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     connect(ui->passEdit1, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit2, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit3, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
+
+#ifdef ANDROID
+    if (mode != Encrypt)
+        fBiometricUnlock = QtAndroid::androidActivity().callMethod<jboolean>("startBiometricUnlock", "()Z");
+#endif
 }
 
 AskPassphraseDialog::~AskPassphraseDialog()
 {
     secureClearPassFields();
+    askPassphraseDialogRef = 0;
     delete ui;
 }
 
@@ -96,8 +109,6 @@ void AskPassphraseDialog::setWalletModel(QSharedPointer<WalletModelRemoteReplica
 {
     this->walletModel = model;
     ui->stakingCheckBox->setChecked(mode == UnlockStaking || model->encryptionInfo().fWalletUnlockStakingOnly());
-    if (mode == UnlockLogin && model->encryptionInfo().fWalletUnlockStakingOnly())
-        ui->stakingCheckBox->hide();
 }
 
 void AskPassphraseDialog::setApplicationModel(QSharedPointer<ApplicationModelRemoteReplica> model)
@@ -183,9 +194,15 @@ void AskPassphraseDialog::accept()
         {
             QMessageBox::critical(this, tr("Wallet unlock failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
+            handleBiometricUnlockFailed();
         }
         else
         {
+#ifdef ANDROID
+            if (!fBiometricUnlock)
+                QtAndroid::androidActivity().callMethod<jboolean>("setupBiometricUnlock", "(Ljava/lang/String;)Z",
+                                                                  QAndroidJniObject::fromString(oldpass).object<jstring>());
+#endif
             QDialog::accept(); // Success
         }
         break;
@@ -194,9 +211,13 @@ void AskPassphraseDialog::accept()
         {
             QMessageBox::critical(this, tr("Wallet decryption failed"),
                                   tr("The passphrase entered for the wallet decryption was incorrect."));
+            handleBiometricUnlockFailed();
         }
         else
         {
+#ifdef ANDROID
+            QtAndroid::androidActivity().callMethod<void>("clearBiometricUnlock", "()V");
+#endif
             QDialog::accept(); // Success
         }
         break;
@@ -207,12 +228,16 @@ void AskPassphraseDialog::accept()
             {
                 QMessageBox::information(this, tr("Wallet encrypted"),
                                      tr("Wallet passphrase was successfully changed."));
+#ifdef ANDROID
+                QtAndroid::androidActivity().callMethod<void>("clearBiometricUnlock", "()V");
+#endif
                 QDialog::accept(); // Success
             }
             else
             {
                 QMessageBox::critical(this, tr("Wallet encryption failed"),
                                      tr("The passphrase entered for the wallet decryption was incorrect."));
+                handleBiometricUnlockFailed();
             }
         }
         else
@@ -309,3 +334,49 @@ void AskPassphraseDialog::showEvent(QShowEvent *e)
 #endif
     QDialog::showEvent(e);
 }
+
+void AskPassphraseDialog::handleBiometricUnlockFailed()
+{
+#ifdef ANDROID
+    if (fBiometricUnlock)
+    {
+        ui->passEdit1->setReadOnly(false);
+        ui->passEdit1->setDisabled(false);
+        QtAndroid::androidActivity().callMethod<void>("clearBiometricUnlock", "()V");
+        fBiometricUnlock = false;
+    }
+#endif
+}
+
+void AskPassphraseDialog::serveBiometricPassword(QString walletPassword)
+{
+    ui->passEdit1->setText(walletPassword);
+    ui->passEdit1->setReadOnly(true);
+    ui->passEdit1->setDisabled(true);
+    if (ui->stakingCheckBox->isHidden() && mode != ChangePass)
+        accept();
+}
+
+#ifdef ANDROID
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+JNIEXPORT void JNICALL
+Java_org_alias_wallet_AliasActivity_serveWalletPassword(JNIEnv *env, jobject obj, jstring walletPassword)
+{
+    const char *walletPasswordStr = env->GetStringUTFChars(walletPassword, NULL);
+    Q_UNUSED (obj)
+    if (askPassphraseDialogRef)
+        QMetaObject::invokeMethod(askPassphraseDialogRef, "serveBiometricPassword", Qt::QueuedConnection,
+                                  Q_ARG(QString, walletPasswordStr));
+    else {
+        qDebug() << "serveWalletPassword could no be proccessed because askPassphraseDialogRef is invalid";
+    }
+    env->ReleaseStringUTFChars(walletPassword, walletPasswordStr);
+    return;
+}
+#ifdef __cplusplus
+}
+#endif
+#endif

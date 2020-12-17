@@ -43,6 +43,9 @@ public:
     void setWalletModel(QSharedPointer<WalletModelRemoteReplica> walletModel);
     void setApplicationModel(QSharedPointer<ApplicationModelRemoteReplica> walletModel);
 
+public slots:
+    void serveBiometricPassword(QString walletPassword);
+
 protected:
     void showEvent(QShowEvent *);
 
@@ -54,6 +57,9 @@ private:
     QSharedPointer<WalletModelRemoteReplica> walletModel;
     QSharedPointer<ApplicationModelRemoteReplica> applicationModel;
     bool fCapsLock;
+
+    void handleBiometricUnlockFailed();
+    bool fBiometricUnlock;
 
 private slots:
     void textChanged();
