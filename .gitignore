@@ -130,13 +130,11 @@ Checksum-Aliaswallet-*
 # Mac
 *.dmg
 .qmake.stash
-
 src/android/.gradle/
-
 src/android/gradle/wrapper/
-
 src/android/local.properties
-
 src/android/gradlew.bat
-
 src/android/gradlew
+
+# CI-Build
+AliasWalletAndroidKeyStore.jks
