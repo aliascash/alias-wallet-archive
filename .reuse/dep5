@@ -110,6 +110,10 @@ Files: src/qt/res/assets/plugins/pnglib/*
 Copyright: 2010 Robert Eisele
 License: BSD-2-Clause
 
+Files: src/android/java/org/qtproject/qt5/android/bindings/Qt*.java
+Copyright: 2016, BogDan Vatra <bogdan@kde.org>
+License: BSD-2-Clause
+
 # ############################################################################
 # GPL-3.0-or-later Licenses
 Files: external/berkeleydb-cmake/patches/config.guess external/berkeleydb-cmake/patches/config.sub
