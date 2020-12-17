@@ -60,9 +60,12 @@ import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.fragment.app.FragmentActivity;
+
 import org.qtproject.qt5.android.QtNative;
 
-public class QtActivity extends Activity
+// TEKNEX: Extend from FragmentActivity instead Activity to support androidx
+public class QtFragmentActivity extends FragmentActivity
 {
     public String APPLICATION_PARAMETERS = null; // use this variable to pass any parameters to your application,
     // the parameters must not contain any white spaces
@@ -90,10 +93,10 @@ public class QtActivity extends Activity
 
     public String QT_ANDROID_DEFAULT_THEME = null; // sets the default theme.
 
-    private QtActivityLoader m_loader;
-    public QtActivity()
+    private QtFragmentActivityLoader m_loader;
+    public QtFragmentActivity()
     {
-        m_loader = new QtActivityLoader(this);
+        m_loader = new QtFragmentActivityLoader(this);
         if (Build.VERSION.SDK_INT >= 21) {
             QT_ANDROID_THEMES = new String[] {"Theme_Holo_Light"};
             QT_ANDROID_DEFAULT_THEME = "Theme_Holo_Light";
@@ -627,16 +630,16 @@ public class QtActivity extends Activity
         QtApplication.invokeDelegate();
     }
     //---------------------------------------------------------------------------
-
-    @Override
-    public Object onRetainNonConfigurationInstance()
-    {
-        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
-        if (res.invoked)
-            return res.methodReturns;
-        else
-            return super.onRetainNonConfigurationInstance();
-    }
+// TEKNEX: FragmentActivity cannot override onRetainNonConfigurationInstance();
+//    @Override
+//    public Object onRetainNonConfigurationInstance()
+//    {
+//        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
+//        if (res.invoked)
+//            return res.methodReturns;
+//        else
+//            return super.onRetainNonConfigurationInstance();
+//    }
     public Object super_onRetainNonConfigurationInstance()
     {
         return super.onRetainNonConfigurationInstance();

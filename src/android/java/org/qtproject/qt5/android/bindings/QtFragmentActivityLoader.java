@@ -47,12 +47,13 @@ import android.view.Window;
 
 import java.lang.reflect.Field;
 
-public class QtActivityLoader extends QtLoader {
-    QtActivity m_activity;
+// TEKNEX: QtActivityLoader copy for QtFragmentActivity to support androidx
+public class QtFragmentActivityLoader extends QtLoader {
+    QtFragmentActivity m_activity;
 
-    QtActivityLoader(QtActivity activity)
+    QtFragmentActivityLoader(QtFragmentActivity activity)
     {
-        super(activity, QtActivity.class);
+        super(activity, QtFragmentActivity.class);
         m_activity = activity;
     }
     @Override
