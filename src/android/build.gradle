@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cronet:17.0.0'
     implementation 'org.chromium.net:cronet-fallback:76.3809.111'
     implementation 'net.lingala.zip4j:zip4j:2.6.4'
+    implementation "androidx.biometric:biometric:1.0.1"
 }
 
 android {
