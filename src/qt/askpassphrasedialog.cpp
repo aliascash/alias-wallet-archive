@@ -245,6 +245,7 @@ void AskPassphraseDialog::accept()
         }
         else
         {
+            ui->passEdit2->setFocus();
             ui->passEdit2->clear();
             ui->passEdit3->clear();
             QMessageBox::critical(this, tr("Wallet encryption failed"),
