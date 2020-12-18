@@ -2,7 +2,8 @@
 <resources>
     <color name="background">#282829</color>
     <color name="primary">#F28321</color>
-    <style name="AppBaseTheme" parent="android:Theme.Holo.NoActionBar.Fullscreen">
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 </resources>
