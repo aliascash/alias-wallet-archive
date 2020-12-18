@@ -322,7 +322,7 @@ public class AliasActivity extends QtFragmentActivity {
             return true;
         } catch (Exception ex) {
             Log.e(TAG, "setupBiometricUnlock()", ex);
-            this.walletPassword = null;
+            clearBiometricUnlock();
             return false;
         }
     }
@@ -350,6 +350,7 @@ public class AliasActivity extends QtFragmentActivity {
         }
         catch (Exception ex) {
             Log.e(TAG, "startBiometricUnlock()", ex);
+            clearBiometricUnlock();
             return false;
         }
     }
