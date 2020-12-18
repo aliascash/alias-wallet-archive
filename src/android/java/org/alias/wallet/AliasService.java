@@ -305,6 +305,9 @@ public class AliasService extends QtService {
         if (ServiceNotificationType.STAKING.ordinal() == type) {
             notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_staking));
         }
+        else if (ServiceNotificationType.SLEEP.ordinal() == type) {
+            notificationBuilder.setLargeIcon(Icon.createWithResource(this, R.drawable.ic_battery_on));
+        }
         else if (ServiceNotificationType.REWINDCHAIN.ordinal() == type) {
             notificationBuilder.setProgress(0, 0, true);
         }
