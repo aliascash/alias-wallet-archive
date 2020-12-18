@@ -370,8 +370,7 @@ public class AliasActivity extends QtFragmentActivity {
     }
 
     private boolean initBiometric() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, UnrecoverableKeyException, CertificateException, KeyStoreException, IOException {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P ||
-                BiometricManager.from(getApplicationContext()).canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
+        if (BiometricManager.from(getApplicationContext()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
             return false;
         }
 
