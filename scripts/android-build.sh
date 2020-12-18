@@ -18,7 +18,8 @@ fi
     --android-platform android-29 \
     --gradle \
     --aab \
-	--jarsigner \
-	--sign /etc/ssl/certs/alias-sign-keystore.jks upload \
-	--storepass "${KEYSTORE_PASS}" \
-    | tee ../Android-Build-$(date +%Y-%m-%d_%H%M%S).log
+    --jarsigner \
+    --sign /etc/ssl/certs/alias-sign-keystore.jks upload \
+    --storepass "${KEYSTORE_PASS}" \
+      | tee ../Android-Build-$(date +%Y-%m-%d_%H%M%S).log ; \
+      exit "${PIPESTATUS[0]}"
