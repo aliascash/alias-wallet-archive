@@ -356,11 +356,14 @@ void AskPassphraseDialog::handleBiometricUnlockFailed()
 
 void AskPassphraseDialog::serveBiometricPassword(QString walletPassword)
 {
-    ui->passEdit1->setText(walletPassword);
-    ui->passEdit1->setReadOnly(true);
-    ui->passEdit1->setDisabled(true);
-    if (ui->stakingCheckBox->isHidden() && mode != ChangePass)
-        accept();
+    if (!walletPassword.isEmpty())
+    {
+        ui->passEdit1->setText(walletPassword);
+        ui->passEdit1->setReadOnly(true);
+        ui->passEdit1->setDisabled(true);
+        if (ui->stakingCheckBox->isHidden() && mode != ChangePass)
+            accept();
+    }
 }
 
 #ifdef ANDROID
