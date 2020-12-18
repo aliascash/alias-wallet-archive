@@ -80,9 +80,8 @@ public class AliasActivity extends QtFragmentActivity {
     private static final String PREF_WALLET_PASSWORD_IV = "PREF_WALLET_PASSWORD_IV";
     private boolean biometricSupport = false;
     private Executor executor;
-    private BiometricPrompt biometricSetupPrompt;
+    private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptSetupInfo;
-    private BiometricPrompt biometricUnlockPrompt;
     private BiometricPrompt.PromptInfo promptUnlockInfo;
     private volatile String walletPassword;
 
@@ -309,7 +308,7 @@ public class AliasActivity extends QtFragmentActivity {
     // Biometric Unlock Support
     //
     public boolean setupBiometricUnlock(String walletPassword) {
-        if (!biometricSupport) {
+        if (!biometricSupport || walletPassword == null || walletPassword.isEmpty()) {
             return false;
         }
         try {
@@ -318,7 +317,7 @@ public class AliasActivity extends QtFragmentActivity {
             SecretKey secretKey = getSecretKey();
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             runOnUiThread(() -> {
-                biometricSetupPrompt.authenticate(promptSetupInfo, new BiometricPrompt.CryptoObject(cipher));
+                biometricPrompt.authenticate(promptSetupInfo, new BiometricPrompt.CryptoObject(cipher));
             });
             return true;
         } catch (Exception ex) {
@@ -340,11 +339,12 @@ public class AliasActivity extends QtFragmentActivity {
             return false;
         }
         try {
+            this.walletPassword = null;
             Cipher cipher = getCipher();
             SecretKey secretKey = getSecretKey();
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(encryptedWalletPasswordIv, Base64.NO_WRAP)));
             runOnUiThread(() -> {
-                biometricUnlockPrompt.authenticate(promptUnlockInfo, new BiometricPrompt.CryptoObject(cipher));
+                biometricPrompt.authenticate(promptUnlockInfo, new BiometricPrompt.CryptoObject(cipher));
             });
             return true;
         }
@@ -356,7 +356,7 @@ public class AliasActivity extends QtFragmentActivity {
 
     public void clearBiometricUnlock()  {
         Log.d(TAG, "clearBiometricUnlock()");
-
+        this.walletPassword = null;
         SharedPreferences.Editor prefEditor = getPreferences(Context.MODE_PRIVATE).edit();
         prefEditor.remove(PREF_WALLET_PASSWORD).remove(PREF_WALLET_PASSWORD_IV).apply();
 
@@ -379,47 +379,12 @@ public class AliasActivity extends QtFragmentActivity {
 
         executor = ContextCompat.getMainExecutor(this);
 
-        biometricSetupPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+        biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
-                Log.d(TAG, "SetupBiometricPrompt: onAuthenticationError: " + errString);
+                Log.d(TAG, "BiometricPrompt: onAuthenticationError: " + errString);
                 walletPassword = null;
-                clearBiometricUnlock();
-            }
-
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                // NullPointerException is unhandled; use Objects.requireNonNull().
-                byte[] encryptedInfo = new byte[0];
-                try {
-                    encryptedInfo = result.getCryptoObject().getCipher().doFinal(walletPassword.getBytes(Charset.defaultCharset()));
-                    SharedPreferences.Editor prefEditor = getPreferences(Context.MODE_PRIVATE).edit();
-                    prefEditor.putString(PREF_WALLET_PASSWORD, Base64.encodeToString(encryptedInfo, Base64.NO_WRAP));
-                    prefEditor.putString(PREF_WALLET_PASSWORD_IV, Base64.encodeToString(result.getCryptoObject().getCipher().getIV(), Base64.NO_WRAP));
-                    prefEditor.apply();
-                    Toast.makeText(getApplicationContext(), "Biometric setup successful!", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Log.e(TAG, "SetupBiometricPrompt: onAuthenticationSucceeded() Exception", e);
-                    Toast.makeText(getApplicationContext(), "Biometric setup failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                    clearBiometricUnlock();
-                }
-                walletPassword = null;
-            }
-
-            @Override
-            public void onAuthenticationFailed() {
-                super.onAuthenticationFailed();
-                Log.d(TAG, "SetupBiometricPrompt: onAuthenticationFailed");
-            }
-        });
-
-        biometricUnlockPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-                Log.d(TAG, "UnlockBiometricPrompt: onAuthenticationError: " + errString);
                 switch (errorCode) {
                     case BiometricPrompt.ERROR_CANCELED:
                     case BiometricPrompt.ERROR_USER_CANCELED:
@@ -435,38 +400,58 @@ public class AliasActivity extends QtFragmentActivity {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                // NullPointerException is unhandled; use Objects.requireNonNull().
-                byte[] decryptedInfo = new byte[0];
-                try {
-                    String encryptedWalletPassword = getPreferences(Context.MODE_PRIVATE).getString(PREF_WALLET_PASSWORD, null);
-                    decryptedInfo = result.getCryptoObject().getCipher().doFinal(Base64.decode(encryptedWalletPassword, Base64.NO_WRAP));
-                    String decryptedInfoString = new String(decryptedInfo, Charset.defaultCharset());
-                    serveWalletPassword(decryptedInfoString);
-                } catch (Exception e) {
-                    Log.e(TAG, "UnlockBiometricPrompt: onAuthenticationSucceeded() Exception", e);
-                    Toast.makeText(getApplicationContext(), "Biometric unlock failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                    clearBiometricUnlock();
+                String encryptedWalletPassword = getPreferences(Context.MODE_PRIVATE).getString(PREF_WALLET_PASSWORD, null);
+                if (walletPassword != null) {
+                    // Encryption Mode
+                    try {
+                        byte[] encryptedInfo = result.getCryptoObject().getCipher().doFinal(walletPassword.getBytes(Charset.defaultCharset()));
+                        SharedPreferences.Editor prefEditor = getPreferences(Context.MODE_PRIVATE).edit();
+                        prefEditor.putString(PREF_WALLET_PASSWORD, Base64.encodeToString(encryptedInfo, Base64.NO_WRAP));
+                        prefEditor.putString(PREF_WALLET_PASSWORD_IV, Base64.encodeToString(result.getCryptoObject().getCipher().getIV(), Base64.NO_WRAP));
+                        prefEditor.apply();
+                        Toast.makeText(getApplicationContext(), "Biometric setup successful!", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Log.e(TAG, "BiometricPrompt: onAuthenticationSucceeded() Encryption Exception", e);
+                        Toast.makeText(getApplicationContext(), "Biometric setup failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        clearBiometricUnlock();
+                    }
                 }
+                else if (encryptedWalletPassword != null) {
+                    // Decryption Mode
+                    try {
+                        byte[] decryptedInfo = result.getCryptoObject().getCipher().doFinal(Base64.decode(encryptedWalletPassword, Base64.NO_WRAP));
+                        String decryptedInfoString = new String(decryptedInfo, Charset.defaultCharset());
+                        serveWalletPassword(decryptedInfoString);
+                    } catch (Exception e) {
+                        Log.e(TAG, "UnlockBiometricPrompt: onAuthenticationSucceeded() Decryption Exception", e);
+                        Toast.makeText(getApplicationContext(), "Biometric unlock failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        clearBiometricUnlock();
+                    }
+                }
+                else {
+                    Log.w(TAG, "UnlockBiometricPrompt: onAuthenticationSucceeded() No walletPassword for encryption nor encryptedWalletPassword for decryption available!");
+                }
+                walletPassword = null;
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                Log.d(TAG, "UnlockBiometricPrompt: onAuthenticationFailed");
+                Log.d(TAG, "BiometricPrompt: onAuthenticationFailed");
             }
         });
 
         promptSetupInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Setup Biometric Wallet Unlock")
-                .setSubtitle("If you setup biometric unlock, you will no longer need to enter your wallet password.")
+                .setSubtitle("Alternative for wallet password")
                 .setNegativeButtonText("Cancel")
-                .setDeviceCredentialAllowed(false)
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 .build();
 
         promptUnlockInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Unlock Alias Wallet Password")
                 .setNegativeButtonText("Enter Password")
-                .setDeviceCredentialAllowed(false)
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                 .build();
 
         return true;
