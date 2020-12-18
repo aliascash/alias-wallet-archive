@@ -27,7 +27,6 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.biometric.BiometricConstants;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -422,11 +421,11 @@ public class AliasActivity extends QtFragmentActivity {
                 super.onAuthenticationError(errorCode, errString);
                 Log.d(TAG, "UnlockBiometricPrompt: onAuthenticationError: " + errString);
                 switch (errorCode) {
-                    case BiometricConstants.ERROR_CANCELED:
-                    case BiometricConstants.ERROR_USER_CANCELED:
-                    case BiometricConstants.ERROR_NEGATIVE_BUTTON:
-                    case BiometricConstants.ERROR_TIMEOUT:
-                    case BiometricConstants.ERROR_LOCKOUT:
+                    case BiometricPrompt.ERROR_CANCELED:
+                    case BiometricPrompt.ERROR_USER_CANCELED:
+                    case BiometricPrompt.ERROR_NEGATIVE_BUTTON:
+                    case BiometricPrompt.ERROR_TIMEOUT:
+                    case BiometricPrompt.ERROR_LOCKOUT:
                         break;
                     default:
                         clearBiometricUnlock();
