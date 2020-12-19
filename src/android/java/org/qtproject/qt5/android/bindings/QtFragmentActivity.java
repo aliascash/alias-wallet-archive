@@ -631,18 +631,18 @@ public class QtFragmentActivity extends FragmentActivity
     }
     //---------------------------------------------------------------------------
 // TEKNEX: FragmentActivity cannot override onRetainNonConfigurationInstance();
-//    @Override
-//    public Object onRetainNonConfigurationInstance()
-//    {
-//        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
-//        if (res.invoked)
-//            return res.methodReturns;
-//        else
-//            return super.onRetainNonConfigurationInstance();
-//    }
+    @Override
+    public Object onRetainCustomNonConfigurationInstance()
+    {
+        QtApplication.InvokeResult res = QtApplication.invokeDelegate();
+        if (res.invoked)
+            return res.methodReturns;
+        else
+            return super.onRetainCustomNonConfigurationInstance();
+    }
     public Object super_onRetainNonConfigurationInstance()
     {
-        return super.onRetainNonConfigurationInstance();
+        return super.onRetainCustomNonConfigurationInstance();
     }
     //---------------------------------------------------------------------------
 
