@@ -184,6 +184,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     message(STATUS "No daemon build on Mac")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "No daemon build on Windows")
+elseif(ANDROID)
+    message(STATUS "No daemon build for Android")
 else()
     # The daemon
     add_executable(Aliaswalletd ${CMAKE_CURRENT_LIST_DIR}/spectrecoind.cpp)
