@@ -353,6 +353,13 @@ void NewMnemonicResultPage::initializePage()
 
 void NewMnemonicVerificationPage::initializePage()
 {
+    QStringList completerWordList;
+    NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
+    for (int i = 0; i < 24; i++)
+    {
+       completerWordList.append(mnemonicPage->mnemonicList[i]);
+    }
+    completerWordModel->setStringList(completerWordList);
     passwordEdit->setStyleSheet("");
     passwordEdit->setReadOnly(false);
     for (int i = 0; i < 24; i++)
@@ -392,6 +399,7 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
                 else {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                     pLineEdit->setReadOnly(true);
+                    completerWordModel->removeRows(completerWordModel->stringList().indexOf(mnemonicPage->mnemonicList[i]), 1);
                 }
                 break;
             }
@@ -424,9 +432,15 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     layout->addWidget(mnemonicLabel, 1, 0, 1, 4);
 
     vMnemonicEdit.reserve(24);
+
+    completerWordModel = new QStringListModel(this);
+    QCompleter *completer = new QCompleter(completerWordModel, this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+
     for (int i = 0; i < 24; i++)
     {
         QLineEdit *qLineEdit = new QLineEdit;
+        qLineEdit->setCompleter(completer);
         qLineEdit->installEventFilter(this);
         vMnemonicEdit.push_back(qLineEdit);
         registerField(QString("verification.mnemonic.%1*").arg(i), vMnemonicEdit[i]);

@@ -15,6 +15,7 @@ class QLabel;
 class QLineEdit;
 class QRadioButton;
 class QProgressBar;
+class QStringListModel;
 QT_END_NAMESPACE
 
 class SetupWalletWizard : public QWizard
@@ -131,6 +132,7 @@ private:
     QLabel *passwordLabel;
     QLineEdit *passwordEdit;
     std::vector<QLineEdit*> vMnemonicEdit;
+    QStringListModel* completerWordModel;
 };
 
 class RecoverFromMnemonicPage : public QWizardPage
