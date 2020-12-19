@@ -386,11 +386,15 @@ public class AliasActivity extends QtFragmentActivity {
                 Log.d(TAG, "BiometricPrompt: onAuthenticationError: " + errString);
                 walletPassword = null;
                 switch (errorCode) {
+                    case BiometricPrompt.ERROR_HW_UNAVAILABLE:
+                    case BiometricPrompt.ERROR_UNABLE_TO_PROCESS:
+                    case BiometricPrompt.ERROR_TIMEOUT:
+                    case BiometricPrompt.ERROR_NO_SPACE:
                     case BiometricPrompt.ERROR_CANCELED:
+                    case BiometricPrompt.ERROR_LOCKOUT:
+                    case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
                     case BiometricPrompt.ERROR_USER_CANCELED:
                     case BiometricPrompt.ERROR_NEGATIVE_BUTTON:
-                    case BiometricPrompt.ERROR_TIMEOUT:
-                    case BiometricPrompt.ERROR_LOCKOUT:
                         break;
                     default:
                         clearBiometricUnlock();
