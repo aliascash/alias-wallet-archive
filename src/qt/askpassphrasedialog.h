@@ -66,6 +66,7 @@ private slots:
     bool event(QEvent *event);
     bool eventFilter(QObject *, QEvent *event);
     void secureClearPassFields();
+    void startBiometricUnlock();
 };
 
 #endif // ASKPASSPHRASEDIALOG_H

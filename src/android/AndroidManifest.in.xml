@@ -76,6 +76,8 @@
             <meta-data android:name="android.app.extract_android_style" android:value="default"/>
             <!-- extract android style -->
         </activity>
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:name="org.alias.wallet.BiometricActivity" android:label="-- %%INSERT_APP_NAME%% --" android:launchMode="standard" android:finishOnTaskLaunch="true" android:theme="@style/BiometricTheme">
+        </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
         <service android:name=".AliasService" android:process=":AliasService" android:exported="false" android:foregroundServiceType="dataSync">
             <!-- android:process=":qt" is needed to force the service to run on a separate process than the Activity -->

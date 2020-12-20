@@ -91,11 +91,6 @@ AskPassphraseDialog::AskPassphraseDialog(Mode mode, QWidget *parent) :
     connect(ui->passEdit1, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit2, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
     connect(ui->passEdit3, SIGNAL(textChanged(QString)), this, SLOT(textChanged()));
-
-#ifdef ANDROID
-    if (mode != Encrypt)
-        fBiometricUnlock = QtAndroid::androidActivity().callMethod<jboolean>("startBiometricUnlock", "()Z");
-#endif
 }
 
 AskPassphraseDialog::~AskPassphraseDialog()
@@ -339,6 +334,17 @@ void AskPassphraseDialog::showEvent(QShowEvent *e)
     resize(QGuiApplication::primaryScreen()->availableSize());
 #endif
     QDialog::showEvent(e);
+#ifdef ANDROID
+    if (mode != Encrypt)
+        QTimer::singleShot(50, this, SLOT(startBiometricUnlock()));
+#endif
+}
+
+void AskPassphraseDialog::startBiometricUnlock()
+{
+#ifdef ANDROID
+    fBiometricUnlock = QtAndroid::androidActivity().callMethod<jboolean>("startBiometricUnlock", "()Z");
+#endif
 }
 
 void AskPassphraseDialog::handleBiometricUnlockFailed()

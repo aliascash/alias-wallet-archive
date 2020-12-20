@@ -10,7 +10,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -18,40 +17,15 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
-import android.util.Base64;
 import android.util.Log;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.core.content.ContextCompat;
-
-import org.qtproject.qt5.android.bindings.QtFragmentActivity;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.concurrent.Executor;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import org.qtproject.qt5.android.bindings.QtActivity;
 
 
-public class AliasActivity extends QtFragmentActivity {
+public class AliasActivity extends QtActivity {
 
     private static final String TAG = "AliasActivity";
 
@@ -76,16 +50,19 @@ public class AliasActivity extends QtFragmentActivity {
     private long backPressedTime;
     private Toast backToast;
 
-    private static final String PREF_WALLET_PASSWORD = "PREF_WALLET_PASSWORD";
-    private static final String PREF_WALLET_PASSWORD_IV = "PREF_WALLET_PASSWORD_IV";
-    private static final Object BIOMETRIC_LOCK = new Object();
-    private volatile String walletPassword;
-    private volatile boolean biometricProcessRunning;
-    private boolean biometricSupport = false;
-    private Executor executor;
-    private BiometricPrompt biometricPrompt;
-    private BiometricPrompt.PromptInfo promptSetupInfo;
-    private BiometricPrompt.PromptInfo promptUnlockInfo;
+    private ActivityResult lastActivityResult;
+
+    private class ActivityResult {
+        public ActivityResult(int requestCode, int resultCode, Intent data) {
+            this.requestCode = requestCode;
+            this.resultCode = resultCode;
+            this.data = data;
+        }
+        public int requestCode;
+        public int resultCode;
+        public Intent data;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,19 +82,12 @@ public class AliasActivity extends QtFragmentActivity {
 
         screenOrientation = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ?
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-
-        // Biometric Unlock Support
-        try {
-            biometricSupport = initBiometric();
-            Log.d(TAG, "initBiometric(): " + biometricSupport);
-        } catch (Exception ex) {
-            Log.e(TAG, "initBiometric(): Exception!", ex);
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        lastActivityResult = null;
         unregisterReceiver(mBoostrapBroadcastReceiver);
     }
 
@@ -143,6 +113,10 @@ public class AliasActivity extends QtFragmentActivity {
             setRequestedOrientation(screenOrientation);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         }
+        if (lastActivityResult != null) {
+            handleOnActivityResult(lastActivityResult.requestCode, lastActivityResult.resultCode, lastActivityResult.data);
+            lastActivityResult = null;
+        }
     }
 
     @Override
@@ -152,6 +126,33 @@ public class AliasActivity extends QtFragmentActivity {
         hasPendingIntent = true;
         if (qtInitialized) {
             handleIntent();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult() requestCode= " +requestCode);
+        lastActivityResult = new ActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "handleOnActivityResult() requestCode=" + requestCode);
+        if (requestCode == BiometricActivity.BiometricAction.ACTION_SETUP.ordinal()) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getApplicationContext(), "Biometric setup successful!", Toast.LENGTH_SHORT).show();
+            }
+            else if (resultCode == BiometricActivity.RESULT_ERROR) {
+                Toast.makeText(getApplicationContext(), "Biometric setup failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+            }
+        }
+        else if (requestCode == BiometricActivity.BiometricAction.ACTION_UNLOCK.ordinal()) {
+            if (resultCode == RESULT_OK) {
+                serveWalletPassword(data.getStringExtra("walletPassword"));
+            }
+            else if (resultCode == BiometricActivity.RESULT_ERROR) {
+                Toast.makeText(getApplicationContext(), "Biometric unlock failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -309,224 +310,17 @@ public class AliasActivity extends QtFragmentActivity {
     // Biometric Unlock Support
     //
     public boolean setupBiometricUnlock(String walletPassword) {
-        synchronized (BIOMETRIC_LOCK) {
-            if (biometricProcessRunning) {
-                Log.d(TAG, "setupBiometricUnlock() return true because of biometricProcessRunning");
-                return true;
-            }
-            if (!biometricSupport || walletPassword == null || walletPassword.isEmpty()) {
-                return false;
-            }
-            try {
-                biometricProcessRunning = true;
-                this.walletPassword = walletPassword;
-                Cipher cipher = getCipher();
-                SecretKey secretKey = getSecretKey();
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-                runOnUiThread(() -> {
-                    biometricPrompt.authenticate(promptSetupInfo, new BiometricPrompt.CryptoObject(cipher));
-                });
-                return true;
-            } catch (Exception ex) {
-                Log.e(TAG, "setupBiometricUnlock()", ex);
-                biometricProcessRunning = false;
-                clearBiometricUnlock();
-                return false;
-            }
-        }
-
+        lastActivityResult = null;
+        return BiometricActivity.setupBiometricUnlock(this, walletPassword);
     }
 
     public boolean startBiometricUnlock()  {
-        synchronized (BIOMETRIC_LOCK) {
-            if (biometricProcessRunning) {
-                Log.d(TAG, "startBiometricUnlock() return true because of biometricProcessRunning");
-                return true;
-            }
-            if (!biometricSupport) {
-                return false;
-            }
-            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-            String encryptedWalletPassword = sharedPref.getString(PREF_WALLET_PASSWORD, null);
-            String encryptedWalletPasswordIv = sharedPref.getString(PREF_WALLET_PASSWORD_IV, null);
-            if (encryptedWalletPassword == null || encryptedWalletPasswordIv == null) {
-                Log.d(TAG, "startBiometricUnlock(): no encryptedWalletPassword");
-                return false;
-            }
-            try {
-                biometricProcessRunning = true;
-                this.walletPassword = null;
-                Cipher cipher = getCipher();
-                SecretKey secretKey = getSecretKey();
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(Base64.decode(encryptedWalletPasswordIv, Base64.NO_WRAP)));
-                runOnUiThread(() -> {
-                    biometricPrompt.authenticate(promptUnlockInfo, new BiometricPrompt.CryptoObject(cipher));
-                });
-                return true;
-            } catch (Exception ex) {
-                Log.e(TAG, "startBiometricUnlock()", ex);
-                biometricProcessRunning = false;
-                clearBiometricUnlock();
-                return false;
-            }
-        }
+        lastActivityResult = null;
+        return BiometricActivity.startBiometricUnlock(this);
     }
 
     public void clearBiometricUnlock()  {
-        synchronized (BIOMETRIC_LOCK) {
-            if (biometricProcessRunning) {
-                Log.d(TAG, "clearBiometricUnlock() aborted because of biometricProcessRunning");
-                return;
-            }
-            Log.d(TAG, "clearBiometricUnlock()");
-            this.walletPassword = null;
-            SharedPreferences.Editor prefEditor = getPreferences(Context.MODE_PRIVATE).edit();
-            prefEditor.remove(PREF_WALLET_PASSWORD).remove(PREF_WALLET_PASSWORD_IV).apply();
-
-            try {
-                clearSecretKey();
-            } catch (Exception ex) {
-                Log.e(TAG, "clearBiometricUnlock: exception when removing secret key.", ex);
-            }
-        }
-    }
-
-    private boolean initBiometric() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, UnrecoverableKeyException, CertificateException, KeyStoreException, IOException {
-        if (BiometricManager.from(getApplicationContext()).canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
-            return false;
-        }
-
-        // initialize Key
-        getSecretKey();
-
-        executor = ContextCompat.getMainExecutor(this);
-
-        biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
-            @Override
-            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-                super.onAuthenticationError(errorCode, errString);
-                Log.d(TAG, "BiometricPrompt: onAuthenticationError: " + errString);
-                synchronized (BIOMETRIC_LOCK) {
-                    walletPassword = null;
-                    biometricProcessRunning = false;
-                    switch (errorCode) {
-                        case BiometricPrompt.ERROR_HW_UNAVAILABLE:
-                        case BiometricPrompt.ERROR_UNABLE_TO_PROCESS:
-                        case BiometricPrompt.ERROR_TIMEOUT:
-                        case BiometricPrompt.ERROR_NO_SPACE:
-                        case BiometricPrompt.ERROR_CANCELED:
-                        case BiometricPrompt.ERROR_LOCKOUT:
-                        case BiometricPrompt.ERROR_LOCKOUT_PERMANENT:
-                        case BiometricPrompt.ERROR_USER_CANCELED:
-                        case BiometricPrompt.ERROR_NEGATIVE_BUTTON:
-                            break;
-                        default:
-                            clearBiometricUnlock();
-                    }
-                }
-            }
-
-            @Override
-            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-                super.onAuthenticationSucceeded(result);
-                String encryptedWalletPassword = getPreferences(Context.MODE_PRIVATE).getString(PREF_WALLET_PASSWORD, null);
-                boolean error = false;
-                if (walletPassword != null) {
-                    // Encryption Mode
-                    try {
-                        byte[] encryptedInfo = result.getCryptoObject().getCipher().doFinal(walletPassword.getBytes(Charset.defaultCharset()));
-                        SharedPreferences.Editor prefEditor = getPreferences(Context.MODE_PRIVATE).edit();
-                        prefEditor.putString(PREF_WALLET_PASSWORD, Base64.encodeToString(encryptedInfo, Base64.NO_WRAP));
-                        prefEditor.putString(PREF_WALLET_PASSWORD_IV, Base64.encodeToString(result.getCryptoObject().getCipher().getIV(), Base64.NO_WRAP));
-                        prefEditor.apply();
-                        Toast.makeText(getApplicationContext(), "Biometric setup successful!", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.e(TAG, "BiometricPrompt: onAuthenticationSucceeded() Encryption Exception", e);
-                        Toast.makeText(getApplicationContext(), "Biometric setup failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                        error = true;
-                    }
-                }
-                else if (encryptedWalletPassword != null) {
-                    // Decryption Mode
-                    try {
-                        byte[] decryptedInfo = result.getCryptoObject().getCipher().doFinal(Base64.decode(encryptedWalletPassword, Base64.NO_WRAP));
-                        String decryptedInfoString = new String(decryptedInfo, Charset.defaultCharset());
-                        serveWalletPassword(decryptedInfoString);
-                    } catch (Exception e) {
-                        Log.e(TAG, "UnlockBiometricPrompt: onAuthenticationSucceeded() Decryption Exception", e);
-                        Toast.makeText(getApplicationContext(), "Biometric unlock failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                        error = true;
-                    }
-                }
-                else {
-                    Log.w(TAG, "UnlockBiometricPrompt: onAuthenticationSucceeded() No walletPassword for encryption nor encryptedWalletPassword for decryption available!");
-                }
-                synchronized (BIOMETRIC_LOCK) {
-                    walletPassword = null;
-                    biometricProcessRunning = false;
-                    if (error) {
-                        clearBiometricUnlock();
-                    }
-                }
-            }
-
-            @Override
-            public void onAuthenticationFailed() {
-                super.onAuthenticationFailed();
-                Log.d(TAG, "BiometricPrompt: onAuthenticationFailed");
-            }
-        });
-
-        promptSetupInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Setup Biometric Wallet Unlock")
-                .setSubtitle("Alternative for wallet password")
-                .setNegativeButtonText("Cancel")
-                .setDeviceCredentialAllowed(false)
-                .build();
-
-        promptUnlockInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Unlock Alias Wallet Password")
-                .setNegativeButtonText("Enter Password")
-                .setDeviceCredentialAllowed(false)
-                .build();
-
-        return true;
-    }
-    private SecretKey getSecretKey() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-        // Before the keystore can be accessed, it must be loaded.
-        keyStore.load(null);
-        SecretKey secretKey = ((SecretKey) keyStore.getKey("AliasWalletPassword", null));
-
-        if (secretKey == null) {
-            secretKey = generateSecretKey(new KeyGenParameterSpec.Builder(
-                    "AliasWalletPassword",
-                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                    .setUserAuthenticationRequired(true)
-                    .setInvalidatedByBiometricEnrollment(true)
-                    .build());
-        }
-        return secretKey;
-    }
-
-    private SecretKey generateSecretKey(KeyGenParameterSpec keyGenParameterSpec) throws InvalidAlgorithmParameterException, NoSuchProviderException, NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-        keyGenerator.init(keyGenParameterSpec);
-        return keyGenerator.generateKey();
-    }
-
-    private void clearSecretKey() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
-        // Before the keystore can be accessed, it must be loaded.
-        keyStore.load(null);
-        if (keyStore.containsAlias("AliasWalletPassword")) {
-            keyStore.deleteEntry("AliasWalletPassword");
-        }
-    }
-
-    private Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        return Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"  + KeyProperties.BLOCK_MODE_CBC + "/" + KeyProperties.ENCRYPTION_PADDING_PKCS7);
+        lastActivityResult = null;
+        BiometricActivity.clearBiometricUnlock(this);
     }
 }
