@@ -63,7 +63,7 @@ pipeline {
         }
         stage('Featurebranch') {
             when {
-                branch 'android'
+                branch "android_*"
             }
             agent {
                 label "docker"
