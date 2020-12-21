@@ -9,6 +9,7 @@
 
 #include "guiconstants.h"
 #include "allocators.h"
+#include "util.h"
 
 #include <QMessageBox>
 #include <QPushButton>
@@ -203,6 +204,7 @@ void AskPassphraseDialog::accept()
                     while(ongoing)
                     {   // Wait for biometricAuthentication finished
                         QApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
+                        MilliSleep(50);
                         ongoing = QtAndroid::androidActivity().getField<jboolean>("biometricAuthenticationOngoing");
                     }
                 }
