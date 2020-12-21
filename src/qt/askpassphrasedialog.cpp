@@ -195,8 +195,18 @@ void AskPassphraseDialog::accept()
         {
 #ifdef ANDROID
             if (!fBiometricUnlock)
-                QtAndroid::androidActivity().callMethod<jboolean>("setupBiometricUnlock", "(Ljava/lang/String;)Z",
-                                                                  QAndroidJniObject::fromString(oldpass).object<jstring>());
+            {
+                if (QtAndroid::androidActivity().callMethod<jboolean>("setupBiometricUnlock", "(Ljava/lang/String;)Z",
+                                                                  QAndroidJniObject::fromString(oldpass).object<jstring>()))
+                {
+                    bool ongoing = QtAndroid::androidActivity().getField<jboolean>("biometricAuthenticationOngoing");
+                    while(ongoing)
+                    {   // Wait for biometricAuthentication finished
+                        QApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
+                        ongoing = QtAndroid::androidActivity().getField<jboolean>("biometricAuthenticationOngoing");
+                    }
+                }
+            }
 #endif
             secureClearPassFields();
             QDialog::accept(); // Success

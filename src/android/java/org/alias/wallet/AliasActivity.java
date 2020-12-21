@@ -50,7 +50,8 @@ public class AliasActivity extends QtActivity {
     private long backPressedTime;
     private Toast backToast;
 
-    private ActivityResult lastActivityResult;
+    public volatile boolean biometricAuthenticationOngoing = false;
+    private volatile ActivityResult lastActivityResult;
 
     private class ActivityResult {
         public ActivityResult(int requestCode, int resultCode, Intent data) {
@@ -134,6 +135,7 @@ public class AliasActivity extends QtActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult() requestCode= " +requestCode);
         lastActivityResult = new ActivityResult(requestCode, resultCode, data);
+        biometricAuthenticationOngoing = false;
     }
 
     private void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
@@ -309,18 +311,21 @@ public class AliasActivity extends QtActivity {
     //
     // Biometric Unlock Support
     //
-    public boolean setupBiometricUnlock(String walletPassword) {
-        lastActivityResult = null;
-        return BiometricActivity.setupBiometricUnlock(this, walletPassword);
+    public boolean setupBiometricUnlock(String walletPassword)  {
+        if (BiometricActivity.setupBiometricUnlock(this, walletPassword)) {
+            biometricAuthenticationOngoing = true;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public boolean startBiometricUnlock()  {
-        lastActivityResult = null;
         return BiometricActivity.startBiometricUnlock(this);
     }
 
     public void clearBiometricUnlock()  {
-        lastActivityResult = null;
         BiometricActivity.clearBiometricUnlock(this);
     }
 }
