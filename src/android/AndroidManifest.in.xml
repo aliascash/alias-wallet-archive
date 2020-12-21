@@ -2,7 +2,7 @@
 <!-- SPDX-FileCopyrightText: © 2020 Alias Developers -->
 <!-- SPDX-License-Identifier: MIT -->
 <manifest package="org.alias.wallet" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@.@ANDROID_VERSION_CODE@" android:versionCode="@ANDROID_VERSION_CODE@" android:installLocation="auto">
-    <uses-sdk android:targetSdkVersion="29"/>
+    <uses-sdk android:targetSdkVersion="@ANDROID_SDK_VERSION@"/>
 
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
          Remove the comment if you do not require these default features. -->
