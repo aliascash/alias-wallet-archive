@@ -350,6 +350,8 @@ void SpectreGUI::pageLoaded()
 
 #ifdef ANDROID
     QtAndroid::androidActivity().callMethod<void>("setRequestedOrientationUnspecified", "()V");
+    // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
+    QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
 #endif
 
     pollTimer->start(1000);
