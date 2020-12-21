@@ -392,7 +392,7 @@ public class AliasActivity extends QtFragmentActivity {
     }
 
     private boolean initBiometric() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, UnrecoverableKeyException, CertificateException, KeyStoreException, IOException {
-        if (BiometricManager.from(getApplicationContext()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
+        if (BiometricManager.from(getApplicationContext()).canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
             return false;
         }
 
@@ -481,13 +481,13 @@ public class AliasActivity extends QtFragmentActivity {
                 .setTitle("Setup Biometric Wallet Unlock")
                 .setSubtitle("Alternative for wallet password")
                 .setNegativeButtonText("Cancel")
-                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                .setDeviceCredentialAllowed(false)
                 .build();
 
         promptUnlockInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Unlock Alias Wallet Password")
                 .setNegativeButtonText("Enter Password")
-                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                .setDeviceCredentialAllowed(false)
                 .build();
 
         return true;
