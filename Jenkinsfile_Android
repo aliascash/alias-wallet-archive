@@ -63,10 +63,7 @@ pipeline {
         }
         stage('Featurebranch') {
             when {
-                expression {
-                    env.BRANCH_NAME ==~ /android_*/
-                }
-                branch 'android'
+                branch "android_*"
             }
             agent {
                 label "docker"
@@ -106,7 +103,8 @@ pipeline {
         }
         stage('Git tag handling') {
             when {
-                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
+                anyOf { branch 'master_android'; branch 'develop_android';
+                    branch "${BRANCH_TO_DEPLOY}" }
             }
             stages {
                 stage('Create Git tag') {
@@ -171,7 +169,8 @@ pipeline {
         }
         stage('Build develop/master') {
             when {
-                anyOf { branch 'master_android'; branch 'develop_android'; branch "${BRANCH_TO_DEPLOY}" }
+                anyOf { branch 'master_android'; branch 'develop_android';
+                    branch "${BRANCH_TO_DEPLOY}" }
             }
             steps {
                 script {
@@ -204,7 +203,7 @@ pipeline {
                 always {
                     script {
                         sh(
-                            script: """
+                                script: """
                                 ${WORKSPACE}/scripts/createChecksumSummary.sh \
                                     "${RELEASE_DESCRIPTION}" \
                                     "${WORKSPACE}" \
