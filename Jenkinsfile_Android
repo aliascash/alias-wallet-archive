@@ -63,6 +63,9 @@ pipeline {
         }
         stage('Featurebranch') {
             when {
+                expression {
+                    env.BRANCH_NAME ==~ /android_*/
+                }
                 branch 'android'
             }
             agent {
