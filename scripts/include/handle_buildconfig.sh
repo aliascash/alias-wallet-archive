@@ -20,6 +20,7 @@ ARCHIVES_ROOT_DIR=${HOME}/Archives
 
 ##### ### # Android # ### ###################################################
 ANDROID_NDK_VERSION=r21d
+ANDROID_SDK_VERSION=29
 ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
 
 ##### ### # Boost # ### #####################################################

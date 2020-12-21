@@ -12,6 +12,7 @@ project(Alias
 
 # ANDROID_VERSION_CODE must be increased with every PlayStore release!
 set(ANDROID_VERSION_CODE 13)
+set(ANDROID_SDK_VERSION 29)
 
 # Alias version definition
 set(CLIENT_VERSION_MAJOR 4)
