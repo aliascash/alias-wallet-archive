@@ -130,11 +130,12 @@ public class QtFragmentActivityLoader extends QtLoader {
             return;
         }
 
-        try {
-            m_activity.setTheme(Class.forName("android.R$style").getDeclaredField(QT_ANDROID_DEFAULT_THEME).getInt(null));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // TEKNEX: style is defined va styles.xml, let QT do his thing with the halo style
+//        try {
+//            m_activity.setTheme(Class.forName("android.R$style").getDeclaredField(QT_ANDROID_DEFAULT_THEME).getInt(null));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         m_activity.requestWindowFeature(Window.FEATURE_ACTION_BAR);
 

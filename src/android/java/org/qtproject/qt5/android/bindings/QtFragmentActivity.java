@@ -98,8 +98,8 @@ public class QtFragmentActivity extends FragmentActivity
     {
         m_loader = new QtFragmentActivityLoader(this);
         if (Build.VERSION.SDK_INT >= 21) {
-            QT_ANDROID_THEMES = new String[] {"Theme_AppCompat_Light_DarkActionBar"};
-            QT_ANDROID_DEFAULT_THEME = "Theme_AppCompat_Light_DarkActionBar";
+            QT_ANDROID_THEMES = new String[] {"Theme_Holo_Light"};
+            QT_ANDROID_DEFAULT_THEME = "Theme_Holo_Light";
         } else {
             QT_ANDROID_THEMES = new String[] {"Theme_DeviceDefault_Light"};
             QT_ANDROID_DEFAULT_THEME = "Theme_DeviceDefault_Light";
