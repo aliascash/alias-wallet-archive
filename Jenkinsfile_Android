@@ -42,7 +42,7 @@ pipeline {
                 script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
-        RELEASE_NAME = "Continuous build #${BUILD_NUMBER} (Branch ${GIT_BRANCH})"
+        RELEASE_NAME = "CI build #${BUILD_NUMBER}, ${RELEASE_TAG}, ${GIT_BRANCH})"
         RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
         PRERELEASE = "true"
     }
