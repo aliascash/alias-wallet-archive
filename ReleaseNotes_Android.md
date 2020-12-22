@@ -21,7 +21,11 @@ SPDX-License-Identifier: MIT
 This releasenotes document covers only the Android relevant changes. For full
 releasenotes please head over to [the latest release on Github](https://github.com/aliascash/alias-wallet/releases/latest).
 
-#### 4.3.1 Android (released 2020-12-10)
+#### 4.3.1.14 Android (released 2020-12-22)
+- Support biometric (fingerprint) unlock
+- Power saving mode with hourly sync when app is not staking
+
+#### 4.3.1.12 Android (released 2020-12-10)
 - Update to QT 5.15.2
 - For leaving the app, back must be pressed twice
 - Fix unintended 'back to camera app' by explicitly go to home
