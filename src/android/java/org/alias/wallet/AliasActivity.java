@@ -22,10 +22,10 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import org.qtproject.qt5.android.bindings.QtActivity;
 
-public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity {
+
+public class AliasActivity extends QtActivity {
 
     private static final String TAG = "AliasActivity";
 
@@ -35,8 +35,12 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     // native method to handle 'alias:' URIs
     public static native void receiveURI(String url);
+
     // native method to handle boostrap service events
     public static native void updateBootstrapState(int state, int errorCode, int progress, int indexOfItem, int numOfItems, boolean indeterminate);
+
+    // native method to pass via biometric protected walletPassword
+    public static native void serveWalletPassword(String walletPassword);
 
     private volatile boolean qtInitialized = false; // will be accessed from android UI and Qt thread
     private boolean hasPendingIntent = false; // accessed only from android UI thread
@@ -45,6 +49,20 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
 
     private long backPressedTime;
     private Toast backToast;
+
+    private volatile ActivityResult lastActivityResult;
+
+    private class ActivityResult {
+        public ActivityResult(int requestCode, int resultCode, Intent data) {
+            this.requestCode = requestCode;
+            this.resultCode = resultCode;
+            this.data = data;
+        }
+        public int requestCode;
+        public int resultCode;
+        public Intent data;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +87,7 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        lastActivityResult = null;
         unregisterReceiver(mBoostrapBroadcastReceiver);
     }
 
@@ -94,6 +113,10 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
             setRequestedOrientation(screenOrientation);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         }
+        if (lastActivityResult != null) {
+            handleOnActivityResult(lastActivityResult.requestCode, lastActivityResult.resultCode, lastActivityResult.data);
+            lastActivityResult = null;
+        }
     }
 
     @Override
@@ -103,6 +126,33 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
         hasPendingIntent = true;
         if (qtInitialized) {
             handleIntent();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult() requestCode= " +requestCode);
+        lastActivityResult = new ActivityResult(requestCode, resultCode, data);
+    }
+
+    private void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "handleOnActivityResult() requestCode=" + requestCode);
+        if (requestCode == BiometricActivity.BiometricAction.ACTION_SETUP.ordinal()) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Biometric setup successful!", Toast.LENGTH_SHORT).show();
+            }
+            else if (resultCode == BiometricActivity.RESULT_ERROR) {
+                Toast.makeText(this, "Biometric setup failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+            }
+        }
+        else if (requestCode == BiometricActivity.BiometricAction.ACTION_UNLOCK.ordinal()) {
+            if (resultCode == RESULT_OK) {
+                serveWalletPassword(data.getStringExtra("walletPassword"));
+            }
+            else if (resultCode == BiometricActivity.RESULT_ERROR) {
+                Toast.makeText(this, "Biometric unlock failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -252,5 +302,22 @@ public class AliasActivity extends org.qtproject.qt5.android.bindings.QtActivity
             boolean indeterminate = intent.getBooleanExtra("indeterminate", false);
             updateBootstrapState(state, errorCode, progress, indexOfItem, numOfItems, indeterminate);
         }
+    }
+
+
+    // ---------------------------------------------------------------------------------------------
+    //
+    // Biometric Unlock Support
+    //
+    public boolean setupBiometricUnlock(String walletPassword)  {
+        return BiometricActivity.setupBiometricUnlock(this, walletPassword);
+    }
+
+    public boolean startBiometricUnlock()  {
+        return BiometricActivity.startBiometricUnlock(this);
+    }
+
+    public void clearBiometricUnlock()  {
+        BiometricActivity.clearBiometricUnlock(this);
     }
 }
