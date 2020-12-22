@@ -325,6 +325,9 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded()
 {
+    if (ShutdownRequested())
+        return;
+
     uiReady = true;
 
 //    // Create the tray icon (or setup the dock icon)

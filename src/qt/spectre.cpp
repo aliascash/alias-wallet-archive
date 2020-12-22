@@ -649,20 +649,20 @@ int main(int argc, char *argv[])
 //                                                        pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
 //                uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
+                if (!ShutdownRequested())
+                    window.loadIndex(applicationModelPtr.data()->webSocketToken());
 
                 if (!ShutdownRequested())
                 {
-                    window.loadIndex(applicationModelPtr.data()->webSocketToken());
-
 //                  // Release lock before starting event processing, otherwise lock would never be released
 //                  LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
 //                  LEAVE_CRITICAL_SECTION(cs_main);
 
                     qDebug() << "Start main loop";
                     app.exec();
+                    window.hide();
                 }
 
-                window.hide();
 //                window.setClientModel(0);
 //                window.setWalletModel(0);
                 guiref = 0;
