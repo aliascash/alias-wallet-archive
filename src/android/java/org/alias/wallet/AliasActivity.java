@@ -50,7 +50,6 @@ public class AliasActivity extends QtActivity {
     private long backPressedTime;
     private Toast backToast;
 
-    public volatile boolean biometricAuthenticationOngoing = false;
     private volatile ActivityResult lastActivityResult;
 
     private class ActivityResult {
@@ -135,17 +134,16 @@ public class AliasActivity extends QtActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult() requestCode= " +requestCode);
         lastActivityResult = new ActivityResult(requestCode, resultCode, data);
-        biometricAuthenticationOngoing = false;
     }
 
     private void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "handleOnActivityResult() requestCode=" + requestCode);
         if (requestCode == BiometricActivity.BiometricAction.ACTION_SETUP.ordinal()) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "Biometric setup successful!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Biometric setup successful!", Toast.LENGTH_SHORT).show();
             }
             else if (resultCode == BiometricActivity.RESULT_ERROR) {
-                Toast.makeText(getApplicationContext(), "Biometric setup failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Biometric setup failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
             }
         }
         else if (requestCode == BiometricActivity.BiometricAction.ACTION_UNLOCK.ordinal()) {
@@ -153,7 +151,7 @@ public class AliasActivity extends QtActivity {
                 serveWalletPassword(data.getStringExtra("walletPassword"));
             }
             else if (resultCode == BiometricActivity.RESULT_ERROR) {
-                Toast.makeText(getApplicationContext(), "Biometric unlock failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Biometric unlock failed: " + data.getStringExtra("error"), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -312,13 +310,7 @@ public class AliasActivity extends QtActivity {
     // Biometric Unlock Support
     //
     public boolean setupBiometricUnlock(String walletPassword)  {
-        if (BiometricActivity.setupBiometricUnlock(this, walletPassword)) {
-            biometricAuthenticationOngoing = true;
-            return true;
-        }
-        else {
-            return false;
-        }
+        return BiometricActivity.setupBiometricUnlock(this, walletPassword);
     }
 
     public boolean startBiometricUnlock()  {

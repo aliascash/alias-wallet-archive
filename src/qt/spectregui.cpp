@@ -226,6 +226,16 @@ void SpectreGUI::loadIndex(QString webSocketToken) {
     view->setSource(QUrl("qrc:///qml/main"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
 
+    // Check if wallet unlock is needed to determine current balance
+    if (walletModel->encryptionInfo().status() == EncryptionStatus::Locked || walletModel->encryptionInfo().fWalletUnlockStakingOnly())
+    {
+        SpectreGUI::UnlockContext unlockContext = requestUnlock(SpectreGUI::UnlockMode::login);
+        if (!unlockContext.isValid()) {
+            StartShutdown();
+            return;
+        }
+    }
+
 #ifdef ANDROID
     // On Android webview can't load resources via qrc, we have to provide and load the resources from the apps assets folder
     QUrl url("file:///android_asset/index.html" + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +

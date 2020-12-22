@@ -649,14 +649,6 @@ int main(int argc, char *argv[])
 //                                                        pindexBestHeader ? pindexBestHeader->GetBlockTime() : GENESIS_BLOCK_TIME };
 //                uiInterface.NotifyBlocksChanged(blockChangedEvent);
 
-                // Check if wallet unlock is needed to determine current balance
-                if (!ShutdownRequested() && (walletModelPtr->encryptionInfo().status() == EncryptionStatus::Locked || walletModelPtr->encryptionInfo().fWalletUnlockStakingOnly()))
-                {
-                    InitMessage("Login");
-                    SpectreGUI::UnlockContext unlockContext = window.requestUnlock(SpectreGUI::UnlockMode::login);
-                    if (!unlockContext.isValid())
-                        StartShutdown();
-                }
 
                 if (!ShutdownRequested())
                 {
