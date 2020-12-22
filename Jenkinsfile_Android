@@ -42,8 +42,8 @@ pipeline {
                 script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
-        RELEASE_NAME = "CI build #${BUILD_NUMBER}, ${RELEASE_TAG}, ${GIT_BRANCH})"
-        RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
+        RELEASE_NAME = "CI build #${BUILD_NUMBER}, v${RELEASE_TAG}"
+        RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}, branch ${GIT_BRANCH}"
         PRERELEASE = "true"
     }
     stages {
