@@ -118,7 +118,7 @@ void ClientModel::updateServiceStatus()
 
     if (applicationModel->coreSleeping())
     {
-        msg = tr("%1 %2 received %3.").arg(sBlockType).arg(count).arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().toString(Qt::DefaultLocaleShortDate));
+        msg = tr("last sync %1 %2 %3.").arg(lastBlockDate.addSecs(-1 * blockInfo.nTimeOffset()).toLocalTime().toString(Qt::DefaultLocaleShortDate)).arg(sBlockType).arg(count);
         QtAndroid::androidService().callMethod<void>("updateNotification", "(Ljava/lang/String;Ljava/lang/String;I)V",
                                                      QAndroidJniObject::fromString("Power Saving (sync hourly)").object<jstring>(),
                                                      QAndroidJniObject::fromString(msg).object<jstring>(),

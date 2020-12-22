@@ -226,6 +226,16 @@ void SpectreGUI::loadIndex(QString webSocketToken) {
     view->setSource(QUrl("qrc:///qml/main"));
     qmlWebView = view->rootObject()->findChild<QObject*>("webView");
 
+    // Check if wallet unlock is needed to determine current balance
+    if (walletModel->encryptionInfo().status() == EncryptionStatus::Locked || walletModel->encryptionInfo().fWalletUnlockStakingOnly())
+    {
+        SpectreGUI::UnlockContext unlockContext = requestUnlock(SpectreGUI::UnlockMode::login);
+        if (!unlockContext.isValid()) {
+            StartShutdown();
+            return;
+        }
+    }
+
 #ifdef ANDROID
     // On Android webview can't load resources via qrc, we have to provide and load the resources from the apps assets folder
     QUrl url("file:///android_asset/index.html" + (fTestNet ? "?websocketport=" + QString::number(WEBSOCKETPORT_TESTNET) + "&" : "?") +
@@ -315,6 +325,9 @@ SpectreGUI::~SpectreGUI()
 
 void SpectreGUI::pageLoaded()
 {
+    if (ShutdownRequested())
+        return;
+
     uiReady = true;
 
 //    // Create the tray icon (or setup the dock icon)
@@ -350,6 +363,8 @@ void SpectreGUI::pageLoaded()
 
 #ifdef ANDROID
     QtAndroid::androidActivity().callMethod<void>("setRequestedOrientationUnspecified", "()V");
+    // change android keyboard mode from adjustPan to adjustResize (note: setting adjustResize in AndroidManifest.xml and switching to adjustPan before showing SetupWalletWizard did not work)
+    QtAndroid::androidActivity().callMethod<void>("setSoftInputModeAdjustResize", "()V");
 #endif
 
     pollTimer->start(1000);
