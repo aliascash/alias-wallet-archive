@@ -485,7 +485,6 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
                 else {
                     pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                     pLineEdit->setReadOnly(true);
-                    completerWordModel->removeRow(completerWordModel->stringList().indexOf(mnemonicPage->mnemonicList[i]));
                 }
                 break;
             }
@@ -727,20 +726,14 @@ void RecoverFromMnemonicPage::initializePage()
 
 bool RecoverFromMnemonicPage::isComplete() const
 {
-    QStringList stringList;
     for (int i = 0; i < 24; i++)
     {
         QString word = field(QString("recover.mnemonic.%1").arg(i)).toString();
         if (word.isEmpty())
             return false;
 
-        if (stringList.contains(word))
-            return false;
-
         if (!completerWordList.contains(word.normalized(QString::NormalizationForm_KD), Qt::CaseInsensitive))
             return false;
-
-        stringList.append(word);
     }
     return true;
 }
@@ -780,20 +773,8 @@ bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
                     return true;
                 }
                 else {
-                    // Check word is used only once
-                    for (auto & mnemonicEdit : vMnemonicEdit)
-                    {
-                        if (mnemonicEdit != pLineEdit && mnemonicEdit->text() == pLineEdit->text())
-                        {
-                            index = -1;
-                            break;
-                        }
-                    }
+                    pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                     pLineEdit->setReadOnly(true);
-                    if (index == -1)
-                        pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
-                    else
-                        pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
                 }
             }
         }
