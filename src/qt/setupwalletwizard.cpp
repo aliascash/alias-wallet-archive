@@ -107,7 +107,7 @@ void SetupWalletWizard::showHelp()
         message = tr("You have to enter the language and optional password you used when creating the seed words.");
         break;
     case Page_RecoverFromMnemonic:
-        message = tr("Please enter your mnemonic seed words");
+        message = tr("Please enter your mnemonic seed words. If you get a checksum error but all seed words are valid, the order of the seed words in not correct.");
         break;
     default:
         message = tr("This help is likely not to be of any help.");
