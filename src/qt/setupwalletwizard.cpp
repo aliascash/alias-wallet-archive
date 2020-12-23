@@ -500,7 +500,7 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     registerField("verification.password", passwordEdit);
     connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
-    mnemonicLabel = new QLabel(tr("<br>Enter <b>first 3 or 4 letters</b> of words:"));
+    mnemonicLabel = new QLabel(tr("<br>Enter the <b>first letters</b> until the word is <b>recognized</b>:"));
     mnemonicLabel->setWordWrap(true);
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
@@ -642,7 +642,7 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     setTitle(tr("Recover Wallet"));
     setSubTitle(tr("Step 2/2: Enter your mnemonic seed words."));
 
-    mnemonicLabel = new QLabel(tr("<br>Enter <b>first 3 to 4 letters</b> of words:"));
+    mnemonicLabel = new QLabel(tr("<br>Enter the <b>first letters</b> until the word is <b>recognized</b>:"));
     mnemonicLabel->setWordWrap(true);
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
@@ -995,12 +995,8 @@ void ExtendedLineEdit::completeWord()
         return;
     if (m_completerWord->completionCount() == 1)
     {
-        QString word = m_completerWord->currentCompletion();
-        if (word.length() < 3 || m_completerWord->completionPrefix().length() >= 3)
-        {
-            setText(m_completerWord->currentCompletion());
-            focusNextChild();
-        }
+        setText(m_completerWord->currentCompletion());
+        focusNextChild();
     }
 }
 
