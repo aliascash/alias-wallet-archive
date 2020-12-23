@@ -978,6 +978,35 @@ int MnemonicDetectLanguage(const std::string &sWordList)
     return 0;
 };
 
+int GetAllMnemonicWords(int nLanguage, std::string &sWordList, std::string &sError)
+{
+    if (fDebug)
+        LogPrintf("%s: language %d.\n", __func__, nLanguage);
+
+    if (nLanguage < 1 || nLanguage > WLL_MAX)
+    {
+        sError = "Unknown language.";
+        return errorN(1, "%s: %s", __func__, sError.c_str());
+    };
+
+    char *pwl = (char*) mnLanguages[nLanguage];
+    char *pt = (char*)pwl;
+
+    while (pt < (pwl+mnLanguageLens[nLanguage]))
+    {
+        if (*pt == '\n')
+            sWordList += " ";
+        else
+            sWordList += *pt;
+        pt++;
+    };
+
+    if (nLanguage == WLL_JAPANESE)
+        ReplaceStrInPlace(sWordList, " ", "\u3000");
+
+    return 0;
+}
+
 int MnemonicEncode(int nLanguage, const std::vector<uint8_t> &vEntropy, std::string &sWordList, std::string &sError)
 {
     if (fDebug)

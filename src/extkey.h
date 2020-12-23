@@ -549,6 +549,7 @@ int LoopExtAccountsInDB(bool fInactive, LoopExtKeyCallback &callback);
 
 int GetWordOffset(const char *p, const char *pwl, int max, int &o);
 int MnemonicDetectLanguage(const std::string &sWordList);
+int GetAllMnemonicWords(int nLanguage, std::string &sWordList, std::string &sError);
 int MnemonicEncode(int nLanguage, const std::vector<uint8_t> &vEntropy, std::string &sWordList, std::string &sError);
 int MnemonicDecode(int nLanguage, const std::string &sWordListIn, std::vector<uint8_t> &vEntropy, std::string &sError, bool fIgnoreChecksum=false);
 int MnemonicToSeed(const std::string &sMnemonic, const std::string &sPasswordIn, std::vector<uint8_t> &vSeed);
