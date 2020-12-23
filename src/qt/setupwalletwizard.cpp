@@ -730,7 +730,8 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     setTitle(tr("Wallet Encryption"));
     setSubTitle(tr("Please enter a password to encrypt the wallet.dat file."));
 
-    topLabel = new QLabel(tr("The password protects your private keys and will be asked by the wallet on startup and for critical operations."));
+    topLabel = new QLabel(tr("The password protects your private keys. It will be asked on wallet startup and critical operations."
+                                " Phones with biometric authentication support (eg. fingerprint reader) can set it up later for user-friendly wallet password access."));
     topLabel->setWordWrap(true);
 
     passwordLabel = new QLabel(tr("&Wallet Password:"));
