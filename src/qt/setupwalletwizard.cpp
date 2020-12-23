@@ -408,13 +408,23 @@ void NewMnemonicResultPage::initializePage()
 
 void NewMnemonicVerificationPage::initializePage()
 {
+    int nLanguage = field("newmnemonic.language").toInt();
     QStringList completerWordList;
-    NewMnemonicSettingsPage* mnemonicPage = (NewMnemonicSettingsPage*)wizard()->page(SetupWalletWizard::Page_NewMnemonic_Settings);
-    for (int i = 0; i < 24; i++)
+    std::string sError;
+    std::string sMnemonic;
+
+    if (0 == GetAllMnemonicWords(nLanguage, sMnemonic, sError))
     {
-       completerWordList.append(mnemonicPage->mnemonicList[i]);
+        if (nLanguage == WLL_JAPANESE)
+            completerWordList = QString::fromStdString(sMnemonic).split("\u3000");
+        else
+            completerWordList = QString::fromStdString(sMnemonic).split(" ");
+    }
+    else {
+        completerWordList.clear();
     }
     completerWordModel->setStringList(completerWordList);
+
     passwordEdit->setStyleSheet("");
     passwordEdit->setReadOnly(false);
     for (int i = 0; i < 24; i++)
