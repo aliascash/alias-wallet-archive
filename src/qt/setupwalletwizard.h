@@ -7,15 +7,36 @@
 #define SETUPWALLETWIZARD_H
 
 #include <QWizard>
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 class QCheckBox;
 class QComboBox;
 class QLabel;
-class QLineEdit;
 class QRadioButton;
 class QProgressBar;
+class QStringListModel;
 QT_END_NAMESPACE
+
+class ExtendedLineEdit : public QLineEdit
+{
+    Q_OBJECT
+public:
+    explicit ExtendedLineEdit(QWidget *parent = nullptr);
+
+    void setWordCompleter(QCompleter* c);
+
+protected:
+    void inputMethodEvent(QInputMethodEvent *) override;
+
+private slots:
+    void completeWord();
+
+private:
+    QCompleter* m_completerWord;
+
+};
+
 
 class SetupWalletWizard : public QWizard
 {
@@ -25,7 +46,7 @@ public:
     enum { Page_Intro,
            Page_ImportWalletDat,
            Page_NewMnemonic_Settings, Page_NewMnemonic_Result, Page_NewMnemonic_Verification,
-           Page_RecoverFromMnemonic,
+           Page_RecoverFromMnemonic_Settings, Page_RecoverFromMnemonic,
            Page_EncryptWallet};
 
     SetupWalletWizard(QWidget *parent = 0);
@@ -140,6 +161,28 @@ private:
     QLabel *passwordLabel;
     QLineEdit *passwordEdit;
     std::vector<QLineEdit*> vMnemonicEdit;
+    QStringListModel* completerWordModel;
+    QCompleter* completer;
+};
+
+class RecoverFromMnemonicSettingsPage : public QWizardPage
+{
+    Q_OBJECT
+
+public:
+    RecoverFromMnemonicSettingsPage(QWidget *parent = 0);
+
+    int nextId() const override;
+    bool isComplete() const override;
+
+private:
+    QLabel *noteLabel;
+    QLabel *languageLabel;
+    QLabel *passwordLabel;
+    QLabel *passwordVerifyLabel;
+    QComboBox *languageComboBox;
+    QLineEdit *passwordEdit;
+    QLineEdit *passwordVerifyEdit;
 };
 
 class RecoverFromMnemonicPage : public QWizardPage
@@ -152,17 +195,17 @@ public:
     int nextId() const override;
     bool validatePage() override;
     bool isComplete() const override;
+    void initializePage() override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
     std::string sKey;
 
 private:
     QLabel *mnemonicLabel;
-    QLabel *passwordLabel;
-    QLabel *passwordVerifyLabel;
-    QLineEdit *passwordEdit;
-    QLineEdit *passwordVerifyEdit;
     std::vector<QLineEdit*> vMnemonicEdit;
+    QStringList completerWordList;
+    QStringListModel* completerWordModel;
+    QCompleter* completer;
 };
 
 class EncryptWalletPage : public QWizardPage

@@ -23,7 +23,14 @@ pipeline {
         ACCESS_TOKEN = credentials('ci_read_access')
         DEVELOP_TAG = "Build${BUILD_NUMBER}-Android"
         RELEASE_TAG = sh(
-                script: "printf \$(grep CLIENT_VERSION_MAJOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_MINOR CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\$(grep CLIENT_VERSION_REVISION CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r')-Android | sed 's/ //g'",
+                script: """
+                    printf "\
+                        \$(grep 'set(CLIENT_VERSION_MAJOR'    CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\
+                        \$(grep 'set(CLIENT_VERSION_MINOR'    CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\
+                        \$(grep 'set(CLIENT_VERSION_REVISION' CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r').\
+                        \$(grep 'set(ANDROID_VERSION_CODE'    CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r')-Android" |
+                        sed 's/ //g'
+                """,
                 returnStdout: true
         )
         GIT_TAG_TO_USE = "${DEVELOP_TAG}"
@@ -35,8 +42,8 @@ pipeline {
                 script: "printf \"\$(date '+%F %T')\"",
                 returnStdout: true
         )
-        RELEASE_NAME = "Continuous build #${BUILD_NUMBER} (Branch ${GIT_BRANCH})"
-        RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}"
+        RELEASE_NAME = "CI build #${BUILD_NUMBER}, v${RELEASE_TAG}"
+        RELEASE_DESCRIPTION = "Build ${BUILD_NUMBER} from ${CURRENT_DATE}, branch ${GIT_BRANCH}"
         PRERELEASE = "true"
     }
     stages {

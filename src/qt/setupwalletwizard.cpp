@@ -15,6 +15,7 @@
 #include <QScreen>
 #include <QInputMethod>
 #include <QtConcurrent>
+#include <QCompleter>
 
 namespace fs = boost::filesystem;
 
@@ -30,6 +31,7 @@ SetupWalletWizard::SetupWalletWizard(QWidget *parent)
     setPage(Page_NewMnemonic_Result, new NewMnemonicResultPage);
     setPage(Page_NewMnemonic_Verification, new NewMnemonicVerificationPage);
     setPage(Page_RecoverFromMnemonic, new RecoverFromMnemonicPage);
+    setPage(Page_RecoverFromMnemonic_Settings, new RecoverFromMnemonicSettingsPage);
     setPage(Page_EncryptWallet, new EncryptWalletPage);
 
     setStartId(Page_Intro);
@@ -101,8 +103,11 @@ void SetupWalletWizard::showHelp()
     case Page_NewMnemonic_Verification:
         message = tr("Please enter the mnemonic words and password given on the previous screen.");
         break;
+    case Page_RecoverFromMnemonic_Settings:
+        message = tr("You have to enter the language and optional password you used when creating the seed words.");
+        break;
     case Page_RecoverFromMnemonic:
-        message = tr("Please enter your mnemonic words and (optional) password.");
+        message = tr("Please enter your mnemonic seed words. If you get a checksum error but all seed words are valid, the order of the seed words in not correct.");
         break;
     default:
         message = tr("This help is likely not to be of any help.");
@@ -140,7 +145,7 @@ int IntroPage::nextId() const
     if (importWalletRadioButton->isChecked()) {
         return SetupWalletWizard::Page_ImportWalletDat;
     } else  if (recoverFromMnemonicRadioButton->isChecked()) {
-        return SetupWalletWizard::Page_RecoverFromMnemonic;
+        return SetupWalletWizard::Page_RecoverFromMnemonic_Settings;
     } else {
         return SetupWalletWizard::Page_NewMnemonic_Settings;
     }
@@ -403,6 +408,23 @@ void NewMnemonicResultPage::initializePage()
 
 void NewMnemonicVerificationPage::initializePage()
 {
+    int nLanguage = field("newmnemonic.language").toInt();
+    QStringList completerWordList;
+    std::string sError;
+    std::string sMnemonic;
+
+    if (0 == GetAllMnemonicWords(nLanguage, sMnemonic, sError))
+    {
+        if (nLanguage == WLL_JAPANESE)
+            completerWordList = QString::fromStdString(sMnemonic).split("\u3000");
+        else
+            completerWordList = QString::fromStdString(sMnemonic).split(" ");
+    }
+    else {
+        completerWordList.clear();
+    }
+    completerWordModel->setStringList(completerWordList);
+
     passwordEdit->setStyleSheet("");
     passwordEdit->setReadOnly(false);
     for (int i = 0; i < 24; i++)
@@ -415,8 +437,9 @@ void NewMnemonicVerificationPage::initializePage()
 bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::FocusIn) {
-        if (obj != passwordEdit)
+        if (obj != passwordEdit) {
             QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+        }
     }
     else if (event->type()==QEvent::KeyPress)
     {
@@ -432,7 +455,6 @@ bool NewMnemonicVerificationPage::eventFilter(QObject *obj, QEvent *event)
     {
         if (obj == passwordEdit)
         {
-
             QString sPassword = field("newmnemonic.password").toString();
             if (sPassword != passwordEdit->text()) {
                 passwordEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
@@ -487,7 +509,8 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     registerField("verification.password", passwordEdit);
     connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
-    mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
+    mnemonicLabel = new QLabel(tr("<br>Enter the <b>first letters</b> until the word is <b>recognized</b>:"));
+    mnemonicLabel->setWordWrap(true);
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 
@@ -505,9 +528,16 @@ NewMnemonicVerificationPage::NewMnemonicVerificationPage(QWidget *parent)
     QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
     bool fLandscape = GUIUtil::isScreenLandscape();
+
+    completerWordModel = new QStringListModel(this);
+    completer = new QCompleter(completerWordModel, this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+
     for (int i = 0; i < 24; i++)
     {
-        QLineEdit *qLineEdit = new QLineEdit;
+        ExtendedLineEdit *qLineEdit = new ExtendedLineEdit;
+        qLineEdit->setInputMethodHints(Qt::ImhSensitiveData | Qt::ImhNoPredictiveText | Qt::ImhLowercaseOnly | Qt::ImhNoAutoUppercase);
+        qLineEdit->setWordCompleter(completer);
         qLineEdit->installEventFilter(this);
         vMnemonicEdit.push_back(qLineEdit);
         registerField(QString("verification.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
@@ -547,16 +577,32 @@ bool NewMnemonicVerificationPage::isComplete() const
     return true;
 }
 
-RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
+
+RecoverFromMnemonicSettingsPage::RecoverFromMnemonicSettingsPage(QWidget *parent)
     : QWizardPage(parent)
 {
     setTitle(tr("Recover Wallet"));
-    setSubTitle(tr("Enter (optional) password and your mnemonic seed words."));
+    setSubTitle(tr("Step 1/2: Define language and optional password of your seed."));
+
+    noteLabel = new QLabel(tr("Recover wallet with mnemonic seed words is a two step procedure:"
+                             "<ol><li>Define language and optional password of your seed.</li>"
+                             "<li>Enter your seed words.</li></ol>"));
+    noteLabel->setWordWrap(true);
+
+    languageLabel = new QLabel(tr("&Language:"));
+    languageComboBox = new QComboBox;
+    languageLabel->setBuddy(languageComboBox);
+
+    languageComboBox->addItem("English", 1);
+    languageComboBox->addItem("French", 2);
+    languageComboBox->addItem("Japanese", 3);
+    languageComboBox->addItem("Spanish", 4);
+    languageComboBox->addItem("Chinese (Simplified)", 5);
+    languageComboBox->addItem("Chinese (Traditional)", 6);
 
     passwordLabel = new QLabel(tr("&Seed Password:"));
     passwordEdit = new QLineEdit;
     passwordEdit->setEchoMode(QLineEdit::Password);
-    passwordEdit->installEventFilter(this);
     passwordLabel->setBuddy(passwordEdit);
     registerField("recover.password", passwordEdit);
     connect(passwordEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
@@ -564,22 +610,52 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     passwordVerifyLabel = new QLabel(tr("&Verify Password:"));
     passwordVerifyEdit = new QLineEdit;
     passwordVerifyEdit->setEchoMode(QLineEdit::Password);
-    passwordVerifyEdit->installEventFilter(this);
     passwordVerifyLabel->setBuddy(passwordVerifyEdit);
     registerField("recover.passwordverify", passwordVerifyEdit);
     connect(passwordVerifyEdit, SIGNAL(textChanged(QString)), this, SIGNAL(completeChanged()));
 
-    mnemonicLabel = new QLabel(tr("<br>Enter Mnemonic Seed Words:"));
+    registerField("recover.language", languageComboBox, "currentData", "currentIndexChanged");
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QGridLayout *formLayout = new QGridLayout;
+    formLayout->addWidget(languageLabel, 0, 0);
+    formLayout->addWidget(languageComboBox, 0, 1);
+    formLayout->addWidget(passwordLabel, 1, 0);
+    formLayout->addWidget(passwordEdit, 1, 1);
+    formLayout->addWidget(passwordVerifyLabel, 2, 0);
+    formLayout->addWidget(passwordVerifyEdit, 2, 1);
+    layout->addLayout(formLayout);
+
+    noteLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->addWidget(noteLabel, Qt::AlignBottom);
+
+    setLayout(layout);
+}
+
+int RecoverFromMnemonicSettingsPage::nextId() const
+{
+    return SetupWalletWizard::Page_RecoverFromMnemonic;
+}
+
+bool RecoverFromMnemonicSettingsPage::isComplete() const
+{
+    QString sPassword = field("recover.password").toString();
+    QString sVerificationPassword = field("recover.passwordverify").toString();
+    return sPassword == sVerificationPassword;
+}
+
+RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
+    : QWizardPage(parent)
+{
+    setTitle(tr("Recover Wallet"));
+    setSubTitle(tr("Step 2/2: Enter your mnemonic seed words."));
+
+    mnemonicLabel = new QLabel(tr("<br>Enter the <b>first letters</b> until the word is <b>recognized</b>:"));
+    mnemonicLabel->setWordWrap(true);
 
     QVBoxLayout* verticalLayout = new QVBoxLayout(this);
-
-    QGridLayout *gridLayout = new QGridLayout(this);
-    gridLayout->addWidget(passwordLabel, 0, 0);
-    gridLayout->addWidget(passwordEdit, 0, 1, 1, 3);
-    gridLayout->addWidget(passwordVerifyLabel, 1, 0);
-    gridLayout->addWidget(passwordVerifyEdit, 1, 1, 1, 3);
-    gridLayout->addWidget(mnemonicLabel, 2, 0, 1, 4);
-    verticalLayout->addLayout(gridLayout);
+    verticalLayout->addWidget(mnemonicLabel);
 
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
@@ -589,9 +665,16 @@ RecoverFromMnemonicPage::RecoverFromMnemonicPage(QWidget *parent)
     QGridLayout *fieldGridLayout = new QGridLayout(scrollAreaWidgetContents);
     vMnemonicEdit.reserve(24);
     bool fLandscape = GUIUtil::isScreenLandscape();
+
+    completerWordModel = new QStringListModel(this);
+    completer = new QCompleter(completerWordModel, this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+
     for (int i = 0; i < 24; i++)
     {
-        QLineEdit *qLineEdit = new QLineEdit;
+        ExtendedLineEdit *qLineEdit = new ExtendedLineEdit;
+        qLineEdit->setInputMethodHints(Qt::ImhSensitiveData | Qt::ImhNoPredictiveText | Qt::ImhLowercaseOnly | Qt::ImhNoAutoUppercase);
+        qLineEdit->setWordCompleter(completer);
         qLineEdit->installEventFilter(this);
         vMnemonicEdit.push_back(qLineEdit);
         registerField(QString("recover.mnemonic.%1*").arg(i), vMnemonicEdit[i]);
@@ -614,17 +697,42 @@ int RecoverFromMnemonicPage::nextId() const
     return SetupWalletWizard::Page_EncryptWallet;
 }
 
-bool RecoverFromMnemonicPage::isComplete() const
+void RecoverFromMnemonicPage::initializePage()
 {
-    QString sPassword = field("recover.password").toString();
-    QString sVerificationPassword = field("recover.passwordverify").toString();
+    int nLanguage = field("recover.language").toInt();
 
-    if (sPassword != sVerificationPassword)
-        return false;
+    std::string sError;
+    std::string sMnemonic;
+
+    if (0 == GetAllMnemonicWords(nLanguage, sMnemonic, sError))
+    {
+        if (nLanguage == WLL_JAPANESE)
+            completerWordList = QString::fromStdString(sMnemonic).split("\u3000");
+        else
+            completerWordList = QString::fromStdString(sMnemonic).split(" ");
+    }
+    else {
+        completerWordList.clear();
+    }
+    completerWordModel->setStringList(completerWordList);
 
     for (int i = 0; i < 24; i++)
     {
-        if (field(QString("recover.mnemonic.%1").arg(i)).toString().isEmpty())
+        vMnemonicEdit[i]->setStyleSheet("");
+        vMnemonicEdit[i]->setReadOnly(false);
+    }
+}
+
+
+bool RecoverFromMnemonicPage::isComplete() const
+{
+    for (int i = 0; i < 24; i++)
+    {
+        QString word = field(QString("recover.mnemonic.%1").arg(i)).toString();
+        if (word.isEmpty())
+            return false;
+
+        if (!completerWordList.contains(word.normalized(QString::NormalizationForm_KD), Qt::CaseInsensitive))
             return false;
     }
     return true;
@@ -633,8 +741,10 @@ bool RecoverFromMnemonicPage::isComplete() const
 bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::FocusIn) {
-        if (obj != passwordEdit)
-            QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+        QTimer::singleShot(0, QGuiApplication::inputMethod(), &QInputMethod::show);
+        QLineEdit* pLineEdit = dynamic_cast<QLineEdit*>(obj);
+        if (pLineEdit)
+            pLineEdit->setReadOnly(false);
     }
     else if (event->type()==QEvent::KeyPress)
     {
@@ -648,20 +758,24 @@ bool RecoverFromMnemonicPage::eventFilter(QObject *obj, QEvent *event)
     }
     else if (event->type() == QEvent::FocusOut)
     {
-        if (obj == passwordVerifyEdit || obj == passwordEdit)
+        QLineEdit* pLineEdit = dynamic_cast<QLineEdit*>(obj);
+        if (pLineEdit)
         {
-            QString sPassword = field("recover.password").toString();
-            QString sPasswordVerify = field("recover.passwordverify").toString();
-
-            if (sPasswordVerify.length() > 0)
+            if (pLineEdit->text().size() == 0)
+                pLineEdit->setStyleSheet("");
+            else
             {
-                if (sPassword != sPasswordVerify)
-                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
-                else
-                    passwordVerifyEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
-            }
-            else {
-                passwordVerifyEdit->setStyleSheet("");
+                int index = completerWordModel->stringList().indexOf(pLineEdit->text().normalized(QString::NormalizationForm_KD).toLower());
+                if (index == -1)
+                {
+                    pLineEdit->setStyleSheet("QLineEdit { background: rgba(255, 0, 0, 30); }");
+                    pLineEdit->setFocus();
+                    return true;
+                }
+                else {
+                    pLineEdit->setStyleSheet("QLineEdit { background: rgba(0, 255, 0, 30); }");
+                    pLineEdit->setReadOnly(true);
+                }
             }
         }
     }
@@ -688,8 +802,10 @@ bool RecoverFromMnemonicPage::validatePage()
 
     sKey.clear();
 
+    int nLanguage = field("recover.language").toInt();
+
     // - decode to determine validity of mnemonic
-    if (0 == MnemonicDecode(-1, sMnemonic.toStdString(), vEntropy, sError))
+    if (0 == MnemonicDecode(nLanguage, sMnemonic.toStdString(), vEntropy, sError))
     {
         if (0 == MnemonicToSeed(sMnemonic.toStdString(), sPassword.toStdString(), vSeed))
         {
@@ -730,7 +846,8 @@ EncryptWalletPage::EncryptWalletPage(QWidget *parent)
     setTitle(tr("Wallet Encryption"));
     setSubTitle(tr("Please enter a password to encrypt the wallet.dat file."));
 
-    topLabel = new QLabel(tr("The password protects your private keys and will be asked by the wallet on startup and for critical operations."));
+    topLabel = new QLabel(tr("The password protects your private keys.<br>It will be asked on wallet startup and critical operations."
+                                "<br><br>Phones with biometric authentication support (eg. fingerprint reader) can set it up later for user-friendly wallet password access."));
     topLabel->setWordWrap(true);
 
     passwordLabel = new QLabel(tr("&Wallet Password:"));
@@ -839,6 +956,39 @@ int EncryptWalletPage::encryptWallet(const QString strWalletFile, const QString 
     secString.assign(password.toStdString().c_str());
 
     return SetupWalletData(strWalletFile.toStdString(), sBip44Key.toStdString(), secString);
+}
+
+
+ExtendedLineEdit::ExtendedLineEdit(QWidget *parent) : QLineEdit(parent)
+{
+}
+
+void ExtendedLineEdit::setWordCompleter(QCompleter *c)
+{
+    m_completerWord = c;
+}
+
+void ExtendedLineEdit::inputMethodEvent(QInputMethodEvent *e)
+{
+    QLineEdit::inputMethodEvent(e);
+    if (!m_completerWord || e->commitString().isEmpty())
+        return;
+    completeWord();
+}
+
+void ExtendedLineEdit::completeWord()
+{
+    if (!m_completerWord)
+        return;
+
+    m_completerWord->setCompletionPrefix(this->displayText());
+    if (m_completerWord->completionPrefix().length() < 1)
+        return;
+    if (m_completerWord->completionCount() == 1)
+    {
+        setText(m_completerWord->currentCompletion());
+        focusNextChild();
+    }
 }
 
 

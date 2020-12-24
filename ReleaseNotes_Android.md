@@ -21,6 +21,9 @@ SPDX-License-Identifier: MIT
 This releasenotes document covers only the Android relevant changes. For full
 releasenotes please head over to [the latest release on Github](https://github.com/aliascash/alias-wallet/releases/latest).
 
+#### 4.3.1.15 Android (released 2020-12-24)
+- Mnemonic seed word autocompletion
+
 #### 4.3.1.14 Android (released 2020-12-22)
 - Support biometric (fingerprint) unlock
 - Power saving mode with hourly sync when app is not staking
