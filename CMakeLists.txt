@@ -177,6 +177,7 @@ if (ENABLE_GUI)
         set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
         set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
         set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
+        set(Qt5LinguistTools_DIR "${QT_CMAKE_MODULE_PATH}/Qt5LinguistTools")
     endif()
 
     # Find includes in corresponding build directories
@@ -228,6 +229,9 @@ if (ENABLE_GUI)
     find_package(Qt5Concurrent)
     message(STATUS "Qt5Concurrent version: ${Qt5Concurrent_VERSION}")
     get_target_property(QtConcurrent_location Qt5::Concurrent LOCATION)
+
+    find_package(Qt5LinguistTools)
+    message(STATUS "Qt5LinguistTools version: ${Qt5LinguistTools_VERSION}")
 
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # Retrieve the absolute path to qmake and then use that path
