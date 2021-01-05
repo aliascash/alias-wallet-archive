@@ -198,12 +198,92 @@ else()
 endif()
 
 if (ENABLE_GUI)
+    # The qm files are generated in the build tree, but the qrc file is inside the
+    # source directory and the path to resources are relative to the location of
+    # the qrc file itself. We use configure_file() to copy the qrc file in the build
+    # directory such that it can find the qm translations files. The qrc file is
+    # copied if it doesn't exist in the destination or if it is modified.
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt/alias_locale.qrc ${CMAKE_BINARY_DIR} COPYONLY)
+
+    # Call lrelease on each translation file to create qm files.
+    qt5_add_translation(QM_FILES
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_af_ZA.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ar.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_be_BY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bg.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bs.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca@valencia.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca_ES.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_cs.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_cy.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_da.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_de.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el_GR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_en.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_eo.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_CL.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_DO.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_MX.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_UY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_et.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_eu_ES.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fa.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fa_IR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fi.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fr_CA.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_gl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_he.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hi_IN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hu.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_id_ID.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_it.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ja.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ka.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_kk_KZ.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ko_KR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ky.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_la.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_lt.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_lv_LV.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ms_MY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_nb.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_nl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pam.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pt_BR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pt_PT.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ro_RO.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ru.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sah.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sk.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sl_SI.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sq.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sv.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_th_TH.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_tr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_uk.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ur_PK.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_vi.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_vi_VN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_CN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_HK.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_TW.ts
+            )
+
     if (ANDROID)
         # Create a shared library 'libAliaswallet_<arch>.so'
         add_library(Aliaswallet
                 SHARED
                 ../spectre.qrc
                 ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                ${QM_FILES}
                 )
 #        set_target_properties(Aliaswallet
 #                PROPERTIES
@@ -306,11 +386,40 @@ if (ENABLE_GUI)
     else()
         # The UI wallet
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            add_executable(Aliaswallet MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    MACOSX_BUNDLE
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         else()
-            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         endif()
 
         # Link the UI wallet
