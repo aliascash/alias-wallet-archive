@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-debian-stretch:2.2 as build
+FROM aliascash/alias-wallet-builder-debian-stretch:2.3 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
