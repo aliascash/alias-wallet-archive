@@ -13,11 +13,18 @@
     </message>
     <message>
         <location line="+41"/>
-        <source>Copyright © 2009-2014 The Bitcoin developers
-Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The BlackCoin developers
-Copyright © 2015 The Shadow developers</source>
-        <translation type="unfinished"/>
+        <source>© 2020 Alias developers
+© 2016 Spectrecoin developers &gt;
+© 2014 ShadowCash developers
+© 2014 BlackCoin developers
+© 2012 NovaCoin developers
+© 2009 Bitcoin developers</source>
+        <translation>© 2020 Alias developers
+© 2016 Spectrecoin developers &gt;
+© 2014 ShadowCash developers
+© 2014 BlackCoin developers
+© 2012 NovaCoin developers
+© 2009 Bitcoin developers</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -65,7 +72,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+0"/>
         <source>n/a</source>
-        <translation type="unfinished"/>
+        <translation>n/a</translation>
     </message>
 </context>
 <context>
@@ -138,7 +145,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location line="+1"/>
         <source>Enter the old and new passphrase to the wallet.</source>
-        <translation>Geben Sie die alte und neue Wallet-Passphrase ein.</translation>
+        <translation>Geben Sie bitte die alte und neue Wallet-Passphrase ein.</translation>
     </message>
     <message>
         <location line="+45"/>
@@ -1271,47 +1278,47 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location filename="../bridgetranslations.h" line="+8"/>
         <source>Overview</source>
-        <translation type="unfinished"/>
+        <translation>Übersicht</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send</source>
-        <translation type="unfinished"/>
+        <translation>Senden</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Receive</source>
-        <translation type="unfinished"/>
+        <translation>Empfangen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Transactions</source>
-        <translation type="unfinished"/>
+        <translation>Transaktionen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Address Book</source>
-        <translation type="unfinished"/>
+        <translation>Adressbuch</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Chat</source>
-        <translation type="unfinished"/>
+        <translation>Chat</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Notifications</source>
-        <translation type="unfinished"/>
+        <translation>Benachrichtigungen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Options</source>
-        <translation type="unfinished"/>
+        <translation>Optionen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1321,47 +1328,47 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Add New Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Neues Wallet hinzufügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Import Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet importieren</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Advanced</source>
-        <translation type="unfinished"/>
+        <translation>Erweitert</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Backup</source>
-        <translation type="unfinished"/>
+        <translation>Backup</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet-Backup erstellen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Encrypt Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet verschlüsseln</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Change Passphrase</source>
-        <translation type="unfinished"/>
+        <translation>Passphrase ändern</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>(Un)lock Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet (ent)sperren</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Tools</source>
-        <translation type="unfinished"/>
+        <translation>Werkzeuge</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1376,12 +1383,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Sign Message</source>
-        <translation type="unfinished"/>
+        <translation>Meldung signieren</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Verify Message</source>
-        <translation type="unfinished"/>
+        <translation>Meldung überprüfen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1391,22 +1398,22 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>About Alias</source>
-        <translation type="unfinished"/>
+        <translation>Über Alias</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>About QT</source>
-        <translation type="unfinished"/>
+        <translation>Über Qt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>QR code</source>
-        <translation type="unfinished"/>
+        <translation>QR-Code</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Address:</source>
-        <translation type="unfinished"/>
+        <translation>Adresse:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1416,37 +1423,37 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Narration:</source>
-        <translation type="unfinished"/>
+        <translation>Kommentar:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Amount:</source>
-        <translation type="unfinished"/>
+        <translation>Betrag:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Add new receive address</source>
-        <translation type="unfinished"/>
+        <translation>Neue Empfängeradresse hinzufügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Add Address</source>
-        <translation type="unfinished"/>
+        <translation>Adresse hinzufügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Add a new contact</source>
-        <translation type="unfinished"/>
+        <translation>Neuen Kontakt hinzufügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Address Lookup</source>
-        <translation type="unfinished"/>
+        <translation>Adresse nachschlagen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Address Type</source>
-        <translation type="unfinished"/>
+        <translation>Adresstyp</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1461,7 +1468,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Gruppe</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1476,12 +1483,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Address</source>
-        <translation type="unfinished"/>
+        <translation>Adresse</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Public Key</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlicher Schlüssel</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1496,12 +1503,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Market</source>
-        <translation type="unfinished"/>
+        <translation>Markt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Advanced Options</source>
-        <translation type="unfinished"/>
+        <translation>Erweiterte Optionen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1511,7 +1518,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Make payment</source>
-        <translation type="unfinished"/>
+        <translation>Zahlung durchführen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1526,22 +1533,22 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Automatically selected</source>
-        <translation type="unfinished"/>
+        <translation>Automatisch ausgewählt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Quantity:</source>
-        <translation type="unfinished"/>
+        <translation>Anzahl:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Fee:</source>
-        <translation type="unfinished"/>
+        <translation>Gebühr:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>After Fee:</source>
-        <translation type="unfinished"/>
+        <translation>Nach Gebühr:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1551,7 +1558,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Priority:</source>
-        <translation type="unfinished"/>
+        <translation>Priorität:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1571,22 +1578,22 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>From account</source>
-        <translation type="unfinished"/>
+        <translation>Von Konto</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>PUBLIC</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>PRIVATE</source>
-        <translation type="unfinished"/>
+        <translation>Privat</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Balance:</source>
-        <translation type="unfinished"/>
+        <translation>Guthaben:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1596,12 +1603,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>To account</source>
-        <translation type="unfinished"/>
+        <translation>An Konto</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Pay to</source>
-        <translation type="unfinished"/>
+        <translation>Zahlen an</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1616,32 +1623,32 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+2"/>
         <source>Tor connection offline</source>
-        <translation type="unfinished"/>
+        <translation>Tor-Verbindung getrennt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>i2p connection offline</source>
-        <translation type="unfinished"/>
+        <translation>i2p-Verbindung getrennt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet is encrypted and currently locked</source>
-        <translation type="unfinished"/>
+        <translation>Wallet ist verschlüsselt und momentan gesperrt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished"/>
+        <translation>Wallet ist gesperrt, kein Staking aktiv</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>0 active connection(s) to Alias network</source>
-        <translation type="unfinished"/>
+        <translation>Keine aktive Verbindung zum Alias-Netzwerk</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet is syncing</source>
-        <translation type="unfinished"/>
+        <translation>Wallet wird synchronisiert</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1651,27 +1658,27 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Enter a label for this address to add it to your address book</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Bezeichnung für diese Adresse eingeben, um sie dem Adressbuch hinzuzufügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter a address to add it to your address book</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Adresse zum hinzufügen zum Adressbuch eingeben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Inputs</source>
-        <translation type="unfinished"/>
+        <translation>Eingänge</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Values</source>
-        <translation type="unfinished"/>
+        <translation>Werte</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Outputs</source>
-        <translation type="unfinished"/>
+        <translation>Ausgänge</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1716,12 +1723,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Your total balance</source>
-        <translation type="unfinished"/>
+        <translation>Ihr Gesamtguthaben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Balances overview</source>
-        <translation type="unfinished"/>
+        <translation>Guthaben-Übersicht</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1741,17 +1748,17 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Choose from address book</source>
-        <translation type="unfinished"/>
+        <translation>Vom Adressbuch holen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Paste address from clipboard</source>
-        <translation type="unfinished"/>
+        <translation>Aus der Zwischenablage einfügen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Remove this recipient</source>
-        <translation type="unfinished"/>
+        <translation>Diesen Empfänger entfernen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1786,37 +1793,37 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>The label for this address</source>
-        <translation type="unfinished"/>
+        <translation>Bezeichnung für diese Adresse</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Amount to transfer</source>
-        <translation type="unfinished"/>
+        <translation>Zu transferierender Betrag</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send to multiple recipients at once</source>
-        <translation type="unfinished"/>
+        <translation>An mehrere Empfänger senden</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Date and time that the transaction was received.</source>
-        <translation type="unfinished"/>
+        <translation>Datum und Zeit, wann die Transaktion empfangen wurde.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation type="unfinished"/>
+        <translation>Transaktionsstatus (Hovern für Anzahl der Bestätigungen)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Type of transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Typ der Transaktion</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Destination address of transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Zieladresse der Transaktion</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1836,7 +1843,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Choose address from address book</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Adresse vom Adressbuch auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1846,17 +1853,17 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Enter a label for this group</source>
-        <translation type="unfinished"/>
+        <translation>Bezeichnung für diese Gruppe eingeben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Name for this Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Name dieses Wallets</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter a password</source>
-        <translation type="unfinished"/>
+        <translation>Passwort eingeben</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1866,12 +1873,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Your recovery phrase (Keep this safe!)</source>
-        <translation type="unfinished"/>
+        <translation>Ihre Wiederherstellungsphrase (Sicher aufbewahren!)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Recovery Phrase</source>
-        <translation type="unfinished"/>
+        <translation>Wiederherstellungsphrase</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1906,17 +1913,17 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Default</source>
-        <translation type="unfinished"/>
+        <translation>Standard</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Path</source>
-        <translation type="unfinished"/>
+        <translation>Pfad</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Active</source>
-        <translation type="unfinished"/>
+        <translation>Aktiv</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2082,7 +2089,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message numerus="yes">
         <location line="+63"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n aktive Verbindung zum Alias-Netzwerk</numerusform><numerusform>%n aktive Verbindungen zum Alias-Netzwerk</numerusform></translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2123,7 +2130,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+14"/>
         <source>Importing blocks...</source>
-        <translation type="unfinished"/>
+        <translation>Importiere Blöcke...</translation>
     </message>
     <message numerus="yes">
         <location line="+5"/>
