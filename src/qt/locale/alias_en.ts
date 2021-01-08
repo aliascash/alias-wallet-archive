@@ -15,14 +15,20 @@
     </message>
     <message>
         <location line="+41"/>
-        <source>Copyright © 2009-2014 The Bitcoin developers
-Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The BlackCoin developers
-Copyright © 2015 The Shadow developers</source>
-        <translation>Copyright © 2009-2014 The Bitcoin developers
-Copyright © 2012-2014 The NovaCoin developers
-Copyright © 2014 The BlackCoin developers
-Copyright © 2015 The Shadow developers</translation>
+        <source>© 2020 Alias Developers
+© 2016 SpectreCoin Developers
+© 2014 ShadowCoin Developers
+© 2014 BlackCoin Developers
+© 2013 NovaCoin Developers
+© 2011 PPCoin Developers
+© 2009 Bitcoin Developers</source>
+        <translation>© 2020 Alias Developers
+© 2016 SpectreCoin Developers
+© 2014 ShadowCoin Developers
+© 2014 BlackCoin Developers
+© 2013 NovaCoin Developers
+© 2011 PPCoin Developers
+© 2009 Bitcoin Developers</translation>
     </message>
     <message>
         <location line="+16"/>

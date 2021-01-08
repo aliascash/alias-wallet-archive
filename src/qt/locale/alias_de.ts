@@ -13,18 +13,20 @@
     </message>
     <message>
         <location line="+41"/>
-        <source>© 2020 Alias developers
-© 2016 Spectrecoin developers &gt;
-© 2014 ShadowCash developers
-© 2014 BlackCoin developers
-© 2012 NovaCoin developers
-© 2009 Bitcoin developers</source>
-        <translation>© 2020 Alias developers
-© 2016 Spectrecoin developers &gt;
-© 2014 ShadowCash developers
-© 2014 BlackCoin developers
-© 2012 NovaCoin developers
-© 2009 Bitcoin developers</translation>
+        <source>© 2020 Alias Developers
+© 2016 SpectreCoin Developers
+© 2014 ShadowCoin Developers
+© 2014 BlackCoin Developers
+© 2013 NovaCoin Developers
+© 2011 PPCoin Developers
+© 2009 Bitcoin Developers</source>
+        <translation>© 2020 Alias Developers
+© 2016 SpectreCoin Developers
+© 2014 ShadowCoin Developers
+© 2014 BlackCoin Developers
+© 2013 NovaCoin Developers
+© 2011 PPCoin Developers
+© 2009 Bitcoin Developers</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -34,7 +36,12 @@ This is experimental software.
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation type="unfinished"/>
+        <translation>
+This is experimental software.
+
+Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
+
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</translation>
     </message>
 </context>
 <context>
@@ -1323,7 +1330,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Wallet Management</source>
-        <translation type="unfinished"/>
+        <translation>Wallet-Wartung</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1373,12 +1380,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Chain Data</source>
-        <translation type="unfinished"/>
+        <translation>Blockchain-Daten</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Block Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Block-Analyse</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1393,7 +1400,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Debug</source>
-        <translation type="unfinished"/>
+        <translation>Debug</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1458,7 +1465,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Normal</source>
-        <translation type="unfinished"/>
+        <translation>Normal</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1473,7 +1480,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>BIP32</source>
-        <translation type="unfinished"/>
+        <translation>BIP32</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1493,12 +1500,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Transaction Hash</source>
-        <translation type="unfinished"/>
+        <translation>Transaktionshash</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Recent Transactions</source>
-        <translation type="unfinished"/>
+        <translation>Letzte Transaktionen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1523,12 +1530,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Balance transfer</source>
-        <translation type="unfinished"/>
+        <translation>Guthaben übertragen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Select Inputs</source>
-        <translation type="unfinished"/>
+        <translation>Eingänge auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1553,7 +1560,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Bytes:</source>
-        <translation type="unfinished"/>
+        <translation>Bytes:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1568,12 +1575,12 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Change:</source>
-        <translation type="unfinished"/>
+        <translation>Wechselgeld:</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Custom change address</source>
-        <translation type="unfinished"/>
+        <translation>Spezielle Wechselgeldadresse</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1598,7 +1605,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Ring Size:</source>
-        <translation type="unfinished"/>
+        <translation>Ringgrösse:</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1618,7 +1625,8 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Catching up...                                    downloaded 0 blocks of history...</source>
-        <translation type="unfinished"/>
+        <translation>Aktualisieren...
+0 Blöcke der Blockchain-Historie heruntergeladen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1763,17 +1771,17 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Send from public or private</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich oder privat senden</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Current spendable send payment balance</source>
-        <translation type="unfinished"/>
+        <translation>Aktuell verfügbares Guthaben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Send to public or private</source>
-        <translation type="unfinished"/>
+        <translation>An öffentliche oder private Adresse senden</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1828,7 +1836,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Short payment note.</source>
-        <translation type="unfinished"/>
+        <translation>Kurze Zahlungsbemerkung</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1848,7 +1856,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Enter a public key for the address above</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Public-Key für obige Adresse eingeben</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1868,7 +1876,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Would you like to create a bip44 path?</source>
-        <translation type="unfinished"/>
+        <translation>Möchten Sie eine BIP44-Hierarchie anlegen?</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1883,32 +1891,32 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Wallet Name for recovered account</source>
-        <translation type="unfinished"/>
+        <translation>Name für das wiederherzustellende Wallet</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter the password for the wallet you are trying to recover</source>
-        <translation type="unfinished"/>
+        <translation>Bitte das Passwort des wiederherzustellenden Wallets eingeben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Is this a bip44 path?</source>
-        <translation type="unfinished"/>
+        <translation>Ist das eine BIP44-Hierarchie?</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>ID</source>
-        <translation type="unfinished"/>
+        <translation>ID</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Created</source>
-        <translation type="unfinished"/>
+        <translation>Angelegt</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Active Account</source>
-        <translation type="unfinished"/>
+        <translation>Aktives Konto</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1928,7 +1936,7 @@ Ring Größe von eins ist nicht anonym und schädigt das Netzwerk.</translation>
     <message>
         <location line="+1"/>
         <source>Master</source>
-        <translation type="unfinished"/>
+        <translation>Master</translation>
     </message>
 </context>
 <context>
@@ -2973,12 +2981,12 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
     <message>
         <location line="+83"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Fehlerhafte Tor adresse -tor &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiger Betrag für -reservebalance=&lt;amount&gt;</translation>
     </message>
     <message>
         <location line="-82"/>
@@ -3003,12 +3011,12 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
     <message>
         <location line="+1"/>
         <source>Output extra network debugging information</source>
-        <translation type="unfinished"/>
+        <translation>Zusätzliche Debug-Informationen über das Netzwerk ausgeben</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Prepend debug output with timestamp</source>
-        <translation type="unfinished"/>
+        <translation>Debug-Ausgaben mit Zeitstempel versehen</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -3028,12 +3036,12 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
     <message>
         <location line="+1"/>
         <source>Send trace/debug info to debugger</source>
-        <translation type="unfinished"/>
+        <translation>Trace-/Debug-Info an Debugger schicken</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation type="unfinished"/>
+        <translation>Maximale Blockgrösse in Bytes setzen (Standard: 250000)</translation>
     </message>
     <message>
         <location line="-1"/>
@@ -3054,7 +3062,8 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
         <location line="+109"/>
         <source>Unable to sign checkpoint, wrong checkpointkey?
 </source>
-        <translation type="unfinished"/>
+        <translation>Checkpoint-Signierung fehlgeschlagen, falscher Checkpoint-Schlüssel?
+</translation>
     </message>
     <message>
         <location line="-80"/>
@@ -3084,7 +3093,7 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
     <message>
         <location line="+57"/>
         <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
-        <translation type="unfinished"/>
+        <translation>WARNUNG: Synchronisierte Checkpoint-Verletzung entdeckt und übersprungen!</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3129,7 +3138,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
     <message>
         <location line="+5"/>
         <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Zeit mit anderen Knoten im Netzwerk synchronisieren. Deaktivieren, wenn lokale Zeit genau genug ist, bspw. durch Zeit-Sync via NTP (Standard: 1)</translation>
     </message>
     <message>
         <location line="+15"/>
