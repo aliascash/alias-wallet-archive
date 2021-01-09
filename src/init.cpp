@@ -840,11 +840,11 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     switch (LoadBlockIndex(true, [] (const unsigned mode, const uint32_t& nBlock) -> void {
                            if (mode == 0)
-                                uiInterface.InitMessage(strprintf("Loading block index... (%d)", nBlock));
+                                uiInterface.InitMessage(strprintf(_("Loading block index... (%d)"), nBlock));
                            else if (mode == 1)
-                                uiInterface.InitMessage(strprintf("Calculating chain trust... (%d)", nBlock));
+                                uiInterface.InitMessage(strprintf(_("Calculating chain trust... (%d)"), nBlock));
                            else
-                                uiInterface.InitMessage(strprintf("Validating last %d block...", nBlock));
+                                uiInterface.InitMessage(strprintf(_("Validating last %d block..."), nBlock));
                        }))
     {
         case 1:
@@ -909,7 +909,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     pwalletMain = new CWallet(strWalletFileName);
     int oltWalletVersion = 0;
     DBErrors nLoadWalletRet = pwalletMain->LoadWallet(oltWalletVersion, [] (const uint32_t& nBlock) -> void {
-        uiInterface.InitMessage(strprintf("Loading wallet items... (%d)", nBlock));
+        uiInterface.InitMessage(strprintf(_("Loading wallet items... (%d)"), nBlock));
     });
 
     if (nLoadWalletRet != DB_LOAD_OK)
@@ -1003,7 +1003,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf("Reindexing block file blk%04u.dat...\n", (unsigned int)nFile);
             LoadExternalBlockFile(nFile, file, [] (const uint32_t& nBlock) -> void {
                 if (nBlock % 10 == 0)
-                    uiInterface.InitMessage(strprintf("Reindexing block... (%d)", nBlock));
+                    uiInterface.InitMessage(strprintf(_("Reindexing block... (%d)"), nBlock));
             });
             nFile++;
         };
