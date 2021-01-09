@@ -3361,6 +3361,31 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Lade Blockindex...</translation>
     </message>
     <message>
+        <location line="-34"/>
+        <source>Loading block index... (%d)</source>
+        <translation>Lade Block-Index... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Calculating chain trust... (%d)</source>
+        <translation>Berechne Vertrauenskette... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Validating last %d block...</source>
+        <translation>Überprüfe letzte %d Blöcke</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Loading wallet items... (%d)</source>
+        <translation>Lade Wallet-Inhalt... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Reindexing block... (%d)</source>
+        <translation>Re-Indexiere Blöcke... (%d)</translation>
+    </message>
+    <message>
         <location line="-103"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Mit dem Knoten verbinden und versuchen die Verbindung aufrecht zu halten</translation>

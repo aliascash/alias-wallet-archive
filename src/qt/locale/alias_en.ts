@@ -3414,6 +3414,31 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Loading block index...</translation>
     </message>
     <message>
+        <location line="-34"/>
+        <source>Loading block index... (%d)</source>
+        <translation>Loading block index... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Calculating chain trust... (%d)</source>
+        <translation>Calculating chain trust... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Validating last %d block...</source>
+        <translation>Validating last %d block...</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Loading wallet items... (%d)</source>
+        <translation>Loading wallet items... (%d)</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Reindexing block... (%d)</source>
+        <translation>Reindexing block... (%d)</translation>
+    </message>
+    <message>
         <location line="-103"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Add a node to connect to and attempt to keep the connection open</translation>
