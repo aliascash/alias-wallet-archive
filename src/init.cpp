@@ -848,7 +848,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                        }))
     {
         case 1:
-            return InitError(_("Error loading blkindex.dat"));
+            return InitError(_("Error loading blk0001.dat"));
         case 2:
             if (nNodeMode == NT_FULL)
             {
@@ -857,7 +857,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             };
             break;
         case 3:
-            return InitError(_("Error loading blkindex.dat: Invalid chain detected, please resync or use bootstrap files."));
+            return InitError(_("Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files."));
     };
 
     // as LoadBlockIndex can take several minutes, it's possible the user
