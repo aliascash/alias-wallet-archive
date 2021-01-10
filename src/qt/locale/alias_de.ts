@@ -2969,6 +2969,16 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
         <translation>Fehler, es konnte kein Port abgehört werden. Wenn dies so gewünscht wird -listen=0 verwenden.</translation>
     </message>
     <message>
+        <location line="+94"/>
+        <source>Failed to listen on any port.</source>
+        <translation>Fehler beim hören auf allen Ports.</translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <source>Error: could not start tor node</source>
+        <translation>Fehler: Konnte Tor nicht starten</translation>
+    </message>
+    <message>
         <location line="-90"/>
         <source>Find peers using DNS lookup (default: 1)</source>
         <translation>Find peers using DNS lookup (default: 1)</translation>
@@ -2982,6 +2992,11 @@ Erwartete Zeit zum Stake Erhalt ist %3</translation>
         <location line="+83"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
         <translation>Fehlerhafte Tor adresse -tor &apos;%s&apos;</translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>Cannot resolve binding address: &apos;%s&apos;</source>
+        <translation>Kann Binding-Adresse &apos;%s&apos; nicht auflösen</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3256,6 +3271,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Kann das Verzeichniss nicht einbinden %s. Alias Brieftasche läuft wahrscheinlich bereits.</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>-bip44key is not allowed if wallet.dat already exists</source>
+        <translation>Option -bip44key ist nicht möglich, wenn eine wallet.dat-Datei bereits existiert</translation>
+    </message>
+    <message>
         <location line="-98"/>
         <source>Alias</source>
         <translation>Alias</translation>
@@ -3282,8 +3302,18 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="-15"/>
-        <source>Error loading blkindex.dat</source>
-        <translation>Fehler beim laden von blkindex.dat</translation>
+        <source>Error loading blk0001.dat</source>
+        <translation>Fehler beim Laden von blk0001.dat</translation>
+    </message>
+    <message>
+        <location line="-15"/>
+        <source>Core started!</source>
+        <translation>Kern gestartet!</translation>
+    </message>
+    <message>
+        <location line="-15"/>
+        <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
+        <translation>Fehler beim Laden von blk0001.dat: Ungültige Kette entdeckt, bitte erneut synchronisieren oder Bootstrap-Archiv benutzen.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3336,6 +3366,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Ungültiger Betrag für -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
+        <location line="-24"/>
+        <source>Timed out waiting for onion hostname</source>
+        <translation>Timeout beim Warten auf Onion-Hostname</translation>
+    </message>
+    <message>
         <location line="+44"/>
         <source>Error: could not start node</source>
         <translation>Fehler: Node konnte nicht gestartet werden</translation>
@@ -3386,6 +3421,16 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Re-Indexiere Blöcke... (%d)</translation>
     </message>
     <message>
+        <location line="-34"/>
+        <source>Reindexing from blk000?.dat files.</source>
+        <translation>Reindexieren von blk000?.dat Dateien.</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
+        <translation>Fehler: Ungültige Option -socks verwendet. Setzen der SOCKS-Version ist nicht mehr möglich. Nur noch SOCKS5-Proxies werden unterstützt.</translation>
+    </message>
+    <message>
         <location line="-103"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Mit dem Knoten verbinden und versuchen die Verbindung aufrecht zu halten</translation>
@@ -3404,6 +3449,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <location line="+55"/>
         <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Ungültiger Betrag für -mininput=&lt;amount&gt;:&apos;%s&apos;</translation>
+    </message>
+    <message>
+        <location line="+55"/>
+        <source>Initialization sanity check failed. Alias is shutting down.</source>
+        <translation>Plausibilitätsprüfung fehlgeschlagen, Alias wird beendet.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -3429,6 +3479,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <location line="+1"/>
         <source>Rescanning...</source>
         <translation>Durchsuche erneut...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Rescanning... %d / %d (%d txns)</source>
+        <translation>Erneutes einlesen... %d / %d (%d Transaktionen)</translation>
     </message>
     <message>
         <location line="+5"/>

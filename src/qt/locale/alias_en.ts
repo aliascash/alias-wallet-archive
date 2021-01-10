@@ -3012,6 +3012,16 @@ Expected time to earn reward is %3</translation>
         <translation>Failed to listen on any port. Use -listen=0 if you want this.</translation>
     </message>
     <message>
+        <location line="+94"/>
+        <source>Failed to listen on any port.</source>
+        <translation>Failed to listen on any port.</translation>
+    </message>
+    <message>
+        <location line="+94"/>
+        <source>Error: could not start tor node</source>
+        <translation>Error: could not start tor node</translation>
+    </message>
+    <message>
         <location line="-90"/>
         <source>Find peers using DNS lookup (default: 1)</source>
         <translation>Find peers using DNS lookup (default: 1)</translation>
@@ -3023,8 +3033,13 @@ Expected time to earn reward is %3</translation>
     </message>
     <message>
         <location line="+83"/>
-        <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation>Invalid -tor address: &apos;%s&apos;</translation>
+        <source>Invalid -tor address: '%s'</source>
+        <translation>Invalid -tor address: '%s'</translation>
+    </message>
+    <message>
+        <location line="+83"/>
+        <source>Cannot resolve binding address: '%s'</source>
+        <translation>Cannot resolve binding address: '%s'</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3309,6 +3324,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Cannot obtain a lock on data directory %s.  Alias is probably already running.</translation>
     </message>
     <message>
+        <location line="+1"/>
+        <source>-bip44key is not allowed if wallet.dat already exists</source>
+        <translation>-bip44key is not allowed if wallet.dat already exists</translation>
+    </message>
+    <message>
         <location line="-98"/>
         <source>Alias</source>
         <translation>Alias</translation>
@@ -3335,8 +3355,18 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="-15"/>
-        <source>Error loading blkindex.dat</source>
-        <translation>Error loading blkindex.dat</translation>
+        <source>Error loading blk0001.dat</source>
+        <translation>Error loading blk0001.dat</translation>
+    </message>
+    <message>
+        <location line="-15"/>
+        <source>Core started!</source>
+        <translation>Core started!</translation>
+    </message>
+    <message>
+        <location line="-15"/>
+        <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
+        <translation>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3380,13 +3410,18 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
     </message>
     <message>
         <location line="+2"/>
-        <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation>Cannot resolve -externalip address: &apos;%s&apos;</translation>
+        <source>Cannot resolve -externalip address: '%s'</source>
+        <translation>Cannot resolve -externalip address: '%s'</translation>
     </message>
     <message>
         <location line="-24"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
+    </message>
+    <message>
+        <location line="-24"/>
+        <source>Timed out waiting for onion hostname</source>
+        <translation>Timed out waiting for onion hostname</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -3439,6 +3474,16 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <translation>Reindexing block... (%d)</translation>
     </message>
     <message>
+        <location line="-34"/>
+        <source>Reindexing from blk000?.dat files.</source>
+        <translation>Reindexing from blk000?.dat files.</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported.</source>
+        <translation>Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported.</translation>
+    </message>
+    <message>
         <location line="-103"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Add a node to connect to and attempt to keep the connection open</translation>
@@ -3457,6 +3502,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <location line="+55"/>
         <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</translation>
+    </message>
+    <message>
+        <location line="+55"/>
+        <source>Initialization sanity check failed. Alias is shutting down.</source>
+        <translation>Initialization sanity check failed. Alias is shutting down.</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -3482,6 +3532,11 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <location line="+1"/>
         <source>Rescanning...</source>
         <translation>Rescanning...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Rescanning... %d / %d (%d txns)</source>
+        <translation>Rescanning... %d / %d (%d txns)</translation>
     </message>
     <message>
         <location line="+5"/>
