@@ -7151,7 +7151,7 @@ std::string CWallet::SendMoney(CScript scriptPubKey, int64_t nValue, std::string
         return "ABORTED";
 
     if (!CommitTransaction(wtxNew))
-        return _("Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
+        return _("Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 
     return "";
 }
