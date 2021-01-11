@@ -1,3180 +1,3024 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en">
+<TS version="2.1" language="en_US">
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../forms/aboutdialog.ui" line="+14"/>
+        <location filename="../forms/aboutdialog.ui" line="14"/>
         <source>About Alias</source>
-        <translation>About Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location filename="../forms/aboutdialog.ui" line="127"/>
         <source>&lt;b&gt;Alias&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;Alias&lt;/b&gt; version</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>© 2020 Alias Developers
-© 2016 SpectreCoin Developers
-© 2014 ShadowCoin Developers
-© 2014 BlackCoin Developers
-© 2013 NovaCoin Developers
-© 2011 PPCoin Developers
-© 2009 Bitcoin Developers</source>
-        <translation>© 2020 Alias Developers
-© 2016 SpectreCoin Developers
-© 2014 ShadowCoin Developers
-© 2014 BlackCoin Developers
-© 2013 NovaCoin Developers
-© 2011 PPCoin Developers
-© 2009 Bitcoin Developers</translation>
+        <location filename="../forms/aboutdialog.ui" line="216"/>
+        <source>© 2020 Alias developers
+© 2016 Spectrecoin developers
+© 2014 ShadowCash developers
+© 2014 BlackCoin developers
+© 2012 NovaCoin developers
+© 2009 Bitcoin developers</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <source>
-This is experimental software.
+        <location filename="../forms/aboutdialog.ui" line="234"/>
+        <source>This is experimental software.
 
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation>
-This is experimental software.
-
-Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
-
-This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AddressTableModel</name>
     <message>
-        <location filename="../addresstablemodel.cpp" line="+217"/>
+        <location filename="../addresstablemodel.cpp" line="219"/>
         <source>Label</source>
-        <translation>Label</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../addresstablemodel.cpp" line="219"/>
         <source>Address</source>
-        <translation>Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../addresstablemodel.cpp" line="219"/>
         <source>pubkey</source>
-        <translation>pubkey</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../addresstablemodel.cpp" line="219"/>
         <source>stealth</source>
-        <translation>stealth</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location filename="../addresstablemodel.cpp" line="253"/>
         <source>(no label)</source>
-        <translation>(no label)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../addresstablemodel.cpp" line="257"/>
         <source>Stealth Address</source>
-        <translation>Stealth Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../addresstablemodel.cpp" line="257"/>
         <source>n/a</source>
-        <translation>n/a</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>AskPassphraseDialog</name>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="+26"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="26"/>
         <source>Passphrase Dialog</source>
-        <translation>Passphrase Dialog</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="59"/>
         <source>Enter passphrase</source>
-        <translation>Enter passphrase</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="85"/>
         <source>New passphrase</source>
-        <translation>New passphrase</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="111"/>
         <source>Repeat new passphrase</source>
-        <translation>Repeat new passphrase</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="161"/>
         <source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
-        <translation>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="164"/>
         <source>For staking only</source>
-        <translation>For staking only</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="+37"/>
+        <location filename="../askpassphrasedialog.cpp" line="44"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../askpassphrasedialog.cpp" line="45"/>
         <source>Encrypt wallet</source>
-        <translation>Encrypt wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../askpassphrasedialog.cpp" line="49"/>
+        <source>Keep wallet unlocked for staking.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="60"/>
+        <source>Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your &lt;b&gt;private ALIAS balance might be shown wrong&lt;/b&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="62"/>
+        <source>&lt;b&gt;Alias Wallet Login&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="64"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>This operation needs your wallet passphrase to unlock the wallet.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../askpassphrasedialog.cpp" line="65"/>
         <source>Unlock wallet</source>
-        <translation>Unlock wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../askpassphrasedialog.cpp" line="68"/>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>This operation needs your wallet passphrase to decrypt the wallet.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../askpassphrasedialog.cpp" line="73"/>
         <source>Decrypt wallet</source>
-        <translation>Decrypt wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../askpassphrasedialog.cpp" line="76"/>
         <source>Change passphrase</source>
-        <translation>Change passphrase</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../askpassphrasedialog.cpp" line="77"/>
         <source>Enter the old and new passphrase to the wallet.</source>
-        <translation>Enter the old and new passphrase to the wallet.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location filename="../askpassphrasedialog.cpp" line="122"/>
         <source>Confirm wallet encryption</source>
-        <translation>Confirm wallet encryption</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../askpassphrasedialog.cpp" line="123"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
-        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../askpassphrasedialog.cpp" line="123"/>
         <source>Are you sure you wish to encrypt your wallet?</source>
-        <translation>Are you sure you wish to encrypt your wallet?</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</translation>
-    </message>
-    <message>
-        <location line="+103"/>
-        <location line="+24"/>
-        <source>Warning: The Caps Lock key is on!</source>
-        <translation>Warning: The Caps Lock key is on!</translation>
-    </message>
-    <message>
-        <location line="-133"/>
-        <location line="+60"/>
+        <location filename="../askpassphrasedialog.cpp" line="132"/>
+        <location filename="../askpassphrasedialog.cpp" line="194"/>
         <source>Wallet encrypted</source>
-        <translation>Wallet encrypted</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-58"/>
+        <location filename="../askpassphrasedialog.cpp" line="134"/>
         <source>Alias will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>Alias will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+7"/>
-        <location line="+44"/>
-        <location line="+6"/>
+        <location filename="../askpassphrasedialog.cpp" line="138"/>
+        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="147"/>
+        <location filename="../askpassphrasedialog.cpp" line="154"/>
+        <location filename="../askpassphrasedialog.cpp" line="200"/>
+        <location filename="../askpassphrasedialog.cpp" line="206"/>
         <source>Wallet encryption failed</source>
-        <translation>Wallet encryption failed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-56"/>
+        <location filename="../askpassphrasedialog.cpp" line="148"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-        <translation>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <location line="+50"/>
+        <location filename="../askpassphrasedialog.cpp" line="155"/>
+        <location filename="../askpassphrasedialog.cpp" line="207"/>
         <source>The supplied passphrases do not match.</source>
-        <translation>The supplied passphrases do not match.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-38"/>
+        <location filename="../askpassphrasedialog.cpp" line="169"/>
         <source>Wallet unlock failed</source>
-        <translation>Wallet unlock failed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+12"/>
-        <location line="+19"/>
+        <location filename="../askpassphrasedialog.cpp" line="170"/>
+        <location filename="../askpassphrasedialog.cpp" line="182"/>
+        <location filename="../askpassphrasedialog.cpp" line="201"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation>The passphrase entered for the wallet decryption was incorrect.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-20"/>
+        <location filename="../askpassphrasedialog.cpp" line="181"/>
         <source>Wallet decryption failed</source>
-        <translation>Wallet decryption failed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location filename="../askpassphrasedialog.cpp" line="195"/>
         <source>Wallet passphrase was successfully changed.</source>
-        <translation>Wallet passphrase was successfully changed.</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../askpassphrasedialog.cpp" line="245"/>
+        <location filename="../askpassphrasedialog.cpp" line="269"/>
+        <source>Warning: The Caps Lock key is on!</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ClientModel</name>
     <message>
-        <location filename="../clientmodel.cpp" line="+137"/>
+        <location filename="../clientmodel.cpp" line="108"/>
         <source>Network Alert</source>
-        <translation>Network Alert</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>CoinControlDialog</name>
     <message>
-        <location filename="../forms/coincontroldialog.ui" line="+14"/>
+        <location filename="../forms/coincontroldialog.ui" line="14"/>
         <source>Coin Control</source>
-        <translation>Coin Control</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location filename="../forms/coincontroldialog.ui" line="45"/>
         <source>Quantity:</source>
-        <translation>Quantity:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location filename="../forms/coincontroldialog.ui" line="77"/>
         <source>Bytes:</source>
-        <translation>Bytes:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location filename="../forms/coincontroldialog.ui" line="125"/>
         <source>Amount:</source>
-        <translation>Amount:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location filename="../forms/coincontroldialog.ui" line="157"/>
         <source>Priority:</source>
-        <translation>Priority:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location filename="../forms/coincontroldialog.ui" line="205"/>
         <source>Fee:</source>
-        <translation>Fee:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location filename="../forms/coincontroldialog.ui" line="240"/>
         <source>Low Output:</source>
-        <translation>Low Output:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="+528"/>
-        <location line="+30"/>
-        <source>no</source>
-        <translation>no</translation>
-    </message>
-    <message>
-        <location filename="../forms/coincontroldialog.ui" line="+51"/>
+        <location filename="../forms/coincontroldialog.ui" line="291"/>
         <source>After Fee:</source>
-        <translation>After Fee:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location filename="../forms/coincontroldialog.ui" line="326"/>
         <source>Change:</source>
-        <translation>Change:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location filename="../forms/coincontroldialog.ui" line="395"/>
         <source>(un)select all</source>
-        <translation>(un)select all</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location filename="../forms/coincontroldialog.ui" line="408"/>
         <source>Tree mode</source>
-        <translation>Tree mode</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location filename="../forms/coincontroldialog.ui" line="424"/>
         <source>List mode</source>
-        <translation>List mode</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location filename="../forms/coincontroldialog.ui" line="469"/>
         <source>Amount</source>
-        <translation>Amount</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../forms/coincontroldialog.ui" line="474"/>
         <source>Label</source>
-        <translation>Label</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../forms/coincontroldialog.ui" line="479"/>
         <source>Address</source>
-        <translation>Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../forms/coincontroldialog.ui" line="484"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../forms/coincontroldialog.ui" line="489"/>
         <source>Confirmations</source>
-        <translation>Confirmations</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../forms/coincontroldialog.ui" line="492"/>
         <source>Confirmed</source>
-        <translation>Confirmed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../forms/coincontroldialog.ui" line="497"/>
         <source>Priority</source>
-        <translation>Priority</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../coincontroldialog.cpp" line="-520"/>
+        <location filename="../coincontroldialog.cpp" line="44"/>
         <source>Copy address</source>
-        <translation>Copy address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="45"/>
         <source>Copy label</source>
-        <translation>Copy label</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <location line="+26"/>
+        <location filename="../coincontroldialog.cpp" line="46"/>
+        <location filename="../coincontroldialog.cpp" line="72"/>
         <source>Copy amount</source>
-        <translation>Copy amount</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location filename="../coincontroldialog.cpp" line="47"/>
         <source>Copy transaction ID</source>
-        <translation>Copy transaction ID</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location filename="../coincontroldialog.cpp" line="71"/>
         <source>Copy quantity</source>
-        <translation>Copy quantity</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../coincontroldialog.cpp" line="73"/>
         <source>Copy fee</source>
-        <translation>Copy fee</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="74"/>
         <source>Copy after fee</source>
-        <translation>Copy after fee</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="75"/>
         <source>Copy bytes</source>
-        <translation>Copy bytes</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="76"/>
         <source>Copy priority</source>
-        <translation>Copy priority</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="77"/>
         <source>Copy low output</source>
-        <translation>Copy low output</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="78"/>
         <source>Copy change</source>
-        <translation>Copy change</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+317"/>
+        <location filename="../coincontroldialog.cpp" line="395"/>
         <source>highest</source>
-        <translation>highest</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="396"/>
         <source>high</source>
-        <translation>high</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="397"/>
         <source>medium-high</source>
-        <translation>medium-high</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="398"/>
         <source>medium</source>
-        <translation>medium</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../coincontroldialog.cpp" line="402"/>
         <source>low-medium</source>
-        <translation>low-medium</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="403"/>
         <source>low</source>
-        <translation>low</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="404"/>
         <source>lowest</source>
-        <translation>lowest</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+130"/>
-        <location line="+30"/>
+        <location filename="../coincontroldialog.cpp" line="534"/>
+        <location filename="../coincontroldialog.cpp" line="564"/>
         <source>DUST</source>
-        <translation>DUST</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-30"/>
-        <location line="+30"/>
+        <location filename="../coincontroldialog.cpp" line="534"/>
+        <location filename="../coincontroldialog.cpp" line="564"/>
         <source>yes</source>
-        <translation>yes</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location filename="../coincontroldialog.cpp" line="534"/>
+        <location filename="../coincontroldialog.cpp" line="564"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../coincontroldialog.cpp" line="574"/>
         <source>This label turns red, if the transaction size is bigger than 10000 bytes.
 
  This means a fee of at least %1 per kb is required.
 
  Can vary +/- 1 Byte per input.</source>
-        <translation>This label turns red, if the transaction size is bigger than 10000 bytes.
-
- This means a fee of at least %1 per kb is required.
-
- Can vary +/- 1 Byte per input.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="575"/>
         <source>Transactions with higher priority get more likely into a block.
 
 This label turns red, if the priority is smaller than &quot;medium&quot;.
 
  This means a fee of at least %1 per kb is required.</source>
-        <translation>Transactions with higher priority get more likely into a block.
-
-This label turns red, if the priority is smaller than &quot;medium&quot;.
-
- This means a fee of at least %1 per kb is required.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="576"/>
         <source>This label turns red, if any recipient receives an amount smaller than %1.
 
  This means a fee of at least %2 is required. 
 
  Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
-        <translation>This label turns red, if any recipient receives an amount smaller than %1.
-
- This means a fee of at least %2 is required. 
-
- Amounts below 0.546 times the minimum relay fee are shown as DUST.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="577"/>
         <source>This label turns red, if the change is smaller than %1.
 
  This means a fee of at least %2 is required.</source>
-        <translation>This label turns red, if the change is smaller than %1.
-
- This means a fee of at least %2 is required.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+40"/>
-        <location line="+66"/>
+        <location filename="../coincontroldialog.cpp" line="628"/>
+        <location filename="../coincontroldialog.cpp" line="698"/>
         <source>(no label)</source>
-        <translation>(no label)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location filename="../coincontroldialog.cpp" line="687"/>
         <source>change from %1 (%2)</source>
-        <translation>change from %1 (%2)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../coincontroldialog.cpp" line="688"/>
         <source>(change)</source>
-        <translation>(change)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>EditAddressDialog</name>
     <message>
-        <location filename="../forms/editaddressdialog.ui" line="+14"/>
+        <location filename="../forms/editaddressdialog.ui" line="14"/>
         <source>Edit Address</source>
-        <translation>Edit Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location filename="../forms/editaddressdialog.ui" line="25"/>
         <source>&amp;Label</source>
-        <translation>&amp;Label</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location filename="../forms/editaddressdialog.ui" line="35"/>
         <source>The label associated with this address book entry</source>
-        <translation>The label associated with this address book entry</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../forms/editaddressdialog.ui" line="42"/>
         <source>&amp;Address</source>
-        <translation>&amp;Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location filename="../forms/editaddressdialog.ui" line="52"/>
         <source>The address associated with this address book entry. This can only be modified for sending addresses.</source>
-        <translation>The address associated with this address book entry. This can only be modified for sending addresses.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../forms/editaddressdialog.ui" line="59"/>
         <source>&amp;Stealth Address</source>
-        <translation>&amp;Stealth Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../editaddressdialog.cpp" line="+20"/>
+        <location filename="../editaddressdialog.cpp" line="26"/>
         <source>New receiving address</source>
-        <translation>New receiving address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../editaddressdialog.cpp" line="33"/>
         <source>New sending address</source>
-        <translation>New sending address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../editaddressdialog.cpp" line="37"/>
         <source>Edit receiving address</source>
-        <translation>Edit receiving address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../editaddressdialog.cpp" line="44"/>
         <source>Edit sending address</source>
-        <translation>Edit sending address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+82"/>
-        <source>The entered address &quot;%1&quot; is already in the address book.</source>
-        <translation>The entered address &quot;%1&quot; is already in the address book.</translation>
-    </message>
-    <message>
-        <location line="-5"/>
+        <location filename="../editaddressdialog.cpp" line="121"/>
         <source>The entered address &quot;%1&quot; is not a valid Alias address.</source>
-        <translation>The entered address &quot;%1&quot; is not a valid Alias address.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location filename="../editaddressdialog.cpp" line="126"/>
+        <source>The entered address &quot;%1&quot; is already in the address book.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../editaddressdialog.cpp" line="131"/>
         <source>Could not unlock wallet.</source>
-        <translation>Could not unlock wallet.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../editaddressdialog.cpp" line="136"/>
         <source>New key generation failed.</source>
-        <translation>New key generation failed.</translation>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EncryptWalletPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="605"/>
+        <source>Wallet Encryption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="606"/>
+        <source>Please enter a password to encrypt the wallet.dat file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="608"/>
+        <source>The password protects your private keys and will be asked by the wallet on startup and for critical operations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="611"/>
+        <source>&amp;Wallet Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="616"/>
+        <source>&amp;Verify Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="624"/>
+        <source>Create and encrypt wallet.dat ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="705"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="705"/>
+        <source>Failed to create wallet.dat. ErrorCode: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="+526"/>
-        <source>version</source>
-        <translation>version</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+12"/>
+        <location filename="../guiutil.cpp" line="550"/>
+        <location filename="../guiutil.cpp" line="562"/>
         <source>Alias</source>
-        <translation>Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location filename="../guiutil.cpp" line="550"/>
+        <source>version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../guiutil.cpp" line="552"/>
         <source>Usage:</source>
-        <translation>Usage:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../guiutil.cpp" line="553"/>
         <source>command-line options</source>
-        <translation>command-line options</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../guiutil.cpp" line="557"/>
         <source>UI options</source>
-        <translation>UI options</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../guiutil.cpp" line="558"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
-        <translation>Set language, for example &quot;de_DE&quot; (default: system locale)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../guiutil.cpp" line="559"/>
         <source>Start minimized</source>
-        <translation>Start minimized</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../guiutil.cpp" line="560"/>
         <source>Show splash screen on startup (default: 1)</source>
-        <translation>Show splash screen on startup (default: 1)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MessageModel</name>
+    <name>ImportWalletDatPage</name>
     <message>
-        <location filename="../messagemodel.cpp" line="+375"/>
-        <source>Type</source>
-        <translation>Type</translation>
+        <location filename="../setupwalletwizard.cpp" line="121"/>
+        <source>Import wallet.dat</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Sent Date Time</source>
-        <translation>Sent Date Time</translation>
+        <location filename="../setupwalletwizard.cpp" line="122"/>
+        <source>Please import a wallet.dat file with your private keys.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Received Date Time</source>
-        <translation>Received Date Time</translation>
+        <location filename="../setupwalletwizard.cpp" line="128"/>
+        <source>&amp;Select wallet.dat</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Label</source>
-        <translation>Label</translation>
+        <location filename="../setupwalletwizard.cpp" line="147"/>
+        <source>QFileDialog::getOpenFileName()</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>To Address</source>
-        <translation>To Address</translation>
+        <location filename="../setupwalletwizard.cpp" line="149"/>
+        <source>Wallet Files (*.dat)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>From Address</source>
-        <translation>From Address</translation>
+        <location filename="../setupwalletwizard.cpp" line="175"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Message</source>
-        <translation>Message</translation>
+        <location filename="../setupwalletwizard.cpp" line="175"/>
+        <source>Failed to copy wallet.dat: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IntroPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="86"/>
+        <source>Set Up Your Wallet</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Send Secure Message</source>
-        <translation>Send Secure Message</translation>
+        <location filename="../setupwalletwizard.cpp" line="90"/>
+        <source>The application has detected that you don&apos;t have a wallet.dat file, which holds your private keys. Please choose how you want to create or restore your private keys.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Send failed: %1.</source>
-        <translation>Send failed: %1.</translation>
+        <location filename="../setupwalletwizard.cpp" line="93"/>
+        <source>&amp;Create new mnemonic recovery seed words</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
-        <location line="+1"/>
-        <source>(no label)</source>
-        <translation>(no label)</translation>
+        <location filename="../setupwalletwizard.cpp" line="94"/>
+        <source>&amp;Recover from your existing mnemonic seed words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="95"/>
+        <source>&amp;Import wallet.dat file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NewMnemonicResultPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="321"/>
+        <source>Create private keys with Mnemonic Recovery Seed Words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="322"/>
+        <source>Step 2/3: Write down your mnemonic recovery seed words.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="324"/>
+        <source>Mnemonic Recovery Seed Words:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="325"/>
+        <source>You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.&lt;br&gt;You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NewMnemonicSettingsPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="183"/>
+        <source>Create private keys with Mnemonic Recovery Seed Words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="184"/>
+        <source>Step 1/3: Please define language to use and optional password to protect your seed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="186"/>
+        <source>Creating mnemonic seed words is a three step procedure:&lt;ol&gt;&lt;li&gt;Define language and optional password for your seed.&lt;/li&gt;&lt;li&gt;Write down created seed words.&lt;/li&gt;&lt;li&gt;Verify seed words and seed password.&lt;/li&gt;&lt;/ol&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="192"/>
+        <source>&amp;Language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="203"/>
+        <source>&amp;Seed Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="210"/>
+        <source>&amp;Verify Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="303"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="303"/>
+        <source>Failed to create Mnemonic Seed Words. %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NewMnemonicVerificationPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="408"/>
+        <source>Create private keys with Mnemonic Recovery Seed Words</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="409"/>
+        <source>Step 3/3: Verify you have the correct words and (optional) password noted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="411"/>
+        <source>&amp;Seed Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="419"/>
+        <source>&lt;br&gt;Enter Mnemonic Seed Words:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PaymentServer</name>
     <message>
-        <location filename="../paymentserver.cpp" line="+107"/>
+        <location filename="../paymentserver.cpp" line="109"/>
         <source>Cannot start Alias: click-to-pay handler</source>
-        <translation>Cannot start Alias: click-to-pay handler</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PeerTableModel</name>
     <message>
-        <location filename="../peertablemodel.cpp" line="+118"/>
+        <location filename="../peertablemodel.cpp" line="120"/>
         <source>Address/Hostname</source>
-        <translation>Address/Hostname</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../peertablemodel.cpp" line="120"/>
         <source>User Agent</source>
-        <translation>User Agent</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../peertablemodel.cpp" line="120"/>
         <source>Ping Time</source>
-        <translation>Ping Time</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../guiutil.cpp" line="-470"/>
+        <location filename="../guiutil.cpp" line="79"/>
         <source>%1 d</source>
-        <translation>%1 d</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../guiutil.cpp" line="81"/>
         <source>%1 h</source>
-        <translation>%1 h</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../guiutil.cpp" line="83"/>
         <source>%1 m</source>
-        <translation>%1 m</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <location line="+55"/>
+        <location filename="../guiutil.cpp" line="85"/>
+        <location filename="../guiutil.cpp" line="140"/>
         <source>%1 s</source>
-        <translation>%1 s</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location filename="../guiutil.cpp" line="130"/>
         <source>None</source>
-        <translation>None</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../guiutil.cpp" line="135"/>
         <source>N/A</source>
-        <translation>N/A</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../guiutil.cpp" line="135"/>
         <source>%1 ms</source>
-        <translation>%1 ms</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>RPCConsole</name>
     <message>
-        <location filename="../forms/rpcconsole.ui" line="+46"/>
-        <source>Client name</source>
-        <translation>Client name</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <location line="+23"/>
-        <location line="+26"/>
-        <location line="+26"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+36"/>
-        <location line="+23"/>
-        <location line="+36"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+491"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <location line="+23"/>
-        <source>N/A</source>
-        <translation>N/A</translation>
-    </message>
-    <message>
-        <location line="-1062"/>
-        <source>Client version</source>
-        <translation>Client version</translation>
-    </message>
-    <message>
-        <location line="-45"/>
-        <source>&amp;Information</source>
-        <translation>&amp;Information</translation>
-    </message>
-    <message>
-        <location line="-10"/>
+        <location filename="../forms/rpcconsole.ui" line="14"/>
         <source>Alias - Debug window</source>
-        <translation>Alias - Debug window</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location filename="../forms/rpcconsole.ui" line="24"/>
+        <source>&amp;Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="39"/>
         <source>Alias Core</source>
-        <translation>Alias Core</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location filename="../forms/rpcconsole.ui" line="46"/>
+        <source>Client name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="56"/>
+        <location filename="../forms/rpcconsole.ui" line="79"/>
+        <location filename="../forms/rpcconsole.ui" line="105"/>
+        <location filename="../forms/rpcconsole.ui" line="131"/>
+        <location filename="../forms/rpcconsole.ui" line="154"/>
+        <location filename="../forms/rpcconsole.ui" line="177"/>
+        <location filename="../forms/rpcconsole.ui" line="213"/>
+        <location filename="../forms/rpcconsole.ui" line="236"/>
+        <location filename="../forms/rpcconsole.ui" line="272"/>
+        <location filename="../forms/rpcconsole.ui" line="295"/>
+        <location filename="../forms/rpcconsole.ui" line="318"/>
+        <location filename="../forms/rpcconsole.ui" line="809"/>
+        <location filename="../forms/rpcconsole.ui" line="832"/>
+        <location filename="../forms/rpcconsole.ui" line="855"/>
+        <location filename="../forms/rpcconsole.ui" line="878"/>
+        <location filename="../forms/rpcconsole.ui" line="901"/>
+        <location filename="../forms/rpcconsole.ui" line="924"/>
+        <location filename="../forms/rpcconsole.ui" line="947"/>
+        <location filename="../forms/rpcconsole.ui" line="970"/>
+        <location filename="../forms/rpcconsole.ui" line="993"/>
+        <location filename="../forms/rpcconsole.ui" line="1016"/>
+        <location filename="../forms/rpcconsole.ui" line="1039"/>
+        <location filename="../forms/rpcconsole.ui" line="1062"/>
+        <location filename="../forms/rpcconsole.ui" line="1085"/>
+        <location filename="../forms/rpcconsole.ui" line="1108"/>
+        <location filename="../forms/rpcconsole.ui" line="1131"/>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="69"/>
+        <source>Client version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="92"/>
         <source>Using OpenSSL version</source>
-        <translation>Using OpenSSL version</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location filename="../forms/rpcconsole.ui" line="118"/>
         <source>Using BerkeleyDB version</source>
-        <translation>Using BerkeleyDB version</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <source>Startup time</source>
-        <translation>Startup time</translation>
-    </message>
-    <message>
-        <location line="+29"/>
-        <source>Network</source>
-        <translation>Network</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Name</source>
-        <translation>Name</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Number of connections</source>
-        <translation>Number of connections</translation>
-    </message>
-    <message>
-        <location line="+157"/>
-        <source>Show the Alias help message to get a list with possible Alias command-line options.</source>
-        <translation>Show the Alias help message to get a list with possible Alias command-line options.</translation>
-    </message>
-    <message>
-        <location line="+99"/>
-        <source>&amp;Network Traffic</source>
-        <translation>&amp;Network Traffic</translation>
-    </message>
-    <message>
-        <location line="+52"/>
-        <source>&amp;Clear</source>
-        <translation>&amp;Clear</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Totals</source>
-        <translation>Totals</translation>
-    </message>
-    <message>
-        <location line="+64"/>
-        <location filename="../rpcconsole.cpp" line="+396"/>
-        <source>In:</source>
-        <translation>In:</translation>
-    </message>
-    <message>
-        <location line="+80"/>
-        <location filename="../rpcconsole.cpp" line="+1"/>
-        <source>Out:</source>
-        <translation>Out:</translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>&amp;Peers</source>
-        <translation>&amp;Peers</translation>
-    </message>
-    <message>
-        <location line="+39"/>
-        <location filename="../rpcconsole.cpp" line="-167"/>
-        <location line="+328"/>
-        <source>Select a peer to view detailed information.</source>
-        <translation>Select a peer to view detailed information.</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Peer ID</source>
-        <translation>Peer ID</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Direction</source>
-        <translation>Direction</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Version</source>
-        <translation>Version</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>User Agent</source>
-        <translation>User Agent</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Services</source>
-        <translation>Services</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Starting Height</source>
-        <translation>Starting Height</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Sync Height</source>
-        <translation>Sync Height</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Ban Score</source>
-        <translation>Ban Score</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Connection Time</source>
-        <translation>Connection Time</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Last Send</source>
-        <translation>Last Send</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Last Receive</source>
-        <translation>Last Receive</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Bytes Sent</source>
-        <translation>Bytes Sent</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Bytes Received</source>
-        <translation>Bytes Received</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Ping Time</source>
-        <translation>Ping Time</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Time Offset</source>
-        <translation>Time Offset</translation>
-    </message>
-    <message>
-        <location line="-866"/>
-        <source>Block chain</source>
-        <translation>Block chain</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Current number of blocks</source>
-        <translation>Current number of blocks</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Estimated total blocks</source>
-        <translation>Estimated total blocks</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Last block time</source>
-        <translation>Last block time</translation>
-    </message>
-    <message>
-        <location line="+49"/>
-        <source>Open the Alias debug log file from the current data directory. This can take a few seconds for large log files.</source>
-        <translation>Open the Alias debug log file from the current data directory. This can take a few seconds for large log files.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>&amp;Open</source>
-        <translation>&amp;Open</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Command-line options</source>
-        <translation>Command-line options</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>&amp;Show</source>
-        <translation>&amp;Show</translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>&amp;Console</source>
-        <translation>&amp;Console</translation>
-    </message>
-    <message>
-        <location line="-266"/>
+        <location filename="../forms/rpcconsole.ui" line="144"/>
         <source>Build date</source>
-        <translation>Build date</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location filename="../forms/rpcconsole.ui" line="167"/>
+        <source>Startup time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="196"/>
+        <source>Network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="203"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="226"/>
+        <source>Number of connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="255"/>
+        <source>Block chain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="262"/>
+        <source>Current number of blocks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="285"/>
+        <source>Estimated total blocks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="308"/>
+        <source>Last block time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="350"/>
         <source>Debug log file</source>
-        <translation>Debug log file</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location filename="../forms/rpcconsole.ui" line="357"/>
+        <source>Open the Alias debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="360"/>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="376"/>
+        <source>Command-line options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="383"/>
+        <source>Show the Alias help message to get a list with possible Alias command-line options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="386"/>
+        <source>&amp;Show</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="410"/>
+        <source>&amp;Console</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="459"/>
         <source>Clear console</source>
-        <translation>Clear console</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rpcconsole.cpp" line="-197"/>
+        <location filename="../forms/rpcconsole.ui" line="482"/>
+        <source>&amp;Network Traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="534"/>
+        <source>&amp;Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="550"/>
+        <source>Totals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="614"/>
+        <location filename="../rpcconsole.cpp" line="388"/>
+        <source>In:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="694"/>
+        <location filename="../rpcconsole.cpp" line="389"/>
+        <source>Out:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="735"/>
+        <source>&amp;Peers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="774"/>
+        <location filename="../rpcconsole.cpp" line="222"/>
+        <location filename="../rpcconsole.cpp" line="546"/>
+        <source>Select a peer to view detailed information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="799"/>
+        <source>Peer ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="822"/>
+        <source>Direction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="845"/>
+        <source>Version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="868"/>
+        <source>User Agent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="891"/>
+        <source>Services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="914"/>
+        <source>Starting Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="937"/>
+        <source>Sync Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="960"/>
+        <source>Ban Score</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="983"/>
+        <source>Connection Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1006"/>
+        <source>Last Send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1029"/>
+        <source>Last Receive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1052"/>
+        <source>Bytes Sent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1075"/>
+        <source>Bytes Received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1098"/>
+        <source>Ping Time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/rpcconsole.ui" line="1121"/>
+        <source>Time Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../rpcconsole.cpp" line="353"/>
         <source>Welcome to the Alias Core RPC console.</source>
-        <translation>Welcome to the Alias Core RPC console.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../rpcconsole.cpp" line="354"/>
         <source>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</source>
-        <translation>Use up and down arrows to navigate history, and &lt;b&gt;Ctrl-L&lt;/b&gt; to clear screen.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../rpcconsole.cpp" line="355"/>
         <source>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</source>
-        <translation>Type &lt;b&gt;help&lt;/b&gt; for an overview of available commands.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location filename="../rpcconsole.cpp" line="584"/>
         <source>via %1</source>
-        <translation>via %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+1"/>
+        <location filename="../rpcconsole.cpp" line="587"/>
+        <location filename="../rpcconsole.cpp" line="588"/>
         <source>never</source>
-        <translation>never</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location filename="../rpcconsole.cpp" line="597"/>
         <source>Inbound</source>
-        <translation>Inbound</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../rpcconsole.cpp" line="597"/>
         <source>Outbound</source>
-        <translation>Outbound</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location filename="../rpcconsole.cpp" line="610"/>
         <source>Unknown</source>
-        <translation>Unknown</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <location line="+1"/>
+        <location filename="../rpcconsole.cpp" line="612"/>
+        <location filename="../rpcconsole.cpp" line="613"/>
         <source>Fetching...</source>
-        <translation>Fetching...</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AliasBridge</name>
+    <name>RecoverFromMnemonicPage</name>
     <message>
-        <location filename="../aliasbridge.cpp" line="+401"/>
-        <source>Incoming Message</source>
-        <translation>Incoming Message</translation>
+        <location filename="../setupwalletwizard.cpp" line="467"/>
+        <source>Recover private keys from Mnemonic Seed Words</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location filename="../setupwalletwizard.cpp" line="468"/>
+        <source>Please enter (optional) password and your mnemonic seed words to recover private keys.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="470"/>
+        <source>&amp;Seed Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="478"/>
+        <source>&amp;Verify Password:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="486"/>
+        <source>&lt;br&gt;Enter Mnemonic Seed Words:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="595"/>
+        <source>Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="595"/>
+        <source>Failed to recover private keys from Mnemonic Seed Words. %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SetupWalletWizard</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="41"/>
+        <source>Alias Wallet Setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="53"/>
+        <source>The file &apos;wallet.dat&apos;, which holds your private keys, could not be found during startup. It must be created now.&lt;br&gt;&lt;br&gt;The private key consists of alphanumerical characters that give a user access and control over their funds to their corresponding cryptocurrency address. In other words, the private key creates unique digital signatures for every transaction that enable a user to spend their funds, by proving that the user does in fact have ownership of those funds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="57"/>
+        <source>If you have a backup of a wallet.dat, you can import this file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="60"/>
+        <source>Mnemonic Seed Words allow you to create and later recover your private keys. The seed consists of 24 words and the optional password functions as a 25th word that you can keep secret to protect your seed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="64"/>
+        <source>It is recommended to make multiple copies of the seed words, stored in different locations.&lt;br&gt;&lt;br&gt;&lt;b&gt;Attention:&lt;/b&gt; Seed Words cannot later be (re)created from your exsting private keys.&lt;br&gt;If you you loose your Seed Words and don&apos;t have a backup of the wallet.dat file, you loose your coins!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="69"/>
+        <source>Please enter the mnemonic words and password given on the previous screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="72"/>
+        <source>Please enter your mnemonic words and (optional) password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="75"/>
+        <source>This help is likely not to be of any help.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="78"/>
+        <source>Alias Wallet Setup Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SpectreBridge</name>
+    <message>
+        <location filename="../spectrebridge.cpp" line="363"/>
         <source>default</source>
-        <translation>default</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+58"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; to %2 (%3)</translation>
+        <location filename="../spectrebridge.cpp" line="438"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; to ALIAS %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; to ALIAS %2 (%3)</translation>
+        <location filename="../spectrebridge.cpp" line="442"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; ALIAS, ring size %2 to ALIAS %3 (%4)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; ALIAS, ring size %2 to ALIAS %3 (%4)</translation>
+        <location filename="../spectrebridge.cpp" line="447"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; ALIAS, ring size %2 to ALIAS %3 (%4)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; ALIAS, ring size %2 to ALIAS %3 (%4)</translation>
+        <location filename="../spectrebridge.cpp" line="452"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+10"/>
-        <location line="+12"/>
-        <location line="+8"/>
+        <location filename="../spectrebridge.cpp" line="456"/>
+        <location filename="../spectrebridge.cpp" line="467"/>
+        <location filename="../spectrebridge.cpp" line="480"/>
+        <location filename="../spectrebridge.cpp" line="491"/>
         <source>Error:</source>
-        <translation>Error:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-30"/>
+        <location filename="../spectrebridge.cpp" line="456"/>
         <source>Unknown txn type detected %1.</source>
-        <translation>Unknown txn type detected %1.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location filename="../spectrebridge.cpp" line="467"/>
         <source>Input types must match for all recipients.</source>
-        <translation>Input types must match for all recipients.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location filename="../spectrebridge.cpp" line="480"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation>Ring sizes must match for all recipients.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location filename="../spectrebridge.cpp" line="489"/>
+        <source>Ring size must be %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="490"/>
         <source>Ring size outside range [%1, %2].</source>
-        <translation>Ring size outside range [%1, %2].</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <location line="+9"/>
+        <location filename="../spectrebridge.cpp" line="499"/>
+        <location filename="../spectrebridge.cpp" line="509"/>
         <source>Confirm send coins</source>
-        <translation>Confirm send coins</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location filename="../spectrebridge.cpp" line="499"/>
         <source>Are you sure you want to send?
-Ring size of one is not anonymous, and harms the network.</source>
-        <translation>Are you sure you want to send?
-Ring size of one is not anonymous, and harms the network.</translation>
+Ring size of one is not anonymous.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
-        <location line="+9"/>
+        <location filename="../spectrebridge.cpp" line="499"/>
+        <location filename="../spectrebridge.cpp" line="511"/>
         <source> and </source>
-        <translation> and </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../spectrebridge.cpp" line="510"/>
+        <source>Are you sure you want to convert %1?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="510"/>
         <source>Are you sure you want to send %1?</source>
-        <translation>Are you sure you want to send %1?</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+15"/>
-        <location line="+25"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+6"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="528"/>
+        <location filename="../spectrebridge.cpp" line="556"/>
+        <location filename="../spectrebridge.cpp" line="562"/>
+        <location filename="../spectrebridge.cpp" line="568"/>
+        <location filename="../spectrebridge.cpp" line="574"/>
+        <location filename="../spectrebridge.cpp" line="580"/>
+        <location filename="../spectrebridge.cpp" line="586"/>
+        <location filename="../spectrebridge.cpp" line="592"/>
+        <location filename="../spectrebridge.cpp" line="599"/>
+        <location filename="../spectrebridge.cpp" line="605"/>
+        <location filename="../spectrebridge.cpp" line="611"/>
+        <location filename="../spectrebridge.cpp" line="617"/>
+        <location filename="../spectrebridge.cpp" line="623"/>
+        <location filename="../spectrebridge.cpp" line="629"/>
+        <location filename="../spectrebridge.cpp" line="635"/>
+        <location filename="../spectrebridge.cpp" line="641"/>
+        <location filename="../spectrebridge.cpp" line="653"/>
+        <location filename="../spectrebridge.cpp" line="659"/>
+        <location filename="../spectrebridge.cpp" line="665"/>
+        <location filename="../spectrebridge.cpp" line="671"/>
+        <location filename="../spectrebridge.cpp" line="686"/>
         <source>Send Coins</source>
-        <translation>Send Coins</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location filename="../spectrebridge.cpp" line="529"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation>The change address is not valid, please recheck.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
-        <location line="+362"/>
+        <location filename="../spectrebridge.cpp" line="557"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>The recipient address is not valid, please recheck.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-357"/>
+        <location filename="../spectrebridge.cpp" line="563"/>
+        <source>Only ALIAS from your Private balance can be send to a stealth address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="569"/>
+        <source>Transfer from Public to Private is only allowed within your account.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="575"/>
+        <source>Transfer from Private to Public is only allowed within your account.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="581"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation>The amount to pay must be larger than 0.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="587"/>
         <source>The amount exceeds your balance.</source>
-        <translation>The amount exceeds your balance.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="593"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>The total exceeds your balance when the %1 transaction fee is included.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+351"/>
+        <location filename="../spectrebridge.cpp" line="600"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation>Duplicate address found, can only send to each address once per send operation.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-346"/>
+        <location filename="../spectrebridge.cpp" line="606"/>
         <source>Error: Transaction creation failed.</source>
-        <translation>Error: Transaction creation failed.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="612"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>Error: Narration is too long.</source>
-        <translation>Error: Narration is too long.</translation>
+        <location filename="../spectrebridge.cpp" line="618"/>
+        <source>Error: Note is too long.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="624"/>
         <source>Error: Ring Size Error.</source>
-        <translation>Error: Ring Size Error.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="630"/>
         <source>Error: Input Type Error.</source>
-        <translation>Error: Input Type Error.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="636"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation>Error: Must be in full mode to send anon.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="642"/>
         <source>Error: Invalid Stealth Address.</source>
-        <translation>Error: Invalid Stealth Address.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
-        <source>The total exceeds your ALIAS balance when the %1 transaction fee is included.</source>
-        <translation>The total exceeds your ALIAS balance when the %1 transaction fee is included.</translation>
+        <location filename="../spectrebridge.cpp" line="647"/>
+        <source>Convert Alias from Private to Public</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="648"/>
+        <source>Error: Invalid Stealth Address. Private to public conversion requires a stealth address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="654"/>
+        <source>The amount exceeds your ALIAS balance.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="660"/>
+        <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="666"/>
         <source>Error generating transaction.</source>
-        <translation>Error generating transaction.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectrebridge.cpp" line="672"/>
         <source>Error generating transaction: %1</source>
-        <translation>Error generating transaction: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+290"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <location line="+5"/>
-        <source>Send Message</source>
-        <translation>Send Message</translation>
+        <location filename="../spectrebridge.cpp" line="687"/>
+        <source>Transaction successfully created.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-14"/>
-        <source>The message can&apos;t be empty.</source>
-        <translation>The message can&apos;t be empty.</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Error: Message creation failed.</source>
-        <translation>Error: Message creation failed.</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Error: The message was rejected.</source>
-        <translation>Error: The message was rejected.</translation>
-    </message>
-    <message>
-        <location line="+98"/>
-        <source>Sanity Error!</source>
-        <translation>Sanity Error!</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</source>
-        <translation>Error: a sanity check prevented the transfer of a non-group private key, please close your wallet and report this error to the development team as soon as possible.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="+8"/>
+        <location filename="../bridgetranslations.h" line="14"/>
         <source>Overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="15"/>
         <source>Wallet</source>
-        <translation type="unfinished">Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="16"/>
         <source>Send</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="17"/>
         <source>Receive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="18"/>
         <source>Transactions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="19"/>
         <source>Address Book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Chat</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="20"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="21"/>
         <source>Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="22"/>
         <source>Wallet Management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="23"/>
         <source>Add New Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="24"/>
         <source>Import Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="25"/>
         <source>Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="26"/>
         <source>Backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="27"/>
         <source>Backup Wallet</source>
-        <translation type="unfinished">Backup Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="28"/>
         <source>Encrypt Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="29"/>
         <source>Change Passphrase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="30"/>
         <source>(Un)lock Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="31"/>
         <source>Tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="32"/>
         <source>Chain Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="33"/>
         <source>Block Explorer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="34"/>
         <source>Sign Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="35"/>
         <source>Verify Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="36"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="37"/>
         <source>About Alias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="38"/>
         <source>About QT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="39"/>
         <source>QR code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="40"/>
         <source>Address:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="41"/>
         <source>Label:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="42"/>
         <source>Narration:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="43"/>
         <source>Amount:</source>
-        <translation type="unfinished">Amount:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="44"/>
         <source>Add new receive address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="45"/>
         <source>Add Address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="46"/>
         <source>Add a new contact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="47"/>
         <source>Address Lookup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="48"/>
         <source>Address Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="49"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="50"/>
         <source>Stealth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="51"/>
         <source>Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="52"/>
         <source>BIP32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="53"/>
         <source>Label</source>
-        <translation type="unfinished">Label</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="54"/>
         <source>Address</source>
-        <translation type="unfinished">Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="55"/>
         <source>Public Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="56"/>
         <source>Transaction Hash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="57"/>
         <source>Recent Transactions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="58"/>
         <source>Market</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="59"/>
         <source>Advanced Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="60"/>
         <source>Coin Control</source>
-        <translation type="unfinished">Coin Control</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="61"/>
         <source>Make payment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="62"/>
         <source>Balance transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="63"/>
         <source>Select Inputs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="64"/>
         <source>Automatically selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="65"/>
         <source>Quantity:</source>
-        <translation type="unfinished">Quantity:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="66"/>
         <source>Fee:</source>
-        <translation type="unfinished">Fee:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="67"/>
         <source>After Fee:</source>
-        <translation type="unfinished">After Fee:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="68"/>
         <source>Bytes:</source>
-        <translation type="unfinished">Bytes:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="69"/>
         <source>Priority:</source>
-        <translation type="unfinished">Priority:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="70"/>
         <source>LowOutput:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="71"/>
         <source>Change:</source>
-        <translation type="unfinished">Change:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="72"/>
         <source>Custom change address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="73"/>
         <source>From account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="74"/>
         <source>PUBLIC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="75"/>
         <source>PRIVATE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="76"/>
         <source>Balance:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="77"/>
         <source>Ring Size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="78"/>
         <source>To account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="79"/>
         <source>Pay to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="80"/>
         <source>(no label)</source>
-        <translation type="unfinished">(no label)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="81"/>
         <source>Catching up...                                    downloaded 0 blocks of history...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../bridgetranslations.h" line="83"/>
         <source>Tor connection offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="84"/>
         <source>i2p connection offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="85"/>
         <source>Wallet is encrypted and currently locked</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="86"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished">Not staking because wallet is locked</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="87"/>
         <source>0 active connection(s) to Alias network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="88"/>
         <source>Wallet is syncing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Open chat list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="89"/>
         <source>Enter a label for this address to add it to your address book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="90"/>
         <source>Enter a address to add it to your address book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="91"/>
         <source>Inputs</source>
-        <translation type="unfinished">Inputs</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="92"/>
         <source>Values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="93"/>
         <source>Outputs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="94"/>
         <source>Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="95"/>
         <source>Enter the message you want to sign</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="96"/>
         <source>Click sign message to generate signature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="97"/>
         <source>Copy the signed message signature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="98"/>
         <source>Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="99"/>
         <source>Enter the message you want to verify</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="100"/>
         <source>Enter a Alias signature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="101"/>
         <source>Paste signature from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="102"/>
         <source>Your total balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="103"/>
         <source>Balances overview</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="104"/>
         <source>Recent in/out transactions or stakes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="105"/>
         <source>Select inputs to spend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="106"/>
         <source>Optional address to receive transaction change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="107"/>
         <source>Choose from address book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="108"/>
         <source>Paste address from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="109"/>
         <source>Remove this recipient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="110"/>
         <source>Send from public or private</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="111"/>
         <source>Current spendable send payment balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="112"/>
         <source>Send to public or private</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="113"/>
         <source>Current spendable balance to account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="114"/>
         <source>The address transfer the balance to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="115"/>
         <source>The address to transfer the balance to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="116"/>
         <source>The label for this address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="117"/>
         <source>Amount to transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="118"/>
         <source>Send to multiple recipients at once</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="119"/>
         <source>Date and time that the transaction was received.</source>
-        <translation type="unfinished">Date and time that the transaction was received.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="120"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation type="unfinished">Transaction status. Hover over this field to show number of confirmations.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="121"/>
         <source>Type of transaction.</source>
-        <translation type="unfinished">Type of transaction.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="122"/>
         <source>Destination address of transaction.</source>
-        <translation type="unfinished">Destination address of transaction.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="123"/>
         <source>Short payment note.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="124"/>
         <source>Amount removed from or added to balance.</source>
-        <translation type="unfinished">Amount removed from or added to balance.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="125"/>
         <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="126"/>
         <source>Choose address from address book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="127"/>
         <source>Enter a public key for the address above</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="128"/>
         <source>Enter a label for this group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="129"/>
         <source>Name for this Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="130"/>
         <source>Enter a password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="131"/>
         <source>Would you like to create a bip44 path?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="132"/>
         <source>Your recovery phrase (Keep this safe!)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="133"/>
         <source>Recovery Phrase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="134"/>
         <source>Wallet Name for recovered account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="135"/>
         <source>Enter the password for the wallet you are trying to recover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="136"/>
         <source>Is this a bip44 path?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="137"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="138"/>
         <source>Created</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="139"/>
         <source>Active Account</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="140"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="141"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="142"/>
         <source>Active</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../bridgetranslations.h" line="143"/>
         <source>Master</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>AliasGUI</name>
+    <name>SpectreGUI</name>
     <message>
-        <location filename="../alias.cpp" line="+111"/>
-        <source>A fatal error occurred. Alias can no longer continue safely and will quit.</source>
-        <translation>A fatal error occurred. Alias can no longer continue safely and will quit.</translation>
+        <location filename="../transactionrecord.cpp" line="28"/>
+        <source>Public received with</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aliasgui.cpp" line="+89"/>
-        <location line="+178"/>
+        <location filename="../transactionrecord.cpp" line="30"/>
+        <source>Public received from</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="33"/>
+        <source>Public sent to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="35"/>
+        <source>Public sent to self</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="37"/>
+        <source>Private sent to self</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="39"/>
+        <source>Public staked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="41"/>
+        <source>Public donated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="43"/>
+        <source>Public contributed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="45"/>
+        <source>Private staked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="47"/>
+        <source>Private donated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="49"/>
+        <source>Private contributed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="51"/>
+        <source>Private received with</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="53"/>
+        <source>Private sent to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="55"/>
+        <source>Private to Public</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="57"/>
+        <source>Public to Private</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactionrecord.cpp" line="59"/>
+        <source>Other</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="152"/>
+        <location filename="../spectregui.cpp" line="405"/>
+        <location filename="../spectregui.cpp" line="420"/>
+        <location filename="../spectregui.cpp" line="480"/>
         <source>Alias</source>
-        <translation>Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-178"/>
+        <location filename="../spectregui.cpp" line="152"/>
         <source>Client</source>
-        <translation>Client</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location filename="../spectregui.cpp" line="313"/>
         <source>E&amp;xit</source>
-        <translation>E&amp;xit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="314"/>
         <source>Quit application</source>
-        <translation>Quit application</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../spectregui.cpp" line="317"/>
         <source>&amp;About Alias</source>
-        <translation>&amp;About Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="318"/>
         <source>Show information about Alias</source>
-        <translation>Show information about Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../spectregui.cpp" line="320"/>
         <source>About &amp;Qt</source>
-        <translation>About &amp;Qt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="321"/>
         <source>Show information about Qt</source>
-        <translation>Show information about Qt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../spectregui.cpp" line="323"/>
         <source>&amp;Options...</source>
-        <translation>&amp;Options...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="324"/>
         <source>Modify configuration options for Alias</source>
-        <translation>Modify configuration options for Alias</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../spectregui.cpp" line="326"/>
         <source>&amp;Show / Hide</source>
-        <translation>&amp;Show / Hide</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="327"/>
         <source>&amp;Encrypt Wallet...</source>
-        <translation>&amp;Encrypt Wallet...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="328"/>
         <source>Encrypt or decrypt wallet</source>
-        <translation>Encrypt or decrypt wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../spectregui.cpp" line="330"/>
         <source>&amp;Backup Wallet...</source>
-        <translation>&amp;Backup Wallet...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="331"/>
         <source>Backup wallet to another location</source>
-        <translation>Backup wallet to another location</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="332"/>
         <source>&amp;Change Passphrase...</source>
-        <translation>&amp;Change Passphrase...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="333"/>
         <source>Change the passphrase used for wallet encryption</source>
-        <translation>Change the passphrase used for wallet encryption</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="334"/>
         <source>&amp;Unlock Wallet...</source>
-        <translation>&amp;Unlock Wallet...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="335"/>
         <source>Unlock wallet</source>
-        <translation>Unlock wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="336"/>
         <source>&amp;Lock Wallet</source>
-        <translation>&amp;Lock Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="337"/>
         <source>Lock wallet</source>
-        <translation>Lock wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../spectregui.cpp" line="341"/>
         <source>&amp;Debug window</source>
-        <translation>&amp;Debug window</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="342"/>
         <source>Open debugging and diagnostic console</source>
-        <translation>Open debugging and diagnostic console</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location filename="../spectregui.cpp" line="372"/>
         <source>&amp;File</source>
-        <translation>&amp;File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../spectregui.cpp" line="378"/>
         <source>&amp;Settings</source>
-        <translation>&amp;Settings</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location filename="../spectregui.cpp" line="386"/>
         <source>&amp;Help</source>
-        <translation>&amp;Help</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location filename="../spectregui.cpp" line="405"/>
         <source>Wallet</source>
-        <translation>Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
-        <location line="+9"/>
+        <location filename="../spectregui.cpp" line="411"/>
+        <location filename="../spectregui.cpp" line="420"/>
         <source>[testnet]</source>
-        <translation>[testnet]</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <location line="+74"/>
-        <source>Alias client</source>
-        <translation>Alias client</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+63"/>
+        <location filename="../spectregui.cpp" line="562"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation>
-            <numerusform>%n active connection to Alias network</numerusform>
-            <numerusform>%n active connections to Alias network</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location filename="../spectregui.cpp" line="582"/>
         <source>block</source>
-        <translation>block</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../spectregui.cpp" line="582"/>
         <source>header</source>
-        <translation>header</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="583"/>
         <source>blocks</source>
-        <translation>blocks</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../spectregui.cpp" line="583"/>
         <source>headers</source>
-        <translation>headers</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <location line="+22"/>
+        <location filename="../spectregui.cpp" line="592"/>
+        <location filename="../spectregui.cpp" line="612"/>
         <source>Synchronizing with network...</source>
-        <translation>Synchronizing with network...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-20"/>
+        <location filename="../spectregui.cpp" line="594"/>
         <source>Downloading filtered blocks...</source>
-        <translation>Downloading filtered blocks...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../spectregui.cpp" line="600"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
-        <translation>~%1 filtered block(s) remaining (%2% done).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location filename="../spectregui.cpp" line="612"/>
         <source>Importing blocks...</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+5"/>
+        <location filename="../spectregui.cpp" line="617"/>
         <source>~%n block(s) remaining</source>
-        <translation>
-            <numerusform>~%n block(s) remaining</numerusform>
-            <numerusform>~%n block(s) remaining</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+4"/>
+        <location filename="../spectregui.cpp" line="630"/>
+        <location filename="../spectregui.cpp" line="634"/>
         <source>Imported</source>
-        <translation>Imported</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4"/>
-        <location line="+4"/>
+        <location filename="../spectregui.cpp" line="630"/>
+        <location filename="../spectregui.cpp" line="634"/>
         <source>Downloaded</source>
-        <translation>Downloaded</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location filename="../spectregui.cpp" line="631"/>
         <source>%1 of %2 %3 of transaction history (%4% done).</source>
-        <translation>%1 of %2 %3 of transaction history (%4% done).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../spectregui.cpp" line="634"/>
         <source>%1 blocks of transaction history.</source>
-        <translation>%1 blocks of transaction history.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="+23"/>
+        <location filename="../spectregui.cpp" line="652"/>
         <source>%n second(s) ago</source>
-        <translation>
-            <numerusform>%n second ago</numerusform>
-            <numerusform>%n seconds ago</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location filename="../spectregui.cpp" line="656"/>
         <source>%n minute(s) ago</source>
-        <translation>
-            <numerusform>%n minute ago</numerusform>
-            <numerusform>%n minutes ago</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location filename="../spectregui.cpp" line="660"/>
         <source>%n hour(s) ago</source>
-        <translation>
-            <numerusform>%n hour ago</numerusform>
-            <numerusform>%n hours ago</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location filename="../spectregui.cpp" line="663"/>
         <source>%n day(s) ago</source>
-        <translation>
-            <numerusform>%n day ago</numerusform>
-            <numerusform>%n days ago</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../spectregui.cpp" line="670"/>
         <source>Up to date</source>
-        <translation>Up to date</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location filename="../spectregui.cpp" line="687"/>
         <source>Catching up...</source>
-        <translation>Catching up...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location filename="../spectregui.cpp" line="732"/>
         <source>Last received %1 was generated %2.</source>
-        <translation>Last received %1 was generated %2.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+59"/>
-        <source>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</source>
-        <translation>This transaction is over the size limit.  You can still send it for a fee of %1, which goes to the nodes that process your transaction and helps to support the network.  Do you want to pay the fee?</translation>
+        <location filename="../spectregui.cpp" line="787"/>
+        <source>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectregui.cpp" line="791"/>
         <source>Confirm transaction fee</source>
-        <translation>Confirm transaction fee</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
-        <source>Sent transaction</source>
-        <translation>Sent transaction</translation>
+        <location filename="../spectregui.cpp" line="821"/>
+        <source>%1 %2</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Incoming transaction</source>
-        <translation>Incoming transaction</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date: %1
-Amount: %2
-Type: %3
-Address: %4
+        <location filename="../spectregui.cpp" line="824"/>
+        <source>Address: %1
+Note: %2
 </source>
-        <translation>Date: %1
-Amount: %2
-Type: %3
-Address: %4
-</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
-        <location line="+15"/>
-        <source>Incoming Message</source>
-        <translation>Incoming Message</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Date: %1
-From Address: %2
-To Address: %3
-Message: %4
+        <location filename="../spectregui.cpp" line="825"/>
+        <source>Address: %1
 </source>
-        <translation>Date: %1
-From Address: %2
-To Address: %3
-Message: %4
-</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+45"/>
-        <location line="+23"/>
+        <location filename="../spectregui.cpp" line="863"/>
+        <location filename="../spectregui.cpp" line="885"/>
         <source>URI handling</source>
-        <translation>URI handling</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-23"/>
-        <location line="+23"/>
+        <location filename="../spectregui.cpp" line="863"/>
+        <location filename="../spectregui.cpp" line="885"/>
         <source>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</source>
-        <translation>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location filename="../spectregui.cpp" line="920"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
-        <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location filename="../spectregui.cpp" line="925"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location filename="../spectregui.cpp" line="946"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location filename="../spectregui.cpp" line="978"/>
         <source>Backup Wallet</source>
-        <translation>Backup Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../spectregui.cpp" line="978"/>
         <source>Wallet Data (*.dat)</source>
-        <translation>Wallet Data (*.dat)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location filename="../spectregui.cpp" line="983"/>
         <source>Backup Failed</source>
-        <translation>Backup Failed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../spectregui.cpp" line="983"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
-        <translation>There was an error trying to save the wallet data to the new location.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+48"/>
+        <location filename="../spectregui.cpp" line="1040"/>
         <source>Lock Wallet</source>
-        <translation>Lock Wallet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1041"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
-        <translation>Error: Wallet must first be encrypted to be locked.</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+69"/>
-        <source>%n second(s)</source>
-        <translation>
-            <numerusform>%n second</numerusform>
-            <numerusform>%n seconds</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+1"/>
-        <source>%n minute(s)</source>
-        <translation>
-            <numerusform>%n minute</numerusform>
-            <numerusform>%n minutes</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+1"/>
-        <source>%n hour(s)</source>
-        <translation>
-            <numerusform>%n hour</numerusform>
-            <numerusform>%n hours</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location line="+1"/>
-        <source>%n day(s)</source>
-        <translation>
-            <numerusform>%n day</numerusform>
-            <numerusform>%n days</numerusform>
-        </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Staking.
-Your weight is %1
-Network weight is %2
-Expected time to earn reward is %3</source>
-        <translation>Staking.
-Your weight is %1
-Network weight is %2
-Expected time to earn reward is %3</translation>
+        <location filename="../spectregui.cpp" line="1110"/>
+        <source>%1 second(s)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../spectregui.cpp" line="1111"/>
+        <source>%1 minute(s), %2 second(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1112"/>
+        <source>%1 hour(s), %2 minute(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1113"/>
+        <source>%1 day(s), %2 hour(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1123"/>
+        <source> (last 72 blocks %1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1125"/>
+        <source>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1131"/>
         <source>Not staking because wallet is in thin mode</source>
-        <translation>Not staking because wallet is in thin mode</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1132"/>
         <source>Not staking, staking is disabled</source>
-        <translation>Not staking, staking is disabled</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1133"/>
         <source>Not staking because wallet is locked</source>
-        <translation>Not staking because wallet is locked</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1134"/>
         <source>Not staking because wallet is offline</source>
-        <translation>Not staking because wallet is offline</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1135"/>
         <source>Not staking because wallet is syncing</source>
-        <translation>Not staking because wallet is syncing</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1136"/>
+        <source>Initializing staking...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1137"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation>Not staking because you don&apos;t have mature coins</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../spectregui.cpp" line="1138"/>
         <source>Not staking</source>
-        <translation>Not staking</translation>
-    </message>
-    <message>
-        <location filename="../transactionrecord.cpp" line="+23"/>
-        <source>Received with</source>
-        <translation>Received with</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Received from</source>
-        <translation>Received from</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Sent to</source>
-        <translation>Sent to</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Payment to yourself</source>
-        <translation>Payment to yourself</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Mined</source>
-        <translation>Mined</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Received ALIAS</source>
-        <translation>Received ALIAS</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Sent ALIAS</source>
-        <translation>Sent ALIAS</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Other</source>
-        <translation>Other</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TrafficGraphWidget</name>
     <message>
-        <location filename="../trafficgraphwidget.cpp" line="+79"/>
+        <location filename="../trafficgraphwidget.cpp" line="81"/>
         <source>KB/s</source>
-        <translation>KB/s</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TransactionDesc</name>
-    <message>
-        <location filename="../transactiondesc.cpp" line="+20"/>
-        <source>Open until %1</source>
-        <translation>Open until %1</translation>
-    </message>
     <message numerus="yes">
-        <location line="-2"/>
+        <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation>
-            <numerusform>Open for %n block</numerusform>
-            <numerusform>Open for %n blocks</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location filename="../transactiondesc.cpp" line="46"/>
+        <source>Open until %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="51"/>
         <source>conflicted</source>
-        <translation>conflicted</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiondesc.cpp" line="53"/>
         <source>%1/offline</source>
-        <translation>%1/offline</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiondesc.cpp" line="55"/>
         <source>%1/unconfirmed</source>
-        <translation>%1/unconfirmed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiondesc.cpp" line="57"/>
         <source>%1 confirmations</source>
-        <translation>%1 confirmations</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
-        <source>Status</source>
-        <translation>Status</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+7"/>
-        <source>, broadcast through %n node(s)</source>
-        <translation>
-            <numerusform>, broadcast through %n node</numerusform>
-            <numerusform>, broadcast through %n nodes</numerusform>
-        </translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Date</source>
-        <translation>Date</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Source</source>
-        <translation>Source</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>Generated</source>
-        <translation>Generated</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <location line="+17"/>
-        <location line="+20"/>
-        <source>From</source>
-        <translation>From</translation>
-    </message>
-    <message>
-        <location line="-19"/>
-        <location line="+20"/>
-        <location line="+23"/>
-        <location line="+57"/>
-        <source>To</source>
-        <translation>To</translation>
-    </message>
-    <message>
-        <location line="-96"/>
-        <location line="+2"/>
-        <location line="+18"/>
-        <location line="+2"/>
-        <source>own address</source>
-        <translation>own address</translation>
-    </message>
-    <message>
-        <location line="-22"/>
-        <location line="+20"/>
-        <source>label</source>
-        <translation>label</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <location line="+12"/>
-        <location line="+44"/>
-        <location line="+20"/>
-        <location line="+40"/>
-        <source>Credit</source>
-        <translation>Credit</translation>
-    </message>
-    <message numerus="yes">
-        <location line="-114"/>
-        <source>matures in %n more block(s)</source>
-        <translation>
-            <numerusform>matures in %n more block</numerusform>
-            <numerusform>matures in %n more blocks</numerusform>
-        </translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>not accepted</source>
-        <translation>not accepted</translation>
-    </message>
-    <message>
-        <location line="+43"/>
-        <location line="+8"/>
-        <location line="+16"/>
-        <location line="+42"/>
-        <source>Debit</source>
-        <translation>Debit</translation>
-    </message>
-    <message>
-        <location line="-52"/>
-        <source>Transaction fee</source>
-        <translation>Transaction fee</translation>
-    </message>
-    <message>
-        <location line="+19"/>
-        <source>Net amount</source>
-        <translation>Net amount</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Message</source>
-        <translation>Message</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Comment</source>
-        <translation>Comment</translation>
-    </message>
-    <message>
-        <location line="+12"/>
+        <location filename="../transactiondesc.cpp" line="78"/>
         <source>Transaction ID</source>
-        <translation>Transaction ID</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Generated coins must mature 450 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
-        <translation>Generated coins must mature 450 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</translation>
+        <location filename="../transactiondesc.cpp" line="82"/>
+        <source>Block Hash</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Debug information</source>
-        <translation>Debug information</translation>
+        <location filename="../transactiondesc.cpp" line="85"/>
+        <source>Status</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Transaction</source>
-        <translation>Transaction</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Inputs</source>
-        <translation>Inputs</translation>
-    </message>
-    <message>
-        <location line="+44"/>
-        <source>Amount</source>
-        <translation>Amount</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>true</source>
-        <translation>true</translation>
-    </message>
-    <message>
-        <location line="+0"/>
-        <source>false</source>
-        <translation>false</translation>
-    </message>
-    <message>
-        <location line="-266"/>
+        <location filename="../transactiondesc.cpp" line="90"/>
         <source>, has not been successfully broadcast yet</source>
-        <translation>, has not been successfully broadcast yet</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../transactiondesc.cpp" line="92"/>
+        <source>, broadcast through %n node(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
-        <location line="+36"/>
-        <location line="+20"/>
+        <location filename="../transactiondesc.cpp" line="97"/>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="106"/>
+        <source>Source</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="106"/>
+        <source>Generated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="112"/>
+        <location filename="../transactiondesc.cpp" line="209"/>
+        <source>Credit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../transactiondesc.cpp" line="117"/>
+        <source>matures in %n more block(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="120"/>
+        <source>not accepted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="134"/>
+        <source>Transaction fee</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="145"/>
+        <source>Net amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="179"/>
+        <source>Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="181"/>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="183"/>
+        <source>Comment-To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="196"/>
+        <source>Generated coins must mature 450 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to &quot;not accepted&quot; and it won&apos;t be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="203"/>
+        <source>Debug information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="206"/>
+        <source>Debit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="211"/>
+        <source>Transaction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="216"/>
+        <source>Inputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="256"/>
+        <source>Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="257"/>
+        <source>true</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="257"/>
+        <source>false</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="291"/>
+        <location filename="../transactiondesc.cpp" line="294"/>
+        <source>Converted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="292"/>
+        <source> from public to private</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="295"/>
+        <source> from private to public</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="298"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="316"/>
+        <location filename="../transactiondesc.cpp" line="324"/>
+        <source>Note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="327"/>
         <source>unknown</source>
-        <translation>unknown</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiondesc.cpp" line="338"/>
+        <source>&lt;dd&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TransactionDescDialog</name>
     <message>
-        <location filename="../forms/transactiondescdialog.ui" line="+14"/>
+        <location filename="../forms/transactiondescdialog.ui" line="14"/>
         <source>Transaction details</source>
-        <translation>Transaction details</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../forms/transactiondescdialog.ui" line="20"/>
         <source>This pane shows a detailed description of the transaction</source>
-        <translation>This pane shows a detailed description of the transaction</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TransactionTableModel</name>
     <message>
-        <location filename="../transactiontablemodel.cpp" line="+217"/>
+        <location filename="../transactiontablemodel.cpp" line="251"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../transactiontablemodel.cpp" line="251"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../transactiontablemodel.cpp" line="251"/>
         <source>Address</source>
-        <translation>Address</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location filename="../transactiontablemodel.cpp" line="251"/>
+        <source>Note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiontablemodel.cpp" line="251"/>
         <source>Amount</source>
-        <translation>Amount</translation>
-    </message>
-    <message>
-        <location line="+54"/>
-        <source>Open until %1</source>
-        <translation>Open until %1</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Confirmed (%1 confirmations)</source>
-        <translation>Confirmed (%1 confirmations)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="-15"/>
+        <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation>
-            <numerusform>Open for %n more block</numerusform>
-            <numerusform>Open for %n more blocks</numerusform>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
         </translation>
     </message>
     <message>
-        <location line="-51"/>
-        <source>Narration</source>
-        <translation>Narration</translation>
+        <location filename="../transactiontablemodel.cpp" line="331"/>
+        <source>Open until %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location filename="../transactiontablemodel.cpp" line="334"/>
         <source>Offline</source>
-        <translation>Offline</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../transactiontablemodel.cpp" line="337"/>
         <source>Unconfirmed</source>
-        <translation>Unconfirmed</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../transactiontablemodel.cpp" line="340"/>
+        <source>Confirming (%1 of %2 required confirmations)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiontablemodel.cpp" line="342"/>
         <source>Confirming (%1 of %2 recommended confirmations)</source>
-        <translation>Confirming (%1 of %2 recommended confirmations)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../transactiontablemodel.cpp" line="346"/>
+        <source>Confirmed (%1 confirmations)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../transactiontablemodel.cpp" line="349"/>
         <source>Conflicted</source>
-        <translation>Conflicted</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location filename="../transactiontablemodel.cpp" line="352"/>
         <source>Immature (%1 confirmations, will be available after %2)</source>
-        <translation>Immature (%1 confirmations, will be available after %2)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>This block was not received by any other nodes and will probably not be accepted!</source>
-        <translation>This block was not received by any other nodes and will probably not be accepted!</translation>
+        <location filename="../transactiontablemodel.cpp" line="356"/>
+        <source>Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>Generated but not accepted</source>
-        <translation>Generated but not accepted</translation>
+        <location filename="../transactiontablemodel.cpp" line="360"/>
+        <source>Orphan %1 stake, someone else submitted the block before you.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location filename="../transactiontablemodel.cpp" line="434"/>
         <source>(n/a)</source>
-        <translation>(n/a)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location filename="../transactiontablemodel.cpp" line="656"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation>Transaction status. Hover over this field to show number of confirmations.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiontablemodel.cpp" line="658"/>
         <source>Date and time that the transaction was received.</source>
-        <translation>Date and time that the transaction was received.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiontablemodel.cpp" line="660"/>
         <source>Type of transaction.</source>
-        <translation>Type of transaction.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiontablemodel.cpp" line="662"/>
         <source>Destination address of transaction.</source>
-        <translation>Destination address of transaction.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location filename="../transactiontablemodel.cpp" line="664"/>
         <source>Amount removed from or added to balance.</source>
-        <translation>Amount removed from or added to balance.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>WalletModel</name>
     <message>
-        <location filename="../walletmodel.cpp" line="+393"/>
-        <location line="+246"/>
+        <location filename="../walletmodel.cpp" line="424"/>
+        <location filename="../walletmodel.cpp" line="655"/>
         <source>Sending...</source>
-        <translation>Sending...</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>bitcoin-core</name>
+    <name>alias-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="+33"/>
-        <source>Alias version</source>
-        <translation>Alias version</translation>
+        <location filename="../bitcoinstrings.cpp" line="15"/>
+        <source>To use the %s option</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Usage:</source>
-        <translation>Usage:</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Send command to -server or aliaswalletd</source>
-        <translation>Send command to -server or aliaswalletd</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>List commands</source>
-        <translation>List commands</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Get help for a command</source>
-        <translation>Get help for a command</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Options:</source>
-        <translation>Options:</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Specify configuration file (default: alias.conf)</source>
-        <translation>Specify configuration file (default: alias.conf)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Specify pid file (default: alias.pid)</source>
-        <translation>Specify pid file (default: alias.pid)</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Specify wallet file (within data directory)</source>
-        <translation>Specify wallet file (within data directory)</translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>Specify data directory</source>
-        <translation>Specify data directory</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Set database cache size in megabytes (default: 25)</source>
-        <translation>Set database cache size in megabytes (default: 25)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Set database disk log size in megabytes (default: 100)</source>
-        <translation>Set database disk log size in megabytes (default: 100)</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</source>
-        <translation>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Maintain at most &lt;n&gt; connections to peers (default: 125)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation>Connect to a node to retrieve peer addresses, and disconnect</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Specify your own public address</source>
-        <translation>Specify your own public address</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Bind to given address. Use [host]:port notation for IPv6</source>
-        <translation>Bind to given address. Use [host]:port notation for IPv6</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Stake your coins to support network and gain reward (default: 1)</source>
-        <translation>Stake your coins to support network and gain reward (default: 1)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation>Threshold for disconnecting misbehaving peers (default: 100)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</translation>
-    </message>
-    <message>
-        <location line="-44"/>
-        <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation>An error occurred while setting up the RPC port %u for listening on IPv4: %s</translation>
-    </message>
-    <message>
-        <location line="+51"/>
-        <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
-        <translation>Detach block and address databases. Increases shutdown time (default: 0)</translation>
-    </message>
-    <message>
-        <location line="+109"/>
-        <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</translation>
-    </message>
-    <message>
-        <location line="-5"/>
-        <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
-        <translation>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </translation>
-    </message>
-    <message>
-        <location line="-87"/>
-        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 36657 or testnet: 36757)</source>
-        <translation>Listen for JSON-RPC connections on &lt;port&gt; (default: 36657 or testnet: 36757)</translation>
-    </message>
-    <message>
-        <location line="-11"/>
-        <source>Accept command line and JSON-RPC commands</source>
-        <translation>Accept command line and JSON-RPC commands</translation>
-    </message>
-    <message>
-        <location line="+101"/>
-        <source>Error: Transaction creation failed  </source>
-        <translation>Error: Transaction creation failed  </translation>
-    </message>
-    <message>
-        <location line="-5"/>
-        <source>Error: Wallet locked, unable to create transaction  </source>
-        <translation>Error: Wallet locked, unable to create transaction  </translation>
-    </message>
-    <message>
-        <location line="-8"/>
-        <source>Importing blockchain data file.</source>
-        <translation>Importing blockchain data file.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Importing bootstrap blockchain data file.</source>
-        <translation>Importing bootstrap blockchain data file.</translation>
-    </message>
-    <message>
-        <location line="-88"/>
-        <source>Run in the background as a daemon and accept commands</source>
-        <translation>Run in the background as a daemon and accept commands</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Use the test network</source>
-        <translation>Use the test network</translation>
-    </message>
-    <message>
-        <location line="-24"/>
-        <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation>Accept connections from outside (default: 1 if no -proxy or -connect)</translation>
-    </message>
-    <message>
-        <location line="-38"/>
-        <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</translation>
-    </message>
-    <message>
-        <location line="+117"/>
-        <source>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</source>
-        <translation>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</translation>
-    </message>
-    <message>
-        <location line="-20"/>
-        <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
-        <translation>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</translation>
-    </message>
-    <message>
-        <location line="+61"/>
-        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</source>
-        <translation>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</translation>
-    </message>
-    <message>
-        <location line="-31"/>
-        <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</translation>
-    </message>
-    <message>
-        <location line="-18"/>
-        <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</translation>
-    </message>
-    <message>
-        <location line="-30"/>
-        <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation>Attempt to recover private keys from a corrupt wallet.dat</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Block creation options:</source>
-        <translation>Block creation options:</translation>
-    </message>
-    <message>
-        <location line="-62"/>
-        <source>Connect only to the specified node(s)</source>
-        <translation>Connect only to the specified node(s)</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation>Discover own IP address (default: 1 when listening and no -externalip)</translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation>Failed to listen on any port. Use -listen=0 if you want this.</translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <source>Failed to listen on any port.</source>
-        <translation>Failed to listen on any port.</translation>
-    </message>
-    <message>
-        <location line="+94"/>
-        <source>Error: could not start tor node</source>
-        <translation>Error: could not start tor node</translation>
-    </message>
-    <message>
-        <location line="-90"/>
-        <source>Find peers using DNS lookup (default: 1)</source>
-        <translation>Find peers using DNS lookup (default: 1)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Sync checkpoints policy (default: strict)</source>
-        <translation>Sync checkpoints policy (default: strict)</translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>Invalid -tor address: '%s'</source>
-        <translation>Invalid -tor address: '%s'</translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>Cannot resolve binding address: '%s'</source>
-        <translation>Cannot resolve binding address: '%s'</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
-        <translation>Invalid amount for -reservebalance=&lt;amount&gt;</translation>
-    </message>
-    <message>
-        <location line="-82"/>
-        <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</translation>
-    </message>
-    <message>
-        <location line="-16"/>
-        <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Output extra debugging information. Implies all other -debug* options</source>
-        <translation>Output extra debugging information. Implies all other -debug* options</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Output extra network debugging information</source>
-        <translation>Output extra network debugging information</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Prepend debug output with timestamp</source>
-        <translation>Prepend debug output with timestamp</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</translation>
-    </message>
-    <message>
-        <location line="-74"/>
-        <source>Select the version of socks proxy to use (4-5, default: 5)</source>
-        <translation>Select the version of socks proxy to use (4-5, default: 5)</translation>
-    </message>
-    <message>
-        <location line="+41"/>
-        <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation>Send trace/debug info to console instead of debug.log file</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Send trace/debug info to debugger</source>
-        <translation>Send trace/debug info to debugger</translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation>Set maximum block size in bytes (default: 250000)</translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>Set minimum block size in bytes (default: 0)</source>
-        <translation>Set minimum block size in bytes (default: 0)</translation>
-    </message>
-    <message>
-        <location line="-29"/>
-        <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation>Shrink debug.log file on client startup (default: 1 when no -debug)</translation>
-    </message>
-    <message>
-        <location line="-42"/>
-        <source>Specify connection timeout in milliseconds (default: 5000)</source>
-        <translation>Specify connection timeout in milliseconds (default: 5000)</translation>
-    </message>
-    <message>
-        <location line="+109"/>
-        <source>Unable to sign checkpoint, wrong checkpointkey?
-</source>
-        <translation>Unable to sign checkpoint, wrong checkpointkey?
-</translation>
-    </message>
-    <message>
-        <location line="-80"/>
-        <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation>Use UPnP to map the listening port (default: 0)</translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation>Use UPnP to map the listening port (default: 1 when listening)</translation>
-    </message>
-    <message>
-        <location line="-25"/>
-        <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
-        <translation>Use proxy to reach tor hidden services (default: same as -proxy)</translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <source>Username for JSON-RPC connections</source>
-        <translation>Username for JSON-RPC connections</translation>
-    </message>
-    <message>
-        <location line="+47"/>
-        <source>Verifying database integrity...</source>
-        <translation>Verifying database integrity...</translation>
-    </message>
-    <message>
-        <location line="+57"/>
-        <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
-        <translation>WARNING: syncronized checkpoint violation detected, but skipped!</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Warning: Disk space is low!</source>
-        <translation>Warning: Disk space is low!</translation>
-    </message>
-    <message>
-        <location line="-2"/>
-        <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation>Warning: This version is obsolete, upgrade required!</translation>
-    </message>
-    <message>
-        <location line="-48"/>
-        <source>wallet.dat corrupt, salvage failed</source>
-        <translation>wallet.dat corrupt, salvage failed</translation>
-    </message>
-    <message>
-        <location line="-54"/>
-        <source>Password for JSON-RPC connections</source>
-        <translation>Password for JSON-RPC connections</translation>
-    </message>
-    <message>
-        <location line="-84"/>
+        <location filename="../bitcoinstrings.cpp" line="16"/>
         <source>%s, you must set a rpcpassword in the configuration file:
  %s
 It is recommended you use the following random password:
@@ -3186,381 +3030,690 @@ If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
 for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.com
 </source>
-        <translation>%s, you must set a rpcpassword in the configuration file:
- %s
-It is recommended you use the following random password:
-rpcuser=aliasrpc
-rpcpassword=%s
-(you do not need to remember this password)
-The username and password MUST NOT be the same.
-If the file does not exist, create it with owner-readable-only file permissions.
-It is also recommended to set alertnotify so you are notified of problems;
-for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.com
-</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+51"/>
-        <source>Find peers using internet relay chat (default: 0)</source>
-        <translation>Find peers using internet relay chat (default: 1) {0)?}</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
-        <translation>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
-        <translation>When creating transactions, ignore inputs with value less than this (default: 0.01)</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation>Allow JSON-RPC connections from specified IP address</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation>Execute command when the best block changes (%s in cmd is replaced by block hash)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Require a confirmations for change (default: 0)</source>
-        <translation>Require a confirmations for change (default: 0)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
-        <translation>Enforce transaction scripts to use canonical PUSH operators (default: 1)</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation>Execute command when a relevant alert is received (%s in cmd is replaced by message)</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Upgrade wallet to latest format</source>
-        <translation>Upgrade wallet to latest format</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation>Set key pool size to &lt;n&gt; (default: 100)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Rescan the block chain for missing wallet transactions</source>
-        <translation>Rescan the block chain for missing wallet transactions</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
-        <translation>How many blocks to check at startup (default: 2500, 0 = all)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>How thorough the block verification is (0-6, default: 1)</source>
-        <translation>How thorough the block verification is (0-6, default: 1)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Imports blocks from external blk000?.dat file</source>
-        <translation>Imports blocks from external blk000?.dat file</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation>Use OpenSSL (https) for JSON-RPC connections</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Server certificate file (default: server.cert)</source>
-        <translation>Server certificate file (default: server.cert)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Server private key (default: server.pem)</source>
-        <translation>Server private key (default: server.pem)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
-    </message>
-    <message>
-        <location line="+53"/>
-        <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
-        <translation>Error: Wallet unlocked for staking only, unable to create transaction.</translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
-        <translation>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</translation>
-    </message>
-    <message>
-        <location line="-158"/>
-        <source>This help message</source>
-        <translation>This help message</translation>
-    </message>
-    <message>
-        <location line="+95"/>
-        <source>Wallet %s resides outside data directory %s.</source>
-        <translation>Wallet %s resides outside data directory %s.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cannot obtain a lock on data directory %s.  Alias is probably already running.</source>
-        <translation>Cannot obtain a lock on data directory %s.  Alias is probably already running.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>-bip44key is not allowed if wallet.dat already exists</source>
-        <translation>-bip44key is not allowed if wallet.dat already exists</translation>
-    </message>
-    <message>
-        <location line="-98"/>
-        <source>Alias</source>
-        <translation>Alias</translation>
-    </message>
-    <message>
-        <location line="+140"/>
-        <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
-        <translation>Unable to bind to %s on this computer (bind returned error %d, %s)</translation>
-    </message>
-    <message>
-        <location line="-130"/>
-        <source>Connect through socks proxy</source>
-        <translation>Connect through socks proxy</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation>Allow DNS lookups for -addnode, -seednode and -connect</translation>
-    </message>
-    <message>
-        <location line="+122"/>
-        <source>Loading addresses...</source>
-        <translation>Loading addresses...</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <source>Error loading blk0001.dat</source>
-        <translation>Error loading blk0001.dat</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <source>Core started!</source>
-        <translation>Core started!</translation>
-    </message>
-    <message>
-        <location line="-15"/>
-        <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
-        <translation>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation>Error loading wallet.dat: Wallet corrupted</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Error loading wallet.dat: Wallet requires newer version of Alias</source>
-        <translation>Error loading wallet.dat: Wallet requires newer version of Alias</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Wallet needed to be rewritten: restart Alias to complete</source>
-        <translation>Wallet needed to be rewritten: restart Alias to complete</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Error loading wallet.dat</source>
-        <translation>Error loading wallet.dat</translation>
-    </message>
-    <message>
-        <location line="-16"/>
-        <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation>Invalid -proxy address: &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation>Unknown network specified in -onlynet: &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <location line="-1"/>
-        <source>Unknown -socks proxy version requested: %i</source>
-        <translation>Unknown -socks proxy version requested: %i</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation>Cannot resolve -bind address: &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Cannot resolve -externalip address: '%s'</source>
-        <translation>Cannot resolve -externalip address: '%s'</translation>
-    </message>
-    <message>
-        <location line="-24"/>
-        <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <location line="-24"/>
-        <source>Timed out waiting for onion hostname</source>
-        <translation>Timed out waiting for onion hostname</translation>
-    </message>
-    <message>
-        <location line="+44"/>
-        <source>Error: could not start node</source>
-        <translation>Error: could not start node</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Sending...</source>
-        <translation>Sending...</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Invalid amount</source>
-        <translation>Invalid amount</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Insufficient funds</source>
-        <translation>Insufficient funds</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Loading block index...</source>
-        <translation>Loading block index...</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Loading block index... (%d)</source>
-        <translation>Loading block index... (%d)</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Calculating chain trust... (%d)</source>
-        <translation>Calculating chain trust... (%d)</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Validating last %d block...</source>
-        <translation>Validating last %d block...</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Loading wallet items... (%d)</source>
-        <translation>Loading wallet items... (%d)</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Reindexing block... (%d)</source>
-        <translation>Reindexing block... (%d)</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Reindexing from blk000?.dat files.</source>
-        <translation>Reindexing from blk000?.dat files.</translation>
-    </message>
-    <message>
-        <location line="-34"/>
-        <source>Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported.</source>
-        <translation>Error: Unsupported argument -socks found. Setting SOCKS version isn't possible anymore, only SOCKS5 proxies are supported.</translation>
-    </message>
-    <message>
-        <location line="-103"/>
-        <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation>Add a node to connect to and attempt to keep the connection open</translation>
-    </message>
-    <message>
-        <location line="+122"/>
-        <source>Unable to bind to %s on this computer. Alias is probably already running.</source>
-        <translation>Unable to bind to %s on this computer. Alias is probably already running.</translation>
-    </message>
-    <message>
-        <location line="-97"/>
-        <source>Fee per KB to add to transactions you send</source>
-        <translation>Fee per KB to add to transactions you send</translation>
-    </message>
-    <message>
-        <location line="+55"/>
-        <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <location line="+55"/>
-        <source>Initialization sanity check failed. Alias is shutting down.</source>
-        <translation>Initialization sanity check failed. Alias is shutting down.</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Loading wallet...</source>
-        <translation>Loading wallet...</translation>
-    </message>
-    <message>
-        <location line="+8"/>
-        <source>Cannot downgrade wallet</source>
-        <translation>Cannot downgrade wallet</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cannot initialize keypool</source>
-        <translation>Cannot initialize keypool</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cannot write default address</source>
-        <translation>Cannot write default address</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Rescanning...</source>
-        <translation>Rescanning...</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Rescanning... %d / %d (%d txns)</source>
-        <translation>Rescanning... %d / %d (%d txns)</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Done loading</source>
-        <translation>Done loading</translation>
-    </message>
-    <message>
-        <location line="-167"/>
-        <source>To use the %s option</source>
-        <translation>To use the %s option</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location filename="../bitcoinstrings.cpp" line="29"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location filename="../bitcoinstrings.cpp" line="30"/>
+        <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="33"/>
+        <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="35"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation>You must set rpcpassword=&lt;password&gt; in the configuration file:
-%s
-If the file does not exist, create it with owner-readable-only file permissions.</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="40"/>
+        <source>Alias version</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="41"/>
+        <source>Usage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="42"/>
+        <source>Send command to -server or aliaswalletd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="43"/>
+        <source>List commands</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="44"/>
+        <source>Get help for a command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="45"/>
+        <source>Alias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="46"/>
+        <source>Options:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="47"/>
+        <source>This help message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="48"/>
+        <source>Specify configuration file (default: alias.conf)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="49"/>
+        <source>Specify pid file (default: alias.pid)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="50"/>
+        <source>Specify data directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="51"/>
+        <source>Specify wallet file (within data directory)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="52"/>
+        <source>Set database cache size in megabytes (default: 25)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="53"/>
+        <source>Set database disk log size in megabytes (default: 100)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="54"/>
+        <source>Specify connection timeout in milliseconds (default: 5000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="55"/>
+        <source>Connect through socks proxy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="56"/>
+        <source>Select the version of socks proxy to use (4-5, default: 5)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="57"/>
+        <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="58"/>
+        <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="59"/>
+        <source>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="60"/>
+        <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="61"/>
+        <source>Add a node to connect to and attempt to keep the connection open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="62"/>
+        <source>Connect only to the specified node(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="63"/>
+        <source>Connect to a node to retrieve peer addresses, and disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="64"/>
+        <source>Specify your own public address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="65"/>
+        <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="66"/>
+        <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="67"/>
+        <source>Find peers using internet relay chat (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="68"/>
+        <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="69"/>
+        <source>Bind to given address. Use [host]:port notation for IPv6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="70"/>
+        <source>Find peers using DNS lookup (default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="71"/>
+        <source>Stake your coins to support network and gain reward (default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="72"/>
+        <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="75"/>
+        <source>Sync checkpoints policy (default: strict)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="76"/>
+        <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="77"/>
+        <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="80"/>
+        <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="81"/>
+        <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="82"/>
+        <source>Use UPnP to map the listening port (default: 1 when listening)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="83"/>
+        <source>Use UPnP to map the listening port (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="84"/>
+        <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="86"/>
+        <source>Fee per KB to add to transactions you send</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="87"/>
+        <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="90"/>
+        <source>Accept command line and JSON-RPC commands</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="91"/>
+        <source>Run in the background as a daemon and accept commands</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="92"/>
+        <source>Use the test network</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="93"/>
+        <source>Output extra debugging information. Implies all other -debug* options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="94"/>
+        <source>Output extra network debugging information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="95"/>
+        <source>Prepend debug output with timestamp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="96"/>
+        <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="97"/>
+        <source>Send trace/debug info to console instead of debug.log file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="98"/>
+        <source>Send trace/debug info to debugger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="99"/>
+        <source>Username for JSON-RPC connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="100"/>
+        <source>Password for JSON-RPC connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="101"/>
+        <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 36657 or testnet: 36757)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="103"/>
+        <source>Allow JSON-RPC connections from specified IP address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="104"/>
+        <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="105"/>
+        <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="108"/>
+        <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="111"/>
+        <source>Require a confirmations for change (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="112"/>
+        <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="114"/>
+        <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="117"/>
+        <source>Upgrade wallet to latest format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="118"/>
+        <source>Set key pool size to &lt;n&gt; (default: 100)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="119"/>
+        <source>Rescan the block chain for missing wallet transactions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="120"/>
+        <source>Attempt to recover private keys from a corrupt wallet.dat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="121"/>
+        <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="122"/>
+        <source>How thorough the block verification is (0-6, default: 1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="123"/>
+        <source>Imports blocks from external blk000?.dat file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="124"/>
+        <source>Block creation options:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="125"/>
+        <source>Set minimum block size in bytes (default: 0)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="126"/>
+        <source>Set maximum block size in bytes (default: 250000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="127"/>
+        <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="130"/>
+        <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="131"/>
+        <source>Use OpenSSL (https) for JSON-RPC connections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="132"/>
+        <source>Server certificate file (default: server.cert)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="133"/>
+        <source>Server private key (default: server.pem)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="134"/>
+        <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="137"/>
+        <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="138"/>
+        <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="141"/>
+        <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="142"/>
+        <source>Wallet %s resides outside data directory %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="143"/>
+        <source>Cannot obtain a lock on data directory %s.  Alias is probably already running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="146"/>
+        <source>Verifying database integrity...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="147"/>
+        <source>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="150"/>
+        <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="154"/>
+        <source>wallet.dat corrupt, salvage failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="155"/>
+        <source>Unknown -socks proxy version requested: %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="156"/>
+        <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="157"/>
+        <source>Invalid -proxy address: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="158"/>
+        <source>Invalid -tor address: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="159"/>
+        <source>Cannot resolve -bind address: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="160"/>
+        <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="161"/>
+        <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="162"/>
+        <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="163"/>
+        <source>Unable to sign checkpoint, wrong checkpointkey?
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="164"/>
+        <source>Loading block index...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="165"/>
+        <source>Error loading blkindex.dat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="166"/>
+        <source>Loading wallet...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="167"/>
+        <source>Error loading wallet.dat: Wallet corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="168"/>
+        <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="171"/>
+        <source>Error loading wallet.dat: Wallet requires newer version of Alias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="172"/>
+        <source>Wallet needed to be rewritten: restart Alias to complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="173"/>
+        <source>Error loading wallet.dat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="174"/>
+        <source>Cannot downgrade wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="175"/>
+        <source>Cannot initialize keypool</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="176"/>
+        <source>Cannot write default address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="177"/>
+        <source>Rescanning...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="178"/>
+        <source>Importing blockchain data file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="179"/>
+        <source>Importing bootstrap blockchain data file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="180"/>
+        <source>Loading addresses...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="181"/>
+        <source>Error: could not start node</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="182"/>
+        <source>Done loading</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="183"/>
+        <source>Unable to bind to %s on this computer. Alias is probably already running.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="185"/>
+        <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="186"/>
+        <source>Error: Wallet locked, unable to create transaction  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="187"/>
+        <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="188"/>
+        <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="191"/>
+        <source>Error: Transaction creation failed  </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="192"/>
+        <source>Sending...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="193"/>
+        <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="197"/>
+        <source>Invalid amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="198"/>
+        <source>Insufficient funds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="199"/>
+        <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="202"/>
+        <source>Warning: This version is obsolete, upgrade required!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="203"/>
+        <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="204"/>
+        <source>Warning: Disk space is low!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="205"/>
+        <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="208"/>
+        <source>Read ATXOs... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="209"/>
+        <source>Read spent ATXOs... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="210"/>
+        <source>Note must be 24 characters or less.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="211"/>
+        <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
