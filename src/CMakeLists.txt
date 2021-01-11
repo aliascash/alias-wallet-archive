@@ -205,6 +205,94 @@ if (ENABLE_GUI)
     # copied if it doesn't exist in the destination or if it is modified.
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt/alias_locale.qrc ${CMAKE_BINARY_DIR} COPYONLY)
 
+    # Create only alias_en.ts new, to figure out if there are new strings to translate.
+    # If src/qt/locale/alias_en.ts is modified afterwards, there are new strings to
+    # translate. Any further steps on transifex.com.
+    # Don't forget to add new source files here too, if they contain strings to translate!
+    qt5_create_translation(QM_FILES
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/aboutdialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/askpassphrasedialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/coincontroldialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/editaddressdialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/rpcconsole.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/transactiondescdialog.ui
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiconstants.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.h
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/init.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/util.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/main.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/net.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/rpcserver.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/wallet.cpp
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/locale/alias_en.ts
+            )
+
     # Call lrelease on each translation file to create qm files.
     qt5_add_translation(QM_FILES
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_af_ZA.ts
@@ -221,7 +309,6 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_de.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el_GR.ts
-            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_en.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_eo.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_CL.ts
