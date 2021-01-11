@@ -1285,228 +1285,228 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
 <context>
     <name>SpectreBridge</name>
     <message>
-        <location filename="../spectrebridge.cpp" line="363"/>
+        <location filename="../spectrebridge.cpp" line="362"/>
         <source>default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="438"/>
+        <location filename="../spectrebridge.cpp" line="437"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="442"/>
+        <location filename="../spectrebridge.cpp" line="441"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="447"/>
+        <location filename="../spectrebridge.cpp" line="446"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="452"/>
+        <location filename="../spectrebridge.cpp" line="451"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="456"/>
-        <location filename="../spectrebridge.cpp" line="467"/>
-        <location filename="../spectrebridge.cpp" line="480"/>
-        <location filename="../spectrebridge.cpp" line="491"/>
+        <location filename="../spectrebridge.cpp" line="455"/>
+        <location filename="../spectrebridge.cpp" line="466"/>
+        <location filename="../spectrebridge.cpp" line="479"/>
+        <location filename="../spectrebridge.cpp" line="490"/>
         <source>Error:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="456"/>
+        <location filename="../spectrebridge.cpp" line="455"/>
         <source>Unknown txn type detected %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="467"/>
+        <location filename="../spectrebridge.cpp" line="466"/>
         <source>Input types must match for all recipients.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="480"/>
+        <location filename="../spectrebridge.cpp" line="479"/>
         <source>Ring sizes must match for all recipients.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="489"/>
+        <location filename="../spectrebridge.cpp" line="488"/>
         <source>Ring size must be %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="490"/>
+        <location filename="../spectrebridge.cpp" line="489"/>
         <source>Ring size outside range [%1, %2].</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="499"/>
-        <location filename="../spectrebridge.cpp" line="509"/>
+        <location filename="../spectrebridge.cpp" line="498"/>
+        <location filename="../spectrebridge.cpp" line="508"/>
         <source>Confirm send coins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="499"/>
+        <location filename="../spectrebridge.cpp" line="498"/>
         <source>Are you sure you want to send?
 Ring size of one is not anonymous.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="499"/>
-        <location filename="../spectrebridge.cpp" line="511"/>
+        <location filename="../spectrebridge.cpp" line="498"/>
+        <location filename="../spectrebridge.cpp" line="510"/>
         <source> and </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="510"/>
+        <location filename="../spectrebridge.cpp" line="509"/>
         <source>Are you sure you want to convert %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="510"/>
+        <location filename="../spectrebridge.cpp" line="509"/>
         <source>Are you sure you want to send %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="528"/>
-        <location filename="../spectrebridge.cpp" line="556"/>
-        <location filename="../spectrebridge.cpp" line="562"/>
-        <location filename="../spectrebridge.cpp" line="568"/>
-        <location filename="../spectrebridge.cpp" line="574"/>
-        <location filename="../spectrebridge.cpp" line="580"/>
-        <location filename="../spectrebridge.cpp" line="586"/>
-        <location filename="../spectrebridge.cpp" line="592"/>
-        <location filename="../spectrebridge.cpp" line="599"/>
-        <location filename="../spectrebridge.cpp" line="605"/>
-        <location filename="../spectrebridge.cpp" line="611"/>
-        <location filename="../spectrebridge.cpp" line="617"/>
-        <location filename="../spectrebridge.cpp" line="623"/>
-        <location filename="../spectrebridge.cpp" line="629"/>
-        <location filename="../spectrebridge.cpp" line="635"/>
-        <location filename="../spectrebridge.cpp" line="641"/>
-        <location filename="../spectrebridge.cpp" line="653"/>
-        <location filename="../spectrebridge.cpp" line="659"/>
-        <location filename="../spectrebridge.cpp" line="665"/>
-        <location filename="../spectrebridge.cpp" line="671"/>
-        <location filename="../spectrebridge.cpp" line="686"/>
+        <location filename="../spectrebridge.cpp" line="527"/>
+        <location filename="../spectrebridge.cpp" line="555"/>
+        <location filename="../spectrebridge.cpp" line="561"/>
+        <location filename="../spectrebridge.cpp" line="567"/>
+        <location filename="../spectrebridge.cpp" line="573"/>
+        <location filename="../spectrebridge.cpp" line="579"/>
+        <location filename="../spectrebridge.cpp" line="585"/>
+        <location filename="../spectrebridge.cpp" line="591"/>
+        <location filename="../spectrebridge.cpp" line="598"/>
+        <location filename="../spectrebridge.cpp" line="604"/>
+        <location filename="../spectrebridge.cpp" line="610"/>
+        <location filename="../spectrebridge.cpp" line="616"/>
+        <location filename="../spectrebridge.cpp" line="622"/>
+        <location filename="../spectrebridge.cpp" line="628"/>
+        <location filename="../spectrebridge.cpp" line="634"/>
+        <location filename="../spectrebridge.cpp" line="640"/>
+        <location filename="../spectrebridge.cpp" line="652"/>
+        <location filename="../spectrebridge.cpp" line="658"/>
+        <location filename="../spectrebridge.cpp" line="664"/>
+        <location filename="../spectrebridge.cpp" line="670"/>
+        <location filename="../spectrebridge.cpp" line="685"/>
         <source>Send Coins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="529"/>
+        <location filename="../spectrebridge.cpp" line="528"/>
         <source>The change address is not valid, please recheck.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="557"/>
+        <location filename="../spectrebridge.cpp" line="556"/>
         <source>The recipient address is not valid, please recheck.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="563"/>
+        <location filename="../spectrebridge.cpp" line="562"/>
         <source>Only ALIAS from your Private balance can be send to a stealth address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="569"/>
+        <location filename="../spectrebridge.cpp" line="568"/>
         <source>Transfer from Public to Private is only allowed within your account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="575"/>
+        <location filename="../spectrebridge.cpp" line="574"/>
         <source>Transfer from Private to Public is only allowed within your account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="581"/>
+        <location filename="../spectrebridge.cpp" line="580"/>
         <source>The amount to pay must be larger than 0.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="587"/>
+        <location filename="../spectrebridge.cpp" line="586"/>
         <source>The amount exceeds your balance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="593"/>
+        <location filename="../spectrebridge.cpp" line="592"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="600"/>
+        <location filename="../spectrebridge.cpp" line="599"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="606"/>
+        <location filename="../spectrebridge.cpp" line="605"/>
         <source>Error: Transaction creation failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="612"/>
+        <location filename="../spectrebridge.cpp" line="611"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="618"/>
+        <location filename="../spectrebridge.cpp" line="617"/>
         <source>Error: Note is too long.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="624"/>
+        <location filename="../spectrebridge.cpp" line="623"/>
         <source>Error: Ring Size Error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="630"/>
+        <location filename="../spectrebridge.cpp" line="629"/>
         <source>Error: Input Type Error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="636"/>
+        <location filename="../spectrebridge.cpp" line="635"/>
         <source>Error: Must be in full mode to send anon.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="642"/>
+        <location filename="../spectrebridge.cpp" line="641"/>
         <source>Error: Invalid Stealth Address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="647"/>
+        <location filename="../spectrebridge.cpp" line="646"/>
         <source>Convert Alias from Private to Public</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="648"/>
+        <location filename="../spectrebridge.cpp" line="647"/>
         <source>Error: Invalid Stealth Address. Private to public conversion requires a stealth address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="654"/>
+        <location filename="../spectrebridge.cpp" line="653"/>
         <source>The amount exceeds your ALIAS balance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="660"/>
+        <location filename="../spectrebridge.cpp" line="659"/>
         <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="666"/>
+        <location filename="../spectrebridge.cpp" line="665"/>
         <source>Error generating transaction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="672"/>
+        <location filename="../spectrebridge.cpp" line="671"/>
         <source>Error generating transaction: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="687"/>
+        <location filename="../spectrebridge.cpp" line="686"/>
         <source>Transaction successfully created.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3466,6 +3466,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="143"/>
+        <location filename="../bitcoinstrings.cpp" line="221"/>
         <source>Cannot obtain a lock on data directory %s.  Alias is probably already running.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3516,203 +3517,279 @@ If the file does not exist, create it with owner-readable-only file permissions.
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="160"/>
-        <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
+        <source>Failed to listen on any port.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="161"/>
-        <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
+        <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="162"/>
-        <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
+        <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="163"/>
+        <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="164"/>
         <source>Unable to sign checkpoint, wrong checkpointkey?
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="164"/>
+        <location filename="../bitcoinstrings.cpp" line="165"/>
         <source>Loading block index...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="165"/>
-        <source>Error loading blkindex.dat</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../bitcoinstrings.cpp" line="166"/>
-        <source>Loading wallet...</source>
+        <source>Error loading blk0001.dat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="167"/>
-        <source>Error loading wallet.dat: Wallet corrupted</source>
+        <source>Loading wallet...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="168"/>
+        <source>Error loading wallet.dat: Wallet corrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="169"/>
+        <location filename="../bitcoinstrings.cpp" line="227"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="171"/>
+        <location filename="../bitcoinstrings.cpp" line="172"/>
         <source>Error loading wallet.dat: Wallet requires newer version of Alias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="172"/>
+        <location filename="../bitcoinstrings.cpp" line="173"/>
         <source>Wallet needed to be rewritten: restart Alias to complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="173"/>
+        <location filename="../bitcoinstrings.cpp" line="174"/>
         <source>Error loading wallet.dat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="174"/>
+        <location filename="../bitcoinstrings.cpp" line="175"/>
         <source>Cannot downgrade wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="175"/>
+        <location filename="../bitcoinstrings.cpp" line="176"/>
         <source>Cannot initialize keypool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="176"/>
+        <location filename="../bitcoinstrings.cpp" line="177"/>
         <source>Cannot write default address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="177"/>
+        <location filename="../bitcoinstrings.cpp" line="178"/>
         <source>Rescanning...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="178"/>
+        <location filename="../bitcoinstrings.cpp" line="179"/>
         <source>Importing blockchain data file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="179"/>
+        <location filename="../bitcoinstrings.cpp" line="180"/>
         <source>Importing bootstrap blockchain data file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="180"/>
+        <location filename="../bitcoinstrings.cpp" line="181"/>
         <source>Loading addresses...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="181"/>
+        <location filename="../bitcoinstrings.cpp" line="182"/>
         <source>Error: could not start node</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="182"/>
+        <location filename="../bitcoinstrings.cpp" line="183"/>
         <source>Done loading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="183"/>
+        <location filename="../bitcoinstrings.cpp" line="184"/>
         <source>Unable to bind to %s on this computer. Alias is probably already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="185"/>
+        <location filename="../bitcoinstrings.cpp" line="186"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="186"/>
+        <location filename="../bitcoinstrings.cpp" line="187"/>
         <source>Error: Wallet locked, unable to create transaction  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="187"/>
+        <location filename="../bitcoinstrings.cpp" line="188"/>
         <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="188"/>
+        <location filename="../bitcoinstrings.cpp" line="189"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="191"/>
+        <location filename="../bitcoinstrings.cpp" line="192"/>
         <source>Error: Transaction creation failed  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="192"/>
+        <location filename="../bitcoinstrings.cpp" line="193"/>
         <source>Sending...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="193"/>
+        <location filename="../bitcoinstrings.cpp" line="194"/>
         <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="197"/>
+        <location filename="../bitcoinstrings.cpp" line="198"/>
         <source>Invalid amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="198"/>
+        <location filename="../bitcoinstrings.cpp" line="199"/>
         <source>Insufficient funds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="199"/>
+        <location filename="../bitcoinstrings.cpp" line="200"/>
         <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="202"/>
+        <location filename="../bitcoinstrings.cpp" line="203"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="203"/>
+        <location filename="../bitcoinstrings.cpp" line="204"/>
         <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="204"/>
+        <location filename="../bitcoinstrings.cpp" line="205"/>
         <source>Warning: Disk space is low!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="205"/>
+        <location filename="../bitcoinstrings.cpp" line="206"/>
         <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="208"/>
+        <location filename="../bitcoinstrings.cpp" line="209"/>
         <source>Read ATXOs... (%d)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="209"/>
+        <location filename="../bitcoinstrings.cpp" line="210"/>
         <source>Read spent ATXOs... (%d)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="210"/>
+        <location filename="../bitcoinstrings.cpp" line="211"/>
         <source>Note must be 24 characters or less.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="211"/>
+        <location filename="../bitcoinstrings.cpp" line="212"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="215"/>
+        <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="216"/>
+        <source>Initialization sanity check failed. Alias is shutting down.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="217"/>
+        <source>Loading block index... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="218"/>
+        <source>Calculating chain trust... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="219"/>
+        <source>Validating last %d block...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="220"/>
+        <source>-bip44key is not allowed if wallet.dat already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="222"/>
+        <source>Cannot resolve binding address: &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="223"/>
+        <source>Error: could not start tor node</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="224"/>
+        <source>Timed out waiting for onion hostname.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="225"/>
+        <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="226"/>
+        <source>Loading wallet items... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="229"/>
+        <source>Reindexing from blk000?.dat files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="230"/>
+        <source>Reindexing block... (%d)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="231"/>
+        <source>Core started!</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
