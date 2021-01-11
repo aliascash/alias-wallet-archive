@@ -11,7 +11,8 @@
 #else
 #define UNUSED
 #endif
-static const char UNUSED *bitcoin_strings[] = {QT_TRANSLATE_NOOP("bitcoin-core", "To use the %s option"),
+static const char UNUSED *bitcoin_strings[] = {
+QT_TRANSLATE_NOOP("bitcoin-core", "To use the %s option"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "%s, you must set a rpcpassword in the configuration file:\n"
 " %s\n"
@@ -38,7 +39,7 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "permissions."),
 QT_TRANSLATE_NOOP("bitcoin-core", "Alias version"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Usage:"),
-QT_TRANSLATE_NOOP("bitcoin-core", "Send command to -server or spectrecoind"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Send command to -server or aliaswalletd"),
 QT_TRANSLATE_NOOP("bitcoin-core", "List commands"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Get help for a command"),
 QT_TRANSLATE_NOOP("bitcoin-core", "Alias"),
@@ -204,4 +205,10 @@ QT_TRANSLATE_NOOP("bitcoin-core", "Warning: Disk space is low!"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "WARNING: Invalid checkpoint found! Displayed transactions may not be "
 "correct! You may need to upgrade, or notify developers."),
+QT_TRANSLATE_NOOP("bitcoin-core", "Read ATXOs... (%d)"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Read spent ATXOs... (%d)"),
+QT_TRANSLATE_NOOP("bitcoin-core", "Note must be 24 characters or less."),
+QT_TRANSLATE_NOOP("bitcoin-core", "Error: The transaction was rejected. "
+"This might happen if some of the coins in your wallet were already spent, such as "
+"if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here."),
 };
