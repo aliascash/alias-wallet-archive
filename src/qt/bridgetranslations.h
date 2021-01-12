@@ -78,8 +78,7 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "To account"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Pay to"),
     QT_TRANSLATE_NOOP("SpectreBridge", "(no label)"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Catching up...\
-                                    downloaded 0 blocks of history..."),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Master"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Tor connection offline"),
     QT_TRANSLATE_NOOP("SpectreBridge", "i2p connection offline"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Wallet is encrypted and currently locked"),
@@ -140,7 +139,6 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "Default"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Path"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Active"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Master"),
 
     0 // Leave this here...
 };
