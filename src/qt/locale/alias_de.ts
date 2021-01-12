@@ -2171,6 +2171,71 @@ Ring size of one is not anonymous.</source>
         <source>Active</source>
         <translation>Aktiv</translation>
     </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="142"/>
+        <source>Amount</source>
+        <translation>Betrag</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="143"/>
+        <source>Note</source>
+        <translation>Bemerkung</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="144"/>
+        <source>Public coins, visible on blockchain</source>
+        <translation>Öffentliche Coins, auf der Blockchain sichtbar</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="145"/>
+        <source>Private coins, untraceable and unlinkable on blockchain</source>
+        <translation>Private Coins, auf der Blockchain nicht nachverfolgbar und nicht verlinkbar</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="146"/>
+        <source>Available coins for spending</source>
+        <translation>Für Ausgaben verfügbare Coins</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="147"/>
+        <source>Reserved coins are not used for staking</source>
+        <translation>Zurückgehaltene Coins werden nicht zum staken verwendet</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="148"/>
+        <source>Staked coins must mature before they can be accessed</source>
+        <translation>Via Staking erhaltene Coins müssen reifen, bevor sie verwended werden können</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="149"/>
+        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
+        <translation>Öffentliche Transaktionen benötigen einen Block zur Bestätigung&lt;br&gt;Private Transaktionen benötigen zehn Blöcke zur Bestätigung</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="150"/>
+        <source>Type</source>
+        <translation>Typ</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="151"/>
+        <source>Date</source>
+        <translation>Datum</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="152"/>
+        <source>Send Payment</source>
+        <translation>Sende Zahlung</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="153"/>
+        <source>The address to send the payment to</source>
+        <translation>Adresse, an welche die Zahlung übermittelt werden soll</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="154"/>
+        <source>Enter a label for this address</source>
+        <translation>Bezeichnung für diese Adresse</translation>
+    </message>
 </context>
 <context>
     <name>SpectreGUI</name>
@@ -2472,7 +2537,7 @@ Ring size of one is not anonymous.</source>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
         <source>Imported %n block(s) of transaction history.</source>
-        <translation><numerusform>%n Block Transaktionshistorie importiert.</numerusform><numerusform>%n Blöcke Transaktionshistorie importiert.</numerusform></translation>
+        <translation><numerusform>%nBlock Transaktionshistorie importiert.</numerusform><numerusform>%n Blöcke Transaktionshistorie importiert.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
@@ -2517,7 +2582,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectregui.cpp" line="788"/>
         <source>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</source>
-        <translation type="unfinished"/>
+        <translation>Um die Transaktion durchzuführen, wird eine Gebühr von %1 zum Unterhalt des Netzwerkes verlangt. Möchten Sie die Transaktion ausführen?</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="792"/>
@@ -2630,32 +2695,32 @@ Bemerkung: %2
     <message>
         <location filename="../spectregui.cpp" line="1126"/>
         <source>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</source>
-        <translation type="unfinished"/>
+        <translation>Staking.&lt;br/&gt;Ihre Gewichtung ist %1&lt;br/&gt;Gewichtung des Netzwerkes ist %2%3&lt;br/&gt;Durchschnittliche Zeit zwischen zwei Vergütungen ist %4</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1132"/>
         <source>Not staking because wallet is in thin mode</source>
-        <translation type="unfinished"/>
+        <translation>Es wird nicht gestaked, Wallet wird im Thin-Mode betrieben</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1133"/>
         <source>Not staking, staking is disabled</source>
-        <translation type="unfinished"/>
+        <translation>Staking ist abgeschaltet</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1134"/>
         <source>Not staking because wallet is locked</source>
-        <translation type="unfinished"/>
+        <translation>Es wird nicht gestaked, Wallet ist gesperrt</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1135"/>
         <source>Not staking because wallet is offline</source>
-        <translation type="unfinished"/>
+        <translation>Es wird nicht gestaked, Wallet ist nicht mit dem Netzwerk verbunden</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1136"/>
         <source>Not staking because wallet is syncing</source>
-        <translation type="unfinished"/>
+        <translation>Es wird nicht gestaked, Wallet synchronisiert gerade</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1137"/>

@@ -2150,6 +2150,71 @@ Ring size of one is not anonymous.</source>
         <source>Active</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="142"/>
+        <source>Amount</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="143"/>
+        <source>Note</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="144"/>
+        <source>Public coins, visible on blockchain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="145"/>
+        <source>Private coins, untraceable and unlinkable on blockchain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="146"/>
+        <source>Available coins for spending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="147"/>
+        <source>Reserved coins are not used for staking</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="148"/>
+        <source>Staked coins must mature before they can be accessed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="149"/>
+        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="150"/>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="151"/>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="152"/>
+        <source>Send Payment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="153"/>
+        <source>The address to send the payment to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="154"/>
+        <source>Enter a label for this address</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpectreGUI</name>

@@ -139,6 +139,19 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "Default"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Path"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Active"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Amount"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Note"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Public coins, visible on blockchain"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Private coins, untraceable and unlinkable on blockchain"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Available coins for spending"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Reserved coins are not used for staking"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Staked coins must mature before they can be accessed"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Public ALIAS requires 1 block confirmation<br>Private ALIAS requires 10 blocks confirmations"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Type"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Date"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Send Payment"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "The address to send the payment to"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Enter a label for this address"),
 
     0 // Leave this here...
 };
