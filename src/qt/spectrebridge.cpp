@@ -917,18 +917,11 @@ QString SpectreBridge::getPubKey(QString address)
     return addressModel->atm->pubkeyForAddress(address);;
 }
 
-QString SpectreBridge::translateHtmlString(QString string)
+void SpectreBridge::translateHtmlString(QString string)
 {
-    int i = 0;
-    while (html_strings[i] != 0)
-    {
-        if (html_strings[i] == string)
-            return tr(html_strings[i]);
-
-        i++;
-    }
-
-    return string;
+    std::string result = QCoreApplication::translate("SpectreBridge", qPrintable(string)).toStdString();
+    LogPrintf("translateHtmlStringAsync: '%s' -> '%s'\n", string.toStdString(), result);
+    emit translateElement(string, QString::fromStdString(result));
 }
 
 void SpectreBridge::getOptions()
