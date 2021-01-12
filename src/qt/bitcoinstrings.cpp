@@ -15,7 +15,7 @@ static const char UNUSED *alias_strings[] = {
 QT_TRANSLATE_NOOP("alias-core", "To use the %s option"),
 QT_TRANSLATE_NOOP("alias-core", ""
 "%s, you must set a rpcpassword in the configuration file:\n"
-" %s\n"
+"%s\n"
 "It is recommended you use the following random password:\n"
 "rpcuser=aliasrpc\n"
 "rpcpassword=%s\n"
@@ -229,4 +229,34 @@ QT_TRANSLATE_NOOP("alias-core", "Warning: error reading wallet.dat! All keys rea
 QT_TRANSLATE_NOOP("alias-core", "Reindexing from blk000?.dat files."),
 QT_TRANSLATE_NOOP("alias-core", "Reindexing block... (%d)"),
 QT_TRANSLATE_NOOP("alias-core", "Core started!"),
+QT_TRANSLATE_NOOP("alias-core", "Use tor hidden services version 2 instead of version 3"),
+QT_TRANSLATE_NOOP("alias-core", "Find peers using .onion seeds (default: 1 unless -connect)"),
+QT_TRANSLATE_NOOP("alias-core", "Minimum time in seconds between successful stakes (default: 30)"),
+QT_TRANSLATE_NOOP("alias-core", "Percentage of staking rewards to donate to the developers (between 0 and 100 inclusive, default 5)"),
+QT_TRANSLATE_NOOP("alias-core", "Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)"),
+QT_TRANSLATE_NOOP("alias-core", "Number of seconds to keep soft banned peers from reconnecting (default: 3600)"),
+QT_TRANSLATE_NOOP("alias-core", "Simple command line interface - if not run as daemon"),
+QT_TRANSLATE_NOOP("alias-core", "Output extra blockchain debugging information"),
+QT_TRANSLATE_NOOP("alias-core", "Output extra Proof of Stake debugging information"),
+QT_TRANSLATE_NOOP("alias-core", "Send trace/debug info to debug.log file"),
+QT_TRANSLATE_NOOP("alias-core", "Wait for RPC server to start"),
+QT_TRANSLATE_NOOP("alias-core", "Keep at most <n> MiB of unconnectable blocks in memory (default: %u)"),
+QT_TRANSLATE_NOOP("alias-core", "Rebuild block chain index from current blk000?.dat files on startup"),
+QT_TRANSLATE_NOOP("alias-core", "Show version and exit"),
+QT_TRANSLATE_NOOP("alias-core", "Thin options:"),
+QT_TRANSLATE_NOOP("alias-core", "Operate in less secure, less resource hungry 'thin' mode"),
+QT_TRANSLATE_NOOP("alias-core", "Keep the entire block index in memory. (default: 0)"),
+QT_TRANSLATE_NOOP("alias-core", "When not thinfullindex, the max number of block headers to keep in memory. (default: 4096)"),
+QT_TRANSLATE_NOOP("alias-core", "Disable supporting thin nodes. (default: 0)"),
+QT_TRANSLATE_NOOP("alias-core", "Disable forwarding, or requesting all stealth txns. (default: 0)"),
+QT_TRANSLATE_NOOP("alias-core", "Don't connect to more than <n> thin peers (default: 8)"),
+QT_TRANSLATE_NOOP("alias-core", "Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)"),
+QT_TRANSLATE_NOOP("alias-core", "conn"),
+QT_TRANSLATE_NOOP("alias-core", "Error: Wallet locked, unable to create transaction."),
+QT_TRANSLATE_NOOP("alias-core", "Error: Must be in full mode."),
+QT_TRANSLATE_NOOP("alias-core", "Error: Block chain must be fully synced first."),
+QT_TRANSLATE_NOOP("alias-core", "Error: Alias is not connected!"),
+QT_TRANSLATE_NOOP("alias-core", "Update balance..."),
+QT_TRANSLATE_NOOP("alias-core", "...Start UI..."),
+QT_TRANSLATE_NOOP("alias-core", "Shutdown..."),
 };
