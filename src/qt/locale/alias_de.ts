@@ -138,7 +138,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="64"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>Dieser Vorgang benötigt ihre Passphrase, um die Wallet zu entsperren.</translation>
+        <translation>Dieser Vorgang benötigt ihre Passphrase, um das Wallet zu entsperren.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="65"/>
@@ -148,7 +148,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="68"/>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>Dieser Vorgang benötigt ihre Passphrase, um die Wallet zu entschlüsseln.</translation>
+        <translation>Dieser Vorgang benötigt ihre Passphrase, um das Wallet zu entschlüsseln.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="73"/>
@@ -1346,34 +1346,34 @@ Dies bedeutet eine Gebühr von min %2 ist benötigt</translation>
     <message>
         <location filename="../spectrebridge.cpp" line="466"/>
         <source>Input types must match for all recipients.</source>
-        <translation type="unfinished"/>
+        <translation>Eingangstyp muss für alle Empfänger übereinstimmen.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="479"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation type="unfinished"/>
+        <translation>Ringgrösse muss für alle Empfänger übereinstimmen.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="488"/>
         <source>Ring size must be %1.</source>
-        <translation type="unfinished"/>
+        <translation>Ringgrösse muss %1 sein.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="489"/>
         <source>Ring size outside range [%1, %2].</source>
-        <translation type="unfinished"/>
+        <translation>Ringgrösse ausserhalb des Bereiches [%1, %2].</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="498"/>
         <location filename="../spectrebridge.cpp" line="508"/>
         <source>Confirm send coins</source>
-        <translation type="unfinished"/>
+        <translation>Bitte das Senden der Coins bestätigen</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="498"/>
         <source>Are you sure you want to send?
 Ring size of one is not anonymous.</source>
-        <translation type="unfinished"/>
+        <translation>Sind Sie sicher, dass Sie abschicken möchten? Eine Ring-Grösse von 1 ist nicht anonym!</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="498"/>
@@ -1419,17 +1419,17 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectrebridge.cpp" line="528"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation type="unfinished"/>
+        <translation>Die Wechselgeldadresse ist nicht gültig, bitte prüfen.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="556"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation type="unfinished"/>
+        <translation>Die Empfängeradresse ist nicht gültig, bitte prüfen.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="562"/>
         <source>Only ALIAS from your Private balance can be send to a stealth address.</source>
-        <translation type="unfinished"/>
+        <translation>Nur private ALIAS können an eine private Adresse geschickt werden.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="568"/>
@@ -1459,7 +1459,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectrebridge.cpp" line="599"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished"/>
+        <translation>Doppelte Empfängeradresse gefunden. Die Empfänger je Transaktion müssen eindeutig sein.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="605"/>
@@ -1469,7 +1469,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectrebridge.cpp" line="611"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Transaktion wurde abgelehnt. Das kann passieren, wenn einige der zu verwendenden Coins bereits ausgegeben wurden. Das wiederum kann passieren, wenn eine Kopie der wallet.dat verwendet wird, in welcher diese Coins nicht als ausgegeben markiert wurden.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="617"/>
@@ -1479,22 +1479,22 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectrebridge.cpp" line="623"/>
         <source>Error: Ring Size Error.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Ringgrösse falsch.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="629"/>
         <source>Error: Input Type Error.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Input-Typ falsch.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="635"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Zum senden privater Coins den Full-Mode aktivieren.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="641"/>
         <source>Error: Invalid Stealth Address.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Ungültige private Adresse</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="646"/>
@@ -1504,7 +1504,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectrebridge.cpp" line="647"/>
         <source>Error: Invalid Stealth Address. Private to public conversion requires a stealth address.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Ungültige private Adresse. Konvertierung von privat zu öffentlich braucht eine Stealth-Adresse.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="653"/>
@@ -1539,7 +1539,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="15"/>
         <source>Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Wallet</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="16"/>
@@ -1574,7 +1574,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="22"/>
         <source>Wallet Management</source>
-        <translation type="unfinished"/>
+        <translation>Wallet-Wartung</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="23"/>
@@ -1624,27 +1624,27 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="32"/>
         <source>Chain Data</source>
-        <translation type="unfinished"/>
+        <translation>Chain-Daten</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="33"/>
         <source>Block Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Block Explorer</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="34"/>
         <source>Sign Message</source>
-        <translation type="unfinished"/>
+        <translation>Nachricht signieren</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="35"/>
         <source>Verify Message</source>
-        <translation type="unfinished"/>
+        <translation>Nachricht verifizieren</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="36"/>
         <source>Debug</source>
-        <translation type="unfinished"/>
+        <translation>Fehlersuche</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="37"/>
@@ -1684,47 +1684,47 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="44"/>
         <source>Add new receive address</source>
-        <translation type="unfinished"/>
+        <translation>Neue Empfänger-Adresse hinzufügen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="45"/>
         <source>Add Address</source>
-        <translation type="unfinished"/>
+        <translation>Adresse hinzufügen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="46"/>
         <source>Add a new contact</source>
-        <translation type="unfinished"/>
+        <translation>Neuen Kontakt hinzufügen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="47"/>
         <source>Address Lookup</source>
-        <translation type="unfinished"/>
+        <translation>Adresse nachschlagen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="48"/>
         <source>Address Type</source>
-        <translation type="unfinished"/>
+        <translation>Adresstyp</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="49"/>
         <source>Normal</source>
-        <translation type="unfinished"/>
+        <translation>öffentlich</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="50"/>
         <source>Stealth</source>
-        <translation type="unfinished"/>
+        <translation>privat</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="51"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Gruppe</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="52"/>
         <source>BIP32</source>
-        <translation type="unfinished"/>
+        <translation>BIP32</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="53"/>
@@ -1779,12 +1779,12 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="63"/>
         <source>Select Inputs</source>
-        <translation type="unfinished"/>
+        <translation>Inputs auswählen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="64"/>
         <source>Automatically selected</source>
-        <translation type="unfinished"/>
+        <translation>Automatisch ausgewählt</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="65"/>
@@ -1849,7 +1849,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="77"/>
         <source>Ring Size:</source>
-        <translation type="unfinished"/>
+        <translation>Ringgrösse:</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="78"/>
@@ -1867,312 +1867,307 @@ Ring size of one is not anonymous.</source>
         <translation>(keine Bezeichnung)</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="81"/>
-        <source>Catching up...                                    downloaded 0 blocks of history...</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="83"/>
+        <location filename="../bridgetranslations.h" line="82"/>
         <source>Tor connection offline</source>
         <translation>Tor-Verbindung getrennt</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="84"/>
+        <location filename="../bridgetranslations.h" line="83"/>
         <source>i2p connection offline</source>
         <translation>i2p-Verbindung getrennt</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="85"/>
+        <location filename="../bridgetranslations.h" line="84"/>
         <source>Wallet is encrypted and currently locked</source>
         <translation>Wallet ist verschlüsselt und momentan gesperrt</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="86"/>
+        <location filename="../bridgetranslations.h" line="85"/>
         <source>Not staking because wallet is locked</source>
         <translation>Wallet gesperrt, es wird nicht gestaked</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="87"/>
+        <location filename="../bridgetranslations.h" line="86"/>
         <source>0 active connection(s) to Alias network</source>
         <translation>0 aktive Verbindungen zum Alias-Netzwerk</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="88"/>
+        <location filename="../bridgetranslations.h" line="87"/>
         <source>Wallet is syncing</source>
         <translation>Wallet wird synchronisiert</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="89"/>
+        <location filename="../bridgetranslations.h" line="88"/>
         <source>Enter a label for this address to add it to your address book</source>
-        <translation type="unfinished"/>
+        <translation>Bezeichnung für diese Adresse</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="89"/>
+        <source>Enter a address to add it to your address book</source>
+        <translation>Bitte zum Adressbuch hinzuzufügende Adresse eingeben</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="90"/>
-        <source>Enter a address to add it to your address book</source>
-        <translation type="unfinished"/>
+        <source>Inputs</source>
+        <translation>Eingänge</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="91"/>
-        <source>Inputs</source>
-        <translation type="unfinished"/>
+        <source>Values</source>
+        <translation>Werte</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="92"/>
-        <source>Values</source>
-        <translation type="unfinished"/>
+        <source>Outputs</source>
+        <translation>Ausgänge</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="93"/>
-        <source>Outputs</source>
-        <translation type="unfinished"/>
+        <source>Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
+        <translation>Adresse eingeben, mit welcher die Nachricht signiert werden soll (bspw. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="94"/>
-        <source>Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
-        <translation type="unfinished"/>
+        <source>Enter the message you want to sign</source>
+        <translation>Nachricht eingeben, welche signiert werden soll.</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="95"/>
-        <source>Enter the message you want to sign</source>
-        <translation type="unfinished"/>
+        <source>Click sign message to generate signature</source>
+        <translation>Klick auf &quot;Nachricht signieren&quot;, um eine Signatur zu erzeugen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="96"/>
-        <source>Click sign message to generate signature</source>
-        <translation type="unfinished"/>
+        <source>Copy the signed message signature</source>
+        <translation>Signatur der unterzeichneten Nachricht kopieren</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="97"/>
-        <source>Copy the signed message signature</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="98"/>
         <source>Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="99"/>
+        <location filename="../bridgetranslations.h" line="98"/>
         <source>Enter the message you want to verify</source>
-        <translation type="unfinished"/>
+        <translation>Bitte zu überprüfende Nachricht eingeben</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="99"/>
+        <source>Enter a Alias signature</source>
+        <translation>Bitte Alias-Signatur eingeben</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="100"/>
-        <source>Enter a Alias signature</source>
-        <translation type="unfinished"/>
+        <source>Paste signature from clipboard</source>
+        <translation>Signatur aus der Zwischenablage einfügen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="101"/>
-        <source>Paste signature from clipboard</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="102"/>
         <source>Your total balance</source>
         <translation>Ihr Gesamtguthaben</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="103"/>
+        <location filename="../bridgetranslations.h" line="102"/>
         <source>Balances overview</source>
         <translation>Übersicht Guthaben</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="104"/>
+        <location filename="../bridgetranslations.h" line="103"/>
         <source>Recent in/out transactions or stakes</source>
         <translation>Letzte ein- bzw. ausgehende Transaktionen oder Stakes</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="105"/>
+        <location filename="../bridgetranslations.h" line="104"/>
         <source>Select inputs to spend</source>
         <translation>Zu verwendende Inputs auswählen</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="106"/>
+        <location filename="../bridgetranslations.h" line="105"/>
         <source>Optional address to receive transaction change</source>
-        <translation type="unfinished"/>
+        <translation>Optionale Wechselgeld-Adresse</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="107"/>
+        <location filename="../bridgetranslations.h" line="106"/>
         <source>Choose from address book</source>
         <translation>Vom Adressbuch wählen</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="108"/>
+        <location filename="../bridgetranslations.h" line="107"/>
         <source>Paste address from clipboard</source>
         <translation>Adresse aus der Zwischenablage einfügen</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="109"/>
+        <location filename="../bridgetranslations.h" line="108"/>
         <source>Remove this recipient</source>
         <translation>Diesen Empfänger entfernen</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="110"/>
+        <location filename="../bridgetranslations.h" line="109"/>
         <source>Send from public or private</source>
-        <translation type="unfinished"/>
+        <translation>Vom öffentlichen oder privaten Guthaben senden</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="110"/>
+        <source>Current spendable send payment balance</source>
+        <translation>Aktuell verfügbares Guthaben</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="111"/>
-        <source>Current spendable send payment balance</source>
-        <translation type="unfinished"/>
+        <source>Send to public or private</source>
+        <translation>Zahlen an öffentliche oder private Adresse</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="112"/>
-        <source>Send to public or private</source>
-        <translation type="unfinished"/>
+        <source>Current spendable balance to account</source>
+        <translation>Verfügbares Guthaben</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="113"/>
-        <source>Current spendable balance to account</source>
-        <translation type="unfinished"/>
+        <source>The address transfer the balance to</source>
+        <translation>Adresse, an welche das Guthaben überwiesen werden soll</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="114"/>
-        <source>The address transfer the balance to</source>
-        <translation type="unfinished"/>
+        <source>The address to transfer the balance to</source>
+        <translation>Adresse, an welche das Guthaben überwiesen werden soll</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="115"/>
-        <source>The address to transfer the balance to</source>
-        <translation type="unfinished"/>
+        <source>The label for this address</source>
+        <translation>Bezeichnung für diese Adresse</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="116"/>
-        <source>The label for this address</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="117"/>
         <source>Amount to transfer</source>
         <translation>Zu überweisender Betrag</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="118"/>
+        <location filename="../bridgetranslations.h" line="117"/>
         <source>Send to multiple recipients at once</source>
-        <translation type="unfinished"/>
+        <translation>An mehrere Empfänger auf einmal überweisen</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="118"/>
+        <source>Date and time that the transaction was received.</source>
+        <translation>Datum und Uhrzeit, als die Transaktion empfangen wurde.</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="119"/>
-        <source>Date and time that the transaction was received.</source>
-        <translation type="unfinished"/>
+        <source>Transaction status. Hover over this field to show number of confirmations.</source>
+        <translation>Transaktionsstatus</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="120"/>
-        <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="121"/>
         <source>Type of transaction.</source>
         <translation>Typ der Transaktion</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="122"/>
+        <location filename="../bridgetranslations.h" line="121"/>
         <source>Destination address of transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Zieladresse der Transaktion.</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="122"/>
+        <source>Short payment note.</source>
+        <translation>Bemerkung zur Zahlung</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="123"/>
-        <source>Short payment note.</source>
-        <translation type="unfinished"/>
+        <source>Amount removed from or added to balance.</source>
+        <translation>Betrag vom Guthaben entfernt bzw. hinzugefügt.</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="124"/>
-        <source>Amount removed from or added to balance.</source>
-        <translation type="unfinished"/>
+        <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
+        <translation>Adresse, an welche die Zahlung erfolgen soll (bspw. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="125"/>
-        <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation type="unfinished"/>
+        <source>Choose address from address book</source>
+        <translation>Adresse aus dem Adressbuch wählen</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="126"/>
-        <source>Choose address from address book</source>
-        <translation type="unfinished"/>
+        <source>Enter a public key for the address above</source>
+        <translation>Öffentlichen Schlüssel für obige Adresse eingeben</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="127"/>
-        <source>Enter a public key for the address above</source>
-        <translation type="unfinished"/>
+        <source>Enter a label for this group</source>
+        <translation>Bezeichnung der Gruppe</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="128"/>
-        <source>Enter a label for this group</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="129"/>
         <source>Name for this Wallet</source>
         <translation>Name für dieses Wallet</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="130"/>
+        <location filename="../bridgetranslations.h" line="129"/>
         <source>Enter a password</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Passwort eingeben</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="130"/>
+        <source>Would you like to create a bip44 path?</source>
+        <translation>Möchten Sie einen BIP44-Pfad anlegen?</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="131"/>
-        <source>Would you like to create a bip44 path?</source>
-        <translation type="unfinished"/>
+        <source>Your recovery phrase (Keep this safe!)</source>
+        <translation>Ihre Wiederherstellungsphrase. Sicher verwahren!</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="132"/>
-        <source>Your recovery phrase (Keep this safe!)</source>
-        <translation type="unfinished"/>
+        <source>Recovery Phrase</source>
+        <translation>Wiederherstellungsphrase</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="133"/>
-        <source>Recovery Phrase</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="134"/>
         <source>Wallet Name for recovered account</source>
         <translation>Name für wiederhergestelltes Konto</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="135"/>
+        <location filename="../bridgetranslations.h" line="134"/>
         <source>Enter the password for the wallet you are trying to recover</source>
         <translation>Bitte geben Sie das Passwort für das Wallet ein, welches Sie wiederherstellen wollen</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="136"/>
+        <location filename="../bridgetranslations.h" line="135"/>
         <source>Is this a bip44 path?</source>
-        <translation type="unfinished"/>
+        <translation>Ist das ein BIP44-Pfad?</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="137"/>
+        <location filename="../bridgetranslations.h" line="136"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="138"/>
+        <location filename="../bridgetranslations.h" line="137"/>
         <source>Created</source>
         <translation>Erzeugt</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="139"/>
+        <location filename="../bridgetranslations.h" line="138"/>
         <source>Active Account</source>
         <translation>Aktiver Account</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="140"/>
+        <location filename="../bridgetranslations.h" line="139"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="141"/>
+        <location filename="../bridgetranslations.h" line="140"/>
         <source>Path</source>
         <translation>Pfad</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="142"/>
+        <location filename="../bridgetranslations.h" line="141"/>
         <source>Active</source>
         <translation>Aktiv</translation>
     </message>
     <message>
-        <location filename="../bridgetranslations.h" line="143"/>
+        <location filename="../bridgetranslations.h" line="81"/>
         <source>Master</source>
         <translation>Master</translation>
     </message>
@@ -2182,82 +2177,82 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../transactionrecord.cpp" line="28"/>
         <source>Public received with</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich empfangen mit</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="30"/>
         <source>Public received from</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich empfangen von</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="33"/>
         <source>Public sent to</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich gesendet an</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="35"/>
         <source>Public sent to self</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich an sich selbst gesendet</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="37"/>
         <source>Private sent to self</source>
-        <translation type="unfinished"/>
+        <translation>Privat an sich selbst gesendet</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="39"/>
         <source>Public staked</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich gestaked</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="41"/>
         <source>Public donated</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich gespendet</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="43"/>
         <source>Public contributed</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich beigetragen</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="45"/>
         <source>Private staked</source>
-        <translation type="unfinished"/>
+        <translation>Privat gestaked</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="47"/>
         <source>Private donated</source>
-        <translation type="unfinished"/>
+        <translation>Privat gespendet</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="49"/>
         <source>Private contributed</source>
-        <translation type="unfinished"/>
+        <translation>Privat beigetragen</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="51"/>
         <source>Private received with</source>
-        <translation type="unfinished"/>
+        <translation>Privat empfangen mit</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="53"/>
         <source>Private sent to</source>
-        <translation type="unfinished"/>
+        <translation>Privat gesendet an</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="55"/>
         <source>Private to Public</source>
-        <translation type="unfinished"/>
+        <translation>Privat an öffentlich</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="57"/>
         <source>Public to Private</source>
-        <translation type="unfinished"/>
+        <translation>Öffentlich an privat</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="59"/>
         <source>Other</source>
-        <translation type="unfinished"/>
+        <translation>Andere</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="152"/>
@@ -2265,12 +2260,22 @@ Ring size of one is not anonymous.</source>
         <location filename="../spectregui.cpp" line="420"/>
         <location filename="../spectregui.cpp" line="480"/>
         <source>Alias</source>
-        <translation type="unfinished"/>
+        <translation>Alias</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="152"/>
         <source>Client</source>
-        <translation type="unfinished"/>
+        <translation>Klient</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="246"/>
+        <source>..Start UI..</source>
+        <translation>.. Starte UI ..</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="263"/>
+        <source>.Start UI.</source>
+        <translation>. Starte UI .</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="313"/>
@@ -2406,7 +2411,7 @@ Ring size of one is not anonymous.</source>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="562"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation><numerusform>%n aktive Verbindungen zum Alias-Netzwerk</numerusform><numerusform>%n aktive Verbindung zum Alias-Netzwerk</numerusform></translation>
+        <translation><numerusform>%n aktive Verbindung zum Alias-Netzwerk</numerusform><numerusform>%n aktive Verbindungen zum Alias-Netzwerk</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="582"/>
@@ -2452,7 +2457,7 @@ Ring size of one is not anonymous.</source>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="617"/>
         <source>~%n block(s) remaining</source>
-        <translation><numerusform>~%n Blöcke verbleibend</numerusform><numerusform>~%n Blöcke verbleibend</numerusform></translation>
+        <translation><numerusform>%n Block verbleibend</numerusform><numerusform>%n Blöcke verbleibent</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="630"/>
@@ -2479,22 +2484,22 @@ Ring size of one is not anonymous.</source>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="652"/>
         <source>%n second(s) ago</source>
-        <translation><numerusform>Vor %n Sekunden</numerusform><numerusform>Vor %n Sekunde</numerusform></translation>
+        <translation><numerusform>vor %n Sekunde</numerusform><numerusform>vor %n Sekunden</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="656"/>
         <source>%n minute(s) ago</source>
-        <translation><numerusform>Vor %n Minuten</numerusform><numerusform>Vor %n Minute</numerusform></translation>
+        <translation><numerusform>vor %n Minute</numerusform><numerusform>vor %n Minuten</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="660"/>
         <source>%n hour(s) ago</source>
-        <translation><numerusform>Vor %n Stunden</numerusform><numerusform>Vor %n Stunde</numerusform></translation>
+        <translation><numerusform>vor %n Stunde</numerusform><numerusform>vor %n Stunden</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="663"/>
         <source>%n day(s) ago</source>
-        <translation><numerusform>Vor %n Tagen</numerusform><numerusform>Vor %n Tag</numerusform></translation>
+        <translation><numerusform>vor %n Tag</numerusform><numerusform>vor %n Tagen</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="670"/>
@@ -2509,7 +2514,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectregui.cpp" line="732"/>
         <source>Last received %1 was generated %2.</source>
-        <translation>Letzter empfangener %1 wurde vor %2 erzeugt.</translation>
+        <translation>Letzter empfangener %1 wurde %2 erzeugt.</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="787"/>
@@ -2531,13 +2536,16 @@ Ring size of one is not anonymous.</source>
         <source>Address: %1
 Note: %2
 </source>
-        <translation type="unfinished"/>
+        <translation>Adresse: %1
+Bemerkung: %2
+</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="825"/>
         <source>Address: %1
 </source>
-        <translation type="unfinished"/>
+        <translation>Adresse: %1
+</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="863"/>
@@ -2554,17 +2562,17 @@ Note: %2
     <message>
         <location filename="../spectregui.cpp" line="920"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
-        <translation type="unfinished"/>
+        <translation>Wallet ist &lt;b&gt;verschlüsselt&lt;/b&gt; und momentan lediglich zum staken &lt;b&gt;entsperrt&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="925"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Wallet ist &lt;b&gt;verschlüsselt&lt;/b&gt; und momentan &lt;b&gt;entsperrt&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="946"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Wallet ist &lt;b&gt;verschlüsselt&lt;/b&gt; und momentan &lt;b&gt;gesperrt&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="978"/>
@@ -2604,22 +2612,22 @@ Note: %2
     <message>
         <location filename="../spectregui.cpp" line="1111"/>
         <source>%1 minute(s), %2 second(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 Minute(n), %2 Sekunde(n)</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1112"/>
         <source>%1 hour(s), %2 minute(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 Stunde(n), %2 Minute(n)</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1113"/>
         <source>%1 day(s), %2 hour(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 Tag(e), %2 Stunde(n)</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1123"/>
         <source> (last 72 blocks %1)</source>
-        <translation type="unfinished"/>
+        <translation>(letzte 72 Blücke %1)</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1125"/>
@@ -2654,17 +2662,17 @@ Note: %2
     <message>
         <location filename="../spectregui.cpp" line="1136"/>
         <source>Initializing staking...</source>
-        <translation type="unfinished"/>
+        <translation>Initialisiere Staking</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1137"/>
         <source>Not staking because you don&apos;t have mature coins</source>
-        <translation type="unfinished"/>
+        <translation>Staking deaktiviert, da nicht ausreichend gealterte Coins vorhanden sind</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1138"/>
         <source>Not staking</source>
-        <translation type="unfinished"/>
+        <translation>Staking deaktiviert</translation>
     </message>
 </context>
 <context>
@@ -2680,7 +2688,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Offen für %n Block</numerusform><numerusform>Offen für %n Blöcke</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="46"/>
@@ -2730,7 +2738,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="92"/>
         <source>, broadcast through %n node(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>, verteilt über %n Knoten</numerusform><numerusform>, verteilt über %n Knoten</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="97"/>
@@ -2756,7 +2764,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="117"/>
         <source>matures in %n more block(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>gereift in %n weiterem Block</numerusform><numerusform>gereift in %n weiteren Blöcken</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="120"/>
@@ -2832,7 +2840,7 @@ Note: %2
         <location filename="../transactiondesc.cpp" line="291"/>
         <location filename="../transactiondesc.cpp" line="294"/>
         <source>Converted</source>
-        <translation type="unfinished"/>
+        <translation>Konvertiert</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="292"/>
@@ -2847,13 +2855,13 @@ Note: %2
     <message>
         <location filename="../transactiondesc.cpp" line="298"/>
         <source>Address</source>
-        <translation type="unfinished"/>
+        <translation>Adresse</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="316"/>
         <location filename="../transactiondesc.cpp" line="324"/>
         <source>Note</source>
-        <translation type="unfinished"/>
+        <translation>Bemerkung</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="327"/>
@@ -2863,7 +2871,7 @@ Note: %2
     <message>
         <location filename="../transactiondesc.cpp" line="338"/>
         <source>&lt;dd&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;dd&gt;</translation>
     </message>
 </context>
 <context>
@@ -2899,7 +2907,7 @@ Note: %2
     <message>
         <location filename="../transactiontablemodel.cpp" line="251"/>
         <source>Note</source>
-        <translation type="unfinished"/>
+        <translation>Bemerkung</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="251"/>
@@ -2909,7 +2917,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Offen für %n weiteren Block</numerusform><numerusform>Offen für %n weitere Blöcke</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="331"/>
@@ -3011,7 +3019,7 @@ Note: %2
     <message>
         <location filename="../bitcoinstrings.cpp" line="16"/>
         <source>%s, you must set a rpcpassword in the configuration file:
- %s
+%s
 It is recommended you use the following random password:
 rpcuser=aliasrpc
 rpcpassword=%s
@@ -3438,7 +3446,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="137"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiger Betrag für -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="138"/>
@@ -3448,7 +3456,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="141"/>
         <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiger Betrag für -mininput=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="142"/>
@@ -3464,7 +3472,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="146"/>
         <source>Verifying database integrity...</source>
-        <translation type="unfinished"/>
+        <translation>Prüfe Datenbankintegrität...</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="147"/>
@@ -3524,7 +3532,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="163"/>
         <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiger Betrag für -reservebalance=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="164"/>
@@ -3540,7 +3548,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="166"/>
         <source>Error loading blk0001.dat</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Laden von blk0001.dat</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="167"/>
@@ -3550,43 +3558,43 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="168"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Laden von wallet.dat, Datei beschädigt</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="169"/>
         <location filename="../bitcoinstrings.cpp" line="227"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
-        <translation type="unfinished"/>
+        <translation>Warnung: Fehler beim Lesen von wallet.dat! Alle Schlüssel wurden korrekt gelesen aber die Transaktionsdaten oder das Adressbuch fehlen oder sind fehlerhaft.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="172"/>
         <source>Error loading wallet.dat: Wallet requires newer version of Alias</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Laden von wallet.dat, neuere Alias-Version benötigt</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="173"/>
         <source>Wallet needed to be rewritten: restart Alias to complete</source>
-        <translation type="unfinished"/>
+        <translation>Wallet muss neu geschrieben werden. Alias neu starten, um das abzuschliessen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="174"/>
         <source>Error loading wallet.dat</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Laden von wallet.dat</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="175"/>
         <source>Cannot downgrade wallet</source>
-        <translation type="unfinished"/>
+        <translation>Kann Wallet nicht downgraden</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="176"/>
         <source>Cannot initialize keypool</source>
-        <translation type="unfinished"/>
+        <translation>Kann Schlüsselpool nicht initialisieren</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="177"/>
         <source>Cannot write default address</source>
-        <translation type="unfinished"/>
+        <translation>Kann Standard-Adresse nicht schreiben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="178"/>
@@ -3596,12 +3604,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="179"/>
         <source>Importing blockchain data file.</source>
-        <translation type="unfinished"/>
+        <translation>Importiere Blockchaindaten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="180"/>
         <source>Importing bootstrap blockchain data file.</source>
-        <translation type="unfinished"/>
+        <translation>Importiere Bootstrap-Blockchaindaten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="181"/>
@@ -3611,7 +3619,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="182"/>
         <source>Error: could not start node</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Konnte Knoten nicht starten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="183"/>
@@ -3641,7 +3649,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="189"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Diese Transaktion benötigt aufgrund von Grösse, Komplexität oder Verwendung von kürzlich empfangenem Guthaben Transaktionsgebühren von mindestens %s.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="192"/>
@@ -3671,12 +3679,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="200"/>
         <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</source>
-        <translation type="unfinished"/>
+        <translation>Warnung: Bitte sicherstellen, dass Datum und Zeit korrekt sind! Das Alias Wallet wird nicht korrekt funktionieren, wenn die Uhr falsch ist.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="203"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
-        <translation type="unfinished"/>
+        <translation>Warnung: Diese Wallet-Version ist veraltet, bitte aktualisieren!</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="204"/>
@@ -3686,7 +3694,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="205"/>
         <source>Warning: Disk space is low!</source>
-        <translation type="unfinished"/>
+        <translation>Warnung: Freier Speicherplatz ist knapp!</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="206"/>
@@ -3721,7 +3729,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="216"/>
         <source>Initialization sanity check failed. Alias is shutting down.</source>
-        <translation type="unfinished"/>
+        <translation>Initiale Plausibilitätsprüfung fehlgeschlagen. Alias wird beendet.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="217"/>
@@ -3741,17 +3749,17 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="220"/>
         <source>-bip44key is not allowed if wallet.dat already exists</source>
-        <translation type="unfinished"/>
+        <translation>Parameter -bip44key ist nicht möglich, wenn wallet.dat bereits existiert</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="222"/>
         <source>Cannot resolve binding address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Kann Bind-Adresse &apos;%s&apos; nicht auflösen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="223"/>
         <source>Error: could not start tor node</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Kann Tor nicht starten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="224"/>
@@ -3782,6 +3790,156 @@ If the file does not exist, create it with owner-readable-only file permissions.
         <location filename="../bitcoinstrings.cpp" line="231"/>
         <source>Core started!</source>
         <translation>Kern gestartet!</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="232"/>
+        <source>Use tor hidden services version 2 instead of version 3</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="233"/>
+        <source>Find peers using .onion seeds (default: 1 unless -connect)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="234"/>
+        <source>Minimum time in seconds between successful stakes (default: 30)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="235"/>
+        <source>Percentage of staking rewards to donate to the developers (between 0 and 100 inclusive, default 5)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="236"/>
+        <source>Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="237"/>
+        <source>Number of seconds to keep soft banned peers from reconnecting (default: 3600)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="238"/>
+        <source>Simple command line interface - if not run as daemon</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="239"/>
+        <source>Output extra blockchain debugging information</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="240"/>
+        <source>Output extra Proof of Stake debugging information</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="241"/>
+        <source>Send trace/debug info to debug.log file</source>
+        <translation>Trace- und Debug-Informationen in debug.log schreiben</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="242"/>
+        <source>Wait for RPC server to start</source>
+        <translation>Warte auf Start des RPC-Server</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="243"/>
+        <source>Keep at most &lt;n&gt; MiB of unconnectable blocks in memory (default: %u)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="244"/>
+        <source>Rebuild block chain index from current blk000?.dat files on startup</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="245"/>
+        <source>Show version and exit</source>
+        <translation>Version zeigen und beenden</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="246"/>
+        <source>Thin options:</source>
+        <translation>Thinmode Optionen:</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="247"/>
+        <source>Operate in less secure, less resource hungry &apos;thin&apos; mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="248"/>
+        <source>Keep the entire block index in memory. (default: 0)</source>
+        <translation>Gesamten Block-Index im Arbeitsspeicher halten. (Standard: 0)</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="249"/>
+        <source>When not thinfullindex, the max number of block headers to keep in memory. (default: 4096)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="250"/>
+        <source>Disable supporting thin nodes. (default: 0)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="251"/>
+        <source>Disable forwarding, or requesting all stealth txns. (default: 0)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="252"/>
+        <source>Don&apos;t connect to more than &lt;n&gt; thin peers (default: 8)</source>
+        <translation>Nicht zu mehr als &lt;n&gt; Thin-Nodes verbinden (Standard: 8)</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="253"/>
+        <source>Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="254"/>
+        <source>conn</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="255"/>
+        <source>Error: Wallet locked, unable to create transaction.</source>
+        <translation>Fehler: Kann Transaktion nicht anlegen, da Wallet gesperrt ist.</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="256"/>
+        <source>Error: Must be in full mode.</source>
+        <translation>Fehler: Wallet muss im Full-Mode laufen.</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="257"/>
+        <source>Error: Block chain must be fully synced first.</source>
+        <translation>Fehler: Blockchain muss vollständig synchronisiert sein.</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="258"/>
+        <source>Error: Alias is not connected!</source>
+        <translation>Fehler: Nicht mit dem Alias-Netzwerk verbunden</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="259"/>
+        <source>Update balance...</source>
+        <translation>Aktualisiere Guthaben...</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="260"/>
+        <source>...Start UI...</source>
+        <translation>... Starte UI ...</translation>
+    </message>
+    <message>
+        <location filename="../bitcoinstrings.cpp" line="261"/>
+        <source>Shutdown...</source>
+        <translation>Herunterfahren...</translation>
     </message>
 </context>
 </TS>
