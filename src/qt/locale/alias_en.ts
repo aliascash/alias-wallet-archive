@@ -2456,18 +2456,18 @@ Ring size of one is not anonymous.</source>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
-        <source>Imported %1 block(s) of transaction history.</source>
+        <source>Imported %n block(s) of transaction history.</source>
         <translation type="unfinished">
-            <numerusform>Imported %1 block of transaction history.</numerusform>
-            <numerusform>Imported %1 blocks of transaction history.</numerusform>
+            <numerusform>Imported %n block of transaction history.</numerusform>
+            <numerusform>Imported %n blocks of transaction history.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
-        <source>Downloaded %1 block(s) of transaction history.</source>
+        <source>Downloaded %n block(s) of transaction history.</source>
         <translation type="unfinished">
-            <numerusform>Downloaded %1 block of transaction history.</numerusform>
-            <numerusform>Downloaded %1 blocks of transaction history.</numerusform>
+            <numerusform>Downloaded %n block of transaction history.</numerusform>
+            <numerusform>Downloaded %n blocks of transaction history.</numerusform>
         </translation>
     </message>
     <message numerus="yes">

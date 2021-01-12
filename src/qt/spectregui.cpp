@@ -627,11 +627,12 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         }
 
         tooltip += (tooltip.isEmpty()? "" : "<br>")
-         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3);
+         + (clientModel->isImporting()
+         ? tr("Imported %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3)
+         : tr("Downloaded %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3));
     } else
     {
-        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+        tooltip = clientModel->isImporting() ? tr("Imported %n block(s) of transaction history.", "", count) : tr("Downloaded %n block(s) of transaction history.", "", count);
     }
 
     // Override progressBarLabel text when we have warnings to display

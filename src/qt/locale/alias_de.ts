@@ -2471,13 +2471,13 @@ Ring size of one is not anonymous.</source>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
-        <source>Imported %1 block(s) of transaction history.</source>
-        <translation><numerusform>%1 Block Transaktionshistorie importiert.</numerusform><numerusform>%1 Blöcke Transaktionshistorie importiert.</numerusform></translation>
+        <source>Imported %n block(s) of transaction history.</source>
+        <translation><numerusform>%n Block Transaktionshistorie importiert.</numerusform><numerusform>%n Blöcke Transaktionshistorie importiert.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
-        <source>Downloaded %1 block(s) of transaction history.</source>
-        <translation><numerusform>%1 Block Transaktionshistorie heruntergeladen.</numerusform><numerusform>%1 Blöcke Transaktionshistorie heruntergeladen.</numerusform></translation>
+        <source>Downloaded %n block(s) of transaction history.</source>
+        <translation><numerusform>%n Block Transaktionshistorie heruntergeladen.</numerusform><numerusform>%n Blöcke Transaktionshistorie heruntergeladen.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="653"/>
