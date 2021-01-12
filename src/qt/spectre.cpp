@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
                 window.setClientModel(&clientModel);
                 window.setWalletModel(&walletModel);
 
-                InitMessage("Update balance...");
+                InitMessage(_("Update balance..."));
 
                 // Manually create a blockChangedEvent to set initial values for the UI
                 BlockChangedEvent blockChangedEvent = { nBestHeight, GetNumBlocksOfPeers(), IsInitialBlockDownload(), nNodeMode == NT_FULL ?
@@ -340,14 +340,14 @@ int main(int argc, char *argv[])
                     WalletModel::UnlockContext unlockContext = walletModel.requestUnlock(WalletModel::UnlockMode::login);
                     if (!unlockContext.isValid())
                     {
-                        InitMessage("Shutdown...");
+                        InitMessage(_("Shutdown..."));
                         StartShutdown();
                     }
                 }
 
                 if (!ShutdownRequested())
                 {
-                    InitMessage("...Start UI...");
+                    InitMessage(_("...Start UI..."));
                     window.loadIndex(webSocketToken);
 
                     // Now that initialization/startup is done, process any command-line
