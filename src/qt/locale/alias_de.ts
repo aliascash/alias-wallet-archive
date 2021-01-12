@@ -2462,7 +2462,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectregui.cpp" line="631"/>
         <source>Imported %1 of %2 %3 of transaction history (%4% done).</source>
-        <translation type="unfinished"/>
+        <translation>%1 von %2 %3 Transaktionshistorie importiert (%4% erledigt).</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="632"/>
@@ -2935,7 +2935,7 @@ Bemerkung: %2
     <message>
         <location filename="../transactiontablemodel.cpp" line="340"/>
         <source>Confirming (%1 of %2 required confirmations)</source>
-        <translation type="unfinished"/>
+        <translation>Wird bestätigt (%1 von %2 benötigten Bestätigungen erhalten)</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="342"/>
