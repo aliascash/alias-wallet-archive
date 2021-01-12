@@ -243,7 +243,7 @@ SpectreGUI::~SpectreGUI()
 void SpectreGUI::pageLoaded(bool ok)
 {
     uiReady = true;
-    initMessage(splashScreen, "..Start UI..");
+    initMessage(splashScreen, tr("..Start UI..").toStdString());
 
     // Create the tray icon (or setup the dock icon)
     if (!initialized) createTrayIcon();
@@ -260,7 +260,7 @@ void SpectreGUI::pageLoaded(bool ok)
     bridge->populateTransactionTable();
     bridge->populateAddressTable();
 
-    initMessage(splashScreen, ".Start UI.");
+    initMessage(splashScreen, tr(".Start UI.").toStdString());
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
