@@ -297,7 +297,7 @@ if (ENABLE_GUI)
     qt5_add_translation(QM_FILES
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_af_ZA.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ar.ts
-            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_be_BY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_be.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bg.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bs.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca.ts
@@ -331,7 +331,7 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_it.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ja.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ka.ts
-            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_kk_KZ.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_kk.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ko_KR.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ky.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_la.ts
@@ -352,7 +352,7 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sq.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sr.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sv.ts
-            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_th_TH.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_th.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_tr.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_uk.ts
             ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ur_PK.ts
