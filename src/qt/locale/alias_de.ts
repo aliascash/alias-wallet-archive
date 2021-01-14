@@ -103,7 +103,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../forms/askpassphrasedialog.ui" line="161"/>
         <source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
-        <translation type="unfinished"/>
+        <translation>Schaltet die Zahlungsfunktion ab, wenn der Betriebssystemaccount kompromittiert wurde. Bietet aber keine wirkliche Sicherheit.</translation>
     </message>
     <message>
         <location filename="../forms/askpassphrasedialog.ui" line="164"/>
@@ -128,7 +128,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="60"/>
         <source>Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your &lt;b&gt;private ALIAS balance might be shown wrong&lt;/b&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>Ihr Wallet enthält gesperrte ATXOs, für welche der Ausgegeben-Status nur mit Ihrem privaten Schlüssel ermittelt werden kann. &lt;b&gt;Ihr angezeigtes Guthaben kann daher falsch sein&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="62"/>
@@ -257,7 +257,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../forms/coincontroldialog.ui" line="14"/>
         <source>Coin Control</source>
-        <translation type="unfinished"/>
+        <translation>Coin-Details</translation>
     </message>
     <message>
         <location filename="../forms/coincontroldialog.ui" line="45"/>
@@ -703,7 +703,7 @@ Dies bedeutet eine Gebühr von min %2 ist benötigt</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="147"/>
         <source>QFileDialog::getOpenFileName()</source>
-        <translation type="unfinished"/>
+        <translation>QFileDialog::getOpenFileName()</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="149"/>
@@ -1764,7 +1764,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="60"/>
         <source>Coin Control</source>
-        <translation type="unfinished"/>
+        <translation>Coin-Details</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="61"/>
@@ -1814,7 +1814,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="70"/>
         <source>LowOutput:</source>
-        <translation type="unfinished"/>
+        <translation>LowOutput:</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="71"/>
@@ -1949,7 +1949,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../bridgetranslations.h" line="97"/>
         <source>Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Alias-Adresse (wie bspw. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV) eingeben, mit welcher die Nachricht überprüft werden soll.</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="98"/>
@@ -2614,13 +2614,13 @@ Bemerkung: %2
         <location filename="../spectregui.cpp" line="864"/>
         <location filename="../spectregui.cpp" line="886"/>
         <source>URI handling</source>
-        <translation type="unfinished"/>
+        <translation>URI-Handhabung</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="864"/>
         <location filename="../spectregui.cpp" line="886"/>
         <source>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</source>
-        <translation type="unfinished"/>
+        <translation>URI kann nicht geparsed werden! Mglw. ist die Alias-Adresse ungültig oder die URI-Parameter sind falsch.</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="921"/>
@@ -2786,7 +2786,7 @@ Bemerkung: %2
     <message>
         <location filename="../transactiondesc.cpp" line="82"/>
         <source>Block Hash</source>
-        <translation type="unfinished"/>
+        <translation>Block-Prüfsumme</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="85"/>
@@ -2857,7 +2857,7 @@ Bemerkung: %2
     <message>
         <location filename="../transactiondesc.cpp" line="183"/>
         <source>Comment-To</source>
-        <translation type="unfinished"/>
+        <translation>Kommentar an</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="196"/>
@@ -2908,12 +2908,12 @@ Bemerkung: %2
     <message>
         <location filename="../transactiondesc.cpp" line="292"/>
         <source> from public to private</source>
-        <translation type="unfinished"/>
+        <translation>von öffentlich an privat</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="295"/>
         <source> from private to public</source>
-        <translation type="unfinished"/>
+        <translation>von privat an öffentlich</translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="298"/>
@@ -3020,17 +3020,17 @@ Bemerkung: %2
     <message>
         <location filename="../transactiontablemodel.cpp" line="352"/>
         <source>Immature (%1 confirmations, will be available after %2)</source>
-        <translation>Unreif (%1 Bestätigungen, wird verfügbar sein nach %2)</translation>
+        <translation>Unreif (bisher %1, verfügbar nach %2 Bestätigungen)</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="356"/>
         <source>Orphan %1 stake, block was not received by any other nodes and will probably not be accepted!</source>
-        <translation type="unfinished"/>
+        <translation>Stake %1 ist verwaist, Block wurde von keinem anderen Knoten empfangen und wird vermutlich nicht akzeptiert werden!</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="360"/>
         <source>Orphan %1 stake, someone else submitted the block before you.</source>
-        <translation type="unfinished"/>
+        <translation>Stake %1 ist verwaist, jemand anderes hat den Block vor Ihnen übertragen.</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="434"/>
@@ -3077,7 +3077,7 @@ Bemerkung: %2
     <message>
         <location filename="../bitcoinstrings.cpp" line="15"/>
         <source>To use the %s option</source>
-        <translation type="unfinished"/>
+        <translation>Um die Option %s zu verwenden</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="16"/>
@@ -3092,7 +3092,17 @@ If the file does not exist, create it with owner-readable-only file permissions.
 It is also recommended to set alertnotify so you are notified of problems;
 for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.com
 </source>
-        <translation type="unfinished"/>
+        <translation>%s, der Parameter rpcpassword muss in der Konfigurationsdatei gesetzt werden:
+%s
+Es wird empfohlen, ein zufälliges Passwort zu verwenden:
+rpcuser=aliasrpc
+rpcpassword=%s
+(Das Passwort muss nicht gesichert/notiert werden)
+Username und Passwort müssen unterschiedlich sein.
+Wenn die Datei nicht existiert, bitte mit Leserechten für den Besitzer anlegen.
+Es wird empfohlen, alertnotify einzurichten, um im Problemfall benachrichtigt zu werden, bspw. so:
+alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.com
+</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="29"/>
@@ -3102,19 +3112,21 @@ for example: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
     <message>
         <location filename="../bitcoinstrings.cpp" line="30"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
-        <translation type="unfinished"/>
+        <translation>Beim Einrichten des RPC-Port %u für IPv6-Verbindungen ist ein Fehler aufgetreten. Gehe zurück auf IPv4: %s</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="33"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
-        <translation type="unfinished"/>
+        <translation>Beim Einrichten des RPC-Port %u für IPv4-Verbindungen ist ein Fehler aufgetreten: %s</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="35"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation type="unfinished"/>
+        <translation>Sie müssen rpcpassword=&lt;password&gt; in der Konfigurationsdatei einrichten:
+%s
+Wenn die Datei nicht existiert, bitte mit Nur-Besitzer-Leserechten anlegen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="40"/>
@@ -3159,352 +3171,352 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="48"/>
         <source>Specify configuration file (default: alias.conf)</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Konfigurationsdatei angeben (Standard: alias.conf)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="49"/>
         <source>Specify pid file (default: alias.pid)</source>
-        <translation type="unfinished"/>
+        <translation>Bitte PID-Datei angeben (Standard: alias.pid)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="50"/>
         <source>Specify data directory</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Datenverzeichnis angeben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="51"/>
         <source>Specify wallet file (within data directory)</source>
-        <translation type="unfinished"/>
+        <translation>Bitte Wallet-Datei (im Datenverzeichnis) angeben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="52"/>
         <source>Set database cache size in megabytes (default: 25)</source>
-        <translation type="unfinished"/>
+        <translation>Setze Datenbank Cache-Grösse in Megabyte (Standard: 25)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="53"/>
         <source>Set database disk log size in megabytes (default: 100)</source>
-        <translation type="unfinished"/>
+        <translation>Setzte Grösse der Datenbank-Log-Datei in Megabyte (Standard: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="54"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
-        <translation type="unfinished"/>
+        <translation>Verbindungstimeout in Millisekunden (Standard: 5000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="55"/>
         <source>Connect through socks proxy</source>
-        <translation type="unfinished"/>
+        <translation>Verbinde via SOCKS-Proxy</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="56"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
-        <translation type="unfinished"/>
+        <translation>Auswählen der SOCKS-Proxy Version (4-5, Standard: 5)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="57"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
-        <translation type="unfinished"/>
+        <translation>Proxy für die Verbindung zu den Hidden-Services verwenden (Standard: wie -proxy)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="58"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
-        <translation type="unfinished"/>
+        <translation>Erlaube DNS-Anfragen für -addnode, -seednode und -connect</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="59"/>
         <source>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</source>
-        <translation type="unfinished"/>
+        <translation>Höre auf Verbindungen an &lt;port&gt; (Standard: 37347 bzw. beim Testnetz 37111)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="60"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation type="unfinished"/>
+        <translation>Verwalte maximal &lt;n&gt; Verbindungen zu anderen Knoten (Standard: 125)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="61"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
-        <translation type="unfinished"/>
+        <translation>Füge einen Knoten hinzu und versuche diese Verbindung aufrecht zu erhalten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="62"/>
         <source>Connect only to the specified node(s)</source>
-        <translation type="unfinished"/>
+        <translation>Verbinde nur zu den angegebenen Knoten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="63"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
-        <translation type="unfinished"/>
+        <translation>Verbinde zum angegebenen Knoten, empfange weitere Knoten-Adressen und trenne danach die Verbindung zu diesem Knoten</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="64"/>
         <source>Specify your own public address</source>
-        <translation type="unfinished"/>
+        <translation>Eigene öffentliche Adresse spezifizieren</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="65"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation type="unfinished"/>
+        <translation>Nur zu Knoten im Netz &lt;net&gt; verbinden (IPv4, IPv6 oder Tor)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="66"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
-        <translation type="unfinished"/>
+        <translation>Eigene IP-Adresse herausfinden (Standard: 1 wenn hörend und nicht -externalip verwendet wird)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="67"/>
         <source>Find peers using internet relay chat (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Suche Gegenstellen mithilfe des Internet Relay Chat (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="68"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
-        <translation type="unfinished"/>
+        <translation>Erlaube Verbindungen von aussen (Standard: 1, wenn die Optionen -proxy oder -connect nicht verwendet werden)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="69"/>
         <source>Bind to given address. Use [host]:port notation for IPv6</source>
-        <translation type="unfinished"/>
+        <translation>Binde an die gegebene Adresse. Bei IPv6 [host]:port Notation verwenden</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="70"/>
         <source>Find peers using DNS lookup (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Suche Gegenstellen durch DNS-Lookup (Standard: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="71"/>
         <source>Stake your coins to support network and gain reward (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Staken Sie Ihre Coins um das Netzwerk zu unterstützen und eine Vergütung zu erhalten (Standard: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="72"/>
         <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Zeit mit anderen Knoten synchronisieren. Abschalten, wenn die lokale Zeit präzise genug ist, bspw. durch NTP (Standard: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="75"/>
         <source>Sync checkpoints policy (default: strict)</source>
-        <translation type="unfinished"/>
+        <translation>Checkpoint-Synchronisierungsregel (Standard: strict)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="76"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
-        <translation type="unfinished"/>
+        <translation>Schwellwert zur Trennung von sich falsch verhaltenden Knoten (Standard: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="77"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
-        <translation type="unfinished"/>
+        <translation>Sekunden, wie lang die Wiederverbindung fehlerhafter Nodes verhindert wird (Standard: 86400)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="80"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
-        <translation type="unfinished"/>
+        <translation>Maximale Empfangspuffergrösse je Verbindung: &lt;n&gt; x 1000 Byte (Standard: 5000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="81"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
-        <translation type="unfinished"/>
+        <translation>Maximale Sendepuffergrösse je Verbindung: 1 x 1000 Byte (Standard: 1000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="82"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
-        <translation type="unfinished"/>
+        <translation>UPnP für die Listening-Ports verwenden (Standard: 1 beim Hören)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="83"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>UPnP für die Listening-Ports verwenden (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="84"/>
         <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Block- und Adressdatenbank abhängen. Erhöht die Dauer des Herunterfahrens. (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="86"/>
         <source>Fee per KB to add to transactions you send</source>
-        <translation type="unfinished"/>
+        <translation>Gebühr je Kilobyte, welche zu den zu sendenden Transaktionen hinzugefügt wird</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="87"/>
         <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
-        <translation type="unfinished"/>
+        <translation>Ignoriere beim Erzeugen einer Transaktion Inputs, welche einen Wert kleiner als diesen Wert haben (Standard: 0.01)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="90"/>
         <source>Accept command line and JSON-RPC commands</source>
-        <translation type="unfinished"/>
+        <translation>Akzeptiere Befehle von der Kommandozeile sowie via JSON-RPC</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="91"/>
         <source>Run in the background as a daemon and accept commands</source>
-        <translation type="unfinished"/>
+        <translation>Ausführung als Daemon im Hintergrund und nimm Kommandos entgegen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="92"/>
         <source>Use the test network</source>
-        <translation type="unfinished"/>
+        <translation>Benutze das Testnetz</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="93"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
-        <translation type="unfinished"/>
+        <translation>Zeige zusätzliche Debug-Informationen. Das enthält alle anderen -debug* Optionen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="94"/>
         <source>Output extra network debugging information</source>
-        <translation type="unfinished"/>
+        <translation>Zeige zusätzliche Netzwerk-Informationen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="95"/>
         <source>Prepend debug output with timestamp</source>
-        <translation type="unfinished"/>
+        <translation>Füge Zeitstempel zum Debug-Output hinzu</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="96"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
-        <translation type="unfinished"/>
+        <translation>Kürze das Debug-Logfile debug.log beim Start des Client (Standard: 1, wenn keine Debug-Option verwendet wird)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="97"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
-        <translation type="unfinished"/>
+        <translation>Debug- und Tracing-Informationen auf der Konsole ausgeben anstelle in die debug.log Datei</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="98"/>
         <source>Send trace/debug info to debugger</source>
-        <translation type="unfinished"/>
+        <translation>Trace- und Debug-Informationen an den Debugger schicken</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="99"/>
         <source>Username for JSON-RPC connections</source>
-        <translation type="unfinished"/>
+        <translation>Benutzername für JSON-RPC-Verbindungen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="100"/>
         <source>Password for JSON-RPC connections</source>
-        <translation type="unfinished"/>
+        <translation>Passwort für JSON-RPC-Verbindungen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="101"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 36657 or testnet: 36757)</source>
-        <translation type="unfinished"/>
+        <translation>Auf JSON-RPC-Verbindungen auf Port &lt;port&gt; hören (Standard: 36657 bzw. beim Testnet 36757)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="103"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
-        <translation type="unfinished"/>
+        <translation>JSON-RPC-Verbindungen von angegebener IP-Adresse zulassen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="104"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
-        <translation type="unfinished"/>
+        <translation>Kommandos an Knoten mit der IP &lt;ip&gt; senden (Standard: 127.0.0.1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="105"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
-        <translation type="unfinished"/>
+        <translation>Kommando ausführen, wenn sich der &quot;beste Block&quot; ändert (%s im Kommando wird durch die Block-Prüfsumme ersetzt)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="108"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
-        <translation type="unfinished"/>
+        <translation>Kommando ausführen, wenn sich eine Transaktion im Wallet ändert (%s im Kommando wird durch die Transaktions-ID ersetzt)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="111"/>
         <source>Require a confirmations for change (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Für Änderungen wird eine Bestätigung erwartet (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="112"/>
         <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Forciere die Verwendung von Canonical-PUSH-Operatoren (Standard: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="114"/>
         <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
-        <translation type="unfinished"/>
+        <translation>Kommando ausführen, wenn ein relevanter Alarm empfangen wird (%s im Kommando wird durch die Alarmmeldung ersetzt)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="117"/>
         <source>Upgrade wallet to latest format</source>
-        <translation type="unfinished"/>
+        <translation>Aktualisiere wallet.dat zum aktuellen Format</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="118"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
-        <translation type="unfinished"/>
+        <translation>Setzte Schlüssel-Poolgrösse auf &lt;n&gt; (Standard: 100)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="119"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation type="unfinished"/>
+        <translation>Blockchain erneut einlesen, um fehlende Transaktionen zu finden</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="120"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
-        <translation type="unfinished"/>
+        <translation>Versuche, private Schlüssel aus beschädigter wallet.dat Datei wiederherzustellen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="121"/>
         <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
-        <translation type="unfinished"/>
+        <translation>Wieviele Blöcke sollen beim Start geprüft werden (Standard: 2500, 0=alle)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="122"/>
         <source>How thorough the block verification is (0-6, default: 1)</source>
-        <translation type="unfinished"/>
+        <translation>Wie gründlich soll die Blockprüfung sein (0-6, Standard: 1)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="123"/>
         <source>Imports blocks from external blk000?.dat file</source>
-        <translation type="unfinished"/>
+        <translation>Importiere Blöcke von externer blk000?.dat-Datei</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="124"/>
         <source>Block creation options:</source>
-        <translation type="unfinished"/>
+        <translation>Optionen zur Block-Erzeugung:</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="125"/>
         <source>Set minimum block size in bytes (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Setze minimale Block-Grösse in Bytes (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="126"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
-        <translation type="unfinished"/>
+        <translation>Setze maximale Block-Grösse in Bytes (Standard: 250000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="127"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
-        <translation type="unfinished"/>
+        <translation>Setze maximale Grösse von High-Prio/Low-Fee Transaktionen in Bytes (Standard: 27000)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="130"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
-        <translation type="unfinished"/>
+        <translation>SSL-Optionen (siehe Bitcoin-Wiki für Einrichtungsoptionen)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="131"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
-        <translation type="unfinished"/>
+        <translation>Benutze OpenSSL (https) für JSON-RPC-Verbindungen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="132"/>
         <source>Server certificate file (default: server.cert)</source>
-        <translation type="unfinished"/>
+        <translation>Zertifikatsdatei des Servers (Standard: server.cert)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="133"/>
         <source>Server private key (default: server.pem)</source>
-        <translation type="unfinished"/>
+        <translation>Privater Schlüssel des Servers (Standard: server.pem)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="134"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
-        <translation type="unfinished"/>
+        <translation>Akzeptierte Ciphers (Standard: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="137"/>
@@ -3514,7 +3526,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="138"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Achtung: -paytxfee ist auf einen sehr kleinen Wert gesetzt! Das ist die Gebühr, welche Sie zahlen, wenn die Transaktion gesendet wird.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="141"/>
@@ -3524,13 +3536,13 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="142"/>
         <source>Wallet %s resides outside data directory %s.</source>
-        <translation type="unfinished"/>
+        <translation>Wallet %s befindet sich ausserhalb des Datenverzeichnis %s.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="143"/>
         <location filename="../bitcoinstrings.cpp" line="221"/>
         <source>Cannot obtain a lock on data directory %s.  Alias is probably already running.</source>
-        <translation type="unfinished"/>
+        <translation>Kann Datenverzeichnis %s nicht blockieren. Alias läuft mglw. schon.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="146"/>
@@ -3540,57 +3552,57 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="147"/>
         <source>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Initialisieren der Datenbankumgebung %s! Zur Wiederherstellung dieses Verzeichnis sichern und dann alles dort ausser der Datei wallet.dat löschen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="150"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
-        <translation type="unfinished"/>
+        <translation>Achtung: Die Datei wallet.dat ist beschädigt, es konnten aber Daten gerettet werden! Die originale Datei wurde unter wallet.{timestamp}.bak in %s gespeichert. Wenn fehlerhaftes Guthaben angezeigt wird oder Transaktionen fehlen, sollten Sie von einer Sicherung wiederherstellen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="154"/>
         <source>wallet.dat corrupt, salvage failed</source>
-        <translation type="unfinished"/>
+        <translation>Datei wallet.dat ist beschädigt, Wiederherstellung fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="155"/>
         <source>Unknown -socks proxy version requested: %i</source>
-        <translation type="unfinished"/>
+        <translation>Unbekannte Proxy-Version angefordert: -socks &apos;%i&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="156"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Unbekanntes Netzwerk in -onlynet &apos;%s&apos; angegeben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="157"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültige Proxy-Adresse -proxy &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="158"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Ungültige Tor-Adresse -tor &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="159"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Kann Bind-Adresse -bind &apos;%s&apos; nicht auflösen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="160"/>
         <source>Failed to listen on any port.</source>
-        <translation type="unfinished"/>
+        <translation>Kann auf keinem Port hören.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="161"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
-        <translation type="unfinished"/>
+        <translation>Kann auf keinem Port hören. Bitte -listen=0 verwenden, wenn das so gewünscht ist.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="162"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Kann externe IP-Adresse -externalip &apos;%s&apos; nicht auflösen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="163"/>
@@ -3601,7 +3613,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
         <location filename="../bitcoinstrings.cpp" line="164"/>
         <source>Unable to sign checkpoint, wrong checkpointkey?
 </source>
-        <translation type="unfinished"/>
+        <translation>Kann Fixpunkt nicht signieren. Falscher Fixpunktschlüssel?</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="165"/>
@@ -3692,22 +3704,22 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="184"/>
         <source>Unable to bind to %s on this computer. Alias is probably already running.</source>
-        <translation type="unfinished"/>
+        <translation>Kann nicht mit Port %s verbinden, Alias läuft mglw. bereits.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="186"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
-        <translation type="unfinished"/>
+        <translation>Kann nicht mit Port %s verbinden (bind hat Fehler %d gemeldet, %s)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="187"/>
         <source>Error: Wallet locked, unable to create transaction  </source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Wallet gesperrt, kann Transaktion nicht anlegen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="188"/>
         <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Wallet ist nur zum Staken freigeschaltet, kann Transaktion nicht anlegen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="189"/>
@@ -3717,7 +3729,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="192"/>
         <source>Error: Transaction creation failed  </source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Erzeugen der Transaktion fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="193"/>
@@ -3727,7 +3739,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="194"/>
         <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Die Transaktion wurde abgelehnt. Das kann passieren, wenn Coins aus Ihrem Wallet bereits ausgegeben wurden, dies in Ihrem Wallet aber nicht vermerkt ist, bspw. bei Verwendung einer Kopie des wallet.dat.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="198"/>
@@ -3752,7 +3764,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="204"/>
         <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
-        <translation type="unfinished"/>
+        <translation>Achtung, Checkpoint-Synchronisation wurde verletzt aber übersprungen!</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="205"/>
@@ -3762,7 +3774,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="206"/>
         <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
-        <translation type="unfinished"/>
+        <translation>Achtung, ungültigen Checkpoint gefunden! Dargestellte Transaktionen können falsch sein. Sie sollten die Software aktualisieren oder die Entwickler benachrichtigen.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="209"/>
@@ -3782,12 +3794,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="212"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Die Transaktion wurde abgelehnt. Das kann passieren, wenn Coins aus Ihrem Wallet bereits ausgegeben wurden, dies in Ihrem Wallet aber nicht vermerkt ist, bspw. bei Verwendung einer Kopie des wallet.dat.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="215"/>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: Ungültige Option -socks verwendet. Wird nicht mehr verwendet, da nur noch SOCKS5-Proxies unterstützt werden.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="216"/>
@@ -3827,12 +3839,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="224"/>
         <source>Timed out waiting for onion hostname.</source>
-        <translation type="unfinished"/>
+        <translation>Zeitüberschreitung beim Warten auf einen Onion-Hostname</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="225"/>
         <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Laden von blk0001.dat: Ungültige Blockchain entdeckt. Bitte erneut synchronisieren oder Bootstrap-Archiv verwenden.</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="226"/>
@@ -3857,47 +3869,47 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="232"/>
         <source>Use tor hidden services version 2 instead of version 3</source>
-        <translation type="unfinished"/>
+        <translation>Benutze Tor-Hidden-Services in Version 2 anstatt Version 3</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="233"/>
         <source>Find peers using .onion seeds (default: 1 unless -connect)</source>
-        <translation type="unfinished"/>
+        <translation>Suche Gegenstellen via .onion-Seeds (Standard: 1, wenn nicht -connect verwendet wird)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="234"/>
         <source>Minimum time in seconds between successful stakes (default: 30)</source>
-        <translation type="unfinished"/>
+        <translation>Minimale Zeit zwischen erfolgreichen Stakes (Standard: 30)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="235"/>
         <source>Percentage of staking rewards to donate to the developers (between 0 and 100 inclusive, default 5)</source>
-        <translation type="unfinished"/>
+        <translation>Prozentwert der Staking-Belohnungen, welcher an die Entwickler gespendet werden soll (0-100, Standard: 5)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="236"/>
         <source>Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)</source>
-        <translation type="unfinished"/>
+        <translation>Millisekunden zwischen Staking-Versuchen. Verringerung dieses Parameters führt nicht zu mehr Stakes! (Standard: 500)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="237"/>
         <source>Number of seconds to keep soft banned peers from reconnecting (default: 3600)</source>
-        <translation type="unfinished"/>
+        <translation>Wieveiel Sekunden wird verhindert, dass sich gesperrte Knoten wieder verbinden können (Standard: 3600)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="238"/>
         <source>Simple command line interface - if not run as daemon</source>
-        <translation type="unfinished"/>
+        <translation>Einfache Kommandozeilenschnittstelle, wenn nicht als Daemon gestartet wird</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="239"/>
         <source>Output extra blockchain debugging information</source>
-        <translation type="unfinished"/>
+        <translation>Zur Fehlersuche zusätzliche Blockchain-Informationen ausgeben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="240"/>
         <source>Output extra Proof of Stake debugging information</source>
-        <translation type="unfinished"/>
+        <translation>Zur Fehlersuche zusätzliche ProofOfStake-Informationen ausgeben</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="241"/>
@@ -3912,12 +3924,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="243"/>
         <source>Keep at most &lt;n&gt; MiB of unconnectable blocks in memory (default: %u)</source>
-        <translation type="unfinished"/>
+        <translation>Behalte maximal &lt;n&gt;MiB von nicht verbundenen Blöcken im Speicher (Standard: %u)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="244"/>
         <source>Rebuild block chain index from current blk000?.dat files on startup</source>
-        <translation type="unfinished"/>
+        <translation>Erzeuge Blockchain-Index von aktueller blk000?.dat-Datei beim Start</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="245"/>
@@ -3932,7 +3944,7 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="247"/>
         <source>Operate in less secure, less resource hungry &apos;thin&apos; mode</source>
-        <translation type="unfinished"/>
+        <translation>Arbeite im weniger sicheren und weniger Resourcenhungrigen Thin-Mode</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="248"/>
@@ -3942,17 +3954,17 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="249"/>
         <source>When not thinfullindex, the max number of block headers to keep in memory. (default: 4096)</source>
-        <translation type="unfinished"/>
+        <translation>Wenn nicht &apos;thinfullindex&apos;, die maximale Anzahl an im Speicher zu haltenden Block-Headern. (Standard: 4096)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="250"/>
         <source>Disable supporting thin nodes. (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Thin-Node-Unterstützung abschalten. (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="251"/>
         <source>Disable forwarding, or requesting all stealth txns. (default: 0)</source>
-        <translation type="unfinished"/>
+        <translation>Forwarding abschalten (Standard: 0)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="252"/>
@@ -3962,12 +3974,12 @@ If the file does not exist, create it with owner-readable-only file permissions.
     <message>
         <location filename="../bitcoinstrings.cpp" line="253"/>
         <source>Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</source>
-        <translation type="unfinished"/>
+        <translation>Akzeptierte Ciphers (Standard: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="254"/>
         <source>conn</source>
-        <translation type="unfinished"/>
+        <translation>conn</translation>
     </message>
     <message>
         <location filename="../bitcoinstrings.cpp" line="255"/>

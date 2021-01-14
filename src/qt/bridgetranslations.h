@@ -152,6 +152,7 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "Send Payment"),
     QT_TRANSLATE_NOOP("SpectreBridge", "The address to send the payment to"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Enter a label for this address"),
+    QT_TRANSLATE_NOOP("SpectreBridge", "Total balance"),
 
     0 // Leave this here...
 };
