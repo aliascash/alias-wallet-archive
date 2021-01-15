@@ -2058,6 +2058,7 @@ Ring size of one is not anonymous.</source>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="119"/>
+        <location filename="../bridgetranslations.h" line="176"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Transaktionsstatus</translation>
     </message>
@@ -2235,6 +2236,186 @@ Ring size of one is not anonymous.</source>
         <location filename="../bridgetranslations.h" line="154"/>
         <source>Enter a label for this address</source>
         <translation>Bezeichnung für diese Adresse</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="155"/>
+        <source>Total balance</source>
+        <translation>Gesamtguthaben</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="156"/>
+        <source>Balance</source>
+        <translation>Guthaben</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="157"/>
+        <source>Available</source>
+        <translation>Verfügbar</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="158"/>
+        <source>Public</source>
+        <translation>Öffentlich</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="159"/>
+        <source>Private</source>
+        <translation>Privat</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="160"/>
+        <source>Tor+OBFS4 connection online</source>
+        <translation>Tor-/OBFS4-Verbindung hergestellt</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="161"/>
+        <source>Wallet Encryption</source>
+        <translation>Wallet-Verschlüsselung</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="162"/>
+        <source>A short reference for the recipient (max 24 characters)</source>
+        <translation>Kurzbemerkung für den Empfänger (max. 24 Zeichen)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="163"/>
+        <source>ALIAS Denomination Value</source>
+        <translation>Wert der ALIAS-Stückelung</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="164"/>
+        <source>No. Owned (* = Immature)</source>
+        <translation>Anzahl in Besitz (*=unreif)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="165"/>
+        <source>No. System Unspent (* = Immature)</source>
+        <translation>Anzahl nicht ausgegeben (*=unreif)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="166"/>
+        <source>No. available Mixins (* = Immature)</source>
+        <translation>Anzahl verfügbarer Mixins (*=unreif)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="167"/>
+        <source>No. System (** = Compromised)</source>
+        <translation>Anzahl System (**=kompromittiert)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="168"/>
+        <source>The last block a coin of this denomination was created</source>
+        <translation>Der letzte Block, mit dem ein Coin dieser Stückelung erzeugt wurde</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="169"/>
+        <source>Owned (*)</source>
+        <translation>Besitz (*)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="170"/>
+        <source>Unspent (*)</source>
+        <translation>unverbraucht (*)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="171"/>
+        <source>Mixins (*)</source>
+        <translation>Mixins (*)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="172"/>
+        <source>System (**)</source>
+        <translation>System (**)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="173"/>
+        <source>Least Depth</source>
+        <translation>Geringste Tiefe</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="174"/>
+        <source>Value Out</source>
+        <translation>Ausgehender Wert</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="175"/>
+        <source>Value</source>
+        <translation>Wert</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="177"/>
+        <source>Addressbook</source>
+        <translation>Adressbuch</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="178"/>
+        <source>Refresh</source>
+        <translation>Aktualisieren</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="179"/>
+        <source>Hash</source>
+        <translation>Prüfsumme</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="180"/>
+        <source>Height</source>
+        <translation>Höhe</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="181"/>
+        <source>Timestamp</source>
+        <translation>Zeitstempel</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="182"/>
+        <source>Enter a Alias address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
+        <translation>Alias-Adresse eingeben, bspw. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="183"/>
+        <source>An address label for the payment senders address book</source>
+        <translation>Eine Bezeichnung für den Eintrag im Adressbuch</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="184"/>
+        <source>Enter a short note to send with a payment (max 24 characters)</source>
+        <translation>Zur Zahlung mitzusendende Bemerkung (max. 24 Zeichen)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="185"/>
+        <source>Filter by label or address...</source>
+        <translation>Nach Bezeichnung oder Adresse filtern...</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="186"/>
+        <source>Note to send with payment (max 24 characters)</source>
+        <translation>Zur Zahlung mitzusendende Bemerkung (max. 24 Zeichen)</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="187"/>
+        <source>The private address to transfer the balance to</source>
+        <translation>Private Zieladresse, an welche das Guthaben transferiert werden soll</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="188"/>
+        <source>Search by label or address</source>
+        <translation>Suche nach Bezeichnung oder Adresse</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="189"/>
+        <source>Search...</source>
+        <translation>Suche...</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="190"/>
+        <source>Filter outputs</source>
+        <translation>Filtere Outputs</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="191"/>
+        <source>Find Block by hash/height/transaction</source>
+        <translation>Block über Prüfsumme, Höhe oder Transaktion finden</translation>
     </message>
 </context>
 <context>
@@ -2572,7 +2753,7 @@ Ring size of one is not anonymous.</source>
     <message>
         <location filename="../spectregui.cpp" line="688"/>
         <source>Catching up...</source>
-        <translation>Hole auf...</translation>
+        <translation>Nachladen...</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="733"/>

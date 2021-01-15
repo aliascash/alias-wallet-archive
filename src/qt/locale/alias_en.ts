@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="en" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="en">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -2059,6 +2061,7 @@ Ring size of one is not anonymous.</translation>
     </message>
     <message>
         <location filename="../bridgetranslations.h" line="119"/>
+        <location filename="../bridgetranslations.h" line="176"/>
         <source>Transaction status. Hover over this field to show number of confirmations.</source>
         <translation>Transaction status. Hover over this field to show number of confirmations.</translation>
     </message>
@@ -2236,6 +2239,186 @@ Ring size of one is not anonymous.</translation>
         <location filename="../bridgetranslations.h" line="154"/>
         <source>Enter a label for this address</source>
         <translation>Enter a label for this address</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="155"/>
+        <source>Total balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="156"/>
+        <source>Balance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="157"/>
+        <source>Available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="158"/>
+        <source>Public</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="159"/>
+        <source>Private</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="160"/>
+        <source>Tor+OBFS4 connection online</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="161"/>
+        <source>Wallet Encryption</source>
+        <translation type="unfinished">Wallet Encryption</translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="162"/>
+        <source>A short reference for the recipient (max 24 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="163"/>
+        <source>ALIAS Denomination Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="164"/>
+        <source>No. Owned (* = Immature)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="165"/>
+        <source>No. System Unspent (* = Immature)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="166"/>
+        <source>No. available Mixins (* = Immature)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="167"/>
+        <source>No. System (** = Compromised)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="168"/>
+        <source>The last block a coin of this denomination was created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="169"/>
+        <source>Owned (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="170"/>
+        <source>Unspent (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="171"/>
+        <source>Mixins (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="172"/>
+        <source>System (**)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="173"/>
+        <source>Least Depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="174"/>
+        <source>Value Out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="175"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="177"/>
+        <source>Addressbook</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="178"/>
+        <source>Refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="179"/>
+        <source>Hash</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="180"/>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="181"/>
+        <source>Timestamp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="182"/>
+        <source>Enter a Alias address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="183"/>
+        <source>An address label for the payment senders address book</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="184"/>
+        <source>Enter a short note to send with a payment (max 24 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="185"/>
+        <source>Filter by label or address...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="186"/>
+        <source>Note to send with payment (max 24 characters)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="187"/>
+        <source>The private address to transfer the balance to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="188"/>
+        <source>Search by label or address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="189"/>
+        <source>Search...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="190"/>
+        <source>Filter outputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bridgetranslations.h" line="191"/>
+        <source>Find Block by hash/height/transaction</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2477,7 +2660,10 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="562"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation><numerusform>%n active connection to Alias network</numerusform><numerusform>%n active connections to Alias network</numerusform></translation>
+        <translation>
+            <numerusform>%n active connection to Alias network</numerusform>
+            <numerusform>%n active connections to Alias network</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="582"/>
@@ -2523,7 +2709,10 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="617"/>
         <source>~%n block(s) remaining</source>
-        <translation><numerusform>%n block remaining</numerusform><numerusform>%n blocks remaining</numerusform></translation>
+        <translation>
+            <numerusform>%n block remaining</numerusform>
+            <numerusform>%n blocks remaining</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="631"/>
@@ -2538,32 +2727,50 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
         <source>Imported %n block(s) of transaction history.</source>
-        <translation><numerusform>Imported %n block of transaction history.</numerusform><numerusform>Imported %n blocks of transaction history.</numerusform></translation>
+        <translation>
+            <numerusform>Imported %n block of transaction history.</numerusform>
+            <numerusform>Imported %n blocks of transaction history.</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
         <source>Downloaded %n block(s) of transaction history.</source>
-        <translation><numerusform>Downloaded %n block of transaction history.</numerusform><numerusform>Downloaded %n blocks of transaction history.</numerusform></translation>
+        <translation>
+            <numerusform>Downloaded %n block of transaction history.</numerusform>
+            <numerusform>Downloaded %n blocks of transaction history.</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="653"/>
         <source>%n second(s) ago</source>
-        <translation><numerusform>%n second ago</numerusform><numerusform>%n seconds ago</numerusform></translation>
+        <translation>
+            <numerusform>%n second ago</numerusform>
+            <numerusform>%n seconds ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="657"/>
         <source>%n minute(s) ago</source>
-        <translation><numerusform>%n minute ago</numerusform><numerusform>%n minutes ago</numerusform></translation>
+        <translation>
+            <numerusform>%n minute ago</numerusform>
+            <numerusform>%n minutes ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="661"/>
         <source>%n hour(s) ago</source>
-        <translation><numerusform>%n hour ago</numerusform><numerusform>%n hours ago</numerusform></translation>
+        <translation>
+            <numerusform>%n hour ago</numerusform>
+            <numerusform>%n hours ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="664"/>
         <source>%n day(s) ago</source>
-        <translation><numerusform>%n day ago</numerusform><numerusform>%n days ago</numerusform></translation>
+        <translation>
+            <numerusform>%n day ago</numerusform>
+            <numerusform>%n days ago</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="671"/>
@@ -2752,7 +2959,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation><numerusform>Open for %n block</numerusform><numerusform>Open for %n blocks</numerusform></translation>
+        <translation>
+            <numerusform>Open for %n block</numerusform>
+            <numerusform>Open for %n blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="46"/>
@@ -2802,7 +3012,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="92"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, broadcast through %n node</numerusform><numerusform>, broadcast through %n nodes</numerusform></translation>
+        <translation>
+            <numerusform>, broadcast through %n node</numerusform>
+            <numerusform>, broadcast through %n nodes</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="97"/>
@@ -2828,7 +3041,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="117"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>matures in %n more block</numerusform><numerusform>matures in %n more blocks</numerusform></translation>
+        <translation>
+            <numerusform>matures in %n more block</numerusform>
+            <numerusform>matures in %n more blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="120"/>
@@ -2981,7 +3197,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Open for %n more block</numerusform><numerusform>Open for %n more blocks</numerusform></translation>
+        <translation>
+            <numerusform>Open for %n more block</numerusform>
+            <numerusform>Open for %n more blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="331"/>
