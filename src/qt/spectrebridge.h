@@ -197,7 +197,7 @@ signals:
 
     void listAnonOutputsResult(QVariantMap result);
 
-    void translateElement(QString sourceString, QString translatedString);
+    void updateElement(QString sourceString, QString translatedString);
 
 private:
     SpectreGUI *window;

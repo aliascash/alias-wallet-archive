@@ -919,9 +919,9 @@ QString SpectreBridge::getPubKey(QString address)
 
 void SpectreBridge::translateHtmlString(QString string)
 {
-    std::string result = QCoreApplication::translate("SpectreBridge", qPrintable(string)).toStdString();
-    LogPrintf("translateHtmlStringAsync: '%s' -> '%s'\n", string.toStdString(), result);
-    emit translateElement(string, QString::fromStdString(result));
+    std::string result = QCoreApplication::translate("alias-bridge", qPrintable(string)).toStdString();
+    LogPrintf("translateHtmlString: '%s' -> '%s'\n", string.toStdString(), result);
+    emit updateElement(string, QString::fromStdString(result));
 }
 
 void SpectreBridge::getOptions()
