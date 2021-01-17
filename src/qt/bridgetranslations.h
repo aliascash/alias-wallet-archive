@@ -173,7 +173,6 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("SpectreBridge", "Least Depth"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Value Out"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Value"),
-    QT_TRANSLATE_NOOP("SpectreBridge", "Transaction status. Hover over this field to show number of confirmations."),
     QT_TRANSLATE_NOOP("SpectreBridge", "Addressbook"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Refresh"),
     QT_TRANSLATE_NOOP("SpectreBridge", "Hash"),
