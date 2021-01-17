@@ -38,7 +38,7 @@
 
 #include "extkey.h"
 
-#include "bridgetranslations.h"
+#include "aliasbridgestrings.h"
 
 #include <QApplication>
 #include <QThread>
