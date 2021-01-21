@@ -408,7 +408,10 @@ buildBoost() {
     cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
     ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
     #        ./bootstrap.sh
-    ./b2 -j"${CORES_TO_USE}"
+    ./b2 \
+        -j"${CORES_TO_USE}" \
+        --layout=tagged \
+        --build-type=complete
     cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
 }
 
@@ -421,7 +424,7 @@ checkBoost() {
     boostBuildRequired=false
     if [[ -d ${BOOST_LIBRARYDIR} ]]; then
         for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
+            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt-x64.a ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
                 warning " => ${currentBoostDependency}: Not found!"
