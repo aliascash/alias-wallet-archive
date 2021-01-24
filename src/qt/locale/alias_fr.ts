@@ -33,9 +33,9 @@
 Distributed under the MIT/X11 software license, see the accompanying file COPYING or &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) and cryptographic software written by Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) and UPnP software written by Thomas Bernard.</source>
-        <translation>C&apos;est un logiciel expérimental.
+        <translation>Ceci est un logiciel expérimental.
 
-Distribué sous licence logicielle MIT/X11, voyez le fichier COPIER ou bien &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
+Distribué sous licence logicielle MIT/X11, voyez le fichier COPYING ou bien &lt;a href=&quot;http://www.opensource.org/licenses/mit-license.php&quot;&gt;http://www.opensource.org/licenses/mit-license.php&lt;/a&gt;.
 
 Ce produit contient du logiciel développé par le OpenSSL Project pour usage dans le OpenSSL Toolkit (&lt;a href=&quot;https://www.openssl.org/&quot;&gt;https://www.openssl.org/&lt;/a&gt;) et logiciel cryptographique écrit par Eric Young (&lt;a href=&quot;mailto:eay@cryptsoft.com&quot;&gt;eay@cryptsoft.com&lt;/a&gt;) et logiciel UPnP écrit par Thomas Bernard.</translation>
     </message>
@@ -769,7 +769,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location filename="../setupwalletwizard.cpp" line="325"/>
         <source>You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.&lt;br&gt;You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly.</source>
-        <translation>Vous avez besoin de la phrase mnémotechnique pour restaurer ce portefeuille. Notez la quelque part et gardez-là en lieu sûr..Nous vous demanderons de confirmer votre phrase mnémotechnique sur le prochain écran pour s&apos;assurer que vous l&apos;avez saisie correctement.</translation>
+        <translation>Vous avez besoin de la phrase mnémotechnique pour restaurer ce portefeuille. Notez la quelque part et gardez-là en lieu sûr. Nous vous demanderons de confirmer votre phrase mnémotechnique sur le prochain écran pour s&apos;assurer que vous l&apos;avez saisie correctement.</translation>
     </message>
 </context>
 <context>
@@ -820,7 +820,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location filename="../setupwalletwizard.cpp" line="408"/>
         <source>Create private keys with Mnemonic Recovery Seed Words</source>
-        <translation>Créer les clés privée au moyen de la phrase mnémotechnique</translation>
+        <translation>Créer les clés privées au moyen de la phrase mnémotechnique</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="409"/>
@@ -1532,711 +1532,6 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
         <source>Transaction successfully created.</source>
         <translation>Transaction créée avec succès.</translation>
     </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="14"/>
-        <source>Overview</source>
-        <translation>Vue d&apos;ensemble</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="15"/>
-        <source>Wallet</source>
-        <translation>Portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="16"/>
-        <source>Send</source>
-        <translation>Envoyer</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="17"/>
-        <source>Receive</source>
-        <translation>Recevoir</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="18"/>
-        <source>Transactions</source>
-        <translation>Transactions</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="19"/>
-        <source>Address Book</source>
-        <translation>Carnet d&apos;adresses</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="20"/>
-        <source>Notifications</source>
-        <translation>Notifications</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="21"/>
-        <source>Options</source>
-        <translation>Options</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="22"/>
-        <source>Wallet Management</source>
-        <translation>Gestion du portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="23"/>
-        <source>Add New Wallet</source>
-        <translation>Ajouter nouveau portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="24"/>
-        <source>Import Wallet</source>
-        <translation>Importer portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="25"/>
-        <source>Advanced</source>
-        <translation>Avancé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="26"/>
-        <source>Backup</source>
-        <translation>Sauvegarde</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="27"/>
-        <source>Backup Wallet</source>
-        <translation>Sauvegarder portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="28"/>
-        <source>Encrypt Wallet</source>
-        <translation>Chiffrer portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="29"/>
-        <source>Change Passphrase</source>
-        <translation>Changer phrase de chiffrement</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="30"/>
-        <source>(Un)lock Wallet</source>
-        <translation>(Dé)verrouiller portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="31"/>
-        <source>Tools</source>
-        <translation>Outils</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="32"/>
-        <source>Chain Data</source>
-        <translation>Données de chaîne</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="33"/>
-        <source>Block Explorer</source>
-        <translation>Explorateur de blocs</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="34"/>
-        <source>Sign Message</source>
-        <translation>Signer message</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="35"/>
-        <source>Verify Message</source>
-        <translation>Vérifier message</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="36"/>
-        <source>Debug</source>
-        <translation>Déboggage</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="37"/>
-        <source>About Alias</source>
-        <translation>A propos d&apos;Alias</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="38"/>
-        <source>About QT</source>
-        <translation>A propos de QT</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="39"/>
-        <source>QR code</source>
-        <translation>QR code</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="40"/>
-        <source>Address:</source>
-        <translation>Adresse:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="41"/>
-        <source>Label:</source>
-        <translation>Étiquette:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="42"/>
-        <source>Narration:</source>
-        <translation>Histoire:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="43"/>
-        <source>Amount:</source>
-        <translation>Montant:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="44"/>
-        <source>Add new receive address</source>
-        <translation>Ajouter nouvelle adresse de réception</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="45"/>
-        <source>Add Address</source>
-        <translation>Ajouter adresse</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="46"/>
-        <source>Add a new contact</source>
-        <translation>Ajouter un nouveau contact</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="47"/>
-        <source>Address Lookup</source>
-        <translation>Recherche d&apos;adresse</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="48"/>
-        <source>Address Type</source>
-        <translation>Type d&apos;adresse</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="49"/>
-        <source>Normal</source>
-        <translation>Normal</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="50"/>
-        <source>Stealth</source>
-        <translation>Furtif</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="51"/>
-        <source>Group</source>
-        <translation>Groupe</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="52"/>
-        <source>BIP32</source>
-        <translation>BIP32</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="53"/>
-        <source>Label</source>
-        <translation>Étiquette</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="54"/>
-        <source>Address</source>
-        <translation>Adresse</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="55"/>
-        <source>Public Key</source>
-        <translation>Clé publique</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="56"/>
-        <source>Transaction Hash</source>
-        <translation>Hachage de transaction</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="57"/>
-        <source>Recent Transactions</source>
-        <translation>Transaction récentes</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="58"/>
-        <source>Market</source>
-        <translation>Marché</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="59"/>
-        <source>Advanced Options</source>
-        <translation>Options avancées</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="60"/>
-        <source>Coin Control</source>
-        <translation>Contrôle du jeton</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="61"/>
-        <source>Make payment</source>
-        <translation>Effectuer paiement</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="62"/>
-        <source>Balance transfer</source>
-        <translation>Transférer balance</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="63"/>
-        <source>Select Inputs</source>
-        <translation>Choisir entrées</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="64"/>
-        <source>Automatically selected</source>
-        <translation>Sélectionné automatiquement</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="65"/>
-        <source>Quantity:</source>
-        <translation>Quantité:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="66"/>
-        <source>Fee:</source>
-        <translation>Frais:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="67"/>
-        <source>After Fee:</source>
-        <translation>Après frais:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="68"/>
-        <source>Bytes:</source>
-        <translation>Octets:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="69"/>
-        <source>Priority:</source>
-        <translation>Priorité:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="70"/>
-        <source>LowOutput:</source>
-        <translation>Sortie faible:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="71"/>
-        <source>Change:</source>
-        <translation>Change:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="72"/>
-        <source>Custom change address</source>
-        <translation>Changement d&apos;adresse avancé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="73"/>
-        <source>From account</source>
-        <translation>Depuis le compte</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="74"/>
-        <source>PUBLIC</source>
-        <translation>PUBLIC</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="75"/>
-        <source>PRIVATE</source>
-        <translation>PRIVÉ</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="76"/>
-        <source>Balance:</source>
-        <translation>Balance:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="77"/>
-        <source>Ring Size:</source>
-        <translation>Taille d&apos;anneau:</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="78"/>
-        <source>To account</source>
-        <translation>Vers le compte</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="79"/>
-        <source>Pay to</source>
-        <translation>Payer à </translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="80"/>
-        <source>(no label)</source>
-        <translation>(aucune étiquette)</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="81"/>
-        <source>Master</source>
-        <translation>Maître</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="82"/>
-        <source>Tor connection offline</source>
-        <translation>Connexion Tor hors-ligne</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="83"/>
-        <source>i2p connection offline</source>
-        <translation>Connexion i2p hors-ligne</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="84"/>
-        <source>Wallet is encrypted and currently locked</source>
-        <translation>Le portefeuille est chiffré et actuellement verrouillé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="85"/>
-        <source>Not staking because wallet is locked</source>
-        <translation>Pas de staking car le portefeuille est vérrouillé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="86"/>
-        <source>0 active connection(s) to Alias network</source>
-        <translation>0 connexion(s) active vers le réseau Alias</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="87"/>
-        <source>Wallet is syncing</source>
-        <translation>Portefeuille en cours de synchronisation</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="88"/>
-        <source>Enter a label for this address to add it to your address book</source>
-        <translation>Entrer une étiquette pour cette adresse à ajouter dans le carnet d&apos;adresses</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="89"/>
-        <source>Enter a address to add it to your address book</source>
-        <translation>Entrer une adresse à ajouter dans le carnet d&apos;adresses</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="90"/>
-        <source>Inputs</source>
-        <translation>Entrées</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="91"/>
-        <source>Values</source>
-        <translation>Valeurs</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="92"/>
-        <source>Outputs</source>
-        <translation>Sorties</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="93"/>
-        <source>Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
-        <translation>Entrer une adresse Alias pour signer le message avec (exemple: SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="94"/>
-        <source>Enter the message you want to sign</source>
-        <translation>Entrer le message que voulez signer</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="95"/>
-        <source>Click sign message to generate signature</source>
-        <translation>Cliquer sur signer message pour générer la signature</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="96"/>
-        <source>Copy the signed message signature</source>
-        <translation>Copier la signature du message signé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="97"/>
-        <source>Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
-        <translation>Entrer une adresse Alias pour signer le message avec (exemple: SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="98"/>
-        <source>Enter the message you want to verify</source>
-        <translation>Entrer le message que voulez vérifier</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="99"/>
-        <source>Enter a Alias signature</source>
-        <translation>Entrer une signature Alias</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="100"/>
-        <source>Paste signature from clipboard</source>
-        <translation>Copier la signature depuis le presse-papiers</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="101"/>
-        <source>Your total balance</source>
-        <translation>Votre balance totale</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="102"/>
-        <source>Balances overview</source>
-        <translation>Vue générale des balances</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="103"/>
-        <source>Recent in/out transactions or stakes</source>
-        <translation>Récentes transactions entrantes/sortantes ou stakes</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="104"/>
-        <source>Select inputs to spend</source>
-        <translation>Sélectionner les entrées à dépenser</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="105"/>
-        <source>Optional address to receive transaction change</source>
-        <translation>Adresse optionnelle pour recevoir le changement de transaction</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="106"/>
-        <source>Choose from address book</source>
-        <translation>Choisir depuis carnet d&apos;adresses</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="107"/>
-        <source>Paste address from clipboard</source>
-        <translation>Copier adresse depuis le presse-papiers</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="108"/>
-        <source>Remove this recipient</source>
-        <translation>Enlever ce récepteur</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="109"/>
-        <source>Send from public or private</source>
-        <translation>Envoyer depuis public ou privé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="110"/>
-        <source>Current spendable send payment balance</source>
-        <translation>Balance de paiement courante envoyable</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="111"/>
-        <source>Send to public or private</source>
-        <translation>Envoyer vers public ou privé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="112"/>
-        <source>Current spendable balance to account</source>
-        <translation>Balance de paiement envoyable vers un compte</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="113"/>
-        <source>The address transfer the balance to</source>
-        <translation>L&apos;adresse vers laquelle transférer la balance</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="114"/>
-        <source>The address to transfer the balance to</source>
-        <translation>L&apos;adresse vers laquelle transférer la balance</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="115"/>
-        <source>The label for this address</source>
-        <translation>L&apos;étiquette pour cette adresse</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="116"/>
-        <source>Amount to transfer</source>
-        <translation>Montant à transférer</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="117"/>
-        <source>Send to multiple recipients at once</source>
-        <translation>Envoyer à plusieurs récepteurs en une fois</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="118"/>
-        <source>Date and time that the transaction was received.</source>
-        <translation>Date et heure à laquelle la transaction a été reçue</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="119"/>
-        <source>Transaction status. Hover over this field to show number of confirmations.</source>
-        <translation>Statut de la transaction. Survolez cette zone avec la souris pour afficher le nombre de confirmations</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="120"/>
-        <source>Type of transaction.</source>
-        <translation>Type de transaction.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="121"/>
-        <source>Destination address of transaction.</source>
-        <translation>Adresse de destination de la transaction.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="122"/>
-        <source>Short payment note.</source>
-        <translation>Courte note de paiement.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="123"/>
-        <source>Amount removed from or added to balance.</source>
-        <translation>Montant enlevé ou ajouté à la balance.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="124"/>
-        <source>The address to send the payment to  (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
-        <translation>L&apos; adresse vers laquelle envoyer le paiement  (Exemple: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="125"/>
-        <source>Choose address from address book</source>
-        <translation>Choisir adresse depuis le carnet d&apos;adresses</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="126"/>
-        <source>Enter a public key for the address above</source>
-        <translation>Entrer une clé publique pour l&apos;adresse ci-dessus</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="127"/>
-        <source>Enter a label for this group</source>
-        <translation>Entrer une étiquette pour ce groupe</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="128"/>
-        <source>Name for this Wallet</source>
-        <translation>Nom pour ce portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="129"/>
-        <source>Enter a password</source>
-        <translation>Entrer un mot de passe</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="130"/>
-        <source>Would you like to create a bip44 path?</source>
-        <translation>Voulez-vous créer un chemin bip44?</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="131"/>
-        <source>Your recovery phrase (Keep this safe!)</source>
-        <translation>Votre phrase de récupération (gardez-la en sécurité)</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="132"/>
-        <source>Recovery Phrase</source>
-        <translation>Phrase de récupération</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="133"/>
-        <source>Wallet Name for recovered account</source>
-        <translation>Nom de portefeuille pour le compte récupéré</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="134"/>
-        <source>Enter the password for the wallet you are trying to recover</source>
-        <translation>Entrer le mot de passe du portefeuille que vous essayez de récupérer </translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="135"/>
-        <source>Is this a bip44 path?</source>
-        <translation>Est-ce un chemin bip44?</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="136"/>
-        <source>ID</source>
-        <translation>ID</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="137"/>
-        <source>Created</source>
-        <translation>Créé</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="138"/>
-        <source>Active Account</source>
-        <translation>Compte actif</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="139"/>
-        <source>Default</source>
-        <translation>Par défaut</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="140"/>
-        <source>Path</source>
-        <translation>Chemin</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="141"/>
-        <source>Active</source>
-        <translation>Actif</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="142"/>
-        <source>Amount</source>
-        <translation>Montant</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="143"/>
-        <source>Note</source>
-        <translation>Note</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="144"/>
-        <source>Public coins, visible on blockchain</source>
-        <translation>Jetons publics, visibles sur la chaîne de blocs</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="145"/>
-        <source>Private coins, untraceable and unlinkable on blockchain</source>
-        <translation>Jeton privés, intraçables et impossible à relier sur la chaîne de blocs</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="146"/>
-        <source>Available coins for spending</source>
-        <translation>Jetons disponibles pour dépense</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="147"/>
-        <source>Reserved coins are not used for staking</source>
-        <translation>Les jetons de réserve ne sont pas utilisés pour staking</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="148"/>
-        <source>Staked coins must mature before they can be accessed</source>
-        <translation>Les jetons stakés doivent mûrir avant de pouvoir y accéder</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="149"/>
-        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
-        <translation>ALIAS Public nécessite 1 confirmation de bloc&lt;br&gt;ALIAS Privé nécessite 10 confirmations de blocs.</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="150"/>
-        <source>Type</source>
-        <translation>Type</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="151"/>
-        <source>Date</source>
-        <translation>Date</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="152"/>
-        <source>Send Payment</source>
-        <translation>Envoyer paiement</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="153"/>
-        <source>The address to send the payment to</source>
-        <translation>L&apos;adresse d&apos;envoi du paiement</translation>
-    </message>
-    <message>
-        <location filename="../bridgetranslations.h" line="154"/>
-        <source>Enter a label for this address</source>
-        <translation>Entrer une étiquette pour cette adresse</translation>
-    </message>
 </context>
 <context>
     <name>SpectreGUI</name>
@@ -2477,7 +1772,7 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="562"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation><numerusform>1 connexion active au réseau Alias</numerusform><numerusform>%n connexions actives au réseau Alias</numerusform></translation>
+        <translation><numerusform>1 connexion active au réseau Alias</numerusform><numerusform>%n connexions au réseau Alias sont actives</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="582"/>
@@ -2533,7 +1828,7 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
     <message>
         <location filename="../spectregui.cpp" line="632"/>
         <source>Downloaded %1 of %2 %3 of transaction history (%4% done).</source>
-        <translation>Téléchargé %1 de %2 %3 de l&apos;historique des transactions (%4% effectué).</translation>
+        <translation>Téléchargement %1 des %2 %3 de l&apos;historique des transactions (%4% effectués).</translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
@@ -2573,7 +1868,7 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
     <message>
         <location filename="../spectregui.cpp" line="688"/>
         <source>Catching up...</source>
-        <translation>Synchronisation...</translation>
+        <translation>A la recherche du temps perdu...</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="733"/>
@@ -2636,7 +1931,7 @@ Note: %2
     <message>
         <location filename="../spectregui.cpp" line="947"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
-        <translation>Le portefeuille est  &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;vérrouillé&lt;/b&gt;</translation>
+        <translation>Le portefeuille est  &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;verrouillé&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="979"/>
@@ -3074,14 +2369,847 @@ Note: %2
     </message>
 </context>
 <context>
+    <name>alias-bridge</name>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="14"/>
+        <source>Overview</source>
+        <translation>Vue générale</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="15"/>
+        <source>Wallet</source>
+        <translation>Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="16"/>
+        <source>Send</source>
+        <translation>Envoyer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="17"/>
+        <source>Receive</source>
+        <translation>Recevoir</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="18"/>
+        <source>Transactions</source>
+        <translation>Transactions</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="19"/>
+        <source>Address Book</source>
+        <translation>Carnet d&apos;adresses</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="20"/>
+        <source>Options</source>
+        <translation>Options</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="23"/>
+        <source>Advanced</source>
+        <translation>Avancé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="24"/>
+        <source>Backup Wallet</source>
+        <translation>Sauvegarder Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="25"/>
+        <source>Encrypt Wallet</source>
+        <translation>Chiffrer Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="26"/>
+        <source>Change Passphrase</source>
+        <translation>Changer phrase chiffrement</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="27"/>
+        <source>(Un)lock Wallet</source>
+        <translation>(Dé)verrouiller Portefeuille </translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="28"/>
+        <source>Tools</source>
+        <translation>Outils</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="29"/>
+        <source>Chain Data</source>
+        <translation>Données de chaine de blocs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="30"/>
+        <source>Block Explorer</source>
+        <translation>Explorateur de blocs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="31"/>
+        <source>Sign Message</source>
+        <translation>Signer message</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="32"/>
+        <source>Verify Message</source>
+        <translation>Vérifier message</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="33"/>
+        <source>Debug</source>
+        <translation>Debogage</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="34"/>
+        <source>About Alias</source>
+        <translation>A propos d&apos;Alias</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="35"/>
+        <source>About QT</source>
+        <translation>A propos de QT</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="36"/>
+        <source>QR code</source>
+        <translation>QR code</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="37"/>
+        <source>Address:</source>
+        <translation>Adresse:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="38"/>
+        <source>Label:</source>
+        <translation>Etiquette:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="39"/>
+        <source>Amount:</source>
+        <translation>Montant:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="40"/>
+        <source>Add new receive address</source>
+        <translation>Ajouter nouvelles adresses de réception</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="41"/>
+        <source>Add Address</source>
+        <translation>Ajouter adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="42"/>
+        <source>Add a new contact</source>
+        <translation>Ajouter nouveau contact</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="43"/>
+        <source>Address Lookup</source>
+        <translation>Recherche d&apos;adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="44"/>
+        <source>Address Type</source>
+        <translation>Type d&apos;adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="45"/>
+        <source>Stealth</source>
+        <translation>Furtif</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="46"/>
+        <source>Group</source>
+        <translation>Groupe</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="47"/>
+        <source>BIP32</source>
+        <translation>BIP32</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="48"/>
+        <source>Label</source>
+        <translation>Etiquette</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="49"/>
+        <source>Address</source>
+        <translation>Adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="50"/>
+        <source>Public Key</source>
+        <translation>Clé publique</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="51"/>
+        <source>Transaction Hash</source>
+        <translation>Transaction Hash</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="52"/>
+        <source>Recent Transactions</source>
+        <translation>Transactions récentes</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="54"/>
+        <source>Coin Control</source>
+        <translation>Contrôle du jeton</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="55"/>
+        <source>Make payment</source>
+        <translation>Effectuer un paiement</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="56"/>
+        <source>Balance transfer</source>
+        <translation>Transfert de balance</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="57"/>
+        <source>Select Inputs</source>
+        <translation>Sélectionner entrées</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="58"/>
+        <source>Automatically selected</source>
+        <translation>Sélectionné automatiquement</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="59"/>
+        <source>Quantity:</source>
+        <translation>Quantité:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="60"/>
+        <source>Fee:</source>
+        <translation>Frais:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="61"/>
+        <source>After Fee:</source>
+        <translation>Après frais:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="62"/>
+        <source>Bytes:</source>
+        <translation>Octets:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="63"/>
+        <source>Priority:</source>
+        <translation>Priorité:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="64"/>
+        <source>LowOutput:</source>
+        <translation>Sortie Faible:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="65"/>
+        <source>Change:</source>
+        <translation>Echange:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="66"/>
+        <source>Custom change address</source>
+        <translation>Personnaliser adresse d&apos;échange</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="67"/>
+        <source>From account</source>
+        <translation>Depuis le compte</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="68"/>
+        <source>PUBLIC</source>
+        <translation>PUBLIC</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="69"/>
+        <source>PRIVATE</source>
+        <translation>PRIVÉ</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="70"/>
+        <source>Balance:</source>
+        <translation>Balance:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="71"/>
+        <source>Ring Size:</source>
+        <translation>Taille de l&apos;anneau:</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="72"/>
+        <source>To account</source>
+        <translation>Vers le compte</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="73"/>
+        <source>Pay to</source>
+        <translation>Payer à </translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="74"/>
+        <source>(no label)</source>
+        <translation>(pas d&apos;étiquette)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="75"/>
+        <source>Master</source>
+        <translation>Maître</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="76"/>
+        <source>Wallet is encrypted and currently locked</source>
+        <translation>Le portefeuille est chiffré et actuellement verrouillé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="77"/>
+        <source>Not staking because wallet is locked</source>
+        <translation>Pas de staking car le portefeuille est verrouillé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="78"/>
+        <source>0 active connection(s) to Alias network</source>
+        <translation>0 connexion active(s) au réseau Alias</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="79"/>
+        <source>Enter a label for this address to add it to your address book</source>
+        <translation>Entrer une étiquette pour cette adresse pour l&apos;ajouter à votre carnet</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="80"/>
+        <source>Enter a address to add it to your address book</source>
+        <translation>Entrer une adresse pour l&apos;ajouter à votre carnet</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="81"/>
+        <source>Inputs</source>
+        <translation>Entrées</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="82"/>
+        <source>Values</source>
+        <translation>Valeurs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="83"/>
+        <source>Outputs</source>
+        <translation>Sorties</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="84"/>
+        <source>Enter a Alias address to sign the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
+        <translation>Saisir une adresse Alias pour signer le message à envoyer (ex: SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="85"/>
+        <source>Enter the message you want to sign</source>
+        <translation>Saisir le message que vous voulez signer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="86"/>
+        <source>Click sign message to generate signature</source>
+        <translation>Cliquez sur signer message pour générer la signature </translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="87"/>
+        <source>Copy the signed message signature</source>
+        <translation>Copier la signature du message signé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="88"/>
+        <source>Enter a Alias address to verify the message with (e.g. SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</source>
+        <translation>Saisir une adresse Alias pour vérifier le message à envoyer (ex: SaKYqfD8J3vw4RTnqtgk2K9B67CBaL3mhV)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="89"/>
+        <source>Enter the message you want to verify</source>
+        <translation>Saisir le message à vérifier</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="90"/>
+        <source>Enter a Alias signature</source>
+        <translation>Entrer une signature Alias</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="91"/>
+        <source>Paste signature from clipboard</source>
+        <translation>Copier la signature depuis le presse-papiers</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="92"/>
+        <source>Your total balance</source>
+        <translation>Votre balance totale</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="94"/>
+        <source>Recent in/out transactions or stakes</source>
+        <translation>Transactions entrantes/sortantes récentes ou stakes</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="95"/>
+        <source>Select inputs to spend</source>
+        <translation>Sélectionner entrées à dépenser</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="96"/>
+        <source>Optional address to receive transaction change</source>
+        <translation>Adresse optionnelle pour recevoir le changement de transaction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="97"/>
+        <source>Choose from address book</source>
+        <translation>Choisir depuis carnet d&apos;adresses</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="98"/>
+        <source>Paste address from clipboard</source>
+        <translation>Coller adresse depuis le presse-papiers</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="99"/>
+        <source>Remove this recipient</source>
+        <translation>Enlever ce récipendiaire</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="100"/>
+        <source>Send from public or private</source>
+        <translation>Envoyer depuis public ou privé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="101"/>
+        <source>Current spendable send payment balance</source>
+        <translation>Balance actuelle utilisable pour payer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="102"/>
+        <source>Send to public or private</source>
+        <translation>Envoyer vers public ou privé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="103"/>
+        <source>Current spendable balance to account</source>
+        <translation>Balance actuelle vers compte</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="104"/>
+        <source>The label for this address</source>
+        <translation>L&apos;étiquette pour cette adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="105"/>
+        <source>Amount to transfer</source>
+        <translation>Montant à transférer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="106"/>
+        <source>Send to multiple recipients at once</source>
+        <translation>Envoyer à des destinataires multiples</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="107"/>
+        <source>Date and time that the transaction was received.</source>
+        <translation>Date et heure de réception de la transaction.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="108"/>
+        <source>Transaction status. Hover over this field to show number of confirmations.</source>
+        <translation>Statut de transaction. Survoler cette zone pour afficher le nombre de confirmations.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="109"/>
+        <source>Type of transaction.</source>
+        <translation>Type de transaction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="110"/>
+        <source>Destination address of transaction.</source>
+        <translation>Adresse de destination de transaction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="111"/>
+        <source>Short payment note.</source>
+        <translation>Court commentaire de paiement.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="112"/>
+        <source>Amount removed from or added to balance.</source>
+        <translation>Montant enlevé ou ajouté à la balance</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="113"/>
+        <source>Name for this Wallet</source>
+        <translation>Nom pour ce portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="114"/>
+        <source>Enter a password</source>
+        <translation>Saisir un mot de passe</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="115"/>
+        <source>Would you like to create a bip44 path?</source>
+        <translation>Voulez-vous créer un chemin bip44?</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="116"/>
+        <source>Your recovery phrase (Keep this safe!)</source>
+        <translation>Votre phrase de récupération (Gardez-la précieusement!)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="117"/>
+        <source>Recovery Phrase</source>
+        <translation>Phrase de récupération</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="118"/>
+        <source>Wallet Name for recovered account</source>
+        <translation>Nom du portefeuille pour le compte récupéré</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="119"/>
+        <source>Enter the password for the wallet you are trying to recover</source>
+        <translation>Saisir le mot de passe pour le portefeuille que vous essayez de récupérer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="120"/>
+        <source>Is this a bip44 path?</source>
+        <translation>Est-ce un chemin bip44?</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="121"/>
+        <source>ID</source>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="122"/>
+        <source>Created</source>
+        <translation>Créé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="123"/>
+        <source>Active Account</source>
+        <translation>Compte actif</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="124"/>
+        <source>Default</source>
+        <translation>Par défaut</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="125"/>
+        <source>Path</source>
+        <translation>Chemin</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="126"/>
+        <source>Active</source>
+        <translation>Actif</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="127"/>
+        <source>Amount</source>
+        <translation>Montant</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="128"/>
+        <source>Note</source>
+        <translation>Note</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="129"/>
+        <source>Public coins, visible on blockchain</source>
+        <translation>Jetons publics, visibles sur la chaine de blocs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="130"/>
+        <source>Private coins, untraceable and unlinkable on blockchain</source>
+        <translation>Jetons privés, intraçables et impossibles à relier sur la chaine de blocs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="131"/>
+        <source>Available coins for spending</source>
+        <translation>Jetons disponibles pour dépense</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="132"/>
+        <source>Reserved coins are not used for staking</source>
+        <translation>Jetons réservés non utilisés pour staking</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="133"/>
+        <source>Staked coins must mature before they can be accessed</source>
+        <translation>Les jetons stakés doivent mûrir avant d&apos;être accessibles</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="134"/>
+        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
+        <translation>ALIAS Public nécessite 1 confirmation de bloc&lt;br&gt;ALIAS Privé nécessite 10 confirmations de bloc</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="135"/>
+        <source>Type</source>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="136"/>
+        <source>Date</source>
+        <translation>Date</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="137"/>
+        <source>Send Payment</source>
+        <translation>Envoyer paiement</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="138"/>
+        <source>The address to send the payment to</source>
+        <translation>Adresse d&apos;envoi du paiement</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="139"/>
+        <source>Enter a label for this address</source>
+        <translation>Entrer une étiquette pour cette adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="21"/>
+        <source>Add Sub-Wallet</source>
+        <translation>Ajouter Sous-Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="22"/>
+        <source>Immature generated coins with Proof-of-Work</source>
+        <translation>Coins non mûrs générés avec Proof-of-Work</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="53"/>
+        <source>Blockchain Info</source>
+        <translation>Info de chaine de blocs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="93"/>
+        <source>Checking wallet state with network</source>
+        <translation>Vérification de l&apos;état du portefeuille avec le réseau</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="140"/>
+        <source>Total Balance</source>
+        <translation>Balance totale</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="141"/>
+        <source>Balance</source>
+        <translation>Balance</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="142"/>
+        <source>Available</source>
+        <translation>Disponible</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="143"/>
+        <source>Public</source>
+        <translation>Public</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="144"/>
+        <source>Private</source>
+        <translation>Privé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="145"/>
+        <source>Tor+OBFS4 connection online</source>
+        <translation>Connexion Tor+OBFS4 En ligne</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="146"/>
+        <source>Wallet Encryption</source>
+        <translation>Chiffr. Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="147"/>
+        <source>A short reference for the recipient (max 24 characters)</source>
+        <translation>Une courte référence pour pour le destinataire (24 caractères max)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="148"/>
+        <source>ALIAS Denomination Value</source>
+        <translation>Valeur dénomination ALIAS</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="149"/>
+        <source>No. Owned (* = Immature)</source>
+        <translation>Nb possédés (*=Pas mûrs)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="150"/>
+        <source>No. System Unspent (* = Immature)</source>
+        <translation>Nb Système non dépensés  (*=Pas mûrs)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="151"/>
+        <source>No. available Mixins (* = Immature)</source>
+        <translation>Nb Mixins disponibles (*=Pas mûrs)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="152"/>
+        <source>No. System (** = Compromised)</source>
+        <translation>Nb Système (*=Compromis)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="153"/>
+        <source>The last block a coin of this denomination was created</source>
+        <translation>Sur le dernier bloc un jeton avec ce nom a été créé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="154"/>
+        <source>Owned (*)</source>
+        <translation>Possédés (*)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="155"/>
+        <source>Unspent (*)</source>
+        <translation>Non dépensés (*)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="156"/>
+        <source>Mixins (*)</source>
+        <translation>Mixins (*)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="157"/>
+        <source>System (**)</source>
+        <translation>Système (*)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="158"/>
+        <source>Least Depth</source>
+        <translation>Least Depth</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="159"/>
+        <source>Value Out</source>
+        <translation>Valeur sortante</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="160"/>
+        <source>Value</source>
+        <translation>Valeur</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="161"/>
+        <source>Addressbook</source>
+        <translation>Carnet d&apos;adresses</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="162"/>
+        <source>Refresh</source>
+        <translation>Rafraîchir</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="163"/>
+        <source>Hash</source>
+        <translation>Hash</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="164"/>
+        <source>Height</source>
+        <translation>Hauteur</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="165"/>
+        <source>Timestamp</source>
+        <translation>Horodatage</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="166"/>
+        <source>Enter a Alias address (e.g. SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</source>
+        <translation>Saisir une adresse Alias (Ex: SXywGBZBowrppUwwNUo1GCRDTibzJi7g2M)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="167"/>
+        <source>An address label for the payment senders address book</source>
+        <translation>Une étiquette d&apos;adresse pour le carnet d&apos;adresses de payeurs</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="168"/>
+        <source>Enter a short note to send with a payment (max 24 characters)</source>
+        <translation>Saisissez une note à envoyer avec le paiement (24 caractères max)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="169"/>
+        <source>Filter by label or address...</source>
+        <translation>Filtrer par étiquette ou adresse...</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="170"/>
+        <source>Note to send with payment (max 24 characters)</source>
+        <translation>Note à envoyer avec le paiement (24 caractères max)</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="171"/>
+        <source>The private address to transfer the balance to</source>
+        <translation>L&apos;adresse privée à laquelle transférer la balance</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="172"/>
+        <source>Search by label or address</source>
+        <translation>Recherche par étiquette ou adresse</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="173"/>
+        <source>Search</source>
+        <translation>Recherche</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="176"/>
+        <source>Family vacation funds</source>
+        <translation>Fonds pour congés en famille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="177"/>
+        <source>Grouping will consolidate transactions of chosen</source>
+        <translation>Grouper va consolider les transactions choisies</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="178"/>
+        <source>Reset form</source>
+        <translation>Formulaire de réinitialisation</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="179"/>
+        <source>Restore Sub-Wallet</source>
+        <translation>Restaurer Sous-Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="174"/>
+        <source>Filter outputs</source>
+        <translation>Filtrer sorties</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="175"/>
+        <source>Find Block by hash/height/transaction</source>
+        <translation>Trouver bloc par hash/hauteur/transaction</translation>
+    </message>
+</context>
+<context>
     <name>alias-core</name>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="15"/>
+        <location filename="../aliascorestrings.h" line="15"/>
         <source>To use the %s option</source>
         <translation>Pour utiliser l&apos;option %s </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="16"/>
+        <location filename="../aliascorestrings.h" line="16"/>
         <source>%s, you must set a rpcpassword in the configuration file:
 %s
 It is recommended you use the following random password:
@@ -3106,22 +3234,22 @@ par exemple : alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.c
 </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="29"/>
+        <location filename="../aliascorestrings.h" line="29"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="30"/>
+        <location filename="../aliascorestrings.h" line="30"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv6, falling back to IPv4: %s</source>
         <translation>Une erreur s&apos;est produite en configurant le port RPC %u pour écouter sur IPv6, retombant sur IPv4: %s</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="33"/>
+        <location filename="../aliascorestrings.h" line="33"/>
         <source>An error occurred while setting up the RPC port %u for listening on IPv4: %s</source>
         <translation>Une erreur s&apos;est produite en configurant le port RPC %u pour écouter sur IPv4: %s</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="35"/>
+        <location filename="../aliascorestrings.h" line="35"/>
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
@@ -3130,891 +3258,891 @@ If the file does not exist, create it with owner-readable-only file permissions.
 Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owner-readable-only.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="40"/>
+        <location filename="../aliascorestrings.h" line="40"/>
         <source>Alias version</source>
         <translation>Alias version</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="41"/>
+        <location filename="../aliascorestrings.h" line="41"/>
         <source>Usage:</source>
         <translation>Utilisation:</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="42"/>
+        <location filename="../aliascorestrings.h" line="42"/>
         <source>Send command to -server or aliaswalletd</source>
         <translation>Envoyer des commandes à -server ou aliaswalletd</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="43"/>
+        <location filename="../aliascorestrings.h" line="43"/>
         <source>List commands</source>
         <translation>Lister commandes</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="44"/>
+        <location filename="../aliascorestrings.h" line="44"/>
         <source>Get help for a command</source>
         <translation>Obtenir de l&apos;aide pour une commande</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="45"/>
+        <location filename="../aliascorestrings.h" line="45"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="46"/>
+        <location filename="../aliascorestrings.h" line="46"/>
         <source>Options:</source>
         <translation>Options:</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="47"/>
+        <location filename="../aliascorestrings.h" line="47"/>
         <source>This help message</source>
         <translation>Ce message d&apos;aide</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="48"/>
+        <location filename="../aliascorestrings.h" line="48"/>
         <source>Specify configuration file (default: alias.conf)</source>
         <translation>Spécifier le fichier de configuration (par défaut : alias.conf)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="49"/>
+        <location filename="../aliascorestrings.h" line="49"/>
         <source>Specify pid file (default: alias.pid)</source>
         <translation>Spécifier le fichier pid (par défaut : alias.pid)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="50"/>
+        <location filename="../aliascorestrings.h" line="50"/>
         <source>Specify data directory</source>
         <translation>Spécifier le répertoire de données</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="51"/>
+        <location filename="../aliascorestrings.h" line="51"/>
         <source>Specify wallet file (within data directory)</source>
         <translation>Spécifier le fichier portefeuille (à l&apos;intérieur du répertoire de données)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="52"/>
+        <location filename="../aliascorestrings.h" line="52"/>
         <source>Set database cache size in megabytes (default: 25)</source>
         <translation>Définir le cache de base de données en mégaoctets (25 par défaut)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="53"/>
+        <location filename="../aliascorestrings.h" line="53"/>
         <source>Set database disk log size in megabytes (default: 100)</source>
         <translation>Définir la taille de la base de données de log en mégaoctets (100 par défaut)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="54"/>
+        <location filename="../aliascorestrings.h" line="54"/>
         <source>Specify connection timeout in milliseconds (default: 5000)</source>
         <translation>Spécifier le timeout de connexion en millisecondes (5000 par défaut)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="55"/>
+        <location filename="../aliascorestrings.h" line="55"/>
         <source>Connect through socks proxy</source>
         <translation>Connexion au travers de proxy socks</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="56"/>
+        <location filename="../aliascorestrings.h" line="56"/>
         <source>Select the version of socks proxy to use (4-5, default: 5)</source>
         <translation>Sélectionner la version de proxy socks à utiliser (4-5, 5 par défaut)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="57"/>
+        <location filename="../aliascorestrings.h" line="57"/>
         <source>Use proxy to reach tor hidden services (default: same as -proxy)</source>
         <translation>Utiliser un proxy pour joindre des services tor cachés (par défaut: identique à -proxy)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="58"/>
+        <location filename="../aliascorestrings.h" line="58"/>
         <source>Allow DNS lookups for -addnode, -seednode and -connect</source>
         <translation>Autorise les recherches DNS pour -addnode , -seednode et -connect</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="59"/>
+        <location filename="../aliascorestrings.h" line="59"/>
         <source>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</source>
         <translation>Ecouter des connexions sur &lt;port&gt; (par defaut: 37347 ou testnet: 37111)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="60"/>
+        <location filename="../aliascorestrings.h" line="60"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
         <translation>Maintenir au plus&lt;n&gt; connexions à des pairs (par défaut: 125)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="61"/>
+        <location filename="../aliascorestrings.h" line="61"/>
         <source>Add a node to connect to and attempt to keep the connection open</source>
         <translation>Ajouter un noeud à connecter et tenter de garder la connexion ouverte</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="62"/>
+        <location filename="../aliascorestrings.h" line="62"/>
         <source>Connect only to the specified node(s)</source>
         <translation>Se connecter uniquement aux noeud(s) indiqués</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="63"/>
+        <location filename="../aliascorestrings.h" line="63"/>
         <source>Connect to a node to retrieve peer addresses, and disconnect</source>
         <translation>Se connecter à un noeud pour récupérer les adresses de pairs, puis se déconnecter</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="64"/>
+        <location filename="../aliascorestrings.h" line="64"/>
         <source>Specify your own public address</source>
         <translation>Indiquez votre propre adresse publique</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="65"/>
+        <location filename="../aliascorestrings.h" line="65"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
         <translation>Se connecte seulement à des noeuds sur le réseau  &lt;net&gt; (IPv4, IPv6 or Tor)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="66"/>
+        <location filename="../aliascorestrings.h" line="66"/>
         <source>Discover own IP address (default: 1 when listening and no -externalip)</source>
         <translation>Afficher sa propre adresse IP (default: 1 when listening and no -externalip)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="67"/>
+        <location filename="../aliascorestrings.h" line="67"/>
         <source>Find peers using internet relay chat (default: 0)</source>
         <translation>Trouver des pairs en utilisant le internet relay chat (par défaut : 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="68"/>
+        <location filename="../aliascorestrings.h" line="68"/>
         <source>Accept connections from outside (default: 1 if no -proxy or -connect)</source>
         <translation>Accepter connexions depuis l&apos;extérieur (par défaut : 1 si pas de -proxy ou -connect)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="69"/>
+        <location filename="../aliascorestrings.h" line="69"/>
         <source>Bind to given address. Use [host]:port notation for IPv6</source>
         <translation>Binder une adresse donnée. Utiliser [host]:port notation pour IPv6</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="70"/>
+        <location filename="../aliascorestrings.h" line="70"/>
         <source>Find peers using DNS lookup (default: 1)</source>
         <translation>Trouver des pairs en utilisant recherche DNS (par défaut : 1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="71"/>
+        <location filename="../aliascorestrings.h" line="71"/>
         <source>Stake your coins to support network and gain reward (default: 1)</source>
         <translation>Stakez vos jetons pour aider le réseau et obtenir des récompenses (par défaut: 1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="72"/>
+        <location filename="../aliascorestrings.h" line="72"/>
         <source>Sync time with other nodes. Disable if time on your system is precise e.g. syncing with NTP (default: 1)</source>
         <translation>Synchroniser l&apos;heure avec d&apos;autres noeuds. Désactiver si l&apos;heure de votre système est précise, c&apos;est à dire utilise un serveur NTP (par défaut: 1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="75"/>
+        <location filename="../aliascorestrings.h" line="75"/>
         <source>Sync checkpoints policy (default: strict)</source>
         <translation>Règles de synchronisation de points de contrôle (par défaut: strict)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="76"/>
+        <location filename="../aliascorestrings.h" line="76"/>
         <source>Threshold for disconnecting misbehaving peers (default: 100)</source>
         <translation>Seuil de déconnexion des pairs au comportement incorrect (défaut: 100)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="77"/>
+        <location filename="../aliascorestrings.h" line="77"/>
         <source>Number of seconds to keep misbehaving peers from reconnecting (default: 86400)</source>
         <translation>Nombre de secondes pour empecher les pairs qui se comportent mal de se reconnecter  (par défaut: 86400)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="80"/>
+        <location filename="../aliascorestrings.h" line="80"/>
         <source>Maximum per-connection receive buffer, &lt;n&gt;*1000 bytes (default: 5000)</source>
         <translation>Buffer de réception maximum per-connection, 1*1000 octets (défaut: 5000)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="81"/>
+        <location filename="../aliascorestrings.h" line="81"/>
         <source>Maximum per-connection send buffer, &lt;n&gt;*1000 bytes (default: 1000)</source>
         <translation>Buffer d&apos;envoi maximum per-connection, &lt;n&gt;*1000 octets (défaut: 1000)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="82"/>
+        <location filename="../aliascorestrings.h" line="82"/>
         <source>Use UPnP to map the listening port (default: 1 when listening)</source>
         <translation>Utiliser UPnP pour mapper le port d&apos;écoute (par défaut : 1 quand écoute)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="83"/>
+        <location filename="../aliascorestrings.h" line="83"/>
         <source>Use UPnP to map the listening port (default: 0)</source>
         <translation>Utiliser UPnP pour mapper le port d&apos;écoute (par défaut : 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="84"/>
+        <location filename="../aliascorestrings.h" line="84"/>
         <source>Detach block and address databases. Increases shutdown time (default: 0)</source>
         <translation>Detacher bloc and base d&apos;adresses. Augmente la durée d&apos;extinction (défaut: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="86"/>
+        <location filename="../aliascorestrings.h" line="86"/>
         <source>Fee per KB to add to transactions you send</source>
         <translation>Frais par KiloOctet à ajouter aux transactions que vous envoyez</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="87"/>
+        <location filename="../aliascorestrings.h" line="87"/>
         <source>When creating transactions, ignore inputs with value less than this (default: 0.01)</source>
         <translation>En créant les transactions, ignorer les entrées avec la valeur plus faible que cela (défaut: 0.01)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="90"/>
+        <location filename="../aliascorestrings.h" line="90"/>
         <source>Accept command line and JSON-RPC commands</source>
         <translation>Acceper ligne de commande et commandes JSON-RPC</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="91"/>
+        <location filename="../aliascorestrings.h" line="91"/>
         <source>Run in the background as a daemon and accept commands</source>
         <translation>Fonctionne en arrière-plan en tant que démon et accepte des commandes</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="92"/>
+        <location filename="../aliascorestrings.h" line="92"/>
         <source>Use the test network</source>
         <translation>Utiliser le réseau de Test</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="93"/>
+        <location filename="../aliascorestrings.h" line="93"/>
         <source>Output extra debugging information. Implies all other -debug* options</source>
         <translation>Extrait information débogage additionnelle. Implique toutes les autres options sont -debug* </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="94"/>
+        <location filename="../aliascorestrings.h" line="94"/>
         <source>Output extra network debugging information</source>
         <translation>Extrait information debogage réseau additionnelles</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="95"/>
+        <location filename="../aliascorestrings.h" line="95"/>
         <source>Prepend debug output with timestamp</source>
         <translation>Ajouter infos de debug avec horodatage</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="96"/>
+        <location filename="../aliascorestrings.h" line="96"/>
         <source>Shrink debug.log file on client startup (default: 1 when no -debug)</source>
         <translation>Compresse le fichier debug.log au démarrage du client (Par défaut : 1 quand pas -debug)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="97"/>
+        <location filename="../aliascorestrings.h" line="97"/>
         <source>Send trace/debug info to console instead of debug.log file</source>
         <translation>Envoyer trace/débogage info vers la console plutot qu&apos;au fichier .log</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="98"/>
+        <location filename="../aliascorestrings.h" line="98"/>
         <source>Send trace/debug info to debugger</source>
         <translation>Envoyer trace/débogage info au débuggeur</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="99"/>
+        <location filename="../aliascorestrings.h" line="99"/>
         <source>Username for JSON-RPC connections</source>
         <translation>Nom utilisateur pour connexions JSON-RPC</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="100"/>
+        <location filename="../aliascorestrings.h" line="100"/>
         <source>Password for JSON-RPC connections</source>
         <translation>Mot de passe pour connexions JSON-RPC </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="101"/>
+        <location filename="../aliascorestrings.h" line="101"/>
         <source>Listen for JSON-RPC connections on &lt;port&gt; (default: 36657 or testnet: 36757)</source>
         <translation>Ecoute de connexions JSON-RPC sur&lt;port&gt; (defaut: 36657 ou testnet: 36757)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="103"/>
+        <location filename="../aliascorestrings.h" line="103"/>
         <source>Allow JSON-RPC connections from specified IP address</source>
         <translation>Autorise les connexions JSON-RPC à partir d&apos;adresses IP enregistrées</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="104"/>
+        <location filename="../aliascorestrings.h" line="104"/>
         <source>Send commands to node running on &lt;ip&gt; (default: 127.0.0.1)</source>
         <translation>Envoi des commandes au noeud tournant sur &lt;ip&gt; (par defaut : 127.0.0.1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="105"/>
+        <location filename="../aliascorestrings.h" line="105"/>
         <source>Execute command when the best block changes (%s in cmd is replaced by block hash)</source>
         <translation>Execute commande quand le meilleur bloc change (%s est remplacé par le hash de bloc)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="108"/>
+        <location filename="../aliascorestrings.h" line="108"/>
         <source>Execute command when a wallet transaction changes (%s in cmd is replaced by TxID)</source>
         <translation>Execute commande quand la transaction de portefeuille change (%s dans cmd est remplacé TxID)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="111"/>
+        <location filename="../aliascorestrings.h" line="111"/>
         <source>Require a confirmations for change (default: 0)</source>
         <translation>Nécessite une confirmation pour changer (default: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="112"/>
+        <location filename="../aliascorestrings.h" line="112"/>
         <source>Enforce transaction scripts to use canonical PUSH operators (default: 1)</source>
         <translation>Force les scripts de transaction à utiliser les canonical PUSH operateurs (défaut: 1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="114"/>
+        <location filename="../aliascorestrings.h" line="114"/>
         <source>Execute command when a relevant alert is received (%s in cmd is replaced by message)</source>
         <translation>Execute commande lorsqu&apos;une alerte adaptée est reçue (%s dans cmd est remplacé par message)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="117"/>
+        <location filename="../aliascorestrings.h" line="117"/>
         <source>Upgrade wallet to latest format</source>
         <translation>Mise à jour du portefeuille au dernier format</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="118"/>
+        <location filename="../aliascorestrings.h" line="118"/>
         <source>Set key pool size to &lt;n&gt; (default: 100)</source>
         <translation>Définit la taille de la clé de pool à &lt;n&gt; (défaut: 100)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="119"/>
+        <location filename="../aliascorestrings.h" line="119"/>
         <source>Rescan the block chain for missing wallet transactions</source>
         <translation>Parcours à nouveau la chaîne de blocs pour trouver les transactions manquantes dans le portefeuille</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="120"/>
+        <location filename="../aliascorestrings.h" line="120"/>
         <source>Attempt to recover private keys from a corrupt wallet.dat</source>
         <translation>Tentative de récupération de clés privées à partir d&apos;un fichier wallet.dat corrompu</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="121"/>
+        <location filename="../aliascorestrings.h" line="121"/>
         <source>How many blocks to check at startup (default: 2500, 0 = all)</source>
         <translation>Combien de blocs à vérifier au démarrage (default: 2500, 0 = tous)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="122"/>
+        <location filename="../aliascorestrings.h" line="122"/>
         <source>How thorough the block verification is (0-6, default: 1)</source>
         <translation>Profondeur de vérification de blocs (0-6, défaut: 1)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="123"/>
+        <location filename="../aliascorestrings.h" line="123"/>
         <source>Imports blocks from external blk000?.dat file</source>
         <translation>Importer des blocs à partir de fichiers blk000?.dat externes</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="124"/>
+        <location filename="../aliascorestrings.h" line="124"/>
         <source>Block creation options:</source>
         <translation>Options de création de blocs:</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="125"/>
+        <location filename="../aliascorestrings.h" line="125"/>
         <source>Set minimum block size in bytes (default: 0)</source>
         <translation>Définir la taille minimal de bloc en octets (default: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="126"/>
+        <location filename="../aliascorestrings.h" line="126"/>
         <source>Set maximum block size in bytes (default: 250000)</source>
         <translation>Définir la taille maximale de bloc en octets (default: 250000)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="127"/>
+        <location filename="../aliascorestrings.h" line="127"/>
         <source>Set maximum size of high-priority/low-fee transactions in bytes (default: 27000)</source>
         <translation>Définir la taille maximale des transactions haute-priorité/faible-frais en octets (default: 27000)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="130"/>
+        <location filename="../aliascorestrings.h" line="130"/>
         <source>SSL options: (see the Bitcoin Wiki for SSL setup instructions)</source>
         <translation>Options SSL : (voir le Bitcoin Wiki pour configuration SSL)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="131"/>
+        <location filename="../aliascorestrings.h" line="131"/>
         <source>Use OpenSSL (https) for JSON-RPC connections</source>
         <translation>Utiliser OpenSSL (https) pour les connexions JSON-RPC </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="132"/>
+        <location filename="../aliascorestrings.h" line="132"/>
         <source>Server certificate file (default: server.cert)</source>
         <translation>Certificat du serveur (par défaut : server.cert)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="133"/>
+        <location filename="../aliascorestrings.h" line="133"/>
         <source>Server private key (default: server.pem)</source>
         <translation>Clé privée du serveur (par défaut : server.pem)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="134"/>
+        <location filename="../aliascorestrings.h" line="134"/>
         <source>Acceptable ciphers (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</source>
         <translation>Ciphers acceptables (default: TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="137"/>
+        <location filename="../aliascorestrings.h" line="137"/>
         <source>Invalid amount for -paytxfee=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Montant invalide pour -paytxfee=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="138"/>
+        <location filename="../aliascorestrings.h" line="138"/>
         <source>Warning: -paytxfee is set very high! This is the transaction fee you will pay if you send a transaction.</source>
         <translation>Avertissement: -paytxfee est placé très haut! Ce sont les frais de transaction que vous allez payer si vous envoyez la transaction.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="141"/>
+        <location filename="../aliascorestrings.h" line="141"/>
         <source>Invalid amount for -mininput=&lt;amount&gt;: &apos;%s&apos;</source>
         <translation>Montant invalide pour -mininput=&lt;amount&gt;: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="142"/>
+        <location filename="../aliascorestrings.h" line="142"/>
         <source>Wallet %s resides outside data directory %s.</source>
         <translation>Le portefeuille %s est en dehors du répertoire de données %s.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="143"/>
-        <location filename="../bitcoinstrings.cpp" line="221"/>
+        <location filename="../aliascorestrings.h" line="143"/>
+        <location filename="../aliascorestrings.h" line="221"/>
         <source>Cannot obtain a lock on data directory %s.  Alias is probably already running.</source>
         <translation>Impossible de verrouiller le répertoire de données %s.  Alias est probablement déjà en train d&apos;être exécuté.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="146"/>
+        <location filename="../aliascorestrings.h" line="146"/>
         <source>Verifying database integrity...</source>
         <translation>Vérification de l&apos;intégrité de la base de données....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="147"/>
+        <location filename="../aliascorestrings.h" line="147"/>
         <source>Error initializing database environment %s! To recover, BACKUP THAT DIRECTORY, then remove everything from it except for wallet.dat.</source>
         <translation>Erreur d&apos;initialisation de l&apos;environnement de base de données %s! Pour restaurer, SAUVEGARDEZ CE REPERTOIRE, puis supprimez tout à l&apos;exception de wallet.dat.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="150"/>
+        <location filename="../aliascorestrings.h" line="150"/>
         <source>Warning: wallet.dat corrupt, data salvaged! Original wallet.dat saved as wallet.{timestamp}.bak in %s; if your balance or transactions are incorrect you should restore from a backup.</source>
         <translation>Avertissement: wallet.dat corrompu, données sauvées! Le wallet.dat d&apos;origine a été enregistré sous le nom wallet.{timestamp}.bak dans %s; si votre balance ou transactions sont incorrects vous devriez restaurer depuis une sauvegarde.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="154"/>
+        <location filename="../aliascorestrings.h" line="154"/>
         <source>wallet.dat corrupt, salvage failed</source>
         <translation>wallet.dat corrompu, récupération en échec</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="155"/>
+        <location filename="../aliascorestrings.h" line="155"/>
         <source>Unknown -socks proxy version requested: %i</source>
         <translation>Version -socks proxy demandée inconnue: %i</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="156"/>
+        <location filename="../aliascorestrings.h" line="156"/>
         <source>Unknown network specified in -onlynet: &apos;%s&apos;</source>
         <translation>Réseau inconnu spécifié dans -onlynet: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="157"/>
+        <location filename="../aliascorestrings.h" line="157"/>
         <source>Invalid -proxy address: &apos;%s&apos;</source>
         <translation>-proxy adresse invalide: &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="158"/>
+        <location filename="../aliascorestrings.h" line="158"/>
         <source>Invalid -tor address: &apos;%s&apos;</source>
         <translation>Adresse tor invalide : &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="159"/>
+        <location filename="../aliascorestrings.h" line="159"/>
         <source>Cannot resolve -bind address: &apos;%s&apos;</source>
         <translation>Ne peut pas résoudre l&apos;adresse -bind : &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="160"/>
+        <location filename="../aliascorestrings.h" line="160"/>
         <source>Failed to listen on any port.</source>
         <translation>Impossible d&apos;écouter sur aucun port</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="161"/>
+        <location filename="../aliascorestrings.h" line="161"/>
         <source>Failed to listen on any port. Use -listen=0 if you want this.</source>
         <translation>Echec d&apos;écoute sur tous les ports. Utiliser -listen=0 si c&apos;est ce que vous voulez.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="162"/>
+        <location filename="../aliascorestrings.h" line="162"/>
         <source>Cannot resolve -externalip address: &apos;%s&apos;</source>
         <translation>Ne peut pas résoudre l&apos;adresse -externalip : &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="163"/>
+        <location filename="../aliascorestrings.h" line="163"/>
         <source>Invalid amount for -reservebalance=&lt;amount&gt;</source>
         <translation>Montant invalide pour -reservebalance=&lt;amount&gt;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="164"/>
+        <location filename="../aliascorestrings.h" line="164"/>
         <source>Unable to sign checkpoint, wrong checkpointkey?
 </source>
         <translation>Impossible de signer le point de contrôle, mauvais checkpointkey?
 </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="165"/>
+        <location filename="../aliascorestrings.h" line="165"/>
         <source>Loading block index...</source>
         <translation>Chargement de l&apos;index des blocs....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="166"/>
+        <location filename="../aliascorestrings.h" line="166"/>
         <source>Error loading blk0001.dat</source>
         <translation>Erreur de chargement blk0001.dat</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="167"/>
+        <location filename="../aliascorestrings.h" line="167"/>
         <source>Loading wallet...</source>
         <translation>Chargement du portefeuille....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="168"/>
+        <location filename="../aliascorestrings.h" line="168"/>
         <source>Error loading wallet.dat: Wallet corrupted</source>
         <translation>Erreur de chargement wallet.dat : Portefeuille corrompu</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="169"/>
-        <location filename="../bitcoinstrings.cpp" line="227"/>
+        <location filename="../aliascorestrings.h" line="169"/>
+        <location filename="../aliascorestrings.h" line="227"/>
         <source>Warning: error reading wallet.dat! All keys read correctly, but transaction data or address book entries might be missing or incorrect.</source>
         <translation>Avertissement: erreur de lecture de wallet.dat! Toutes les clés ont été lues correctement, mais les données de transactions ou les entrées de bloc d&apos;adresses semblent manquantes ou incorrectes.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="172"/>
+        <location filename="../aliascorestrings.h" line="172"/>
         <source>Error loading wallet.dat: Wallet requires newer version of Alias</source>
         <translation>Erreur de chargement wallet.dat: Le portefeuille nécessite une version d&apos;Alias plus récente</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="173"/>
+        <location filename="../aliascorestrings.h" line="173"/>
         <source>Wallet needed to be rewritten: restart Alias to complete</source>
         <translation>Le portefeuille doit être regénéré: redémarrez Alias pour terminer</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="174"/>
+        <location filename="../aliascorestrings.h" line="174"/>
         <source>Error loading wallet.dat</source>
         <translation>Erreur de chargement de wallet.dat</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="175"/>
+        <location filename="../aliascorestrings.h" line="175"/>
         <source>Cannot downgrade wallet</source>
         <translation>Ne peut pas dégrader le portefeuille</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="176"/>
+        <location filename="../aliascorestrings.h" line="176"/>
         <source>Cannot initialize keypool</source>
         <translation>Ne peut pas initialiser le pool de clés</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="177"/>
+        <location filename="../aliascorestrings.h" line="177"/>
         <source>Cannot write default address</source>
         <translation>Ne peut pas écrire l&apos;adresse par défaut</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="178"/>
+        <location filename="../aliascorestrings.h" line="178"/>
         <source>Rescanning...</source>
         <translation>Rebalayage....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="179"/>
+        <location filename="../aliascorestrings.h" line="179"/>
         <source>Importing blockchain data file.</source>
         <translation>Importation du fichier de chaine de blocs.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="180"/>
+        <location filename="../aliascorestrings.h" line="180"/>
         <source>Importing bootstrap blockchain data file.</source>
         <translation>Importation du fichier bootstrap de chaine de blocs.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="181"/>
+        <location filename="../aliascorestrings.h" line="181"/>
         <source>Loading addresses...</source>
         <translation>Chargement des adresses....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="182"/>
+        <location filename="../aliascorestrings.h" line="182"/>
         <source>Error: could not start node</source>
         <translation>Erreur: le noeud n&apos;a pas pu démarrer</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="183"/>
+        <location filename="../aliascorestrings.h" line="183"/>
         <source>Done loading</source>
         <translation>Chargement effectué</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="184"/>
+        <location filename="../aliascorestrings.h" line="184"/>
         <source>Unable to bind to %s on this computer. Alias is probably already running.</source>
         <translation>Impossible de binder à %s sur cet ordinateur. Alias est probablement déjà en cours d&apos;exécution.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="186"/>
+        <location filename="../aliascorestrings.h" line="186"/>
         <source>Unable to bind to %s on this computer (bind returned error %d, %s)</source>
         <translation>Impossible de binder à %s sur cet ordinateur (bind a retourné l&apos;erreur %d, %s)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="187"/>
+        <location filename="../aliascorestrings.h" line="187"/>
         <source>Error: Wallet locked, unable to create transaction  </source>
         <translation>Erreur; Portefeuille verrouillé, impossible de créer la transaction</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="188"/>
+        <location filename="../aliascorestrings.h" line="188"/>
         <source>Error: Wallet unlocked for staking only, unable to create transaction.</source>
         <translation>Erreur: Portefeuille déverrouillé pour staking uniquement, impossible de créer la transaction.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="189"/>
+        <location filename="../aliascorestrings.h" line="189"/>
         <source>Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds  </source>
         <translation>Erreur: Cette transaction nécessite des frais de transaction d&apos;au moins %s en raison de son montant, sa complexité, ou bien l&apos;utilisation de fonds récemment reçus.  </translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="192"/>
+        <location filename="../aliascorestrings.h" line="192"/>
         <source>Error: Transaction creation failed  </source>
         <translation>Erreur: Création de transaction en échec</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="193"/>
+        <location filename="../aliascorestrings.h" line="193"/>
         <source>Sending...</source>
         <translation>Envoi...</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="194"/>
+        <location filename="../aliascorestrings.h" line="194"/>
         <source>Error: The transaction was rejected.  This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
         <translation>Erreur: La transaction a été rejetée.  Cela peut arriver si certains des jetons dans votre portefeuille ont déjà été dépensés, comme si vous aviez utilisé une copie de wallet.dat et que les jetons ont été dépensés dans la opie mais non marqués comme dépensés ici.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="198"/>
+        <location filename="../aliascorestrings.h" line="198"/>
         <source>Invalid amount</source>
         <translation>Montant invalide</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="199"/>
+        <location filename="../aliascorestrings.h" line="199"/>
         <source>Insufficient funds</source>
         <translation>Fonds insuffisants</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="200"/>
+        <location filename="../aliascorestrings.h" line="200"/>
         <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Alias will not work properly.</source>
         <translation>Avertissement: Vérifier que la date et l&apos;heure de votre ordinateur sont correctes ! Si ce n&apos;est pas le cas Alias fonctionnera d&apos;une manière incorrecte.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="203"/>
+        <location filename="../aliascorestrings.h" line="203"/>
         <source>Warning: This version is obsolete, upgrade required!</source>
         <translation>Avertissement: Cette version est obsolete, mise à jour obligatoire !</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="204"/>
+        <location filename="../aliascorestrings.h" line="204"/>
         <source>WARNING: syncronized checkpoint violation detected, but skipped!</source>
         <translation>Avertissement: Violation de point de contrôle synchronisé détecté, mais ignoré !</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="205"/>
+        <location filename="../aliascorestrings.h" line="205"/>
         <source>Warning: Disk space is low!</source>
         <translation>Avertissement: Espace disque faible !</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="206"/>
+        <location filename="../aliascorestrings.h" line="206"/>
         <source>WARNING: Invalid checkpoint found! Displayed transactions may not be correct! You may need to upgrade, or notify developers.</source>
         <translation>AVERTISSEMENT: Point de contrôle invalide trouvé ! Les transactions affichées peuvent ne pas être correctes ! Vous pourriez avoir besoin de mettre à jour votre logiciel, ou bien informer les développeurs.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="209"/>
+        <location filename="../aliascorestrings.h" line="209"/>
         <source>Read ATXOs... (%d)</source>
         <translation>Lecture ATXOs... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="210"/>
+        <location filename="../aliascorestrings.h" line="210"/>
         <source>Read spent ATXOs... (%d)</source>
         <translation>Lecture ATXOs dépensés... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="211"/>
+        <location filename="../aliascorestrings.h" line="211"/>
         <source>Note must be 24 characters or less.</source>
         <translation>La note doit faire 24 caractères ou moins.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="212"/>
+        <location filename="../aliascorestrings.h" line="212"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
         <translation>Erreur: La transaction a été rejetée. Cela peut arriver si certains des jetons dans votre portefeuille ont déjà été dépensés, comme si vous aviez utilisé une copie de wallet.dat et que les jetons ont été dépensés dans la opie mais non marqués comme dépensés ici.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="215"/>
+        <location filename="../aliascorestrings.h" line="215"/>
         <source>Error: Unsupported argument -socks found. Setting SOCKS version isn&apos;t possible anymore, only SOCKS5 proxies are supported.</source>
         <translation>Erreur: Argument trouvé -socks non supporté. Configurer version SOCKS n&apos;est plus possible à présent, seuls les proxys SOCKS5 sont supportés.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="216"/>
+        <location filename="../aliascorestrings.h" line="216"/>
         <source>Initialization sanity check failed. Alias is shutting down.</source>
         <translation>Le Sanity check up de démarrage a échoué, Alias s&apos;arrête.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="217"/>
+        <location filename="../aliascorestrings.h" line="217"/>
         <source>Loading block index... (%d)</source>
         <translation>Chargement index de bloc... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="218"/>
+        <location filename="../aliascorestrings.h" line="218"/>
         <source>Calculating chain trust... (%d)</source>
         <translation>Calcul confiance de chaîne... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="219"/>
+        <location filename="../aliascorestrings.h" line="219"/>
         <source>Validating last %d block...</source>
         <translation>Validation du dernier %d bloc...</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="220"/>
+        <location filename="../aliascorestrings.h" line="220"/>
         <source>-bip44key is not allowed if wallet.dat already exists</source>
         <translation>-bip44key n&apos;est pas autorisé si le fichier wallet.dat existe déjà</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="222"/>
+        <location filename="../aliascorestrings.h" line="222"/>
         <source>Cannot resolve binding address: &apos;%s&apos;</source>
         <translation>Ne peut pas résoudre l&apos;adresse binding : &apos;%s&apos;</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="223"/>
+        <location filename="../aliascorestrings.h" line="223"/>
         <source>Error: could not start tor node</source>
         <translation>Erreur: n&apos;a pas pu démarrer le noeud tor</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="224"/>
+        <location filename="../aliascorestrings.h" line="224"/>
         <source>Timed out waiting for onion hostname.</source>
         <translation>Temps écoulé pour le nom d&apos;hôte Oignon</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="225"/>
+        <location filename="../aliascorestrings.h" line="225"/>
         <source>Error loading blk0001.dat: Invalid chain detected, please resync or use bootstrap files.</source>
         <translation>Erreur de chargement blk0001.dat: Chaine invalide détectée, veuillez resynchroniser ou ou bien utilisez des fichiers bootstrap.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="226"/>
+        <location filename="../aliascorestrings.h" line="226"/>
         <source>Loading wallet items... (%d)</source>
         <translation>Chargement des articles du portefeuille... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="229"/>
+        <location filename="../aliascorestrings.h" line="229"/>
         <source>Reindexing from blk000?.dat files.</source>
         <translation>Réindexation depuis les fichiers blk000?.dat.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="230"/>
+        <location filename="../aliascorestrings.h" line="230"/>
         <source>Reindexing block... (%d)</source>
         <translation>Réindexation bloc... (%d)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="231"/>
+        <location filename="../aliascorestrings.h" line="231"/>
         <source>Core started!</source>
         <translation>Coeur démarré !</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="232"/>
+        <location filename="../aliascorestrings.h" line="232"/>
         <source>Use tor hidden services version 2 instead of version 3</source>
         <translation>Utilise les services cachés de tor version 2 au lieu de version 3</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="233"/>
+        <location filename="../aliascorestrings.h" line="233"/>
         <source>Find peers using .onion seeds (default: 1 unless -connect)</source>
         <translation>Trouver des pairs en utilisant les seeds .onion  (défaut: 1 sauf si -connect)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="234"/>
+        <location filename="../aliascorestrings.h" line="234"/>
         <source>Minimum time in seconds between successful stakes (default: 30)</source>
         <translation>Temps minimum en secondes entre des stakes réussis (par défaut: 30)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="235"/>
+        <location filename="../aliascorestrings.h" line="235"/>
         <source>Percentage of staking rewards to donate to the developers (between 0 and 100 inclusive, default 5)</source>
         <translation>Pourcentage de récompenses de staking à donner aux développeurs (entre 0 et 100 inclu, par défault 5)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="236"/>
+        <location filename="../aliascorestrings.h" line="236"/>
         <source>Milliseconds between stake attempts. Lowering this param will not result in more stakes. (default: 500)</source>
         <translation>Millisecondes entre tentatives de staking. Baisser la valeur de ce paramètre ne permet pas d&apos;avoir plus de stakes. (défaut: 500)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="237"/>
+        <location filename="../aliascorestrings.h" line="237"/>
         <source>Number of seconds to keep soft banned peers from reconnecting (default: 3600)</source>
         <translation>Nombre de secondes d&apos;empechement de reconnexion des pairs bannis par le logiciel  (défaut: 3600)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="238"/>
+        <location filename="../aliascorestrings.h" line="238"/>
         <source>Simple command line interface - if not run as daemon</source>
         <translation>Interface de ligne de commande simple - si non lancé comme démon</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="239"/>
+        <location filename="../aliascorestrings.h" line="239"/>
         <source>Output extra blockchain debugging information</source>
         <translation>Sortie d&apos;information supplémentaires de debug de chaine de blocs</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="240"/>
+        <location filename="../aliascorestrings.h" line="240"/>
         <source>Output extra Proof of Stake debugging information</source>
         <translation>Sortie d&apos;information supplémentaires de Proof of Stake</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="241"/>
+        <location filename="../aliascorestrings.h" line="241"/>
         <source>Send trace/debug info to debug.log file</source>
         <translation>Envoyer trace/débogage info au fichier debug.log</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="242"/>
+        <location filename="../aliascorestrings.h" line="242"/>
         <source>Wait for RPC server to start</source>
         <translation>Attendez que le serveur RPC démarre</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="243"/>
+        <location filename="../aliascorestrings.h" line="243"/>
         <source>Keep at most &lt;n&gt; MiB of unconnectable blocks in memory (default: %u)</source>
         <translation>Garder en mémoire au plus &lt;n&gt; MiB de blocs non connectables (défaut: %u)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="244"/>
+        <location filename="../aliascorestrings.h" line="244"/>
         <source>Rebuild block chain index from current blk000?.dat files on startup</source>
         <translation>Reconstruire au démarrage  l&apos;index de chaine de blocs depuis le fichier blk000?.dat en cours</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="245"/>
+        <location filename="../aliascorestrings.h" line="245"/>
         <source>Show version and exit</source>
         <translation>Afficher version et sortir</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="246"/>
+        <location filename="../aliascorestrings.h" line="246"/>
         <source>Thin options:</source>
         <translation>Options légères :</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="247"/>
+        <location filename="../aliascorestrings.h" line="247"/>
         <source>Operate in less secure, less resource hungry &apos;thin&apos; mode</source>
         <translation>Opère en mode &quot;léger&quot; moins sécurisé, moins gourmand en ressource</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="248"/>
+        <location filename="../aliascorestrings.h" line="248"/>
         <source>Keep the entire block index in memory. (default: 0)</source>
         <translation>Garder l&apos;index de bloc entier en mémoire. (défaut: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="249"/>
+        <location filename="../aliascorestrings.h" line="249"/>
         <source>When not thinfullindex, the max number of block headers to keep in memory. (default: 4096)</source>
         <translation>Lorsque non thinfullindex, le nombre maximum d&apos;en-têtes de bloc à garder en mémoire. (défaut: 4096)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="250"/>
+        <location filename="../aliascorestrings.h" line="250"/>
         <source>Disable supporting thin nodes. (default: 0)</source>
         <translation>Désactive le support des noeuds légers. (défaut: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="251"/>
+        <location filename="../aliascorestrings.h" line="251"/>
         <source>Disable forwarding, or requesting all stealth txns. (default: 0)</source>
         <translation>Désactive forwarding, ou demande toutes les txns furtives. (défaut: 0)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="252"/>
+        <location filename="../aliascorestrings.h" line="252"/>
         <source>Don&apos;t connect to more than &lt;n&gt; thin peers (default: 8)</source>
         <translation>Ne pas se connecter à plus de  &lt;n&gt; pairs légers (défaut: 8)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="253"/>
+        <location filename="../aliascorestrings.h" line="253"/>
         <source>Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</source>
         <translation>Ciphers acceptables (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH)</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="254"/>
+        <location filename="../aliascorestrings.h" line="254"/>
         <source>conn</source>
         <translation>conn</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="255"/>
+        <location filename="../aliascorestrings.h" line="255"/>
         <source>Error: Wallet locked, unable to create transaction.</source>
         <translation>Erreur: Portefeuille verrouillé, impossible de créer la transaction</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="256"/>
+        <location filename="../aliascorestrings.h" line="256"/>
         <source>Error: Must be in full mode.</source>
         <translation>Erreur: doit être en mode complet.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="257"/>
+        <location filename="../aliascorestrings.h" line="257"/>
         <source>Error: Block chain must be fully synced first.</source>
         <translation>Erreur: la chaine de blocs doit d&apos;abord être synchronisée complètement.</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="258"/>
+        <location filename="../aliascorestrings.h" line="258"/>
         <source>Error: Alias is not connected!</source>
         <translation>Erreur: Alias n&apos;est pas connecté</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="259"/>
+        <location filename="../aliascorestrings.h" line="259"/>
         <source>Update balance...</source>
         <translation>Mise à jour de la balance...</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="260"/>
+        <location filename="../aliascorestrings.h" line="260"/>
         <source>...Start UI...</source>
         <translation>...démarrage de l&apos;interface graphique....</translation>
     </message>
     <message>
-        <location filename="../bitcoinstrings.cpp" line="261"/>
+        <location filename="../aliascorestrings.h" line="261"/>
         <source>Shutdown...</source>
         <translation>Extinction....</translation>
     </message>
