@@ -2950,9 +2950,144 @@ Bemerkung: %2
         <translation>Via Staking erhaltene Coins müssen erst reifen, bevor sie verwendet werden können</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="134"/>
-        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
-        <translation>Öffentliche ALIAS benötigen eine, private ALIAS benötigen zehn Bestätigungen.</translation>
+        <location filename="../aliasbridgestrings.h" line="180"/>
+        <source>Stake</source>
+        <translation>Stake</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="181"/>
+        <source>Sub-Wallets</source>
+        <translation>Sub-Wallets</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="182"/>
+        <source>Start Alias on system login</source>
+        <translation>Alias beim Systemstart starten</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="183"/>
+        <source>Detach databases at shutdown</source>
+        <translation>Datenbanken beim Herunterfahren abhängen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="184"/>
+        <source>Pay transaction fee</source>
+        <translation>Zahlung der Transaktionsgebühr</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="185"/>
+        <source>Transaction fee per kB. A higher fee makes sure your transactions are processed quickly in times of high transaction volume.</source>
+        <translation>Transaktionsgebühr je Kilobyte. Eine höhere Gebühr stellt sicher, dass Ihre Transaktionen bei hohem Transaktionsaufkommen schneller bearbeitet werden.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="186"/>
+        <source>Most transactions are 1kB. The minimal fee is 0.0001</source>
+        <translation>Die meissten Transaktionen sind 1 Kilobyte gross. Minimale Gebühr ist 0.0001</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="187"/>
+        <source>Enable Staking</source>
+        <translation>Staking aktivieren</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="188"/>
+        <source>Enables or disables the staking process. If your wallet is encrypted, you will need to unlock it for staking.</source>
+        <translation>Schaltet den Staking-Vorgang ein oder aus. Wenn Ihr Wallet verschlüsselt ist, muss es für das Staking entsperrt werden.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="189"/>
+        <source>Staking Donation</source>
+        <translation>Staking-Spende</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="190"/>
+        <source>Every sixth block on the blockchain is a development contribution block (DCB). Staking rewards of DCBs are contributed to the development fund no matter the donation percentage setting. Please feel free to additionally donate from your remaining stake rewards by defining a donation chance. Thank you.</source>
+        <translation>Jeder sechste BLock der Blockchain ist ein sog. Development Contribution Block (DCB). Die Entlohnung für einen solchen Block wird einem Entwickler-Fonds gutgeschrieben, unabhängig des eingestellten Prozentwertes. Sie können zusätzliche Spenden von Ihren Entlohnungen durch die Angabe eines Prozentwertes der Weiterentwicklung zukommen lassen. Vielen Dank!</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="191"/>
+        <source>Reserve</source>
+        <translation>Reserve</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="192"/>
+        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
+        <translation>Der Reservebetrag wird nicht zum Staking verwendet und kann somit jederzeit ausgegeben werden.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="193"/>
+        <source>Minimum Stake Interval</source>
+        <translation>Minimales Staking-Interval</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="194"/>
+        <source>Main</source>
+        <translation>Allgemein</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="195"/>
+        <source>Window</source>
+        <translation>Fenster</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="196"/>
+        <source>Display</source>
+        <translation>Darstellung</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="197"/>
+        <source>Minimize to the tray instead of the taskbar</source>
+        <translation>In den Benachrichtigungsbereich anstatt die Task-Leiste minimieren</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="198"/>
+        <source>Minimize on close</source>
+        <translation>Beim schliessen minimieren</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="199"/>
+        <source>User Interface language</source>
+        <translation>Sprache der Bedienoberfläche</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="200"/>
+        <source>Unit to show amounts in</source>
+        <translation>Einheit, in welcher Beträge angezeigt werden sollen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="201"/>
+        <source>Rows per page</source>
+        <translation>Zeilen pro Seite</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="202"/>
+        <source>Display addresses in transaction list</source>
+        <translation>Adressen in der Transaktionsliste anzeigen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="203"/>
+        <source>Notifications</source>
+        <translation>Benachrichtigungen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="204"/>
+        <source>Visible Transaction Types</source>
+        <translation>Sichtbare Transaktionstypen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="205"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="206"/>
+        <source>Apply</source>
+        <translation>Anwenden</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="207"/>
+        <source>Ok</source>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="135"/>
@@ -2998,6 +3133,11 @@ Bemerkung: %2
         <location filename="../aliasbridgestrings.h" line="93"/>
         <source>Checking wallet state with network</source>
         <translation>Prüfe Wallet-Status mit dem Netzwerk</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="134"/>
+        <source>Public ALIAS requires 1 confirmation&lt;br&gt;Private ALIAS requires 10 confirmations</source>
+        <translation>Öffentliche ALIAS benötigen eine&lt;br&gt;private ALIAS benötigen zehn Bestätigungen.</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="140"/>
