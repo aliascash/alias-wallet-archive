@@ -131,7 +131,7 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("alias-bridge", "Available coins for spending"),
     QT_TRANSLATE_NOOP("alias-bridge", "Reserved coins are not used for staking"),
     QT_TRANSLATE_NOOP("alias-bridge", "Staked coins must mature before they can be accessed"),
-    QT_TRANSLATE_NOOP("alias-bridge", "Public ALIAS requires 1 block confirmation<br>Private ALIAS requires 10 blocks confirmations"),
+    QT_TRANSLATE_NOOP("alias-bridge", "Public ALIAS requires 1 confirmation<br>Private ALIAS requires 10 confirmations"),
     QT_TRANSLATE_NOOP("alias-bridge", "Type"),
     QT_TRANSLATE_NOOP("alias-bridge", "Date"),
     QT_TRANSLATE_NOOP("alias-bridge", "Send Payment"),
