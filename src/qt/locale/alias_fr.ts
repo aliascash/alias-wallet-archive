@@ -998,7 +998,7 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location filename="../forms/rpcconsole.ui" line="255"/>
         <source>Block chain</source>
-        <translation>Chaîne de blocs</translation>
+        <translation>Blockchaîne</translation>
     </message>
     <message>
         <location filename="../forms/rpcconsole.ui" line="262"/>
@@ -1346,12 +1346,12 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     <message>
         <location filename="../spectrebridge.cpp" line="466"/>
         <source>Input types must match for all recipients.</source>
-        <translation>Les types d&apos;entrées doivent correspondre pour tous les receveurs.</translation>
+        <translation>Les types d&apos;entrées doivent correspondre pour tous les destinataires.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="479"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation>La taille des anneaux doit être la même pour tous les receveurs.</translation>
+        <translation>La taille des anneaux doit être la même pour tous les destinataires.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="488"/>
@@ -1425,7 +1425,7 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
     <message>
         <location filename="../spectrebridge.cpp" line="556"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>L&apos;adresse du receveur n&apos;est pas valide, vérifiez-la.</translation>
+        <translation>L&apos;adresse du destinataire n&apos;est pas valide, vérifiez-la.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="562"/>
@@ -2423,7 +2423,7 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="26"/>
         <source>Change Passphrase</source>
-        <translation>Changer phrase chiffrement</translation>
+        <translation>Changer phrase chiffr.</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="27"/>
@@ -2438,7 +2438,7 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="29"/>
         <source>Chain Data</source>
-        <translation>Données de chaine de blocs</translation>
+        <translation>Données de blockchaîne</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="30"/>
@@ -2458,7 +2458,7 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="33"/>
         <source>Debug</source>
-        <translation>Debogage</translation>
+        <translation>Débogage</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="34"/>
@@ -2778,7 +2778,7 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="99"/>
         <source>Remove this recipient</source>
-        <translation>Enlever ce récipendiaire</translation>
+        <translation>Enlever ce destinataire</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="100"/>
@@ -2951,9 +2951,144 @@ Note: %2
         <translation>Les jetons stakés doivent mûrir avant d&apos;être accessibles</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="134"/>
-        <source>Public ALIAS requires 1 block confirmation&lt;br&gt;Private ALIAS requires 10 blocks confirmations</source>
-        <translation>ALIAS Public nécessite 1 confirmation de bloc&lt;br&gt;ALIAS Privé nécessite 10 confirmations de bloc</translation>
+        <location filename="../aliasbridgestrings.h" line="180"/>
+        <source>Stake</source>
+        <translation>Stake</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="181"/>
+        <source>Sub-Wallets</source>
+        <translation>Sous-portefeuilles</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="182"/>
+        <source>Start Alias on system login</source>
+        <translation>Démarrer Alias au login système</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="183"/>
+        <source>Detach databases at shutdown</source>
+        <translation>Détacher bases de données à l&apos;extinction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="184"/>
+        <source>Pay transaction fee</source>
+        <translation>Payer frais de transaction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="185"/>
+        <source>Transaction fee per kB. A higher fee makes sure your transactions are processed quickly in times of high transaction volume.</source>
+        <translation>Frais de transaction par Kilo-Octet. Des frais plus élevés vous assurent que vos transactions seront traitées rapidement en cas de forts volumes de transaction.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="186"/>
+        <source>Most transactions are 1kB. The minimal fee is 0.0001</source>
+        <translation>La plupart des transactions font 1 Ko. Le minimum de frais est 0,0001.  </translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="187"/>
+        <source>Enable Staking</source>
+        <translation>Activer le staking</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="188"/>
+        <source>Enables or disables the staking process. If your wallet is encrypted, you will need to unlock it for staking.</source>
+        <translation>Active ou désactive le process de staking. Si votre portefeuille est chiffré, vous devrez le déverrouiller pour staking.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="189"/>
+        <source>Staking Donation</source>
+        <translation>Don de staking</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="190"/>
+        <source>Every sixth block on the blockchain is a development contribution block (DCB). Staking rewards of DCBs are contributed to the development fund no matter the donation percentage setting. Please feel free to additionally donate from your remaining stake rewards by defining a donation chance. Thank you.</source>
+        <translation>Chaque sixième bloc de la blockchain est un bloc de contribution au développement (DCB). Les récompenses de staking des DCB sont versées au fonds de développement, quel que soit le pourcentage de don. N&apos;hésitez pas à faire un don supplémentaire de vos récompenses de staking restantes en définissant une chance de don. Merci.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="191"/>
+        <source>Reserve</source>
+        <translation>Réserve</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="192"/>
+        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
+        <translation>Le montant réservé ne participe pas au staking, pour cette raison il est dépensable à tout moment.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="193"/>
+        <source>Minimum Stake Interval</source>
+        <translation>Intervalle de staking minimal</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="194"/>
+        <source>Main</source>
+        <translation>Principal</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="195"/>
+        <source>Window</source>
+        <translation>Fenêtre</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="196"/>
+        <source>Display</source>
+        <translation>Affichage</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="197"/>
+        <source>Minimize to the tray instead of the taskbar</source>
+        <translation>Réduire dans les icônes de programmes au lieu de la barre de tâches</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="198"/>
+        <source>Minimize on close</source>
+        <translation>Réduire à la fermeture</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="199"/>
+        <source>User Interface language</source>
+        <translation>Langue de l&apos;interface utilisateur</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="200"/>
+        <source>Unit to show amounts in</source>
+        <translation>Unité d&apos;affichage des montants</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="201"/>
+        <source>Rows per page</source>
+        <translation>Lignes par page</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="202"/>
+        <source>Display addresses in transaction list</source>
+        <translation>Afficher les adresses dans la liste de transactions</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="203"/>
+        <source>Notifications</source>
+        <translation>Notifications</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="204"/>
+        <source>Visible Transaction Types</source>
+        <translation>Types de transactions visibles</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="205"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="206"/>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="207"/>
+        <source>Ok</source>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="135"/>
@@ -2993,12 +3128,17 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="53"/>
         <source>Blockchain Info</source>
-        <translation>Info de chaine de blocs</translation>
+        <translation>Info Blockchaîne</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="93"/>
         <source>Checking wallet state with network</source>
         <translation>Vérification de l&apos;état du portefeuille avec le réseau</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="134"/>
+        <source>Public ALIAS requires 1 confirmation&lt;br&gt;Private ALIAS requires 10 confirmations</source>
+        <translation>ALIAS Public nécessite 1 confirmation&lt;br&gt;ALIAS Privé nécessite 10 confirmations</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="140"/>
@@ -3028,7 +3168,7 @@ Note: %2
     <message>
         <location filename="../aliasbridgestrings.h" line="145"/>
         <source>Tor+OBFS4 connection online</source>
-        <translation>Connexion Tor+OBFS4 En ligne</translation>
+        <translation>Connexion Tor+OBFS4 en ligne</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="146"/>
@@ -3580,7 +3720,7 @@ Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owne
     <message>
         <location filename="../aliascorestrings.h" line="119"/>
         <source>Rescan the block chain for missing wallet transactions</source>
-        <translation>Parcours à nouveau la chaîne de blocs pour trouver les transactions manquantes dans le portefeuille</translation>
+        <translation>Parcours à nouveau la Blockchaîne pour trouver les transactions manquantes dans le portefeuille</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="120"/>
@@ -3809,12 +3949,12 @@ Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owne
     <message>
         <location filename="../aliascorestrings.h" line="179"/>
         <source>Importing blockchain data file.</source>
-        <translation>Importation du fichier de chaine de blocs.</translation>
+        <translation>Importation du fichier de Blockchaîne.</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="180"/>
         <source>Importing bootstrap blockchain data file.</source>
-        <translation>Importation du fichier bootstrap de chaine de blocs.</translation>
+        <translation>Importation du fichier bootstrap de Blockchaîne.</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="181"/>
@@ -4034,7 +4174,7 @@ Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owne
     <message>
         <location filename="../aliascorestrings.h" line="239"/>
         <source>Output extra blockchain debugging information</source>
-        <translation>Sortie d&apos;information supplémentaires de debug de chaine de blocs</translation>
+        <translation>Sortie d&apos;information supplémentaires de debug de Blockchaîne</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="240"/>
@@ -4059,7 +4199,7 @@ Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owne
     <message>
         <location filename="../aliascorestrings.h" line="244"/>
         <source>Rebuild block chain index from current blk000?.dat files on startup</source>
-        <translation>Reconstruire au démarrage  l&apos;index de chaine de blocs depuis le fichier blk000?.dat en cours</translation>
+        <translation>Reconstruire au démarrage  l&apos;index de Blockchaîne depuis le fichier blk000?.dat en cours</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="245"/>
@@ -4124,7 +4264,7 @@ Si le fichier n&apos;existe pas, le créer avec les permissions de fichiers owne
     <message>
         <location filename="../aliascorestrings.h" line="257"/>
         <source>Error: Block chain must be fully synced first.</source>
-        <translation>Erreur: la chaine de blocs doit d&apos;abord être synchronisée complètement.</translation>
+        <translation>Erreur: la Blockchaîne doit d&apos;abord être synchronisée complètement.</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="258"/>
