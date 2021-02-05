@@ -143,8 +143,19 @@ else()
 endif()
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_NO_SYSTEM_PATHS ON)
-set(Boost_ARCHITECTURE -x64)
 #set(Boost_DEBUG ON)
+
+set(Boost_ARCHITECTURE -x64)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    execute_process(COMMAND uname -m OUTPUT_VARIABLE USED_ARCH)
+#    message(STATUS "Used arch: ${USED_ARCH}")
+    if (USED_ARCH MATCHES "aarch64")
+        # We're compiling for ARMv8 like Raspberry Pi
+        message(STATUS "Found aarch64, setting Boost architecture to -a64")
+        set(Boost_ARCHITECTURE -a64)
+    endif()
+endif()
+
 find_package(Boost 1.72.0 REQUIRED COMPONENTS
         atomic
         chrono
