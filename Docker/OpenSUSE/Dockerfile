@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.3 as build
+FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.4 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
