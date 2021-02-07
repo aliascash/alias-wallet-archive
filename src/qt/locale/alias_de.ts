@@ -1638,6 +1638,11 @@ Ring size of one is not anonymous.</source>
         <translation>. Starte UI .</translation>
     </message>
     <message>
+        <location filename="../spectregui.cpp" line="283"/>
+        <source>Ready!</source>
+        <translation>Fertig!</translation>
+    </message>
+    <message>
         <location filename="../spectregui.cpp" line="313"/>
         <source>E&amp;xit</source>
         <translation>Beenden</translation>
