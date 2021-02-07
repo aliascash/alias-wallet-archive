@@ -280,7 +280,7 @@ void SpectreGUI::pageLoaded(bool ok)
     runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
 #endif
 
-    initMessage(splashScreen, "Ready!");
+    initMessage(splashScreen, tr("Ready!").toStdString());
     if (splashScreen) splashScreen->finish(this);
     initialized = true;
 
