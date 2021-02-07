@@ -105,12 +105,12 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="44"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation>Introduzca la nueva contraseña del monedero.&lt;br/&gt;Por favor elija una con &lt;b&gt;10 o más caracteres aleatorios&lt;/b&gt;, u &lt;b&gt;ocho o más palabras&lt;/b&gt;.</translation>
+        <translation>Introduzca la nueva contraseña de la Billetera.&lt;br/&gt;Por favor elija una con &lt;b&gt;10 o más caracteres aleatorios&lt;/b&gt;, u &lt;b&gt;ocho o más palabras&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="45"/>
         <source>Encrypt wallet</source>
-        <translation>Cifrar el monedero</translation>
+        <translation>Cifrar la Billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="49"/>
@@ -120,7 +120,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="60"/>
         <source>Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your &lt;b&gt;private ALIAS balance might be shown wrong&lt;/b&gt;.</source>
-        <translation>Su monedero contiene ATXOs bloqueados cuyo estado de gasto sólo puede determinarse con su clave privada. Su&lt;b&gt; saldo privado de ALIAS podría mostrarse de forma errónea&lt;/b&gt;.</translation>
+        <translation>Su Billetera contiene ATXOs bloqueados cuyo estado de gasto sólo puede determinarse con su clave privada. Su&lt;b&gt; saldo privado de ALIAS podría mostrarse de forma errónea&lt;/b&gt;.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="62"/>
@@ -130,22 +130,22 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="64"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>Esta operación requiere su contraseña para desbloquear el monedero.</translation>
+        <translation>Esta operación requiere su contraseña para desbloquear la billetera.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="65"/>
         <source>Unlock wallet</source>
-        <translation>Desbloquear monedero</translation>
+        <translation>Desbloquear billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="68"/>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>Esta operación requiere su contraseña para descifrar el monedero.</translation>
+        <translation>Esta operación requiere su contraseña para descifrar la billetera.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="73"/>
         <source>Decrypt wallet</source>
-        <translation>Descifrar el monedero</translation>
+        <translation>Descifrar la billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="76"/>
@@ -155,38 +155,38 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="77"/>
         <source>Enter the old and new passphrase to the wallet.</source>
-        <translation>Introduzca la contraseña anterior del monedero y la nueva. </translation>
+        <translation>Introduzca la contraseña anterior de la billetera y la nueva. </translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="122"/>
         <source>Confirm wallet encryption</source>
-        <translation>Confirmar cifrado del monedero</translation>
+        <translation>Confirmar cifrado de la billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="123"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
-        <translation>Advertencia: Si encripta su cartera y pierde su frase de contraseña, puede &lt;b&gt;PERDER TODAS SUS MONEDAS&lt;/ b&gt;!</translation>
+        <translation>Advertencia: Si encripta su billetera y pierde su frase de contraseña, puede &lt;b&gt;PERDER TODAS SUS MONEDAS&lt;/ b&gt;!</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="123"/>
         <source>Are you sure you wish to encrypt your wallet?</source>
-        <translation>¿Seguro que desea cifrar su monedero?</translation>
+        <translation>¿Seguro que desea cifrar su billetera?</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="132"/>
         <location filename="../askpassphrasedialog.cpp" line="194"/>
         <source>Wallet encrypted</source>
-        <translation>Monedero cifrado</translation>
+        <translation>Billetera cifrada</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="134"/>
         <source>Alias will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>Alias cerrará para terminar el proceso de encriptación. Recuerde que la encriptación de su monedero no puede proteger completamente que sus monedas sean robadas por malware infectando su computadora.</translation>
+        <translation>Alias cerrará para terminar el proceso de encriptación. Recuerde que la encriptación de su billetera no puede proteger completamente que sus monedas sean robadas por malware infectando su computadora.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="138"/>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>IMPORTANTE: Cualquier copia de seguridad que haya realizado previamente de su archivo de monedero debe reemplazarse con el nuevo archivo de monedero cifrado. Por razones de seguridad, las copias de seguridad previas del archivo de monedero no cifradas serán inservibles en cuanto comience a usar el nuevo monedero cifrado.</translation>
+        <translation>IMPORTANTE: Cualquier copia de seguridad que haya realizado previamente de su archivo de billetera debe reemplazarse con el nuevo archivo de billetera cifrada. Por razones de seguridad, las copias de seguridad previas del archivo de billetera no cifradas serán inservibles en cuanto comience a usar el nuevo billetera cifrada.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="147"/>
@@ -194,12 +194,12 @@ This product includes software developed by the OpenSSL Project for use in the O
         <location filename="../askpassphrasedialog.cpp" line="200"/>
         <location filename="../askpassphrasedialog.cpp" line="206"/>
         <source>Wallet encryption failed</source>
-        <translation>Ha fallado el cifrado del monedero</translation>
+        <translation>Ha fallado el cifrado de la billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="148"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
-        <translation>Ha fallado el cifrado del monedero debido a un error interno. El monedero no ha sido cifrado.</translation>
+        <translation>Ha fallado el cifrado de la billetera debido a un error interno. La Billetera no ha sido cifrado.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="155"/>
@@ -210,24 +210,24 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../askpassphrasedialog.cpp" line="169"/>
         <source>Wallet unlock failed</source>
-        <translation>Ha fallado el desbloqueo del monedero</translation>
+        <translation>Ha fallado el desbloqueo de la billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="170"/>
         <location filename="../askpassphrasedialog.cpp" line="182"/>
         <location filename="../askpassphrasedialog.cpp" line="201"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
-        <translation>La contraseña introducida para descifrar el monedero es incorrecta.</translation>
+        <translation>La contraseña introducida para descifrar la billetera es incorrecta.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="181"/>
         <source>Wallet decryption failed</source>
-        <translation>Ha fallado el descifrado del monedero</translation>
+        <translation>Ha fallado el descifrado de la billetera</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="195"/>
         <source>Wallet passphrase was successfully changed.</source>
-        <translation>Se ha cambiado correctamente la contraseña del monedero.</translation>
+        <translation>Se ha cambiado correctamente la contraseña de la billetera.</translation>
     </message>
     <message>
         <location filename="../askpassphrasedialog.cpp" line="245"/>
@@ -1585,8 +1585,7 @@ El tamaño del anillo de uno no es anónimo.</translation>
     <message>
         <location filename="../transactionrecord.cpp" line="51"/>
         <source>Private received with</source>
-        <translation>Privado recibido con
-</translation>
+        <translation>Privado recibido con</translation>
     </message>
     <message>
         <location filename="../transactionrecord.cpp" line="53"/>
