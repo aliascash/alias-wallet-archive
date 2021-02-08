@@ -968,6 +968,9 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         for(int option = 0;option < optionsModel->rowCount(); option++) {
             if(object.contains(optionsModel->optionIDName(option))) {
                 optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
+                if (optionsModel->index(option).row() == OptionsModel::Language) {
+                    window->restartNotice();
+                }
             }
         }
 

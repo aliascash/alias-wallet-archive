@@ -9,6 +9,7 @@
 #include "transactionrecord.h"
 
 #include "aboutdialog.h"
+#include "restartdialog.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "optionsmodel.h"
@@ -317,6 +318,9 @@ void SpectreGUI::createActions()
     aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Alias"), this);
     aboutAction->setToolTip(tr("Show information about Alias"));
     aboutAction->setMenuRole(QAction::AboutRole);
+    restartAction = new QAction(QIcon(":/icons/spectre"), tr("&Restart Alias"), this);
+    restartAction->setToolTip(tr("Show notice about required wallet restart"));
+    restartAction->setMenuRole(QAction::PreferencesRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
@@ -344,6 +348,7 @@ void SpectreGUI::createActions()
     connect(quitAction, SIGNAL(triggered()), SLOT(requestShutdown()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
+    connect(restartAction, SIGNAL(triggered()), SLOT(restartNotice()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(optionsAction, SIGNAL(triggered()), SLOT(optionsClicked()));
     connect(toggleHideAction, SIGNAL(triggered()), SLOT(toggleHidden()));
@@ -517,6 +522,13 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void SpectreGUI::aboutClicked()
 {
     AboutDialog dlg;
+    dlg.setModel(clientModel);
+    dlg.exec();
+}
+
+void SpectreGUI::restartNotice()
+{
+    RestartDialog dlg;
     dlg.setModel(clientModel);
     dlg.exec();
 }

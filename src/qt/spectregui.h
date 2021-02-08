@@ -93,6 +93,7 @@ private:
 
     QAction *quitAction;
     QAction *aboutAction;
+    QAction *restartAction;
     QAction *optionsAction;
     QAction *toggleHideAction;
     QAction *exportAction;
@@ -187,6 +188,8 @@ private slots:
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
+    /** Show restart dialog */
+    void restartNotice();
 
     /** Unlock wallet */
     void unlockWallet(WalletModel::UnlockMode unlockMode=WalletModel::UnlockMode::standard);
