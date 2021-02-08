@@ -1639,6 +1639,11 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
         <translation>.Démarrer l&apos;interface.</translation>
     </message>
     <message>
+        <location filename="../spectregui.cpp" line="283"/>
+        <source>Ready!</source>
+        <translation>Prêt !</translation>
+    </message>
+    <message>
         <location filename="../spectregui.cpp" line="313"/>
         <source>E&amp;xit</source>
         <translation>&amp;Quitter</translation>

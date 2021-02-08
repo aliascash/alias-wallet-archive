@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="en" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="en">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -488,10 +490,18 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location filename="../coincontroldialog.cpp" line="576"/>
         <source>This label turns red, if any recipient receives an amount smaller than %1.
 
+ This means a fee of at least %2 is required. 
+
+ Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This label turns red, if any recipient receives an amount smaller than %1.
+
  This means a fee of at least %2 is required.
 
  Amounts below 0.546 times the minimum relay fee are shown as DUST.</source>
-        <translation>This label turns red, if any recipient receives an amount smaller than %1.
+        <translation type="vanished">This label turns red, if any recipient receives an amount smaller than %1.
 
  This means a fee of at least %2 is required.
 
@@ -1777,7 +1787,10 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="562"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation><numerusform>%n active connection to Alias network</numerusform><numerusform>%n active connections to Alias network</numerusform></translation>
+        <translation>
+            <numerusform>%n active connection to Alias network</numerusform>
+            <numerusform>%n active connections to Alias network</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="582"/>
@@ -1823,7 +1836,10 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="617"/>
         <source>~%n block(s) remaining</source>
-        <translation><numerusform>%n block remaining</numerusform><numerusform>%n blocks remaining</numerusform></translation>
+        <translation>
+            <numerusform>%n block remaining</numerusform>
+            <numerusform>%n blocks remaining</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="631"/>
@@ -1838,32 +1854,50 @@ Ring size of one is not anonymous.</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
         <source>Imported %n block(s) of transaction history.</source>
-        <translation><numerusform>Imported %n block of transaction history.</numerusform><numerusform>Imported %n blocks of transaction history.</numerusform></translation>
+        <translation>
+            <numerusform>Imported %n block of transaction history.</numerusform>
+            <numerusform>Imported %n blocks of transaction history.</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="635"/>
         <source>Downloaded %n block(s) of transaction history.</source>
-        <translation><numerusform>Downloaded %n block of transaction history.</numerusform><numerusform>Downloaded %n blocks of transaction history.</numerusform></translation>
+        <translation>
+            <numerusform>Downloaded %n block of transaction history.</numerusform>
+            <numerusform>Downloaded %n blocks of transaction history.</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="653"/>
         <source>%n second(s) ago</source>
-        <translation><numerusform>%n second ago</numerusform><numerusform>%n seconds ago</numerusform></translation>
+        <translation>
+            <numerusform>%n second ago</numerusform>
+            <numerusform>%n seconds ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="657"/>
         <source>%n minute(s) ago</source>
-        <translation><numerusform>%n minute ago</numerusform><numerusform>%n minutes ago</numerusform></translation>
+        <translation>
+            <numerusform>%n minute ago</numerusform>
+            <numerusform>%n minutes ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="661"/>
         <source>%n hour(s) ago</source>
-        <translation><numerusform>%n hour ago</numerusform><numerusform>%n hours ago</numerusform></translation>
+        <translation>
+            <numerusform>%n hour ago</numerusform>
+            <numerusform>%n hours ago</numerusform>
+        </translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="664"/>
         <source>%n day(s) ago</source>
-        <translation><numerusform>%n day ago</numerusform><numerusform>%n days ago</numerusform></translation>
+        <translation>
+            <numerusform>%n day ago</numerusform>
+            <numerusform>%n days ago</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="671"/>
@@ -2052,7 +2086,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation><numerusform>Open for %n block</numerusform><numerusform>Open for %n blocks</numerusform></translation>
+        <translation>
+            <numerusform>Open for %n block</numerusform>
+            <numerusform>Open for %n blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="46"/>
@@ -2102,7 +2139,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="92"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, broadcast through %n node</numerusform><numerusform>, broadcast through %n nodes</numerusform></translation>
+        <translation>
+            <numerusform>, broadcast through %n node</numerusform>
+            <numerusform>, broadcast through %n nodes</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="97"/>
@@ -2128,7 +2168,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="117"/>
         <source>matures in %n more block(s)</source>
-        <translation><numerusform>matures in %n more block</numerusform><numerusform>matures in %n more blocks</numerusform></translation>
+        <translation>
+            <numerusform>matures in %n more block</numerusform>
+            <numerusform>matures in %n more blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="120"/>
@@ -2281,7 +2324,10 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Open for %n more block</numerusform><numerusform>Open for %n more blocks</numerusform></translation>
+        <translation>
+            <numerusform>Open for %n more block</numerusform>
+            <numerusform>Open for %n more blocks</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="331"/>

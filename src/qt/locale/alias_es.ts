@@ -1631,6 +1631,11 @@ El tamaño del anillo de uno no es anónimo.</translation>
         <translation>.Iniciar UI.</translation>
     </message>
     <message>
+        <location filename="../spectregui.cpp" line="283"/>
+        <source>Ready!</source>
+        <translation>Listo!</translation>
+    </message>
+    <message>
         <location filename="../spectregui.cpp" line="313"/>
         <source>E&amp;xit</source>
         <translation>Sa$lida</translation>
