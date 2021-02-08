@@ -105,6 +105,8 @@ private:
     QString language;
     QStringList notifications;
     QStringList visibleTransactions;
+    bool bActivateAllTransactiontypesAfterLanguageSwitch = false;
+    bool bActivateAllNotificationsAfterLanguageSwitch = false;
 
 signals:
     void displayUnitChanged(int unit);
