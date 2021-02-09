@@ -205,9 +205,9 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("alias-bridge", "Cancel"),
     QT_TRANSLATE_NOOP("alias-bridge", "Apply"),
     QT_TRANSLATE_NOOP("alias-bridge", "Ok"),
-//    QT_TRANSLATE_NOOP("alias-bridge", ""),
-//    QT_TRANSLATE_NOOP("alias-bridge", ""),
-//    QT_TRANSLATE_NOOP("alias-bridge", ""),
+    QT_TRANSLATE_NOOP("alias-bridge", "Reserved"),
+    QT_TRANSLATE_NOOP("alias-bridge", "Unconfirmed"),
+    QT_TRANSLATE_NOOP("alias-bridge", "Immature"),
 //    QT_TRANSLATE_NOOP("alias-bridge", ""),
 //    QT_TRANSLATE_NOOP("alias-bridge", ""),
 

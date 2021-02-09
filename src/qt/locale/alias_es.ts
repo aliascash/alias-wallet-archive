@@ -3088,6 +3088,21 @@ Nota: %2
         <translation>Ok</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="208"/>
+        <source>Reserved</source>
+        <translation>Reservado</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="209"/>
+        <source>Unconfirmed</source>
+        <translation>Sin confirmar</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="210"/>
+        <source>Immature</source>
+        <translation>Inmaduro</translation>
+    </message>
+    <message>
         <location filename="../aliasbridgestrings.h" line="135"/>
         <source>Type</source>
         <translation>Tipo</translation>

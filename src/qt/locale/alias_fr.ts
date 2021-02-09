@@ -444,7 +444,7 @@ Ce produit contient du logiciel développé par le OpenSSL Project pour usage da
         <location filename="../coincontroldialog.cpp" line="534"/>
         <location filename="../coincontroldialog.cpp" line="564"/>
         <source>DUST</source>
-        <translation>DUST</translation>
+        <translation>POUSSIERE</translation>
     </message>
     <message>
         <location filename="../coincontroldialog.cpp" line="534"/>
@@ -2321,7 +2321,7 @@ Note: %2
     <message>
         <location filename="../transactiontablemodel.cpp" line="352"/>
         <source>Immature (%1 confirmations, will be available after %2)</source>
-        <translation>Immature (%1 confirmations, sera disponible après %2)</translation>
+        <translation>Pas mûr (%1 confirmations, sera disponible après %2)</translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="356"/>
@@ -3094,6 +3094,21 @@ Note: %2
         <location filename="../aliasbridgestrings.h" line="207"/>
         <source>Ok</source>
         <translation>Ok</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="208"/>
+        <source>Reserved</source>
+        <translation>Réservé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="209"/>
+        <source>Unconfirmed</source>
+        <translation>Non confirmé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="210"/>
+        <source>Immature</source>
+        <translation>Pas mûr</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="135"/>
