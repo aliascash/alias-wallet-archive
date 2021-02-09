@@ -167,7 +167,8 @@
             <cursorShape>IBeamCursor</cursorShape>
            </property>
            <property name="text">
-            <string>Please restart the wallet after switching used language!</string>
+            <string>The used language has changed.
+Please restart the wallet!</string>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
