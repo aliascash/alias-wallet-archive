@@ -4305,9 +4305,9 @@ int LoadBlockIndex(bool fAllowNew, std::function<void (const unsigned mode, cons
 
         if (!pwalletMain->CacheAnonStats(nBestHeight, [] (const unsigned mode, const uint32_t& nOutpus) -> void {
                                             if (mode == 0)
-                                                uiInterface.InitMessage(strprintf("Read ATXOs... (%d)", nOutpus));
+                                                uiInterface.InitMessage(strprintf(_("Read ATXOs... (%d)"), nOutpus));
                                             else
-                                                uiInterface.InitMessage(strprintf("Read spent ATXOs... (%d)", nOutpus));
+                                                uiInterface.InitMessage(strprintf(_("Read spent ATXOs... (%d)"), nOutpus));
                                         }))
             LogPrintf("CacheAnonStats() failed.\n");
     } else

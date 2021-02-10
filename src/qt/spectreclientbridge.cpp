@@ -24,7 +24,7 @@
 #include "extkey.h"
 
 #include "addresstablemodel.h" // Need enum EAddressType
-#include "bridgetranslations.h"
+#include "aliasbridgestrings.h"
 
 #include <QApplication>
 #include <QClipboard>

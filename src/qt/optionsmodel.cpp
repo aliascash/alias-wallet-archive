@@ -215,6 +215,20 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         break;
     case Language:
         settings.setValue("language", value);
+
+        // As long as the real strings of the choosen language are used to filter transactions and notifications,
+        // this workaround is neccessary. Otherwise the transaction list will be empty after a language change and
+        // wallet restart.
+        visibleTransactions().clear();
+        visibleTransactions().append("*");
+        settings.setValue("visibleTransactions", visibleTransactions());
+        bActivateAllTransactiontypesAfterLanguageSwitch = true;
+
+        notifications().clear();
+        notifications().append("*");
+        settings.setValue("notifications", notifications());
+        bActivateAllNotificationsAfterLanguageSwitch = true;
+
         break;
     case RowsPerPage: {
         setRowsPerPage(value.toInt());
@@ -222,12 +236,24 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         }
         break;
     case Notifications: {
-        setNotifications(value.toStringList());
+        if (bActivateAllNotificationsAfterLanguageSwitch) {
+            notifications().clear();
+            notifications().append("*");
+            bActivateAllNotificationsAfterLanguageSwitch = false;
+        } else {
+            setNotifications(value.toStringList());
+        }
         settings.setValue("notifications", notifications());
         }
         break;
     case VisibleTransactions: {
-        setVisibleTransactions(value.toStringList());
+        if (bActivateAllTransactiontypesAfterLanguageSwitch) {
+            visibleTransactions().clear();
+            visibleTransactions().append("*");
+            bActivateAllTransactiontypesAfterLanguageSwitch = false;
+        } else {
+            setVisibleTransactions(value.toStringList());
+        }
         settings.setValue("visibleTransactions", visibleTransactions());
         }
         break;

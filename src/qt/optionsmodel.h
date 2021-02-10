@@ -76,6 +76,8 @@ public:
 
     void emitTransactionFeeChanged(qint64);
     void emitReserveBalanceChanged(qint64);
+    bool bActivateAllTransactiontypesAfterLanguageSwitch = false;
+    bool bActivateAllNotificationsAfterLanguageSwitch = false;
 
 signals:
     void transactionFeeChanged(qint64);

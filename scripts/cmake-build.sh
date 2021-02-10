@@ -408,7 +408,10 @@ buildBoost() {
     cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
     ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
     #        ./bootstrap.sh
-    ./b2 -j"${CORES_TO_USE}"
+    ./b2 \
+        -j"${CORES_TO_USE}" \
+        --layout=tagged \
+        --build-type=complete
     cd "${currentDir}" || die 1 "Unable to cd into ${currentDir}"
 }
 
@@ -421,7 +424,7 @@ checkBoost() {
     boostBuildRequired=false
     if [[ -d ${BOOST_LIBRARYDIR} ]]; then
         for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
-            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}.a ]]; then
+            if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt-${LIB_ARCH_SUFFIX}.a ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
                 warning " => ${currentBoostDependency}: Not found!"
@@ -883,6 +886,11 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 #    CORES_TO_USE=1
 else
     CORES_TO_USE=1
+fi
+# Determine arch
+LIB_ARCH_SUFFIX=x64
+if [ "$(uname -m)" = "aarch64" ] ; then
+    LIB_ARCH_SUFFIX=a64
 fi
 
 FULLBUILD=false

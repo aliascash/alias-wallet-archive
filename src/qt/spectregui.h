@@ -134,6 +134,7 @@ private:
 
     QAction *quitAction;
     QAction *aboutAction;
+    QAction *restartAction;
     QAction *optionsAction;
     QAction *toggleHideAction;
     QAction *exportAction;
@@ -236,6 +237,8 @@ private slots:
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
+    /** Show restart dialog */
+    void restartNotice();
 
     /* Request to unlock for AXTO spent state determination, this slot should be called queued */
     void requestUnlockRescan();
