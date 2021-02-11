@@ -564,7 +564,7 @@ int main(int argc, char *argv[])
 #ifndef ANDROID
         boost::thread_group threadGroup;
 #endif
-        InitMessage("Connect service...");
+        InitMessage(SpectreGUI::tr("Connect service...").toStdString());
 
         // Accuire remote objects replicas
         QRemoteObjectNode repNode;

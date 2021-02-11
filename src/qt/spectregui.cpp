@@ -220,7 +220,7 @@ void SpectreGUI::updateCoreMessage(QString message)
 unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex(QString webSocketToken) {
-    initMessage(splashScreen, "...Start UI...");
+    initMessage(splashScreen, tr("...Start UI...").toStdString());
 
     QQuickWidget *view = new QQuickWidget(this);
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);

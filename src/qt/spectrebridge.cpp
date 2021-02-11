@@ -367,7 +367,7 @@ void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicatio
 }
 
 void SpectreBridge::jsReady() {
-    this->applicationModel->setCoreMessage("..Start UI..");
+    this->applicationModel->setCoreMessage(tr("..Start UI.."));
     QApplication::instance()->processEvents();
 
     // Populate data
@@ -379,7 +379,7 @@ void SpectreBridge::jsReady() {
     populateTransactionTable();
     populateAddressTable();
 
-    this->applicationModel->setCoreMessage(".Start UI.");
+    this->applicationModel->setCoreMessage(tr(".Start UI."));
     {
         QApplication::instance()->processEvents();
         LOCK2(cs_main, pwalletMain->cs_wallet);
