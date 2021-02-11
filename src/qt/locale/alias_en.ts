@@ -1523,22 +1523,32 @@ Please restart the wallet!</translation>
 <context>
     <name>SpectreBridge</name>
     <message>
-        <location filename="../spectrebridge.cpp" line="442"/>
+        <location filename="../spectrebridge.cpp" line="370"/>
+        <source>..Start UI..</source>
+        <translation type="unfinished">..Start UI..</translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="382"/>
+        <source>.Start UI.</source>
+        <translation type="unfinished">.Start UI.</translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="441"/>
         <source>default</source>
         <translation>default</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="1873"/>
+        <location filename="../spectrebridge.cpp" line="1872"/>
         <source>%1 %2</source>
         <translation type="unfinished">%1 %2</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="1876"/>
+        <location filename="../spectrebridge.cpp" line="1875"/>
         <source>%1 | %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="1877"/>
+        <location filename="../spectrebridge.cpp" line="1876"/>
         <source>%1</source>
         <translation type="unfinished">%1</translation>
     </message>
@@ -2170,6 +2180,11 @@ Note: %2
         <location filename="../spectregui.cpp" line="1090"/>
         <source>Wallet Data (*.dat)</source>
         <translation>Wallet Data (*.dat)</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="223"/>
+        <source>...Start UI...</source>
+        <translation type="unfinished">...Start UI...</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1088"/>
