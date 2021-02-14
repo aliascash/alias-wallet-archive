@@ -26,6 +26,16 @@ BUILD_DIR_ARM8=cmake-build-cmdline-android${ANDROID_API_ARM64}_arm64
 BUILD_DIR_ARM7=cmake-build-cmdline-android${ANDROID_API_ARMV7}_armv7a
 BUILD_DIR_x86_64=cmake-build-cmdline-android${ANDROID_API_X86_64}_x86_64
 
+if [ -z "${DEPENDENCIES_BUILD_DIR}" ] ; then
+    BUILD_DIR_TOR_ARM8=${BUILD_DIR_ARM8}
+    BUILD_DIR_TOR_ARM7=${BUILD_DIR_ARM7}
+    BUILD_DIR_TOR_x86_64=${BUILD_DIR_x86_64}
+else
+    BUILD_DIR_TOR_ARM8=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR_ARM8}
+    BUILD_DIR_TOR_ARM7=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR_ARM7}
+    BUILD_DIR_TOR_x86_64=${DEPENDENCIES_BUILD_DIR}/${BUILD_DIR_x86_64}
+fi
+
 BUILD_DIR_APK=cmake-build-cmdline-android-apk
 
 rm -Rf ${BUILD_DIR_APK}/android-build/assets
@@ -33,17 +43,17 @@ mkdir -p ${BUILD_DIR_APK}/android-build
 ln -s ${DIR_UI} ${BUILD_DIR_APK}/android-build/assets
 
 mkdir -p ${BUILD_DIR_APK}/android-build/libs/arm64-v8a
-cp ${BUILD_DIR_ARM8}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/arm64-v8a/libtor.so
+cp ${BUILD_DIR_TOR_ARM8}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/arm64-v8a/libtor.so
 cp ${BUILD_DIR_ARM8}/aliaswallet/android-build/libs/arm64-v8a/libAlias_arm64-v8a.so ${BUILD_DIR_APK}/android-build/libs/arm64-v8a/
 chmod +x ${BUILD_DIR_APK}/android-build/libs/arm64-v8a/*.so
 
 mkdir -p ${BUILD_DIR_APK}/android-build/libs/armeabi-v7a
-cp ${BUILD_DIR_ARM7}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/armeabi-v7a/libtor.so
+cp ${BUILD_DIR_TOR_ARM7}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/armeabi-v7a/libtor.so
 cp ${BUILD_DIR_ARM7}/aliaswallet/android-build/libs/armeabi-v7a/libAlias_armeabi-v7a.so ${BUILD_DIR_APK}/android-build/libs/armeabi-v7a/
 chmod +x ${BUILD_DIR_APK}/android-build/libs/armeabi-v7a/*.so
 
 mkdir -p ${BUILD_DIR_APK}/android-build/libs/x86_64
-cp ${BUILD_DIR_x86_64}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/x86_64/libtor.so
+cp ${BUILD_DIR_TOR_x86_64}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs/x86_64/libtor.so
 cp ${BUILD_DIR_x86_64}/aliaswallet/android-build/libs/x86_64/libAlias_x86_64.so ${BUILD_DIR_APK}/android-build/libs/x86_64/
 chmod +x ${BUILD_DIR_APK}/android-build/libs/x86_64/*.so
 
