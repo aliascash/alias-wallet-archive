@@ -57,7 +57,12 @@ cp ${BUILD_DIR_TOR_x86_64}/usr/local/bin/tor ${BUILD_DIR_APK}/android-build/libs
 cp ${BUILD_DIR_x86_64}/aliaswallet/android-build/libs/x86_64/libAlias_x86_64.so ${BUILD_DIR_APK}/android-build/libs/x86_64/
 chmod +x ${BUILD_DIR_APK}/android-build/libs/x86_64/*.so
 
-cp -f scripts/android_deployment_settings_CI.json ${BUILD_DIR_APK}/android_deployment_settings.json
+sed -e "s#ANDROID_HOME#${ANDROID_HOME}#g" \
+    -e "s#ANDROID_NDK_VERSION#${ANDROID_NDK_VERSION}#g" \
+    -e "s#QT_INSTALLATION_PATH#${QT_INSTALLATION_PATH}#g" \
+    -e "s#QT_VERSION_ANDROID#${QT_VERSION_ANDROID}#g" \
+    -e "s#PATH_TO_CLONE#${ownLocation}/..#g" \
+    scripts/android_deployment_settings_NEW.json > ${BUILD_DIR_APK}/android_deployment_settings.json
 
 export ANDROID_HOME=${ANDROID_HOME}
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
