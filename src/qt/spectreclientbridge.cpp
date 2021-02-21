@@ -419,3 +419,10 @@ void SpectreClientBridge::newAddress(QString addressLabel, int addressType, QStr
             emit newAddressResult(false, tr("Core not responding."), "", send);
     }
 }
+
+void SpectreClientBridge::translateHtmlString(QString string)
+{
+    std::string result = QCoreApplication::translate("alias-bridge", qPrintable(string)).toStdString();
+    LogPrintf("translateHtmlString: '%s' -> '%s'\n", string.toStdString(), result);
+    emit updateElement(string, QString::fromStdString(result));
+}

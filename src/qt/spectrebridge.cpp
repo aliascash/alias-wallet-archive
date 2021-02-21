@@ -611,13 +611,6 @@ QString SpectreBridge::getPubKey(QString address)
     return addressModel->atm->pubkeyForAddress(address);;
 }
 
-void SpectreBridge::translateHtmlString(QString string)
-{
-    std::string result = QCoreApplication::translate("alias-bridge", qPrintable(string)).toStdString();
-    LogPrintf("translateHtmlString: '%s' -> '%s'\n", string.toStdString(), result);
-    emit updateElement(string, QString::fromStdString(result));
-}
-
 void SpectreBridge::getOptions()
 {
     emit getOptionResult(info->value("options"));

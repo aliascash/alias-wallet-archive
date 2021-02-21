@@ -147,7 +147,6 @@ public slots:
     Q_INVOKABLE void extKeySetMaster(QString extKeyID);
     Q_INVOKABLE void extKeySetActive(QString extKeySetActive, QString isActive);
 
-    Q_INVOKABLE void translateHtmlString(QString string);
     Q_INVOKABLE void getOptions();
 
 signals:
@@ -184,8 +183,6 @@ signals:
     void getOptionResult(QVariant result);
 
     void listAnonOutputsResult(QVariantMap result);
-
-    void updateElement(QString sourceString, QString translatedString);
 
 private:
     ClientModel *clientModel;
