@@ -28,7 +28,7 @@ ANDROID_NDK_ROOT=${ANDROID_NDK_ARCHIVE_LOCATION}/android-ndk-${ANDROID_NDK_VERSI
 ANDROID_TOOLCHAIN_CMAKE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
 ANDROID_ARCH=armv7a
 ANDROID_ABI=armeabi-v7a
-ANDROID_API=26
+ANDROID_API=${ANDROID_API_ARMV7}
 
 ##### ### # Android Qt # ### ################################################
 ANDROID_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_ANDROID}/android
