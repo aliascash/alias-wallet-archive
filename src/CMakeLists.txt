@@ -229,10 +229,13 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/aliasbridgestrings.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/aliascorestrings.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
@@ -252,6 +255,7 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectreclientbridge.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.h
@@ -263,10 +267,12 @@ if (ENABLE_GUI)
 
             ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp
@@ -285,6 +291,7 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectreclientbridge.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.cpp
