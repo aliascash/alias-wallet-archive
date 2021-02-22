@@ -245,6 +245,75 @@ This product includes software developed by the OpenSSL Project for use in the O
     </message>
 </context>
 <context>
+    <name>BootstrapIntroPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="117"/>
+        <source>The application has detected that the blockchain data files have not been updated since %1 days.&lt;br&gt;&lt;br&gt;Do you want to bootstrap the blockchain data from scratch?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the boostrap download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>Es wurde festgestellt, dass die Blockchain-Daten seit %1 Tagen nicht aktualisiert wurden.&lt;br&gt;&lt;br&gt;Möchten Sie die Blockchain von Grund auf neu installieren?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Bitte beachten Sie, dass der Download knapp 2GB gross ist und dies zu zusätzlichem Datenverkehr führt.&lt;/strong&gt;</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="122"/>
+        <source>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>Es wurde festgestellt, dass die Blockchain-Daten nicht vorhanden sind.&lt;br&gt;&lt;br&gt;Es wird empfohlen, die Blockchain via Bootstrap neu aufzusetzen. Wird die Blockchain hingegen synchronisiert, kann dieser Vorgang von mehreren Stunden bis hin zu mehreren Tagen dauern.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Bitte beachten Sie, dass der Download knapp 2GB gross ist und dies zu zusätzlichem Datenverkehr führt.&lt;/strong&gt;</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="128"/>
+        <source>&amp;Download bootstrap</source>
+        <translation>&amp;Bootstrap-Archiv herunterladen</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="129"/>
+        <source>&amp;Sync &amp;&amp; validate blockchain</source>
+        <translation>&amp;Blockchain synchronisieren und validieren</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapSyncPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="319"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Blockchain-Daten einrichten</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="322"/>
+        <source>Are you sure you want to &lt;strong&gt;synchronize and validate&lt;/strong&gt; the complete blockchain?&lt;br&gt;&lt;br&gt;Synchronizing the blockchain takes up, from several hours on a fast desktop computer, to &lt;strong&gt;several days on a smartphone&lt;/strong&gt;.</source>
+        <translation>Sind Sie sicher, die gesamte Blockchain zu &lt;strong&gt;synchronisieren und zu validieren&lt;/strong&gt;?&lt;br&gt;&lt;br&gt;Die Synchronisation kann von einigen Stunden auf schnellen PCs bis hin zu &lt;strong&gt;mehreren Tagen auf Smartphones&lt;/strong&gt; dauern.</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapWizard</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="43"/>
+        <source>Alias Blockchain Setup</source>
+        <translation>Alias Blockchain-Einrichtung</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="93"/>
+        <source>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</source>
+        <translation>Die Applikation benötigt die Blockchain-Daten, damit sie funktioniert. Die Daten können Block für Block synchronisiert und validiert oder als Bootstrap-Archiv heruntergeladen werden.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="96"/>
+        <source>If you have problems with the bootstrap download, make sure you have a good internet connection.</source>
+        <translation>Bei Problemen mit dem Bootstrap-Download bitte sicherstellen, dass eine gute Internet-Verbindung besteht.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="99"/>
+        <source>The benefit of syncing and validating the blockchain is that you don&apos;t have to trust a central server which provides you the blockchain bootstrap. Instead the complete blockchain will by downloaded and validated block by block from the blockchain network.</source>
+        <translation>Der Vorteil der Synchronisation und Validierung liegt darin, dass Sie nicht einem zentralen Server vertrauen müssen, welcher das Blockchain-Archiv vorhält. Stattdessen wird die Blockchain Block für Block vom Alias-Netzwerk heruntergeladen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="102"/>
+        <source>No help available.</source>
+        <translation>Keine Hilfe verfügbar.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="105"/>
+        <source>Blockchain Data Setup Help</source>
+        <translation>Blockchain-Setup Hilfe</translation>
+    </message>
+</context>
+<context>
     <name>ClientModel</name>
     <message>
         <location filename="../clientmodel.cpp" line="108"/>
@@ -611,6 +680,107 @@ Dies bedeutet eine Gebühr von min %2 ist benötigt</translation>
         <location filename="../coincontroldialog.cpp" line="688"/>
         <source>(change)</source>
         <translation>(Wechselgeld)</translation>
+    </message>
+</context>
+<context>
+    <name>DownloadPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="168"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Blockchain-Daten einrichten</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="169"/>
+        <source>Blockchain bootstrap installation</source>
+        <translation>Bootstrap-Installation der Blockchain</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="171"/>
+        <source>Initialize... </source>
+        <translation>Initialisiere...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="178"/>
+        <source>&amp;Retry</source>
+        <translation>&amp;Wiederholen</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="205"/>
+        <source>Initialize...</source>
+        <translation>Initialisiere...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="230"/>
+        <source>Bootstrap download failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>Download des Boostrap-Archives fehlgeschlagen, da nicht genug freier Speicher zur Verfügung steht.&lt;br&gt;&lt;br&gt;Bitte sicherstellen, dass genug freier Speicher vorhanden ist, bevor der Download erneut gestartet wird.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="234"/>
+        <source>Bootstrap archive extraction failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>Entpacken des Boostrap-Archives fehlgeschlagen, da nicht genug freier Speicher zur Verfügung steht.&lt;br&gt;&lt;br&gt;Bitte sicherstellen, dass genug freier Speicher vorhanden ist.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="238"/>
+        <source>Bootstrap archive extraction failed, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Entpacken des Bootstrap-Archives fehlgeschlagen, bitte erneut versuchen.&lt;br&gt;&lt;br&gt;Wenn der Fehler weiterhin besteht, bitte mit den Entwicklern in Verbindung setzen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="242"/>
+        <source>Bootstrap hash mismatch, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Prüfsumme des Bootstrap-Archives falsch, bitte Download wiederholen. &lt;br&gt;&lt;br&gt;Wenn der Fehler weiterhin besteht, bitte mit den Entwicklern in Verbindung setzen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="246"/>
+        <source>Bootstrap index file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Index der Bootstrap-Archive auf dem entfernten Server nicht gefunden, bitte Download wiederholen.&lt;br&gt;&lt;br&gt;Wenn der Fehler weiterhin besteht, bitte mit den Entwicklern in Verbindung setzen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="250"/>
+        <source>Bootstrap file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap-Archiv auf dem entfernten Server nicht gefunden, bitte Download wiederholen.&lt;br&gt;&lt;br&gt;Wenn der Fehler weiterhin besteht, bitte mit den Entwicklern in Verbindung setzen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="254"/>
+        <source>Bootstrap download failed, please try again.&lt;br&gt;&lt;br&gt;Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi.</source>
+        <translation>Download der Bootstrap-Archive fehlgeschlagen, bitte wiederholen.&lt;br&gt;&lt;br&gt;Bitte sicherstellen, dass eine stabile Internet-Verbindung besteht.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="263"/>
+        <source>Bootstrap download aborted by user.</source>
+        <translation>Bootstrap-Download vom Benutzer abgebrochen.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="271"/>
+        <source>Downloading... (%1/%2)</source>
+        <translation>Lade herunter... (%1/%2)</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="273"/>
+        <source>Downloading...</source>
+        <translation>Lade herunter...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="280"/>
+        <source>Extracting...</source>
+        <translation>Entpacken...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="291"/>
+        <source>There seems to be a problem with the Bootstrap service, please restart app.</source>
+        <translation>Es besteht ein Problem mit dem Bootstrap-Service. Bitte die App neu starten.</translation>
+    </message>
+</context>
+<context>
+    <name>DownloadSuccessPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="299"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Blockchain-Daten einrichten</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="301"/>
+        <source>&lt;strong&gt;Bootstrap finished!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;The blockchain data was successfully downloaded and installed.&lt;/strong&gt;</source>
+        <translation>&lt;strong&gt;Bootstrap-Installation abgeschlossen!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Die Blockchain-Daten wurden erfolgreich heruntergeladen und installiert.</translation>
     </message>
 </context>
 <context>
@@ -1473,6 +1643,208 @@ Bitte starten Sie das Wallet neu!</translation>
         <location filename="../spectrebridge.cpp" line="1869"/>
         <source>%1</source>
         <translation>%1</translation>
+    </message>
+</context>
+<context>
+    <name>SpectreClientBridge</name>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="121"/>
+        <location filename="../spectreclientbridge.cpp" line="307"/>
+        <source>Send Coins</source>
+        <translation>Schicke Coins</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="140"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; von Ihrem öffentlichen Guthaben an %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="144"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; vom öffentlichen an das private Guthaben unter Verwendung von Adresse %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="149"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; von Ihrem privaten Guthaben, Ring-Grösse %2, an %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="154"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; vom privaten an das öffentliche Guthaben mit Ring-Grösse %2 unter Verwendung von Adresse %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="158"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation>Unbekannten Transaktionstyp %1 gefunden.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="165"/>
+        <source>Input types must match for all recipients.</source>
+        <translation>Eingangstyp muss für alle Empfänger übereinstimmen.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="173"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation>Ringgrösse muss für alle Empfänger übereinstimmen.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="178"/>
+        <source>Ring size must be %1.</source>
+        <translation>Ringgrösse muss %1 sein.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="179"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation>Ringgrösse ausserhalb des Bereiches [%1, %2].</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="187"/>
+        <source>Confirm send coins</source>
+        <translation>Bitte das Senden der Coins bestätigen</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to convert %1?</source>
+        <translation>Sind Sie sicher %1 zu konvertieren?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to send %1?</source>
+        <translation>Sind Sie sicher %1 zu senden?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="189"/>
+        <source> and </source>
+        <translation>und</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="206"/>
+        <source>The change address is not valid, please recheck.</source>
+        <translation>Die Wechselgeldadresse ist nicht gültig, bitte prüfen.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="218"/>
+        <source>Payment not send because wallet is locked.</source>
+        <translation>Zahlung nicht verschickt, da Wallet gesperrt ist.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="231"/>
+        <location filename="../spectreclientbridge.cpp" line="250"/>
+        <location filename="../spectreclientbridge.cpp" line="411"/>
+        <location filename="../spectreclientbridge.cpp" line="419"/>
+        <source>Core not responding.</source>
+        <translation>Applikationskern reagiert nicht.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="259"/>
+        <source>The recipient address is not valid, please recheck.</source>
+        <translation>Die Empfängeradresse ist nicht gültig, bitte prüfen.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="261"/>
+        <source>Only ALIAS from your Private balance can be send to a private address.</source>
+        <translation>Nur private ALIAS können an eine private Adresse geschickt werden.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="263"/>
+        <source>Transfer from Public to Private is only allowed within your account.</source>
+        <translation>Transfer von öffentlichem an privates Guthaben ist nur innerhalb des Wallets möglich.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="265"/>
+        <source>Transfer from Private to Public is only allowed within your account.</source>
+        <translation>Transfer von privatem an öffentliches Guthaben ist nur innerhalb des Wallets möglich.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="267"/>
+        <source>The amount to pay must be larger than 0.</source>
+        <translation>Der Betrag muss grösser 0 sein.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="269"/>
+        <source>The amount exceeds your balance.</source>
+        <translation>Der Betrag überschreitet das Guthaben.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="271"/>
+        <source>The total exceeds your balance when the %1 transaction fee is included.</source>
+        <translation>Die Summe überschreitet das Guthaben, wenn %1 Transaktionsgebühren enthalten sind.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="273"/>
+        <source>Duplicate address found, can only send to each address once per send operation.</source>
+        <translation>Doppelte Empfängeradresse gefunden. Die Empfänger je Transaktion müssen eindeutig sein.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="275"/>
+        <source>Error: Transaction creation failed.</source>
+        <translation>Fehler: Erzeugen der Transaktion fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="277"/>
+        <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <translation>Fehler: Transaktion wurde abgelehnt. Das kann passieren, wenn einige der zu verwendenden Coins bereits ausgegeben wurden. Das wiederum kann passieren, wenn eine Kopie der wallet.dat verwendet wird, in welcher diese Coins nicht als ausgegeben markiert wurden.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="279"/>
+        <source>Error: Note is too long.</source>
+        <translation>Fehler: Die Notiz ist zu lang.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="281"/>
+        <source>Error: Ring Size Error.</source>
+        <translation>Fehler: Ringgrösse falsch.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="283"/>
+        <source>Error: Input Type Error.</source>
+        <translation>Fehler: Input-Typ falsch.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="285"/>
+        <source>Error: Must be in full mode to send anon.</source>
+        <translation>Fehler: Zum senden privater Coins den Full-Mode aktivieren.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="287"/>
+        <source>Error: Invalid Private Address.</source>
+        <translation>Fehler: Ungültige private Adresse.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="289"/>
+        <source>Error: Invalid Private Address. Private to public conversion requires a stealth address.</source>
+        <translation>Fehler: Ungültige private Adresse. Konvertierung von privat zu öffentlich braucht eine Stealth-Adresse</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="291"/>
+        <source>The amount exceeds your ALIAS balance.</source>
+        <translation>Der Betrag überschreitet das ALIAS Guthaben.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="293"/>
+        <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
+        <translation>Die Summe überschreitet das ALIAS Guthaben, wenn %1 Transaktionsgebühren enthalten sind.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="295"/>
+        <source>Error generating transaction.</source>
+        <translation>Fehler beim Erzeugen der Transaktion.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="297"/>
+        <source>Error generating transaction: %1</source>
+        <translation>Fehler beim Erzeugen der Transaktion: %1</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="308"/>
+        <source>Transaction successfully created. Fee payed %1</source>
+        <translation>Transaktion erfolgreich erzeugt und Gebühr von %1 gezahlt.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="404"/>
+        <source>Wallet locked.</source>
+        <translation>Wallet gesperrt.</translation>
     </message>
 </context>
 <context>
