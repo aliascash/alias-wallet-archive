@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="en">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="en" version="2.1">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -244,6 +242,75 @@ This product includes software developed by the OpenSSL Project for use in the O
         <location filename="../askpassphrasedialog.cpp" line="311"/>
         <source>Warning: The Caps Lock key is on!</source>
         <translation>Warning: The Caps Lock key is on!</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapIntroPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="117"/>
+        <source>The application has detected that the blockchain data files have not been updated since %1 days.&lt;br&gt;&lt;br&gt;Do you want to bootstrap the blockchain data from scratch?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the boostrap download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>The application has detected that the blockchain data files have not been updated since %1 days.&lt;br&gt;&lt;br&gt;Do you want to bootstrap the blockchain data from scratch?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the boostrap download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="122"/>
+        <source>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="128"/>
+        <source>&amp;Download bootstrap</source>
+        <translation>&amp;Download bootstrap</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="129"/>
+        <source>&amp;Sync &amp;&amp; validate blockchain</source>
+        <translation>&amp;Sync &amp;&amp; validate blockchain</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapSyncPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="319"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Set Up Blockchain Data</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="322"/>
+        <source>Are you sure you want to &lt;strong&gt;synchronize and validate&lt;/strong&gt; the complete blockchain?&lt;br&gt;&lt;br&gt;Synchronizing the blockchain takes up, from several hours on a fast desktop computer, to &lt;strong&gt;several days on a smartphone&lt;/strong&gt;.</source>
+        <translation>Are you sure you want to &lt;strong&gt;synchronize and validate&lt;/strong&gt; the complete blockchain?&lt;br&gt;&lt;br&gt;Synchronizing the blockchain takes up, from several hours on a fast desktop computer, to &lt;strong&gt;several days on a smartphone&lt;/strong&gt;.</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapWizard</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="43"/>
+        <source>Alias Blockchain Setup</source>
+        <translation>Alias Blockchain Setup</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="93"/>
+        <source>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</source>
+        <translation>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="96"/>
+        <source>If you have problems with the bootstrap download, make sure you have a good internet connection.</source>
+        <translation>If you have problems with the bootstrap download, make sure you have a good internet connection.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="99"/>
+        <source>The benefit of syncing and validating the blockchain is that you don&apos;t have to trust a central server which provides you the blockchain bootstrap. Instead the complete blockchain will by downloaded and validated block by block from the blockchain network.</source>
+        <translation>The benefit of syncing and validating the blockchain is that you don&apos;t have to trust a central server which provides you the blockchain bootstrap. Instead the complete blockchain will by downloaded and validated block by block from the blockchain network.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="102"/>
+        <source>No help available.</source>
+        <translation>No help available.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="105"/>
+        <source>Blockchain Data Setup Help</source>
+        <translation>Blockchain Data Setup Help</translation>
     </message>
 </context>
 <context>
@@ -613,6 +680,107 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location filename="../coincontroldialog.cpp" line="688"/>
         <source>(change)</source>
         <translation>(change)</translation>
+    </message>
+</context>
+<context>
+    <name>DownloadPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="168"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Set Up Blockchain Data</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="169"/>
+        <source>Blockchain bootstrap installation</source>
+        <translation>Blockchain bootstrap installation</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="171"/>
+        <source>Initialize... </source>
+        <translation>Initialize... </translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="178"/>
+        <source>&amp;Retry</source>
+        <translation>&amp;Retry</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="205"/>
+        <source>Initialize...</source>
+        <translation>Initialize...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="230"/>
+        <source>Bootstrap download failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>Bootstrap download failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="234"/>
+        <source>Bootstrap archive extraction failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>Bootstrap archive extraction failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="238"/>
+        <source>Bootstrap archive extraction failed, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap archive extraction failed, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="242"/>
+        <source>Bootstrap hash mismatch, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap hash mismatch, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="246"/>
+        <source>Bootstrap index file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap index file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="250"/>
+        <source>Bootstrap file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="254"/>
+        <source>Bootstrap download failed, please try again.&lt;br&gt;&lt;br&gt;Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi.</source>
+        <translation>Bootstrap download failed, please try again.&lt;br&gt;&lt;br&gt;Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="263"/>
+        <source>Bootstrap download aborted by user.</source>
+        <translation>Bootstrap download aborted by user.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="271"/>
+        <source>Downloading... (%1/%2)</source>
+        <translation>Downloading... (%1/%2)</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="273"/>
+        <source>Downloading...</source>
+        <translation>Downloading...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="280"/>
+        <source>Extracting...</source>
+        <translation>Extracting...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="291"/>
+        <source>There seems to be a problem with the Bootstrap service, please restart app.</source>
+        <translation>There seems to be a problem with the Bootstrap service, please restart app.</translation>
+    </message>
+</context>
+<context>
+    <name>DownloadSuccessPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="299"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Set Up Blockchain Data</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="301"/>
+        <source>&lt;strong&gt;Bootstrap finished!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;The blockchain data was successfully downloaded and installed.&lt;/strong&gt;</source>
+        <translation>&lt;strong&gt;Bootstrap finished!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;The blockchain data was successfully downloaded and installed.&lt;/strong&gt;</translation>
     </message>
 </context>
 <context>
@@ -1478,6 +1646,208 @@ Please restart the wallet!</translation>
     </message>
 </context>
 <context>
+    <name>SpectreClientBridge</name>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="121"/>
+        <location filename="../spectreclientbridge.cpp" line="307"/>
+        <source>Send Coins</source>
+        <translation>Send Coins</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="140"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="144"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="149"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="154"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="158"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation>Unknown txn type detected %1.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="165"/>
+        <source>Input types must match for all recipients.</source>
+        <translation>Input types must match for all recipients.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="173"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation>Ring sizes must match for all recipients.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="178"/>
+        <source>Ring size must be %1.</source>
+        <translation>Ring size must be %1.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="179"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation>Ring size outside range [%1, %2].</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="187"/>
+        <source>Confirm send coins</source>
+        <translation>Confirm send coins</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to convert %1?</source>
+        <translation>Are you sure you want to convert %1?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to send %1?</source>
+        <translation>Are you sure you want to send %1?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="189"/>
+        <source> and </source>
+        <translation> and </translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="206"/>
+        <source>The change address is not valid, please recheck.</source>
+        <translation>The change address is not valid, please recheck.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="218"/>
+        <source>Payment not send because wallet is locked.</source>
+        <translation>Payment not send because wallet is locked.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="231"/>
+        <location filename="../spectreclientbridge.cpp" line="250"/>
+        <location filename="../spectreclientbridge.cpp" line="411"/>
+        <location filename="../spectreclientbridge.cpp" line="419"/>
+        <source>Core not responding.</source>
+        <translation>Core not responding.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="259"/>
+        <source>The recipient address is not valid, please recheck.</source>
+        <translation>The recipient address is not valid, please recheck.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="261"/>
+        <source>Only ALIAS from your Private balance can be send to a private address.</source>
+        <translation>Only ALIAS from your Private balance can be send to a private address.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="263"/>
+        <source>Transfer from Public to Private is only allowed within your account.</source>
+        <translation>Transfer from Public to Private is only allowed within your account.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="265"/>
+        <source>Transfer from Private to Public is only allowed within your account.</source>
+        <translation>Transfer from Private to Public is only allowed within your account.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="267"/>
+        <source>The amount to pay must be larger than 0.</source>
+        <translation>The amount to pay must be larger than 0.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="269"/>
+        <source>The amount exceeds your balance.</source>
+        <translation>The amount exceeds your balance.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="271"/>
+        <source>The total exceeds your balance when the %1 transaction fee is included.</source>
+        <translation>The total exceeds your balance when the %1 transaction fee is included.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="273"/>
+        <source>Duplicate address found, can only send to each address once per send operation.</source>
+        <translation>Duplicate address found, can only send to each address once per send operation.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="275"/>
+        <source>Error: Transaction creation failed.</source>
+        <translation>Error: Transaction creation failed.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="277"/>
+        <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
+        <translation>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="279"/>
+        <source>Error: Note is too long.</source>
+        <translation>Error: Note is too long.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="281"/>
+        <source>Error: Ring Size Error.</source>
+        <translation>Error: Ring Size Error.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="283"/>
+        <source>Error: Input Type Error.</source>
+        <translation>Error: Input Type Error.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="285"/>
+        <source>Error: Must be in full mode to send anon.</source>
+        <translation>Error: Must be in full mode to send anon.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="287"/>
+        <source>Error: Invalid Private Address.</source>
+        <translation>Error: Invalid Private Address.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="289"/>
+        <source>Error: Invalid Private Address. Private to public conversion requires a stealth address.</source>
+        <translation>Error: Invalid Private Address. Private to public conversion requires a stealth address.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="291"/>
+        <source>The amount exceeds your ALIAS balance.</source>
+        <translation>The amount exceeds your ALIAS balance.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="293"/>
+        <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
+        <translation>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="295"/>
+        <source>Error generating transaction.</source>
+        <translation>Error generating transaction.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="297"/>
+        <source>Error generating transaction: %1</source>
+        <translation>Error generating transaction: %1</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="308"/>
+        <source>Transaction successfully created. Fee payed %1</source>
+        <translation>Transaction successfully created. Fee payed %1</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="404"/>
+        <source>Wallet locked.</source>
+        <translation>Wallet locked.</translation>
+    </message>
+</context>
+<context>
     <name>SpectreGUI</name>
     <message>
         <location filename="../transactionrecord.cpp" line="28"/>
@@ -1713,10 +2083,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="642"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation>
-            <numerusform>%n active connection(s) to Alias network</numerusform>
-            <numerusform>%n active connection(s) to Alias network</numerusform>
-        </translation>
+        <translation><numerusform>%n active connection(s) to Alias network</numerusform><numerusform>%n active connection(s) to Alias network</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="668"/>
@@ -1762,10 +2129,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="706"/>
         <source>~%n block(s) remaining</source>
-        <translation>
-            <numerusform>~%n block(s) remaining</numerusform>
-            <numerusform>~%n block(s) remaining</numerusform>
-        </translation>
+        <translation><numerusform>~%n block(s) remaining</numerusform><numerusform>~%n block(s) remaining</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="720"/>
@@ -1780,50 +2144,32 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="724"/>
         <source>Imported %n block(s) of transaction history.</source>
-        <translation>
-            <numerusform>Imported %n block(s) of transaction history.</numerusform>
-            <numerusform>Imported %n block(s) of transaction history.</numerusform>
-        </translation>
+        <translation><numerusform>Imported %n block(s) of transaction history.</numerusform><numerusform>Imported %n block(s) of transaction history.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="724"/>
         <source>Downloaded %n block(s) of transaction history.</source>
-        <translation>
-            <numerusform>Downloaded %n block(s) of transaction history.</numerusform>
-            <numerusform>Downloaded %n block(s) of transaction history.</numerusform>
-        </translation>
+        <translation><numerusform>Downloaded %n block(s) of transaction history.</numerusform><numerusform>Downloaded %n block(s) of transaction history.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="742"/>
         <source>%n second(s) ago</source>
-        <translation>
-            <numerusform>%n second(s) ago</numerusform>
-            <numerusform>%n second(s) ago</numerusform>
-        </translation>
+        <translation><numerusform>%n second(s) ago</numerusform><numerusform>%n second(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="746"/>
         <source>%n minute(s) ago</source>
-        <translation>
-            <numerusform>%n minute(s) ago</numerusform>
-            <numerusform>%n minute(s) ago</numerusform>
-        </translation>
+        <translation><numerusform>%n minute(s) ago</numerusform><numerusform>%n minute(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="750"/>
         <source>%n hour(s) ago</source>
-        <translation>
-            <numerusform>%n hour(s) ago</numerusform>
-            <numerusform>%n hour(s) ago</numerusform>
-        </translation>
+        <translation><numerusform>%n hour(s) ago</numerusform><numerusform>%n hour(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../spectregui.cpp" line="753"/>
         <source>%n day(s) ago</source>
-        <translation>
-            <numerusform>%n day(s) ago</numerusform>
-            <numerusform>%n day(s) ago</numerusform>
-        </translation>
+        <translation><numerusform>%n day(s) ago</numerusform><numerusform>%n day(s) ago</numerusform></translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="760"/>
@@ -2037,10 +2383,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation>
-            <numerusform>Open for %n block(s)</numerusform>
-            <numerusform>Open for %n block(s)</numerusform>
-        </translation>
+        <translation><numerusform>Open for %n block(s)</numerusform><numerusform>Open for %n block(s)</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="46"/>
@@ -2090,10 +2433,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="92"/>
         <source>, broadcast through %n node(s)</source>
-        <translation>
-            <numerusform>, broadcast through %n node(s)</numerusform>
-            <numerusform>, broadcast through %n node(s)</numerusform>
-        </translation>
+        <translation><numerusform>, broadcast through %n node(s)</numerusform><numerusform>, broadcast through %n node(s)</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="97"/>
@@ -2119,10 +2459,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="117"/>
         <source>matures in %n more block(s)</source>
-        <translation>
-            <numerusform>matures in %n more block(s)</numerusform>
-            <numerusform>matures in %n more block(s)</numerusform>
-        </translation>
+        <translation><numerusform>matures in %n more block(s)</numerusform><numerusform>matures in %n more block(s)</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="120"/>
@@ -2275,10 +2612,7 @@ Please restart the wallet!</translation>
     <message numerus="yes">
         <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation>
-            <numerusform>Open for %n more block(s)</numerusform>
-            <numerusform>Open for %n more block(s)</numerusform>
-        </translation>
+        <translation><numerusform>Open for %n more block(s)</numerusform><numerusform>Open for %n more block(s)</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="331"/>
