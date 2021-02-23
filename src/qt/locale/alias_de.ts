@@ -254,7 +254,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../bootstrapwizard.cpp" line="122"/>
         <source>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
-        <translation>Es wurde festgestellt, dass die Blockchain-Daten nicht vorhanden sind.&lt;br&gt;&lt;br&gt;Es wird empfohlen, die Blockchain via Bootstrap neu aufzusetzen. Wird die Blockchain hingegen synchronisiert, kann dieser Vorgang von mehreren Stunden bis hin zu mehreren Tagen dauern.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Bitte beachten Sie, dass der Download knapp 2GB gross ist und dies zu zusätzlichem Datenverkehr führt.&lt;/strong&gt;</translation>
+        <translation>Blockchain-Daten nicht vorhanden&lt;br&gt;&lt;br&gt;Es wird empfohlen, die Blockchain via Bootstrap aufzusetzen. Wird die Blockchain synchronisiert, kann dieser Vorgang Stunden bis Tage dauern.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Bitte beachten Sie, dass der Download knapp 2GB gross ist und dies zu zusätzlichem Datenverkehr führt.&lt;/strong&gt;</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="128"/>
@@ -1012,7 +1012,7 @@ Dies bedeutet eine Gebühr von min %2 ist benötigt</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="131"/>
         <source>&amp;Import wallet.dat file</source>
-        <translation>&amp;Vorhandene wallet.dat Datei importieren</translation>
+        <translation>&amp;Vorhandene Datei importieren</translation>
     </message>
 </context>
 <context>
@@ -1943,7 +1943,7 @@ Bitte starten Sie das Wallet neu!</translation>
     <message>
         <location filename="../spectregui.cpp" line="223"/>
         <source>...Start UI...</source>
-        <translation>... Start UI ...</translation>
+        <translation>... Starte UI ...</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="355"/>
