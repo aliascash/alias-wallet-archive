@@ -1287,7 +1287,7 @@ Please restart the wallet!</source>
     <message>
         <location filename="../setupwalletwizard.cpp" line="64"/>
         <source>It is recommended to make multiple copies of the seed words, stored in different locations.&lt;br&gt;&lt;br&gt;&lt;b&gt;Attention:&lt;/b&gt; Seed Words cannot later be (re)created from your exsting private keys.&lt;br&gt;If you you loose your Seed Words and don&apos;t have a backup of the wallet.dat file, you loose your coins!</source>
-        <translation>Se recomienda hacer varias copias de las palabras clave, almacenadas en diferentes lugares.&lt;br&gt;&lt;br&gt;&lt;b&gt; Atención: &lt;/b&gt;Las palabras clave no pueden ser creadas de nuevo a partir de las claves privadas existentes.&lt;br&gt; Si pierdes tus palabras clave y no tienes una copia de seguridad del archivo wallet.dat, ¡perderás tus monedas!</translation>
+        <translation>Se recomienda hacer varias copias de las palabras clave, almacenadas en diferentes lugares.&lt;br&gt;&lt;br&gt;&lt;b&gt; Atención: &lt;/b&gt;Las palabras clave no pueden ser (r)creadas de nuevo a partir de las claves privadas existentes.&lt;br&gt; Si pierdes tus palabras clave y no tienes una copia de seguridad del archivo wallet.dat, ¡perderás tus monedas!</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="69"/>
@@ -3431,7 +3431,7 @@ por ejemplo: alertnotify=echo %%s | mail -s &quot;Alias Alert&quot; admin@foo.co
         <source>You must set rpcpassword=&lt;password&gt; in the configuration file:
 %s
 If the file does not exist, create it with owner-readable-only file permissions.</source>
-        <translation>Debe establecer rpcpassword= en el archivo de configuración:
+        <translation>Debe establecer rpcpassword=&lt;password&gt; en el archivo de configuración:
 %s
 Si el archivo no existe, créelo con permisos de archivo de sólo lectura para el propietario.</translation>
     </message>
@@ -3533,12 +3533,12 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="59"/>
         <source>Listen for connections on &lt;port&gt; (default: 37347 or testnet: 37111)</source>
-        <translation>Escucha de conexiones en (por defecto: 37347 o testnet: 37111)</translation>
+        <translation>Escucha de conexiones en&lt;port&gt; (por defecto: 37347 o testnet: 37111)</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="60"/>
         <source>Maintain at most &lt;n&gt; connections to peers (default: 125)</source>
-        <translation>Mantener como máximo las conexiones con los pares (por defecto: 125)</translation>
+        <translation>Mantener como máximo&lt;n&gt; las conexiones con los pares (por defecto: 125)</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="61"/>
@@ -3563,7 +3563,7 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="65"/>
         <source>Only connect to nodes in network &lt;net&gt; (IPv4, IPv6 or Tor)</source>
-        <translation>Sólo se conecta a los nodos de la red (IPv4, IPv6 o Tor)</translation>
+        <translation>Sólo se conecta a los nodos de la red&lt;net&gt; (IPv4, IPv6 o Tor)</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="66"/>
@@ -3899,7 +3899,7 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="160"/>
         <source>Failed to listen on any port.</source>
-        <translation>Ha fallado la escucha en todos los puertos. Use -listen=0 si desea esto.</translation>
+        <translation>No se puede escuchar en ningún puerto.</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="161"/>
@@ -4077,7 +4077,7 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="205"/>
         <source>Warning: Disk space is low!</source>
-        <translation>Advertencia: Espacio en disco bajo!</translation>
+        <translation>Advertencia: Poco espacio en el disco!</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="206"/>
@@ -4182,7 +4182,7 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="233"/>
         <source>Find peers using .onion seeds (default: 1 unless -connect)</source>
-        <translation>Buscar compañeros usando semillas .onion (por defecto: 1 a menos que -connect)</translation>
+        <translation>Buscar pares usando semillas .onion (por defecto: 1 a menos que -connect)</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="234"/>
@@ -4232,7 +4232,7 @@ Si el archivo no existe, créelo con permisos de archivo de sólo lectura para e
     <message>
         <location filename="../aliascorestrings.h" line="243"/>
         <source>Keep at most &lt;n&gt; MiB of unconnectable blocks in memory (default: %u)</source>
-        <translation>Mantener como máximo MiB de bloques no conectables en memoria (por defecto: %u)</translation>
+        <translation>Mantener como máximo&lt;n&gt; MiB de bloques no conectables en memoria (por defecto: %u)</translation>
     </message>
     <message>
         <location filename="../aliascorestrings.h" line="244"/>
