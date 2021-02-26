@@ -86,168 +86,327 @@ Ce produit contient du logiciel développé par le OpenSSL Project pour usage da
         <translation>Dialogue de phrase de chiffrement</translation>
     </message>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="59"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="77"/>
         <source>Enter passphrase</source>
         <translation>Saisir la phrase de chiffrement</translation>
     </message>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="85"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="103"/>
         <source>New passphrase</source>
         <translation>Nouvelle phrase de chiffrement</translation>
     </message>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="111"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="129"/>
         <source>Repeat new passphrase</source>
         <translation>Répéter la phrase de chiffrement</translation>
     </message>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="161"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="177"/>
         <source>Serves to disable the trivial sendmoney when OS account compromised. Provides no real security.</source>
         <translation>Sert à désactiver les transactions sortantes si votre compte de système d&apos;exploitation est compromis. Ne procure pas de réelle sécurité.</translation>
     </message>
     <message>
-        <location filename="../forms/askpassphrasedialog.ui" line="164"/>
+        <location filename="../forms/askpassphrasedialog.ui" line="180"/>
         <source>For staking only</source>
         <translation>Pour &quot;staking&quot; seulement</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="44"/>
+        <location filename="../askpassphrasedialog.cpp" line="54"/>
         <source>Enter the new passphrase to the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;10 or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
         <translation>Saisir la nouvelle phrase de chiffrement pour le portefeuille. &lt;br/&gt;Veuillez utiliser une phrase de chiffrement de &lt;b&gt;10 caractères aléatoires ou plus&lt;/b&gt;, ou de &lt;b&gt;huit mots ou plus&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="45"/>
+        <location filename="../askpassphrasedialog.cpp" line="55"/>
         <source>Encrypt wallet</source>
         <translation>Chiffrer le portefeuille</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="49"/>
+        <location filename="../askpassphrasedialog.cpp" line="58"/>
         <source>Keep wallet unlocked for staking.</source>
         <translation>Garder le portefeuille verrouillé pour staking</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="60"/>
+        <location filename="../askpassphrasedialog.cpp" line="69"/>
         <source>Your wallet contains locked ATXOs for which its spending state can only be determinate with your private key. Your &lt;b&gt;private ALIAS balance might be shown wrong&lt;/b&gt;.</source>
         <translation>Votre portefeuille contient quelques ATXOs verrouillés pour lesquels leur état de dépense ne peut être déterminé qu&apos;avec votre clé privée.. Votre&lt;b&gt;balance ALIAS privée pourrait s&apos;afficher incorrectement&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="62"/>
+        <location filename="../askpassphrasedialog.cpp" line="71"/>
         <source>&lt;b&gt;Alias Wallet Login&lt;/b&gt;</source>
         <translation>&lt;b&gt;Accès portefeuille Alias&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="64"/>
+        <location filename="../askpassphrasedialog.cpp" line="73"/>
         <source>This operation needs your wallet passphrase to unlock the wallet.</source>
         <translation>Cette opération nécessite votre phrase de chiffrement pour déverrouiller le portefeuille.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="65"/>
+        <location filename="../askpassphrasedialog.cpp" line="74"/>
         <source>Unlock wallet</source>
         <translation>Déverrouiller le portefeuille</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="68"/>
+        <location filename="../askpassphrasedialog.cpp" line="77"/>
         <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
         <translation>Cette opération nécessite votre phrase de chiffrement pour déchiffrer le portefeuille.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="73"/>
+        <location filename="../askpassphrasedialog.cpp" line="82"/>
         <source>Decrypt wallet</source>
         <translation>Déchiffrer le portefeuille</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="76"/>
+        <location filename="../askpassphrasedialog.cpp" line="85"/>
         <source>Change passphrase</source>
         <translation>Changer la phrase de chiffrement </translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="77"/>
+        <location filename="../askpassphrasedialog.cpp" line="86"/>
         <source>Enter the old and new passphrase to the wallet.</source>
         <translation>Saisir l’ancienne phrase de chiffrement pour le portefeuille ainsi que la nouvelle.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="122"/>
+        <location filename="../askpassphrasedialog.cpp" line="143"/>
         <source>Confirm wallet encryption</source>
         <translation>Confirmer le chiffrement du portefeuille</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="123"/>
+        <location filename="../askpassphrasedialog.cpp" line="144"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR COINS&lt;/b&gt;!</source>
         <translation>Avertissement : Si vous chiffrez votre portefeuille et perdez votre phrase de chiffrement , vous ne pourrez &lt;b&gt;plus accéder à vos jetons Alias&lt;/b&gt;!</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="123"/>
+        <location filename="../askpassphrasedialog.cpp" line="144"/>
         <source>Are you sure you wish to encrypt your wallet?</source>
         <translation>Êtes-vous sûr de vouloir chiffrer votre portefeuille ?</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="132"/>
-        <location filename="../askpassphrasedialog.cpp" line="194"/>
+        <location filename="../askpassphrasedialog.cpp" line="153"/>
+        <location filename="../askpassphrasedialog.cpp" line="228"/>
         <source>Wallet encrypted</source>
         <translation>Portefeuille chiffré</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="134"/>
+        <location filename="../askpassphrasedialog.cpp" line="155"/>
         <source>Alias will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
         <translation>L&apos;application Alias va désormais se fermer afin de finaliser le processus de chiffrage. Merci de noter que le chiffrage du portefeuille ne garantit pas de se prémunir du vol via utilisation de malware, qui auraient pu infecter votre ordinateur. </translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="138"/>
-        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
-        <translation>IMPORTANT : Toute sauvegarde précédente de votre fichier de portefeuille devrait être remplacée par le nouveau fichier de portefeuille chiffré. Pour des raisons de sécurité, les sauvegardes précédentes de votre fichier de portefeuille non chiffré deviendront inutilisables dès lors que vous commencerez à utiliser le nouveau portefeuille chiffré.</translation>
+        <location filename="../askpassphrasedialog.cpp" line="159"/>
+        <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file.</source>
+        <translation>IMPORTANT: Toute précédente  sauvegarde de votre fichier portefeuille doit être remplacée par la nouvelle qui vient d&apos;être générée et chiffrée.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="147"/>
-        <location filename="../askpassphrasedialog.cpp" line="154"/>
-        <location filename="../askpassphrasedialog.cpp" line="200"/>
-        <location filename="../askpassphrasedialog.cpp" line="206"/>
+        <location filename="../askpassphrasedialog.cpp" line="166"/>
+        <location filename="../askpassphrasedialog.cpp" line="174"/>
+        <location filename="../askpassphrasedialog.cpp" line="238"/>
+        <location filename="../askpassphrasedialog.cpp" line="248"/>
         <source>Wallet encryption failed</source>
         <translation>Le chiffrement du portefeuille a échoué</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="148"/>
+        <location filename="../askpassphrasedialog.cpp" line="167"/>
         <source>Wallet encryption failed due to an internal error. Your wallet was not encrypted.</source>
         <translation>Le chiffrement du portefeuille a échoué en raison d&apos;une erreur interne. Votre portefeuille n&apos;a pas été chiffré.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="155"/>
-        <location filename="../askpassphrasedialog.cpp" line="207"/>
+        <location filename="../askpassphrasedialog.cpp" line="175"/>
+        <location filename="../askpassphrasedialog.cpp" line="249"/>
         <source>The supplied passphrases do not match.</source>
         <translation>Les phrases de passe saisies ne correspondent pas.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="169"/>
+        <location filename="../askpassphrasedialog.cpp" line="190"/>
         <source>Wallet unlock failed</source>
         <translation>Le déverrouillage du portefeuille a échoué</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="170"/>
-        <location filename="../askpassphrasedialog.cpp" line="182"/>
-        <location filename="../askpassphrasedialog.cpp" line="201"/>
+        <location filename="../askpassphrasedialog.cpp" line="191"/>
+        <location filename="../askpassphrasedialog.cpp" line="211"/>
+        <location filename="../askpassphrasedialog.cpp" line="239"/>
         <source>The passphrase entered for the wallet decryption was incorrect.</source>
         <translation>La phrase de passe saisie pour déchiffrer le portefeuille est incorrecte.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="181"/>
+        <location filename="../askpassphrasedialog.cpp" line="210"/>
         <source>Wallet decryption failed</source>
         <translation>Le déchiffrage du portefeuille a échoué</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="195"/>
+        <location filename="../askpassphrasedialog.cpp" line="229"/>
         <source>Wallet passphrase was successfully changed.</source>
         <translation>La phrase de passe du portefeuille a été modifiée avec succès.</translation>
     </message>
     <message>
-        <location filename="../askpassphrasedialog.cpp" line="245"/>
-        <location filename="../askpassphrasedialog.cpp" line="269"/>
+        <location filename="../askpassphrasedialog.cpp" line="287"/>
+        <location filename="../askpassphrasedialog.cpp" line="311"/>
         <source>Warning: The Caps Lock key is on!</source>
         <translation>Attention : la touche Verr. Maj. est activée !</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapIntroPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="117"/>
+        <source>The application has detected that the blockchain data files have not been updated since %1 days.&lt;br&gt;&lt;br&gt;Do you want to bootstrap the blockchain data from scratch?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the boostrap download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>L&apos;application a détecté que les fichiers de données blockchain n&apos;ont pas été mis à jour depuis %1 jours.&lt;br&gt;&lt;br&gt;Voulez-vous initialiser les données de blockchain depsui zéro ?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Veuillez noter que le téléchargement des données de blockchain initiales pèse plus d&apos;1,5 GO et peut entrainer des coûts de traffic réseau additionnels&lt;/strong&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="122"/>
+        <source>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
+        <translation>L&apos;application a détecté que les fichiers de données blockchain sont manquants.&lt;br&gt;&lt;br&gt;Il est recommandé d&apos;initialiser les données de blockchain. Si à la place vous préférez les synchroniser cela peut prendre de quelques heures à plusieurs jours.&lt;br&gt;&lt;br&gt;&lt;strong&gt;345Veuillez noter que le téléchargement des données de blockchain initiales pèse plus d&apos;1,5 GO et peut entrainer des coûts de trafic réseau additionnels&lt;/strong&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="128"/>
+        <source>&amp;Download bootstrap</source>
+        <translation>&amp;Télécharger blockchain initiale</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="129"/>
+        <source>&amp;Sync &amp;&amp; validate blockchain</source>
+        <translation>&amp;Synchroniser &amp;&amp; valider la blockchain</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapSyncPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="319"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Prépare les données de blockchain</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="322"/>
+        <source>Are you sure you want to &lt;strong&gt;synchronize and validate&lt;/strong&gt; the complete blockchain?&lt;br&gt;&lt;br&gt;Synchronizing the blockchain takes up, from several hours on a fast desktop computer, to &lt;strong&gt;several days on a smartphone&lt;/strong&gt;.</source>
+        <translation>Etes-vous sûr de vouloir &lt;strong&gt;synchroniser et valider&lt;/strong&gt; la blockchain complète ?&lt;br&gt;&lt;br&gt;Synchroniser la blockchain peut prendre plusieurs heures  sur un ordinateur puissant, jusqu&apos;à &lt;strong&gt;plusieurs jours sur un smartphone&lt;/strong&gt;.</translation>
+    </message>
+</context>
+<context>
+    <name>BootstrapWizard</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="43"/>
+        <source>Alias Blockchain Setup</source>
+        <translation>Alias Blockchain Configuration</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="93"/>
+        <source>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</source>
+        <translation>Cette app a besoin des données de blockchain pour fonctionner. Les données peuvent être synchronisées ou validées bloc par bloc, ou bien téléchargées en totalité depuis un serveur.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="96"/>
+        <source>If you have problems with the bootstrap download, make sure you have a good internet connection.</source>
+        <translation>Si vous rencontrez des problèmes avec le téléchargement de la blockchain initiale, vérifiez la qualité de votre connexion internet.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="99"/>
+        <source>The benefit of syncing and validating the blockchain is that you don&apos;t have to trust a central server which provides you the blockchain bootstrap. Instead the complete blockchain will by downloaded and validated block by block from the blockchain network.</source>
+        <translation>L&apos;avantage de synchroniser et valider la blockchain est que vous n&apos;avez pas besoin de faire confiance à un serveur qui vous fournit la blockchain entière. A la place de cela, vous téléchargerez et validerez les transactions une à une. </translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="102"/>
+        <source>No help available.</source>
+        <translation>Pas d&apos;aide disponible</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="105"/>
+        <source>Blockchain Data Setup Help</source>
+        <translation>Aide pour la configuration des données de blockchain</translation>
     </message>
 </context>
 <context>
     <name>ClientModel</name>
     <message>
         <location filename="../clientmodel.cpp" line="108"/>
+        <source>block</source>
+        <translation>bloc</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="108"/>
+        <source>header</source>
+        <translation>en-tête</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="109"/>
+        <source>blocks</source>
+        <translation>blocs</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="109"/>
+        <source>headers</source>
+        <translation>en-têtes</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="117"/>
+        <source>%1 nodes connected</source>
+        <translation>%1 noeuds connectés</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="121"/>
+        <source>last sync %1 %2 %3.</source>
+        <translation>dernière synchronisation %1 %2 %3.</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="150"/>
+        <source>%1% done.</source>
+        <translation>%1% effectués.</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="159"/>
+        <source>%1%</source>
+        <translation>%1%</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="163"/>
+        <source> ~%1 block(s) remaining.</source>
+        <translation> ~%1 bloc(s) restants.</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="173"/>
+        <source>%1 %2 received %3.</source>
+        <translation>%1 %2 reçus %3.</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="184"/>
+        <source>Staking</source>
+        <translation>Staking</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="185"/>
+        <source>Expected time for reward </source>
+        <translation>Temps estimé avant récompense</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="186"/>
+        <source>%1 second(s)</source>
+        <translation>%1 seconde(s)</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="187"/>
+        <source>%1 minute(s), %2 second(s)</source>
+        <translation>%1 minute(s), %2 seconde(s)</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="188"/>
+        <source>%1 hour(s), %2 minute(s)</source>
+        <translation>%1 heure(s), %2 minute(s)</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="189"/>
+        <source>%1 day(s), %2 hour(s)</source>
+        <translation>%1 jour(s), %2 heure(s)</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="194"/>
+        <source>Up to date</source>
+        <translation>A jour</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="199"/>
+        <source>Synchronizing</source>
+        <translation>Synchronisation</translation>
+    </message>
+    <message>
+        <location filename="../clientmodel.cpp" line="244"/>
         <source>Network Alert</source>
         <translation>Alerte réseau</translation>
     </message>
@@ -524,6 +683,107 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
     </message>
 </context>
 <context>
+    <name>DownloadPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="168"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Prépare les données de blockchain</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="169"/>
+        <source>Blockchain bootstrap installation</source>
+        <translation>Installation données de blockchain initiales</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="171"/>
+        <source>Initialize... </source>
+        <translation>Initialise... </translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="178"/>
+        <source>&amp;Retry</source>
+        <translation>&amp;Réessayer</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="205"/>
+        <source>Initialize...</source>
+        <translation>Initialise...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="230"/>
+        <source>Bootstrap download failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>Le téléchargement de la blockchain initiale a échoué car il n&apos;y a pas assez d&apos;espace libre sur cet appareil.&lt;br&gt;&lt;br&gt;Assurez-vous d&apos;avoir assez d&apos;espace libre avant de réessayer.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="234"/>
+        <source>Bootstrap archive extraction failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
+        <translation>L&apos;extraction de l&apos;archive de la blockchain initiale a échoué car il n&apos;y a pas assez d&apos;espace libre sur cet appareil.&lt;br&gt;&lt;br&gt;Assurez-vous d&apos;avoir assez d&apos;espace libre avant de réessayer.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="238"/>
+        <source>Bootstrap archive extraction failed, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>L&apos;extraction de l&apos;archive de la blockchain initiale a échoué, veuillez réessayer.&lt;br&gt;&lt;br&gt;Si l&apos;erreur persiste, contactez l&apos;équipe de développement.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="242"/>
+        <source>Bootstrap hash mismatch, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Bootstrap hash incorrect, veuillez réessayer.&lt;br&gt;&lt;br&gt;Si  l&apos;erreur persiste, contactez l&apos;équipe de développement.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="246"/>
+        <source>Bootstrap index file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Fichier Bootstrap index manquant sur le serveur, veuillez réessayer.&lt;br&gt;&lt;br&gt;Si  l&apos;erreur persiste, contactez l&apos;équipe de développement.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="250"/>
+        <source>Bootstrap file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
+        <translation>Fichier Bootstrap absent du serveur, veuillez réessayer.&lt;br&gt;&lt;br&gt;Si  l&apos;erreur persiste, contactez l&apos;équipe de développement.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="254"/>
+        <source>Bootstrap download failed, please try again.&lt;br&gt;&lt;br&gt;Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi.</source>
+        <translation>Le téléchargement de la Blockchain initiale a échoué, veuillez réessayer.&lt;br&gt;&lt;br&gt;Assurez-vous d&apos;avoir une connexion internet stable, par Wi-Fi ou Ethernet de préférence.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="263"/>
+        <source>Bootstrap download aborted by user.</source>
+        <translation>Téléchargement de blockchain initiale interrompu par l&apos;utilisateur.</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="271"/>
+        <source>Downloading... (%1/%2)</source>
+        <translation>Téléchargement... (%1/%2)</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="273"/>
+        <source>Downloading...</source>
+        <translation>Téléchargement...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="280"/>
+        <source>Extracting...</source>
+        <translation>Extraction...</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="291"/>
+        <source>There seems to be a problem with the Bootstrap service, please restart app.</source>
+        <translation>Il semble y avoir un problème avec le service de téléchargement de blockchain initiale, veuillez redémarrer l&apos;application.</translation>
+    </message>
+</context>
+<context>
+    <name>DownloadSuccessPage</name>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="299"/>
+        <source>Set Up Blockchain Data</source>
+        <translation>Prépare les données de blockchain</translation>
+    </message>
+    <message>
+        <location filename="../bootstrapwizard.cpp" line="301"/>
+        <source>&lt;strong&gt;Bootstrap finished!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;The blockchain data was successfully downloaded and installed.&lt;/strong&gt;</source>
+        <translation>&lt;strong&gt;Téléchargement de blockchain teminé!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Les données de blockchain ont été téléchargées et installées avec succès.&lt;/strong&gt;</translation>
+    </message>
+</context>
+<context>
     <name>EditAddressDialog</name>
     <message>
         <location filename="../forms/editaddressdialog.ui" line="14"/>
@@ -599,42 +859,42 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>EncryptWalletPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="605"/>
+        <location filename="../setupwalletwizard.cpp" line="846"/>
         <source>Wallet Encryption</source>
         <translation>Chiffrement portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="606"/>
+        <location filename="../setupwalletwizard.cpp" line="847"/>
         <source>Please enter a password to encrypt the wallet.dat file.</source>
         <translation>Veuillez saisir un mot de passe pour chiffrer le fichier wallet.dat.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="608"/>
-        <source>The password protects your private keys and will be asked by the wallet on startup and for critical operations.</source>
-        <translation>Le mot de passe protège vos clés privées et sera demandé par le portefeuille au démarrage ou bien pour des opérations sensibles.</translation>
+        <location filename="../setupwalletwizard.cpp" line="849"/>
+        <source>The password protects your private keys.&lt;br&gt;It will be asked on wallet startup and critical operations.&lt;br&gt;&lt;br&gt;Phones with biometric authentication support (eg. fingerprint reader) can set it up later for user-friendly wallet password access.</source>
+        <translation>Le mot de passe protège vos clés privées.&lt;br&gt;IIl sera demandé au démarrage du portefeuille et lors d&apos;opérations sensibles.&lt;br&gt;&lt;br&gt;Les appareils avec identification biométrique (tels que lecteur d&apos;empreinte) pourront l&apos;activer plus tard pour un accès plus simple au mot de passe.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="611"/>
+        <location filename="../setupwalletwizard.cpp" line="853"/>
         <source>&amp;Wallet Password:</source>
         <translation>&amp;Mot de passe portefeuille:</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="616"/>
+        <location filename="../setupwalletwizard.cpp" line="858"/>
         <source>&amp;Verify Password:</source>
         <translation>&amp;Vérifier mot de passe</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="624"/>
+        <location filename="../setupwalletwizard.cpp" line="866"/>
         <source>Create and encrypt wallet.dat ...</source>
         <translation>Création et chiffrement wallet.dat....</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="705"/>
+        <location filename="../setupwalletwizard.cpp" line="947"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="705"/>
+        <location filename="../setupwalletwizard.cpp" line="947"/>
         <source>Failed to create wallet.dat. ErrorCode: %1</source>
         <translation>Echec de la création du fichier wallet.dat. ErrorCode: %1</translation>
     </message>
@@ -642,43 +902,43 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>GUIUtil::HelpMessageBox</name>
     <message>
-        <location filename="../guiutil.cpp" line="550"/>
-        <location filename="../guiutil.cpp" line="562"/>
+        <location filename="../guiutil.cpp" line="551"/>
+        <location filename="../guiutil.cpp" line="563"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="550"/>
+        <location filename="../guiutil.cpp" line="551"/>
         <source>version</source>
         <translation>version</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="552"/>
+        <location filename="../guiutil.cpp" line="553"/>
         <source>Usage:</source>
         <translation>Utilisation:</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="553"/>
+        <location filename="../guiutil.cpp" line="554"/>
         <source>command-line options</source>
         <translation>Options de ligne de commande</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="557"/>
+        <location filename="../guiutil.cpp" line="558"/>
         <source>UI options</source>
         <translation>Options graphiques</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="558"/>
+        <location filename="../guiutil.cpp" line="559"/>
         <source>Set language, for example &quot;de_DE&quot; (default: system locale)</source>
         <translation>Définir la langue, par exemple « fr_FR » (par défaut: la langue du système)</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="559"/>
+        <location filename="../guiutil.cpp" line="560"/>
         <source>Start minimized</source>
         <translation>Démarrer en mode réduit</translation>
     </message>
     <message>
-        <location filename="../guiutil.cpp" line="560"/>
+        <location filename="../guiutil.cpp" line="561"/>
         <source>Show splash screen on startup (default: 1)</source>
         <translation>Affichage de l&apos;écran de démarrage (par défaut: 1)</translation>
     </message>
@@ -686,65 +946,71 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>ImportWalletDatPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="121"/>
+        <location filename="../setupwalletwizard.cpp" line="157"/>
         <source>Import wallet.dat</source>
         <translation>Importer wallet.dat</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="122"/>
+        <location filename="../setupwalletwizard.cpp" line="158"/>
         <source>Please import a wallet.dat file with your private keys.</source>
         <translation>Veuillez importer un fichier wallet.dat à l&apos;aide de vos clés privées </translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="128"/>
+        <location filename="../setupwalletwizard.cpp" line="164"/>
         <source>&amp;Select wallet.dat</source>
         <translation>&amp;Choisir wallet.dat</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="147"/>
+        <location filename="../setupwalletwizard.cpp" line="183"/>
         <source>QFileDialog::getOpenFileName()</source>
         <translation>QFileDialog::getOpenFileName()</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="149"/>
+        <location filename="../setupwalletwizard.cpp" line="185"/>
         <source>Wallet Files (*.dat)</source>
         <translation>Fichiers Portefeuilles (*.dat)</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="175"/>
+        <location filename="../setupwalletwizard.cpp" line="210"/>
+        <location filename="../setupwalletwizard.cpp" line="215"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="175"/>
+        <location filename="../setupwalletwizard.cpp" line="210"/>
         <source>Failed to copy wallet.dat: %1</source>
         <translation>Echec de la copie de wallet.dat: %1</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="215"/>
+        <source>Failed to set permissions to copied wallet.dat: %1</source>
+        <translation>Echec d&apos;attribution des droits au fichier wallet.dat copié.: %1</translation>
     </message>
 </context>
 <context>
     <name>IntroPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="86"/>
+        <location filename="../setupwalletwizard.cpp" line="124"/>
         <source>Set Up Your Wallet</source>
         <translation>Configurez votre portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="90"/>
+        <location filename="../setupwalletwizard.cpp" line="126"/>
         <source>The application has detected that you don&apos;t have a wallet.dat file, which holds your private keys. Please choose how you want to create or restore your private keys.</source>
         <translation>L&apos;application a détecté que vous n&apos;aviez pas de fichier wallet.dat, qui contient vos clés privées. Veuillez choisir comment vous voulez créer ou restaurer vos clés privées.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="93"/>
-        <source>&amp;Create new mnemonic recovery seed words</source>
-        <translation>&amp;Créer nouvelle phrase mnémotechnique </translation>
+        <location filename="../setupwalletwizard.cpp" line="129"/>
+        <source>&amp;Create new wallet</source>
+        <translation>&amp;Créer nouveau portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="94"/>
-        <source>&amp;Recover from your existing mnemonic seed words</source>
-        <translation>&amp;Restaurer depuis votre phrase mnémotechnique existante</translation>
+        <location filename="../setupwalletwizard.cpp" line="130"/>
+        <source>&amp;Recover wallet</source>
+        <translation>&amp;Restaurer portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="95"/>
+        <location filename="../setupwalletwizard.cpp" line="131"/>
         <source>&amp;Import wallet.dat file</source>
         <translation>&amp;Importer fichier wallet.dat</translation>
     </message>
@@ -752,65 +1018,65 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>NewMnemonicResultPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="321"/>
-        <source>Create private keys with Mnemonic Recovery Seed Words</source>
-        <translation>Créer clé privée au moyen de la phrase mnémotechnique</translation>
+        <location filename="../setupwalletwizard.cpp" line="363"/>
+        <source>Create New Wallet</source>
+        <translation>Créer nouveau portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="322"/>
+        <location filename="../setupwalletwizard.cpp" line="364"/>
         <source>Step 2/3: Write down your mnemonic recovery seed words.</source>
         <translation>Etape 2/3: notez votre phrase mnémotechnique en lieu sûr</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="324"/>
+        <location filename="../setupwalletwizard.cpp" line="366"/>
         <source>Mnemonic Recovery Seed Words:</source>
         <translation>Phrase mnémotechnique</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="325"/>
-        <source>You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.&lt;br&gt;You will be asked to confirm the Recovery Seed Words in the next screen to ensure you have written it down correctly.</source>
-        <translation>Vous avez besoin de la phrase mnémotechnique pour restaurer ce portefeuille. Notez la quelque part et gardez-là en lieu sûr. Nous vous demanderons de confirmer votre phrase mnémotechnique sur le prochain écran pour s&apos;assurer que vous l&apos;avez saisie correctement.</translation>
+        <location filename="../setupwalletwizard.cpp" line="367"/>
+        <source>You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.</source>
+        <translation>Vous aurez besoin des mots de  votre phrase mnémotechnique de récupération pour restaurer votre portefeuille. Notez-les et gardez les précieusement en lieu sûr.</translation>
     </message>
 </context>
 <context>
     <name>NewMnemonicSettingsPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="183"/>
-        <source>Create private keys with Mnemonic Recovery Seed Words</source>
-        <translation>Créer clés privées avec la phrase mnémotechnique </translation>
+        <location filename="../setupwalletwizard.cpp" line="225"/>
+        <source>Create New Wallet</source>
+        <translation>Créer nouveau portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="184"/>
-        <source>Step 1/3: Please define language to use and optional password to protect your seed.</source>
-        <translation>Etape 1/3 : Choisissez votre langue et un mot de passe, optionnel, pour protéger votre phrase mnémotechnique </translation>
+        <location filename="../setupwalletwizard.cpp" line="226"/>
+        <source>Step 1/3: Define language and optional password for your seed.</source>
+        <translation>Etape 1/3: Définir la langue et un mot de passe optionnel pour votre seed/graine.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="186"/>
+        <location filename="../setupwalletwizard.cpp" line="228"/>
         <source>Creating mnemonic seed words is a three step procedure:&lt;ol&gt;&lt;li&gt;Define language and optional password for your seed.&lt;/li&gt;&lt;li&gt;Write down created seed words.&lt;/li&gt;&lt;li&gt;Verify seed words and seed password.&lt;/li&gt;&lt;/ol&gt;</source>
         <translation>Créer une phrase mnémotechnique se fait en trois étapes:&lt;ol&gt;&lt;li&gt;Choisir sa langue et un mot de passe optionnel pour votre phrase mnémotechnique.&lt;/li&gt;&lt;li&gt;Noter la phrase mnémotechnique créée.&lt;/li&gt;&lt;li&gt;Vérifier la phrase mnémotechnique et le mot de passe.&lt;/li&gt;&lt;/ol&gt;</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="192"/>
+        <location filename="../setupwalletwizard.cpp" line="234"/>
         <source>&amp;Language:</source>
         <translation>&amp;Langue :</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="203"/>
+        <location filename="../setupwalletwizard.cpp" line="245"/>
         <source>&amp;Seed Password:</source>
         <translation>&amp;Mot de passe phrase mnémotechnique</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="210"/>
+        <location filename="../setupwalletwizard.cpp" line="252"/>
         <source>&amp;Verify Password:</source>
         <translation>&amp;Vérifier mot de passe:</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="303"/>
+        <location filename="../setupwalletwizard.cpp" line="345"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="303"/>
+        <location filename="../setupwalletwizard.cpp" line="345"/>
         <source>Failed to create Mnemonic Seed Words. %1</source>
         <translation>Echec de la création de la phrase mnémotechnique.. %1</translation>
     </message>
@@ -818,24 +1084,24 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>NewMnemonicVerificationPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="408"/>
-        <source>Create private keys with Mnemonic Recovery Seed Words</source>
-        <translation>Créer les clés privées au moyen de la phrase mnémotechnique</translation>
+        <location filename="../setupwalletwizard.cpp" line="501"/>
+        <source>Create New Wallet</source>
+        <translation>Créer nouveau portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="409"/>
-        <source>Step 3/3: Verify you have the correct words and (optional) password noted.</source>
-        <translation>Etape 3/3 : Assurez-vous que la phrase mnémotechnique est correcte de même que le mot de passe (optionnel).</translation>
+        <location filename="../setupwalletwizard.cpp" line="502"/>
+        <source>Step 3/3: Verify you noted correctly words and (optional) password.</source>
+        <translation>Etape 3/3: Vérifiez que vous avez noté correctement les mots, ainsi que votre mot de passe (optionnel).</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="411"/>
+        <location filename="../setupwalletwizard.cpp" line="504"/>
         <source>&amp;Seed Password:</source>
         <translation>&amp;Mot de passe phrase mnémotechnique:</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="419"/>
-        <source>&lt;br&gt;Enter Mnemonic Seed Words:</source>
-        <translation>&lt;br&gt;Saisissez la phrase mnémotechnique:</translation>
+        <location filename="../setupwalletwizard.cpp" line="512"/>
+        <source>&lt;br&gt;Enter the &lt;b&gt;first letters&lt;/b&gt; until the word is &lt;b&gt;recognized&lt;/b&gt;:</source>
+        <translation>&lt;br&gt;Saisir les &lt;b&gt;premières lettres&lt;/b&gt; jusqu&apos;à ce que le mot soit &lt;b&gt;reconnu&lt;/b&gt;:</translation>
     </message>
 </context>
 <context>
@@ -1220,39 +1486,62 @@ Cela implique que des frais à hauteur d&apos;au moins %2 seront nécessaires.</
 <context>
     <name>RecoverFromMnemonicPage</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="467"/>
-        <source>Recover private keys from Mnemonic Seed Words</source>
-        <translation>Retrouver les clés privées au moyen de la phrase mnémotechnique</translation>
+        <location filename="../setupwalletwizard.cpp" line="651"/>
+        <source>Recover Wallet</source>
+        <translation>Restaurer portefeuille</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="468"/>
-        <source>Please enter (optional) password and your mnemonic seed words to recover private keys.</source>
-        <translation>Veuillez saisir le mot de passe (optionnel) ainsi que la phrase mnémotechnique pour récupérer vos clés privées.</translation>
+        <location filename="../setupwalletwizard.cpp" line="652"/>
+        <source>Step 2/2: Enter your mnemonic seed words.</source>
+        <translation>Etape 2/2: Saisissez les mots de votre graine ou phrase clé</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="470"/>
-        <source>&amp;Seed Password:</source>
-        <translation>&amp;Mot de passe phrase mnémotechnique:</translation>
+        <location filename="../setupwalletwizard.cpp" line="654"/>
+        <source>&lt;br&gt;Enter the &lt;b&gt;first letters&lt;/b&gt; until the word is &lt;b&gt;recognized&lt;/b&gt;:</source>
+        <translation>&lt;br&gt;Saisir les &lt;b&gt;premières lettres&lt;/b&gt; jusqu&apos;à ce que le mot soit &lt;b&gt;reconnu&lt;/b&gt;:</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="478"/>
-        <source>&amp;Verify Password:</source>
-        <translation>&amp;Vérifier mot de passe:</translation>
-    </message>
-    <message>
-        <location filename="../setupwalletwizard.cpp" line="486"/>
-        <source>&lt;br&gt;Enter Mnemonic Seed Words:</source>
-        <translation>&lt;br&gt;Entrez la phrase mnémotechnique:</translation>
-    </message>
-    <message>
-        <location filename="../setupwalletwizard.cpp" line="595"/>
+        <location filename="../setupwalletwizard.cpp" line="828"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="595"/>
+        <location filename="../setupwalletwizard.cpp" line="828"/>
         <source>Failed to recover private keys from Mnemonic Seed Words. %1</source>
         <translation>Echec de la récupération depuis la phrase mnémotechnique. %1</translation>
+    </message>
+</context>
+<context>
+    <name>RecoverFromMnemonicSettingsPage</name>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="584"/>
+        <source>Recover Wallet</source>
+        <translation>Restaurer portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="585"/>
+        <source>Step 1/2: Define language and optional password of your seed.</source>
+        <translation>Etape 1/2: Définir la langue et un mot de passe optionnel pour votre seed/graine.</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="587"/>
+        <source>Recover wallet with mnemonic seed words is a two step procedure:&lt;ol&gt;&lt;li&gt;Define language and optional password of your seed.&lt;/li&gt;&lt;li&gt;Enter your seed words.&lt;/li&gt;&lt;/ol&gt;</source>
+        <translation>Restaurer un portefeuille avec les mots de la phrase mnémotechnique se déroule en deux étapes:&lt;ol&gt;&lt;li&gt;D&apos;abord choisir la langue et le mot de passe optionnel de votre seed/graine.&lt;/li&gt;&lt;li&gt;Ensuite saisir les mots de ladite seed/graine.&lt;/li&gt;&lt;/ol&gt;</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="592"/>
+        <source>&amp;Language:</source>
+        <translation>&amp;Langue</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="603"/>
+        <source>&amp;Seed Password:</source>
+        <translation>&amp;Mot de passe de la graine:</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="610"/>
+        <source>&amp;Verify Password:</source>
+        <translation>&amp;Vérifier mot de passe:</translation>
     </message>
 </context>
 <context>
@@ -1272,47 +1561,52 @@ Please restart the wallet!</source>
 <context>
     <name>SetupWalletWizard</name>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="41"/>
+        <location filename="../setupwalletwizard.cpp" line="51"/>
         <source>Alias Wallet Setup</source>
         <translation>Configuration portefeuille Alias</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="53"/>
+        <location filename="../setupwalletwizard.cpp" line="88"/>
         <source>The file &apos;wallet.dat&apos;, which holds your private keys, could not be found during startup. It must be created now.&lt;br&gt;&lt;br&gt;The private key consists of alphanumerical characters that give a user access and control over their funds to their corresponding cryptocurrency address. In other words, the private key creates unique digital signatures for every transaction that enable a user to spend their funds, by proving that the user does in fact have ownership of those funds.</source>
         <translation>Le fichier &apos;wallet.dat&apos;, qui contient vos clés privées n&apos;a pas pu être localisé pendant le démarrage. Il doit être créé maintenant.&lt;br&gt;&lt;br&gt;Les clés privées sont des caractères alphanumériques qui donnent à l&apos;utilisateur accès et contrôle sur les addresses de cryptomonnaies correspondantes. En d&apos;autres termes, la clé privée crée une signature numérique unique pour chaque transaction qui permet à l&apos;utilisateur de dépenser ses fonds, prouvant ainsi que l&apos;utilisateur a bien la propriété de ces fonds.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="57"/>
+        <location filename="../setupwalletwizard.cpp" line="92"/>
         <source>If you have a backup of a wallet.dat, you can import this file.</source>
         <translation>Si vous avez une sauvegarde d&apos;un fichier wallet.dat, vous pouvez importer ce fichier.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="60"/>
+        <location filename="../setupwalletwizard.cpp" line="95"/>
         <source>Mnemonic Seed Words allow you to create and later recover your private keys. The seed consists of 24 words and the optional password functions as a 25th word that you can keep secret to protect your seed.</source>
         <translation>La phrase mnémotechnique vous permet de créer et ensuite récupérer vos clés privées. La phrase mnémotechnique consiste en une liste de 24 mots ainsi qu&apos;un mot de passe optionnel comme 25ème mot, que vous pouvez garder secrets pour protéger votre phrase mnémotechnique.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="64"/>
+        <location filename="../setupwalletwizard.cpp" line="99"/>
         <source>It is recommended to make multiple copies of the seed words, stored in different locations.&lt;br&gt;&lt;br&gt;&lt;b&gt;Attention:&lt;/b&gt; Seed Words cannot later be (re)created from your exsting private keys.&lt;br&gt;If you you loose your Seed Words and don&apos;t have a backup of the wallet.dat file, you loose your coins!</source>
         <translation>Il est recommandé de faire de multiples copies de votre phrase mnémotechnique, stockées à plusieurs endroits sécurisés.&lt;br&gt;&lt;br&gt;&lt;b&gt;Attention:&lt;/b&gt; La phrase mnémotechnique ne peut pas être (re)générée à partir de vos clés privées existantes.&lt;br&gt;Si vous perdez votre phrase mnémotechnique et n&apos;avez pas de sauvegarde de votre fichier wallet.dat vous perdez vos jetons Alias!</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="69"/>
+        <location filename="../setupwalletwizard.cpp" line="104"/>
         <source>Please enter the mnemonic words and password given on the previous screen.</source>
         <translation>Veuillez entrer la phrase mnémotechnique ainsi que le mot de passe donné sur l&apos;écran précédent</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="72"/>
-        <source>Please enter your mnemonic words and (optional) password.</source>
-        <translation>Veuillez entrer la phrase mnémotechnique ainsi que le mot de passe (optionnel)</translation>
+        <location filename="../setupwalletwizard.cpp" line="107"/>
+        <source>You have to enter the language and optional password you used when creating the seed words.</source>
+        <translation>Vous devez saisir la langue et le mot de passe optionnel que vous avez choisis lors de la création des mots de seed/graine.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="75"/>
+        <location filename="../setupwalletwizard.cpp" line="110"/>
+        <source>Please enter your mnemonic seed words. If you get a checksum error but all seed words are valid, the order of the seed words in not correct.</source>
+        <translation>Veuillez saisir mots de seed/graine. Si vous obtenez une erreur de checksum alors que vos mots sont corrects, cela signifie que l&apos;ordre de vos mots est incorrect.</translation>
+    </message>
+    <message>
+        <location filename="../setupwalletwizard.cpp" line="113"/>
         <source>This help is likely not to be of any help.</source>
         <translation>L&apos;aide ne sera probablement d&apos;aucune aide.</translation>
     </message>
     <message>
-        <location filename="../setupwalletwizard.cpp" line="78"/>
+        <location filename="../setupwalletwizard.cpp" line="116"/>
         <source>Alias Wallet Setup Help</source>
         <translation>Aide de la configuration du portefeuille Alias</translation>
     </message>
@@ -1320,231 +1614,236 @@ Please restart the wallet!</source>
 <context>
     <name>SpectreBridge</name>
     <message>
-        <location filename="../spectrebridge.cpp" line="362"/>
+        <location filename="../spectrebridge.cpp" line="370"/>
+        <source>..Start UI..</source>
+        <translation>..Démarrage Interface..</translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="382"/>
+        <source>.Start UI.</source>
+        <translation>.Démarrage Interface.</translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="441"/>
         <source>default</source>
         <translation>par défaut</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="437"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; depuis votre balance publique vers %2 (%3)</translation>
+        <location filename="../spectrebridge.cpp" line="1865"/>
+        <source>%1 %2</source>
+        <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="441"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; depuis public vers privé, en utilisant l&apos;adresse %2 (%3)</translation>
+        <location filename="../spectrebridge.cpp" line="1868"/>
+        <source>%1 | %2</source>
+        <translation>%1 | %2</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="446"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; depuis votre balance privée, taille de l&apos;anneau %2, to %3 (%4)</translation>
+        <location filename="../spectrebridge.cpp" line="1869"/>
+        <source>%1</source>
+        <translation>%1</translation>
     </message>
+</context>
+<context>
+    <name>SpectreClientBridge</name>
     <message>
-        <location filename="../spectrebridge.cpp" line="451"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; depuis privé vers public , taille d&apos;anneau %2, utilisant l&apos;adresse %3 (%4)</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="455"/>
-        <location filename="../spectrebridge.cpp" line="466"/>
-        <location filename="../spectrebridge.cpp" line="479"/>
-        <location filename="../spectrebridge.cpp" line="490"/>
-        <source>Error:</source>
-        <translation>Erreur:</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="455"/>
-        <source>Unknown txn type detected %1.</source>
-        <translation>Type de transaction inconnu détecté %1.</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="466"/>
-        <source>Input types must match for all recipients.</source>
-        <translation>Les types d&apos;entrées doivent correspondre pour tous les destinataires.</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="479"/>
-        <source>Ring sizes must match for all recipients.</source>
-        <translation>La taille des anneaux doit être la même pour tous les destinataires.</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="488"/>
-        <source>Ring size must be %1.</source>
-        <translation>La taille de l&apos;anneau doit être %1 </translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="489"/>
-        <source>Ring size outside range [%1, %2].</source>
-        <translation>Taille de l&apos;anneau en dehors des bornes  [%1, %2].</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="498"/>
-        <location filename="../spectrebridge.cpp" line="508"/>
-        <source>Confirm send coins</source>
-        <translation>Confirmer l&apos;envoi des jetons</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="498"/>
-        <source>Are you sure you want to send?
-Ring size of one is not anonymous.</source>
-        <translation>Etes-vous sûr de vouloir envoyer?
-L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="498"/>
-        <location filename="../spectrebridge.cpp" line="510"/>
-        <source> and </source>
-        <translation>et</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="509"/>
-        <source>Are you sure you want to convert %1?</source>
-        <translation>Etes-vous sûr de vouloir convertir %1?</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="509"/>
-        <source>Are you sure you want to send %1?</source>
-        <translation>Etes-vous sûr de vouloir envoyer %1?</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="527"/>
-        <location filename="../spectrebridge.cpp" line="555"/>
-        <location filename="../spectrebridge.cpp" line="561"/>
-        <location filename="../spectrebridge.cpp" line="567"/>
-        <location filename="../spectrebridge.cpp" line="573"/>
-        <location filename="../spectrebridge.cpp" line="579"/>
-        <location filename="../spectrebridge.cpp" line="585"/>
-        <location filename="../spectrebridge.cpp" line="591"/>
-        <location filename="../spectrebridge.cpp" line="598"/>
-        <location filename="../spectrebridge.cpp" line="604"/>
-        <location filename="../spectrebridge.cpp" line="610"/>
-        <location filename="../spectrebridge.cpp" line="616"/>
-        <location filename="../spectrebridge.cpp" line="622"/>
-        <location filename="../spectrebridge.cpp" line="628"/>
-        <location filename="../spectrebridge.cpp" line="634"/>
-        <location filename="../spectrebridge.cpp" line="640"/>
-        <location filename="../spectrebridge.cpp" line="652"/>
-        <location filename="../spectrebridge.cpp" line="658"/>
-        <location filename="../spectrebridge.cpp" line="664"/>
-        <location filename="../spectrebridge.cpp" line="670"/>
-        <location filename="../spectrebridge.cpp" line="685"/>
+        <location filename="../spectreclientbridge.cpp" line="121"/>
+        <location filename="../spectreclientbridge.cpp" line="307"/>
         <source>Send Coins</source>
         <translation>Envoyer jetons</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="528"/>
+        <location filename="../spectreclientbridge.cpp" line="140"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; depuis votre balance publique vers %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="144"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; depuis publique vers privé, en utilisant l&apos;adresse %2 (%3)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="149"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; depuis votre balance privée, taille d&apos;anneau  %2, vers %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="154"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; depuis privé vers publique, taille d&apos;anneau %2, avec l&apos;adresse %3 (%4)</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="158"/>
+        <source>Unknown txn type detected %1.</source>
+        <translation>Type de txn inconnu détecté %1.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="165"/>
+        <source>Input types must match for all recipients.</source>
+        <translation>Les types d&apos;entrées doivent correspondre pour tous les destinataires.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="173"/>
+        <source>Ring sizes must match for all recipients.</source>
+        <translation>Les tailles d&apos;anneau doivent correspondre pour tous les destinataires.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="178"/>
+        <source>Ring size must be %1.</source>
+        <translation>La taille d&apos;anneau doit être %1.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="179"/>
+        <source>Ring size outside range [%1, %2].</source>
+        <translation>Taille d&apos;anneau en dehors des bornes [%1, %2].</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="187"/>
+        <source>Confirm send coins</source>
+        <translation>Confirmer l&apos;envoi de jetons</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to convert %1?</source>
+        <translation>Etes-vous sûr de vouloir convertir %1?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="188"/>
+        <source>Are you sure you want to send %1?</source>
+        <translation>Etes-vous sûr de vouloir envoyer %1?</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="189"/>
+        <source> and </source>
+        <translation>et</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="206"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation>L&apos;adresse d&apos;échange n&apos;est pas valide, vérifiez-la.</translation>
+        <translation>La nouvelle adresse n&apos;est pas valide, veuillez revérifier.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="556"/>
+        <location filename="../spectreclientbridge.cpp" line="218"/>
+        <source>Payment not send because wallet is locked.</source>
+        <translation>Paiement non envoyé car le portefeuille est verrouillé.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="231"/>
+        <location filename="../spectreclientbridge.cpp" line="250"/>
+        <location filename="../spectreclientbridge.cpp" line="411"/>
+        <location filename="../spectreclientbridge.cpp" line="419"/>
+        <source>Core not responding.</source>
+        <translation>Le coeur ne répond pas.</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="259"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation>L&apos;adresse du destinataire n&apos;est pas valide, vérifiez-la.</translation>
+        <translation>L&apos;adresse du destinataire n&apos;est pas valide, veuillez revérifier.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="562"/>
-        <source>Only ALIAS from your Private balance can be send to a stealth address.</source>
-        <translation>Seuls des ALIAS de votre balance Privée peuvent etre envoyés vers une adresse furtive.</translation>
+        <location filename="../spectreclientbridge.cpp" line="261"/>
+        <source>Only ALIAS from your Private balance can be send to a private address.</source>
+        <translation>Seuls des ALIAS depuis votre balance Privée peuvent être envoyés à une adresse privée.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="568"/>
+        <location filename="../spectreclientbridge.cpp" line="263"/>
         <source>Transfer from Public to Private is only allowed within your account.</source>
-        <translation>Transfert de Public vers Privé n&apos;est autorisé qu&apos;au sein de votre compte.</translation>
+        <translation>Les transferts de Publique vers Privé ne sont possibles qu&apos;au sein même de votre compte.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="574"/>
+        <location filename="../spectreclientbridge.cpp" line="265"/>
         <source>Transfer from Private to Public is only allowed within your account.</source>
-        <translation>Transfert de Privé vers Public n&apos;est autorisé qu&apos;au sein de votre compte.</translation>
+        <translation>Les transferts de Privé vers Publique ne sont possibles qu&apos;au sein même de votre compte.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="580"/>
+        <location filename="../spectreclientbridge.cpp" line="267"/>
         <source>The amount to pay must be larger than 0.</source>
         <translation>Le montant à payer doit être supérieur à 0.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="586"/>
+        <location filename="../spectreclientbridge.cpp" line="269"/>
         <source>The amount exceeds your balance.</source>
         <translation>Le montant dépasse votre balance.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="592"/>
+        <location filename="../spectreclientbridge.cpp" line="271"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation>Le montant dépasse votre balance une fois que le %1 de frais de transaction est inclus.</translation>
+        <translation>Le total dépasse votre balance quand les %1 de frais de transaction sont ajoutés.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="599"/>
+        <location filename="../spectreclientbridge.cpp" line="273"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation>Adresse trouvée en double, vous ne pouvez envoyer à chaque adresse qu&apos;une fois par transaction.</translation>
+        <translation>Adresse en double trouvée, ne peut envoyer qu&apos;à une adresse à la fois par opération. </translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="605"/>
+        <location filename="../spectreclientbridge.cpp" line="275"/>
         <source>Error: Transaction creation failed.</source>
-        <translation>Erreur: la création de la transaction a échoué.</translation>
+        <translation>Erreur: Création de transaction a échoué.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="611"/>
+        <location filename="../spectreclientbridge.cpp" line="277"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation>Erreur: la transaction a été rejetée. Cela peut arriver si certains jetons dans votre portefeuille ont été déjà dépensés, par exemple dans le cas où vous avez utilisé une copie du fichier wallet.dat, que les jetons ont été dépensés avec cette copie mais non marqués comme dépensés ici.</translation>
+        <translation>Erreur: La transaction a été rejetée. Cela peut arriver si certains de vos jetons ont été déjà dépensés, par exemple si vous avez utilisé une copie de votre fichier wallet.dat, que vos jetons ont été dépensés dans votre copie mais pas ici.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="617"/>
+        <location filename="../spectreclientbridge.cpp" line="279"/>
         <source>Error: Note is too long.</source>
-        <translation>Erreur: la note est trop longue</translation>
+        <translation>Erreur: Note trop longue.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="623"/>
+        <location filename="../spectreclientbridge.cpp" line="281"/>
         <source>Error: Ring Size Error.</source>
-        <translation>Erreur: erreur de taille d&apos;anneau</translation>
+        <translation>Erreur: Erreur de taille d&apos;Anneau</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="629"/>
+        <location filename="../spectreclientbridge.cpp" line="283"/>
         <source>Error: Input Type Error.</source>
-        <translation>Erreur: erreur de type d&apos;entrée</translation>
+        <translation>Error: Erreur de type d&apos;entrée.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="635"/>
+        <location filename="../spectreclientbridge.cpp" line="285"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation>Erreur: Doit être en mode complet pour envoyer anonymement</translation>
+        <translation>Erreur: Vous devez être en mode complet pour envoyer anonymement..</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="641"/>
-        <source>Error: Invalid Stealth Address.</source>
-        <translation>Erreur: Adresse furtive invalide</translation>
+        <location filename="../spectreclientbridge.cpp" line="287"/>
+        <source>Error: Invalid Private Address.</source>
+        <translation>Erreur: Adresse Privée invalide.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="646"/>
-        <source>Convert Alias from Private to Public</source>
-        <translation>Convertir Alias depuis Privé vers Public</translation>
+        <location filename="../spectreclientbridge.cpp" line="289"/>
+        <source>Error: Invalid Private Address. Private to public conversion requires a stealth address.</source>
+        <translation>Erreur: Adresse Privée invalide. La conversion de Privé vers Public nécessite une adresse furtive.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="647"/>
-        <source>Error: Invalid Stealth Address. Private to public conversion requires a stealth address.</source>
-        <translation>Erreur: Adresse furtive invalide. La conversion Privé vers Public nécessite une adresse furtive.</translation>
-    </message>
-    <message>
-        <location filename="../spectrebridge.cpp" line="653"/>
+        <location filename="../spectreclientbridge.cpp" line="291"/>
         <source>The amount exceeds your ALIAS balance.</source>
-        <translation>Le montant dépasse votre balance ALIAS.</translation>
+        <translation>Le montant dépasse votre balance d&apos;ALIAS.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="659"/>
+        <location filename="../spectreclientbridge.cpp" line="293"/>
         <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
-        <translation>Le montant dépasse votre balance ALIAS lorsque les %1 de frais de transaction sont inclus.</translation>
+        <translation>Le total dépasse votre balance d&apos;ALIAS privés quand  les %1 de frais de transaction sont ajoutés.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="665"/>
+        <location filename="../spectreclientbridge.cpp" line="295"/>
         <source>Error generating transaction.</source>
-        <translation>Erreur de génération de transaction</translation>
+        <translation>Erreur de génération de transaction.</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="671"/>
+        <location filename="../spectreclientbridge.cpp" line="297"/>
         <source>Error generating transaction: %1</source>
-        <translation>Erreur de génération de transaction : %1</translation>
+        <translation>Erreur de génération de transaction: %1</translation>
     </message>
     <message>
-        <location filename="../spectrebridge.cpp" line="686"/>
-        <source>Transaction successfully created.</source>
-        <translation>Transaction créée avec succès.</translation>
+        <location filename="../spectreclientbridge.cpp" line="308"/>
+        <source>Transaction successfully created. Fee payed %1</source>
+        <translation>Transaction créée avec succès. Commission payée %1</translation>
+    </message>
+    <message>
+        <location filename="../spectreclientbridge.cpp" line="404"/>
+        <source>Wallet locked.</source>
+        <translation>Portefeuille vérrouillé.</translation>
     </message>
 </context>
 <context>
@@ -1630,437 +1929,444 @@ L&apos;une des tailles d&apos;anneau n&apos;est pas anonyme.</translation>
         <translation>Autres</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="153"/>
-        <location filename="../spectregui.cpp" line="410"/>
-        <location filename="../spectregui.cpp" line="425"/>
-        <location filename="../spectregui.cpp" line="485"/>
+        <location filename="../spectregui.cpp" line="170"/>
+        <location filename="../spectregui.cpp" line="555"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="153"/>
+        <location filename="../spectregui.cpp" line="170"/>
         <source>Client</source>
         <translation>Client</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="247"/>
-        <source>..Start UI..</source>
-        <translation>..Démarrer l&apos;interface..</translation>
+        <location filename="../spectregui.cpp" line="223"/>
+        <source>...Start UI...</source>
+        <translation>...Démarrage UI...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="264"/>
-        <source>.Start UI.</source>
-        <translation>.Démarrer l&apos;interface.</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="284"/>
+        <location filename="../spectregui.cpp" line="355"/>
         <source>Ready!</source>
         <translation>Prêt !</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="314"/>
+        <location filename="../spectregui.cpp" line="385"/>
         <source>E&amp;xit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="315"/>
+        <location filename="../spectregui.cpp" line="386"/>
         <source>Quit application</source>
         <translation>Quitter l&apos;application</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="318"/>
+        <location filename="../spectregui.cpp" line="389"/>
         <source>&amp;About Alias</source>
         <translation>&amp;A propos d&apos;Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="319"/>
+        <location filename="../spectregui.cpp" line="390"/>
         <source>Show information about Alias</source>
         <translation>Montrer des informations à propos d&apos;Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="321"/>
+        <location filename="../spectregui.cpp" line="392"/>
         <source>&amp;Restart Alias</source>
         <translation>&amp;Redémarrer Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="322"/>
+        <location filename="../spectregui.cpp" line="393"/>
         <source>Show notice about required wallet restart</source>
         <translation>Afficher avertissement du nécessaire redémarrage du portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="324"/>
+        <location filename="../spectregui.cpp" line="395"/>
         <source>About &amp;Qt</source>
         <translation>A propos de q&amp;T</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="325"/>
+        <location filename="../spectregui.cpp" line="396"/>
         <source>Show information about Qt</source>
         <translation>Montrer des informations à propos de Qt</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="327"/>
+        <location filename="../spectregui.cpp" line="398"/>
         <source>&amp;Options...</source>
         <translation>&amp;Options...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="328"/>
+        <location filename="../spectregui.cpp" line="399"/>
         <source>Modify configuration options for Alias</source>
         <translation>Changer les options de configurations d&apos;Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="330"/>
+        <location filename="../spectregui.cpp" line="401"/>
         <source>&amp;Show / Hide</source>
         <translation>&amp;Montrer / Cacher</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="331"/>
+        <location filename="../spectregui.cpp" line="402"/>
         <source>&amp;Encrypt Wallet...</source>
         <translation>&amp;Chiffrer portefeuille...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="332"/>
+        <location filename="../spectregui.cpp" line="403"/>
         <source>Encrypt or decrypt wallet</source>
         <translation>Chiffrer ou déchiffrer portfeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="334"/>
+        <location filename="../spectregui.cpp" line="405"/>
         <source>&amp;Backup Wallet...</source>
         <translation>&amp;Sauvegarde portfeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="335"/>
+        <location filename="../spectregui.cpp" line="406"/>
         <source>Backup wallet to another location</source>
         <translation>Sauvegarder le portefeuille à un autre emplacement</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="336"/>
+        <location filename="../spectregui.cpp" line="407"/>
         <source>&amp;Change Passphrase...</source>
         <translation>&amp;Changer phrase de récupération</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="337"/>
+        <location filename="../spectregui.cpp" line="408"/>
         <source>Change the passphrase used for wallet encryption</source>
         <translation>Changer la phrase de récupération pour le chiffrement du portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="338"/>
+        <location filename="../spectregui.cpp" line="409"/>
         <source>&amp;Unlock Wallet...</source>
         <translation>&amp;Déverrouiller portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="339"/>
+        <location filename="../spectregui.cpp" line="410"/>
         <source>Unlock wallet</source>
         <translation>Déverrouiller portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="340"/>
+        <location filename="../spectregui.cpp" line="411"/>
         <source>&amp;Lock Wallet</source>
         <translation>&amp;Verrouiller portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="341"/>
+        <location filename="../spectregui.cpp" line="412"/>
         <source>Lock wallet</source>
         <translation>Verrouiller portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="345"/>
+        <location filename="../spectregui.cpp" line="416"/>
         <source>&amp;Debug window</source>
         <translation>&amp;Fenêtre de débogage</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="346"/>
+        <location filename="../spectregui.cpp" line="417"/>
         <source>Open debugging and diagnostic console</source>
         <translation>Ouvrir console de débogage et de diagnostic</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="377"/>
+        <location filename="../spectregui.cpp" line="448"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="383"/>
+        <location filename="../spectregui.cpp" line="454"/>
         <source>&amp;Settings</source>
         <translation>&amp;Paramètres</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="391"/>
+        <location filename="../spectregui.cpp" line="462"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
-    <message>
-        <location filename="../spectregui.cpp" line="410"/>
-        <source>Wallet</source>
-        <translation>Portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="416"/>
-        <location filename="../spectregui.cpp" line="425"/>
-        <source>[testnet]</source>
-        <translation>[testnet]</translation>
-    </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="574"/>
+        <location filename="../spectregui.cpp" line="642"/>
         <source>%n active connection(s) to Alias network</source>
-        <translation><numerusform>1 connexion active au réseau Alias</numerusform><numerusform>%n connexions au réseau Alias sont actives</numerusform></translation>
+        <translation><numerusform>%n connexion active au réseau Alias</numerusform><numerusform>%n connexions actives au réseau Alias</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="594"/>
+        <location filename="../spectregui.cpp" line="668"/>
         <source>block</source>
         <translation>bloc</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="594"/>
+        <location filename="../spectregui.cpp" line="668"/>
         <source>header</source>
         <translation>en-tête</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="595"/>
+        <location filename="../spectregui.cpp" line="669"/>
         <source>blocks</source>
         <translation>blocs</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="595"/>
+        <location filename="../spectregui.cpp" line="669"/>
         <source>headers</source>
         <translation>en-têtes</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="604"/>
-        <location filename="../spectregui.cpp" line="624"/>
+        <location filename="../spectregui.cpp" line="681"/>
+        <location filename="../spectregui.cpp" line="701"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronisation en cours avec le réseau...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="606"/>
+        <location filename="../spectregui.cpp" line="683"/>
         <source>Downloading filtered blocks...</source>
         <translation>Téléchargement des blocs filtrés...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="612"/>
+        <location filename="../spectregui.cpp" line="689"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
         <translation>~%1 bloc(s) filtrés restants (%2% faits).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="624"/>
+        <location filename="../spectregui.cpp" line="701"/>
         <source>Importing blocks...</source>
         <translation>Import des blocs...</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="629"/>
+        <location filename="../spectregui.cpp" line="706"/>
         <source>~%n block(s) remaining</source>
-        <translation><numerusform>%n bloc restant</numerusform><numerusform>%n blocs restants</numerusform></translation>
+        <translation><numerusform>~%n bloc restant</numerusform><numerusform>~%n bloc(s) restants</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="643"/>
+        <location filename="../spectregui.cpp" line="720"/>
         <source>Imported %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>%1 de %2 %3 de l&apos;historique des transactions importé (%4% effectué).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="644"/>
+        <location filename="../spectregui.cpp" line="721"/>
         <source>Downloaded %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>Téléchargement %1 des %2 %3 de l&apos;historique des transactions (%4% effectués).</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="647"/>
+        <location filename="../spectregui.cpp" line="724"/>
         <source>Imported %n block(s) of transaction history.</source>
         <translation><numerusform>%n bloc d&apos;historique de transaction importé.</numerusform><numerusform>%n blocs d&apos;historique de transaction importés.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="647"/>
+        <location filename="../spectregui.cpp" line="724"/>
         <source>Downloaded %n block(s) of transaction history.</source>
-        <translation><numerusform>%n bloc d&apos;historique de transaction téléchargé.</numerusform><numerusform>%n blocs d&apos;historique de transaction téléchargés.</numerusform></translation>
+        <translation><numerusform>%n bloc d&apos;historique de transactions téléchargé.</numerusform><numerusform>%n blocs d&apos;historique de transactions téléchargés.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="665"/>
+        <location filename="../spectregui.cpp" line="742"/>
         <source>%n second(s) ago</source>
-        <translation><numerusform>il y a %n seconde</numerusform><numerusform>il y a %n secondes</numerusform></translation>
+        <translation><numerusform>Il y a %n seconde</numerusform><numerusform>Il y a %n secondes</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="669"/>
+        <location filename="../spectregui.cpp" line="746"/>
         <source>%n minute(s) ago</source>
-        <translation><numerusform>il y a %n minute</numerusform><numerusform>il y a %n minutes</numerusform></translation>
+        <translation><numerusform>Il y a %n minute</numerusform><numerusform>Il y a %n minutes</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="673"/>
+        <location filename="../spectregui.cpp" line="750"/>
         <source>%n hour(s) ago</source>
-        <translation><numerusform>il y a %n heure</numerusform><numerusform>il y a %n heures</numerusform></translation>
+        <translation><numerusform>Il y a %n heure</numerusform><numerusform>Il y a %n heures</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="676"/>
+        <location filename="../spectregui.cpp" line="753"/>
         <source>%n day(s) ago</source>
-        <translation><numerusform>il y a %n seconde</numerusform><numerusform>il y a %n jours</numerusform></translation>
+        <translation><numerusform>Il y a %n jour</numerusform><numerusform>Il y a %n jours</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="683"/>
+        <location filename="../spectregui.cpp" line="760"/>
         <source>Up to date</source>
         <translation>A jour</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="700"/>
+        <location filename="../spectregui.cpp" line="777"/>
         <source>Catching up...</source>
         <translation>A la recherche du temps perdu...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="745"/>
+        <location filename="../spectregui.cpp" line="822"/>
         <source>Last received %1 was generated %2.</source>
         <translation>Le dernier %1 reçu a été généré %2.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="800"/>
+        <location filename="../spectregui.cpp" line="877"/>
         <source>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</source>
         <translation>Pour traiter cette transaction, des frais de %1 seront prélevés pour soutenir le réseau. Souhaitez-vous confirmer la transaction?</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="804"/>
+        <location filename="../spectregui.cpp" line="881"/>
         <source>Confirm transaction fee</source>
         <translation>Confirmer les frais de transaction</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="834"/>
-        <source>%1 %2</source>
-        <translation>%1 %2</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="837"/>
-        <source>Address: %1
-Note: %2
-</source>
-        <translation>Adresse: %1
-Note: %2
-</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="838"/>
-        <source>Address: %1
-</source>
-        <translation>Adresse: %1
-</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="876"/>
-        <location filename="../spectregui.cpp" line="898"/>
+        <location filename="../spectregui.cpp" line="954"/>
+        <location filename="../spectregui.cpp" line="992"/>
         <source>URI handling</source>
         <translation>Traitement URL </translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="876"/>
-        <location filename="../spectregui.cpp" line="898"/>
+        <location filename="../spectregui.cpp" line="954"/>
+        <location filename="../spectregui.cpp" line="992"/>
         <source>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</source>
         <translation>URI ne peut pas être analysé! Cela peut être dû à une adresse Alias invalide ou bien des paramètres URI mal formulés..</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="933"/>
+        <location filename="../spectregui.cpp" line="1027"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
         <translation>Le portefeuille est  &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;déverrouillé&lt;/b&gt; uniquement pour staking</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="938"/>
+        <location filename="../spectregui.cpp" line="1032"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>Le portefeuille est &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;déverrouillé&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="959"/>
+        <location filename="../spectregui.cpp" line="1053"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Le portefeuille est  &lt;b&gt;chiffré&lt;/b&gt; et actuellement &lt;b&gt;verrouillé&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="991"/>
-        <source>Backup Wallet</source>
-        <translation>Sauvegarder portefeuille</translation>
+        <location filename="../spectregui.cpp" line="1088"/>
+        <source>wallet.dat</source>
+        <translation>wallet.dat</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="991"/>
+        <location filename="../spectregui.cpp" line="1088"/>
+        <location filename="../spectregui.cpp" line="1090"/>
         <source>Wallet Data (*.dat)</source>
         <translation>Données de portefeuille (*.dat)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="996"/>
+        <location filename="../spectregui.cpp" line="1090"/>
+        <source>Backup Wallet</source>
+        <translation>Sauvegarder portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1096"/>
         <source>Backup Failed</source>
         <translation>Sauvegarde en échec</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="996"/>
+        <location filename="../spectregui.cpp" line="1096"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
         <translation>Une erreur s&apos;est produite en essayant de sauvegarder le portefeuille à un nouvel emplacement</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1053"/>
+        <location filename="../spectregui.cpp" line="1098"/>
+        <source>Backup Completed</source>
+        <translation>Sauvegarde terminée</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1098"/>
+        <source>Wallet data successfully saved to new location.</source>
+        <translation>Données de portefeuille sauvegardées avec succès au nouvel emplacement.</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1153"/>
         <source>Lock Wallet</source>
         <translation>Verrouiller le portefeuille</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1054"/>
+        <location filename="../spectregui.cpp" line="1154"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
         <translation>Erreur: Le portefeuille doit d&apos;abord être chiffré pourpouvoir être verrouillé</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1123"/>
+        <location filename="../spectregui.cpp" line="1212"/>
         <source>%1 second(s)</source>
         <translation>%1 seconde(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1124"/>
+        <location filename="../spectregui.cpp" line="1213"/>
         <source>%1 minute(s), %2 second(s)</source>
         <translation>%1 minute(s), %2 seconde(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1125"/>
+        <location filename="../spectregui.cpp" line="1214"/>
         <source>%1 hour(s), %2 minute(s)</source>
         <translation>%1 heure(s), %2 minute(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1126"/>
+        <location filename="../spectregui.cpp" line="1215"/>
         <source>%1 day(s), %2 hour(s)</source>
         <translation>%1 jours(s), %2 heure(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1136"/>
+        <location filename="../spectregui.cpp" line="1225"/>
         <source> (last 72 blocks %1)</source>
         <translation> (derniers 72 blocs %1)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1138"/>
+        <location filename="../spectregui.cpp" line="1227"/>
         <source>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</source>
         <translation>Staking.&lt;br/&gt;Votre poids est %1&lt;br/&gt;Le poids du réseau est %2%3&lt;br/&gt;Le temps moyen avant la prochaine récompense est de %4</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1144"/>
+        <location filename="../spectregui.cpp" line="1237"/>
         <source>Not staking because wallet is in thin mode</source>
         <translation>Pas de staking car le portefeuille est en mode léger</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1145"/>
+        <location filename="../spectregui.cpp" line="1238"/>
         <source>Not staking, staking is disabled</source>
         <translation>Pas de staking, le staking est désactivé</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1146"/>
+        <location filename="../spectregui.cpp" line="1239"/>
         <source>Not staking because wallet is locked</source>
         <translation>Pas de staking car le portefeuille est verrouillé</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1147"/>
+        <location filename="../spectregui.cpp" line="1240"/>
         <source>Not staking because wallet is offline</source>
         <translation>Pas de staking car le portefeuille est hors-ligne</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1148"/>
+        <location filename="../spectregui.cpp" line="1241"/>
         <source>Not staking because wallet is syncing</source>
         <translation>Pas de staking car le portefeuille se synchronise</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1149"/>
+        <location filename="../spectregui.cpp" line="1242"/>
         <source>Initializing staking...</source>
         <translation>Initialise le staking....</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1150"/>
+        <location filename="../spectregui.cpp" line="1243"/>
         <source>Not staking because you don&apos;t have mature coins</source>
         <translation>Pas de staking car vous n&apos;avez pas de jetons mûrs</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1151"/>
+        <location filename="../spectregui.cpp" line="1244"/>
         <source>Not staking</source>
         <translation>Pas de staking</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1259"/>
+        <source>Disable Battery Optimization</source>
+        <translation>Désactiver l&apos;optimisation de la batterie</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1260"/>
+        <source>App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias.</source>
+        <translation>L&apos;optimisation de la batterie pour cette application est activée et peut impacter négativement le staking. Pour des résultats optimaux, veuillez désactiver l&apos;optimisation de batterie pour Alias.</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1284"/>
+        <source>Reset Blockchain Data</source>
+        <translation>Réinitialiser les données de blockchain</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1285"/>
+        <source>Are you sure you want to reset the blockchain data?&lt;br&gt;&lt;br&gt;- Application will stop&lt;br&gt;- Blockchain data deleted&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
+        <translation>Etes-vous sûr de vouloir réinitialiser les données de blockchain?&lt;br&gt;&lt;br&gt;- L&apos;application va s&apos;arrêter&lt;br&gt;- Les données de blockchain seront effacées&lt;br&gt;- le fichier wallet.dat restera intact &lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1303"/>
+        <source>Rewind Blockchain Data</source>
+        <translation>Rembobiner données de blockchain</translation>
+    </message>
+    <message>
+        <location filename="../spectregui.cpp" line="1304"/>
+        <source>Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.&lt;br&gt;&lt;br&gt;- Last 100 blocks will be deleted&lt;br&gt;- Application will stop&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
+        <translation>Etes-vous sûr de rembobiner les 100 derniers blocs des données de blockchain? Cela pourrait s&apos;avérer utile si le portefeuille a arrêté de synchroniser à une certaine hauteur de blocs.&lt;br&gt;&lt;br&gt;- Les 100 derniers blocs seront effacés&lt;br&gt;- L&apos;application va s&apos;arrêter&lt;br&gt;- wallet.dat restera intact&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -2076,7 +2382,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="44"/>
         <source>Open for %n block(s)</source>
-        <translation><numerusform>Ouvrir pour %n bloc</numerusform><numerusform>Ouvrir pour %n blocs</numerusform></translation>
+        <translation><numerusform>Ouvert pour %n bloc</numerusform><numerusform>Ouvert pour %n blocs</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="46"/>
@@ -2126,7 +2432,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiondesc.cpp" line="92"/>
         <source>, broadcast through %n node(s)</source>
-        <translation><numerusform>, diffusé via %n noeud</numerusform><numerusform>, diffusé via %n noeuds</numerusform></translation>
+        <translation><numerusform>, diffusion au travers d&apos; %n noeud</numerusform><numerusform>, diffusion au travers de %n noeuds</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiondesc.cpp" line="97"/>
@@ -2305,7 +2611,7 @@ Note: %2
     <message numerus="yes">
         <location filename="../transactiontablemodel.cpp" line="328"/>
         <source>Open for %n more block(s)</source>
-        <translation><numerusform>Ouvrir pour %n bloc supplémentaire</numerusform><numerusform>Ouvrir pour %n blocs supplémentaires</numerusform></translation>
+        <translation><numerusform>Ouvert dans %n bloc supplémentaire</numerusform><numerusform>Ouverts dans %n blocs supplémentaires</numerusform></translation>
     </message>
     <message>
         <location filename="../transactiontablemodel.cpp" line="331"/>
@@ -2389,15 +2695,6 @@ Note: %2
     </message>
 </context>
 <context>
-    <name>WalletModel</name>
-    <message>
-        <location filename="../walletmodel.cpp" line="424"/>
-        <location filename="../walletmodel.cpp" line="655"/>
-        <source>Sending...</source>
-        <translation>Envoi...</translation>
-    </message>
-</context>
-<context>
     <name>alias-bridge</name>
     <message>
         <location filename="../aliasbridgestrings.h" line="14"/>
@@ -2433,6 +2730,16 @@ Note: %2
         <location filename="../aliasbridgestrings.h" line="20"/>
         <source>Options</source>
         <translation>Options</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="21"/>
+        <source>Add Sub-Wallet</source>
+        <translation>Ajouter Sous-Portefeuille</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="22"/>
+        <source>Immature generated coins with Proof-of-Work</source>
+        <translation>Coins non mûrs générés avec Proof-of-Work</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="23"/>
@@ -2583,6 +2890,11 @@ Note: %2
         <location filename="../aliasbridgestrings.h" line="52"/>
         <source>Recent Transactions</source>
         <translation>Transactions récentes</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="53"/>
+        <source>Blockchain Info</source>
+        <translation>Info Blockchaîne</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="54"/>
@@ -2778,6 +3090,11 @@ Note: %2
         <location filename="../aliasbridgestrings.h" line="92"/>
         <source>Your total balance</source>
         <translation>Votre balance totale</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="93"/>
+        <source>Checking wallet state with network</source>
+        <translation>Vérification de l&apos;état du portefeuille avec le réseau</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="94"/>
@@ -2980,159 +3297,9 @@ Note: %2
         <translation>Les jetons stakés doivent mûrir avant d&apos;être accessibles</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="180"/>
-        <source>Stake</source>
-        <translation>Stake</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="181"/>
-        <source>Sub-Wallets</source>
-        <translation>Sous-portefeuilles</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="182"/>
-        <source>Start Alias on system login</source>
-        <translation>Démarrer Alias au login système</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="183"/>
-        <source>Detach databases at shutdown</source>
-        <translation>Détacher bases de données à l&apos;extinction</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="184"/>
-        <source>Pay transaction fee</source>
-        <translation>Payer frais de transaction</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="185"/>
-        <source>Transaction fee per kB. A higher fee makes sure your transactions are processed quickly in times of high transaction volume.</source>
-        <translation>Frais de transaction par Kilo-Octet. Des frais plus élevés vous assurent que vos transactions seront traitées rapidement en cas de forts volumes de transaction.</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="186"/>
-        <source>Most transactions are 1kB. The minimal fee is 0.0001</source>
-        <translation>La plupart des transactions font 1 Ko. Le minimum de frais est 0,0001.  </translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="187"/>
-        <source>Enable Staking</source>
-        <translation>Activer le staking</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="188"/>
-        <source>Enables or disables the staking process. If your wallet is encrypted, you will need to unlock it for staking.</source>
-        <translation>Active ou désactive le process de staking. Si votre portefeuille est chiffré, vous devrez le déverrouiller pour staking.</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="189"/>
-        <source>Staking Donation</source>
-        <translation>Don de staking</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="190"/>
-        <source>Every sixth block on the blockchain is a development contribution block (DCB). Staking rewards of DCBs are contributed to the development fund no matter the donation percentage setting. Please feel free to additionally donate from your remaining stake rewards by defining a donation chance. Thank you.</source>
-        <translation>Chaque sixième bloc de la blockchain est un bloc de contribution au développement (DCB). Les récompenses de staking des DCB sont versées au fonds de développement, quel que soit le pourcentage de don. N&apos;hésitez pas à faire un don supplémentaire de vos récompenses de staking restantes en définissant une chance de don. Merci.</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="191"/>
-        <source>Reserve</source>
-        <translation>Réserve</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="192"/>
-        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
-        <translation>Le montant réservé ne participe pas au staking, pour cette raison il est dépensable à tout moment.</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="193"/>
-        <source>Minimum Stake Interval</source>
-        <translation>Intervalle de staking minimal</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="194"/>
-        <source>Main</source>
-        <translation>Principal</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="195"/>
-        <source>Window</source>
-        <translation>Fenêtre</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="196"/>
-        <source>Display</source>
-        <translation>Affichage</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="197"/>
-        <source>Minimize to the tray instead of the taskbar</source>
-        <translation>Réduire dans les icônes de programmes au lieu de la barre de tâches</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="198"/>
-        <source>Minimize on close</source>
-        <translation>Réduire à la fermeture</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="199"/>
-        <source>User Interface language</source>
-        <translation>Langue de l&apos;interface utilisateur</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="200"/>
-        <source>Unit to show amounts in</source>
-        <translation>Unité d&apos;affichage des montants</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="201"/>
-        <source>Rows per page</source>
-        <translation>Lignes par page</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="202"/>
-        <source>Display addresses in transaction list</source>
-        <translation>Afficher les adresses dans la liste de transactions</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="203"/>
-        <source>Notifications</source>
-        <translation>Notifications</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="204"/>
-        <source>Visible Transaction Types</source>
-        <translation>Types de transactions visibles</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="205"/>
-        <source>Cancel</source>
-        <translation>Annuler</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="206"/>
-        <source>Apply</source>
-        <translation>Appliquer</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="207"/>
-        <source>Ok</source>
-        <translation>Ok</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="208"/>
-        <source>Reserved</source>
-        <translation>Réservé</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="209"/>
-        <source>Unconfirmed</source>
-        <translation>Non confirmé</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="210"/>
-        <source>Immature</source>
-        <translation>Pas mûr</translation>
+        <location filename="../aliasbridgestrings.h" line="134"/>
+        <source>Public ALIAS requires 1 confirmation&lt;br&gt;Private ALIAS requires 10 confirmations</source>
+        <translation>ALIAS Public nécessite 1 confirmation&lt;br&gt;ALIAS Privé nécessite 10 confirmations</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="135"/>
@@ -3158,31 +3325,6 @@ Note: %2
         <location filename="../aliasbridgestrings.h" line="139"/>
         <source>Enter a label for this address</source>
         <translation>Entrer une étiquette pour cette adresse</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="21"/>
-        <source>Add Sub-Wallet</source>
-        <translation>Ajouter Sous-Portefeuille</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="22"/>
-        <source>Immature generated coins with Proof-of-Work</source>
-        <translation>Coins non mûrs générés avec Proof-of-Work</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="53"/>
-        <source>Blockchain Info</source>
-        <translation>Info Blockchaîne</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="93"/>
-        <source>Checking wallet state with network</source>
-        <translation>Vérification de l&apos;état du portefeuille avec le réseau</translation>
-    </message>
-    <message>
-        <location filename="../aliasbridgestrings.h" line="134"/>
-        <source>Public ALIAS requires 1 confirmation&lt;br&gt;Private ALIAS requires 10 confirmations</source>
-        <translation>ALIAS Public nécessite 1 confirmation&lt;br&gt;ALIAS Privé nécessite 10 confirmations</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="140"/>
@@ -3355,6 +3497,16 @@ Note: %2
         <translation>Recherche</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="174"/>
+        <source>Filter outputs</source>
+        <translation>Filtrer sorties</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="175"/>
+        <source>Find Block by hash/height/transaction</source>
+        <translation>Trouver bloc par hash/hauteur/transaction</translation>
+    </message>
+    <message>
         <location filename="../aliasbridgestrings.h" line="176"/>
         <source>Family vacation funds</source>
         <translation>Fonds pour congés en famille</translation>
@@ -3375,14 +3527,169 @@ Note: %2
         <translation>Restaurer Sous-Portefeuille</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="174"/>
-        <source>Filter outputs</source>
-        <translation>Filtrer sorties</translation>
+        <location filename="../aliasbridgestrings.h" line="180"/>
+        <source>Stake</source>
+        <translation>Stake</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="175"/>
-        <source>Find Block by hash/height/transaction</source>
-        <translation>Trouver bloc par hash/hauteur/transaction</translation>
+        <location filename="../aliasbridgestrings.h" line="181"/>
+        <source>Sub-Wallets</source>
+        <translation>Sous-portefeuilles</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="182"/>
+        <source>Start Alias on system login</source>
+        <translation>Démarrer Alias au login système</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="183"/>
+        <source>Detach databases at shutdown</source>
+        <translation>Détacher bases de données à l&apos;extinction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="184"/>
+        <source>Pay transaction fee</source>
+        <translation>Payer frais de transaction</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="185"/>
+        <source>Transaction fee per kB. A higher fee makes sure your transactions are processed quickly in times of high transaction volume.</source>
+        <translation>Frais de transaction par Kilo-Octet. Des frais plus élevés vous assurent que vos transactions seront traitées rapidement en cas de forts volumes de transaction.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="186"/>
+        <source>Most transactions are 1kB. The minimal fee is 0.0001</source>
+        <translation>La plupart des transactions font 1 Ko. Le minimum de frais est 0,0001.  </translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="187"/>
+        <source>Enable Staking</source>
+        <translation>Activer le staking</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="188"/>
+        <source>Enables or disables the staking process. If your wallet is encrypted, you will need to unlock it for staking.</source>
+        <translation>Active ou désactive le process de staking. Si votre portefeuille est chiffré, vous devrez le déverrouiller pour staking.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="189"/>
+        <source>Staking Donation</source>
+        <translation>Don de staking</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="190"/>
+        <source>Every sixth block on the blockchain is a development contribution block (DCB). Staking rewards of DCBs are contributed to the development fund no matter the donation percentage setting. Please feel free to additionally donate from your remaining stake rewards by defining a donation chance. Thank you.</source>
+        <translation>Chaque sixième bloc de la blockchain est un bloc de contribution au développement (DCB). Les récompenses de staking des DCB sont versées au fonds de développement, quel que soit le pourcentage de don. N&apos;hésitez pas à faire un don supplémentaire de vos récompenses de staking restantes en définissant une chance de don. Merci.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="191"/>
+        <source>Reserve</source>
+        <translation>Réserve</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="192"/>
+        <source>Reserved amount does not participate in staking and is therefore spendable at any time.</source>
+        <translation>Le montant réservé ne participe pas au staking, pour cette raison il est dépensable à tout moment.</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="193"/>
+        <source>Minimum Stake Interval</source>
+        <translation>Intervalle de staking minimal</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="194"/>
+        <source>Main</source>
+        <translation>Principal</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="195"/>
+        <source>Window</source>
+        <translation>Fenêtre</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="196"/>
+        <source>Display</source>
+        <translation>Affichage</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="197"/>
+        <source>Minimize to the tray instead of the taskbar</source>
+        <translation>Réduire dans les icônes de programmes au lieu de la barre de tâches</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="198"/>
+        <source>Minimize on close</source>
+        <translation>Réduire à la fermeture</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="199"/>
+        <source>User Interface language</source>
+        <translation>Langue de l&apos;interface utilisateur</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="200"/>
+        <source>Unit to show amounts in</source>
+        <translation>Unité d&apos;affichage des montants</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="201"/>
+        <source>Rows per page</source>
+        <translation>Lignes par page</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="202"/>
+        <source>Display addresses in transaction list</source>
+        <translation>Afficher les adresses dans la liste de transactions</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="203"/>
+        <source>Notifications</source>
+        <translation>Notifications</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="204"/>
+        <source>Visible Transaction Types</source>
+        <translation>Types de transactions visibles</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="205"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="206"/>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="207"/>
+        <source>Ok</source>
+        <translation>Ok</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="208"/>
+        <source>Reserved</source>
+        <translation>Réservé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="209"/>
+        <source>Unconfirmed</source>
+        <translation>Non confirmé</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="210"/>
+        <source>Immature</source>
+        <translation>Pas mûr</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="211"/>
+        <source>Connect service...</source>
+        <translation>Connexion du service...</translation>
+    </message>
+    <message>
+        <location filename="../aliasbridgestrings.h" line="212"/>
+        <source>Loading block index...</source>
+        <translation>Chargement de l&apos;index de blocs...</translation>
     </message>
 </context>
 <context>
