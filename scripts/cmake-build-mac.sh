@@ -25,8 +25,6 @@ _init
 ##### ### # Mac Qt # ### ####################################################
 if [[ -z "${MAC_QT_DIR}" ]]; then
     MAC_QT_DIR=${QT_INSTALLATION_PATH}/${QT_VERSION_MAC}/clang_64
-else
-    MAC_QT_DIR="${MAC_QT_DIR}"
 fi
 
 MAC_QT_LIBRARYDIR=${MAC_QT_DIR}/lib
@@ -35,8 +33,6 @@ MAC_QT_LIBRARYDIR=${MAC_QT_DIR}/lib
 # Trying to find required Homebrew Boost libs
 if [[ -z "${BOOST_VERSION_MAC}" ]]; then
     BOOST_VERSION_MAC=1.73.0
-else
-    BOOST_VERSION_MAC="${BOOST_VERSION_MAC}"
 fi
 BOOST_INCLUDEDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/include
 BOOST_LIBRARYDIR=/usr/local/Cellar/boost/${BOOST_VERSION_MAC}/lib
