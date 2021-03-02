@@ -44,7 +44,7 @@ RUN cd /filesToUpload \
         --user aliascash \
         --security-token "${GITHUB_CI_TOKEN}" \
         --repo "${ALIAS_REPOSITORY}" \
-        --tag "${ALIAS_RELEASE}" \
+        --tag "${ALIAS_RELEASE}-${GIT_COMMIT}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
         ${REPLACE_EXISTING_ARCHIVE} \
