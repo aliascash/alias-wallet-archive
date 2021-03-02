@@ -136,6 +136,10 @@ jobs:
           VSDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise'
           CMAKEDIR: 'C:\Program Files\CMake\bin'
           VCPKGDIR: ${{ github.workspace }}/vcpkg
+
+      - name: Check directory content
+        run: dir
+
       - name: Create zip archive
         uses: papeloto/action-zip@v1
         with:
