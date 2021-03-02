@@ -136,15 +136,9 @@ jobs:
           VSDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise'
           CMAKEDIR: 'C:\Program Files\CMake\bin'
           VCPKGDIR: ${{ github.workspace }}/vcpkg
-
-      - name: Check directory content
-        run: dir
-
       - name: Create zip archive
-        uses: papeloto/action-zip@v1
-        with:
-          files: ${{ github.workspace }}/build/
-          dest: ${{ github.workspace }}/Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64-Qt5.12.zip.zip
+        run: |
+          powershell Compress-Archive build Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
       - name: Upload Windows Build
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -152,8 +146,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ github.workspace }}/Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64-Qt5.12.zip.zip
-          asset_name: ${{ github.workspace }}/Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64-Qt5.12.zip.zip
+          asset_path: ${{ github.workspace }}/Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
+          asset_name: ${{ github.workspace }}/Alias-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
           asset_content_type: application/octet-stream
 
   # ==========================================================================
