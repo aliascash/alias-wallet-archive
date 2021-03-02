@@ -116,7 +116,7 @@ jobs:
     needs: prepareRelease
     outputs:
       upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-      github_sha_short: ${{ needs.prepareRelease.outputs.sha8 }}
+      github_sha_short: ${{ needs.prepareRelease.outputs.github_sha_short }}
     steps:
       - uses: actions/checkout@v2
         with:
