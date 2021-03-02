@@ -177,7 +177,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ github.workspace }}/Alias-icon-colour-03.svg
+          asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
           asset_name: Alias-Icon2.svg
           asset_content_type: application/octet-stream
 
@@ -201,6 +201,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ github.workspace }}/Alias-icon-colour-03.svg
+          asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
           asset_name: Alias-Icon.svg
           asset_content_type: application/octet-stream
