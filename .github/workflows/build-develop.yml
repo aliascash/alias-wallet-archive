@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag_name: Build${{ github.run_number }}-${{ steps.slug.outputs.sha8 }}
-          release_name: Continuous build \#${{ github.run_number }}
+          release_name: "Continuous build #${{ github.run_number }}"
           body: |
             Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
             - tbd: Artifact checksums
@@ -114,6 +114,9 @@ jobs:
   buildWindows:
     runs-on: windows-latest
     needs: prepareRelease
+    outputs:
+      upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
+      github_sha_short: ${{ needs.prepareRelease.outputs.sha8 }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -218,7 +221,7 @@ jobs:
       - name: Download content to install
         uses: carlosperate/download-file-action@v1.0.3
         with:
-          file-url: https://github.com/aliascash/alias-wallet/releases/download/Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}/Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
+          file-url: https://github.com/aliascash/alias-wallet/releases/download/Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}/Alias-Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64.zip
           file-name: Alias.zip
           location: ${{ github.workspace }}
 
@@ -241,7 +244,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
+          upload_url: ${{ needs.buildWindows.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/windows/Alias-Installer.exe
-          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64-Installer.exe
+          asset_name: Alias-Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.exe
           asset_content_type: application/octet-stream
