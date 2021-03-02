@@ -200,3 +200,48 @@ jobs:
           asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
           asset_name: Alias-Icon.svg
           asset_content_type: application/octet-stream
+
+  # ==========================================================================
+  # Create Windows installer
+  # Based on the content of https://github.com/aliascash/installer
+  createWindowsInstaller:
+    runs-on: windows-latest
+    needs: buildWindows
+    steps:
+      # Get installer repo content
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          repository: aliascash/installer
+
+      # Download installable content...
+      - name: Download content to install
+        uses: carlosperate/download-file-action@v1.0.3
+        with:
+          file-url: https://github.com/aliascash/alias-wallet/releases/download/Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}/Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
+          file-name: Alias.zip
+          location: ${{ github.workspace }}
+
+      # ... and extract it
+      - name: Extract content to install
+        run: 7z x -o"${{ github.workspace }}/windows/content" "${{ github.workspace }}/Alias.zip"
+
+      # Create installer
+      - name: Create Windows installer
+        uses: joncloud/makensis-action@v3.4
+        with:
+          arguments: "/V4"
+          additional-plugin-paths: "${{ github.workspace }}/windows/plugins"
+          script-file: "windows/Alias.nsi"
+
+      # Upload the installer to Github
+      - name: Upload installer
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/windows/Alias-Installer.exe
+          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64-Installer.exe
+          asset_content_type: application/octet-stream
