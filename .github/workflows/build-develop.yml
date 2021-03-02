@@ -16,18 +16,20 @@ jobs:
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: build${{ github.run_number }}-${{ steps.slug.outputs.sha8 }}
-          release_name: CI build ${{ github.run_number }}
+          tag_name: Build${{ github.run_number }}-${{ steps.slug.outputs.sha8 }}
+          release_name: Continuous build \#${{ github.run_number }}
           body: |
-            Continuous integration build
-            - This is build #${{ github.run_number }}
-            - Lets see how it works :-)
+            Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
+            - tbd: Artifact checksums
           draft: false
           prerelease: true
 
@@ -102,9 +104,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg
-          asset_name: Alias-build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
+          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
           asset_content_type: application/octet-stream
 
   # ==========================================================================
@@ -145,9 +147,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/Alias.zip
-          asset_name: Alias-build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
+          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
           asset_content_type: application/octet-stream
 
   # ==========================================================================
@@ -170,7 +172,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
           asset_name: Alias-Icon2.svg
           asset_content_type: application/octet-stream
@@ -194,7 +196,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }} # This pulls from the prepareRelease step before, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
           asset_name: Alias-Icon.svg
           asset_content_type: application/octet-stream
