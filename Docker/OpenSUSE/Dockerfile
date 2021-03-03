@@ -50,6 +50,7 @@ RUN cd /filesToUpload \
         --file "/filesToUpload/${ARCHIVE}" \
         ${REPLACE_EXISTING_ARCHIVE} \
  && sha256sum /filesToUpload/${ARCHIVE} | awk '{ print $1 }' > /filesToUpload/${ARCHIVE_CHKSUM} \
+ && cat /filesToUpload/${ARCHIVE_CHKSUM} \
  && github-release upload \
         --user aliascash \
         --security-token "${GITHUB_CI_TOKEN}" \
