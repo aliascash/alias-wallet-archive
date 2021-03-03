@@ -5,6 +5,7 @@ on:
       - 'master'
       - 'develop'
       - '*android*'
+      - 'githubActionsRefactoring'
 jobs:
   # ==========================================================================
   # Build all x86 Linux flavours
