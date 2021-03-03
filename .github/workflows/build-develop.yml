@@ -157,7 +157,7 @@ jobs:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.sha256
-          asset_content_type: application/octet-stream
+          asset_content_type: text/plain
 
   # ==========================================================================
   # Build Windows version
@@ -206,7 +206,7 @@ jobs:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/Alias.zip
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
-          asset_content_type: application/octet-stream
+          asset_content_type: application/zip
       - name: Upload Windows checksum file
         id: upload-release-checksum
         uses: actions/upload-release-asset@v1
@@ -216,7 +216,7 @@ jobs:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/Alias.sha256
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.sha256
-          asset_content_type: application/octet-stream
+          asset_content_type: text/plain
 
   # ==========================================================================
   # Create Windows installer
@@ -277,4 +277,4 @@ jobs:
           upload_url: ${{ needs.buildWindows.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/windows/Alias-Installer.sha256
           asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.sha256
-          asset_content_type: application/octet-stream
+          asset_content_type: text/plain
