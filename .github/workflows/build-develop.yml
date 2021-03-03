@@ -11,7 +11,7 @@ jobs:
   prepareRelease:
     runs-on: ubuntu-latest
     outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      upload_url: ${{ steps.create_release.outputs.url }}
       github_sha_short: ${{ steps.slug.outputs.sha8 }}
       alias_release: ${{ steps.determine_release.outputs.alias_release }}
     steps:
@@ -37,19 +37,47 @@ jobs:
           else
               echo "::set-output name=alias_release::Build${{ github.run_number }}"
           fi
-      - name: Create Github Release
+
+      # First create the plain release, so the upload URL could be exported
+      - name: Create release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.determine_release.outputs.alias_release }}
-          release_name: "Build #${{ github.run_number }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # If we're on 'master', use ReleaseNotes.md
+      - name: Releasenotes from master
+        id: create_release_master
+        uses: softprops/action-gh-release@v1
+        if: steps.extract_branch.outputs.branch == 'master'
+        with:
+          tag_name: ${{ steps.determine_release.outputs.alias_release }}
+          name: "Release ${{ steps.determine_release.outputs.alias_release }} (Build #${{ github.run_number }})"
+          body_path: ${{ github.workspace }}/ReleaseNotes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # If we're on 'develop', use simple text directly
+      - name: Releasenotes from Develop
+        id: create_release_develop
+        uses: softprops/action-gh-release@v1
+        if: steps.extract_branch.outputs.branch != 'master'
+        with:
+          tag_name: ${{ steps.determine_release.outputs.alias_release }}
+          name: "Continuous build #${{ github.run_number }}"
           body: |
             Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
-            - tbd: Artifact checksums
+            - To verify checksums see dedicated checksum files for each download
           draft: false
           prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ==========================================================================
   # Build all x86 Linux flavours
@@ -118,46 +146,50 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.12.10'
           setup-python: 'false'
           modules: 'qtwebengine'
+
       - name: Install dependencies
         run: |
           curl -L https://bintray.com/homebrew/bottles/download_file?file_path=boost-1.74.0.high_sierra.bottle.tar.gz -o boost-1.74.0.high_sierra.bottle.tar.gz
           brew install -f boost-1.74.0.high_sierra.bottle.tar.gz
           brew install berkeley-db@4
+
       - name: Build MacOS binaries
         run: ./scripts/cmake-build-mac.sh -g
         env:
           MAC_QT_DIR: ${{ env.Qt5_DIR }}
           BOOST_VERSION_MAC: 1.74.0
-      - name: Create MacOS dmg checksum file
+
+      - name: Create MacOS dmg sha256 checksum file
         run: |
           shasum -a 256 ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg | awk '{ print $1 }' > ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
           cat ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
+
       - name: Upload MacOS Build
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
-          asset_content_type: application/octet-stream
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
+
       - name: Upload MacOS checksum file
         id: upload-release-checksum
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.sha256
-          asset_content_type: text/plain
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
 
   # ==========================================================================
   # Build Windows version
@@ -172,18 +204,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.12.9'
           setup-python: 'false'
           modules: 'qtwebengine'
+
       - name: Install vcpkg and packages with cache
         uses: lukka/run-vcpkg@v6
         with:
           vcpkgArguments: 'berkeleydb boost leveldb openssl'
           vcpkgGitCommitId: a037d826492039db9d58af47a1e1248037d15f40
           vcpkgTriplet: x64-windows
+
       - name: Build Windows binaries
         run: ./scripts/cmake-build-win.bat
         env:
@@ -192,31 +227,32 @@ jobs:
           VSDIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise'
           CMAKEDIR: 'C:\Program Files\CMake\bin'
           VCPKGDIR: ${{ github.workspace }}/vcpkg
-      - name: Create zip archive
+
+      - name: Create zip archive and sha256 checksum
         run: |
           powershell Compress-Archive build/Alias Alias.zip
           powershell "(Get-FileHash Alias.zip).Hash > Alias.sha256"
           type Alias.sha256
+
       - name: Upload Windows Build
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/Alias.zip
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/Alias.zip
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
-          asset_content_type: application/zip
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
+
       - name: Upload Windows checksum file
         id: upload-release-checksum
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/Alias.sha256
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/Alias.sha256
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.sha256
-          asset_content_type: text/plain
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
 
   # ==========================================================================
   # Create Windows installer
@@ -259,22 +295,20 @@ jobs:
       # Upload the installer to Github
       - name: Upload installer
         id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.buildWindows.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/windows/Alias-Installer.exe
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/windows/Alias-Installer.exe
           asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.exe
-          asset_content_type: application/octet-stream
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
 
       - name: Upload installer checksum
         id: upload-release-checksum
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ needs.buildWindows.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/windows/Alias-Installer.sha256
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.workspace }}/windows/Alias-Installer.sha256
           asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.sha256
-          asset_content_type: text/plain
+          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          overwrite: true
