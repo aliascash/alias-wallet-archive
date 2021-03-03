@@ -52,7 +52,7 @@ RUN cd /filesToUpload \
         ${REPLACE_EXISTING_ARCHIVE} \
  && sha256sum /filesToUpload/${ARCHIVE} | awk '{ print $1 }' > /filesToUpload/${ARCHIVE_CHKSUM} \
  && github-release upload \
-        --user HLXEasy \
+        --user aliascash \
         --security-token "${GITHUB_CI_TOKEN}" \
         --repo "${ALIAS_REPOSITORY}" \
         --tag "${ALIAS_RELEASE}" \
