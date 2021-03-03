@@ -147,7 +147,7 @@ jobs:
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
           asset_content_type: application/octet-stream
       - name: Upload MacOS checksum file
-        id: upload-release-asset
+        id: upload-release-checksum
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -205,7 +205,7 @@ jobs:
           asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
           asset_content_type: application/octet-stream
       - name: Upload Windows checksum file
-        id: upload-release-asset
+        id: upload-release-checksum
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -265,7 +265,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload installer checksum
-        id: upload-release-asset
+        id: upload-release-checksum
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
