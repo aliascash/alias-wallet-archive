@@ -43,7 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ steps.determine_release.outputs.alias_release }}-${{ steps.slug.outputs.sha8 }}
+          tag_name: ${{ steps.determine_release.outputs.alias_release }}
           release_name: "Build #${{ github.run_number }}"
           body: |
             Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
@@ -209,7 +209,7 @@ jobs:
       - name: Download content to install
         uses: carlosperate/download-file-action@v1.0.3
         with:
-          file-url: https://github.com/aliascash/alias-wallet/releases/download/${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}/Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64.zip
+          file-url: https://github.com/aliascash/alias-wallet/releases/download/${{ needs.buildWindows.outputs.alias_release }}/Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64.zip
           file-name: Alias.zip
           location: ${{ github.workspace }}
 
