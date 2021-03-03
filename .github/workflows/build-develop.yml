@@ -135,7 +135,9 @@ jobs:
           MAC_QT_DIR: ${{ env.Qt5_DIR }}
           BOOST_VERSION_MAC: 1.74.0
       - name: Create MacOS dmg checksum file
-        run: sha256sum ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg | awk '{ print $1 }' > ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
+        run: |
+          shasum -a 256 ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg | awk '{ print $1 }' > ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
+          cat ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.sha256
       - name: Upload MacOS Build
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -193,7 +195,8 @@ jobs:
       - name: Create zip archive
         run: |
           powershell Compress-Archive build/Alias Alias.zip
-          powershell (Get-FileHash Alias.zip).Hash > Alias.sha256
+          powershell "(Get-FileHash Alias.zip).Hash > Alias.sha256"
+          type Alias.sha256
       - name: Upload Windows Build
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -250,7 +253,8 @@ jobs:
 
       - name: Create installer checksum file
         run: |
-          powershell (Get-FileHash ${{ github.workspace }}/windows/Alias-Installer.exe).Hash > ${{ github.workspace }}/windows/Alias-Installer.sha256
+          powershell "(Get-FileHash ${{ github.workspace }}/windows/Alias-Installer.exe).Hash > ${{ github.workspace }}/windows/Alias-Installer.sha256"
+          type ${{ github.workspace }}/windows/Alias-Installer.sha256
 
       # Upload the installer to Github
       - name: Upload installer
