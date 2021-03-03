@@ -193,55 +193,6 @@ jobs:
           asset_content_type: application/octet-stream
 
   # ==========================================================================
-  # Dummy-Build A
-  buildDummyA:
-    runs-on: ubuntu-latest
-    needs: prepareRelease
-    steps:
-      - uses: actions/checkout@v1
-      - name: Run a one-line script
-        run: echo Hello, world!
-      - name: Run a multi-line script
-        run: |
-          echo Sleep 10s...
-          sleep 10
-          echo Now go ahead!
-      - name: Upload Release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
-          asset_name: Alias-Icon2.svg
-          asset_content_type: application/octet-stream
-
-  # ==========================================================================
-  # Dummy-Build B
-  buildDummyB:
-    runs-on: ubuntu-latest
-    needs: prepareRelease
-    steps:
-      - uses: actions/checkout@v1
-      - name: Run a one-line script
-        run: echo Hello, world!
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-      - name: Upload Release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/src/qt/res/icons/alias-app.svg
-          asset_name: Alias-Icon.svg
-          asset_content_type: application/octet-stream
-
-  # ==========================================================================
   # Create Windows installer
   # Based on the content of https://github.com/aliascash/installer
   createWindowsInstaller:
