@@ -2,8 +2,9 @@ name: Develop
 on:
   push:
     branches:
-      - develop
       - githubActionsRefactoring
+      - develop
+      - master
 jobs:
   # ==========================================================================
   # Create Github tag/release and export short SHA of current HEAD
@@ -12,21 +13,38 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
       github_sha_short: ${{ steps.slug.outputs.sha8 }}
+      alias_release: ${{ steps.determine_release.outputs.alias_release }}
     steps:
+      - uses: actions/checkout@v1
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
       - name: Get current date
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
-      - name: Create Release
+      - name: Extract branch name
+        id: extract_branch
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: Set Alias release/tag name
+        id: determine_release
+        run: |
+          if [[ ${{ steps.extract_branch.outputs.branch }} = master ]] ; then
+              majorVersion=$(grep CLIENT_VERSION_MAJOR ${{ github.workspace }}/CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r' | sed 's/ //g')
+              minorVersion=$(grep CLIENT_VERSION_MINOR ${{ github.workspace }}/CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r' | sed 's/ //g')
+              bugfixVersion=$(grep CLIENT_VERSION_REVISION ${{ github.workspace }}/CMakeLists.txt | head -n1 | cut -d ' ' -f2 | sed 's/)//g' | tr -d '\\n' | tr -d '\\r' | sed 's/ //g')
+              echo "::set-output name=alias_release::$(printf '%s.%s.%s' $majorVersion $minorVersion $bugfixVersion)"
+          else
+              echo "::set-output name=alias_release::Build${{ github.run_number }}"
+          fi
+      - name: Create Github Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: Build${{ github.run_number }}-${{ steps.slug.outputs.sha8 }}
-          release_name: "Continuous build #${{ github.run_number }}"
+          tag_name: ${{ steps.determine_release.outputs.alias_release }}-${{ steps.slug.outputs.sha8 }}
+          release_name: "Build #${{ github.run_number }}"
           body: |
             Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
             - tbd: Artifact checksums
@@ -53,7 +71,7 @@ jobs:
           --build-arg BUILD_THREADS=2
           --build-arg GITHUB_CI_TOKEN=${{ secrets.GITHUB_TOKEN }}
           --build-arg GIT_COMMIT=${{ needs.prepareRelease.outputs.github_sha_short }}
-          --build-arg ALIAS_RELEASE=Build${{ github.run_number }}
+          --build-arg ALIAS_RELEASE=${{ needs.prepareRelease.outputs.alias_release }}
           --build-arg REPLACE_EXISTING_ARCHIVE=--replace
           .
         env:
@@ -85,7 +103,7 @@ jobs:
           --build-arg BUILD_THREADS=2
           --build-arg GITHUB_CI_TOKEN=${{ secrets.GITHUB_TOKEN }}
           --build-arg GIT_COMMIT=${{ needs.prepareRelease.outputs.github_sha_short }}
-          --build-arg ALIAS_RELEASE=Build${{ github.run_number }}
+          --build-arg ALIAS_RELEASE=${{ needs.prepareRelease.outputs.alias_release }}
           --build-arg REPLACE_EXISTING_ARCHIVE=--replace
           .
         env:
@@ -124,7 +142,7 @@ jobs:
         with:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet/Alias.dmg
-          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
+          asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Mac.dmg
           asset_content_type: application/octet-stream
 
   # ==========================================================================
@@ -135,6 +153,7 @@ jobs:
     outputs:
       upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
       github_sha_short: ${{ needs.prepareRelease.outputs.github_sha_short }}
+      alias_release: ${{ needs.prepareRelease.outputs.alias_release }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -170,7 +189,7 @@ jobs:
         with:
           upload_url: ${{ needs.prepareRelease.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/Alias.zip
-          asset_name: Alias-Build${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
+          asset_name: Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.prepareRelease.outputs.github_sha_short }}-Win64.zip
           asset_content_type: application/octet-stream
 
   # ==========================================================================
@@ -239,7 +258,7 @@ jobs:
       - name: Download content to install
         uses: carlosperate/download-file-action@v1.0.3
         with:
-          file-url: https://github.com/aliascash/alias-wallet/releases/download/Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}/Alias-Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64.zip
+          file-url: https://github.com/aliascash/alias-wallet/releases/download/${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}/Alias-${{ needs.prepareRelease.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64.zip
           file-name: Alias.zip
           location: ${{ github.workspace }}
 
@@ -264,5 +283,5 @@ jobs:
         with:
           upload_url: ${{ needs.buildWindows.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/windows/Alias-Installer.exe
-          asset_name: Alias-Build${{ github.run_number }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.exe
+          asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.exe
           asset_content_type: application/octet-stream
