@@ -232,6 +232,7 @@ jobs:
         run: |
           powershell Compress-Archive build/Alias Alias.zip
           powershell "(Get-FileHash Alias.zip).Hash > Alias.sha256"
+          powershell "(Get-Content Alias.sha256) | Out-File Alias.sha256 -Encoding ascii"
           type Alias.sha256
 
       - name: Upload Windows Build
@@ -290,6 +291,7 @@ jobs:
       - name: Create installer checksum file
         run: |
           powershell "(Get-FileHash ${{ github.workspace }}/windows/Alias-Installer.exe).Hash > ${{ github.workspace }}/windows/Alias-Installer.sha256"
+          powershell "(Get-Content ${{ github.workspace }}/windows/Alias-Installer.sha256) | Out-File ${{ github.workspace }}/windows/Alias-Installer.sha256 -Encoding ascii"
           type ${{ github.workspace }}/windows/Alias-Installer.sha256
 
       # Upload the installer to Github
