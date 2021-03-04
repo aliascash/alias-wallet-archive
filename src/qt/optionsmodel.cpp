@@ -221,6 +221,20 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         case Language:
             settings.setValue("language", value);
+
+            // As long as the real strings of the choosen language are used to filter transactions and notifications,
+            // this workaround is neccessary. Otherwise the transaction list will be empty after a language change and
+            // wallet restart.
+            visibleTransactions.clear();
+            visibleTransactions.append("*");
+            settings.setValue("visibleTransactions", visibleTransactions);
+            bActivateAllTransactiontypesAfterLanguageSwitch = true;
+
+            notifications.clear();
+            notifications.append("*");
+            settings.setValue("notifications", notifications);
+            bActivateAllNotificationsAfterLanguageSwitch = true;
+
             break;
         case RowsPerPage: {
             nRowsPerPage = value.toInt();
@@ -229,12 +243,24 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             }
             break;
         case Notifications: {
-            notifications = value.toStringList();
+            if (bActivateAllNotificationsAfterLanguageSwitch) {
+                notifications.clear();
+                notifications.append("*");
+                bActivateAllNotificationsAfterLanguageSwitch = false;
+            } else {
+                notifications = value.toStringList();
+            }
             settings.setValue("notifications", notifications);
             }
             break;
         case VisibleTransactions: {
-            visibleTransactions = value.toStringList();
+            if (bActivateAllTransactiontypesAfterLanguageSwitch) {
+                visibleTransactions.clear();
+                visibleTransactions.append("*");
+                bActivateAllTransactiontypesAfterLanguageSwitch = false;
+            } else {
+                visibleTransactions = value.toStringList();
+            }
             settings.setValue("visibleTransactions", visibleTransactions);
             emit visibleTransactionsChanged(visibleTransactions);
             }

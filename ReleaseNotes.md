@@ -44,6 +44,11 @@ updated will not be able to create transactions on the Alias V3 network.
 SPDX-License-Identifier: MIT
 
 ### Changelog
+## 4.4.0 (released 2021-??-??)
+- [#14](https://github.com/aliascash/alias-wallet/issues/14)
+  Localization of main wallet
+- Localization of installer and Shell-UI
+
 ## 4.3.1 (released 2020-12-08)
 - Update to Qt 5.12.10 (Mac)
 - [#227](https://github.com/aliascash/alias-wallet/issues/227) On startup, always require password if wallet is encrypted.

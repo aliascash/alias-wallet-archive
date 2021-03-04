@@ -243,7 +243,7 @@ SpectreGUI::~SpectreGUI()
 void SpectreGUI::pageLoaded(bool ok)
 {
     uiReady = true;
-    initMessage(splashScreen, "..Start UI..");
+    initMessage(splashScreen, tr("..Start UI..").toStdString());
 
     // Create the tray icon (or setup the dock icon)
     if (!initialized) createTrayIcon();
@@ -260,7 +260,7 @@ void SpectreGUI::pageLoaded(bool ok)
     bridge->populateTransactionTable();
     bridge->populateAddressTable();
 
-    initMessage(splashScreen, ".Start UI.");
+    initMessage(splashScreen, tr(".Start UI.").toStdString());
     {
         LOCK2(cs_main, pwalletMain->cs_wallet);
         walletModel->checkBalanceChanged(true);
@@ -280,7 +280,7 @@ void SpectreGUI::pageLoaded(bool ok)
     runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.only-desktop { display: none !important }'; document.body.appendChild(sheet);"));
 #endif
 
-    initMessage(splashScreen, "Ready!");
+    initMessage(splashScreen, tr("Ready!").toStdString());
     if (splashScreen) splashScreen->finish(this);
     initialized = true;
 
@@ -627,11 +627,12 @@ void SpectreGUI::setNumBlocks(int count, int nTotalBlocks)
         }
 
         tooltip += (tooltip.isEmpty()? "" : "<br>")
-         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3);
+         + (clientModel->isImporting()
+         ? tr("Imported %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3)
+         : tr("Downloaded %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3));
     } else
     {
-        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+        tooltip = clientModel->isImporting() ? tr("Imported %n block(s) of transaction history.", "", count) : tr("Downloaded %n block(s) of transaction history.", "", count);
     }
 
     // Override progressBarLabel text when we have warnings to display

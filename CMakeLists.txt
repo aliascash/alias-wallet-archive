@@ -12,8 +12,8 @@ project(Alias
 
 # The version number.
 set(CLIENT_VERSION_MAJOR 4)
-set(CLIENT_VERSION_MINOR 3)
-set(CLIENT_VERSION_REVISION 1)
+set(CLIENT_VERSION_MINOR 4)
+set(CLIENT_VERSION_REVISION 0)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_GIT_SHA1 "---")
 set(VERSION_STRING "${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_REVISION}.${CLIENT_VERSION_BUILD}")
@@ -195,6 +195,7 @@ if (ENABLE_GUI)
         set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
         set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
         set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
+        set(Qt5LinguistTools_DIR "${QT_CMAKE_MODULE_PATH}/Qt5LinguistTools")
     endif()
 
     # Find includes in corresponding build directories
@@ -246,6 +247,9 @@ if (ENABLE_GUI)
     find_package(Qt5Concurrent)
     message(STATUS "Qt5Concurrent version: ${Qt5Concurrent_VERSION}")
     get_target_property(QtConcurrent_location Qt5::Concurrent LOCATION)
+
+    find_package(Qt5LinguistTools)
+    message(STATUS "Qt5LinguistTools version: ${Qt5LinguistTools_VERSION}")
 
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         # Retrieve the absolute path to qmake and then use that path
