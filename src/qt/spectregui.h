@@ -188,8 +188,6 @@ private slots:
     void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
-    /** Show restart dialog */
-    void restartNotice();
 
     /** Unlock wallet */
     void unlockWallet(WalletModel::UnlockMode unlockMode=WalletModel::UnlockMode::standard);

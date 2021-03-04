@@ -9,7 +9,6 @@
 #include "transactionrecord.h"
 
 #include "aboutdialog.h"
-#include "restartdialog.h"
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "optionsmodel.h"
@@ -348,7 +347,6 @@ void SpectreGUI::createActions()
     connect(quitAction, SIGNAL(triggered()), SLOT(requestShutdown()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(aboutAction, SIGNAL(triggered()), SLOT(aboutClicked()));
-    connect(restartAction, SIGNAL(triggered()), SLOT(restartNotice()));
     connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(optionsAction, SIGNAL(triggered()), SLOT(optionsClicked()));
     connect(toggleHideAction, SIGNAL(triggered()), SLOT(toggleHidden()));
@@ -522,13 +520,6 @@ void SpectreGUI::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void SpectreGUI::aboutClicked()
 {
     AboutDialog dlg;
-    dlg.setModel(clientModel);
-    dlg.exec();
-}
-
-void SpectreGUI::restartNotice()
-{
-    RestartDialog dlg;
     dlg.setModel(clientModel);
     dlg.exec();
 }

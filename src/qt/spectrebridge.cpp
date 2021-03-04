@@ -969,7 +969,8 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
             if(object.contains(optionsModel->optionIDName(option))) {
                 optionsModel->setData(optionsModel->index(option), object.value(optionsModel->optionIDName(option)).toVariant());
                 if (optionsModel->index(option).row() == OptionsModel::Language) {
-                    window->restartNotice();
+                    QMessageBox::warning(window, tr("Please restart wallet"), tr("The used language has changed.\nPlease restart the wallet!"),
+                                          QMessageBox::Ok, QMessageBox::Ok);
                 }
             }
         }

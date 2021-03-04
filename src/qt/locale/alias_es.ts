@@ -1248,21 +1248,6 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     </message>
 </context>
 <context>
-    <name>RestartDialog</name>
-    <message>
-        <location filename="../forms/restartdialog.ui" line="14"/>
-        <source>Please restart wallet</source>
-        <translation>Por favor, reinicie la billetera.</translation>
-    </message>
-    <message>
-        <location filename="../forms/restartdialog.ui" line="170"/>
-        <source>The used language has changed.
-Please restart the wallet!</source>
-        <translation>El idioma utilizado ha cambiado.
-¡Por favor, reinicie la billetera!</translation>
-    </message>
-</context>
-<context>
     <name>SetupWalletWizard</name>
     <message>
         <location filename="../setupwalletwizard.cpp" line="41"/>
@@ -1539,6 +1524,18 @@ El tamaño del anillo de uno no es anónimo.</translation>
         <source>Transaction successfully created.</source>
         <translation>Transacción creada con éxito.</translation>
     </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="972"/>
+        <source>Please restart wallet</source>
+        <translation>Por favor, reinicie la billetera.</translation>
+    </message>
+    <message>
+        <location filename="../spectrebridge.cpp" line="972"/>
+        <source>The used language has changed.
+Please restart the wallet!</source>
+        <translation>El idioma utilizado ha cambiado.
+¡Por favor, reinicie la billetera!</translation>
+    </message>
 </context>
 <context>
     <name>SpectreGUI</name>
@@ -1623,297 +1620,297 @@ El tamaño del anillo de uno no es anónimo.</translation>
         <translation>Otro</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="153"/>
-        <location filename="../spectregui.cpp" line="410"/>
-        <location filename="../spectregui.cpp" line="425"/>
-        <location filename="../spectregui.cpp" line="485"/>
+        <location filename="../spectregui.cpp" line="152"/>
+        <location filename="../spectregui.cpp" line="408"/>
+        <location filename="../spectregui.cpp" line="423"/>
+        <location filename="../spectregui.cpp" line="483"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="153"/>
+        <location filename="../spectregui.cpp" line="152"/>
         <source>Client</source>
         <translation>Cliente</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="247"/>
+        <location filename="../spectregui.cpp" line="246"/>
         <source>..Start UI..</source>
         <translation>...Comienza la UI...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="264"/>
+        <location filename="../spectregui.cpp" line="263"/>
         <source>.Start UI.</source>
         <translation>.Iniciar UI.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="284"/>
+        <location filename="../spectregui.cpp" line="283"/>
         <source>Ready!</source>
         <translation>Listo!</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="314"/>
+        <location filename="../spectregui.cpp" line="313"/>
         <source>E&amp;xit</source>
         <translation>Sa$lida</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="315"/>
+        <location filename="../spectregui.cpp" line="314"/>
         <source>Quit application</source>
         <translation>Salir de la aplicación</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="318"/>
+        <location filename="../spectregui.cpp" line="317"/>
         <source>&amp;About Alias</source>
         <translation>&amp;Acerca de Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="319"/>
+        <location filename="../spectregui.cpp" line="318"/>
         <source>Show information about Alias</source>
         <translation>Mostrar información sobre Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="321"/>
+        <location filename="../spectregui.cpp" line="320"/>
         <source>&amp;Restart Alias</source>
         <translation>&amp;Reiniciar Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="322"/>
+        <location filename="../spectregui.cpp" line="321"/>
         <source>Show notice about required wallet restart</source>
         <translation>Mostrar aviso sobre el reinicio necesario de la billetera</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="324"/>
+        <location filename="../spectregui.cpp" line="323"/>
         <source>About &amp;Qt</source>
         <translation>Acerca de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="325"/>
+        <location filename="../spectregui.cpp" line="324"/>
         <source>Show information about Qt</source>
         <translation>Mostrar información sobre Qt</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="327"/>
+        <location filename="../spectregui.cpp" line="326"/>
         <source>&amp;Options...</source>
         <translation>&amp;Opciones...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="328"/>
+        <location filename="../spectregui.cpp" line="327"/>
         <source>Modify configuration options for Alias</source>
         <translation>Modificar las opciones de configuración de Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="330"/>
+        <location filename="../spectregui.cpp" line="329"/>
         <source>&amp;Show / Hide</source>
         <translation>&amp;Show / Hide</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="331"/>
+        <location filename="../spectregui.cpp" line="330"/>
         <source>&amp;Encrypt Wallet...</source>
         <translation>&amp;Encriptar billetera...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="332"/>
+        <location filename="../spectregui.cpp" line="331"/>
         <source>Encrypt or decrypt wallet</source>
         <translation>Cifrar o descifrar la billetera</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="334"/>
+        <location filename="../spectregui.cpp" line="333"/>
         <source>&amp;Backup Wallet...</source>
         <translation>&amp;Billetera de respaldo...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="335"/>
+        <location filename="../spectregui.cpp" line="334"/>
         <source>Backup wallet to another location</source>
         <translation>Copia de seguridad de la billetera en otra ubicación</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="336"/>
+        <location filename="../spectregui.cpp" line="335"/>
         <source>&amp;Change Passphrase...</source>
         <translation>&amp;Cambiar frase de paso...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="337"/>
+        <location filename="../spectregui.cpp" line="336"/>
         <source>Change the passphrase used for wallet encryption</source>
         <translation>Cambiar la frase de contraseña utilizada para el cifrado del monedero</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="338"/>
+        <location filename="../spectregui.cpp" line="337"/>
         <source>&amp;Unlock Wallet...</source>
         <translation>&amp;Desbloquear la billetera...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="339"/>
+        <location filename="../spectregui.cpp" line="338"/>
         <source>Unlock wallet</source>
         <translation>Desbloquear la billetera</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="340"/>
+        <location filename="../spectregui.cpp" line="339"/>
         <source>&amp;Lock Wallet</source>
         <translation>&amp;Billetera bloqueada</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="341"/>
+        <location filename="../spectregui.cpp" line="340"/>
         <source>Lock wallet</source>
         <translation>Billetera bloqueada</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="345"/>
+        <location filename="../spectregui.cpp" line="344"/>
         <source>&amp;Debug window</source>
         <translation>&amp;Ventana de depuración</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="346"/>
+        <location filename="../spectregui.cpp" line="345"/>
         <source>Open debugging and diagnostic console</source>
         <translation>Abrir la consola de depuración y diagnóstico</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="377"/>
+        <location filename="../spectregui.cpp" line="375"/>
         <source>&amp;File</source>
         <translation>&amp;Archivo</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="383"/>
+        <location filename="../spectregui.cpp" line="381"/>
         <source>&amp;Settings</source>
         <translation>&amp;Configuración</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="391"/>
+        <location filename="../spectregui.cpp" line="389"/>
         <source>&amp;Help</source>
         <translation>&amp;Ayuda</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="410"/>
+        <location filename="../spectregui.cpp" line="408"/>
         <source>Wallet</source>
         <translation>Billetera</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="416"/>
-        <location filename="../spectregui.cpp" line="425"/>
+        <location filename="../spectregui.cpp" line="414"/>
+        <location filename="../spectregui.cpp" line="423"/>
         <source>[testnet]</source>
         <translation>[testnet]</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="574"/>
+        <location filename="../spectregui.cpp" line="572"/>
         <source>%n active connection(s) to Alias network</source>
         <translation><numerusform>%n conexiones activas a la red Alias</numerusform><numerusform>%n conexiones activas a la red Alias</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="594"/>
+        <location filename="../spectregui.cpp" line="592"/>
         <source>block</source>
         <translation>Bloqueo</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="594"/>
+        <location filename="../spectregui.cpp" line="592"/>
         <source>header</source>
         <translation>encabezado</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="595"/>
+        <location filename="../spectregui.cpp" line="593"/>
         <source>blocks</source>
         <translation>bloques</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="595"/>
+        <location filename="../spectregui.cpp" line="593"/>
         <source>headers</source>
         <translation>encabezados</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="604"/>
-        <location filename="../spectregui.cpp" line="624"/>
+        <location filename="../spectregui.cpp" line="602"/>
+        <location filename="../spectregui.cpp" line="622"/>
         <source>Synchronizing with network...</source>
         <translation>Sincronización con la red...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="606"/>
+        <location filename="../spectregui.cpp" line="604"/>
         <source>Downloading filtered blocks...</source>
         <translation>Descarga de bloques filtrados...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="612"/>
+        <location filename="../spectregui.cpp" line="610"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
         <translation>~%1 bloque(s) filtrados restantes (%2% hecho).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="624"/>
+        <location filename="../spectregui.cpp" line="622"/>
         <source>Importing blocks...</source>
         <translation>Importando bloques..</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="629"/>
+        <location filename="../spectregui.cpp" line="627"/>
         <source>~%n block(s) remaining</source>
         <translation><numerusform>%n bloques restantes</numerusform><numerusform>%n bloques restantes</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="643"/>
+        <location filename="../spectregui.cpp" line="641"/>
         <source>Imported %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>Importado %1 de %2 %3 del historial de transacciones (%4% hecho).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="644"/>
+        <location filename="../spectregui.cpp" line="642"/>
         <source>Downloaded %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>Descargado %1 de %2 %3 del historial de transacciones (%4% realizado).</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="647"/>
+        <location filename="../spectregui.cpp" line="645"/>
         <source>Imported %n block(s) of transaction history.</source>
         <translation><numerusform>Importados %n bloques del historial de transacciones.</numerusform><numerusform>Importados %n bloques del historial de transacciones.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="647"/>
+        <location filename="../spectregui.cpp" line="645"/>
         <source>Downloaded %n block(s) of transaction history.</source>
         <translation><numerusform>Descargado %n bloques del historial de transacciones.</numerusform><numerusform>Descargado %n bloques del historial de transacciones.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="665"/>
+        <location filename="../spectregui.cpp" line="663"/>
         <source>%n second(s) ago</source>
         <translation><numerusform>%n segundos atrás</numerusform><numerusform>%n segundos antes</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="669"/>
+        <location filename="../spectregui.cpp" line="667"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n minutos atrás</numerusform><numerusform>%n minutos antes</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="673"/>
+        <location filename="../spectregui.cpp" line="671"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n horas atrás</numerusform><numerusform>%n horas antes</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="676"/>
+        <location filename="../spectregui.cpp" line="674"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n días antes</numerusform><numerusform>%n días antes</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="683"/>
+        <location filename="../spectregui.cpp" line="681"/>
         <source>Up to date</source>
         <translation>Hasta la fecha</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="700"/>
+        <location filename="../spectregui.cpp" line="698"/>
         <source>Catching up...</source>
         <translation>Poniéndose al día...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="745"/>
+        <location filename="../spectregui.cpp" line="743"/>
         <source>Last received %1 was generated %2.</source>
         <translation>El último recibido %1 fue generado %2.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="800"/>
+        <location filename="../spectregui.cpp" line="798"/>
         <source>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</source>
         <translation>Para procesar esta transacción, se cobrará una tasa de %1 para apoyar la red. Desea enviar la transacción?</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="804"/>
+        <location filename="../spectregui.cpp" line="802"/>
         <source>Confirm transaction fee</source>
         <translation>Confirmar tasa de transacción</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="834"/>
+        <location filename="../spectregui.cpp" line="832"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="837"/>
+        <location filename="../spectregui.cpp" line="835"/>
         <source>Address: %1
 Note: %2
 </source>
@@ -1922,136 +1919,136 @@ Nota: %2
 </translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="838"/>
+        <location filename="../spectregui.cpp" line="836"/>
         <source>Address: %1
 </source>
         <translation>Direccion: %1
 </translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="876"/>
-        <location filename="../spectregui.cpp" line="898"/>
+        <location filename="../spectregui.cpp" line="874"/>
+        <location filename="../spectregui.cpp" line="896"/>
         <source>URI handling</source>
         <translation>Gestión de URIs</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="876"/>
-        <location filename="../spectregui.cpp" line="898"/>
+        <location filename="../spectregui.cpp" line="874"/>
+        <location filename="../spectregui.cpp" line="896"/>
         <source>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</source>
         <translation>El URI no puede ser analizado. Esto puede ser causado por una dirección de Alias inválida o por parámetros URI mal formados.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="933"/>
+        <location filename="../spectregui.cpp" line="931"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
         <translation>El monedero está&lt;b&gt; encriptado&lt;/b&gt; y actualmente&lt;b&gt; está desbloqueado&lt;/b&gt; sólo para las apuestas</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="938"/>
+        <location filename="../spectregui.cpp" line="936"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>La billetera está &lt;b&gt;encriptada&lt;/b&gt; y actualmente &lt;b&gt;desbloqueada&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="959"/>
+        <location filename="../spectregui.cpp" line="957"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>La billetera está &lt;b&gt;encriptada&lt;/b&gt; y actualmente &lt;b&gt;bloqueada&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="991"/>
+        <location filename="../spectregui.cpp" line="989"/>
         <source>Backup Wallet</source>
         <translation>Billetera de respaldo</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="991"/>
+        <location filename="../spectregui.cpp" line="989"/>
         <source>Wallet Data (*.dat)</source>
         <translation>Datos de la billetera (*.dat)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="996"/>
+        <location filename="../spectregui.cpp" line="994"/>
         <source>Backup Failed</source>
         <translation>Copia de respaldo fallida</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="996"/>
+        <location filename="../spectregui.cpp" line="994"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
         <translation>Hubo un error al intentar guardar los datos de la billetera en la nueva ubicación.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1053"/>
+        <location filename="../spectregui.cpp" line="1051"/>
         <source>Lock Wallet</source>
         <translation>Billetera Bloqueada</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1054"/>
+        <location filename="../spectregui.cpp" line="1052"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
         <translation>Error: La billetera debe ser encriptada primero para ser bloqueada.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1123"/>
+        <location filename="../spectregui.cpp" line="1121"/>
         <source>%1 second(s)</source>
         <translation>%1 segundo(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1124"/>
+        <location filename="../spectregui.cpp" line="1122"/>
         <source>%1 minute(s), %2 second(s)</source>
         <translation>%1 minuto(s), %2 segundo(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1125"/>
+        <location filename="../spectregui.cpp" line="1123"/>
         <source>%1 hour(s), %2 minute(s)</source>
         <translation>%1 hora(s), %2 minuto(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1126"/>
+        <location filename="../spectregui.cpp" line="1124"/>
         <source>%1 day(s), %2 hour(s)</source>
         <translation>%1 day(s), %2 hour(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1136"/>
+        <location filename="../spectregui.cpp" line="1134"/>
         <source> (last 72 blocks %1)</source>
         <translation>(últimos 72 bloques %1)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1138"/>
+        <location filename="../spectregui.cpp" line="1136"/>
         <source>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</source>
         <translation>Apuesta. &lt;br/&gt;Su peso es %1 &lt;br/&gt;El peso de la red es %2%3 &lt;br/&gt;El tiempo medio entre recompensas es %4</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1144"/>
+        <location filename="../spectregui.cpp" line="1142"/>
         <source>Not staking because wallet is in thin mode</source>
         <translation>No apostar porque la billetera está en modo delgado</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1145"/>
+        <location filename="../spectregui.cpp" line="1143"/>
         <source>Not staking, staking is disabled</source>
         <translation>No hay apuestas, las apuestas están desactivadas</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1146"/>
+        <location filename="../spectregui.cpp" line="1144"/>
         <source>Not staking because wallet is locked</source>
         <translation>No se puede apostar porque la billetera está bloqueada</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1147"/>
+        <location filename="../spectregui.cpp" line="1145"/>
         <source>Not staking because wallet is offline</source>
         <translation>No apostar porque la billetera está desconectada</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1148"/>
+        <location filename="../spectregui.cpp" line="1146"/>
         <source>Not staking because wallet is syncing</source>
         <translation>No se puede apostar porque la billetera se está sincronizando</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1149"/>
+        <location filename="../spectregui.cpp" line="1147"/>
         <source>Initializing staking...</source>
         <translation>Iniciando la apuesta..</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1150"/>
+        <location filename="../spectregui.cpp" line="1148"/>
         <source>Not staking because you don&apos;t have mature coins</source>
         <translation>No apostar por no tener monedas antiguas</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1151"/>
+        <location filename="../spectregui.cpp" line="1149"/>
         <source>Not staking</source>
         <translation>No apostar</translation>
     </message>

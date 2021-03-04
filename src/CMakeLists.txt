@@ -214,7 +214,6 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/forms/askpassphrasedialog.ui
             ${CMAKE_CURRENT_LIST_DIR}/qt/forms/coincontroldialog.ui
             ${CMAKE_CURRENT_LIST_DIR}/qt/forms/editaddressdialog.ui
-            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/restartdialog.ui
             ${CMAKE_CURRENT_LIST_DIR}/qt/forms/rpcconsole.ui
             ${CMAKE_CURRENT_LIST_DIR}/qt/forms/transactiondescdialog.ui
 
@@ -240,7 +239,6 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
-            ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
             ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
@@ -273,7 +271,6 @@ if (ENABLE_GUI)
             ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
-            ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
             ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
@@ -427,7 +424,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
-                ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
@@ -461,7 +457,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
@@ -557,7 +552,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
-                ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
@@ -591,7 +585,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/qt/restartdialog.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
