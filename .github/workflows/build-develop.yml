@@ -300,7 +300,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ github.workspace }}/windows/Alias-Installer.exe
           asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.exe
-          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          tag: ${{ needs.buildWindows.outputs.alias_release }}
           overwrite: true
 
       - name: Upload installer checksum
@@ -310,5 +310,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ github.workspace }}/windows/Alias-Installer.sha256
           asset_name: Alias-${{ needs.buildWindows.outputs.alias_release }}-${{ needs.buildWindows.outputs.github_sha_short }}-Win64-Installer.sha256
-          tag: ${{ needs.prepareRelease.outputs.alias_release }}
+          tag: ${{ needs.buildWindows.outputs.alias_release }}
           overwrite: true
