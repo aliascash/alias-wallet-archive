@@ -317,9 +317,6 @@ void SpectreGUI::createActions()
     aboutAction = new QAction(QIcon(":/icons/spectre"), tr("&About Alias"), this);
     aboutAction->setToolTip(tr("Show information about Alias"));
     aboutAction->setMenuRole(QAction::AboutRole);
-    restartAction = new QAction(QIcon(":/icons/spectre"), tr("&Restart Alias"), this);
-    restartAction->setToolTip(tr("Show notice about required wallet restart"));
-    restartAction->setMenuRole(QAction::PreferencesRole);
     aboutQtAction = new QAction(QIcon(":/trolltech/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);

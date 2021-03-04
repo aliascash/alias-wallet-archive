@@ -93,7 +93,6 @@ private:
 
     QAction *quitAction;
     QAction *aboutAction;
-    QAction *restartAction;
     QAction *optionsAction;
     QAction *toggleHideAction;
     QAction *exportAction;
