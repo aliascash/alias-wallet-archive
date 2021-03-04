@@ -1545,21 +1545,6 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     </message>
 </context>
 <context>
-    <name>RestartDialog</name>
-    <message>
-        <location filename="../forms/restartdialog.ui" line="14"/>
-        <source>Please restart wallet</source>
-        <translation>Please restart wallet</translation>
-    </message>
-    <message>
-        <location filename="../forms/restartdialog.ui" line="170"/>
-        <source>The used language has changed.
-Please restart the wallet!</source>
-        <translation>The used language has changed.
-Please restart the wallet!</translation>
-    </message>
-</context>
-<context>
     <name>SetupWalletWizard</name>
     <message>
         <location filename="../setupwalletwizard.cpp" line="51"/>
@@ -1930,442 +1915,432 @@ Please restart the wallet!</translation>
         <translation>Other</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="170"/>
-        <location filename="../spectregui.cpp" line="555"/>
+        <location filename="../spectregui.cpp" line="169"/>
+        <location filename="../spectregui.cpp" line="550"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="170"/>
+        <location filename="../spectregui.cpp" line="169"/>
         <source>Client</source>
         <translation>Client</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="223"/>
+        <location filename="../spectregui.cpp" line="222"/>
         <source>...Start UI...</source>
         <translation>...Start UI...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="355"/>
+        <location filename="../spectregui.cpp" line="354"/>
         <source>Ready!</source>
         <translation>Ready!</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="385"/>
+        <location filename="../spectregui.cpp" line="384"/>
         <source>E&amp;xit</source>
         <translation>E&amp;xit</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="386"/>
+        <location filename="../spectregui.cpp" line="385"/>
         <source>Quit application</source>
         <translation>Quit application</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="389"/>
+        <location filename="../spectregui.cpp" line="388"/>
         <source>&amp;About Alias</source>
         <translation>&amp;About Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="390"/>
+        <location filename="../spectregui.cpp" line="389"/>
         <source>Show information about Alias</source>
         <translation>Show information about Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="392"/>
-        <source>&amp;Restart Alias</source>
-        <translation>&amp;Restart Alias</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="393"/>
-        <source>Show notice about required wallet restart</source>
-        <translation>Show notice about required wallet restart</translation>
-    </message>
-    <message>
-        <location filename="../spectregui.cpp" line="395"/>
+        <location filename="../spectregui.cpp" line="391"/>
         <source>About &amp;Qt</source>
         <translation>About &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="396"/>
+        <location filename="../spectregui.cpp" line="392"/>
         <source>Show information about Qt</source>
         <translation>Show information about Qt</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="398"/>
+        <location filename="../spectregui.cpp" line="394"/>
         <source>&amp;Options...</source>
         <translation>&amp;Options...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="399"/>
+        <location filename="../spectregui.cpp" line="395"/>
         <source>Modify configuration options for Alias</source>
         <translation>Modify configuration options for Alias</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="401"/>
+        <location filename="../spectregui.cpp" line="397"/>
         <source>&amp;Show / Hide</source>
         <translation>&amp;Show / Hide</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="402"/>
+        <location filename="../spectregui.cpp" line="398"/>
         <source>&amp;Encrypt Wallet...</source>
         <translation>&amp;Encrypt Wallet...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="403"/>
+        <location filename="../spectregui.cpp" line="399"/>
         <source>Encrypt or decrypt wallet</source>
         <translation>Encrypt or decrypt wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="405"/>
+        <location filename="../spectregui.cpp" line="401"/>
         <source>&amp;Backup Wallet...</source>
         <translation>&amp;Backup Wallet...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="406"/>
+        <location filename="../spectregui.cpp" line="402"/>
         <source>Backup wallet to another location</source>
         <translation>Backup wallet to another location</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="407"/>
+        <location filename="../spectregui.cpp" line="403"/>
         <source>&amp;Change Passphrase...</source>
         <translation>&amp;Change Passphrase...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="408"/>
+        <location filename="../spectregui.cpp" line="404"/>
         <source>Change the passphrase used for wallet encryption</source>
         <translation>Change the passphrase used for wallet encryption</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="409"/>
+        <location filename="../spectregui.cpp" line="405"/>
         <source>&amp;Unlock Wallet...</source>
         <translation>&amp;Unlock Wallet...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="410"/>
+        <location filename="../spectregui.cpp" line="406"/>
         <source>Unlock wallet</source>
         <translation>Unlock wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="411"/>
+        <location filename="../spectregui.cpp" line="407"/>
         <source>&amp;Lock Wallet</source>
         <translation>&amp;Lock Wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="412"/>
+        <location filename="../spectregui.cpp" line="408"/>
         <source>Lock wallet</source>
         <translation>Lock wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="416"/>
+        <location filename="../spectregui.cpp" line="412"/>
         <source>&amp;Debug window</source>
         <translation>&amp;Debug window</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="417"/>
+        <location filename="../spectregui.cpp" line="413"/>
         <source>Open debugging and diagnostic console</source>
         <translation>Open debugging and diagnostic console</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="448"/>
+        <location filename="../spectregui.cpp" line="443"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="454"/>
+        <location filename="../spectregui.cpp" line="449"/>
         <source>&amp;Settings</source>
         <translation>&amp;Settings</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="462"/>
+        <location filename="../spectregui.cpp" line="457"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="642"/>
+        <location filename="../spectregui.cpp" line="631"/>
         <source>%n active connection(s) to Alias network</source>
         <translation><numerusform>%n active connection(s) to Alias network</numerusform><numerusform>%n active connection(s) to Alias network</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="668"/>
+        <location filename="../spectregui.cpp" line="657"/>
         <source>block</source>
         <translation>block</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="668"/>
+        <location filename="../spectregui.cpp" line="657"/>
         <source>header</source>
         <translation>header</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="669"/>
+        <location filename="../spectregui.cpp" line="658"/>
         <source>blocks</source>
         <translation>blocks</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="669"/>
+        <location filename="../spectregui.cpp" line="658"/>
         <source>headers</source>
         <translation>headers</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="681"/>
-        <location filename="../spectregui.cpp" line="701"/>
+        <location filename="../spectregui.cpp" line="670"/>
+        <location filename="../spectregui.cpp" line="690"/>
         <source>Synchronizing with network...</source>
         <translation>Synchronizing with network...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="683"/>
+        <location filename="../spectregui.cpp" line="672"/>
         <source>Downloading filtered blocks...</source>
         <translation>Downloading filtered blocks...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="689"/>
+        <location filename="../spectregui.cpp" line="678"/>
         <source>~%1 filtered block(s) remaining (%2% done).</source>
         <translation>~%1 filtered block(s) remaining (%2% done).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="701"/>
+        <location filename="../spectregui.cpp" line="690"/>
         <source>Importing blocks...</source>
         <translation>Importing blocks...</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="706"/>
+        <location filename="../spectregui.cpp" line="695"/>
         <source>~%n block(s) remaining</source>
         <translation><numerusform>~%n block(s) remaining</numerusform><numerusform>~%n block(s) remaining</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="720"/>
+        <location filename="../spectregui.cpp" line="709"/>
         <source>Imported %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>Imported %1 of %2 %3 of transaction history (%4% done).</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="721"/>
+        <location filename="../spectregui.cpp" line="710"/>
         <source>Downloaded %1 of %2 %3 of transaction history (%4% done).</source>
         <translation>Downloaded %1 of %2 %3 of transaction history (%4% done).</translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="724"/>
+        <location filename="../spectregui.cpp" line="713"/>
         <source>Imported %n block(s) of transaction history.</source>
         <translation><numerusform>Imported %n block(s) of transaction history.</numerusform><numerusform>Imported %n block(s) of transaction history.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="724"/>
+        <location filename="../spectregui.cpp" line="713"/>
         <source>Downloaded %n block(s) of transaction history.</source>
         <translation><numerusform>Downloaded %n block(s) of transaction history.</numerusform><numerusform>Downloaded %n block(s) of transaction history.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="742"/>
+        <location filename="../spectregui.cpp" line="731"/>
         <source>%n second(s) ago</source>
         <translation><numerusform>%n second(s) ago</numerusform><numerusform>%n second(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="746"/>
+        <location filename="../spectregui.cpp" line="735"/>
         <source>%n minute(s) ago</source>
         <translation><numerusform>%n minute(s) ago</numerusform><numerusform>%n minute(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="750"/>
+        <location filename="../spectregui.cpp" line="739"/>
         <source>%n hour(s) ago</source>
         <translation><numerusform>%n hour(s) ago</numerusform><numerusform>%n hour(s) ago</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../spectregui.cpp" line="753"/>
+        <location filename="../spectregui.cpp" line="742"/>
         <source>%n day(s) ago</source>
         <translation><numerusform>%n day(s) ago</numerusform><numerusform>%n day(s) ago</numerusform></translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="760"/>
+        <location filename="../spectregui.cpp" line="749"/>
         <source>Up to date</source>
         <translation>Up to date</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="777"/>
+        <location filename="../spectregui.cpp" line="766"/>
         <source>Catching up...</source>
         <translation>Catching up...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="822"/>
+        <location filename="../spectregui.cpp" line="811"/>
         <source>Last received %1 was generated %2.</source>
         <translation>Last received %1 was generated %2.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="877"/>
+        <location filename="../spectregui.cpp" line="866"/>
         <source>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</source>
         <translation>To process this transaction, a fee of %1 will be charged to support the network. Do you want to submit the transaction?</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="881"/>
+        <location filename="../spectregui.cpp" line="870"/>
         <source>Confirm transaction fee</source>
         <translation>Confirm transaction fee</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="954"/>
-        <location filename="../spectregui.cpp" line="992"/>
+        <location filename="../spectregui.cpp" line="943"/>
+        <location filename="../spectregui.cpp" line="981"/>
         <source>URI handling</source>
         <translation>URI handling</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="954"/>
-        <location filename="../spectregui.cpp" line="992"/>
+        <location filename="../spectregui.cpp" line="943"/>
+        <location filename="../spectregui.cpp" line="981"/>
         <source>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</source>
         <translation>URI can not be parsed! This can be caused by an invalid Alias address or malformed URI parameters.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1027"/>
+        <location filename="../spectregui.cpp" line="1016"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</source>
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt; for staking only</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1032"/>
+        <location filename="../spectregui.cpp" line="1021"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</source>
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;unlocked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1053"/>
+        <location filename="../spectregui.cpp" line="1042"/>
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1088"/>
+        <location filename="../spectregui.cpp" line="1077"/>
         <source>wallet.dat</source>
         <translation>wallet.dat</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1088"/>
-        <location filename="../spectregui.cpp" line="1090"/>
+        <location filename="../spectregui.cpp" line="1077"/>
+        <location filename="../spectregui.cpp" line="1079"/>
         <source>Wallet Data (*.dat)</source>
         <translation>Wallet Data (*.dat)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1090"/>
+        <location filename="../spectregui.cpp" line="1079"/>
         <source>Backup Wallet</source>
         <translation>Backup Wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1096"/>
+        <location filename="../spectregui.cpp" line="1085"/>
         <source>Backup Failed</source>
         <translation>Backup Failed</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1096"/>
+        <location filename="../spectregui.cpp" line="1085"/>
         <source>There was an error trying to save the wallet data to the new location.</source>
         <translation>There was an error trying to save the wallet data to the new location.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1098"/>
+        <location filename="../spectregui.cpp" line="1087"/>
         <source>Backup Completed</source>
         <translation>Backup Completed</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1098"/>
+        <location filename="../spectregui.cpp" line="1087"/>
         <source>Wallet data successfully saved to new location.</source>
         <translation>Wallet data successfully saved to new location.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1153"/>
+        <location filename="../spectregui.cpp" line="1142"/>
         <source>Lock Wallet</source>
         <translation>Lock Wallet</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1154"/>
+        <location filename="../spectregui.cpp" line="1143"/>
         <source>Error: Wallet must first be encrypted to be locked.</source>
         <translation>Error: Wallet must first be encrypted to be locked.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1212"/>
+        <location filename="../spectregui.cpp" line="1201"/>
         <source>%1 second(s)</source>
         <translation>%1 second(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1213"/>
+        <location filename="../spectregui.cpp" line="1202"/>
         <source>%1 minute(s), %2 second(s)</source>
         <translation>%1 minute(s), %2 second(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1214"/>
+        <location filename="../spectregui.cpp" line="1203"/>
         <source>%1 hour(s), %2 minute(s)</source>
         <translation>%1 hour(s), %2 minute(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1215"/>
+        <location filename="../spectregui.cpp" line="1204"/>
         <source>%1 day(s), %2 hour(s)</source>
         <translation>%1 day(s), %2 hour(s)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1225"/>
+        <location filename="../spectregui.cpp" line="1214"/>
         <source> (last 72 blocks %1)</source>
         <translation> (last 72 blocks %1)</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1227"/>
+        <location filename="../spectregui.cpp" line="1216"/>
         <source>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</source>
         <translation>Staking.&lt;br/&gt;Your weight is %1&lt;br/&gt;Network weight is %2%3&lt;br/&gt;Average time between rewards is %4</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1237"/>
+        <location filename="../spectregui.cpp" line="1226"/>
         <source>Not staking because wallet is in thin mode</source>
         <translation>Not staking because wallet is in thin mode</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1238"/>
+        <location filename="../spectregui.cpp" line="1227"/>
         <source>Not staking, staking is disabled</source>
         <translation>Not staking, staking is disabled</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1239"/>
+        <location filename="../spectregui.cpp" line="1228"/>
         <source>Not staking because wallet is locked</source>
         <translation>Not staking because wallet is locked</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1240"/>
+        <location filename="../spectregui.cpp" line="1229"/>
         <source>Not staking because wallet is offline</source>
         <translation>Not staking because wallet is offline</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1241"/>
+        <location filename="../spectregui.cpp" line="1230"/>
         <source>Not staking because wallet is syncing</source>
         <translation>Not staking because wallet is syncing</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1242"/>
+        <location filename="../spectregui.cpp" line="1231"/>
         <source>Initializing staking...</source>
         <translation>Initializing staking...</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1243"/>
+        <location filename="../spectregui.cpp" line="1232"/>
         <source>Not staking because you don&apos;t have mature coins</source>
         <translation>Not staking because you don&apos;t have mature coins</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1244"/>
+        <location filename="../spectregui.cpp" line="1233"/>
         <source>Not staking</source>
         <translation>Not staking</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1259"/>
+        <location filename="../spectregui.cpp" line="1248"/>
         <source>Disable Battery Optimization</source>
         <translation>Disable Battery Optimization</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1260"/>
+        <location filename="../spectregui.cpp" line="1249"/>
         <source>App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias.</source>
         <translation>App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias.</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1284"/>
+        <location filename="../spectregui.cpp" line="1273"/>
         <source>Reset Blockchain Data</source>
         <translation>Reset Blockchain Data</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1285"/>
+        <location filename="../spectregui.cpp" line="1274"/>
         <source>Are you sure you want to reset the blockchain data?&lt;br&gt;&lt;br&gt;- Application will stop&lt;br&gt;- Blockchain data deleted&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
         <translation>Are you sure you want to reset the blockchain data?&lt;br&gt;&lt;br&gt;- Application will stop&lt;br&gt;- Blockchain data deleted&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1303"/>
+        <location filename="../spectregui.cpp" line="1292"/>
         <source>Rewind Blockchain Data</source>
         <translation>Rewind Blockchain Data</translation>
     </message>
     <message>
-        <location filename="../spectregui.cpp" line="1304"/>
+        <location filename="../spectregui.cpp" line="1293"/>
         <source>Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.&lt;br&gt;&lt;br&gt;- Last 100 blocks will be deleted&lt;br&gt;- Application will stop&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
         <translation>Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.&lt;br&gt;&lt;br&gt;- Last 100 blocks will be deleted&lt;br&gt;- Application will stop&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</translation>
     </message>
@@ -3683,14 +3658,12 @@ Please restart the wallet!</translation>
         <translation>Immature</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
-        <translation>Connect service...</translation>
+        <translation type="vanished">Connect service...</translation>
     </message>
     <message>
-        <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
-        <translation>Loading block index...</translation>
+        <translation type="vanished">Loading block index...</translation>
     </message>
 </context>
 <context>
