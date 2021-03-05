@@ -160,6 +160,17 @@ jobs:
           brew install -f boost-1.74.0.high_sierra.bottle.tar.gz
           brew install berkeley-db@4
 
+      - name: Cache build dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build-dependencies-mac
+        with:
+          path: |
+            ${{ github.workspace }}/cmake-build-cmdline-mac/*
+            !${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet
+            ~/Archives/Tor/Tor.libraries.MacOS.zip
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Build MacOS binaries
         run: ./scripts/cmake-build-mac.sh -g
         env:

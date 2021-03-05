@@ -53,17 +53,31 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: '5.12.10'
           setup-python: 'false'
           modules: 'qtwebengine'
+
       - name: Install dependencies
         run: |
           curl -L https://bintray.com/homebrew/bottles/download_file?file_path=boost-1.74.0.high_sierra.bottle.tar.gz -o boost-1.74.0.high_sierra.bottle.tar.gz
           brew install -f boost-1.74.0.high_sierra.bottle.tar.gz
           brew install berkeley-db@4
+
+      - name: Cache build dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-build-dependencies-mac
+        with:
+          path: |
+            ${{ github.workspace }}/cmake-build-cmdline-mac/*
+            !${{ github.workspace }}/cmake-build-cmdline-mac/aliaswallet
+            ~/Archives/Tor/Tor.libraries.MacOS.zip
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Build MacOS binaries
         run: ./scripts/cmake-build-mac.sh -g
         env:
