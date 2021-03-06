@@ -8,7 +8,7 @@ jobs:
   # ==========================================================================
   # Build Android app
   buildARM:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         distro: [ Android/Dockerfile ]

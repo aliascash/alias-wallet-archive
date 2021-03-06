@@ -83,7 +83,7 @@ jobs:
   # ==========================================================================
   # Build all x86 Linux flavours
   buildLinux:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: prepareRelease
     strategy:
       matrix:
