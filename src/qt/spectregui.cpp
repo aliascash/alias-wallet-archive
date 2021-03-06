@@ -652,7 +652,7 @@ void SpectreGUI::setNumBlocks()
     int nNodeMode = blockInfo.nNodeMode();
     int nNodeState = blockInfo.nNodeState();
     fConnectionInit = false;
-    
+
     // -- translation (tr()) makes it difficult to neatly pick block/header
     static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
     static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
@@ -663,7 +663,7 @@ void SpectreGUI::setNumBlocks()
     int count = blockInfo.numBlocks();
     int nTotalBlocks = blockInfo.numBlocksOfPeers();
     float nPercentageDone = -1;
-    
+
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {

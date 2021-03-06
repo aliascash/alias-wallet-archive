@@ -184,6 +184,8 @@ signals:
 
     void listAnonOutputsResult(QVariantMap result);
 
+    void updateElement(QString sourceString, QString translatedString);
+
 private:
     ClientModel *clientModel;
     WalletModel *walletModel;

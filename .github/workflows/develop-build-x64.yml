@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+
+name: Build x64
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro: [ CentOS/Dockerfile, Debian/Dockerfile_Buster, Debian/Dockerfile_Stretch, Fedora/Dockerfile, OpenSUSE/Dockerfile, Ubuntu/Dockerfile_18_04, Ubuntu/Dockerfile_20_04 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Build docker images
+        run: docker build -t local -f Docker/${{ matrix.distro }}_noUpload --build-arg BUILD_THREADS=2 .
+        env:
+          GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}

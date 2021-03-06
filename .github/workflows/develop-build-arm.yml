@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+
+name: Build ARM
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro: [ RaspberryPi/Dockerfile_Buster]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+      - name: Build docker images
+        run: docker build -t local -f Docker/${{ matrix.distro }}_noUpload --build-arg BUILD_THREADS=2 .
+        env:
+          GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}

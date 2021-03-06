@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: © 2021 Alias Developers
+# SPDX-License-Identifier: MIT
+
+name: Build MacOS
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+            version: '5.12.10'
+            setup-python: 'false'
+            modules: 'qtwebengine'
+      - name: Install dependencies
+        run: |
+          curl -L https://bintray.com/homebrew/bottles/download_file?file_path=boost-1.74.0.high_sierra.bottle.tar.gz -o boost-1.74.0.high_sierra.bottle.tar.gz
+          brew install -f boost-1.74.0.high_sierra.bottle.tar.gz
+          brew install berkeley-db@4
+      - name: Build MacOS binaries
+        run: ./scripts/cmake-build-mac.sh -g
+        env:
+          MAC_QT_DIR: ${{ env.Qt5_DIR }}
+          BOOST_VERSION_MAC: 1.74.0
