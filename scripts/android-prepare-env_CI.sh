@@ -7,7 +7,8 @@ ownLocation="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if [[ ! -e /alias-wallet-ui ]] ; then
     cd /
-    git clone https://github.com/aliascash/alias-wallet-ui --branch android
+    # Revert to branch "android" before merge back to develop_android
+    git clone https://github.com/aliascash/alias-wallet-ui --branch multiLanguageSupport_android
 fi
 cd "${ownLocation}"/..
 DIR_UI=/alias-wallet-ui
