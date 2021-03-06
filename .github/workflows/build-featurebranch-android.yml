@@ -1,4 +1,4 @@
-name: Featurebranch
+name: Android-Featurebranch
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
 jobs:
   # ==========================================================================
   # Build Android app
-  buildARM:
+  buildAndroid:
     runs-on: self-hosted
     strategy:
       matrix:

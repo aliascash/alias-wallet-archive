@@ -1,4 +1,4 @@
-name: Develop
+name: Android-Develop
 on:
   push:
     branches:
@@ -81,8 +81,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ==========================================================================
-  # Build all x86 Linux flavours
-  buildLinux:
+  # Build Android app
+  buildAndroid:
     runs-on: self-hosted
     needs: prepareRelease
     strategy:
