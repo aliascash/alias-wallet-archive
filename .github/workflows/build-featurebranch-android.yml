@@ -16,6 +16,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
+
+      - name: Provide keystore
+        run: cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ${{ github.workspace }}/
+
       - name: Build docker images
         run: docker build -t local -f Docker/${{ matrix.distro }}_noUpload --build-arg BUILD_THREADS=8 .
         env:
