@@ -1,10 +1,8 @@
 name: Featurebranch
 on:
   push:
-    branches-ignore:
-      - 'master'
-      - 'develop'
-      - 'develop_android'
+    branches:
+      - android_*
 
 jobs:
   # ==========================================================================
