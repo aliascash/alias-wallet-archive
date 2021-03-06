@@ -20,8 +20,17 @@ jobs:
       - name: Provide keystore
         run: cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ${{ github.workspace }}/
 
-      - name: Build docker images
-        run: docker build -t local -f Docker/${{ matrix.distro }}_noUpload --build-arg BUILD_THREADS=8 .
+      - name: Build app using Docker
+        run: >
+          docker build
+          -t local-${{ github.run_number }}
+          -f Docker/${{ matrix.distro }}_noUpload
+          --rm
+          --build-arg BUILD_THREADS=8
+          .
         env:
           GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+
+      - name: Cleanup Docker images
+        run: docker rmi local-${{ github.run_number }}
