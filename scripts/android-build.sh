@@ -23,6 +23,7 @@ fi
     --gradle \
     --aab \
     --jarsigner \
+    --verbose \
     --sign /etc/ssl/certs/alias-sign-keystore.jks upload \
     --storepass "${KEYSTORE_PASS}" \
       | tee ../Android-Build-$(date +%Y-%m-%d_%H%M%S).log ; \
