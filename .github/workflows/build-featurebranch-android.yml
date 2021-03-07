@@ -24,7 +24,7 @@ jobs:
       - name: Build app using Docker
         run: >
           docker build
-          -t local-${{ github.run_number }}-${{ steps.get_short_sha.github_sha_short }}
+          -t local-${{ github.run_number }}-${{ steps.get_short_sha.outputs.github_sha_short }}
           -f Docker/Android/Dockerfile_noUpload
           --rm
           --build-arg BUILD_THREADS=8
@@ -32,4 +32,4 @@ jobs:
           .
 
       - name: Cleanup Docker images
-        run: docker rmi local-${{ github.run_number }}-${{ steps.get_short_sha.github_sha_short }}
+        run: docker rmi local-${{ github.run_number }}-${{ steps.get_short_sha.outputs.github_sha_short }}
