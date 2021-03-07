@@ -104,13 +104,11 @@ jobs:
           --rm
           --build-arg BUILD_THREADS=8
           --build-arg GITHUB_CI_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          --build-arg KEYSTORE_PASS=${{ secrets.KEYSTORE_PASS }}
           --build-arg GIT_COMMIT=${{ needs.prepareRelease.outputs.github_sha_short }}
           --build-arg ALIAS_RELEASE=${{ needs.prepareRelease.outputs.alias_release }}
           --build-arg REPLACE_EXISTING_ARCHIVE=--replace
           .
-        env:
-          GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
 
       - name: Cleanup Docker images
         run: docker rmi local-${{ github.run_number }}

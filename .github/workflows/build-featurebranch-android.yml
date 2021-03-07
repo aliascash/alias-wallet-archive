@@ -27,10 +27,8 @@ jobs:
           -f Docker/${{ matrix.distro }}_noUpload
           --rm
           --build-arg BUILD_THREADS=8
+          --build-arg KEYSTORE_PASS=${{ secrets.KEYSTORE_PASS }}
           .
-        env:
-          GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
 
 #      - name: Cleanup Docker images
 #        run: docker rmi local-${{ github.run_number }}
