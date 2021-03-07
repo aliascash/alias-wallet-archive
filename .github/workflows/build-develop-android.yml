@@ -85,9 +85,6 @@ jobs:
   buildAndroid:
     runs-on: self-hosted
     needs: prepareRelease
-    strategy:
-      matrix:
-        distro: [ Android/Dockerfile ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -99,8 +96,8 @@ jobs:
       - name: Build app using Docker
         run: >
           docker build
-          -t local
-          -f Docker/${{ matrix.distro }}
+          -t local-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}
+          -f Docker/Android/Dockerfile
           --rm
           --build-arg BUILD_THREADS=8
           --build-arg GITHUB_CI_TOKEN=${{ secrets.GITHUB_TOKEN }}
@@ -111,4 +108,4 @@ jobs:
           .
 
       - name: Cleanup Docker images
-        run: docker rmi local-${{ github.run_number }}
+        run: docker rmi local-${{ github.run_number }}-${{ needs.prepareRelease.outputs.github_sha_short }}

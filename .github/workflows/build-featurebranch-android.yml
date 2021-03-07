@@ -9,13 +9,14 @@ jobs:
   # Build Android app
   buildAndroid:
     runs-on: self-hosted
-    strategy:
-      matrix:
-        distro: [ Android/Dockerfile ]
     steps:
       - uses: actions/checkout@v2
         with:
           persist-credentials: false
+
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=github_sha_short::$(echo ${GITHUB_SHA} | cut -c1-8)"
 
       - name: Provide keystore
         run: cp /etc/ssl/certs/AliasWalletAndroidKeyStore.jks ${{ github.workspace }}/
@@ -23,12 +24,12 @@ jobs:
       - name: Build app using Docker
         run: >
           docker build
-          -t local-${{ github.run_number }}
-          -f Docker/${{ matrix.distro }}_noUpload
+          -t local-${{ github.run_number }}-${{ outputs.github_sha_short }}
+          -f Docker/Android/Dockerfile_noUpload
           --rm
           --build-arg BUILD_THREADS=8
           --build-arg KEYSTORE_PASS=${{ secrets.KEYSTORE_PASS }}
           .
 
-#      - name: Cleanup Docker images
-#        run: docker rmi local-${{ github.run_number }}
+      - name: Cleanup Docker images
+        run: docker rmi local-${{ github.run_number }}-${{ outputs.github_sha_short }}
