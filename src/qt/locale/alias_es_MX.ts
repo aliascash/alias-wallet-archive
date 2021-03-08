@@ -3658,10 +3658,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
         <translation>Inmaduro</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
         <translation type="unfinished"/>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
         <translation type="unfinished"/>
     </message>

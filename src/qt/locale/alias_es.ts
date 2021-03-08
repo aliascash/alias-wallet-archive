@@ -3650,12 +3650,14 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
         <translation>Inmaduro</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
-        <translation type="vanished">Conecta el servicio...</translation>
+        <translation>Conecta el servicio...</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
-        <translation type="vanished">Cargando el índice de bloques...</translation>
+        <translation>Cargando el índice de bloques...</translation>
     </message>
 </context>
 <context>

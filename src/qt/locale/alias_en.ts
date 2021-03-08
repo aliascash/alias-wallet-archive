@@ -3658,12 +3658,14 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <translation>Immature</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
-        <translation type="vanished">Connect service...</translation>
+        <translation>Connect service...</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
-        <translation type="vanished">Loading block index...</translation>
+        <translation>Loading block index...</translation>
     </message>
 </context>
 <context>

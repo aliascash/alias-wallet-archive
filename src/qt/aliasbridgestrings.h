@@ -208,6 +208,12 @@ static const char *html_strings[] = {
     QT_TRANSLATE_NOOP("alias-bridge", "Reserved"),
     QT_TRANSLATE_NOOP("alias-bridge", "Unconfirmed"),
     QT_TRANSLATE_NOOP("alias-bridge", "Immature"),
+    QT_TRANSLATE_NOOP("alias-bridge", "Connect service..."),
+    QT_TRANSLATE_NOOP("alias-bridge", "Loading block index..."),
+//    QT_TRANSLATE_NOOP("alias-bridge", ""),
+//    QT_TRANSLATE_NOOP("alias-bridge", ""),
+//    QT_TRANSLATE_NOOP("alias-bridge", ""),
+//    QT_TRANSLATE_NOOP("alias-bridge", ""),
 //    QT_TRANSLATE_NOOP("alias-bridge", ""),
 //    QT_TRANSLATE_NOOP("alias-bridge", ""),
 

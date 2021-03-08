@@ -3658,12 +3658,14 @@ Dies bedeutet eine Gebühr von min %2 ist benötigt</translation>
         <translation>Am reifen</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
-        <translation type="vanished">Verbinde Service...</translation>
+        <translation>Verbinde Service...</translation>
     </message>
     <message>
+        <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
-        <translation type="vanished">Lade Block-Index...</translation>
+        <translation>Lade Block-Index...</translation>
     </message>
 </context>
 <context>
