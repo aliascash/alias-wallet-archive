@@ -68,6 +68,7 @@ void OptionsModel::Init()
         SoftSetBoolArg("-thinfullindex", settings.value("fThinFullIndex").toBool());
     if (settings.contains("nThinIndexWindow"))
         SoftSetArg("-thinindexmax", settings.value("nThinIndexWindow").toString().toStdString());
+    settings.sync();
 }
 
 int OptionsModel::rowCount() const
@@ -78,6 +79,7 @@ int OptionsModel::rowCount() const
 QVariant OptionsModel::data(const int row) const
 {
     QSettings settings;
+    settings.sync();
     switch(row)
     {
     case StartAtStartup:
@@ -306,6 +308,7 @@ bool OptionsModel::setData(const int row, const QVariant & value)
     default:
         break;
     }
+    settings.sync();
     return successful;
 }
 
