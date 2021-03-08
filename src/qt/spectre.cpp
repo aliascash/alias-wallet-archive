@@ -218,6 +218,16 @@ bool AndroidAppInit(int argc, char* argv[])
     QAndroidService app(argc, argv);
     qInfo() << "Android service starting...";
 
+    app.setOrganizationName("The Alias Foundation");
+    app.setOrganizationDomain("alias.cash");
+    if(GetBoolArg("-testnet")) // Separate UI settings for testnet
+        app.setApplicationName("Alias-testnet");
+    else
+        app.setApplicationName("Alias");
+
+    // ... then GUI settings:
+    OptionsModel optionsModel;
+
     // Get desired locale (e.g. "de_DE") from command line or use system locale
     QString lang_territory = QString::fromStdString(GetArg("-lang", QLocale::system().name().toStdString()));
     QString lang = lang_territory;
