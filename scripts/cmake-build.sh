@@ -891,6 +891,13 @@ fi
 LIB_ARCH_SUFFIX=x64
 if [ "$(uname -m)" = "aarch64" ] ; then
     LIB_ARCH_SUFFIX=a64
+elif [ -e /bin/file ] ; then
+    # uname -m will say 'x86_64' if the build is running on an x64 host,
+    # even if on an x32 Docker builder. So we need to use another way
+    # to check if we're building on an x32 host or container
+    if file /bin/bash | grep 32-bit -q ; then
+        LIB_ARCH_SUFFIX=x32
+    fi
 fi
 
 FULLBUILD=false
