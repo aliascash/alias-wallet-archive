@@ -153,6 +153,17 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         # We're compiling for ARMv8 like Raspberry Pi
         message(STATUS "Found aarch64, setting Boost architecture to -a64")
         set(Boost_ARCHITECTURE -a64)
+    else()
+        find_program(FILE_FOUND file)
+        if(FILE_FOUND)
+            execute_process(COMMAND file /bin/bash OUTPUT_VARIABLE USED_ARCH)
+            string(FIND "${USED_ARCH}" "32-bit" FOUND32BIT)
+            if (NOT FOUND32BIT MATCHES "-1")
+                # We're compiling for i386
+                message(STATUS "Found 32bit bash, setting Boost architecture to -a32")
+                set(Boost_ARCHITECTURE -a32)
+            endif()
+        endif()
     endif()
 endif()
 
