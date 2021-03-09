@@ -86,7 +86,17 @@ jobs:
     needs: prepareRelease
     strategy:
       matrix:
-        distro: [ CentOS/Dockerfile, Debian/Dockerfile_Buster, Debian/Dockerfile_Stretch, Fedora/Dockerfile, OpenSUSE/Dockerfile, Ubuntu/Dockerfile_18_04, Ubuntu/Dockerfile_20_04 ]
+        distro: [
+            CentOS/Dockerfile,
+            Debian/Dockerfile_Buster,
+            Debian/Dockerfile_Buster_i386,
+            Debian/Dockerfile_Stretch,
+            Fedora/Dockerfile,
+            OpenSUSE/Dockerfile,
+            Ubuntu/Dockerfile_18_04,
+            Ubuntu/Dockerfile_18_04_i386,
+            Ubuntu/Dockerfile_20_04
+        ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -110,9 +120,6 @@ jobs:
   buildARM:
     runs-on: ubuntu-latest
     needs: prepareRelease
-    strategy:
-      matrix:
-        distro: [ RaspberryPi/Dockerfile_Buster]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -127,7 +134,7 @@ jobs:
         run: >
           docker build
           -t local
-          -f Docker/${{ matrix.distro }}
+          -f Docker/RaspberryPi/Dockerfile_Buster
           --build-arg BUILD_THREADS=2
           --build-arg GITHUB_CI_TOKEN=${{ secrets.GITHUB_TOKEN }}
           --build-arg GIT_COMMIT=${{ needs.prepareRelease.outputs.github_sha_short }}

@@ -13,7 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        distro: [ CentOS/Dockerfile, Debian/Dockerfile_Buster, Debian/Dockerfile_Stretch, Fedora/Dockerfile, OpenSUSE/Dockerfile, Ubuntu/Dockerfile_18_04, Ubuntu/Dockerfile_20_04 ]
+        distro: [
+            CentOS/Dockerfile,
+            Debian/Dockerfile_Buster,
+            Debian/Dockerfile_Buster_i386,
+            Debian/Dockerfile_Stretch,
+            Fedora/Dockerfile,
+            OpenSUSE/Dockerfile,
+            Ubuntu/Dockerfile_18_04,
+            Ubuntu/Dockerfile_18_04_i386,
+            Ubuntu/Dockerfile_20_04
+        ]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -27,9 +37,6 @@ jobs:
   # Build aarch64 version (Raspberry PI ARMv8)
   buildARM:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        distro: [ RaspberryPi/Dockerfile_Buster]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -41,7 +48,7 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: arm64
       - name: Build docker images
-        run: docker build -t local -f Docker/${{ matrix.distro }}_noUpload --build-arg BUILD_THREADS=2 .
+        run: docker build -t local -f Docker/RaspberryPi/Dockerfile_Buster_noUpload --build-arg BUILD_THREADS=2 .
         env:
           GITHUB_CI_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
