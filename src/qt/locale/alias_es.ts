@@ -282,7 +282,7 @@ This product includes software developed by the OpenSSL Project for use in the O
     <message>
         <location filename="../bootstrapwizard.cpp" line="93"/>
         <source>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</source>
-        <translation>Alias Blockchain SetupEsta aplicación necesita los datos de la cadena de bloques para funcionar. Los datos pueden ser sincronizados o validados bloque a bloque, o descargados como bootstrap desde el servidor.</translation>
+        <translation>Alias Blockchain Setup. Esta aplicación necesita los datos de la cadena de bloques para funcionar. Los datos pueden ser sincronizados o validados bloque a bloque, o descargados como bootstrap desde el servidor.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="96"/>

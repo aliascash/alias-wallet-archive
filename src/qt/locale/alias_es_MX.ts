@@ -249,22 +249,22 @@ Este producto incluye software desarrollado por el Proyecto OpenSSL para su uso 
     <message>
         <location filename="../bootstrapwizard.cpp" line="117"/>
         <source>The application has detected that the blockchain data files have not been updated since %1 days.&lt;br&gt;&lt;br&gt;Do you want to bootstrap the blockchain data from scratch?&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the boostrap download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>La aplicación ha detectado que los archivos de datos del blockchain no han sido actualizados desde %1 días.&lt;br&gt;&lt;br&gt;¿Desea arrancar los datos del blockchain desde cero? &lt;br&gt;&lt;br&gt;&lt;strong&gt;Por favor, tenga en cuenta que la descarga de boostrap es de más de 1,5 GB de datos y podría conllevar costes adicionales de tráfico de red.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="122"/>
         <source>The application has detected that the blockchain data files are missing.&lt;br&gt;&lt;br&gt;It is recommended that you bootstrap the blockchain data. Syncing the blockchain instead, might take multiple hours to several days.&lt;br&gt;&lt;br&gt;&lt;strong&gt;Please be aware that the initial download is over 1.5 GB of data and might lead to additional network traffic costs&lt;/strong&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>La aplicación ha detectado que faltan los archivos de datos del blockchain.&lt;br&gt;&lt;br&gt;Se recomienda arrancar los datos del blockchain. La sincronización de la cadena de bloques puede llevar de varias horas a varios días.&lt;br&gt;&lt;br&gt;&lt;strong&gt; Tenga en cuenta que la descarga inicial tiene más de 1,5 GB de datos y puede generar costes adicionales de tráfico de red&lt;/strong&gt;.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="128"/>
         <source>&amp;Download bootstrap</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Descargar bootstrap</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="129"/>
         <source>&amp;Sync &amp;&amp; validate blockchain</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Sync &amp;&amp; validar blockchain</translation>
     </message>
 </context>
 <context>
@@ -272,12 +272,12 @@ Este producto incluye software desarrollado por el Proyecto OpenSSL para su uso 
     <message>
         <location filename="../bootstrapwizard.cpp" line="319"/>
         <source>Set Up Blockchain Data</source>
-        <translation type="unfinished"/>
+        <translation>Configurar los datos de la cadena de bloques</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="322"/>
         <source>Are you sure you want to &lt;strong&gt;synchronize and validate&lt;/strong&gt; the complete blockchain?&lt;br&gt;&lt;br&gt;Synchronizing the blockchain takes up, from several hours on a fast desktop computer, to &lt;strong&gt;several days on a smartphone&lt;/strong&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>¿Estás seguro de que quieres&lt;strong&gt; sincronizar y validar&lt;/strong&gt; la cadena de bloques completa?&lt;br&gt;&lt;br&gt;Sincronizar la cadena de bloques lleva desde varias horas en un ordenador de sobremesa rápido hasta&lt;strong&gt; varios días en un smartphone&lt;/strong&gt;.</translation>
     </message>
 </context>
 <context>
@@ -285,32 +285,32 @@ Este producto incluye software desarrollado por el Proyecto OpenSSL para su uso 
     <message>
         <location filename="../bootstrapwizard.cpp" line="43"/>
         <source>Alias Blockchain Setup</source>
-        <translation type="unfinished"/>
+        <translation>Configuración de Alias Blockchain</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="93"/>
         <source>This app needs the blockchain data to work. The data can be synchronised or validated block by block, or download as bootstrap from the server.</source>
-        <translation type="unfinished"/>
+        <translation>Alias Blockchain Setup. Esta aplicación necesita los datos de la cadena de bloques para funcionar. Los datos pueden ser sincronizados o validados bloque a bloque, o descargados como bootstrap desde el servidor.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="96"/>
         <source>If you have problems with the bootstrap download, make sure you have a good internet connection.</source>
-        <translation type="unfinished"/>
+        <translation>Si tienes problemas con la descarga del bootstrap, asegúrate de tener una buena conexión a Internet.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="99"/>
         <source>The benefit of syncing and validating the blockchain is that you don&apos;t have to trust a central server which provides you the blockchain bootstrap. Instead the complete blockchain will by downloaded and validated block by block from the blockchain network.</source>
-        <translation type="unfinished"/>
+        <translation>La ventaja de sincronizar y validar la cadena de bloques es que no tienes que confiar en un servidor central que te proporcione el arranque de la cadena de bloques. En su lugar, la cadena de bloques completa será descargada y validada bloque a bloque desde la red de cadenas de bloques.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="102"/>
         <source>No help available.</source>
-        <translation type="unfinished"/>
+        <translation>No hay ayuda disponible.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="105"/>
         <source>Blockchain Data Setup Help</source>
-        <translation type="unfinished"/>
+        <translation>Ayuda configuración de datos de la cadena de bloques</translation>
     </message>
 </context>
 <context>
@@ -318,92 +318,92 @@ Este producto incluye software desarrollado por el Proyecto OpenSSL para su uso 
     <message>
         <location filename="../clientmodel.cpp" line="108"/>
         <source>block</source>
-        <translation type="unfinished"/>
+        <translation>bloque</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="108"/>
         <source>header</source>
-        <translation type="unfinished"/>
+        <translation>encabezado</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="109"/>
         <source>blocks</source>
-        <translation type="unfinished"/>
+        <translation>bloques</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="109"/>
         <source>headers</source>
-        <translation type="unfinished"/>
+        <translation>encabezados</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="117"/>
         <source>%1 nodes connected</source>
-        <translation type="unfinished"/>
+        <translation>%1 nodos conectados</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="121"/>
         <source>last sync %1 %2 %3.</source>
-        <translation type="unfinished"/>
+        <translation>última sincronización %1 %2 %3.</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="150"/>
         <source>%1% done.</source>
-        <translation type="unfinished"/>
+        <translation>%1% listo.</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="159"/>
         <source>%1%</source>
-        <translation type="unfinished"/>
+        <translation>%1%</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="163"/>
         <source> ~%1 block(s) remaining.</source>
-        <translation type="unfinished"/>
+        <translation> ~%1 bloque(s) restantes.</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="173"/>
         <source>%1 %2 received %3.</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2 recibido %3.</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="184"/>
         <source>Staking</source>
-        <translation type="unfinished"/>
+        <translation>Apostando</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="185"/>
         <source>Expected time for reward </source>
-        <translation type="unfinished"/>
+        <translation>Tiempo previsto de recompensa</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="186"/>
         <source>%1 second(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 segundo(s)</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="187"/>
         <source>%1 minute(s), %2 second(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 minuto(s), %2 segundo(s)</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="188"/>
         <source>%1 hour(s), %2 minute(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 hora(s), %2 minuto(s)</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="189"/>
         <source>%1 day(s), %2 hour(s)</source>
-        <translation type="unfinished"/>
+        <translation>%1 día(s), %2 hora(s)</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="194"/>
         <source>Up to date</source>
-        <translation type="unfinished"/>
+        <translation>Hasta la fecha</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="199"/>
         <source>Synchronizing</source>
-        <translation type="unfinished"/>
+        <translation>Sincronizando</translation>
     </message>
     <message>
         <location filename="../clientmodel.cpp" line="244"/>
@@ -687,87 +687,87 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../bootstrapwizard.cpp" line="168"/>
         <source>Set Up Blockchain Data</source>
-        <translation type="unfinished"/>
+        <translation>Configurar los datos de la cadena de bloques</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="169"/>
         <source>Blockchain bootstrap installation</source>
-        <translation type="unfinished"/>
+        <translation>Instalación del bootstrap de Blockchain</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="171"/>
         <source>Initialize... </source>
-        <translation type="unfinished"/>
+        <translation>Inicializa...</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="178"/>
         <source>&amp;Retry</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Retírelo</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="205"/>
         <source>Initialize...</source>
-        <translation type="unfinished"/>
+        <translation>Inicializa...</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="230"/>
         <source>Bootstrap download failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
-        <translation type="unfinished"/>
+        <translation>La descarga de Bootstrap ha fallado, no hay suficiente espacio libre en este dispositivo.&lt;br&gt;&lt;br&gt;Asegúrate de que tienes suficiente espacio libre y vuelve a intentarlo.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="234"/>
         <source>Bootstrap archive extraction failed because there is not enough free space on this device.&lt;br&gt;&lt;br&gt;Make sure you have enough free space before trying again.</source>
-        <translation type="unfinished"/>
+        <translation>La extracción del archivo de arranque falló, no hay suficiente espacio libre en este dispositivo.&lt;br&gt;&lt;br&gt;Asegúrese de que tiene suficiente espacio libre y vuelve a intentarlo.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="238"/>
         <source>Bootstrap archive extraction failed, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
-        <translation type="unfinished"/>
+        <translation>La extracción del archivo Bootstrap ha fallado, por favor inténtelo de nuevo.&lt;br&gt;&lt;br&gt; Si el error persiste, contacte a un desarrolador.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="242"/>
         <source>Bootstrap hash mismatch, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
-        <translation type="unfinished"/>
+        <translation>El hash de Bootstrap no coincide, por favor inténtelo de nuevo. &lt;br&gt;&lt;br&gt;Si el error persiste, contacte a un desarrollador.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="246"/>
         <source>Bootstrap index file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
-        <translation type="unfinished"/>
+        <translation>Falta el archivo de índice de Bootstrap en el servidor, inténtelo de nuevo. Si el error persiste, contacte a un desarrollador.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="250"/>
         <source>Bootstrap file missing on server, please try again.&lt;br&gt;&lt;br&gt;If the error persists, please contact the developers.</source>
-        <translation type="unfinished"/>
+        <translation>Falta el archivo Bootstrap en el servidor, por favor inténtelo de nuevo.&lt;br&gt;&lt;br&gt; Si el error persiste, contacte a un desarrollador.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="254"/>
         <source>Bootstrap download failed, please try again.&lt;br&gt;&lt;br&gt;Make sure you have a stable internet connection, preferable via ethernet or Wi-Fi.</source>
-        <translation type="unfinished"/>
+        <translation>La descarga de Bootstrap ha fallado, por favor inténtalo de nuevo. &lt;br&gt;&lt;br&gt;Utiliza una conexión a Internet estable, preferiblemente a través de Ethernet o Wi-Fi.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="263"/>
         <source>Bootstrap download aborted by user.</source>
-        <translation type="unfinished"/>
+        <translation>Descarga de Bootstrap abortada por el usuario.</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="271"/>
         <source>Downloading... (%1/%2)</source>
-        <translation type="unfinished"/>
+        <translation>Descargando... (%1/%2)</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="273"/>
         <source>Downloading...</source>
-        <translation type="unfinished"/>
+        <translation>Descargando...</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="280"/>
         <source>Extracting...</source>
-        <translation type="unfinished"/>
+        <translation>Extrayendo...</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="291"/>
         <source>There seems to be a problem with the Bootstrap service, please restart app.</source>
-        <translation type="unfinished"/>
+        <translation>Parece que hay un problema con el servicio de Bootstrap, por favor reinicie la aplicación.</translation>
     </message>
 </context>
 <context>
@@ -775,12 +775,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../bootstrapwizard.cpp" line="299"/>
         <source>Set Up Blockchain Data</source>
-        <translation type="unfinished"/>
+        <translation>Configurar los datos de la cadena de bloques</translation>
     </message>
     <message>
         <location filename="../bootstrapwizard.cpp" line="301"/>
         <source>&lt;strong&gt;Bootstrap finished!&lt;/strong&gt;&lt;br&gt;&lt;br&gt;The blockchain data was successfully downloaded and installed.&lt;/strong&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;¡Bootstrap terminado!&lt;/strong&gt;&lt;br&gt;&lt;br&gt; Los datos de la cadena de bloques se han descargado e instalado con éxito.&lt;/strong&gt;</translation>
     </message>
 </context>
 <context>
@@ -871,7 +871,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="849"/>
         <source>The password protects your private keys.&lt;br&gt;It will be asked on wallet startup and critical operations.&lt;br&gt;&lt;br&gt;Phones with biometric authentication support (eg. fingerprint reader) can set it up later for user-friendly wallet password access.</source>
-        <translation type="unfinished"/>
+        <translation>La contraseña protege sus claves privadas. &lt;br&gt;Se le pedirá al iniciar el monedero y en las operaciones críticas.&lt;br&gt;&lt;br&gt; Los teléfonos con soporte de autenticación biométrica (p. ej., lector de huellas dactilares) pueden configurarlo más tarde para acceder a la contraseña del monedero con facilidad.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="853"/>
@@ -984,7 +984,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="215"/>
         <source>Failed to set permissions to copied wallet.dat: %1</source>
-        <translation type="unfinished"/>
+        <translation>Fallo al establecer los permisos de la copia de wallet.dat: %1</translation>
     </message>
 </context>
 <context>
@@ -1002,12 +1002,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="129"/>
         <source>&amp;Create new wallet</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Crear nuevo monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="130"/>
         <source>&amp;Recover wallet</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Recuperar monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="131"/>
@@ -1020,7 +1020,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="363"/>
         <source>Create New Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Crear nuevo monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="364"/>
@@ -1035,7 +1035,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="367"/>
         <source>You need the Mnemonic Recovery Seed Words to restore this wallet. Write them down and keep them somewhere safe.</source>
-        <translation type="unfinished"/>
+        <translation>Necesitas las Palabras Semilla de la Recuperación Mnemónica para restaurar este monedero. Escríbelas y guárdalas en un lugar seguro.</translation>
     </message>
 </context>
 <context>
@@ -1043,12 +1043,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="225"/>
         <source>Create New Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Crear nuevo monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="226"/>
         <source>Step 1/3: Define language and optional password for your seed.</source>
-        <translation type="unfinished"/>
+        <translation>Paso 1/3: Defina el idioma y la contraseña opcional para su semilla.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="228"/>
@@ -1086,12 +1086,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="501"/>
         <source>Create New Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Crear nuevo monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="502"/>
         <source>Step 3/3: Verify you noted correctly words and (optional) password.</source>
-        <translation type="unfinished"/>
+        <translation>Paso 3/3: Compruebe que ha anotado correctamente las palabras y la contraseña (opcional).</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="504"/>
@@ -1101,7 +1101,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="512"/>
         <source>&lt;br&gt;Enter the &lt;b&gt;first letters&lt;/b&gt; until the word is &lt;b&gt;recognized&lt;/b&gt;:</source>
-        <translation type="unfinished"/>
+        <translation>&lt;br&gt;Introduzca las&lt;b&gt; primeras letras hasta que&lt;b&gt; se reconozca la palabra&lt;/b&gt;:</translation>
     </message>
 </context>
 <context>
@@ -1488,17 +1488,17 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="651"/>
         <source>Recover Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Recuperar monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="652"/>
         <source>Step 2/2: Enter your mnemonic seed words.</source>
-        <translation type="unfinished"/>
+        <translation>Paso 2/2: Introduzca sus palabras semilla mnemotécnicas.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="654"/>
         <source>&lt;br&gt;Enter the &lt;b&gt;first letters&lt;/b&gt; until the word is &lt;b&gt;recognized&lt;/b&gt;:</source>
-        <translation type="unfinished"/>
+        <translation>&lt;br&gt;Introduzca las&lt;b&gt; primeras letras hasta que&lt;b&gt; se reconozca la palabra&lt;/b&gt;:</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="828"/>
@@ -1516,32 +1516,32 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="584"/>
         <source>Recover Wallet</source>
-        <translation type="unfinished"/>
+        <translation>Recuperar monedero</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="585"/>
         <source>Step 1/2: Define language and optional password of your seed.</source>
-        <translation type="unfinished"/>
+        <translation>Paso 1/2: Defina el idioma y la contraseña opcional de su semilla.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="587"/>
         <source>Recover wallet with mnemonic seed words is a two step procedure:&lt;ol&gt;&lt;li&gt;Define language and optional password of your seed.&lt;/li&gt;&lt;li&gt;Enter your seed words.&lt;/li&gt;&lt;/ol&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Recuperar el monedero con palabras semilla mnemotécnicas es un procedimiento de dos pasos:&lt;ol&gt;&lt;li&gt; Defina el idioma y la contraseña opcional de su semilla.&lt;/li&gt;&lt;li&gt; Introduzca sus palabras semilla&lt;/li&gt;&lt;/ol&gt;.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="592"/>
         <source>&amp;Language:</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Idioma:</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="603"/>
         <source>&amp;Seed Password:</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Semilla Contraseña:</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="610"/>
         <source>&amp;Verify Password:</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Verifique la contraseña:</translation>
     </message>
 </context>
 <context>
@@ -1579,12 +1579,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../setupwalletwizard.cpp" line="107"/>
         <source>You have to enter the language and optional password you used when creating the seed words.</source>
-        <translation type="unfinished"/>
+        <translation>Tiene que introducir el idioma y la contraseña opcional que utilizó al crear las palabras clave.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="110"/>
         <source>Please enter your mnemonic seed words. If you get a checksum error but all seed words are valid, the order of the seed words in not correct.</source>
-        <translation type="unfinished"/>
+        <translation>Por favor, introduzca sus palabras semilla mnemotécnicas. Si obtiene un error de suma de comprobación pero todas las palabras clave son válidas, el orden de las palabras clave no es correcto.</translation>
     </message>
     <message>
         <location filename="../setupwalletwizard.cpp" line="113"/>
@@ -1602,12 +1602,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectrebridge.cpp" line="370"/>
         <source>..Start UI..</source>
-        <translation type="unfinished"/>
+        <translation>...Comienza UI...</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="382"/>
         <source>.Start UI.</source>
-        <translation type="unfinished"/>
+        <translation>.Comienza UI.</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="441"/>
@@ -1617,17 +1617,17 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectrebridge.cpp" line="1865"/>
         <source>%1 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="1868"/>
         <source>%1 | %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 | %2</translation>
     </message>
     <message>
         <location filename="../spectrebridge.cpp" line="1869"/>
         <source>%1</source>
-        <translation type="unfinished"/>
+        <translation>%1</translation>
     </message>
 </context>
 <context>
@@ -1636,82 +1636,82 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
         <location filename="../spectreclientbridge.cpp" line="121"/>
         <location filename="../spectreclientbridge.cpp" line="307"/>
         <source>Send Coins</source>
-        <translation type="unfinished"/>
+        <translation>Enviar monedas</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="140"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from your public balance to %2 (%3)</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;%1 &lt;/b&gt;de su saldo público a %2 (%3)</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="144"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from public to private, using address %2 (%3)</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;%1&lt;/b&gt; de público a privado, utilizando la dirección %2 (%3)</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="149"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from your private balance, ring size %2, to %3 (%4)</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;%1&lt;/b&gt; de su saldo privado, talla de anillo %2, a %3 (%4)</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="154"/>
         <source>&lt;b&gt;%1&lt;/b&gt; from private to public, ring size %2, using address %3 (%4)</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;%1 &lt;/b&gt;de privado a público, tamaño de anillo %2, utilizando la dirección %3 (%4)</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="158"/>
         <source>Unknown txn type detected %1.</source>
-        <translation type="unfinished"/>
+        <translation>Se ha detectado un tipo de transmisión desconocido %1.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="165"/>
         <source>Input types must match for all recipients.</source>
-        <translation type="unfinished"/>
+        <translation>Los tipos de entrada deben coincidir para todos los destinatarios.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="173"/>
         <source>Ring sizes must match for all recipients.</source>
-        <translation type="unfinished"/>
+        <translation>Las tallas de los anillos deben coincidir para todos los destinatarios.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="178"/>
         <source>Ring size must be %1.</source>
-        <translation type="unfinished"/>
+        <translation>El tamaño del anillo debe ser %1.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="179"/>
         <source>Ring size outside range [%1, %2].</source>
-        <translation type="unfinished"/>
+        <translation>Tamaño del anillo fuera del rango [%1, %2].</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="187"/>
         <source>Confirm send coins</source>
-        <translation type="unfinished"/>
+        <translation>Confirmar envío de monedas</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="188"/>
         <source>Are you sure you want to convert %1?</source>
-        <translation type="unfinished"/>
+        <translation>¿Estás seguro de que quieres convertir %1?</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="188"/>
         <source>Are you sure you want to send %1?</source>
-        <translation type="unfinished"/>
+        <translation>¿Está seguro de que quiere convertir %1? ¿Está seguro de que quiere enviar %1?</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="189"/>
         <source> and </source>
-        <translation type="unfinished"/>
+        <translation>y</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="206"/>
         <source>The change address is not valid, please recheck.</source>
-        <translation type="unfinished"/>
+        <translation>El cambio de dirección no es válido, por favor, vuelva a comprobarlo.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="218"/>
         <source>Payment not send because wallet is locked.</source>
-        <translation type="unfinished"/>
+        <translation>El pago no se envía porque el monedero está bloqueado.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="231"/>
@@ -1719,117 +1719,117 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
         <location filename="../spectreclientbridge.cpp" line="411"/>
         <location filename="../spectreclientbridge.cpp" line="419"/>
         <source>Core not responding.</source>
-        <translation type="unfinished"/>
+        <translation>El núcleo no responde.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="259"/>
         <source>The recipient address is not valid, please recheck.</source>
-        <translation type="unfinished"/>
+        <translation>La dirección del destinatario no es válida, por favor, vuelva a comprobarla.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="261"/>
         <source>Only ALIAS from your Private balance can be send to a private address.</source>
-        <translation type="unfinished"/>
+        <translation>Sólo los ALIAS de su saldo privado pueden ser enviados a una dirección privada</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="263"/>
         <source>Transfer from Public to Private is only allowed within your account.</source>
-        <translation type="unfinished"/>
+        <translation>La transferencia de Público a Privado sólo se permite dentro de su cuenta.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="265"/>
         <source>Transfer from Private to Public is only allowed within your account.</source>
-        <translation type="unfinished"/>
+        <translation>La transferencia de Privado a Público sólo se permite dentro de su cuenta.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="267"/>
         <source>The amount to pay must be larger than 0.</source>
-        <translation type="unfinished"/>
+        <translation>El importe a pagar debe ser mayor que 0.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="269"/>
         <source>The amount exceeds your balance.</source>
-        <translation type="unfinished"/>
+        <translation>El importe excede su saldo.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="271"/>
         <source>The total exceeds your balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"/>
+        <translation>El total supera su saldo cuando se incluye la comisión de transacción del %1.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="273"/>
         <source>Duplicate address found, can only send to each address once per send operation.</source>
-        <translation type="unfinished"/>
+        <translation>Se ha encontrado una dirección duplicada, sólo se puede enviar a cada dirección una vez por operación de envío.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="275"/>
         <source>Error: Transaction creation failed.</source>
-        <translation type="unfinished"/>
+        <translation>Error: La creación de la transacción ha fallado.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="277"/>
         <source>Error: The transaction was rejected. This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.</source>
-        <translation type="unfinished"/>
+        <translation>Error: La transacción fue rechazada. Esto puede ocurrir si algunas de las monedas de su monedero ya se han gastado, por ejemplo, si ha utilizado una copia de wallet.dat y las monedas se han gastado en la copia pero no se han marcado como gastadas aquí.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="279"/>
         <source>Error: Note is too long.</source>
-        <translation type="unfinished"/>
+        <translation>Error: La nota es demasiado larga.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="281"/>
         <source>Error: Ring Size Error.</source>
-        <translation type="unfinished"/>
+        <translation>Error: Error en el tamaño del anillo.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="283"/>
         <source>Error: Input Type Error.</source>
-        <translation type="unfinished"/>
+        <translation>Error: Error de tipo de entrada.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="285"/>
         <source>Error: Must be in full mode to send anon.</source>
-        <translation type="unfinished"/>
+        <translation>Error: Debe estar en modo completo para enviar anon.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="287"/>
         <source>Error: Invalid Private Address.</source>
-        <translation type="unfinished"/>
+        <translation>Error: Dirección privada no válida.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="289"/>
         <source>Error: Invalid Private Address. Private to public conversion requires a stealth address.</source>
-        <translation type="unfinished"/>
+        <translation>Error: Dirección privada no válida. La conversión de privado a público requiere una dirección oculta</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="291"/>
         <source>The amount exceeds your ALIAS balance.</source>
-        <translation type="unfinished"/>
+        <translation>El importe supera su saldo de ALIAS.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="293"/>
         <source>The total exceeds your private ALIAS balance when the %1 transaction fee is included.</source>
-        <translation type="unfinished"/>
+        <translation>El total supera su saldo privado de ALIAS cuando se incluye la tasa de transacción del %1.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="295"/>
         <source>Error generating transaction.</source>
-        <translation type="unfinished"/>
+        <translation>Error al generar la transacción.</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="297"/>
         <source>Error generating transaction: %1</source>
-        <translation type="unfinished"/>
+        <translation>Error al generar la transacción: %1</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="308"/>
         <source>Transaction successfully created. Fee payed %1</source>
-        <translation type="unfinished"/>
+        <translation>Transacción creada con éxito. Tasa pagada %1</translation>
     </message>
     <message>
         <location filename="../spectreclientbridge.cpp" line="404"/>
         <source>Wallet locked.</source>
-        <translation type="unfinished"/>
+        <translation>Monedero bloqueado.</translation>
     </message>
 </context>
 <context>
@@ -1928,7 +1928,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectregui.cpp" line="222"/>
         <source>...Start UI...</source>
-        <translation type="unfinished"/>
+        <translation>...Comienza la UI...</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="354"/>
@@ -2201,7 +2201,7 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectregui.cpp" line="1077"/>
         <source>wallet.dat</source>
-        <translation type="unfinished"/>
+        <translation>wallet.dat</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1077"/>
@@ -2227,12 +2227,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectregui.cpp" line="1087"/>
         <source>Backup Completed</source>
-        <translation type="unfinished"/>
+        <translation>Copia de seguridad completada</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1087"/>
         <source>Wallet data successfully saved to new location.</source>
-        <translation type="unfinished"/>
+        <translation>Los datos del monedero se han guardado con éxito en la nueva ubicación.</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1142"/>
@@ -2317,32 +2317,32 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../spectregui.cpp" line="1248"/>
         <source>Disable Battery Optimization</source>
-        <translation type="unfinished"/>
+        <translation>Desactivar la optimización de la batería</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1249"/>
         <source>App battery optimization is enabled and might affect staking negatively. For optimal results, please disable battery optimization for Alias.</source>
-        <translation type="unfinished"/>
+        <translation>La optimización de la batería de la aplicación está activada y podría afectar negativamente a las apuestas. Para obtener resultados óptimos, desactive la optimización de la batería para Alias.</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1273"/>
         <source>Reset Blockchain Data</source>
-        <translation type="unfinished"/>
+        <translation>Restablecer los datos de la cadena de bloques</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1274"/>
         <source>Are you sure you want to reset the blockchain data?&lt;br&gt;&lt;br&gt;- Application will stop&lt;br&gt;- Blockchain data deleted&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>¿Seguro que quieres restablecer los datos de la cadena de bloques?&lt;br&gt;&lt;br&gt; - La aplicación se detendrá &lt;br&gt;- Los datos de la cadena de bloques se eliminan&lt;br&gt; - wallet.dat permanece intacto&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1292"/>
         <source>Rewind Blockchain Data</source>
-        <translation type="unfinished"/>
+        <translation>Rebobinar los datos de la cadena de bloques</translation>
     </message>
     <message>
         <location filename="../spectregui.cpp" line="1293"/>
         <source>Are you sure you want to rewind the last 100 blocks from the blockchain data? This might help if the wallet stopped syncing at a certain block height.&lt;br&gt;&lt;br&gt;- Last 100 blocks will be deleted&lt;br&gt;- Application will stop&lt;br&gt;- wallet.dat remains untouched&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>¿Estás seguro de que quieres rebobinar los últimos 100 bloques de los datos del blockchain? Esto podría ayudar si el monedero dejara de sincronizarse a una determinada altura de bloque.&lt;br&gt;&lt;br&gt;- Los últimos 100 bloques se borrarán&lt;br&gt;- La aplicación se detendrá&lt;br&gt;- wallet.dat permanece intacto&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -3660,12 +3660,12 @@ Esto significa que se requiere una cuota de al menos %2.</translation>
     <message>
         <location filename="../aliasbridgestrings.h" line="211"/>
         <source>Connect service...</source>
-        <translation type="unfinished"/>
+        <translation>Conectar el servicio...</translation>
     </message>
     <message>
         <location filename="../aliasbridgestrings.h" line="212"/>
         <source>Loading block index...</source>
-        <translation type="unfinished"/>
+        <translation>Cargando el índice de bloques...</translation>
     </message>
 </context>
 <context>
