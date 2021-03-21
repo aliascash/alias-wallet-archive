@@ -166,7 +166,7 @@ bool AppInit(int argc, char* argv[])
 
         ReadConfigFile(mapArgs, mapMultiArgs);
 
-        if (mapArgs.count("-?") || mapArgs.count("--help"))
+        if (mapArgs.count("-?") || mapArgs.count("-help"))
         {
             // First part of help message is specific to bitcoind / RPC client
             std::string strUsage = _("Alias version") + " " + FormatFullVersion() + "\n\n" +
