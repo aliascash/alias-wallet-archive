@@ -1109,7 +1109,7 @@ static const char *strMainNetOnionSeed[][1] = {
     {"nounwopyxdcwe72v5xey5jgjf6ypsmyitzolambc7c4vgvheyquekmyd.onion"},
     {"zhn7wjfhk232kkmb.onion"},
 	{"qe6swgcfktc5l3l7.onion"},
-	{"r5mk35ekwr6j7ccb.onion"},
+	{"34mek66nmcgc4hb4u55zq3pjay5fz3qqmmopqqw6vaqlfxbqtuudkhad.onion"},
 
     // other stable nodes that are monitored by the project
     {NULL}
@@ -1118,8 +1118,8 @@ static const char *strMainNetOnionSeed[][1] = {
 static const char *strTestNetOnionSeed[][1] = {
     // project-maintained nodes
     {"f3kcqb22tae4twfvd6lrsanwp4ikfocltsuo4onsjdapcsgatoyw7oid.onion"},
-    {"iw5cbprcpm2md7l2.onion"},
-    {"glyxixwz4uk6n7w6.onion"},
+    {"k2chqlj5s5q6xejbkznjqptidqmdbdtnm4jozbe5d5o7mmugikuwzsyd.onion"},
+    {"srrfkizif7t7t46s4n37remlzjslryzo5vwibm2l2ewcfsbfgesie7yd.onion"},
     {"almrpkxuhk2r35sw.onion"},
     {"vwxv3bstufb7kfsr.onion"},
     {NULL}
