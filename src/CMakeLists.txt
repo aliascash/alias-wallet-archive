@@ -205,10 +205,184 @@ else()
 endif()
 
 if (ENABLE_GUI)
+    # The qm files are generated in the build tree, but the qrc file is inside the
+    # source directory and the path to resources are relative to the location of
+    # the qrc file itself. We use configure_file() to copy the qrc file in the build
+    # directory such that it can find the qm translations files. The qrc file is
+    # copied if it doesn't exist in the destination or if it is modified.
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qt/alias_locale.qrc ${CMAKE_BINARY_DIR} COPYONLY)
+
+    # Create only alias_en.ts new, to figure out if there are new strings to translate.
+    # If src/qt/locale/alias_en.ts is modified afterwards, there are new strings to
+    # translate. Any further steps on transifex.com.
+    # Don't forget to add new source files here too, if they contain strings to translate!
+    qt5_create_translation(QM_FILES
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/aboutdialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/askpassphrasedialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/coincontroldialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/editaddressdialog.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/rpcconsole.ui
+            ${CMAKE_CURRENT_LIST_DIR}/qt/forms/transactiondescdialog.ui
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aliasbridgestrings.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aliascorestrings.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiconstants.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectreclientbridge.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.h
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.h
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/csvmodelwriter.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/editaddressdialog.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/guiutil.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/monitoreddatamapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/notificator.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/optionsmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/paymentserver.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/peertablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvalidatedlineedit.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/qvaluecombobox.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/rpcconsole.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/scicon.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/setupwalletwizard.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectrebridge.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectreclientbridge.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/spectregui.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/trafficgraphwidget.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiondesc.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactionrecord.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/transactiontablemodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/walletmodel.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websocketclientwrapper.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/qt/websockettransport.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/init.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/util.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/main.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/net.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/rpcserver.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/wallet.cpp
+
+            ${CMAKE_CURRENT_LIST_DIR}/qt/locale/alias_en.ts
+            )
+
+    # Call lrelease on each translation file to create qm files.
+    qt5_add_translation(QM_FILES
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_af_ZA.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ar.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_be.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bg.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_bs.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca@valencia.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ca_ES.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_cs.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_cy.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_da.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_de.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_el_GR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_eo.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_CL.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_DO.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_MX.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_es_UY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_et.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_eu_ES.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fa.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fa_IR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fi.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_fr_CA.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_gl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_he.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hi_IN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_hu.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_id_ID.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_it.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ja.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ka.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_kk.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ko_KR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ky.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_la.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_lt.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_lv_LV.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ms_MY.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_nb.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_nl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pam.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pl.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pt_BR.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_pt_PT.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ro_RO.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ru.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sah.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sk.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sl_SI.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sq.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_sv.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_th.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_tr.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_uk.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_ur_PK.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_vi.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_vi_VN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_CN.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_HK.ts
+            ${CMAKE_CURRENT_SOURCE_DIR}/qt/locale/alias_zh_TW.ts
+            )
+
     if (ANDROID)
         set(SPECTRECOIN_SRCS
                 ../spectre.qrc
                 ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                ${QM_FILES}
         )
 
         qt5_generate_repc(SPECTRECOIN_SRCS ${CMAKE_CURRENT_LIST_DIR}/qt/rep/modelremote.rep SOURCE)
@@ -262,6 +436,8 @@ if (ENABLE_GUI)
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/aliasbridgestrings.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/aliascorestrings.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
@@ -269,7 +445,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
-                ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
@@ -305,7 +480,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
@@ -338,11 +512,40 @@ if (ENABLE_GUI)
     else()
         # The UI wallet
         if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            add_executable(Aliaswallet MACOSX_BUNDLE ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    MACOSX_BUNDLE
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/res/alias-qt.rc
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         else()
-            add_executable(Aliaswallet ../spectre.qrc ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp)
+            # We have to reference the alias_locale.qrc copy in the build directory, not the
+            # original file in the source directory. We also add qm files to the target to
+            # create a dependency that will force rebuild in case the translation are
+            # updated.
+            add_executable(Aliaswallet
+                    ../spectre.qrc
+                    ${CMAKE_CURRENT_LIST_DIR}/qt/spectre.cpp
+                    ${CMAKE_BINARY_DIR}/alias_locale.qrc
+                    ${QM_FILES}
+                    )
         endif()
 
         # Link the UI wallet
@@ -368,6 +571,8 @@ if (ENABLE_GUI)
                 PUBLIC
                 ${CMAKE_CURRENT_LIST_DIR}/qt/aboutdialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/addresstablemodel.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/aliasbridgestrings.h
+                ${CMAKE_CURRENT_LIST_DIR}/qt/aliascorestrings.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/askpassphrasedialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodelconstants.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.h
@@ -375,7 +580,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.h
-                ${CMAKE_CURRENT_LIST_DIR}/qt/bridgetranslations.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroldialog.h
                 ${CMAKE_CURRENT_LIST_DIR}/qt/coincontroltreewidget.h
@@ -410,7 +614,6 @@ if (ENABLE_GUI)
                 ${CMAKE_CURRENT_LIST_DIR}/qt/applicationmodel.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinaddressvalidator.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinamountfield.cpp
-                ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinstrings.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bitcoinunits.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/bootstrapwizard.cpp
                 ${CMAKE_CURRENT_LIST_DIR}/qt/clientmodel.cpp
@@ -494,6 +697,7 @@ if (ENABLE_GUI)
                     )
             target_link_libraries(Aliaswallet "Shlwapi")
             add_custom_command(TARGET Aliaswallet POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
                     COMMAND "${CMAKE_COMMAND}" -E
                     env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
                     --force
@@ -505,10 +709,10 @@ if (ENABLE_GUI)
                     --quick
                     --webengine
                     "$<TARGET_FILE:Aliaswallet>"
+                    COMMAND unzip -o ${VCRUNTIME_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND unzip -o ${TOR_ARCHIVE} -d ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_BINARY_DIR}/delivery/Release/ ${CMAKE_BINARY_DIR}/delivery/
                     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/delivery/Release
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Alias
                     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/delivery ${CMAKE_BINARY_DIR}/Alias
                     COMMENT "Running windeployqt..."
                     )

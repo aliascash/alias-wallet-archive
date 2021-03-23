@@ -16,8 +16,8 @@ set(ANDROID_SDK_VERSION 29)
 
 # Alias version definition
 set(CLIENT_VERSION_MAJOR 4)
-set(CLIENT_VERSION_MINOR 3)
-set(CLIENT_VERSION_REVISION 1)
+set(CLIENT_VERSION_MINOR 4)
+set(CLIENT_VERSION_REVISION 0)
 if (ANDROID)
     set(CLIENT_VERSION_BUILD ${ANDROID_VERSION_CODE})
 else()
@@ -143,11 +143,29 @@ else()
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_STATIC_RUNTIME ON)
 endif()
-set(Boost_USE_DEBUG_LIBS OFF) # ignore debug libs and
-set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(Boost_USE_DEBUG_LIBS ON)    # only find debug libs and
+    set(Boost_USE_RELEASE_LIBS OFF) # ignore release libs
+else()
+    set(Boost_USE_DEBUG_LIBS OFF)   # ignore debug libs and
+    set(Boost_USE_RELEASE_LIBS ON)  # only find release libs
+endif()
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_NO_SYSTEM_PATHS ON)
-find_package(Boost 1.65.1 REQUIRED COMPONENTS
+#set(Boost_DEBUG ON)
+
+set(Boost_ARCHITECTURE -x64)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    execute_process(COMMAND uname -m OUTPUT_VARIABLE USED_ARCH)
+#    message(STATUS "Used arch: ${USED_ARCH}")
+    if (USED_ARCH MATCHES "aarch64")
+        # We're compiling for ARMv8 like Raspberry Pi
+        message(STATUS "Found aarch64, setting Boost architecture to -a64")
+        set(Boost_ARCHITECTURE -a64)
+    endif()
+endif()
+
+find_package(Boost 1.72.0 REQUIRED COMPONENTS
         atomic
         chrono
         date_time
@@ -186,6 +204,7 @@ if (ENABLE_GUI)
         set(Qt5Qml_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Qml")
         set(Qt5Network_DIR "${QT_CMAKE_MODULE_PATH}/Qt5Network")
         set(Qt5QmlModels_DIR "${QT_CMAKE_MODULE_PATH}/Qt5QmlModels")
+        set(Qt5LinguistTools_DIR "${QT_CMAKE_MODULE_PATH}/Qt5LinguistTools")
         if (ANDROID)
             set(Qt5AndroidExtras_DIR "${QT_CMAKE_MODULE_PATH}/Qt5AndroidExtras")
             set(Qt5RemoteObjects_DIR "${QT_CMAKE_MODULE_PATH}/Qt5RemoteObjects")
@@ -242,6 +261,9 @@ if (ENABLE_GUI)
     message(STATUS "Qt5Concurrent version: ${Qt5Concurrent_VERSION}")
     get_target_property(QtConcurrent_location Qt5::Concurrent LOCATION)
 
+    find_package(Qt5LinguistTools)
+    message(STATUS "Qt5LinguistTools version: ${Qt5LinguistTools_VERSION}")
+
     if (ANDROID)
         find_package(Qt5AndroidExtras)
         message(STATUS "Qt5AndroidExtras version: ${Qt5AndroidExtras_VERSION}")
@@ -289,6 +311,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         include(DownloadFile)
         set(TOR_ARCHIVE "${CMAKE_BINARY_DIR}/Tor.libraries.Win64.zip")
         download_file(https://github.com/aliascash/resources/raw/master/resources/Tor.libraries.Win64.zip ${TOR_ARCHIVE} SHA1 ac40fae3eee1040d7ffab64b9b7b7356ca75b37c)
+    endif()
+    if (NOT VCRUNTIME_ARCHIVE)
+        include(DownloadFile)
+        set(VCRUNTIME_ARCHIVE "${CMAKE_BINARY_DIR}/VCRuntime.libraries.Win64.zip")
+        download_file(https://github.com/aliascash/resources/raw/master/resources/VCRuntime.libraries.Win64.zip ${VCRUNTIME_ARCHIVE} SHA1 8f52e83d99d88362946e97a66a748975bd78347f)
     endif()
 endif()
 

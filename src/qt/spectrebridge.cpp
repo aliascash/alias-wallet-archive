@@ -38,7 +38,7 @@
 
 #include "extkey.h"
 
-#include "bridgetranslations.h"
+#include "aliasbridgestrings.h"
 
 #include <QApplication>
 #include <QThread>
@@ -367,7 +367,7 @@ void SpectreBridge::setApplicationModel(ApplicationModelRemoteSource *applicatio
 }
 
 void SpectreBridge::jsReady() {
-    this->applicationModel->setCoreMessage("..Start UI..");
+    this->applicationModel->setCoreMessage(tr("..Start UI.."));
     QApplication::instance()->processEvents();
 
     // Populate data
@@ -379,7 +379,7 @@ void SpectreBridge::jsReady() {
     populateTransactionTable();
     populateAddressTable();
 
-    this->applicationModel->setCoreMessage(".Start UI.");
+    this->applicationModel->setCoreMessage(tr(".Start UI."));
     {
         QApplication::instance()->processEvents();
         LOCK2(cs_main, pwalletMain->cs_wallet);
@@ -611,20 +611,6 @@ QString SpectreBridge::getPubKey(QString address)
     return addressModel->atm->pubkeyForAddress(address);;
 }
 
-QString SpectreBridge::translateHtmlString(QString string)
-{
-    int i = 0;
-    while (html_strings[i] != 0)
-    {
-        if (html_strings[i] == string)
-            return tr(html_strings[i]);
-
-        i++;
-    }
-
-    return string;
-}
-
 void SpectreBridge::getOptions()
 {
     emit getOptionResult(info->value("options"));
@@ -645,6 +631,9 @@ QJsonValue SpectreBridge::userAction(QJsonValue action)
         for(int option = 0;option < optionsModel->rowCount(); option++) {
             if(object.contains(optionsModel->optionIDName(option))) {
                 optionsModel->setData(option, object.value(optionsModel->optionIDName(option)).toVariant());
+                if (optionsModel->optionIDName(option) == OptionsModel::Language) {
+                    // TODO: Handle restart dialog
+                }
             }
         }
 

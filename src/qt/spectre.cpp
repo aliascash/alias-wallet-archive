@@ -139,7 +139,7 @@ static void InitQMessage(const QString &message)
  */
 static std::string Translate(const char* psz)
 {
-    return QCoreApplication::translate("bitcoin-core", psz).toStdString();
+    return QCoreApplication::translate("alias-core", psz).toStdString();
 }
 
 /* Handle runaway exceptions. Shows a message box with the problem and quits the program.
@@ -217,6 +217,41 @@ bool AndroidAppInit(int argc, char* argv[])
 {
     QAndroidService app(argc, argv);
     qInfo() << "Android service starting...";
+
+    app.setOrganizationName("The Alias Foundation");
+    app.setOrganizationDomain("alias.cash");
+    if(GetBoolArg("-testnet")) // Separate UI settings for testnet
+        app.setApplicationName("Alias-testnet");
+    else
+        app.setApplicationName("Alias");
+
+    // ... then GUI settings:
+    OptionsModel optionsModel;
+
+    // Get desired locale (e.g. "de_DE") from command line or use system locale
+    QString lang_territory = QString::fromStdString(GetArg("-lang", QLocale::system().name().toStdString()));
+    QString lang = lang_territory;
+    // Convert to "de" only by truncating "_DE"
+    lang.truncate(lang_territory.lastIndexOf('_'));
+
+    QTranslator qtTranslatorBase, qtTranslator, translatorBase, translator;
+    // Load language files for configured locale:
+    // - First load the translator for the base language, without territory
+    // - Then load the more specific locale translator
+
+    // Load e.g. qt_de.qm
+    if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTranslatorBase);
+    // Load e.g. qt_de_DE.qm
+    if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTranslator);
+    // Load e.g. bitcoin_de.qm (shortcut "de" needs to be defined in bitcoin.qrc)
+    if (translatorBase.load(lang, ":/translations/"))
+        app.installTranslator(&translatorBase);
+    // Load e.g. bitcoin_de_DE.qm (shortcut "de_DE" needs to be defined in bitcoin.qrc)
+    if (translator.load(lang_territory, ":/translations/"))
+        app.installTranslator(&translator);
+    uiInterface.Translate.connect(Translate);
 
     uiInterface.InitMessage.connect(InitMessage);
 
@@ -564,7 +599,7 @@ int main(int argc, char *argv[])
 #ifndef ANDROID
         boost::thread_group threadGroup;
 #endif
-        InitMessage("Connect service...");
+        InitMessage(app.translate("alias-bridge", "Connect service...").toStdString());
 
         // Accuire remote objects replicas
         QRemoteObjectNode repNode;

@@ -68,6 +68,7 @@ void OptionsModel::Init()
         SoftSetBoolArg("-thinfullindex", settings.value("fThinFullIndex").toBool());
     if (settings.contains("nThinIndexWindow"))
         SoftSetArg("-thinindexmax", settings.value("nThinIndexWindow").toString().toStdString());
+    settings.sync();
 }
 
 int OptionsModel::rowCount() const
@@ -78,6 +79,7 @@ int OptionsModel::rowCount() const
 QVariant OptionsModel::data(const int row) const
 {
     QSettings settings;
+    settings.sync();
     switch(row)
     {
     case StartAtStartup:
@@ -215,6 +217,20 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         break;
     case Language:
         settings.setValue("language", value);
+
+        // As long as the real strings of the choosen language are used to filter transactions and notifications,
+        // this workaround is neccessary. Otherwise the transaction list will be empty after a language change and
+        // wallet restart.
+        visibleTransactions().clear();
+        visibleTransactions().append("*");
+        settings.setValue("visibleTransactions", visibleTransactions());
+        bActivateAllTransactiontypesAfterLanguageSwitch = true;
+
+        notifications().clear();
+        notifications().append("*");
+        settings.setValue("notifications", notifications());
+        bActivateAllNotificationsAfterLanguageSwitch = true;
+
         break;
     case RowsPerPage: {
         setRowsPerPage(value.toInt());
@@ -222,12 +238,24 @@ bool OptionsModel::setData(const int row, const QVariant & value)
         }
         break;
     case Notifications: {
-        setNotifications(value.toStringList());
+        if (bActivateAllNotificationsAfterLanguageSwitch) {
+            notifications().clear();
+            notifications().append("*");
+            bActivateAllNotificationsAfterLanguageSwitch = false;
+        } else {
+            setNotifications(value.toStringList());
+        }
         settings.setValue("notifications", notifications());
         }
         break;
     case VisibleTransactions: {
-        setVisibleTransactions(value.toStringList());
+        if (bActivateAllTransactiontypesAfterLanguageSwitch) {
+            visibleTransactions().clear();
+            visibleTransactions().append("*");
+            bActivateAllTransactiontypesAfterLanguageSwitch = false;
+        } else {
+            setVisibleTransactions(value.toStringList());
+        }
         settings.setValue("visibleTransactions", visibleTransactions());
         }
         break;
@@ -280,6 +308,7 @@ bool OptionsModel::setData(const int row, const QVariant & value)
     default:
         break;
     }
+    settings.sync();
     return successful;
 }
 

@@ -9,6 +9,17 @@
 #
 # ===========================================================================
 
+# Handle UI repo location
+#
+# Determine path where this repo clone is located. As default we asume the
+# UI repo clone should be located at the same folder level
+#
+# 1: Get path to .git folder
+currentCloneLocation=$(git rev-parse --git-dir 2>/dev/null)
+# 2: Repo location is two folder levels up
+currentCloneLocation=${currentCloneLocation%/*}
+ALIAS_UI_REPO_LOCATION=${currentCloneLocation%/*}
+
 if [[ ! -e .buildconfig ]] ; then
     cat << EOF > .buildconfig
 ##### ### # Global definitions # ### ########################################
@@ -19,9 +30,13 @@ if [[ ! -e .buildconfig ]] ; then
 ARCHIVES_ROOT_DIR=${HOME}/Archives
 
 ##### ### # Android # ### ###################################################
+ANDROID_HOME=${HOME}/Archives/Android
 ANDROID_NDK_VERSION=r21d
 ANDROID_SDK_VERSION=29
-ANDROID_SDK_ROOT=${HOME}/Archives/Android/Sdk
+ANDROID_SDK_ROOT=${ANDROID_HOME}/Sdk
+ANDROID_API_ARM64=26
+ANDROID_API_ARMV7=26
+ANDROID_API_X86_64=26
 
 ##### ### # Boost # ### #####################################################
 BOOST_VERSION=1.73.0
@@ -106,6 +121,9 @@ TOR_ARCHIVE_HASH_ANDROID=ee7adbbc5e30898bc35d9658bbf6a67e4242977175f7bad11c5f1ee
 #TOR_ARCHIVE_HASH_ANDROID=be22b9326093dd6b012377d9e3c456028cd2104e5a454a7773aebf75d44c1ccf
 #TOR_BUILD_VERSION_ANDROID=0.4.2.5
 #TOR_ARCHIVE_HASH_ANDROID=94ad248f4d852a8f38bd8902a12b9f41897c76e389fcd5b8a7d272aa265fd6c9
+
+##### ### # Alias UI repo # ### #############################################
+ALIAS_UI_REPO_LOCATION=${ALIAS_UI_REPO_LOCATION}
 
 EOF
 fi

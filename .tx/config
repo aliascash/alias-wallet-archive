@@ -6,9 +6,8 @@
 [main]
 host = https://www.transifex.com
 
-[spectrecore.spectrecoin_qt]
-file_filter = src/qt/locale/spectrecoin_<lang>.ts
-source_file = src/qt/locale/spectrecoin_en.ts
+[alias-wallet.alias_qt]
+file_filter = src/qt/locale/alias_<lang>.ts
+source_file = src/qt/locale/alias_en.ts
 source_lang = en
 type = QT
-

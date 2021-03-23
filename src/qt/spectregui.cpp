@@ -219,7 +219,7 @@ void SpectreGUI::updateCoreMessage(QString message)
 unsigned short const onion_port = 9089;
 
 void SpectreGUI::loadIndex(QString webSocketToken) {
-    initMessage(splashScreen, "...Start UI...");
+    initMessage(splashScreen, tr("...Start UI...").toStdString());
 
     QQuickWidget *view = new QQuickWidget(this);
     view->setResizeMode(QQuickWidget::SizeRootObjectToView);
@@ -351,7 +351,7 @@ void SpectreGUI::pageLoaded()
     runJavaScript(QString("var sheet = document.createElement('style'); sheet.innerHTML = '.has-qr-code-scanner { display: none !important }'; document.body.appendChild(sheet);"));
 #endif
 
-    initMessage(splashScreen, "Ready!");
+    initMessage(splashScreen, tr("Ready!").toStdString());
     if (splashScreen) splashScreen->finish(this);
     initialized = true;
 
@@ -652,7 +652,7 @@ void SpectreGUI::setNumBlocks()
     int nNodeMode = blockInfo.nNodeMode();
     int nNodeState = blockInfo.nNodeState();
     fConnectionInit = false;
-    
+
     // -- translation (tr()) makes it difficult to neatly pick block/header
     static QString sBlockType = nNodeMode == NT_FULL ? tr("block") : tr("header");
     static QString sBlockTypeMulti = nNodeMode == NT_FULL ? tr("blocks") : tr("headers");
@@ -663,7 +663,7 @@ void SpectreGUI::setNumBlocks()
     int count = blockInfo.numBlocks();
     int nTotalBlocks = blockInfo.numBlocksOfPeers();
     float nPercentageDone = -1;
-    
+
     if (nNodeMode != NT_FULL
         && nNodeState == NS_GET_FILTERED_BLOCKS)
     {
@@ -705,11 +705,12 @@ void SpectreGUI::setNumBlocks()
         }
 
         tooltip += (tooltip.isEmpty()? "" : "<br>")
-         + (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " "
-                 + tr("%1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3);
+         + (clientModel->isImporting()
+         ? tr("Imported %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3)
+         : tr("Downloaded %1 of %2 %3 of transaction history (%4% done).").arg(count).arg(nTotalBlocks).arg(sBlockTypeMulti).arg(nPercentageDone, 0, 'f', 3));
     } else
     {
-        tooltip = (clientModel->isImporting() ? tr("Imported") : tr("Downloaded")) + " " + tr("%1 blocks of transaction history.").arg(count);
+        tooltip = clientModel->isImporting() ? tr("Imported %n block(s) of transaction history.", "", count) : tr("Downloaded %n block(s) of transaction history.", "", count);
     }
 
     // Override progressBarLabel text when we have warnings to display

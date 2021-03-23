@@ -24,7 +24,7 @@
 #include "extkey.h"
 
 #include "addresstablemodel.h" // Need enum EAddressType
-#include "bridgetranslations.h"
+#include "aliasbridgestrings.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -418,4 +418,11 @@ void SpectreClientBridge::newAddress(QString addressLabel, int addressType, QStr
         else
             emit newAddressResult(false, tr("Core not responding."), "", send);
     }
+}
+
+void SpectreClientBridge::translateHtmlString(QString string)
+{
+    std::string result = QCoreApplication::translate("alias-bridge", qPrintable(string)).toStdString();
+    LogPrintf("translateHtmlString: '%s' -> '%s'\n", string.toStdString(), result);
+    emit updateElement(string, QString::fromStdString(result));
 }

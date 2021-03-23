@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 ### At first perform source build ###
-FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.2 as build
+FROM aliascash/alias-wallet-builder-opensuse-tumbleweed:2.4 as build
 MAINTAINER HLXEasy <hlxeasy@gmail.com>
 
 # Build parameters
@@ -30,6 +30,7 @@ ARG GIT_COMMIT=unknown
 ARG REPLACE_EXISTING_ARCHIVE=''
 #ENV GITHUB_CI_TOKEN=${GITHUB_CI_TOKEN}
 ENV ARCHIVE=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-OpenSUSE-Tumbleweed.tgz
+ENV ARCHIVE_CHKSUM=Alias-${ALIAS_RELEASE}-${GIT_COMMIT}-OpenSUSE-Tumbleweed.sha256
 ENV CHKSUM_FILE=Checksum-Alias-OpenSUSE-Tumbleweed.txt
 
 RUN mkdir -p /filesToUpload/usr/local/bin
@@ -47,6 +48,16 @@ RUN cd /filesToUpload \
         --tag "${ALIAS_RELEASE}" \
         --name "${ARCHIVE}" \
         --file "/filesToUpload/${ARCHIVE}" \
+        ${REPLACE_EXISTING_ARCHIVE} \
+ && sha256sum /filesToUpload/${ARCHIVE} | awk '{ print $1 }' > /filesToUpload/${ARCHIVE_CHKSUM} \
+ && cat /filesToUpload/${ARCHIVE_CHKSUM} \
+ && github-release upload \
+        --user aliascash \
+        --security-token "${GITHUB_CI_TOKEN}" \
+        --repo "${ALIAS_REPOSITORY}" \
+        --tag "${ALIAS_RELEASE}" \
+        --name "${ARCHIVE_CHKSUM}" \
+        --file "/filesToUpload/${ARCHIVE_CHKSUM}" \
         ${REPLACE_EXISTING_ARCHIVE} \
  && chmod +x /tmp/createChecksums.sh \
  && sh /tmp/createChecksums.sh /filesToUpload/${ARCHIVE} ${CHKSUM_FILE} \
