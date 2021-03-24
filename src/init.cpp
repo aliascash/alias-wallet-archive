@@ -232,7 +232,7 @@ bool static Bind(const CService &addr, bool fError = true)
 std::string HelpMessage()
 {
     std::string strUsage = _("Options:") + "\n";
-    strUsage += "  -?                     " + _("This help message") + "\n";
+    strUsage += "  -?|-h|-help            " + _("This help message") + "\n";
     strUsage += "  -conf=<file>           " + _("Specify configuration file (default: alias.conf)") + "\n";
     strUsage += "  -pid=<file>            " + _("Specify pid file (default: alias.pid)") + "\n";
     strUsage += "  -datadir=<dir>         " + _("Specify data directory") + "\n";
