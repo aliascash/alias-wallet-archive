@@ -57,7 +57,7 @@ jobs:
         if: steps.extract_branch.outputs.branch == 'master_android'
         with:
           tag_name: ${{ steps.determine_release.outputs.alias_release }}
-          name: "Release ${{ steps.determine_release.outputs.alias_release }} (Build #${{ github.run_number }})"
+          name: "Android release ${{ steps.determine_release.outputs.alias_release }} (Build #${{ github.run_number }})"
           body_path: ${{ github.workspace }}/ReleaseNotes_Android.md
           draft: false
           prerelease: false
@@ -71,7 +71,7 @@ jobs:
         if: steps.extract_branch.outputs.branch != 'master_android'
         with:
           tag_name: ${{ steps.determine_release.outputs.alias_release }}
-          name: "Continuous build #${{ github.run_number }}"
+          name: "Android continuous build #${{ github.run_number }}"
           body: |
             Build #${{ github.run_number }} from ${{ steps.date.outputs.date }}
             - To verify checksums see dedicated checksum files for each download
