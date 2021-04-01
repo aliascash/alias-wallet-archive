@@ -165,6 +165,11 @@ add_subdirectory(json)
 add_subdirectory(lz4)
 add_subdirectory(wordlists)
 add_subdirectory(xxhash)
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    add_subdirectory(test)
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(win)
 endif ()

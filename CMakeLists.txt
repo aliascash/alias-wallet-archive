@@ -32,6 +32,10 @@ if (WIN32)
     add_compile_definitions(NOMINMAX)
 endif ()
 
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
+
 if (ANDROID)
     # https://www.jetbrains.com/help/clion/cmake-profile.html
     # adding two custom build types to the cached value
