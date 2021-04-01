@@ -166,6 +166,7 @@ find_package(Boost 1.72.0 REQUIRED COMPONENTS
         regex
         system
         thread
+        unit_test_framework
         )
 message(STATUS "Boost_VERSION:      ${Boost_VERSION}")
 message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")

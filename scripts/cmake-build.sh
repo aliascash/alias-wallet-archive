@@ -26,7 +26,7 @@ _init
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic test'
 # regex date_time atomic
 
 ##### ### # BerkeleyDB # ### ################################################
@@ -406,6 +406,7 @@ buildBoost() {
     tar xzf ${BOOST_ARCHIVE_LOCATION}/boost_${BOOST_VERSION//./_}.tar.gz
     info " -> Building Boost"
     cd boost_${BOOST_VERSION//./_} || die 1 "Unable to cd into boost_${BOOST_VERSION//./_}"
+    info "    ./bootstrap.sh --with-libraries='${BOOST_REQUIRED_LIBS// /,}'"
     ./bootstrap.sh --with-libraries="${BOOST_REQUIRED_LIBS// /,}"
     #        ./bootstrap.sh
     ./b2 \
@@ -425,6 +426,8 @@ checkBoost() {
     if [[ -d ${BOOST_LIBRARYDIR} ]]; then
         for currentBoostDependency in ${BOOST_REQUIRED_LIBS}; do
             if [[ -e ${BOOST_LIBRARYDIR}/libboost_${currentBoostDependency}-mt-${LIB_ARCH_SUFFIX}.a ]]; then
+                info " -> ${currentBoostDependency}: OK"
+            elif [[ "${currentBoostDependency}" = 'test' && -e ${BOOST_LIBRARYDIR}/libboost_unit_${currentBoostDependency}_framework-mt-${LIB_ARCH_SUFFIX}.a ]]; then
                 info " -> ${currentBoostDependency}: OK"
             else
                 warning " => ${currentBoostDependency}: Not found!"

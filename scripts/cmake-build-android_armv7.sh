@@ -37,7 +37,7 @@ ANDROID_QT_LIBRARYDIR=${ANDROID_QT_DIR}/lib
 ##### ### # Boost # ### #####################################################
 # Location of Boost will be resolved by trying to find required Boost libs
 BOOST_ARCHIVE_LOCATION=${ARCHIVES_ROOT_DIR}/Boost
-BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic'
+BOOST_REQUIRED_LIBS='chrono filesystem iostreams program_options system thread regex date_time atomic test'
 # regex date_time atomic
 
 ##### ### # Qt # ### ########################################################
